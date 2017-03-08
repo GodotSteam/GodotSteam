@@ -1,0 +1,144 @@
+#ifndef GODOTSTEAM_H
+#define GODOTSTEAM_H
+
+#include <steam/steam_api.h>
+
+#include "object.h"
+#include "scene/resources/texture.h"	// For avatars
+#include "reference.h"
+#include "dictionary.h"					// Contains array.h as well
+
+class Steam: public Object
+{
+public:
+	enum {
+		OFFLINE=0, ONLINE=1, BUSY=2, AWAY=3, SNOOZE=4, LF_TRADE, LF_PLAY, STATE_MAX, NOT_OFFLINE=8, ALL=9,
+		TOP_LEFT=0, TOP_RIGHT=1, BOT_LEFT=2, BOT_RIGHT=3,
+		ERR_NO_CLIENT=2, ERR_NO_CONNECTION=3,
+		AVATAR_SMALL=0, AVATAR_MEDIUM, AVATAR_LARGE,
+		GLOBAL=0, GLOBAL_AROUND_USER=1, FRIENDS=2, USERS=3,
+		LOBBY_OK=0, LOBBY_NO_CONNECTION=1, LOBBY_TIMEOUT=2, LOBBY_FAIL=3, LOBBY_ACCESS_DENIED=4, LOBBY_LIMIT_EXCEEDED=5,
+		PRIVATE=0, FRIENDS_ONLY=1, PUBLIC=2, INVISIBLE=3, LOBBY_KEY_LENGTH=255,
+		UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
+		UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1,
+		UGC_STATE_NONE=0, UGC_STATE_SUBSCRIBED=1, UGC_STATE_LEGACY=2, UGC_STATE_INSTALLED=4, UGC_STATE_UPDATE=8, UGC_STATE_DOWNLOADING=16, UGC_STATE_PENDING=32,
+		STATUS_INVALID=0, STATUS_PREPARING_CONFIG=1, STATUS_PREPARING_CONTENT=2, STATUS_UPLOADING_CONTENT=3, STATUS_UPLOADING_PREVIEW=4, STATUS_COMMITTING_CHANGES=5
+	};
+	static Steam* get_singleton();
+	Steam();
+	~Steam();
+
+	CSteamID createSteamID(uint32 steamID, int accountType=-1);
+	Image drawAvatar(int size, uint8* buffer);
+	// Steamworks
+	bool steamInit();
+	bool isSteamRunning();
+	// Apps
+	bool hasOtherApp(int value);
+	int getDLCCount();
+	bool isDLCInstalled(int value);
+	void requestAppProofOfPurchaseKey(int value);
+	bool isAppInstalled(int value);
+	// Friends
+	int getFriendCount();
+	String getPersonaName();
+	String getFriendPersonaName(int steam_id);
+	void setGameInfo(const String& s_key, const String& s_value);
+	void clearGameInfo();
+	void inviteFriend(int id, const String& conString);
+	void setPlayedWith(int steam_id);
+	Array getRecentPlayers();
+	void getFriendAvatar(int size=AVATAR_MEDIUM);
+	Array getUserSteamGroups();
+	Array getUserSteamFriends();
+	void activateGameOverlay(const String& type);
+	void activateGameOverlayToUser(const String& type, int steam_id);
+	void activateGameOverlayToWebPage(const String& url);
+	void activateGameOverlayToStore(int appid=0);
+	// Matchmaking
+	void createLobby(int lobbyType, int cMaxMembers);
+	void joinLobby(int steamIDLobby);
+	void leaveLobby(int steamIDLobby);
+	bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
+	// Music
+	bool musicIsEnabled();
+	bool musicIsPlaying();
+	float musicGetVolume();
+	void musicPause();
+	void musicPlay();
+	void musicPlayNext();
+	void musicPlayPrev();
+	void musicSetVolume(float value);
+	// Screenshots
+	void triggerScreenshot();
+	// Users
+	int getSteamID();
+	bool loggedOn();
+	int getPlayerSteamLevel();
+	String getUserDataFolder();
+	// User Stats
+	bool clearAchievement(const String& s_key);
+	bool getAchievement(const String& s_key);
+	float getStatFloat(const String& s_key);
+	int getStatInt(const String& s_key);
+	bool resetAllStats(bool bAchievementsToo=true);
+	bool requestCurrentStats();
+	bool setAchievement(const String& s_key);
+	bool setStatFloat(const String& s_key, float value);
+	bool setStatInt(const String& s_key, int value);
+	bool storeStats();
+	void findLeaderboard(const String& lName);
+	String getLeaderboardName();
+	int getLeaderboardEntryCount();
+	void downloadLeaderboardEntries(int rStart, int rEnd, int type=GLOBAL);
+	void downloadLeaderboardEntriesForUsers(Array usersID);
+	void uploadLeaderboardScore(int score, bool keepBest=false);
+	void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount);
+	void updateLeaderboardHandle(SteamLeaderboard_t lHandle);
+	uint64 getLeaderboardHandle();
+	Array getLeaderboardEntries();
+	// Utils
+	String getIPCountry();
+	bool isOverlayEnabled();
+	String getSteamUILanguage();
+	int getAppID();
+	int getSecondsSinceAppActive();
+	void setOverlayNotificationPosition(int pos);
+	int getCurrentBatteryPower();
+	bool isSteamRunningInVR();
+	int getServerRealTime();
+	// Workshop
+	int getNumSubscribedItems();
+	int getItemState(int publishedFileID);
+	bool downloadItem(int nPublishedFileID, bool bHighPriority);
+	void suspendDownloads(bool bSuspend);
+
+protected:
+	static void _bind_methods();
+	static Steam* singleton;
+//	static void updateFriendList(int filter=9);
+
+private:
+	bool isInitSuccess;
+	bool is_valid;
+
+	SteamLeaderboard_t leaderboard_handle;
+	Array leaderboard_entries;
+
+	void _lobby_created(LobbyCreated_t* lobbyData);
+	void _lobby_joined(LobbyEnter_t* lobbyData);
+	void _lobby_invite(LobbyInvite_t* lobbyData);
+	void _join_requested(GameRichPresenceJoinRequested_t* callData);
+	void _overlay_toggled(GameOverlayActivated_t* callData);
+	void _low_power(LowBatteryPower_t* timeLeft);
+	void _avatar_loaded(AvatarImageLoaded_t* avatarData);
+	void _leaderboard_loaded(LeaderboardFindResult_t *callData);
+	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData);
+	void run_callbacks(){
+		SteamAPI_RunCallbacks();
+	}
+
+	OBJ_TYPE(Steam, Object);
+	OBJ_CATEGORY("Steam");
+};
+#endif // GODOTSTEAM_H
