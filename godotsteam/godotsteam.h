@@ -30,16 +30,17 @@ public:
 
 	CSteamID createSteamID(uint32 steamID, int accountType=-1);
 	Image drawAvatar(int size, uint8* buffer);
-	// Steamworks
+	// Steamworks ///////////////////////////////
 	bool steamInit();
 	bool isSteamRunning();
-	// Apps
+	// Apps /////////////////////////////////////
 	bool hasOtherApp(int value);
 	int getDLCCount();
 	bool isDLCInstalled(int value);
 	void requestAppProofOfPurchaseKey(int value);
 	bool isAppInstalled(int value);
-	// Friends
+	String getCurrentGameLanguage();
+	// Friends //////////////////////////////////
 	int getFriendCount();
 	String getPersonaName();
 	String getFriendPersonaName(int steam_id);
@@ -55,12 +56,13 @@ public:
 	void activateGameOverlayToUser(const String& type, int steam_id);
 	void activateGameOverlayToWebPage(const String& url);
 	void activateGameOverlayToStore(int appid=0);
-	// Matchmaking
+	void activateGameOverlayInviteDialog(int id);
+	// Matchmaking //////////////////////////////
 	void createLobby(int lobbyType, int cMaxMembers);
 	void joinLobby(int steamIDLobby);
 	void leaveLobby(int steamIDLobby);
 	bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
-	// Music
+	// Music ////////////////////////////////////
 	bool musicIsEnabled();
 	bool musicIsPlaying();
 	float musicGetVolume();
@@ -69,14 +71,15 @@ public:
 	void musicPlayNext();
 	void musicPlayPrev();
 	void musicSetVolume(float value);
-	// Screenshots
+	// Screenshots //////////////////////////////
 	void triggerScreenshot();
-	// Users
+	// Users ////////////////////////////////////
 	int getSteamID();
 	bool loggedOn();
 	int getPlayerSteamLevel();
 	String getUserDataFolder();
-	// User Stats
+	void advertiseGame(const String& server_ip, int port);
+	// User Stats ///////////////////////////////
 	bool clearAchievement(const String& s_key);
 	bool getAchievement(const String& s_key);
 	float getStatFloat(const String& s_key);
@@ -97,7 +100,7 @@ public:
 	void updateLeaderboardHandle(SteamLeaderboard_t lHandle);
 	uint64 getLeaderboardHandle();
 	Array getLeaderboardEntries();
-	// Utils
+	// Utils ////////////////////////////////////
 	String getIPCountry();
 	bool isOverlayEnabled();
 	String getSteamUILanguage();
@@ -107,7 +110,7 @@ public:
 	int getCurrentBatteryPower();
 	bool isSteamRunningInVR();
 	int getServerRealTime();
-	// Workshop
+	// Workshop /////////////////////////////////
 	int getNumSubscribedItems();
 	int getItemState(int publishedFileID);
 	bool downloadItem(int nPublishedFileID, bool bHighPriority);
@@ -125,15 +128,19 @@ private:
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries;
 
-	void _lobby_created(LobbyCreated_t* lobbyData);
-	void _lobby_joined(LobbyEnter_t* lobbyData);
-	void _lobby_invite(LobbyInvite_t* lobbyData);
-	void _join_requested(GameRichPresenceJoinRequested_t* callData);
-	void _overlay_toggled(GameOverlayActivated_t* callData);
-	void _low_power(LowBatteryPower_t* timeLeft);
-	void _avatar_loaded(AvatarImageLoaded_t* avatarData);
-	void _leaderboard_loaded(LeaderboardFindResult_t *callData);
-	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData);
+	STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
+	STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
+	STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
+	STEAM_CALLBACK(Steam, _join_requested, GameRichPresenceJoinRequested_t);
+	STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
+	STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
+	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
+	STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t);
+	STEAM_CALLBACK(Steam, _leaderboard_entries_loaded, LeaderboardScoresDownloaded_t);
+	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
+	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
+	STEAM_CALLBACK(Steam, _request_proofofpurchase, AppProofOfPurchaseKeyResponse_t);
+
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();
 	}

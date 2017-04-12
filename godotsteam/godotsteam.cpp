@@ -1,8 +1,8 @@
 #include "godotsteam.h"
 #include <steam/steam_api.h>
 
-//#include "core/io/ip_address.h"
-//#include "core/io/ip.h"
+#include "core/io/ip_address.h"
+#include "core/io/ip.h"
 
 Steam* Steam::singleton = NULL;
 
@@ -65,19 +65,23 @@ bool Steam::hasOtherApp(int value){
 // Get the number of DLC the user owns for a parent application/game
 int Steam::getDLCCount(){
 	if(SteamApps() == NULL){
-		return 0;
+		return false;
 	}
 	return SteamApps()->GetDLCCount();
 }
-// Check give the given DLC is installed, returns true/false
+// Takes AppID of DLC and checks if the user owns the DLC & if the DLC is installed
 bool Steam::isDLCInstalled(int value){
 	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsDlcInstalled(value);
 }
-// Returns purchase key for given application/game
+// Returns purchase key for given application/game. You'll receive an AppProofOfPurchaseKeyResponse_t callback when
+// the key is available (which may be immediately).
 void Steam::requestAppProofOfPurchaseKey(int value){
+	if(SteamApps() == NULL){
+		return;
+	}
 	SteamApps()->RequestAppProofOfPurchaseKey(value);
 }
 // Check if given application/game is installed, not necessarily owned
@@ -87,15 +91,65 @@ bool Steam::isAppInstalled(int value){
 	}
 	return SteamApps()->BIsAppInstalled((AppId_t)value);
 }
+// Get the user's game language
+String Steam::getCurrentGameLanguage(){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	return SteamApps()->GetCurrentGameLanguage();
+}
+// Does the user have a VAC ban for this game
+bool Steam::isVACBanned(){
+	if(SteamApp() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsVACBanned();
+}
+// Returns the Unix time of the purchase of the app
+int Steam::getEarliestPurchaseUnixTime(int value){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)value);
+}
+// Checks if the user is subscribed to the current app through a free weekend
+// This function will return false for users who have a retail or other type of license
+// Suggested you contact Valve on how to package and secure your free weekend properly
+bool Steam::isSubscribedFromFreeWeekend(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedFromFreeWeekend();
+}
+// Install/Uninstall control for optional DLC
+void Steam::installDLC(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	SteamApps()->InstallDLC((AppId_t)value);
+}
+void Steam::uninstallDLC(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	SteamApps()->UninstallDLC((AppId_t)value);
+}
+
 /////////////////////////////////////////////////
 ///// FRIENDS ///////////////////////////////////
 //
 // Get number of friends user has
 int Steam::getFriendCount(){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
 	return SteamFriends()->GetFriendCount(0x04);
 }
 // Get the user's Steam username
 String Steam::getPersonaName(){
+	if(SteamFriends() == NULL){
+		return "";
+	}
 	return SteamFriends()->GetPersonaName();
 }
 // Get given friend's Steam username
@@ -223,7 +277,7 @@ Image Steam::drawAvatar(int iSize, uint8* iBuffer){
 	}
 	return avatar;
 }
-// Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements"
+// Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite"
 void Steam::activateGameOverlay(const String& url){
 	if(SteamFriends() == NULL){
 		return;
@@ -290,6 +344,14 @@ Array Steam::getUserSteamFriends(){
 	}
 	return steamFriends;
 }
+// Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby
+void Steam::activateGameOverlayInviteDialog(int steamID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID lobbyID = createSteamID(steamID);
+	SteamFriends()->ActivateGameOverlayInviteDialog(lobbyID);
+}
 /////////////////////////////////////////////////
 ///// MATCHMAKING ///////////////////////////////
 //
@@ -341,34 +403,58 @@ bool Steam::inviteUserToLobby(int steamIDLobby, int steamIDInvitee){
 //
 // Is Steam music enabled
 bool Steam::musicIsEnabled(){
+	if(SteamMusic() == NULL){
+		return false;
+	}
 	return SteamMusic()->BIsEnabled();
 }
 // Is Steam music playing something
 bool Steam::musicIsPlaying(){
+	if(SteamMusic() == NULL){
+		return false;
+	}
 	return SteamMusic()->BIsPlaying();
 }
 // Get the volume level of the music
 float Steam::musicGetVolume(){
+	if(SteamMusic() == NULL){
+		return 0;
+	}
 	return SteamMusic()->GetVolume();
 }
 // Pause whatever Steam music is playing
 void Steam::musicPause(){
+	if(SteamMusic() == NULL){
+		return;
+	}
 	return SteamMusic()->Pause();
 }
 // Play current track/album
 void Steam::musicPlay(){
+	if(SteamMusic() == NULL){
+		return;
+	}
 	return SteamMusic()->Play();
 }
 // Play next track/album
 void Steam::musicPlayNext(){
+	if(SteamMusic() == NULL){
+		return;
+	}
 	return SteamMusic()->PlayNext();
 }
 // Play previous track/album
 void Steam::musicPlayPrev(){
+	if(SteamMusic() == NULL){
+		return;
+	}
 	return SteamMusic()->PlayPrevious();
 }
 // Set the volume of Steam music
 void Steam::musicSetVolume(float value){
+	if(SteamMusic() == NULL){
+		return;
+	}
 	return SteamMusic()->SetVolume(value);
 }
 /////////////////////////////////////////////////
@@ -489,25 +575,42 @@ void Steam::_overlay_toggled(GameOverlayActivated_t* callData){
 		emit_signal("overlay_toggled", false);
 	}
 }
-// Singal when battery power is running low, less than 10 minutes left
+// Signal when battery power is running low, less than 10 minutes left
 void Steam::_low_power(LowBatteryPower_t* timeLeft){
 	uint8 power = timeLeft->m_nMinutesBatteryLeft;
 	emit_signal("low_power", power);
+}
+// When connected to a server
+void Steam::_server_connected(SteamServersConnected_t* conData){
+	emit_signal("connection_changed", true);
+}
+// When disconnected from a server
+void Steam::_server_disconnected(SteamServersDisconnected_t* conData){
+	emit_signal("connection_changed", false);
 }
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
 //
 // Get user's Steam ID
 int Steam::getSteamID(){
+	if(SteamUser() == NULL){
+		return 0;
+	}
 	CSteamID cSteamID = SteamUser()->GetSteamID();
 	return cSteamID.ConvertToUint64();
 }
 // Check, true/false, if user is logged into Steam currently
 bool Steam::loggedOn(){
+	if(SteamUser() == NULL){
+		return false;
+	}
 	return SteamUser()->BLoggedOn();
 }
 // Get the user's Steam level
 int Steam::getPlayerSteamLevel(){
+	if(SteamUser() == NULL){
+		return 0;
+	}
 	return SteamUser()->GetPlayerSteamLevel(); 
 }
 // Get the user's Steam installation path
@@ -521,6 +624,34 @@ String Steam::getUserDataFolder(){
 	String data_path = pchBuffer;
 	delete pchBuffer;
 	return data_path;
+}
+// (LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game
+void Steam::advertiseGame(const String& server_ip, int port){
+	if(SteamUser() == NULL){
+		return;
+	}
+	// Resolve address and convert it from IP_Address struct to uint32_t
+	IP_Address addr;
+	if(server_ip.is_valid_ip_address()){
+		addr = server_ip;
+	}
+	else{
+		addr = IP::get_singleton()->resolve_hostname(server_ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(addr == IP_Address()){
+		return;
+	}
+	uint32_t ip4 = *((uint32_t *)addr.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i=0; i<2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	CSteamID gameserverID = SteamUser()->GetSteamID();
+	SteamUser()->AdvertiseGame(gameserverID, *((uint32_t *)ip4_p), port);
 }
 /////////////////////////////////////////////////
 ///// USER STATS ////////////////////////////////
@@ -759,13 +890,14 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("steamInit", &Steam::steamInit);
 	ObjectTypeDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ObjectTypeDB::bind_method("run_callbacks", &Steam::run_callbacks);
-	// Apps Bind Methods
+	// Apps Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("hasOtherApp", &Steam::hasOtherApp);
 	ObjectTypeDB::bind_method("getDLCCount", &Steam::getDLCCount);
 	ObjectTypeDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
 	ObjectTypeDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
 	ObjectTypeDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
-	// Friends Bind Methods
+	ObjectTypeDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
+	// Friends Bind Methods /////////////////////
 	ObjectTypeDB::bind_method("getFriendCount", &Steam::getFriendCount);
 	ObjectTypeDB::bind_method("getPersonaName", &Steam::getPersonaName);
 	ObjectTypeDB::bind_method("getFriendPersonaName", &Steam::getFriendPersonaName);
@@ -781,12 +913,13 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""));
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToStore", "appID"), &Steam::activateGameOverlayToStore, DEFVAL(0));
-	// Matchmaking Bind Methods
+	ObjectTypeDB::bind_method(_MD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
+	// Matchmaking Bind Methods /////////////////
 	ObjectTypeDB::bind_method(_MD("createLobby", "type"), &Steam::createLobby, DEFVAL(2));
 	ObjectTypeDB::bind_method("joinLobby", &Steam::joinLobby);
 	ObjectTypeDB::bind_method("leaveLobby", &Steam::leaveLobby);
 	ObjectTypeDB::bind_method("inviteUserToLobby", &Steam::inviteUserToLobby);
-	// Music Bind Methods
+	// Music Bind Methods ///////////////////////
 	ObjectTypeDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
 	ObjectTypeDB::bind_method("musicIsPlaying", &Steam::musicIsPlaying);
 	ObjectTypeDB::bind_method("musicGetVolume", &Steam::musicGetVolume);
@@ -795,14 +928,15 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
 	ObjectTypeDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ObjectTypeDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
-	// Screenshoot Bind Methods
+	// Screenshoot Bind Methods /////////////////
 	ObjectTypeDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
-	// User Bind Methods
+	// User Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("getSteamID", &Steam::getSteamID);
 	ObjectTypeDB::bind_method("loggedOn", &Steam::loggedOn);
 	ObjectTypeDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
 	ObjectTypeDB::bind_method("getUserDataFolder", &Steam::getUserDataFolder);
-	// User Stats Bind Methods
+	ObjectTypeDB::bind_method(_MD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
+	// User Stats Bind Methods //////////////////
 	ObjectTypeDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ObjectTypeDB::bind_method("getAchievement", &Steam::getAchievement);
 	ObjectTypeDB::bind_method("getStatFloat", &Steam::getStatFloat);
@@ -820,7 +954,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntriesForUsers", "users_id"), &Steam::downloadLeaderboardEntriesForUsers);
 	ObjectTypeDB::bind_method(_MD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
 	ObjectTypeDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
-	// Utils Bind Methods
+	// Utils Bind Methods ///////////////////////
 	ObjectTypeDB::bind_method("getIPCountry", &Steam::getIPCountry);
 	ObjectTypeDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
 	ObjectTypeDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
@@ -830,12 +964,12 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
 	ObjectTypeDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
 	ObjectTypeDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
-	// Workshop Bind Methods
+	// Workshop Bind Methods ////////////////////
 	ObjectTypeDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
 	ObjectTypeDB::bind_method("getItemState", &Steam::getItemState);
 	ObjectTypeDB::bind_method("downloadItem", &Steam::downloadItem);
 	ObjectTypeDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
-	// Signals
+	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::IMAGE, "avatar")));
 	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::OBJECT, "SteamLeaderboard")));
@@ -845,7 +979,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("lobby_created", PropertyInfo(Variant::INT, "lobby")));
 	ADD_SIGNAL(MethodInfo("lobby_joined", PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "permissions"), PropertyInfo(Variant::BOOL, "locked"), PropertyInfo(Variant::INT, "response")));
 	ADD_SIGNAL(MethodInfo("lobby_invite", PropertyInfo(Variant::INT, "inviter"), PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "game")));
-	// Status constants
+	ADD_SIGNAL(MethodInfo("connection_changed", PropertyInfo(Variant::BOOL, "connected")));
+	// Status constants //////////////////////////
 	BIND_CONSTANT(OFFLINE);		// 0
 	BIND_CONSTANT(ONLINE);		// 1
 	BIND_CONSTANT(BUSY);		// 2
@@ -855,39 +990,39 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LF_PLAY);		// 6
 	BIND_CONSTANT(NOT_OFFLINE); // Custom
 	BIND_CONSTANT(ALL); 		// Custom
-	// Initialization errors
+	// Initialization errors ////////////////////
 	BIND_CONSTANT(ERR_NO_CLIENT);
 	BIND_CONSTANT(ERR_NO_CONNECTION);
-	// Avatar sizes
+	// Avatar sizes /////////////////////////////
 	BIND_CONSTANT(AVATAR_SMALL);
 	BIND_CONSTANT(AVATAR_MEDIUM);
 	BIND_CONSTANT(AVATAR_LARGE);
-	// Overlay notification locations
+	// Overlay notification locations ///////////
 	BIND_CONSTANT(TOP_LEFT);
 	BIND_CONSTANT(TOP_RIGHT);
 	BIND_CONSTANT(BOT_LEFT);
 	BIND_CONSTANT(BOT_RIGHT);
-	// Matchmaking types
+	// Matchmaking types ////////////////////////
 	BIND_CONSTANT(PRIVATE);				// Only way to join the lobby is to invite to someone else
 	BIND_CONSTANT(FRIENDS_ONLY);		// Shows for friends or invitees, but not in lobby list
 	BIND_CONSTANT(PUBLIC);				// Visible for friends and in lobby list
 	BIND_CONSTANT(INVISIBLE);			// Returned by search, but not visible to other friends
 	BIND_CONSTANT(LOBBY_KEY_LENGTH);	// Maximum number of characters a lobby metadata key can be
-	// Matchmaking lobby responses
+	// Matchmaking lobby responses //////////////
 	BIND_CONSTANT(LOBBY_OK);				// Lobby was successfully created
 	BIND_CONSTANT(LOBBY_NO_CONNECTION);		// Your Steam client doesn't have a connection to the back-end
 	BIND_CONSTANT(LOBBY_TIMEOUT);			// Message to the Steam servers, but it didn't respond
 	BIND_CONSTANT(LOBBY_FAIL);				// Server responded, but with an unknown internal error
 	BIND_CONSTANT(LOBBY_ACCESS_DENIED);		// Game isn't set to allow lobbies, or your client does haven't rights to play the game
 	BIND_CONSTANT(LOBBY_LIMIT_EXCEEDED);	// Game client has created too many lobbies
-	// Workshop item characters
+	// Workshop item characters /////////////////
 	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);		// 128
 	BIND_CONSTANT(UGC_MAX_DESC_CHARS);		// 8000
 	BIND_CONSTANT(UGC_MAX_METADATA_CHARS);	// 5000
-	// Workshop item types
+	// Workshop item types //////////////////////
 	BIND_CONSTANT(UGC_ITEM_COMMUNITY);			// Normal items that can be subscribed to
 	BIND_CONSTANT(UGC_ITEM_MICROTRANSACTION);	// Item that is meant to be voted on for the purpose of selling in-game
-	// Workshop item stats
+	// Workshop item stats //////////////////////
 	BIND_CONSTANT(UGC_STATE_NONE);			// Not tracked on client
 	BIND_CONSTANT(UGC_STATE_SUBSCRIBED);	// Current user is subscribed to this item, not just cached
 	BIND_CONSTANT(UGC_STATE_LEGACY);		// Was created with ISteamRemoteStorage
@@ -895,7 +1030,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_STATE_UPDATE);		// Needs an update, either because it's not installed yet or creator updated content
 	BIND_CONSTANT(UGC_STATE_DOWNLOADING);	// Update is currently downloading
 	BIND_CONSTANT(UGC_STATE_PENDING);		// DownloadItem() was called for this item, content isn't available until DownloadItemResult_t is fired
-	// Workshop item update status
+	// Workshop item update status //////////////
 	BIND_CONSTANT(STATUS_INVALID);				// Update handle was invalid, job might be finished, listen to SubmitItemUpdateResult_t
 	BIND_CONSTANT(STATUS_PREPARING_CONFIG);		// Update is processing configuration data
 	BIND_CONSTANT(STATUS_PREPARING_CONTENT);	// Update is reading and processing content files
