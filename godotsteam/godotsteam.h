@@ -40,6 +40,11 @@ public:
 	void requestAppProofOfPurchaseKey(int value);
 	bool isAppInstalled(int value);
 	String getCurrentGameLanguage();
+	bool isVACBanned();
+	int getEarliestPurchaseUnixTime(int value);
+	bool isSubscribedFromFreeWeekend();
+	void installDLC(int value);
+	void uninstallDLC(int value);
 	// Friends //////////////////////////////////
 	int getFriendCount();
 	String getPersonaName();
@@ -79,6 +84,7 @@ public:
 	int getPlayerSteamLevel();
 	String getUserDataFolder();
 	void advertiseGame(const String& server_ip, int port);
+	int getGameBadgeLevel(int series, bool foil);
 	// User Stats ///////////////////////////////
 	bool clearAchievement(const String& s_key);
 	bool getAchievement(const String& s_key);
@@ -100,6 +106,8 @@ public:
 	void updateLeaderboardHandle(SteamLeaderboard_t lHandle);
 	uint64 getLeaderboardHandle();
 	Array getLeaderboardEntries();
+	bool getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime);
+	bool indicateAchievementProgress(const String& name, int curProgress, int maxProgress);
 	// Utils ////////////////////////////////////
 	String getIPCountry();
 	bool isOverlayEnabled();
@@ -110,6 +118,8 @@ public:
 	int getCurrentBatteryPower();
 	bool isSteamRunningInVR();
 	int getServerRealTime();
+	bool isSteamInBigPictureMode();
+	void startVRDashboard();
 	// Workshop /////////////////////////////////
 	int getNumSubscribedItems();
 	int getItemState(int publishedFileID);
@@ -139,7 +149,8 @@ private:
 	STEAM_CALLBACK(Steam, _leaderboard_entries_loaded, LeaderboardScoresDownloaded_t);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
-	STEAM_CALLBACK(Steam, _request_proofofpurchase, AppProofOfPurchaseKeyResponse_t);
+//	STEAM_CALLBACK(Steam, _request_proofofpurchase, AppProofOfPurchaseKeyResponse_t);
+	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();

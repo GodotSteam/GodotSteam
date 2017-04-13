@@ -94,13 +94,13 @@ bool Steam::isAppInstalled(int value){
 // Get the user's game language
 String Steam::getCurrentGameLanguage(){
 	if(SteamApps() == NULL){
-		return 0;
+		return "None";
 	}
 	return SteamApps()->GetCurrentGameLanguage();
 }
 // Does the user have a VAC ban for this game
 bool Steam::isVACBanned(){
-	if(SteamApp() == NULL){
+	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsVACBanned();
@@ -124,13 +124,13 @@ bool Steam::isSubscribedFromFreeWeekend(){
 // Install/Uninstall control for optional DLC
 void Steam::installDLC(int value){
 	if(SteamApps() == NULL){
-		return false;
+		return;
 	}
 	SteamApps()->InstallDLC((AppId_t)value);
 }
 void Steam::uninstallDLC(int value){
 	if(SteamApps() == NULL){
-		return false;
+		return;
 	}
 	SteamApps()->UninstallDLC((AppId_t)value);
 }
@@ -588,6 +588,19 @@ void Steam::_server_connected(SteamServersConnected_t* conData){
 void Steam::_server_disconnected(SteamServersDisconnected_t* conData){
 	emit_signal("connection_changed", false);
 }
+// Response to RequestAppProofOfPurchaseKey/RequestAllProofOfPurchaseKeys for supporting third-party CD keys, or other proof-of-purchase systems
+// CURRENTLY CAUSES ERROR AS CANNOT CONVERT FROM CHAR TO STRING
+//void Steam::_request_proofofpurchase(AppProofOfPurchaseKeyResponse_t* callData){
+//	int appID = (uint32)callData->m_nAppID;
+//	int keyLength = (uint32)callData->m_cchKeyLength;
+//	String key = callData->m_rgchKey[k_cubAppProofOfPurchaseKeyMax];
+//	emit_signal("request_proofofpurchase", appID, keyLength, key.utf8().get_data());
+//}
+// Posted after the user gains ownership of DLC & that DLC is installed
+void Steam::_dlc_installed(DlcInstalled_t* callData){
+	int appID = (AppId_t)callData->m_nAppID;
+	emit_signal("dlc_installed", appID);
+}
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
 //
@@ -652,6 +665,14 @@ void Steam::advertiseGame(const String& server_ip, int port){
 	}
 	CSteamID gameserverID = SteamUser()->GetSteamID();
 	SteamUser()->AdvertiseGame(gameserverID, *((uint32_t *)ip4_p), port);
+}
+// Trading Card badges data access, if you only have one set of cards, the series will be 1
+// The user has can have two different badges for a series; the regular (max level 5) and the foil (max level 1)
+int Steam::getGameBadgeLevel(int series, bool foil){
+	if(SteamUser()== NULL){
+		return 0;
+	}
+	return SteamUser()->GetGameBadgeLevel(series, foil);
 }
 /////////////////////////////////////////////////
 ///// USER STATS ////////////////////////////////
@@ -804,6 +825,21 @@ uint64 Steam::getLeaderboardHandle(){
 Array Steam::getLeaderboardEntries(){
 	return leaderboard_entries;
 }
+// Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19)
+bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime){
+	if(SteamUserStats() == NULL){
+		return 0;
+	}
+	return SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), (bool *)achieved, (uint32_t *)unlockTime);
+}
+// Achievement progress, triggers an AchievementProgress callback, that is all.
+// Calling this with X out of X progress will NOT set the achievement, the game must still do that.
+bool Steam::indicateAchievementProgress(const String& name, int curProgress, int maxProgress){
+	if(SteamUserStats() == NULL){
+		return 0;
+	}
+	return SteamUserStats()->IndicateAchievementProgress(name.utf8().get_data(), curProgress, maxProgress);
+}
 /////////////////////////////////////////////////
 ///// UTILS /////////////////////////////////////
 //
@@ -842,15 +878,38 @@ int Steam::getSecondsSinceAppActive(){
 }
 // Get the amount of battery power, clearly for laptops
 int Steam::getCurrentBatteryPower(){
+	if(SteamUtils() == NULL){
+		return 0;
+	}
 	return SteamUtils()->GetCurrentBatteryPower();
 }
 // Is Steam running in VR?
 bool Steam::isSteamRunningInVR(){
+	if(SteamUtils() == NULL){
+		return 0;
+	}
 	return SteamUtils()->IsSteamRunningInVR();
 }
 // Get the actual time
 int Steam::getServerRealTime(){
+	if(SteamUtils() == NULL){
+		return 0;
+	}
 	return SteamUtils()->GetServerRealTime();
+}
+// Returns true if Steam & the Steam Overlay are running in Big Picture mode
+bool Steam::isSteamInBigPictureMode(){
+	if(SteamUtils() == NULL){
+		return false;
+	}
+	return SteamUtils()->IsSteamInBigPictureMode();
+}
+// Ask SteamUI to create and render its OpenVR dashboard
+void Steam::startVRDashboard(){
+	if(SteamUtils() == NULL){
+		return ;
+	}
+	SteamUtils()->StartVRDashboard();
 }
 /////////////////////////////////////////////////
 ///// WORKSHOP //////////////////////////////////
@@ -897,6 +956,11 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
 	ObjectTypeDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
 	ObjectTypeDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
+	ObjectTypeDB::bind_method("isVACBanned", &Steam::isVACBanned);
+	ObjectTypeDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);
+	ObjectTypeDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
+	ObjectTypeDB::bind_method("installDLC", &Steam::installDLC);
+	ObjectTypeDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
 	// Friends Bind Methods /////////////////////
 	ObjectTypeDB::bind_method("getFriendCount", &Steam::getFriendCount);
 	ObjectTypeDB::bind_method("getPersonaName", &Steam::getPersonaName);
@@ -936,6 +1000,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
 	ObjectTypeDB::bind_method("getUserDataFolder", &Steam::getUserDataFolder);
 	ObjectTypeDB::bind_method(_MD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
+	ObjectTypeDB::bind_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
 	// User Stats Bind Methods //////////////////
 	ObjectTypeDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ObjectTypeDB::bind_method("getAchievement", &Steam::getAchievement);
@@ -954,6 +1019,8 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntriesForUsers", "users_id"), &Steam::downloadLeaderboardEntriesForUsers);
 	ObjectTypeDB::bind_method(_MD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
 	ObjectTypeDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
+	ObjectTypeDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
+	ObjectTypeDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
 	// Utils Bind Methods ///////////////////////
 	ObjectTypeDB::bind_method("getIPCountry", &Steam::getIPCountry);
 	ObjectTypeDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
@@ -964,6 +1031,8 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
 	ObjectTypeDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
 	ObjectTypeDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
+	ObjectTypeDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
+	ObjectTypeDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
 	// Workshop Bind Methods ////////////////////
 	ObjectTypeDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
 	ObjectTypeDB::bind_method("getItemState", &Steam::getItemState);
@@ -980,6 +1049,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("lobby_joined", PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "permissions"), PropertyInfo(Variant::BOOL, "locked"), PropertyInfo(Variant::INT, "response")));
 	ADD_SIGNAL(MethodInfo("lobby_invite", PropertyInfo(Variant::INT, "inviter"), PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "game")));
 	ADD_SIGNAL(MethodInfo("connection_changed", PropertyInfo(Variant::BOOL, "connected")));
+//	ADD_SIGNAL(MethodInfo("request_proofofpurchase", PropertyInfo(Variant::INT, "app"), PropertyInfo(Variant::INT, "length"), PropertyInfo(Variant::STRING, "key")));
+	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	// Status constants //////////////////////////
 	BIND_CONSTANT(OFFLINE);		// 0
 	BIND_CONSTANT(ONLINE);		// 1
