@@ -7,6 +7,14 @@ Documentation is available here: https://gramps.github.io/GodotSteam/
 
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
+Current Build
+----------
+Version 1.1.0
+- Added: getCurrentGameLanguage
+- Added: Pre-compiled engines and templates for Windows
+- Added: change log to documentation
+- Changed: minor things in godotsteam.cpp
+
 Quick How-To
 ----------
 - Download this repository and unpack it.
