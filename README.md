@@ -9,9 +9,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
+You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
+
 Version 1.1.0
 - Added: getCurrentGameLanguage
-- Added: Pre-compiled engines and templates for Windows
+- Added: Pre-compiled engines and templates for Windows, Linux
 - Added: change log to documentation
 - Changed: minor things in godotsteam.cpp
 
