@@ -13,7 +13,7 @@ You can download pre-compiled versions of this repo here: https://github.com/Gra
 
 Version 1.1.0
 - Added: getCurrentGameLanguage
-- Added: Pre-compiled engines and templates for Windows, Linux
+- Added: Pre-compiled engines and templates for Linux, Mac, and Windows
 - Added: change log to documentation
 - Changed: minor things in godotsteam.cpp
 
