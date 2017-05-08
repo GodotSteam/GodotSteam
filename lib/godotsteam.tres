@@ -1,0 +1,18 @@
+[gd_resource type="GDNativeLibrary" format=2]
+
+[resource]
+
+resource_local_to_scene = true
+platform/unix = ""
+platform/x11 = "res://lib/libgodotsteam.so"
+platform/server = ""
+platform/android = ""
+platform/blackberry = ""
+platform/haiku = ""
+platform/mac = ""
+platform/ios = ""
+platform/osx = ""
+platform/html5 = ""
+platform/windows = ""
+platform/uwp = ""
+
