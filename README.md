@@ -1,7 +1,7 @@
 # Godot Steam for GDNative
 Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms. 
 
-WARNING: GDNative is still in active development with Godot 3.0 as is this repo. I do not suggest using it for production code for your game; testing only.
+**WARNING**: GDNative is still in active development with Godot 3.0 as is this repo. I do not suggest using it for production code for your game; testing only.
 
 Read more about GDNative here: https://godotengine.org/article/dlscript-here
 
@@ -30,7 +30,7 @@ Quick How-To
 ----------
 - Download this repository.
 - Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download the [Godot 3.0 source](https://github.com/GodotBuilder/godot-builds/releases).
+- Download the [Godot 3.0 binary](https://github.com/GodotBuilder/godot-builds/releases).
 - Download the [GDNative Starter kit](https://github.com/GodotNativeTools/cpp_bindings/releases/).
 
 Follow these next steps in order (kind of important):
