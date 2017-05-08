@@ -20,8 +20,10 @@
 			<div id="header">
 				<nav>
 					<li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li>
-					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/master">ZIP</a></li>
-					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/master">TAR</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/master">MODULE ZIP</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/master">MODULE TAR</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/gdnative">GDNATIVE ZIP</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/gdnative">GDNATIVE TAR</a></li>
 					<li class="title">DOWNLOADS</li>
 				</nav>
 			</div><!-- end header -->
@@ -40,29 +42,40 @@
 				<div id="intro">
 					<h1>Introduction</h1>
 					<p>Current build: v1.1.0, availabled as pre-compiles here: <a href="https://github.com/Gramps/GodotSteam/releases">https://github.com/Gramps/GodotSteam/releases</a>.</p>
-					<p>This is the documentation page for GodotSteam, a Steamworks module for <a href="https://godotengine.org" target="_blank">Godot Engine</a>. It is forked from <a href="https://github.com/Kermer/GodotSteam" target="_blank">Kermer's excellent fork</a>.There are a few things you'll need to start working with the module:</p>
+					<p>This is the documentation page for GodotSteam, a Steamworks module for <a href="https://godotengine.org" target="_blank">Godot Engine</a>, and GodotSteam for GDNative (<a href="https://godotengine.org/article/dlscript-here" target="_blank">more on GDNative for Godot 3.0 here</a>). It was initially forked from <a href="https://github.com/Kermer/GodotSteam" target="_blank">Kermer's excellent fork</a>.There are a few things you'll need to start working with the module:</p>
 					<ul>
+						<h2>GodotSteam Module</h2>
 						<li>The Steamworks SDK (<a href="https://partner.steamgames.com/" target="_blank">https://partner.steamgames.com/</a>).</li>
 						<li>A Steamworks account.</li>
 						<li>The Godot Engine source code; preferably 2.0.3 or higher (<a href="https://github.com/godotengine/godot" target="_blank">https://github.com/godotengine/godot</a>).</li>
+					</ul>
+					<ul>
+						<h2>GodotSteam For GDNative</h2>
+						<li>The Steamworks SDK (<a href="https://partner.steamgames.com/" target="_blank">https://partner.steamgames.com/</a>).</li>
+						<li>A Steamworks account.</li>
+						<li>Godot Engine 3.0 (<a href="https://github.com/GodotBuilder/godot-builds/releases" target="_blank">https://github.com/GodotBuilder/godot-builds/releases</a>).</li>
+						<li>Download the <a href="https://github.com/GodotNativeTools/cpp_bindings/releases/" target="_blank">GDNative Starter kit</a>.</li>
 					</ul>
 					<p>Those are the basics to working with the wrapper. How, to get the most out of it, you'll need these too:</p>
 					<ul>
 						<li>Logged into your Steam client if testing your game or any scenes.</li>
 					</ul>
+					<p>From here either navigate to the <a href="#howto-module">Module How-To</a> or <a href="#howto-native">GDNative How-To</a>.</p>
 				</div>
 				<div id="todo">
 					<h1>To-Do List</h1>
 					<p>Here is a short-list of additional things still needed for the wrapper:</p>
 					<ul>
+						<li>Fix signals, leaderboards, and callbacks in GDNative version</li>
 						<li>Add in more features from the Steamworks SDK.</li>
 						<li>Optimize C++ code by someone better at C++.</li>
+						<li>Test, test, test!</li>
 					</ul>
 				</div>
-				<div id="howto">
-					<h1>How To Get Started</h1>
+				<div id="howto-module">
+					<h1>How To Get Started: GodotSteam module</h1>
 					<ol>
-						<li>Download this repository and unpack it.</li>
+						<li>Download the <a href="https://github.com/Gramps/GodotSteam/tarball/gdnative">module repository</a> and unpack it.</li>
 						<li>Download and unpack the Steamworks SDK.</li>
 						<li>Download and unpack the Godot Engine source.</li>
 						<li>Move the following to godotsteam/sdk/:
@@ -119,6 +132,70 @@
 					</ol>
 					<p>From here you should be able to call various functions of Steamworks.  You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.</p>
 					<p>You may notice that achievements and stats do not work properly if the game is tested outside of Steam (as in running it from the Steam client itself).  This behavior seems to be new within the last few weeks and is most likely a changed on Valve's end.</p>
+				</div>
+				<div id="howto-native">
+					<h1>How To Get Started: GodotSteam For GDNative</h1>
+					<ol>
+						<li>Download the <a href="https://github.com/Gramps/GodotSteam/tarball/gdnative" target="_blank">GodotNative GDNative repository</a> and unpack it.</li>
+						<li>Download and unpack the Steamworks SDK.</li>
+						<li>Download and unpack the Godot Engine 3.0 binary.</li>
+						<li>Download the GDNative starter pack.</li>
+						<li>Unpack the starter kit into your project's root folder.</li>
+						<li>Unpack the Steamworks SDK then copy the <strong>public</strong> and redistributable_bin** to /include/sdk folder.</li>
+						<li>Unpack this repo and place it into your project's root folder.
+							<ul>
+								<li>Allow the folders to merge.</li>
+								<li>Nothing should overwrite unless you are updating to a new version of this repo.</li>
+							</ul>
+						</li>
+						<li>Navigate to the src directory in your project and run:
+							<div class="language-ruby highlighter-rouge">
+								<pre class="highlight"><code>scons platform=<your platform></code></pre>
+							</div>
+						</li>
+						<li>You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.</li>
+					</ol>
+					<p><strong>OPTIONAL</strong>: if you choose not to use the included steam.tscn file, follow these steps. Otherwise, continue on to the next section.</p>
+					<ol>
+						<li>Create a new scene with one node as a, well, Node.
+							<ol>
+								<li>Name it Steam.</li>
+								<li>Save the scene as steam.tscn in your project.</li>
+								<li>On Inspector tab for this node, select a new script.</li>
+								<li>Name it Steam.</li>
+								<li>Set language as Native.</li>
+								<li>Set path: built-in script to On.</li>
+								<li>Press create.</li>
+							</ol>
+						</li>
+						<li>Under newly created script settings in Inspector tab.
+							<ol>
+								<li>Click next to Library and select New GDNativeLibrary.</li>
+								<li>Click the right arrow and it should show a list of platforms.</li>
+								<li>Select the platforms you built for.
+									<ul>
+										<li>You could dump multiple platform files (SO, DLL, Dylib) into your folder to select more than one.</li>
+									</ul>
+								</li>
+								<li>For each selected platform, link the right file by clicking the folder icon next to them.
+									<ul>
+										<li>Example: x11 would link libgodotsteam.so, Windows would link godotsteam.dll, Mac would link libgodotsteam.dylib</li>
+									</ul>
+								</li>
+								<li>Then press the save icon and save this as godotsteam.tres in your lib folder.</li>
+							</ol>
+						</li>
+					</ol>
+					<p>The last step after doing the above optional steps or just using the supplied steam.tscn file in /lib.</p>
+					<ol>
+						<li>Add the steam.tscn to your project as a singelton in the AutoLoad section under Project Settings.</li>
+						<li>Done!</li>
+					</ol>
+					<p>Now you should be able to call functions from GodotSteam like you would normally with the GodotSteam module:
+						<div class="language-ruby highlighter-rouge">
+							<pre class="highlight"><code>steam.steamInit()<br/>steam.getIPCountry()<br/>steam.isSteamRunning()</code></pre>
+						</div>
+					</p>
 				</div>
 				<div id="functions">
 					<h1>Functions and Features</h1>

@@ -1,6 +1,8 @@
 # Godot Steam
 Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms. 
 
+View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+
 Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
