@@ -53,6 +53,7 @@ env.Append(CPPPATH=["../include/sdk/public/"])
 if platform == "linux":
 	env.Append(CCFLAGS = ["-g","-O3", "-std=c++14"])
 	env.Append(LINKFLAGS = ["-Wl,-R,\"$$ORIGIN\""])
+	env.Append(LIBS=["steam_api"])
 	# Check bits
 	if OS_BIT == "32":
 		env.Append(RPATH=env.Literal("\\$$ORIGIN"))
@@ -62,40 +63,38 @@ if platform == "linux":
 		env.Append(LIBPATH=["../include/sdk/redistributable_bin/linux64"])
 # If the platform is OSX
 if platform == "osx":
+	env.Append(LIBS=["steam_api"])
 	env.Append(RPATH=env.Literal("\\$$ORIGIN"))
 	env.Append(LIBPATH=["../include/sdk/redistributable_bin/osx32"])
 # If the platform is Windows
 if platform == "windows":
-	steamlib = "steam_api"
+	steamlib = "steam_api.lib"
 	steamlib_path = "../include/sdk/redistributable_bin"
 	# Using 64bit steam_api?
 	# Change this to false if you have problems with "unresolved external symbols"
 	use_64bit_lib = True
 	# Mostly VisualStudio
 	if env["CC"] == "cl":
-		if OS_BIT == "32":
-			steamlib += ".lib"
-		elif OS_BIT == "64":
+		if OS_BIT == "64":
 			if (use_64bit_lib):
-				steamlib += "64"
-				steamlib_path += "/win64"
-			steamlib += ".lib"
+				steamlib = "steam_api64.lib"
+				steamlib_path = "../include/sdk/redistributable_bin/win64"
 		env.Append(LINKFLAGS=[ steamlib ])
 	# Mostly GCC
 	else:
 		if OS_BIT == "64":
 			if (use_64bit_lib):
-				steamlib += "64"
-				steamlib_path += "/win64"
+				steamlib = "steam_api64.lib"
+				steamlib_path = "../include/sdk/redistributable_bin/win64"
 		env.Append(LIBS=[ steamlib ])
-	env.Append(LIBS=[ steamlib_path ])
+	env.Append(LIBPATH=[ steamlib_path ])
 	# Include tools
 	if OS_BIT == "64":
 		env.Append(LIBS=["godot.windows.opt.tools.64"])
 	else:
 		env.Append(LIBS=["godot.windows.opt.tools.32"])
 # Append the godot core and Steam API
-env.Append(LIBS=["godot_cpp_core", "godot_cpp_bindings", "steam_api"])
+env.Append(LIBS=["godot_cpp_core", "godot_cpp_bindings"])
 
 # Sources has all the paths to files that should be compiled
 # I usually have one init.cpp at the top of the source tree : sources = ["init.cpp"]

@@ -4,6 +4,7 @@ Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms.
 **WARNING**: GDNative is still in active development with Godot 3.0 as is this repo. I do not suggest using it for production code for your game; testing only.
 
 Read more about GDNative here: https://godotengine.org/article/dlscript-here
+The GDNative Github repo is here: https://github.com/GodotNativeTools
 
 View the GodotSteam module here: https://github.com/Gramps/GodotSteam/tree/master
 
@@ -25,6 +26,7 @@ GodotSteam GDNative Version 0.1
 - Added: most pre-existing GodotSteam code over
 - Added: GodotSteam GDNative documentation
 - Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS
+- Bugs: Windows does not work for compiling yet, waiting for GDNative update
 
 Quick How-To
 ----------
