@@ -1,78 +1,86 @@
-# Godot Steam
+# Godot Steam for GDNative
 Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms. 
+
+WARNING: GDNative is still in active development with Godot 3.0 as is this repo. I do not suggest using it for production code for your game; testing only.
+
+Read more about GDNative here: https://godotengine.org/article/dlscript-here
+
+View the GodotSteam module here: https://github.com/Gramps/GodotSteam/tree/master
 
 Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
 
-You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
-
 Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.0
+GodotSteam Version 1.1.0
 - Added: getCurrentGameLanguage
 - Added: Pre-compiled engines and templates for Linux, Mac, and Windows
 - Added: change log to documentation
 - Changed: minor things in godotsteam.cpp
 
+GodotSteam GDNative Version 0.1
+- Added: most pre-existing GodotSteam code over
+- Added: GodotSteam GDNative documentation
+- Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS
+
 Quick How-To
 ----------
-- Download this repository and unpack it.
-- Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.0.3 or higher.
-- Move the following to godotsteam/sdk/:
-````
-    sdk/public/
-    sdk/redistributable_bin/
-````
-- The repo's directory contents should now look like this:
-````
-    godotsteam/sdk/public/*
-    godotsteam/sdk/redistributable_bin/*
-    godotsteam/SCsub
-    godotsteam/config.py
-    godotsteam/godotsteam.cpp
-    godotsteam/godotsteam.h
-    godotsteam/register_types.cpp
-    godotsteam/register_types.h
-````
-- Now move the "godotsteam" directory into the "modules" directory of the unpacked Godot Engine source.
-- Recompile for your platform:
-  - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
-  - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
-    - If not using Godot 2.0.3 or higher, you must add openssl=no when compiling because it has problems with libcrypto (class StreamPeerSSL can't use).
-  - OSX ( http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html )
-    - When creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( http://steamcommunity.com/app/404790/discussions/0/364042703865087202/ ).
-- When recompiling the engine is finished, copy the shared library (steam_api) from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder). It should look like this:
-  - Linux 32/64-bit
-  ```
-  libsteam_api.so
-  ./godot.linux.tools.32 or ./godot.linux.tools.64
-  ```
-  - OSX
-  ```
-  libsteam_api.dylib
-  ./godot.osx.tools.32 or ./godot.osx.tools.64
-  ```
-  - Windows 32-bit
-  ```
-  steam_api.dll
-  ./godot.windows.tools.32.exe
-  ```
-  - Windows 64-bit
-  ```
-  steam_api64.dll
-  ./godot.windows.tools.64.exe
-  ```
-- Your game must ship with the executable, Steam API DLL/SO/DyLIB, and steam_appid.txt to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.
+- Download this repository.
+- Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
+- Download the [Godot 3.0 source](https://github.com/GodotBuilder/godot-builds/releases).
+- Download the [GDNative Starter kit](https://github.com/GodotNativeTools/cpp_bindings/releases/).
 
-From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
+Follow these next steps in order (kind of important):
+- Unpack the starter kit into your project's root folder
+- Unpack the Steamworks SDK then copy the **public** and **redistributable_bin** to /include/sdk
+- Unpack this repo and place it into your project's root folder
+  - Allow the folders to merge
+  - Nothing should overwrite unless you are updating to a new version of this repo
+- Navigate to the src directory in your project and run:
+````
+    scons platform=<your platform>
+````
+  - You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.
+
+**OPTIONAL**: if you choose not to use the included steam.tscn file, follow these steps. Otherwise, continue on to the next section.
+- Create a new scene with one node as a, well, Node
+  - Name it Steam
+  - Save the scene as steam.tscn in your project
+  - On Inspector tab for this node, select a new script
+  - Name it Steam
+  - Set language as Native
+  - Set path: built-in script to On
+  - Press create
+- Under newly created script settings in Inspector tab
+  - Click next to Library and select New GDNativeLibrary
+  - Click the right arrow and it should show a list of platforms
+  - Select the platforms you built for
+    - You could dump multiple platform files (SO, DLL, Dylib) into your folder to select more than one
+  - For each selected platform, link the right file by clicking the folder icon next to them
+    - Example: x11 would link libgodotsteam.so, Windows would link godotsteam.dll, Mac would link libgodotsteam.dylib
+  - Then press the save icon and save this as godotsteam.tres in your lib folder
+
+The last step after doing the above optional steps or just using the supplied steam.tscn file in /lib.
+- Add the steam.tscn to your project as a singelton in the AutoLoad section under Project Settings
+- Done!
+
+Now you should be able to call functions from GodotSteam like you would normally with the GodotSteam module:
+````
+    steam.steamInit()
+    steam.getIPCountry()
+    steam.isSteamRunning()
+````
+
+The documentation for GodotSteam should apply to GodotSteam GDNative as they are built from the same code. The only exeception is that GDNative is still in early development as is Godot 3.0 so things may change over time.  I will try to keep up and modify the code shortly after.
 
 To-Do
 -------------
-- Add additional functionality, ideally all of the Steamworks API.
+- Additional testing
+- Fix signals, leaderboards, and callbacks
+- Add more Steamworks functionality
 
 License
 -------------
