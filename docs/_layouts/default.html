@@ -149,9 +149,14 @@
 								<li>Nothing should overwrite unless you are updating to a new version of this repo.</li>
 							</ul>
 						</li>
+						<li>You should end up with a project folder that looks something like this:
+							<div class="language-ruby highlighter-rouge">
+								<pre class="highlight"><code>include/godot/*<br/>include/godot_cpp/*<br/>include/godot_cpp/core/*<br/>include/sdk/public/steam/*include/sdk/redistributable_bin/*<br/>include/godot.h<br/>lib/godot.windows.opt.tools.64.lib<br/>lib/godot_cpp_bindings.lib<br/>lib/godot_cpp_core.lib<br/>lib/godotsteam.tres<br/>lib/libgodot_cpp_bindings.so (for Linux)<br/>lib/libgodot_cpp_core.so (for Linux)<br/>lib/godot_cpp_bindings.dll (for Windows)<br/>lib/godot_cpp_core.dll (for Windows)<br/>lib/steam.tscn<br/>src/godotsteam.cpp<br/>src/init.cpp<br/>src/SConstruct</code></pre>
+							</div>
+						</li>
 						<li>Navigate to the src directory in your project and run:
 							<div class="language-ruby highlighter-rouge">
-								<pre class="highlight"><code>scons platform=<your platform></code></pre>
+								<pre class="highlight"><code>scons platform=[your platform]</code></pre>
 							</div>
 						</li>
 						<li>You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.</li>
