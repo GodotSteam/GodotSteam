@@ -55,7 +55,8 @@
 						<li>The Steamworks SDK (<a href="https://partner.steamgames.com/" target="_blank">https://partner.steamgames.com/</a>).</li>
 						<li>A Steamworks account.</li>
 						<li>Godot Engine 3.0 (<a href="https://github.com/GodotBuilder/godot-builds/releases" target="_blank">https://github.com/GodotBuilder/godot-builds/releases</a>).</li>
-						<li>Download the <a href="https://github.com/GodotNativeTools/cpp_bindings/releases/" target="_blank">GDNative Starter kit</a>.</li>
+						<li>**(Recommended)** Download the <a href="https://github.com/GodotNativeTools/cpp_bindings" target="_blank">CPP bindings</a> and <a href="https://github.com/GodotNativeTools/godot_headers" target="_blank">Godot headers</a>.</li>
+						<li>**(Alternatively)** Download the <a href="https://github.com/GodotNativeTools/cpp_bindings/releases/" target="_blank">GDNative Starter kit</a>.</li>
 					</ul>
 					<p>Those are the basics to working with the wrapper. How, to get the most out of it, you'll need these too:</p>
 					<ul>
@@ -147,7 +148,7 @@
 								<li>Follow their instructions for proper layout, you may need to change the Scon file to the right directories</li>
 								<li>Compile the core first:
 									<div class="language-ruby highlighter-rouge">
-										<pre class="highlight"><code>scons platform=<your platform> target=core</code></pre>
+										<pre class="highlight"><code>scons platform=[your platform] target=core</code></pre>
 									</div>
 								</li>
 								<li>The compile the bindings:
