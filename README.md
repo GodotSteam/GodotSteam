@@ -68,7 +68,7 @@ Follow these next steps in order (kind of important):
 ````
   - You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.
 
-**OPTIONAL**: if you choose not to use the included steam.tscn file, follow these steps. Otherwise, continue on to the next section.
+**OPTIONAL: This step is highly recommended due to the fact this is all still in development.** If you choose not to use the included steam.tscn file, follow these steps. Otherwise, continue on to the next section.
 - Create a new scene with one node as a, well, Node
   - Name it Steam
   - Save the scene as steam.tscn in your project

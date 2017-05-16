@@ -43,6 +43,9 @@ def add_sources(sources, dir):
 
 # Append the base include and lib path
 env.Append(CPPPATH=["../include"])
+env.Append(CPPPATH=["../include/godot"])
+env.Append(CPPPATH=["../include/godot_cpp"])
+env.Append(CPPPATH=["../include/godot_cpp/core"])
 env.Append(LIBPATH=["../lib"])
 
 # Append the Steam API path
@@ -53,7 +56,6 @@ env.Append(CPPPATH=["../include/sdk/public/"])
 if platform == "linux":
 	env.Append(CCFLAGS = ["-g","-O3", "-std=c++14"])
 	env.Append(LINKFLAGS = ["-Wl,-R,\"$$ORIGIN\""])
-	env.Append(LIBS=["steam_api"])
 	# Check bits
 	if OS_BIT == "32":
 		env.Append(RPATH=env.Literal("\\$$ORIGIN"))
@@ -63,7 +65,6 @@ if platform == "linux":
 		env.Append(LIBPATH=["../include/sdk/redistributable_bin/linux64"])
 # If the platform is OSX
 if platform == "osx":
-	env.Append(LIBS=["steam_api"])
 	env.Append(RPATH=env.Literal("\\$$ORIGIN"))
 	env.Append(LIBPATH=["../include/sdk/redistributable_bin/osx32"])
 # If the platform is Windows
@@ -94,7 +95,7 @@ if platform == "windows":
 	else:
 		env.Append(LIBS=["godot.windows.opt.tools.32"])
 # Append the godot core and Steam API
-env.Append(LIBS=["godot_cpp_core", "godot_cpp_bindings"])
+env.Append(LIBS=["godot_cpp_core", "godot_cpp_bindings", "steam_api"])
 
 # Sources has all the paths to files that should be compiled
 # I usually have one init.cpp at the top of the source tree : sources = ["init.cpp"]

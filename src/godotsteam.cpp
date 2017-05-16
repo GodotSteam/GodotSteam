@@ -10,10 +10,10 @@
 
 using namespace godot;
 
-class Steam : public Node {
-	GODOT_CLASS(Steam, Node)
+class Steam : public GodotScript<Node> {
+	GODOT_CLASS(Steam)
 	
-	float version = 0.1;
+	float version = 0.2;
 
 	private :
 		bool IS_INIT_SUCCESS = false;
@@ -938,5 +938,5 @@ class Steam : public Node {
 };
 
 GODOT_NATIVE_INIT(godot_native_init_options *options){
-	register_class<Steam>();
+	godot::register_class<Steam>();
 }
