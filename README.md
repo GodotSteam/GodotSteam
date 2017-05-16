@@ -41,6 +41,27 @@ Follow these next steps in order (kind of important):
 - Unpack this repo and place it into your project's root folder
   - Allow the folders to merge
   - Nothing should overwrite unless you are updating to a new version of this repo
+- You should end up with a project folder that looks something like this:
+````
+    include/godot/*
+    include/godot_cpp/*
+    include/godot_cpp/core/*
+    include/sdk/public/steam/*
+    include/sdk/redistributable_bin/*
+    include/godot.h
+    lib/godot.windows.opt.tools.64.lib
+    lib/godot_cpp_bindings.lib
+    lib/godot_cpp_core.lib
+    lib/godotsteam.tres
+    lib/libgodot_cpp_bindings.so (for Linux)
+    lib/libgodot_cpp_core.so (for Linux)
+    lib/godot_cpp_bindings.dll (for Windows)
+    lib/godot_cpp_core.dll (for Windows)
+    lib/steam.tscn
+    src/godotsteam.cpp
+    src/init.cpp
+    src/SConstruct
+````
 - Navigate to the src directory in your project and run:
 ````
     scons platform=<your platform>
