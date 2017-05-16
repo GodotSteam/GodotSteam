@@ -141,7 +141,24 @@
 						<li>Download and unpack the Steamworks SDK.</li>
 						<li>Download and unpack the Godot Engine 3.0 binary.</li>
 						<li>Download the GDNative starter pack.</li>
-						<li>Unpack the starter kit into your project's root folder.</li>
+						<li><strong>Recommended you compile the bindings</strong> as the GDNative Starter kit may not be up to date.
+							<ol>
+								<li>Download the <a href="https://github.com/GodotNativeTools/cpp_bindings" target="_blank">CPP bindings</a> and <a href="https://github.com/GodotNativeTools/godot_headers" target="_blank">Godot headers</a>.</li>
+								<li>Follow their instructions for proper layout, you may need to change the Scon file to the right directories</li>
+								<li>Compile the core first:
+									<div class="language-ruby highlighter-rouge">
+										<pre class="highlight"><code>scons platform=<your platform> target=core</code></pre>
+									</div>
+								</li>
+								<li>The compile the bindings:
+									<div class="language-ruby highlighter-rouge">
+										<pre class="highlight"><code>scons platform=[your platform] target=bindings generate_bindings=yes</code></pre>
+									</div>
+								</li>
+							</ol>
+						</li>
+						<li><strong>Alternately,</strong> download the GDNative Starter kit.</li>
+						<li>Unpack the starter kit into your project's root folder or place the bindings into your lib/ folder, depending on which previous step you took.</li>
 						<li>Unpack the Steamworks SDK then copy the <strong>public</strong> and redistributable_bin** to /include/sdk folder.</li>
 						<li>Unpack this repo and place it into your project's root folder.
 							<ul>
