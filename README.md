@@ -33,7 +33,18 @@ Quick How-To
 - Download this repository.
 - Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
 - Download the [Godot 3.0 binary](https://github.com/GodotBuilder/godot-builds/releases).
-- Download the [GDNative Starter kit](https://github.com/GodotNativeTools/cpp_bindings/releases/).
+- **Recommended you compile the bindings as the GDNative Starter kit may not be up to date**
+  - Download the [CPP bindings](https://github.com/GodotNativeTools/cpp_bindings) and [Godot headers](https://github.com/GodotNativeTools/godot_headers)
+  - Follow their instructions for proper layout, you may need to change the Scon file to the right directories
+  - Compile the core first:
+````
+    scons platform=<your platform> target=core
+````
+  - The compile the bindings:
+````
+    scons platform=<your platform> target=bindings generate_bindings=yes
+````
+- **Alternately,** download the [GDNative Starter kit](https://github.com/GodotNativeTools/cpp_bindings/releases/).
 
 Follow these next steps in order (kind of important):
 - Unpack the starter kit into your project's root folder
