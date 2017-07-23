@@ -13,11 +13,8 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.0
-- Added: getCurrentGameLanguage
-- Added: Pre-compiled engines and templates for Linux, Mac, and Windows
-- Added: change log to documentation
-- Changed: minor things in godotsteam.cpp
+Version 1.1.1
+- Changed: updated pre-compiles for Linux and Windows to Steamworks SDK to 1.41
 
 Quick How-To
 ----------
