@@ -13,7 +13,7 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.1
+Version 1.1.0
 - Changed: updated pre-compiles for Linux and Windows to Steamworks SDK to 1.41
 
 Quick How-To
