@@ -31,6 +31,7 @@ public:
 	CSteamID createSteamID(uint32 steamID, int accountType=-1);
 	Image drawAvatar(int size, uint8* buffer);
 	// Steamworks ///////////////////////////////
+	bool restartAppIfNecessary(int value);
 	bool steamInit();
 	bool isSteamRunning();
 	// Apps /////////////////////////////////////

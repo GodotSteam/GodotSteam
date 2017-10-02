@@ -27,6 +27,10 @@ CSteamID Steam::createSteamID(uint32 steamID, int accountType){
 /////////////////////////////////////////////////
 ///// STEAMWORKS FUNCTIONS //////////////////////
 //
+// Checks if your executable was launched through Steam and relaunches it through Steam if it wasn't.
+bool Steam::restartAppIfNecessary(int value){
+	return SteamAPI_RestartAppIfNecessary((AppId_t)value);
+}
 // Initialize Steamworks
 bool Steam::steamInit(){
 	return SteamAPI_Init();
@@ -946,6 +950,7 @@ void Steam::suspendDownloads(bool bSuspend){
 ///// BIND METHODS //////////////////////////////
 //
 void Steam::_bind_methods(){
+	ObjectTypeDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
 	ObjectTypeDB::bind_method("steamInit", &Steam::steamInit);
 	ObjectTypeDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ObjectTypeDB::bind_method("run_callbacks", &Steam::run_callbacks);
