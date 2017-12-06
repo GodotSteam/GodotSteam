@@ -1,6 +1,7 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
 
+#include <inttypes.h>
 #include <steam/steam_api.h>
 
 #include "object.h"
