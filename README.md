@@ -3,6 +3,8 @@ Steam API for the Godot game engine (versions 2 to 2.1.4). For the Windows, Linu
 
 View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
+This master build will eventually be replaced with Godot Steam for Godot 3 once that version hits release. This version will be pushed to a Godot 2 branch at that point.
+
 Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
@@ -14,7 +16,7 @@ Current Build
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 Version 1.1.0
-- Changed: updated pre-compiles for Linux and Windows to Steamworks SDK to 1.41
+- Changed: updated pre-compiles for Windows to Steamworks SDK to 1.42
 
 Quick How-To
 ----------
