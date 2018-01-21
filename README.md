@@ -3,7 +3,7 @@ Steam API for the Godot game engine (versions 2 to 2.1.4). For the Windows, Linu
 
 View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
-This master build will eventually be replaced with Godot Steam for Godot 3 once that version hits release. This version will be pushed to a Godot 2 branch at that point.
+**THIS VERSION IS NOT COMPATIBLE WITH GODOT 3.  There is a separate experimental branch for Godot 3.** This master branch will eventually be replaced with Godot Steam for Godot 3 once that version hits release. This version will be pushed to a Godot 2 branch at that point.
 
 Documentation
 ----------
