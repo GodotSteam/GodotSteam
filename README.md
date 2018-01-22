@@ -1,6 +1,7 @@
-# Godot Steam
-Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms. 
+# Godot Steam for Godot 3
+Steam API for the Godot game engine (version 3 RC2 or higher). For the Windows, Linux, and Mac platforms. 
 
+View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
 View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
 Documentation
@@ -13,14 +14,15 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.0
-- Changed: updated pre-compiles for Linux and Windows to Steamworks SDK to 1.41
+Version 2.0.0
+- Added: experimental pre-compiles for Windows linked against Steamworks API 1.42
+- Added: first experimental build of the wrapper
 
 Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.0.3 or higher.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0 RC2 or higher.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
