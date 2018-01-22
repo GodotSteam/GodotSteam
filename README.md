@@ -6,7 +6,8 @@ Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms.
 Read more about GDNative here: https://godotengine.org/article/dlscript-here
 The GDNative Github repo is here: https://github.com/GodotNativeTools
 
-View the GodotSteam module here: https://github.com/Gramps/GodotSteam/tree/master
+- View the GodotSteam module for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
+- View the GodotSteam module for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 
 Documentation
 ----------
