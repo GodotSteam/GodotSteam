@@ -8,13 +8,15 @@ Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
 
+Alternately, there is the project's Wiki page here: https://github.com/Gramps/GodotSteam/wiki
+
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
 Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 2.0.0
+Version 2.0.0 Changes
 - Added: experimental pre-compiles for Windows linked against Steamworks API 1.42
 - Added: first experimental build of the wrapper
 
@@ -75,10 +77,6 @@ Quick How-To
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
-
-To-Do
--------------
-- Add additional functionality, ideally all of the Steamworks API.
 
 License
 -------------
