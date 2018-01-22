@@ -18,6 +18,10 @@ Version 2.0.0
 - Added: experimental pre-compiles for Windows linked against Steamworks API 1.42
 - Added: first experimental build of the wrapper
 
+Known Issues
+----------
+- User avatar functions do not work due to changes in Godot's image class
+
 Quick How-To
 ----------
 - Download this repository and unpack it.
