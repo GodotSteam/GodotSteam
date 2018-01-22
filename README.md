@@ -18,8 +18,10 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.0 Updates
-- Changed: updated pre-compiles for Windows to Steamworks SDK to 1.42
+Version 1.1.1 Updates
+- Added: isSubscribed, isLowViolence, isCybercafe, isSubscribedApp, getAppBuildId functions
+- Added: new functions to documentation
+- Changed: small bits of text in documentation
 
 Quick How-To
 ----------
