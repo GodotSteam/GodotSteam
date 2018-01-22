@@ -10,13 +10,15 @@ Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
 
+Alternately, there is the project's Wiki page here: https://github.com/Gramps/GodotSteam/wiki
+
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
 Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.0
+Version 1.1.0 Updates
 - Changed: updated pre-compiles for Windows to Steamworks SDK to 1.42
 
 Quick How-To
