@@ -9,8 +9,8 @@
 #include "reference.h"
 #include "dictionary.h"					// Contains array.h as well
 
-class Steam: public Object
-{
+class Steam: public Object {
+	GDCLASS(Steam, Object);
 public:
 	enum {
 		OFFLINE=0, ONLINE=1, BUSY=2, AWAY=3, SNOOZE=4, LF_TRADE, LF_PLAY, STATE_MAX, NOT_OFFLINE=8, ALL=9,
@@ -47,6 +47,11 @@ public:
 	bool isSubscribedFromFreeWeekend();
 	void installDLC(int value);
 	void uninstallDLC(int value);
+	bool isSubscribed();
+	bool isLowViolence();
+	bool isCybercafe();
+	bool isSubscribedApp(int value);
+	int getAppBuildId();
 	// Friends //////////////////////////////////
 	int getFriendCount();
 	String getPersonaName();
@@ -147,8 +152,12 @@ private:
 	STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 	STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
 	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
-	STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t);
-	STEAM_CALLBACK(Steam, _leaderboard_entries_loaded, LeaderboardScoresDownloaded_t);
+//	STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t);
+	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+	void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+//	STEAM_CALLBACK(Steam, _leaderboard_entries_loaded, LeaderboardScoresDownloaded_t);
+	CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
+	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
 //	STEAM_CALLBACK(Steam, _request_proofofpurchase, AppProofOfPurchaseKeyResponse_t);
@@ -157,8 +166,5 @@ private:
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();
 	}
-
-	OBJ_TYPE(Steam, Object);
-	OBJ_CATEGORY("Steam");
 };
 #endif // GODOTSTEAM_H

@@ -138,7 +138,41 @@ void Steam::uninstallDLC(int value){
 	}
 	SteamApps()->UninstallDLC((AppId_t)value);
 }
-
+// Is subscribed lacks notes from Valve
+bool Steam::isSubscribed(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribed();
+}
+// Presumably if Steam is set to low violence; lacks notes from Valve
+bool Steam::isLowViolence(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsLowViolence();
+}
+// Presumably if users is a cyber cafe; lacks notes from Valve
+bool Steam::isCybercafe(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsCybercafe();
+}
+// Only use to check ownership of another game related to yours: a demo, etc.
+bool Steam::isSubscribedApp(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+}
+// Return the build ID for this app; will change based on backend updates
+int Steam::getAppBuildId(){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	return SteamApps()->GetAppBuildId();
+}
 /////////////////////////////////////////////////
 ///// FRIENDS ///////////////////////////////////
 //
@@ -268,7 +302,7 @@ void Steam::getFriendAvatar(int size){
 // Draw the given avatar
 Image Steam::drawAvatar(int iSize, uint8* iBuffer){
 	// Apply buffer to Image
-	Image avatar(iSize,iSize,false,Image::FORMAT_RGBA);
+	Image avatar(iSize, iSize, false, Image::FORMAT_RGBA8);	// Might need tweaked
 	for(int y = 0; y < iSize; y++){
 		for(int x=0;x<iSize;x++){
 			int i = 4*(x+y*iSize);
@@ -276,7 +310,7 @@ Image Steam::drawAvatar(int iSize, uint8* iBuffer){
 			float g = float(iBuffer[i+1])/255;
 			float b = float(iBuffer[i+2])/255;
 			float a = float(iBuffer[i+3])/255;
-			avatar.put_pixel(x,y, Color(r,g,b,a) );
+			avatar.set_pixel(x, y, Color(r, g, b, a));
 		}
 	}
 	return avatar;
@@ -529,7 +563,7 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 	// Get image buffer
 	int buffSize = 4*size*size;
 	uint8* iBuffer = new uint8[buffSize];
-	bool success = SteamUtils()->GetImageRGBA(avatarData->m_iImage,iBuffer,buffSize);
+	bool success = SteamUtils()->GetImageRGBA(avatarData->m_iImage, iBuffer, buffSize);
 	if(!success){
 		printf("[Steam] Failed to load image buffer from callback\n");
 		return;
@@ -548,11 +582,11 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 		printf("[Steam] Invalid avatar size from callback\n");
 		return;
 	}
-	Image avatar = drawAvatar(size,iBuffer);
-	call_deferred("emit_signal", "avatar_loaded", rSize, avatar);
+	Image avatar = drawAvatar(size, iBuffer);
+//	call_deferred("emit_signal", "avatar_loaded", rSize, avatar);	Temporarily disabled because of Image change in Godot
 }
 // Signal a leaderboard has been loaded or has failed
-void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData){
+void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
 	if(callData->m_bLeaderboardFound == 0){
 		emit_signal("leaderboard_loaded", "");
 	}
@@ -562,7 +596,7 @@ void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData){
 	}
 }
 // Signal leaderboard entries are downloaded
-void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData){
+void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure){
 	// Incorrect leaderboard
 	if(callData->m_hSteamLeaderboard != leaderboard_handle){
 		return;
@@ -741,8 +775,8 @@ void Steam::findLeaderboard(const String& lName){
 	if(SteamUserStats() == NULL){
 		return;
 	}
-	//SteamAPICall_t apiCall = 
-	SteamUserStats()->FindLeaderboard(lName.utf8().get_data());
+	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard(lName.utf8().get_data());
+	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
 }
 // Get the name of a leaderboard
 String Steam::getLeaderboardName(){
@@ -763,8 +797,8 @@ void Steam::downloadLeaderboardEntries(int rStart, int rEnd, int type){
 	if(SteamUserStats() == NULL){
 		return;
 	}
-	//SteamAPICall_t apiCall = 
-	SteamUserStats()->DownloadLeaderboardEntries(leaderboard_handle, ELeaderboardDataRequest(type), rStart, rEnd);
+	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntries(leaderboard_handle, ELeaderboardDataRequest(type), rStart, rEnd);
+	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
 }
 // Request a maximum of 100 users with only one outstanding call at a time
 void Steam::downloadLeaderboardEntriesForUsers(Array usersID){
@@ -780,7 +814,8 @@ void Steam::downloadLeaderboardEntriesForUsers(Array usersID){
 		CSteamID user = createSteamID(usersID[i]);
 		pUsers[i] = user;
 	}
-	SteamUserStats()->DownloadLeaderboardEntriesForUsers(leaderboard_handle, pUsers, users_count);
+	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntriesForUsers(leaderboard_handle, pUsers, users_count);
+	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
 	delete[] pUsers;
 }
 // Upload a leaderboard score for the user
@@ -803,8 +838,8 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int
 		return;
 	}
 	leaderboard_entries.clear();
+	LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
 	for(int i = 0; i < entryCount; i++){
-		LeaderboardEntry_t *entry=NULL;
 		SteamUserStats()->GetDownloadedLeaderboardEntry(eHandle, i, entry, NULL, 0);
 		Dictionary entryDict;
 		entryDict["score"] = entry->m_nScore;
@@ -812,6 +847,7 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int
 		entryDict["global_rank"] = entry->m_nGlobalRank;
 		leaderboard_entries.append(entryDict);
 	}
+	memdelete(entry);
 }
 // Update the currently used leaderboard handle
 void Steam::updateLeaderboardHandle(SteamLeaderboard_t lHandle){
@@ -950,103 +986,108 @@ void Steam::suspendDownloads(bool bSuspend){
 ///// BIND METHODS //////////////////////////////
 //
 void Steam::_bind_methods(){
-	ObjectTypeDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
-	ObjectTypeDB::bind_method("steamInit", &Steam::steamInit);
-	ObjectTypeDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
-	ObjectTypeDB::bind_method("run_callbacks", &Steam::run_callbacks);
+	ClassDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
+	ClassDB::bind_method("steamInit", &Steam::steamInit);
+	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
+	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	// Apps Bind Methods ////////////////////////
-	ObjectTypeDB::bind_method("hasOtherApp", &Steam::hasOtherApp);
-	ObjectTypeDB::bind_method("getDLCCount", &Steam::getDLCCount);
-	ObjectTypeDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
-	ObjectTypeDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
-	ObjectTypeDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
-	ObjectTypeDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
-	ObjectTypeDB::bind_method("isVACBanned", &Steam::isVACBanned);
-	ObjectTypeDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);
-	ObjectTypeDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
-	ObjectTypeDB::bind_method("installDLC", &Steam::installDLC);
-	ObjectTypeDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
+	ClassDB::bind_method("hasOtherApp", &Steam::hasOtherApp);
+	ClassDB::bind_method("getDLCCount", &Steam::getDLCCount);
+	ClassDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
+	ClassDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
+	ClassDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
+	ClassDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
+	ClassDB::bind_method("isVACBanned", &Steam::isVACBanned);
+	ClassDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);
+	ClassDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
+	ClassDB::bind_method("installDLC", &Steam::installDLC);
+	ClassDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
+	ClassDB::bind_method("isSubscribed", &Steam::isSubscribed);
+	ClassDB::bind_method("isLowViolence", &Steam::isLowViolence);
+	ClassDB::bind_method("isCybercafe", &Steam::isCybercafe);
+	ClassDB::bind_method("isSubscribedApp", &Steam::isSubscribedApp);
+	ClassDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
 	// Friends Bind Methods /////////////////////
-	ObjectTypeDB::bind_method("getFriendCount", &Steam::getFriendCount);
-	ObjectTypeDB::bind_method("getPersonaName", &Steam::getPersonaName);
-	ObjectTypeDB::bind_method("getFriendPersonaName", &Steam::getFriendPersonaName);
-	ObjectTypeDB::bind_method(_MD("setGameInfo", "key", "value"), &Steam::setGameInfo);
-	ObjectTypeDB::bind_method(_MD("clearGameInfo"), &Steam::clearGameInfo);
-	ObjectTypeDB::bind_method(_MD("inviteFriend", "steam_id", "connect_string"), &Steam::inviteFriend);
-	ObjectTypeDB::bind_method(_MD("setPlayedWith", "steam_id"), &Steam::setPlayedWith);
-	ObjectTypeDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
-	ObjectTypeDB::bind_method(_MD("getFriendAvatar", "size"), &Steam::getFriendAvatar, DEFVAL(AVATAR_MEDIUM));
-	ObjectTypeDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
-	ObjectTypeDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
-	ObjectTypeDB::bind_method(_MD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
-	ObjectTypeDB::bind_method(_MD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""));
-	ObjectTypeDB::bind_method(_MD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
-	ObjectTypeDB::bind_method(_MD("activateGameOverlayToStore", "appID"), &Steam::activateGameOverlayToStore, DEFVAL(0));
-	ObjectTypeDB::bind_method(_MD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
+	ClassDB::bind_method("getFriendCount", &Steam::getFriendCount);
+	ClassDB::bind_method("getPersonaName", &Steam::getPersonaName);
+	ClassDB::bind_method("getFriendPersonaName", &Steam::getFriendPersonaName);
+	ClassDB::bind_method(D_METHOD("setGameInfo", "key", "value"), &Steam::setGameInfo);
+	ClassDB::bind_method(D_METHOD("clearGameInfo"), &Steam::clearGameInfo);
+	ClassDB::bind_method(D_METHOD("inviteFriend", "steam_id", "connect_string"), &Steam::inviteFriend);
+	ClassDB::bind_method(D_METHOD("setPlayedWith", "steam_id"), &Steam::setPlayedWith);
+	ClassDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
+	ClassDB::bind_method(D_METHOD("getFriendAvatar", "size"), &Steam::getFriendAvatar, DEFVAL(AVATAR_MEDIUM));
+	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
+	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
+	ClassDB::bind_method(D_METHOD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
+	ClassDB::bind_method(D_METHOD("activateGameOverlayToStore", "appID"), &Steam::activateGameOverlayToStore, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
 	// Matchmaking Bind Methods /////////////////
-	ObjectTypeDB::bind_method(_MD("createLobby", "type"), &Steam::createLobby, DEFVAL(2));
-	ObjectTypeDB::bind_method("joinLobby", &Steam::joinLobby);
-	ObjectTypeDB::bind_method("leaveLobby", &Steam::leaveLobby);
-	ObjectTypeDB::bind_method("inviteUserToLobby", &Steam::inviteUserToLobby);
+	ClassDB::bind_method(D_METHOD("createLobby", "type"), &Steam::createLobby, DEFVAL(2));
+	ClassDB::bind_method("joinLobby", &Steam::joinLobby);
+	ClassDB::bind_method("leaveLobby", &Steam::leaveLobby);
+	ClassDB::bind_method("inviteUserToLobby", &Steam::inviteUserToLobby);
 	// Music Bind Methods ///////////////////////
-	ObjectTypeDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
-	ObjectTypeDB::bind_method("musicIsPlaying", &Steam::musicIsPlaying);
-	ObjectTypeDB::bind_method("musicGetVolume", &Steam::musicGetVolume);
-	ObjectTypeDB::bind_method("musicPause", &Steam::musicPause);
-	ObjectTypeDB::bind_method("musicPlay", &Steam::musicPlay);
-	ObjectTypeDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
-	ObjectTypeDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
-	ObjectTypeDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
+	ClassDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
+	ClassDB::bind_method("musicIsPlaying", &Steam::musicIsPlaying);
+	ClassDB::bind_method("musicGetVolume", &Steam::musicGetVolume);
+	ClassDB::bind_method("musicPause", &Steam::musicPause);
+	ClassDB::bind_method("musicPlay", &Steam::musicPlay);
+	ClassDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
+	ClassDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
+	ClassDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
 	// Screenshoot Bind Methods /////////////////
-	ObjectTypeDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
+	ClassDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	// User Bind Methods ////////////////////////
-	ObjectTypeDB::bind_method("getSteamID", &Steam::getSteamID);
-	ObjectTypeDB::bind_method("loggedOn", &Steam::loggedOn);
-	ObjectTypeDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
-	ObjectTypeDB::bind_method("getUserDataFolder", &Steam::getUserDataFolder);
-	ObjectTypeDB::bind_method(_MD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
-	ObjectTypeDB::bind_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
+	ClassDB::bind_method("getSteamID", &Steam::getSteamID);
+	ClassDB::bind_method("loggedOn", &Steam::loggedOn);
+	ClassDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
+	ClassDB::bind_method("getUserDataFolder", &Steam::getUserDataFolder);
+	ClassDB::bind_method(D_METHOD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
+	ClassDB::bind_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
 	// User Stats Bind Methods //////////////////
-	ObjectTypeDB::bind_method("clearAchievement", &Steam::clearAchievement);
-	ObjectTypeDB::bind_method("getAchievement", &Steam::getAchievement);
-	ObjectTypeDB::bind_method("getStatFloat", &Steam::getStatFloat);
-	ObjectTypeDB::bind_method("getStatInt", &Steam::getStatInt);
-	ObjectTypeDB::bind_method("resetAllStats", &Steam::resetAllStats);
-	ObjectTypeDB::bind_method("requestCurrentStats", &Steam::requestCurrentStats);
-	ObjectTypeDB::bind_method("setAchievement", &Steam::setAchievement);
-	ObjectTypeDB::bind_method("setStatFloat", &Steam::setStatFloat);
-	ObjectTypeDB::bind_method("setStatInt", &Steam::setStatInt);
-	ObjectTypeDB::bind_method("storeStats", &Steam::storeStats);
-	ObjectTypeDB::bind_method(_MD("findLeaderboard", "name"), &Steam::findLeaderboard);
-	ObjectTypeDB::bind_method("getLeaderboardName", &Steam::getLeaderboardName);
-	ObjectTypeDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
-	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(GLOBAL));
-	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntriesForUsers", "users_id"), &Steam::downloadLeaderboardEntriesForUsers);
-	ObjectTypeDB::bind_method(_MD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
-	ObjectTypeDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
-	ObjectTypeDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
-	ObjectTypeDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
+	ClassDB::bind_method("clearAchievement", &Steam::clearAchievement);
+	ClassDB::bind_method("getAchievement", &Steam::getAchievement);
+	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);
+	ClassDB::bind_method("getStatInt", &Steam::getStatInt);
+	ClassDB::bind_method("resetAllStats", &Steam::resetAllStats);
+	ClassDB::bind_method("requestCurrentStats", &Steam::requestCurrentStats);
+	ClassDB::bind_method("setAchievement", &Steam::setAchievement);
+	ClassDB::bind_method("setStatFloat", &Steam::setStatFloat);
+	ClassDB::bind_method("setStatInt", &Steam::setStatInt);
+	ClassDB::bind_method("storeStats", &Steam::storeStats);
+	ClassDB::bind_method(D_METHOD("findLeaderboard", "name"), &Steam::findLeaderboard);
+	ClassDB::bind_method("getLeaderboardName", &Steam::getLeaderboardName);
+	ClassDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
+	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(GLOBAL));
+	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntriesForUsers", "users_id"), &Steam::downloadLeaderboardEntriesForUsers);
+	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
+	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
+	ClassDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
+	ClassDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
 	// Utils Bind Methods ///////////////////////
-	ObjectTypeDB::bind_method("getIPCountry", &Steam::getIPCountry);
-	ObjectTypeDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
-	ObjectTypeDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
-	ObjectTypeDB::bind_method("getAppID", &Steam::getAppID);
-	ObjectTypeDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
-	ObjectTypeDB::bind_method(_MD("setOverlayNotificationPosition", "0-3"), &Steam::setOverlayNotificationPosition);
-	ObjectTypeDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
-	ObjectTypeDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
-	ObjectTypeDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
-	ObjectTypeDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
-	ObjectTypeDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
+	ClassDB::bind_method("getIPCountry", &Steam::getIPCountry);
+	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
+	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
+	ClassDB::bind_method("getAppID", &Steam::getAppID);
+	ClassDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
+	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "0-3"), &Steam::setOverlayNotificationPosition);
+	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
+	ClassDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
+	ClassDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
+	ClassDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
+	ClassDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
 	// Workshop Bind Methods ////////////////////
-	ObjectTypeDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
-	ObjectTypeDB::bind_method("getItemState", &Steam::getItemState);
-	ObjectTypeDB::bind_method("downloadItem", &Steam::downloadItem);
-	ObjectTypeDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
+	ClassDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
+	ClassDB::bind_method("getItemState", &Steam::getItemState);
+	ClassDB::bind_method("downloadItem", &Steam::downloadItem);
+	ClassDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
-	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::IMAGE, "avatar")));
-	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::OBJECT, "SteamLeaderboard")));
+	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size")));
+	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::OBJECT, "Steam")));
 	ADD_SIGNAL(MethodInfo("leaderboard_entries_loaded"));
 	ADD_SIGNAL(MethodInfo("overlay_toggled", PropertyInfo(Variant::BOOL, "active")));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
