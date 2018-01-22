@@ -47,6 +47,11 @@ public:
 	bool isSubscribedFromFreeWeekend();
 	void installDLC(int value);
 	void uninstallDLC(int value);
+	bool isSubscribed();
+	bool isLowViolence();
+	bool isCybercafe();
+	bool isSubscribedApp(int value);
+	int getAppBuildId();
 	// Friends //////////////////////////////////
 	int getFriendCount();
 	String getPersonaName();

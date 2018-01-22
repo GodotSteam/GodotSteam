@@ -20,8 +20,10 @@
 			<div id="header">
 				<nav>
 					<li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li>
-					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/master">MODULE ZIP</a></li>
-					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/master">MODULE TAR</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/master">GODOT 2 MODULE ZIP</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/master">GODOT 2 MODULE TAR</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/godot3">GODOT 3 MODULE ZIP</a></li>
+					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/godot3">GODOT 3 MODULE TAR</a></li>
 					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/tarball/gdnative">GDNATIVE ZIP</a></li>
 					<li class="downloads"><a href="https://github.com/Gramps/GodotSteam/zipball/gdnative">GDNATIVE TAR</a></li>
 					<li class="title">DOWNLOADS</li>
@@ -41,14 +43,15 @@
 
 				<div id="intro">
 					<h1>Introduction</h1>
-					<p>Current build: v1.1.0, availabled as pre-compiles here: <a href="https://github.com/Gramps/GodotSteam/releases">https://github.com/Gramps/GodotSteam/releases</a>.</p>
-					<p>This is the documentation page for GodotSteam, a Steamworks module for <a href="https://godotengine.org" target="_blank">Godot Engine</a>, and GodotSteam for GDNative (<a href="https://godotengine.org/article/dlscript-here" target="_blank">more on GDNative for Godot 3.0 here</a>). It was initially forked from <a href="https://github.com/Kermer/GodotSteam" target="_blank">Kermer's excellent fork</a>.</p>
+					<p>Pre-compiles are available here if you don't want to compile it yourself: <a href="https://github.com/Gramps/GodotSteam/releases">https://github.com/Gramps/GodotSteam/releases</a>.</p>
+					<p>This is the documentation page for GodotSteam, a Steamworks module for <a href="https://godotengine.org" target="_blank">Godot Engine</a>, and GodotSteam for GDNative (<a href="https://godotengine.org/article/dlscript-here" target="_blank">more on GDNative for Godot 3.0 here</a>). It was initially forked from <a href="https://github.com/Kermer/GodotSteam" target="_blank">Kermer's excellent fork</a> which was forked from <a href="https://github.com/Mavhod/GodotSteam" target="_blank">Mavhod's original</a>. It has since grown from there with more functionality, newer GDNative and Godot 3 version, direct Steamworks API codebase, and more.</p>
+					<p>You can also view a more up-to-date and expanded version of the documentation at <a href="https://github.com/Gramps/GodotSteam/wiki" target="_blank">the repository's wiki page!</a></p>
 					<p>There are a few things you'll need to start working with the module:</p>
 					<ul>
-						<h2>GodotSteam Module</h2>
+						<h2>GodotSteam Module For Godot 2 / 3</h2>
 						<li>The Steamworks SDK (<a href="https://partner.steamgames.com/" target="_blank">https://partner.steamgames.com/</a>).</li>
 						<li>A Steamworks account.</li>
-						<li>The Godot Engine source code; preferably 2.0.3 or higher (<a href="https://github.com/godotengine/godot" target="_blank">https://github.com/godotengine/godot</a>).</li>
+						<li>The Godot Engine source code; preferably 2.0.3 or higher (<a href="https://github.com/godotengine/godot" target="_blank">https://github.com/godotengine/godot</a>). <strong>Make sure this source matches the GodotSteam branch you are using or vice-versa.</strong></li>
 					</ul>
 					<ul>
 						<h2>GodotSteam For GDNative</h2>
@@ -63,16 +66,6 @@
 						<li>Logged into your Steam client if testing your game or any scenes.</li>
 					</ul>
 					<p>From here either navigate to the <a href="#howto-module">Module How-To</a> or <a href="#howto-native">GDNative How-To</a>.</p>
-				</div>
-				<div id="todo">
-					<h1>To-Do List</h1>
-					<p>Here is a short-list of additional things still needed for the wrapper:</p>
-					<ul>
-						<li>Fix signals, leaderboards, and callbacks in GDNative version</li>
-						<li>Add in more features from the Steamworks SDK.</li>
-						<li>Optimize C++ code by someone better at C++.</li>
-						<li>Test, test, test!</li>
-					</ul>
 				</div>
 				<div id="howto-module">
 					<h1>How To Get Started: GodotSteam module</h1>
@@ -236,44 +229,49 @@
 					</ul>
 					<h3>Apps</h3>
 					<ul>
-						<li>hasOtherApp(appID)<br />- Does the user own the given application/game for this appID?</li>
+						<li>hasOtherApp( <em>int</em> appID )<br />- Does the user own the given application/game for this appID?</li>
 						<li>getDLCCount()<br />- Get the total number of DLC installed for this application/game.</li>
-						<li>isDLCInstalled(appID)<br />- Is the given DLC appID installed for this application/game?</li>
-						<li>requestAppProofOfPurchaseKey(appID)<br />- Returns purchase key for given application/game in a callback (currently not working).</li>
-						<li>isAppInstalled(appID)<br />- Check if given application/game is installed, not necessarily owned.</li>
+						<li>isDLCInstalled( <em>int</em> appID )<br />- Is the given DLC appID installed for this application/game?</li>
+						<li>requestAppProofOfPurchaseKey( <em>int</em> appID )<br />- Returns purchase key for given application/game in a callback (currently not working).</li>
+						<li>isAppInstalled( <em>int</em> appID )<br />- Check if given application/game is installed, not necessarily owned.</li>
 						<li>getCurrentGameLanguage()<br />- Get the user's current game language (ie. english, russian, french).</li>
 						<li>isVACBanned()<br />- Does the user have a VAC ban for this game.</li>
-						<li>getEarliestPurchaseUnixTime(value)<br />- Returns the Unix time of the purchase of the app.</li>
+						<li>getEarliestPurchaseUnixTime( <em>int</em> value )<br />- Returns the Unix time of the purchase of the app.</li>
 						<li>isSubscribedFromFreeWeekend()<br />- Checks if the user is subscribed to the current app through a free weekend.</li>
-						<li>installDLC(value)<br />- Install control for optional DLC.</li>
-						<li>uninstallDLC(value)<br />- Uninstall control for optional DLC.</li>
+						<li>installDLC( <em>int</em> value )<br />- Install control for optional DLC.</li>
+						<li>uninstallDLC( <em>int</em> value )<br />- Uninstall control for optional DLC.</li>
+						<li>isSubscribed()<br />- Is user subscribed too...? Lacks notes from Valve.</li>
+						<li>isLowViolence()<br />- Set to low violence in Steam? Lacks notes from Valve.</li>
+						<li>isCybercafe()<br /> - Is user a cyber cafe? Lacks notes from Valve.</li>
+						<li>isSubscribedApp( <em>int</em> value )<br />- Checks ownership of another game related to yours: a demo, etc.</li>
+						<li>getAppBuildId()<br />- Returns the build ID for this application; will change based on backend updates.</li>
 					</ul>
 					<h3>Friends</h3>
 					<ul>
 						<li>getFriendCount()<br />- Get the number of friends the user has.</li>
 						<li>getPersonaName()<br />- Get the user's Steam username.</li>
-						<li>getFriendPersonaName(steamID)<br />- Get the given user's Steam username.</li>
-						<li>setGameInfo(serverKey, serverValue)<br />- Set the game information in Steam; used in 'View Game Info'. Must be set as a key/value pair; multiple may be set.</li>
+						<li>getFriendPersonaName( <em>int</em> steamID )<br />- Get the given user's Steam username.</li>
+						<li>setGameInfo( <em>string</em>server key, <em>string</em>server value )<br />- Set the game information in Steam; used in 'View Game Info'. Must be set as a key/value pair; multiple may be set.</li>
 						<li>clearGameInfo()<br />- Clear the game information in Steam; used in 'View Game Info'.</li>
-						<li>inviteFriend(steamID, connection)<br />- Invite friend ot current game/lobby.</li>
-						<li>setPlayedWith(steamID)<br />- Set player as 'Played With' for current game.</li>
+						<li>inviteFriend( <em>int</em> steamID, <em>string</em>connection )<br />- Invite friend ot current game/lobby.</li>
+						<li>setPlayedWith( <em>int</em> steamID )<br />- Set player as 'Played With' for current game.</li>
 						<li>getRecentPlayers()<br />- Get list of players user has recently played game with.</li>
-						<li>getFriendAvatar(size)<br />- Get player's avatar.</li>
-						<li>ActivateGameOverlay(dialog)<br />- Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".</li>
-						<li>ActivateGameOverlayToUser(url, steamID)<br />- Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".</li>
-						<li>ActivateGameOverlayToWebPage(url)<br />- Activates the overlay with specified web address.</li>
-						<li>ActivateGameOverlayToStore(appID)<br />- Activates the overlay with the application/game Steam store page.</li>
-						<li>ActivateGameOverlayInviteDialog(steamID)<br />- Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.</li>
+						<li>getFriendAvatar( <em>int</em> size )<br />- Get player's avatar.</li>
+						<li>activateGameOverlay( <em>string</em> dialog )<br />- Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".</li>
+						<li>activateGameOverlayToUser( <em>string</em> url, <em>int</em> steamID )<br />- Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".</li>
+						<li>activateGameOverlayToWebPage( <em>string</em> url )<br />- Activates the overlay with specified web address.</li>
+						<li>activateGameOverlayToStore( <em>int</em> appID )<br />- Activates the overlay with the application/game Steam store page.</li>
+						<li>activateGameOverlayInviteDialog( <em>int</em> steamID )<br />- Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.</li>
 						<li>getUserSteamGroups()<br />- Get list of user's Steam groups; a mix of different Steamworks API group functions.</li>
 						<li>getUserSteamFriends()<br />- Get a list of user's Steam friends; a mix of different Steamworks API friend functions.</li>
-						<li>activateGameOverlayInviteDialog(steamID)<br />- Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.</li>
+						<li>activateGameOverlayInviteDialog( <em>int</em> steamID )<br />- Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.</li>
 					</ul>
 					<h3>Matchmaking</h3>
 					<ul>
-						<li>createLobby(lobbyType, maxMembers)<br />- Create a lobby on the Steam servers, if private the lobby will not be returned by any RequestLobbyList() call.</li>
-						<li>joinLobby(lobbyID)<br />- Join an existing lobby.</li>
-						<li>leaveLobby(lobbyID)<br />- Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback.</li>
-						<li>inviteUserToLobby(lobbyID, steamID)<br />- Invite another user to the lobby, the target user will receive a LobbyInvite_t callback, will return true if the invite is successfully sent, whether or not the target responds.</li>
+						<li>createLobby( <em>int</em> lobby type, <em>int</em> max members )<br />- Create a lobby on the Steam servers, if private the lobby will not be returned by any RequestLobbyList() call.</li>
+						<li>joinLobby( <em>int</em> lobby ID )<br />- Join an existing lobby.</li>
+						<li>leaveLobby( <em>int</em> lobby ID )<br />- Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback.</li>
+						<li>inviteUserToLobby( <em>int</em> lobby ID, <em>int</em> steamID )<br />- Invite another user to the lobby, the target user will receive a LobbyInvite_t callback, will return true if the invite is successfully sent, whether or not the target responds.</li>
 					</ul>
 					<h3>Music</h3>
 					<ul>
@@ -284,7 +282,7 @@
 						<li>musicPlay()<br />- Play current track/album.</li>
 						<li>musicPlayNext()<br />- Play next track/album.</li>
 						<li>musicPlayPrev()<br />- Play previous track/album.</li>
-						<li>musicSetVolume(value)<br />- Set the volume of Steam music. Must pass a float between 0.0 and 1.0.</li>
+						<li>musicSetVolume( <em>float</em> value )<br />- Set the volume of Steam music. Must pass a float between 0.0 and 1.0.</li>
 					</ul>
 					<h3>Screenshots</h3>
 					<ul>
@@ -308,9 +306,9 @@
 					<h3>UGC (User Generated Content) / Workshop</h3>
 					<ul>
 						<li>getNumSubscribedItems()<br />- Number of subscribed items.</li>
-						<li>getItemState(fileID)<br />- Get EItemState flags about item on this client.</li>
-						<li>downloadItem(fileID, highPriority)<br />- Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.</li>
-						<li>suspendDownloads(suspend)<br />- SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.</li>
+						<li>getItemState( <em>int</em> file ID )br />- Get EItemState flags about item on this client.</li>
+						<li>downloadItem( <em>int</em> file ID, <em>bool</em> high priority )<br />- Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.</li>
+						<li>suspendDownloads( <em>bool</em> suspend )<br />- SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.</li>
 					</ul>
 					<h3>Users</h3>
 					<ul>
@@ -318,33 +316,33 @@
 						<li>loggedOn()<br />- Check, true/false, if user is logged into Steam currently.</li>
 						<li>getPlayerSteamLevel()<br />- Get the user's Steam level.</li>
 						<li>getUserDataFolder()<br />- Get the user's Steam installation path.</li>
-						<li>advertiseGame(serverIP, port)<br />- (LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game.</li>
-						<li>getGameBadgeLevel(series, foil)<br />- Trading Card badges data access, if you only have one set of cards, the series will be 1.</li>
+						<li>advertiseGame( <em>string</em> server IP, <em>int</em> port )<br />- (LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game.</li>
+						<li>getGameBadgeLevel( <em>int</em> series, <em>bool</em> foil )<br />- Trading Card badges data access, if you only have one set of cards, the series will be 1.</li>
 					</ul>
 					<h3>User Statistics</h3>
 					<ul>
-						<li>getAchievement(name)<br />-Return true/false if use has given achievement.</li>
-						<li>getStatInt(name)<br />- Get the value of an integer statistic.</li>
-						<li>getStatFloat(name)<br />- Get the value of a float statistic.</li>
-						<li>resetAllStats(achievesToo)<br />- Reset all Steam statistics; optional to reset achievements.</li>
+						<li>getAchievement( <em>string</em> name )<br />-Return true/false if use has given achievement.</li>
+						<li>getStatInt( <em>string</em> name )<br />- Get the value of an integer statistic.</li>
+						<li>getStatFloat( <em>string</em> name )<br />- Get the value of a float statistic.</li>
+						<li>resetAllStats( <em>bool</em> achievements too )<br />- Reset all Steam statistics; optional to reset achievements.</li>
 						<li>requestCurrentStats()<br />-  Request all statistics and achievements from Steam servers.</li>
-						<li>setAchievement(name)<br />- Set a given achievement.</li>
-						<li>setStatFloat(name, value)<br />- Set a statistic.</li>
-						<li>setStatInt(name, value)<br />- Set a statistic. </li>
+						<li>setAchievement( <em>string</em> name )<br />- Set a given achievement.</li>
+						<li>setStatFloat( <em>string</em> name, <em>float</em> value )<br />- Set a statistic.</li>
+						<li>setStatInt( <em>string</em> name, <em>int</em> value )<br />- Set a statistic. </li>
 						<li>storeStats()<br />- Store all statistics, and achievements, on Steam servers; must be called to "pop" achievements.</li>
-						<li>clearAchievement(name)<br />- Clears a given achievement.</li>
-						<li>findLeaderboard(name)<br />- Find a given leaderboard, by name.</li>
+						<li>clearAchievement( <em>string</em> name )<br />- Clears a given achievement.</li>
+						<li>findLeaderboard( <em>string</em> name )<br />- Find a given leaderboard, by name.</li>
 						<li>getLeaderboardName()<br />- Get the name of a leaderboard.</li>
 						<li>getLeaderboardEntryCount()<br />- Get the total number of entries in a leaderboard, as of the last request.</li>
-						<li>downloadLeaderboardEntries(start, end, type)<br />- Request all rows for friends of user.</li>
-						<li>downloadLeaderboardEntriesForUsers(usersID)<br />- Request a maximum of 100 users with only one outstanding call at a time.</li>
-						<li>uploadLeaderboardScore(score, keepBest)<br />- Upload a leaderboard score for the user.</li>
-						<li>getDownloadedLeaderboardEntry(handle, entryCount)<br />- Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.</li>
-						<li>updateLeaderboardHandle(handle)<br />- Update the currently used leaderboard handle.</li>
+						<li>downloadLeaderboardEntries( <em>int</em> start, <em>int</em> end, <em>int</em> type )<br />- Request all rows for friends of user.</li>
+						<li>downloadLeaderboardEntriesForUsers( <em>array</em> users ID )<br />- Request a maximum of 100 users with only one outstanding call at a time.</li>
+						<li>uploadLeaderboardScore( <em>int</em> score, <em>bool</em> keep best )<br />- Upload a leaderboard score for the user.</li>
+						<li>getDownloadedLeaderboardEntry( <em>string</em> handle, <em>int</em> entry count )<br />- Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.</li>
+						<li>updateLeaderboardHandle( <em>string</em> handle )<br />- Update the currently used leaderboard handle.</li>
 						<li>getLeaderboardHandle()<br />- Get the currently used leaderboard handle.</li>
 						<li>getLeaderboardEntries()<br />- Get the currently used leaderboard entries.</li>
-						<li>getAchievementAndUnlockTime(name, achieved, unlockTime)<br />- Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).</li>
-						<li>indicateAchievementProgress(name, curProgress, maxProgress)<br />- Achievement progress, triggers an AchievementProgress callback, that is all.</li>
+						<li>getAchievementAndUnlockTime( <em>string</em> name, <em>bool</em> achieved, <em>int</em> unlock time )<br />- Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).</li>
+						<li>indicateAchievementProgress( <em>string</em> name, <em>int</em> current progress, <em>int</em> max progress )<br />- Achievement progress, triggers an AchievementProgress callback, that is all.</li>
 					</ul>
 					<h3>Utilities</h3>
 					<ul>
@@ -356,7 +354,7 @@
 						<li>isSteamRunningInVR()<br />- Is Steam running in VR?.</li>
 						<li>getSteamUILanguage()<br />- Get the Steam user interface language.</li>
 						<li>getAppID()<br />- Get the Steam ID of the running application/game.</li>
-						<li>setOverlayNotificationPosition(pos)<br />- Set the position where overlay shows notifications. Accepts integers 0-3 (top left, top right, bottom left, bottom right).</li>
+						<li>setOverlayNotificationPosition( <em>int</em> pos )<br />- Set the position where overlay shows notifications. Accepts integers 0-3 (top left, top right, bottom left, bottom right).</li>
 						<li>isSteamInBigPictureMode()<br />- Returns true if Steam & the Steam Overlay are running in Big Picture mode.</li>
 						<li>startVRDashboard()<br />- Ask SteamUI to create and render its OpenVR dashboard.</li>
 					</ul>

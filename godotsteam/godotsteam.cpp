@@ -138,6 +138,41 @@ void Steam::uninstallDLC(int value){
 	}
 	SteamApps()->UninstallDLC((AppId_t)value);
 }
+// Is subscribed lacks notes from Valve
+bool Steam::isSubscribed(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribed();
+}
+// Presumably if Steam is set to low violence; lacks notes from Valve
+bool Steam::isLowViolence(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsLowViolence();
+}
+// Presumably if users is a cyber cafe; lacks notes from Valve
+bool Steam::isCybercafe(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsCybercafe();
+}
+// Only use to check ownership of another game related to yours: a demo, etc.
+bool Steam::isSubscribedApp(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+}
+// Return the build ID for this app; will change based on backend updates
+int Steam::getAppBuildId(){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	return SteamApps()->GetAppBuildId();
+}
 
 /////////////////////////////////////////////////
 ///// FRIENDS ///////////////////////////////////
@@ -966,6 +1001,11 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
 	ObjectTypeDB::bind_method("installDLC", &Steam::installDLC);
 	ObjectTypeDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
+	ObjectTypeDB::bind_method("isSubscribed", &Steam::isSubscribed);
+	ObjectTypeDB::bind_method("isLowViolence", &Steam::isLowViolence);
+	ObjectTypeDB::bind_method("isCybercafe", &Steam::isCybercafe);
+	ObjectTypeDB::bind_method("isSubscribedApp", &Steam::isSubscribedApp);
+	ObjectTypeDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
 	// Friends Bind Methods /////////////////////
 	ObjectTypeDB::bind_method("getFriendCount", &Steam::getFriendCount);
 	ObjectTypeDB::bind_method("getPersonaName", &Steam::getPersonaName);
