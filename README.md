@@ -1,8 +1,8 @@
 # Godot Steam for Godot 3
 Steam API for the Godot game engine (version 3 RC2 or higher). For the Windows, Linux, and Mac platforms. 
 
-View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
-View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+- View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
+- View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
 Documentation
 ----------
