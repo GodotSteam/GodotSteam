@@ -1,5 +1,5 @@
 # Godot Steam for Godot 3
-Steam API for the Godot game engine (version 3 RC2 or higher). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3 or higher). For the Windows, Linux, and Mac platforms. 
 
 - View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
 - View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
@@ -28,7 +28,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0 RC2 or higher.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0 or higher.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -49,7 +49,6 @@ Quick How-To
 - Recompile for your platform:
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
   - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
-    - If not using Godot 2.0.3 or higher, you must add openssl=no when compiling because it has problems with libcrypto (class StreamPeerSSL can't use).
   - OSX ( http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html )
     - When creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( http://steamcommunity.com/app/404790/discussions/0/364042703865087202/ ).
 - When recompiling the engine is finished, copy the shared library (steam_api) from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder). It should look like this:
