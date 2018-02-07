@@ -496,6 +496,98 @@ void Steam::musicSetVolume(float value){
 	return SteamMusic()->SetVolume(value);
 }
 /////////////////////////////////////////////////
+///// REMOTE STORAGE ////////////////////////////
+//
+// Write to given file from Steam Cloud
+//bool Steam::fileWrite(const String& chFile, const DVector<uint8_t>& vData, int32 cubData){
+//	if(SteamRemoteStorage() == NULL){
+//		return false;
+//	}
+//	return SteamRemoteStorage()->FileWrite(chFile.utf8().get_data(), vData.read().ptr(), cubData);
+//}
+// Read given file from Steam Cloud
+//Dictionary Steam::fileRead(const String& chFile, int32 cubDataToRead){
+//	if(SteamRemoteStorage() == NULL){
+//		return false;
+//	}
+//	DVector<uint8_t> vData;
+//	vData.resize(cubDataToRead);
+//	Dictionary d;
+//	d["ret"] = SteamRemoteStorage()->FileRead(chFile.utf8().get_data(), vData.write().ptr(), cubDataToRead);
+//	d["buf"] = vData;
+//	return d;
+//}
+// Delete file from remote storage but leave it on local disk to remain accessible
+bool Steam::fileForget(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileForget(chFile.utf8().get_data());
+}
+// Delete a given file in Steam Cloud
+bool Steam::fileDelete(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileDelete(chFile.utf8().get_data());
+}
+// Check if a given file exists in Steam Cloud
+bool Steam::fileExists(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileExists(chFile.utf8().get_data());
+}
+// Check if a given file is persisted in Steam Cloud
+bool Steam::filePersisted(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FilePersisted(chFile.utf8().get_data());
+}
+// Get the size of a given file
+int32 Steam::getFileSize(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return -1;
+	}
+	return SteamRemoteStorage()->GetFileSize(chFile.utf8().get_data());
+}
+// Get the timestamp of when the file was uploaded/changed
+int32 Steam::getFileTimestamp(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return -1;
+	}
+	return SteamRemoteStorage()->GetFileTimestamp(chFile.utf8().get_data());
+}
+// Gets the total number of local files synchronized by Steam Cloud
+int32 Steam::getFileCount(){
+	if(SteamRemoteStorage() == NULL){
+		return 0;
+	}
+	return SteamRemoteStorage()->GetFileCount();
+}
+// Is Steam Cloud enabled on the user's account?
+bool Steam::isCloudEnabledForAccount(){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->IsCloudEnabledForAccount();
+}
+// Is Steam Cloud enabled for this application?
+bool Steam::isCloudEnabledForApp(){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->IsCloudEnabledForApp();
+}
+// Set Steam Cloud enabled for this application
+void Steam::setCloudEnabledForApp(bool bEnabled){
+	if(SteamRemoteStorage() == NULL){
+		return;
+	}
+	return SteamRemoteStorage()->SetCloudEnabledForApp(bEnabled);
+}
+/////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
 // Causes Steam overlay to take a screenshot
@@ -1038,6 +1130,19 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
 	ClassDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ClassDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
+	// Remote Storage Bind Methods //////////////
+//	ClassDB::bind_method("fileWrite", &Steam::fileWrite);
+//	ClassDB::bind_method("fileRead", &Steam::fileRead);
+	ClassDB::bind_method("fileForget", &Steam::fileForget);
+	ClassDB::bind_method("fileDelete", &Steam::fileDelete);
+	ClassDB::bind_method("fileExists", &Steam::fileExists);
+	ClassDB::bind_method("filePersisted", &Steam::filePersisted);
+	ClassDB::bind_method("getFileSize", &Steam::getFileSize);
+	ClassDB::bind_method("getFileTimestamp", &Steam::getFileTimestamp);
+	ClassDB::bind_method("getFileCount", &Steam::getFileCount);
+	ClassDB::bind_method("isCloudEnabledForAccount", &Steam::isCloudEnabledForAccount);
+	ClassDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
+	ClassDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
 	// Screenshoot Bind Methods /////////////////
 	ClassDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	// User Bind Methods ////////////////////////

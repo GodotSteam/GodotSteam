@@ -1,5 +1,5 @@
 
 # SCsub
 Import('env')
-
+env.Append(LINKFLAGS=['-no-pie'])
 env.add_source_files(env.modules_sources,"*.cpp")

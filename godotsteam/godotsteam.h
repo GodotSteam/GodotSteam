@@ -83,6 +83,19 @@ public:
 	void musicPlayNext();
 	void musicPlayPrev();
 	void musicSetVolume(float value);
+	// Remote Storage ///////////////////////////
+//	bool fileWrite(const String& chFile, const DVector<uint8_t>& vData, int32 cubData);
+//	Dictionary fileRead(const String& chFile, int32 cubDataToRead);
+	bool fileForget(const String& chFile);
+	bool fileDelete(const String& chFile);
+	bool fileExists(const String& chFile);
+	bool filePersisted(const String& chFile);
+	int32 getFileSize(const String& chFile);
+	int32 getFileTimestamp(const String& chFile);
+	int32 getFileCount();
+	bool isCloudEnabledForAccount();
+	bool isCloudEnabledForApp();
+	void setCloudEnabledForApp(bool bEnabled);
 	// Screenshots //////////////////////////////
 	void triggerScreenshot();
 	// Users ////////////////////////////////////
