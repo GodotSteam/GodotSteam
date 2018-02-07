@@ -497,6 +497,83 @@ void Steam::musicSetVolume(float value){
 	return SteamMusic()->SetVolume(value);
 }
 /////////////////////////////////////////////////
+///// REMOTE STORAGE ////////////////////////////
+//
+bool Steam::storageFileWrite(const String& chFile, const DVector<uint8_t>& vData, int32 cubData){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileWrite(chFile.utf8().get_data(), vData.read().ptr(), cubData);
+}
+
+Dictionary Steam::storageFileRead(const String& chFile, int32 cubDataToRead){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	DVector<uint8_t> vData;
+	vData.resize(cubDataToRead);
+	Dictionary d;
+	d["ret"] = SteamRemoteStorage()->FileRead(chFile.utf8().get_data(), vData.write().ptr(), cubDataToRead);
+	d["buf"] = vData;
+	return d;
+}
+
+bool Steam::storageFileForget(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileForget(chFile.utf8().get_data());
+}
+
+bool Steam::storageFileDelete(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileDelete(chFile.utf8().get_data());
+}
+
+bool Steam::storageFileExists(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileExists(chFile.utf8().get_data());
+}
+
+bool Steam::storageFilePersisted(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FilePersisted(chFile.utf8().get_data());
+}
+
+int32 Steam::storageGetFileSize(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return -1;
+	}
+	return SteamRemoteStorage()->GetFileSize(chFile.utf8().get_data());
+}
+
+int64 Steam::storageGetFileTimestamp(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return -1;
+	}
+	return SteamRemoteStorage()->GetFileTimestamp(chFile.utf8().get_data());
+}
+
+bool Steam::storageIsCloudEnabledForAccount(){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->IsCloudEnabledForAccount();
+}
+
+bool Steam::storageIsCloudEnabledForApp(){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->IsCloudEnabledForApp();
+}
+/////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
 // Causes Steam overlay to take a screenshot
@@ -1037,6 +1114,17 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
 	ObjectTypeDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ObjectTypeDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
+	// Remote Storage Bind Methods //////////////
+	ObjectTypeDB::bind_method("storageFileWrite", &Steam::storageFileWrite);
+	ObjectTypeDB::bind_method("storageFileRead", &Steam::storageFileRead);
+	ObjectTypeDB::bind_method("storageFileForget", &Steam::storageFileForget);
+	ObjectTypeDB::bind_method("storageFileDelete", &Steam::storageFileDelete);
+	ObjectTypeDB::bind_method("storageFileExists", &Steam::storageFileExists);
+	ObjectTypeDB::bind_method("storageFilePersisted", &Steam::storageFilePersisted);
+	ObjectTypeDB::bind_method("storageGetFileSize", &Steam::storageGetFileSize);
+	ObjectTypeDB::bind_method("storageGetFileTimestamp", &Steam::storageGetFileTimestamp);
+	ObjectTypeDB::bind_method("storageIsCloudEnabledForAccount", &Steam::storageIsCloudEnabledForAccount);
+	ObjectTypeDB::bind_method("storageIsCloudEnabledForApp", &Steam::storageIsCloudEnabledForApp);
 	// Screenshoot Bind Methods /////////////////
 	ObjectTypeDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	// User Bind Methods ////////////////////////
