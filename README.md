@@ -18,10 +18,9 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.1.1 Updates
-- Added: isSubscribed, isLowViolence, isCybercafe, isSubscribedApp, getAppBuildId functions
+Version 1.2.0 Updates
+- Added: Remote Storage functionality for Steam Cloud, thanks to **marcelofg55**
 - Added: new functions to documentation
-- Changed: small bits of text in documentation
 
 Quick How-To
 ----------
