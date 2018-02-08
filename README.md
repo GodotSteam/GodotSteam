@@ -18,7 +18,11 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 1.2.0 Updates
+**Version 1.2.1 Updates**
+- Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation
+- Changed: readme to reflect Godot 3 release
+
+**Version 1.2.0 Updates**
 - Added: Remote Storage functionality for Steam Cloud, thanks to **marcelofg55**
 - Added: new functions to documentation
 - Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher
