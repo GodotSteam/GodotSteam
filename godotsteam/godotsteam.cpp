@@ -554,7 +554,7 @@ int32 Steam::getFileSize(const String& chFile){
 	return SteamRemoteStorage()->GetFileSize(chFile.utf8().get_data());
 }
 // Get the timestamp of when the file was uploaded/changed
-int32 Steam::getFileTimestamp(const String& chFile){
+int64_t Steam::getFileTimestamp(const String& chFile){
 	if(SteamRemoteStorage() == NULL){
 		return -1;
 	}

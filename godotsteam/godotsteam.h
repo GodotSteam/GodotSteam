@@ -91,7 +91,7 @@ public:
 	bool fileExists(const String& chFile);
 	bool filePersisted(const String& chFile);
 	int32 getFileSize(const String& chFile);
-	int32 getFileTimestamp(const String& chFile);
+	int64_t getFileTimestamp(const String& chFile);
 	int32 getFileCount();
 	bool isCloudEnabledForAccount();
 	bool isCloudEnabledForApp();
