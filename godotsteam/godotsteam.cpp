@@ -547,7 +547,7 @@ bool Steam::filePersisted(const String& chFile){
 	return SteamRemoteStorage()->FilePersisted(chFile.utf8().get_data());
 }
 // Get the size of a given file
-int32 Steam::getFileSize(const String& chFile){
+int32_t Steam::getFileSize(const String& chFile){
 	if(SteamRemoteStorage() == NULL){
 		return -1;
 	}
@@ -561,7 +561,7 @@ int64_t Steam::getFileTimestamp(const String& chFile){
 	return SteamRemoteStorage()->GetFileTimestamp(chFile.utf8().get_data());
 }
 // Gets the total number of local files synchronized by Steam Cloud
-int32 Steam::getFileCount(){
+int32_t Steam::getFileCount(){
 	if(SteamRemoteStorage() == NULL){
 		return 0;
 	}
@@ -950,7 +950,7 @@ void Steam::updateLeaderboardHandle(SteamLeaderboard_t lHandle){
 	}
 }
 // Get the currently used leaderboard handle
-uint64 Steam::getLeaderboardHandle(){
+uint64_t Steam::getLeaderboardHandle(){
 	return leaderboard_handle;
 }
 // Get the currently used leaderboard entries
