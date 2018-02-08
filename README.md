@@ -16,9 +16,10 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-Version 2.0.0 Changes
-- Added: experimental pre-compiles for Windows linked against Steamworks API 1.42
-- Added: first experimental build of the wrapper
+**Version 2.0.0 Changes**
+- Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55
+- Added: new functions to documentation
+- Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher
 
 Known Issues
 ----------
