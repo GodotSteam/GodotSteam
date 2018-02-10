@@ -499,24 +499,25 @@ void Steam::musicSetVolume(float value){
 ///// REMOTE STORAGE ////////////////////////////
 //
 // Write to given file from Steam Cloud
-//bool Steam::fileWrite(const String& chFile, const DVector<uint8_t>& vData, int32 cubData){
-//	if(SteamRemoteStorage() == NULL){
-//		return false;
-//	}
-//	return SteamRemoteStorage()->FileWrite(chFile.utf8().get_data(), vData.read().ptr(), cubData);
-//}
+bool Steam::fileWrite(const String& chFile, const PoolByteArray& vData, int32 cubData){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->FileWrite(chFile.utf8().get_data(), vData.read().ptr(), cubData);
+}
 // Read given file from Steam Cloud
-//Dictionary Steam::fileRead(const String& chFile, int32 cubDataToRead){
-//	if(SteamRemoteStorage() == NULL){
-//		return false;
-//	}
-//	DVector<uint8_t> vData;
-//	vData.resize(cubDataToRead);
-//	Dictionary d;
-//	d["ret"] = SteamRemoteStorage()->FileRead(chFile.utf8().get_data(), vData.write().ptr(), cubDataToRead);
-//	d["buf"] = vData;
-//	return d;
-//}
+Dictionary Steam::fileRead(const String& chFile, int32 cubDataToRead){
+	Dictionary d;
+	if(SteamRemoteStorage() == NULL){
+		d["ret"] = false;
+		return d;
+	}
+	PoolByteArray vData;
+	vData.resize(cubDataToRead);
+	d["ret"] = SteamRemoteStorage()->FileRead(chFile.utf8().get_data(), vData.write().ptr(), cubDataToRead);
+	d["buf"] = vData;
+	return d;
+}
 // Delete file from remote storage but leave it on local disk to remain accessible
 bool Steam::fileForget(const String& chFile){
 	if(SteamRemoteStorage() == NULL){
@@ -1131,8 +1132,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ClassDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
 	// Remote Storage Bind Methods //////////////
-//	ClassDB::bind_method("fileWrite", &Steam::fileWrite);
-//	ClassDB::bind_method("fileRead", &Steam::fileRead);
+	ClassDB::bind_method("fileWrite", &Steam::fileWrite);
+	ClassDB::bind_method("fileRead", &Steam::fileRead);
 	ClassDB::bind_method("fileForget", &Steam::fileForget);
 	ClassDB::bind_method("fileDelete", &Steam::fileDelete);
 	ClassDB::bind_method("fileExists", &Steam::fileExists);
