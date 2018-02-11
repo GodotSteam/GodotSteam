@@ -16,6 +16,9 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
+**Version 2.1.1 Changes**
+- Fixed: fileRead and fileWrite thanks to marcelofg55
+
 **Version 2.1.0 Changes**
 - Added: two more functions for Remote Storage
 - Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation
