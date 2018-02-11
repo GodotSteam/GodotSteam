@@ -84,8 +84,8 @@ public:
 	void musicPlayPrev();
 	void musicSetVolume(float value);
 	// Remote Storage ///////////////////////////
-//	bool fileWrite(const String& chFile, const DVector<uint8_t>& vData, int32 cubData);
-//	Dictionary fileRead(const String& chFile, int32 cubDataToRead);
+	bool fileWrite(const String& chFile, const PoolByteArray& vData, int32 cubData);
+	Dictionary fileRead(const String& chFile, int32 cubDataToRead);
 	bool fileForget(const String& chFile);
 	bool fileDelete(const String& chFile);
 	bool fileExists(const String& chFile);
