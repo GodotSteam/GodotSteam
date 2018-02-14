@@ -679,8 +679,12 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 	Image avatar = drawAvatar(size,iBuffer);
 	call_deferred("emit_signal", "avatar_loaded", rSize, avatar);
 }
+// Signal number of current players (online + offline)
+void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure){
+	emit_signal("number_of_current_players", callData->m_bSuccess && bIOFailure, callData->m_cPlayers);
+}
 // Signal a leaderboard has been loaded or has failed
-void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData){
+void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
 	if(callData->m_bLeaderboardFound == 0){
 		emit_signal("leaderboard_loaded", "");
 	}
@@ -688,6 +692,14 @@ void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData){
 		uint8 sLeaderboard = callData->m_hSteamLeaderboard;
 		emit_signal("leaderboard_loaded", sLeaderboard);
 	}
+}
+// Signal a leaderboard entry has been uploaded
+void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure){
+	// Incorrect leaderboard
+	if(callData->m_hSteamLeaderboard != leaderboard_handle){
+		return;
+	}
+	emit_signal("leaderboard_uploaded", callData->m_bSuccess && bIOFailure, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
 }
 // Signal leaderboard entries are downloaded
 void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData){
@@ -819,6 +831,14 @@ bool Steam::getAchievement(const String& s_key){
 	SteamUserStats()->GetAchievement(s_key.utf8().get_data(), &achieved);
 	return achieved;
 }
+//  Get the amount of players currently playing the current game (online + offline)
+void Steam::getNumberOfCurrentPlayers(){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->GetNumberOfCurrentPlayers();
+	callResultNumberOfCurrentPlayers.Set(apiCall, this, &Steam::_number_of_current_players);
+}
 // Get the value of a float statistic
 float Steam::getStatFloat(const String& s_key){
 	float statval = 0;
@@ -916,14 +936,9 @@ void Steam::uploadLeaderboardScore(int score, bool keepBest){
 	if(SteamUserStats() == NULL){
 		return;
 	}
-	int method = 0;
-	if(keepBest){
-		method = 1;
-	}
-	else{
-		method = 2;
-	}
-	SteamUserStats()->UploadLeaderboardScore(leaderboard_handle, ELeaderboardUploadScoreMethod(method), (int32)score, NULL, 0);
+	ELeaderboardUploadScoreMethod method = keepBest ? k_ELeaderboardUploadScoreMethodKeepBest : k_ELeaderboardUploadScoreMethodForceUpdate;
+	SteamAPICall_t apiCall = SteamUserStats()->UploadLeaderboardScore(leaderboard_handle, method, (int32)score, NULL, 0);
+	callResultUploadScore.Set(apiCall, this, &Steam::_leaderboard_uploaded);
 }
 // Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it
 void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount){
@@ -931,8 +946,8 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int
 		return;
 	}
 	leaderboard_entries.clear();
+	LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
 	for(int i = 0; i < entryCount; i++){
-		LeaderboardEntry_t *entry=NULL;
 		SteamUserStats()->GetDownloadedLeaderboardEntry(eHandle, i, entry, NULL, 0);
 		Dictionary entryDict;
 		entryDict["score"] = entry->m_nScore;
@@ -940,6 +955,7 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int
 		entryDict["global_rank"] = entry->m_nGlobalRank;
 		leaderboard_entries.append(entryDict);
 	}
+	memdelete(entry);
 }
 // Update the currently used leaderboard handle
 void Steam::updateLeaderboardHandle(SteamLeaderboard_t lHandle){
@@ -1155,6 +1171,7 @@ void Steam::_bind_methods(){
 	// User Stats Bind Methods //////////////////
 	ObjectTypeDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ObjectTypeDB::bind_method("getAchievement", &Steam::getAchievement);
+	ObjectTypeDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 	ObjectTypeDB::bind_method("getStatFloat", &Steam::getStatFloat);
 	ObjectTypeDB::bind_method("getStatInt", &Steam::getStatInt);
 	ObjectTypeDB::bind_method("resetAllStats", &Steam::resetAllStats);
@@ -1192,7 +1209,9 @@ void Steam::_bind_methods(){
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::IMAGE, "avatar")));
+	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
 	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::OBJECT, "SteamLeaderboard")));
+	ADD_SIGNAL(MethodInfo("leaderboard_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
 	ADD_SIGNAL(MethodInfo("leaderboard_entries_loaded"));
 	ADD_SIGNAL(MethodInfo("overlay_toggled", PropertyInfo(Variant::BOOL, "active")));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));

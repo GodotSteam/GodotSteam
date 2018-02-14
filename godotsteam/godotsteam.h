@@ -107,6 +107,7 @@ public:
 	int getGameBadgeLevel(int series, bool foil);
 	// User Stats ///////////////////////////////
 	bool clearAchievement(const String& s_key);
+	void getNumberOfCurrentPlayers();
 	bool getAchievement(const String& s_key);
 	float getStatFloat(const String& s_key);
 	int getStatInt(const String& s_key);
@@ -165,7 +166,15 @@ private:
 	STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 	STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
 	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
-	STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t);
+//	STEAM_CALLBACK(Steam, _number_of_current_players, NumberOfCurrentPlayers_t);
+	CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
+	void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
+//	STEAM_CALLBACK(Steam, _leaderboard_uploaded, LeaderboardScoreUploaded_t);
+	CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
+	void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+//	STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t);
+	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+	void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
 	STEAM_CALLBACK(Steam, _leaderboard_entries_loaded, LeaderboardScoresDownloaded_t);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
