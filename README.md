@@ -17,11 +17,11 @@ Current Build
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 2.2.0 Changes**
-- Added: getNumberOfCurrentPlayers
-- Added: leaderboard_uploaded and number_of_current_players callbacks
+- Added: getNumberOfCurrentPlayers, thanks to marcelofg55
+- Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55
 
 **Version 2.1.1 Changes**
-- Fixed: fileRead and fileWrite thanks to marcelofg55
+- Fixed: fileRead and fileWrite, thanks to marcelofg55
 
 **Version 2.1.0 Changes**
 - Added: two more functions for Remote Storage
