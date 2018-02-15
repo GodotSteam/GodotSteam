@@ -751,7 +751,10 @@ void Steam::_get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* ca
 }
 // Called when an auth ticket has been validated
 void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* callData){
-	emit_signal("validate_auth_ticket_response", callData->m_SteamID.ConvertToUint64(), callData->m_eAuthSessionResponse, callData->m_OwnerSteamID.ConvertToUint64());
+	int authID = callData->m_SteamID.ConvertToUint64();
+	int response = callData->m_eAuthSessionResponse;
+	int ownerID = callData->m_OwnerSteamID.ConvertToUint64();
+	emit_signal("validate_auth_ticket_response", authID, response, ownerID);
 }
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
@@ -790,7 +793,8 @@ int Steam::beginAuthSession(uint32_t hAuthTicket, uint64_t steamID){
 	for(int i=0; i<tickets.size(); i++){
 		TicketData ticket = tickets.get(i);
 		if (ticket.id == hAuthTicket){
-			return SteamUser()->BeginAuthSession(ticket.buf, ticket.size, CSteamID(steamID));
+			CSteamID authSteamID = createSteamID(steamID);
+			return SteamUser()->BeginAuthSession(ticket.buf, ticket.size, authSteamID);
 		}
 	}
 	return -1;
@@ -800,7 +804,8 @@ void Steam::endAuthSession(uint64_t steamID){
 	if(SteamUser() == NULL){
 		return;
 	}
-	return SteamUser()->EndAuthSession(CSteamID(steamID));
+	CSteamID authSteamID = createSteamID(steamID);
+	return SteamUser()->EndAuthSession(authSteamID);
 }
 // Get user's Steam ID
 uint64_t Steam::getSteamID(){
@@ -1295,6 +1300,17 @@ void Steam::_bind_methods(){
 	// Initialization errors ////////////////////
 	BIND_CONSTANT(ERR_NO_CLIENT);
 	BIND_CONSTANT(ERR_NO_CONNECTION);
+	// Authentication responses /////////////////
+	BIND_CONSTANT(AUTH_SESSION_OK);
+	BIND_CONSTANT(AUTH_SESSION_STEAM_NOT_CONNECTED);
+	BIND_CONSTANT(AUTH_SESSION_NO_LICENSE);
+	BIND_CONSTANT(AUTH_SESSION_VAC_BANNED);
+	BIND_CONSTANT(AUTH_SESSION_LOGGED_IN_ELSEWHERE);
+	BIND_CONSTANT(AUTH_SESSION_VAC_CHECK_TIMEOUT);
+	BIND_CONSTANT(AUTH_SESSION_TICKET_CANCELED);
+	BIND_CONSTANT(AUTH_SESSION_TICKET_ALREADY_USED);
+	BIND_CONSTANT(AUTH_SESSION_TICKET_INVALID);
+	BIND_CONSTANT(AUTH_SESSION_PUBLISHER_BANNED);
 	// Avatar sizes /////////////////////////////
 	BIND_CONSTANT(AVATAR_SMALL);
 	BIND_CONSTANT(AVATAR_MEDIUM);
