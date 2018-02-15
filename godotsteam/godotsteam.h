@@ -16,6 +16,8 @@ public:
 		OFFLINE=0, ONLINE=1, BUSY=2, AWAY=3, SNOOZE=4, LF_TRADE, LF_PLAY, STATE_MAX, NOT_OFFLINE=8, ALL=9,
 		TOP_LEFT=0, TOP_RIGHT=1, BOT_LEFT=2, BOT_RIGHT=3,
 		ERR_NO_CLIENT=2, ERR_NO_CONNECTION=3,
+		AUTH_SESSION_OK=0, AUTH_SESSION_STEAM_NOT_CONNECTED=1, AUTH_SESSION_NO_LICENSE=2, AUTH_SESSION_VAC_BANNED=3, AUTH_SESSION_LOGGED_IN_ELSEWHERE=4,
+		AUTH_SESSION_VAC_CHECK_TIMEOUT=5, AUTH_SESSION_TICKET_CANCELED=6, AUTH_SESSION_TICKET_ALREADY_USED=7, AUTH_SESSION_TICKET_INVALID=8, AUTH_SESSION_PUBLISHER_BANNED=9,
 		AVATAR_SMALL=0, AVATAR_MEDIUM, AVATAR_LARGE,
 		GLOBAL=0, GLOBAL_AROUND_USER=1, FRIENDS=2, USERS=3,
 		LOBBY_OK=0, LOBBY_NO_CONNECTION=1, LOBBY_TIMEOUT=2, LOBBY_FAIL=3, LOBBY_ACCESS_DENIED=4, LOBBY_LIMIT_EXCEEDED=5,
@@ -99,7 +101,11 @@ public:
 	// Screenshots //////////////////////////////
 	void triggerScreenshot();
 	// Users ////////////////////////////////////
-	int getSteamID();
+	uint32_t getAuthSessionTicket();
+	void cancelAuthTicket(uint32_t hAuthTicket);
+	int beginAuthSession(uint32_t hAuthTicket, uint64_t steamID);
+	void endAuthSession(uint64_t steamID);
+	uint64_t getSteamID();
 	bool loggedOn();
 	int getPlayerSteamLevel();
 	String getUserDataFolder();
@@ -158,7 +164,13 @@ private:
 
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries;
-
+	struct TicketData {
+		uint32_t id;
+		uint32_t *buf;
+		uint32_t size;
+	};
+	Vector<TicketData> tickets;
+	// Steam Callbacks //////////////////////////
 	STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
 	STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
 	STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
@@ -180,6 +192,8 @@ private:
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
 //	STEAM_CALLBACK(Steam, _request_proofofpurchase, AppProofOfPurchaseKeyResponse_t);
 	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
+	STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
+	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();

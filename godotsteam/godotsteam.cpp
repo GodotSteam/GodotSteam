@@ -10,6 +10,7 @@ Steam::Steam(){
 	isInitSuccess = false;
 	is_valid = false;
 	singleton = this;
+	tickets.clear();
 }
 
 Steam* Steam::get_singleton(){
@@ -745,11 +746,70 @@ void Steam::_dlc_installed(DlcInstalled_t* callData){
 	int appID = (AppId_t)callData->m_nAppID;
 	emit_signal("dlc_installed", appID);
 }
+// Response from getAuthSessionTicket
+void Steam::_get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* callData){
+	emit_signal("get_auth_session_ticket_response", callData->m_hAuthTicket, callData->m_eResult);
+}
+// Called when an auth ticket has been validated
+void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* callData){
+	int authID = callData->m_SteamID.ConvertToUint64();
+	int response = callData->m_eAuthSessionResponse;
+	int ownerID = callData->m_OwnerSteamID.ConvertToUint64();
+	emit_signal("validate_auth_ticket_response", authID, response, ownerID);
+}
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
 //
+// Get an authentication ticket
+uint32_t Steam::getAuthSessionTicket(){
+	if(SteamUser() == NULL){
+		return 0;
+	}
+	uint32_t cbTicket = 1024;
+	uint32_t *buf = memnew_arr(uint32_t, cbTicket);
+	uint32_t id = SteamUser()->GetAuthSessionTicket(buf, cbTicket, &cbTicket);
+	TicketData ticket = { id, buf, cbTicket };
+	tickets.push_back(ticket);
+	return id;
+}
+// Cancels an auth ticket
+void Steam::cancelAuthTicket(uint32_t hAuthTicket){
+	if(SteamUser() == NULL){
+		return;
+	}
+	for(int i=0; i<tickets.size(); i++){
+		TicketData ticket = tickets.get(i);
+		if (ticket.id == hAuthTicket){
+			tickets.remove(i);
+			memdelete_arr(ticket.buf);
+			break;
+		}
+	}
+}
+// Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused
+int Steam::beginAuthSession(uint32_t hAuthTicket, uint64_t steamID){
+	if(SteamUser() == NULL){
+		return -1;
+	}
+	for(int i=0; i<tickets.size(); i++){
+		TicketData ticket = tickets.get(i);
+		if (ticket.id == hAuthTicket){
+			CSteamID authSteamID = createSteamID(steamID);
+			return SteamUser()->BeginAuthSession(ticket.buf, ticket.size, authSteamID);
+		}
+	}
+	return -1;
+}
+// Ends an auth session
+void Steam::endAuthSession(uint64_t steamID){
+	if(SteamUser() == NULL){
+		return;
+	}
+	CSteamID authSteamID = createSteamID(steamID);
+	return SteamUser()->EndAuthSession(authSteamID);
+}
 // Get user's Steam ID
-int Steam::getSteamID(){
+uint64_t Steam::getSteamID(){
 	if(SteamUser() == NULL){
 		return 0;
 	}
@@ -1162,6 +1222,10 @@ void Steam::_bind_methods(){
 	// Screenshoot Bind Methods /////////////////
 	ObjectTypeDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	// User Bind Methods ////////////////////////
+	ObjectTypeDB::bind_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
+	ObjectTypeDB::bind_method("cancelAuthTicket", &Steam::cancelAuthTicket);
+	ObjectTypeDB::bind_method("beginAuthSession", &Steam::beginAuthSession);
+	ObjectTypeDB::bind_method("endAuthSession", &Steam::endAuthSession);
 	ObjectTypeDB::bind_method("getSteamID", &Steam::getSteamID);
 	ObjectTypeDB::bind_method("loggedOn", &Steam::loggedOn);
 	ObjectTypeDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
@@ -1221,6 +1285,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("connection_changed", PropertyInfo(Variant::BOOL, "connected")));
 //	ADD_SIGNAL(MethodInfo("request_proofofpurchase", PropertyInfo(Variant::INT, "app"), PropertyInfo(Variant::INT, "length"), PropertyInfo(Variant::STRING, "key")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
+	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "ticket"), PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
 	// Status constants //////////////////////////
 	BIND_CONSTANT(OFFLINE);		// 0
 	BIND_CONSTANT(ONLINE);		// 1
@@ -1234,6 +1300,17 @@ void Steam::_bind_methods(){
 	// Initialization errors ////////////////////
 	BIND_CONSTANT(ERR_NO_CLIENT);
 	BIND_CONSTANT(ERR_NO_CONNECTION);
+	// Authentication responses /////////////////
+	BIND_CONSTANT(AUTH_SESSION_OK);
+	BIND_CONSTANT(AUTH_SESSION_STEAM_NOT_CONNECTED);
+	BIND_CONSTANT(AUTH_SESSION_NO_LICENSE);
+	BIND_CONSTANT(AUTH_SESSION_VAC_BANNED);
+	BIND_CONSTANT(AUTH_SESSION_LOGGED_IN_ELSEWHERE);
+	BIND_CONSTANT(AUTH_SESSION_VAC_CHECK_TIMEOUT);
+	BIND_CONSTANT(AUTH_SESSION_TICKET_CANCELED);
+	BIND_CONSTANT(AUTH_SESSION_TICKET_ALREADY_USED);
+	BIND_CONSTANT(AUTH_SESSION_TICKET_INVALID);
+	BIND_CONSTANT(AUTH_SESSION_PUBLISHER_BANNED);
 	// Avatar sizes /////////////////////////////
 	BIND_CONSTANT(AVATAR_SMALL);
 	BIND_CONSTANT(AVATAR_MEDIUM);
