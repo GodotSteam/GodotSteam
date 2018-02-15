@@ -18,10 +18,9 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.3.0 Updates**
-- Added: getNumberOfCurrentPlayers, thanks to marcelofg55
-- Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55
-- Changed: signals in godotsteam.h with CCallback instead of SteamCallback
+**Version 1.4.0 Update**
+- Added: Auth Session functions added to Godot 3 branch thanks to marcelofg55
+- Added: Auth Session constants
 
 Quick How-To
 ----------
