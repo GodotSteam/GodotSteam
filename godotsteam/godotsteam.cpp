@@ -16,7 +16,7 @@ Steam* Steam::get_singleton(){
 	return singleton;
 }
 
-CSteamID Steam::createSteamID(uint32 steamID, int accountType){
+CSteamID Steam::createSteamID(uint32_t steamID, int accountType){
 	CSteamID cSteamID;
 	if(accountType < 0 || accountType >= k_EAccountTypeMax){
 		accountType = 1;
@@ -499,14 +499,14 @@ void Steam::musicSetVolume(float value){
 ///// REMOTE STORAGE ////////////////////////////
 //
 // Write to given file from Steam Cloud
-bool Steam::fileWrite(const String& chFile, const PoolByteArray& vData, int32 cubData){
+bool Steam::fileWrite(const String& chFile, const PoolByteArray& vData, int32_t cubData){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
 	return SteamRemoteStorage()->FileWrite(chFile.utf8().get_data(), vData.read().ptr(), cubData);
 }
 // Read given file from Steam Cloud
-Dictionary Steam::fileRead(const String& chFile, int32 cubDataToRead){
+Dictionary Steam::fileRead(const String& chFile, int32_t cubDataToRead){
 	Dictionary d;
 	if(SteamRemoteStorage() == NULL){
 		d["ret"] = false;
@@ -547,21 +547,21 @@ bool Steam::filePersisted(const String& chFile){
 	return SteamRemoteStorage()->FilePersisted(chFile.utf8().get_data());
 }
 // Get the size of a given file
-int32 Steam::getFileSize(const String& chFile){
+int32_t Steam::getFileSize(const String& chFile){
 	if(SteamRemoteStorage() == NULL){
 		return -1;
 	}
 	return SteamRemoteStorage()->GetFileSize(chFile.utf8().get_data());
 }
 // Get the timestamp of when the file was uploaded/changed
-int32 Steam::getFileTimestamp(const String& chFile){
+int64_t Steam::getFileTimestamp(const String& chFile){
 	if(SteamRemoteStorage() == NULL){
 		return -1;
 	}
 	return SteamRemoteStorage()->GetFileTimestamp(chFile.utf8().get_data());
 }
 // Gets the total number of local files synchronized by Steam Cloud
-int32 Steam::getFileCount(){
+int32_t Steam::getFileCount(){
 	if(SteamRemoteStorage() == NULL){
 		return 0;
 	}
@@ -629,9 +629,9 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData){
 // Signal that lobby has been joined
 void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
 	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
-	uint32 permissions = lobbyData->m_rgfChatPermissions;
+	uint32_t permissions = lobbyData->m_rgfChatPermissions;
 	bool locked = lobbyData->m_bLocked;
-	uint32 response = lobbyData->m_EChatRoomEnterResponse;
+	uint32_t response = lobbyData->m_EChatRoomEnterResponse;
 	emit_signal("lobby_joined", lobbyID, permissions, locked, response);
 }
 // Signal that a lobby invite was sent
@@ -748,7 +748,7 @@ void Steam::_dlc_installed(DlcInstalled_t* callData){
 ///// USERS /////////////////////////////////////
 //
 // Get user's Steam ID
-int Steam::getSteamID(){
+uint64_t Steam::getSteamID(){
 	if(SteamUser() == NULL){
 		return 0;
 	}
@@ -846,7 +846,7 @@ float Steam::getStatFloat(const String& s_key){
 }
 // Get the value of an integer statistic
 int Steam::getStatInt(const String& s_key){
-	int32 statval = 0;
+	int32_t statval = 0;
 	SteamUserStats()->GetStat(s_key.utf8().get_data(), &statval);
 	return statval;
 }
@@ -966,7 +966,7 @@ void Steam::updateLeaderboardHandle(SteamLeaderboard_t lHandle){
 	}
 }
 // Get the currently used leaderboard handle
-uint64 Steam::getLeaderboardHandle(){
+uint64_t Steam::getLeaderboardHandle(){
 	return leaderboard_handle;
 }
 // Get the currently used leaderboard entries
