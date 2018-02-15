@@ -29,7 +29,7 @@ public:
 	Steam();
 	~Steam();
 
-	CSteamID createSteamID(uint32 steamID, int accountType=-1);
+	CSteamID createSteamID(uint32_t steamID, int accountType=-1);
 	Image drawAvatar(int size, uint8* buffer);
 	// Steamworks ///////////////////////////////
 	bool restartAppIfNecessary(int value);
@@ -84,22 +84,22 @@ public:
 	void musicPlayPrev();
 	void musicSetVolume(float value);
 	// Remote Storage ///////////////////////////
-	bool fileWrite(const String& chFile, const PoolByteArray& vData, int32 cubData);
-	Dictionary fileRead(const String& chFile, int32 cubDataToRead);
+	bool fileWrite(const String& chFile, const PoolByteArray& vData, int32_t cubData);
+	Dictionary fileRead(const String& chFile, int32_t cubDataToRead);
 	bool fileForget(const String& chFile);
 	bool fileDelete(const String& chFile);
 	bool fileExists(const String& chFile);
 	bool filePersisted(const String& chFile);
-	int32 getFileSize(const String& chFile);
-	int32 getFileTimestamp(const String& chFile);
-	int32 getFileCount();
+	int32_t getFileSize(const String& chFile);
+	int64_t getFileTimestamp(const String& chFile);
+	int32_t getFileCount();
 	bool isCloudEnabledForAccount();
 	bool isCloudEnabledForApp();
 	void setCloudEnabledForApp(bool bEnabled);
 	// Screenshots //////////////////////////////
 	void triggerScreenshot();
 	// Users ////////////////////////////////////
-	int getSteamID();
+	uint64_t getSteamID();
 	bool loggedOn();
 	int getPlayerSteamLevel();
 	String getUserDataFolder();
@@ -125,7 +125,7 @@ public:
 	void uploadLeaderboardScore(int score, bool keepBest=false);
 	void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount);
 	void updateLeaderboardHandle(SteamLeaderboard_t lHandle);
-	uint64 getLeaderboardHandle();
+	uint64_t getLeaderboardHandle();
 	Array getLeaderboardEntries();
 	bool getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime);
 	bool indicateAchievementProgress(const String& name, int curProgress, int maxProgress);
