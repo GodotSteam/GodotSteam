@@ -16,9 +16,8 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.2.0 Changes**
-- Added: getNumberOfCurrentPlayers, thanks to marcelofg55
-- Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55
+**Version 2.3.0 Changes**
+- Added: implemented Auth Session functions, thanks to marcelofg55
 
 Known Issues
 ----------
