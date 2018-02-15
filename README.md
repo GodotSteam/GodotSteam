@@ -16,8 +16,9 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.3.0 Changes**
-- Added: implemented Auth Session functions, thanks to marcelofg55
+**Version 2.3.1 Changes**
+- Added: constants for Auth Session functions and callbacks
+- Fixed: issue with validate_auth_ticket_response on Linux
 
 Known Issues
 ----------
