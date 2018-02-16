@@ -772,9 +772,9 @@ void Steam::_get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* ca
 }
 // Called when an auth ticket has been validated
 void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* callData){
-	int authID = callData->m_SteamID.ConvertToUint64();
-	int response = callData->m_eAuthSessionResponse;
-	int ownerID = callData->m_OwnerSteamID.ConvertToUint64();
+	uint64_t authID = callData->m_SteamID.ConvertToUint64();
+	uint32_t response = callData->m_eAuthSessionResponse;
+	uint64_t ownerID = callData->m_OwnerSteamID.ConvertToUint64();
 	emit_signal("validate_auth_ticket_response", authID, response, ownerID);
 }
 // A screenshot has been requested by the user

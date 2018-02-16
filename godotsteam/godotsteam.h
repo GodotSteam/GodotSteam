@@ -173,7 +173,7 @@ private:
 		uint32_t size;
 	};
 	Vector<TicketData> tickets;
-
+	// Steam Callbacks //////////////////////////
 	STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
 	STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
 	STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
