@@ -287,14 +287,14 @@
 					</ul>
 					<h3>Remote Storage</h3>
 					<ul>
-						<li><strong>fileWrite( string file, void data, int data)</strong><br />- Write user file to remote online storage.</li>
-						<li><strong>fileRead( string file, void data, int data to read)</strong><br />- Read user file from remote online storage.</strong><br />- Returns a Dictionary with d["ret"] and d["buf"].</li>
-						<li><strong>fileForget( string file )</strong><br />- Deletes the file from remote storage, but leaves it on the local disk and remains accessible from the API.</strong><br />- Returns 1 if forgotten, 0 if not.
-						<li><strong>fileDelete( string file )</strong><br />- Delete user file from remote online storage.</strong><br />- Returns 1 if deleted successfully, 0 if not.</li>
-						<li><strong>fileExists( string file )</strong><br />- Check if a remote file exists.</strong><br />- Returns 1 if it does, 0 if it does not.</li>
-						<li><strong>filePersisted( string file )</strong><br />- Checks if a specific file is persisted in the Steam Cloud. Depreciated: PS3 Only</strong><br />- Returns 1 if it has, 0 if it has not.</li>
-						<li><strong>getFileSize( string file )</strong><br />- Get the size of the current file.</strong><br />- Returns the file size in bytes.</li>
-						<li><strong>getFileTimestamp( string file )</strong><br />- Get the timestamp of when the file was uploaded.</strong><br />- Returns datetime in Unix format.</li>
+						<li><strong>fileWrite( <em>string</em> file, <em>void</em> data, <em>int</em> data)</strong><br />- Write user file to remote online storage.</li>
+						<li><strong>fileRead( <em>string</em> file, <em>void</em> data, <em>int</em> data to read)</strong><br />- Read user file from remote online storage.</strong><br />- Returns a Dictionary with d["ret"] and d["buf"].</li>
+						<li><strong>fileForget( <em>string</em> file )</strong><br />- Deletes the file from remote storage, but leaves it on the local disk and remains accessible from the API.</strong><br />- Returns 1 if forgotten, 0 if not.
+						<li><strong>fileDelete( <em>string</em> file )</strong><br />- Delete user file from remote online storage.</strong><br />- Returns 1 if deleted successfully, 0 if not.</li>
+						<li><strong>fileExists( <em>string</em> file )</strong><br />- Check if a remote file exists.</strong><br />- Returns 1 if it does, 0 if it does not.</li>
+						<li><strong>filePersisted( <em>string</em> file )</strong><br />- Checks if a specific file is persisted in the Steam Cloud. Depreciated: PS3 Only</strong><br />- Returns 1 if it has, 0 if it has not.</li>
+						<li><strong>getFileSize( <em>string</em> file )</strong><br />- Get the size of the current file.</strong><br />- Returns the file size in bytes.</li>
+						<li><strong>getFileTimestamp( <em>string</em> file )</strong><br />- Get the timestamp of when the file was uploaded.</strong><br />- Returns datetime in Unix format.</li>
 						<li><strong>getFileCount()</strong><br />- Get the number of files saved on Steam Cloud.</strong><br />- Returns an integer; the number of files present for the current user, including files in subfolders.</li>
 						<li><strong>isCloudEnabledForAccount()</strong><br />- Check if Cloud Saves/Storage is enabled for the user's account.</strong><br />- Returns 1 if enabled, 0 if not.</li>
 						<li><strong>isCloudEnabledForApp()</strong><br />- Check if Cloud Saves/Storage is enabled for the application.</strong><br />- Returns 1 if enabled, 0 if not.</li>
@@ -302,7 +302,10 @@
 					</ul>
 					<h3>Screenshots</h3>
 					<ul>
+						<li><strong>hookScreenshots( <em>bool</em> hook)</strong><br />- Toggles whether the overlay handles screenshots</li>
+						<li><strong>isScreenshotsHooked()</strong><br />- Checks if the app is hooking screenshots</li>
 						<li><strong>triggerScreenshot()</strong><br />- Causes the Steam overlay to take a screenshot.</li>
+						<li><strong>writeScreenshot( <em>array</em> data, <em>int</em> width, <em>int</em> height )</strong><br />- Writes a screenshot to the user's Steam screenshot library</li>
 					</ul>
 					<h3>Signals</h3>
 					<ul>
@@ -311,13 +314,18 @@
 						<li><strong>_lobby_invite</strong><br />- Signal that a lobby invite was sent.</li>
 						<li><strong>_join_requested</strong><br />- Signal a game/lobby join has been requested.</li>
 						<li><strong>_avatar_loaded</strong><br />- Signal that the avatar has been loaded.</li>
+						<li><strong>_number_of_current_players</strong><br />- Signal number of current players (online + offline)</li>
 						<li><strong>_leaderboard_loaded</strong><br />- Signal a leaderboard has been loaded or has failed.</li>
+						<li><strong>_leaderboard_uploaded</strong><br />- Signal a leaderboard entry has been uploaded</li>
 						<li><strong>_leaderboard_entries_loaded</strong><br />- Signal leaderboard entries are downloaded.</li>
 						<li><strong>_overlay_toggled</strong><br />- Signal when overlay is triggered.</li>
 						<li><strong>_low_power</strong><br />- Signal when battery power is running low, less than 10 minutes left.</li>
 						<li><strong>_server_connected</strong><br />- When connected to a server.</li>
 						<li><strong>_server_disconnected</strong><br />- When disconnected from a server.</li>
 						<li><strong>_dlc_installed</strong><br />- Posted after the user gains ownership of DLC & that DLC is installed.</li>
+						<li><strong>_get_auth_session_ticket_response</strong><br />- Response from getAuthSessionTicket</li>
+						<li><strong>_validate_auth_ticket_response</strong><br />- Called when an authentication ticket has been validated</li>
+						<li><strong>_screenshot_ready</strong><br />- A screenshot has been requested by the user</li>
 					</ul>
 					<h3>UGC (User Generated Content) / Workshop</h3>
 					<ul>
@@ -334,6 +342,10 @@
 						<li><strong>getUserDataFolder()</strong><br />- Get the user's Steam installation path.</li>
 						<li><strong>advertiseGame( <em>string</em> server IP, <em>int</em> port )</strong><br />- (LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game.</li>
 						<li><strong>getGameBadgeLevel( <em>int</em> series, <em>bool</em> foil )</strong><br />- Trading Card badges data access, if you only have one set of cards, the series will be 1.</li>
+						<li><strong>getAuthSessionTicket()</strong><br />- Get an authentication ticket</li>
+						<li><strong>cancelAuthTicket( <em>int</em> ticket )</strong><br />- Cancels an authentication ticket</li>
+						<li><strong>beginAuthSession( <em>int</em> ticket, <em>int</em> steamID )</strong><br />- Authenticate the ticket from the entity's Steam ID to be sure it is valid and isn't reused</li>
+						<li><strong>endAuthSession(( <em>int</em> steamID )</strong><br />- Ends an authentication session</li>
 					</ul>
 					<h3>User Statistics</h3>
 					<ul>
@@ -375,16 +387,6 @@
 						<li><strong>startVRDashboard()</strong><br />- Ask SteamUI to create and render its OpenVR dashboard.</li>
 					</ul>
 				</div>
-				<div id="changes">
-					<h1>Change Log</h1>
-					<p>The change log for the repo.  Since the change log stars well after the project had been going, versioning will start a 1.1.0, sorry.</p>
-					<ul>
-						<li>Added: getCurrentGameLanguage</li>
-						<li>Added: Pre-compiled engines and templates for Windows</li>
-						<li>Added: change log to documentation</li>
-						<li>Changed: minor things in godotsteam.cpp</li>
-					</ul>
-				</ol>
 			</section>
 
 		</div>

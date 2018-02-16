@@ -18,9 +18,11 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.4.0 Update**
-- Added: Auth Session functions added to Godot 3 branch thanks to marcelofg55
-- Added: Auth Session constants
+**Version 1.5.0 Update**
+- Added: more Screenshot features
+- Added: notes for callback
+- Changed: documentation to reflect new features and signals
+- Fixed: types in _validate_auth_ticket_response
 
 Quick How-To
 ----------

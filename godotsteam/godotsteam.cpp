@@ -589,16 +589,36 @@ void Steam::setCloudEnabledForApp(bool bEnabled){
 	}
 	return SteamRemoteStorage()->SetCloudEnabledForApp(bEnabled);
 }
-
 /////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
+// Toggles whether the overlay handles screenshots
+void Steam::hookScreenshots(bool bHook){
+	if(SteamScreenshots() == NULL){
+		return;
+	}
+	SteamScreenshots()->HookScreenshots(bHook);
+}
+// Checks if the app is hooking screenshots
+bool Steam::isScreenshotsHooked(){
+	if(SteamScreenshots() == NULL){
+		return false;
+	}
+	return SteamScreenshots()->IsScreenshotsHooked();
+}
 // Causes Steam overlay to take a screenshot
 void Steam::triggerScreenshot(){
 	if(SteamScreenshots() == NULL){
 		return;
 	}
 	SteamScreenshots()->TriggerScreenshot();
+}
+// Writes a screenshot to the user's Steam screenshot library
+uint32_t Steam::writeScreenshot(const DVector<uint8_t>& RGB, int nWidth, int nHeight){
+	if(SteamScreenshots() == NULL){
+		return 0;
+	}
+	return SteamScreenshots()->WriteScreenshot((void*)RGB.read().ptr(), RGB.size(), nWidth, nHeight);
 }
 /////////////////////////////////////////////////
 ///// SIGNALS ///////////////////////////////////
@@ -752,10 +772,14 @@ void Steam::_get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* ca
 }
 // Called when an auth ticket has been validated
 void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* callData){
-	int authID = callData->m_SteamID.ConvertToUint64();
-	int response = callData->m_eAuthSessionResponse;
-	int ownerID = callData->m_OwnerSteamID.ConvertToUint64();
+	uint64_t authID = callData->m_SteamID.ConvertToUint64();
+	uint32_t response = callData->m_eAuthSessionResponse;
+	uint64_t ownerID = callData->m_OwnerSteamID.ConvertToUint64();
 	emit_signal("validate_auth_ticket_response", authID, response, ownerID);
+}
+// A screenshot has been requested by the user
+void Steam::_screenshot_ready(ScreenshotReady_t* callData){
+	emit_signal("screenshot_ready", callData->m_hLocal, callData->m_eResult);
 }
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
@@ -1220,7 +1244,10 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
 	ObjectTypeDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
 	// Screenshoot Bind Methods /////////////////
+	ObjectTypeDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
+	ObjectTypeDB::bind_method("isScreenshotsHooked", &Steam::isScreenshotsHooked);
 	ObjectTypeDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
+	ObjectTypeDB::bind_method("writeScreenshot", &Steam::writeScreenshot);
 	// User Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
 	ObjectTypeDB::bind_method("cancelAuthTicket", &Steam::cancelAuthTicket);
@@ -1287,6 +1314,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "ticket"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
+	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
 	// Status constants //////////////////////////
 	BIND_CONSTANT(OFFLINE);		// 0
 	BIND_CONSTANT(ONLINE);		// 1
