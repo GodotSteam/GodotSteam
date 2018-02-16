@@ -99,7 +99,10 @@ public:
 	bool isCloudEnabledForApp();
 	void setCloudEnabledForApp(bool bEnabled);
 	// Screenshots //////////////////////////////
+	void hookScreenshots(bool bHook);
+	bool isScreenshotsHooked();
 	void triggerScreenshot();
+	uint32_t writeScreenshot(const PoolByteArray& RGB, int nWidth, int nHeight);
 	// Users ////////////////////////////////////
 	uint32_t getAuthSessionTicket();
 	void cancelAuthTicket(uint32_t hAuthTicket);
@@ -196,6 +199,7 @@ private:
 	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 	STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
+	STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
 
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();
