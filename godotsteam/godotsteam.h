@@ -133,7 +133,6 @@ public:
 	void downloadLeaderboardEntriesForUsers(Array usersID);
 	void uploadLeaderboardScore(int score, bool keepBest=false);
 	void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount);
-	void updateLeaderboardHandle(SteamLeaderboard_t lHandle);
 	uint64_t getLeaderboardHandle();
 	Array getLeaderboardEntries();
 	bool getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime);
@@ -163,7 +162,6 @@ protected:
 
 private:
 	bool isInitSuccess;
-	bool is_valid;
 
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries;
