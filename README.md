@@ -61,6 +61,7 @@ Quick How-To
     scons platform=<your platform>
 ````
   - You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.
+- Copy the resulting libgodotsteam.so/godotsteam.dll/libgodotsteam.dylib and the matching libsteam_api.so/steam_api.dll/libsteam_api.dylib to the base of your project folder; optionally in a lib folder inside the project folder.
 - Create a new scene with a Node.
   - Save the scene as godotsteam.tscn in your project.
 - On Inspector tab for this node, select a new script.
