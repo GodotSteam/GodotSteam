@@ -41,7 +41,6 @@ public:
 	bool hasOtherApp(int value);
 	int getDLCCount();
 	bool isDLCInstalled(int value);
-	void requestAppProofOfPurchaseKey(int value);
 	bool isAppInstalled(int value);
 	String getCurrentGameLanguage();
 	bool isVACBanned();
@@ -162,9 +161,10 @@ protected:
 
 private:
 	bool isInitSuccess;
-
+	// Leaderboards
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries;
+	// Authentication
 	struct TicketData {
 		uint32_t id;
 		uint32_t *buf;
@@ -193,7 +193,6 @@ private:
 	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
-//	STEAM_CALLBACK(Steam, _request_proofofpurchase, AppProofOfPurchaseKeyResponse_t);
 	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 	STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);

@@ -80,14 +80,6 @@ bool Steam::isDLCInstalled(int value){
 	}
 	return SteamApps()->BIsDlcInstalled(value);
 }
-// Returns purchase key for given application/game. You'll receive an AppProofOfPurchaseKeyResponse_t callback when
-// the key is available (which may be immediately).
-void Steam::requestAppProofOfPurchaseKey(int value){
-	if(SteamApps() == NULL){
-		return;
-	}
-	SteamApps()->RequestAppProofOfPurchaseKey(value);
-}
 // Check if given application/game is installed, not necessarily owned
 bool Steam::isAppInstalled(int value){
 	if(SteamApps() == NULL){
@@ -748,14 +740,6 @@ void Steam::_server_connected(SteamServersConnected_t* conData){
 void Steam::_server_disconnected(SteamServersDisconnected_t* conData){
 	emit_signal("connection_changed", false);
 }
-// Response to RequestAppProofOfPurchaseKey/RequestAllProofOfPurchaseKeys for supporting third-party CD keys, or other proof-of-purchase systems
-// CURRENTLY CAUSES ERROR AS CANNOT CONVERT FROM CHAR TO STRING
-//void Steam::_request_proofofpurchase(AppProofOfPurchaseKeyResponse_t* callData){
-//	int appID = (uint32)callData->m_nAppID;
-//	int keyLength = (uint32)callData->m_cchKeyLength;
-//	String key = callData->m_rgchKey[k_cubAppProofOfPurchaseKeyMax];
-//	emit_signal("request_proofofpurchase", appID, keyLength, key.utf8().get_data());
-//}
 // Posted after the user gains ownership of DLC & that DLC is installed
 void Steam::_dlc_installed(DlcInstalled_t* callData){
 	int appID = (AppId_t)callData->m_nAppID;
@@ -1174,7 +1158,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("hasOtherApp", &Steam::hasOtherApp);
 	ClassDB::bind_method("getDLCCount", &Steam::getDLCCount);
 	ClassDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
-	ClassDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
 	ClassDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
 	ClassDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
 	ClassDB::bind_method("isVACBanned", &Steam::isVACBanned);
@@ -1298,7 +1281,6 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("lobby_joined", PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "permissions"), PropertyInfo(Variant::BOOL, "locked"), PropertyInfo(Variant::INT, "response")));
 	ADD_SIGNAL(MethodInfo("lobby_invite", PropertyInfo(Variant::INT, "inviter"), PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "game")));
 	ADD_SIGNAL(MethodInfo("connection_changed", PropertyInfo(Variant::BOOL, "connected")));
-//	ADD_SIGNAL(MethodInfo("request_proofofpurchase", PropertyInfo(Variant::INT, "app"), PropertyInfo(Variant::INT, "length"), PropertyInfo(Variant::STRING, "key")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "ticket"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
