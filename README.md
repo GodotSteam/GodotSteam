@@ -23,6 +23,7 @@ You can download pre-compiled versions of this repo here: https://github.com/Gra
 - Removed: is_valid for updateLeaderboardHandle
 - Removed: depreciated function requestAppProofOfPurchaseKey
 - Removed: callback for requestAppProofOfPurchaseKey
+- Removed: commented out depreciated functions
 
 Quick How-To
 ----------
