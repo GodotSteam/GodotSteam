@@ -758,7 +758,22 @@ void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* callDat
 }
 // A screenshot has been requested by the user
 void Steam::_screenshot_ready(ScreenshotReady_t* callData){
-	emit_signal("screenshot_ready", callData->m_hLocal, callData->m_eResult);
+	uint32_t handle = callData->m_hLocal;
+	uint32_t result = callData->m_eResult;
+	emit_signal("screenshot_ready", handle, result);
+}
+// User stats are ready
+void Steam::_user_stats_received(UserStatsReceived_t* callData){
+	uint64_t gameID = callData->m_nGameID;
+	uint32_t result = callData->m_eResult;
+	uint64_t userID = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("user_stats_received", gameID, result, userID);
+}
+// Global achievements percentages are ready
+void Steam::_global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t* callData, bool bIOFailure){
+	uint64_t gameID = callData->m_nGameID;
+	uint32_t result = callData->m_eResult;
+	emit_signal("global_achievement_percentages_ready", gameID, result);
 }
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
@@ -894,6 +909,19 @@ bool Steam::getAchievement(const String& s_key){
 	SteamUserStats()->GetAchievement(s_key.utf8().get_data(), &achieved);
 	return achieved;
 }
+// Returns the percentage of users who have unlocked the specified achievement
+Dictionary Steam::getAchievementAchievedPercent(const String& s_key){
+	Dictionary d;
+	float percent = 0.f;
+	bool achieved = false;
+	if(SteamUserStats() == NULL){
+		d["ret"] = false;
+	} else {
+		d["ret"] = SteamUserStats()->GetAchievementAchievedPercent(s_key.utf8().get_data(), &percent);
+	}
+	d["percent"] = percent;
+	return d;
+}
 //  Get the amount of players currently playing the current game (online + offline)
 void Steam::getNumberOfCurrentPlayers(){
 	if(SteamUserStats() == NULL){
@@ -901,6 +929,13 @@ void Steam::getNumberOfCurrentPlayers(){
 	}
 	SteamAPICall_t apiCall = SteamUserStats()->GetNumberOfCurrentPlayers();
 	callResultNumberOfCurrentPlayers.Set(apiCall, this, &Steam::_number_of_current_players);
+}
+// Get the number of achievements
+uint32_t Steam::getNumAchievements(){
+	if(SteamUserStats() == NULL){
+		return 0;
+	}
+	return SteamUserStats()->GetNumAchievements();
 }
 // Get the value of a float statistic
 float Steam::getStatFloat(const String& s_key){
@@ -922,6 +957,14 @@ bool Steam::resetAllStats(bool bAchievementsToo){
 // Request all statistics and achievements from Steam servers
 bool Steam::requestCurrentStats(){
 	return SteamUserStats()->RequestCurrentStats();
+}
+// Asynchronously fetch the data for the percentages
+void Steam::requestGlobalAchievementPercentages(){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->RequestGlobalAchievementPercentages();
+	callResultGlobalAchievementPercentagesReady.Set(apiCall, this, &Steam::_global_achievement_percentages_ready);
 }
 // Set a given achievement
 bool Steam::setAchievement(const String& s_key){
@@ -1233,11 +1276,14 @@ void Steam::_bind_methods(){
 	// User Stats Bind Methods //////////////////
 	ClassDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ClassDB::bind_method("getAchievement", &Steam::getAchievement);
+	ClassDB::bind_method("getAchievementAchievedPercent", &Steam::getAchievementAchievedPercent);
+	ClassDB::bind_method("getNumAchievements", &Steam::getNumAchievements);
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);
 	ClassDB::bind_method("getStatInt", &Steam::getStatInt);
 	ClassDB::bind_method("resetAllStats", &Steam::resetAllStats);
 	ClassDB::bind_method("requestCurrentStats", &Steam::requestCurrentStats);
+	ClassDB::bind_method("requestGlobalAchievementPercentages", &Steam::requestGlobalAchievementPercentages);
 	ClassDB::bind_method("setAchievement", &Steam::setAchievement);
 	ClassDB::bind_method("setStatFloat", &Steam::setStatFloat);
 	ClassDB::bind_method("setStatInt", &Steam::setStatInt);
@@ -1285,6 +1331,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "ticket"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
+	ADD_SIGNAL(MethodInfo("global_achievement_percentages_ready", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result")));
 	// Status constants //////////////////////////
 	BIND_CONSTANT(OFFLINE);		// 0
 	BIND_CONSTANT(ONLINE);		// 1
