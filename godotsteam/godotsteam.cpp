@@ -697,9 +697,13 @@ void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool 
 }
 // Signal a leaderboard has been loaded or has failed
 void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
-	leaderboard_handle = callData->m_hSteamLeaderboard;
-	uint8_t bFound = callData->m_bLeaderboardFound;
-	emit_signal("leaderboard_loaded", leaderboard_handle, bFound);
+	if(callData->m_bLeaderboardFound == 0){
+		emit_signal("leaderboard_loaded", "");
+	}
+	else{
+		uint8 sLeaderboard = callData->m_hSteamLeaderboard;
+		emit_signal("leaderboard_loaded", sLeaderboard);
+	}
 }
 // Signal a leaderboard entry has been uploaded
 void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure){
