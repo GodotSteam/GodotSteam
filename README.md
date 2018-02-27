@@ -18,6 +18,7 @@ You can download pre-compiled versions of this repo here: https://github.com/Gra
 
 **Version 2.4.1 Changes**
 - Added: some notes
+- Fixed: leaderboard_update signal
 - Removed: depreciated function requestAppProofOfPurchaseKey
 - Removed: related callback to requestAppProofOfPurchaseKey
 
