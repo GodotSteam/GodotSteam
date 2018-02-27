@@ -697,13 +697,9 @@ void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool 
 }
 // Signal a leaderboard has been loaded or has failed
 void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
-	if(callData->m_bLeaderboardFound == 0){
-		emit_signal("leaderboard_loaded", "");
-	}
-	else{
-		uint8 sLeaderboard = callData->m_hSteamLeaderboard;
-		emit_signal("leaderboard_loaded", sLeaderboard);
-	}
+	leaderboard_handle = callData->m_hSteamLeaderboard;
+	uint8_t bFound = callData->m_bLeaderboardFound;
+	emit_signal("leaderboard_loaded", (uint64_t)leaderboard_handle, bFound);
 }
 // Signal a leaderboard entry has been uploaded
 void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure){
@@ -1275,7 +1271,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::IMAGE, "avatar")));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
-	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::OBJECT, "SteamLeaderboard")));
+	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::INT, "leaderboard"), PropertyInfo(Variant::INT, "found")));
 	ADD_SIGNAL(MethodInfo("leaderboard_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
 	ADD_SIGNAL(MethodInfo("leaderboard_entries_loaded"));
 	ADD_SIGNAL(MethodInfo("overlay_toggled", PropertyInfo(Variant::BOOL, "active")));

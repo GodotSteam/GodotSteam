@@ -157,7 +157,6 @@ public:
 protected:
 	static void _bind_methods();
 	static Steam* singleton;
-//	static void updateFriendList(int filter=9);
 
 private:
 	bool isInitSuccess;
@@ -179,22 +178,21 @@ private:
 	STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 	STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
 	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
-//	STEAM_CALLBACK(Steam, _number_of_current_players, NumberOfCurrentPlayers_t);
-	CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
-	void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
-//	STEAM_CALLBACK(Steam, _leaderboard_uploaded, LeaderboardScoreUploaded_t);
-	CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
-	void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
-//	STEAM_CALLBACK(Steam, _leaderboard_loaded, LeaderboardFindResult_t);
-	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
-	void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
-	STEAM_CALLBACK(Steam, _leaderboard_entries_loaded, LeaderboardScoresDownloaded_t);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
 	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 	STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 	STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
+	CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
+	void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
+	CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
+	void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+	void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+	CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
+	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
+
 	
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();
