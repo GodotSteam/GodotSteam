@@ -16,10 +16,10 @@ Current Build
 ----------
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.4.0 Changes**
-- Added: more Screenshot features
-- Added: notes for callback
-- Fixed: types in _validate_auth_ticket_response
+**Version 2.4.1 Changes**
+- Added: some notes
+- Removed: depreciated function requestAppProofOfPurchaseKey
+- Removed: related callback to requestAppProofOfPurchaseKey
 
 Known Issues
 ----------
