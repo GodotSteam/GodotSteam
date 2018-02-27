@@ -710,7 +710,7 @@ void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIO
 	emit_signal("leaderboard_uploaded", callData->m_bSuccess && bIOFailure, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
 }
 // Signal leaderboard entries are downloaded
-void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData){
+void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure){
 	// Incorrect leaderboard
 	if(callData->m_hSteamLeaderboard != leaderboard_handle){
 		return;

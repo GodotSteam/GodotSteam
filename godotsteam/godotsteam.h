@@ -192,7 +192,6 @@ private:
 	void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
 	CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
 	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
-
 	
 	void run_callbacks(){
 		SteamAPI_RunCallbacks();
