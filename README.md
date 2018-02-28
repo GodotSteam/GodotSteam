@@ -14,16 +14,10 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.4.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.4.1 Changes**
-- Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions
-- Added: related signals to new functions
-- Added: some notes
-- Fixed: leaderboard_update signal
-- Removed: depreciated function requestAppProofOfPurchaseKey
-- Removed: related callback to requestAppProofOfPurchaseKey
-- Removed: commented out depreciated functions
+**Version 2.5.0 Changes**
+- Added: getFileNameAndSize, getQuota, getSyncPlatforms functions
 
 Known Issues
 ----------
