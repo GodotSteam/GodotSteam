@@ -580,6 +580,37 @@ void Steam::setCloudEnabledForApp(bool bEnabled){
 	}
 	return SteamRemoteStorage()->SetCloudEnabledForApp(bEnabled);
 }
+// Gets the file name and size of a file from the index
+Dictionary Steam::getFileNameAndSize(int iFile){
+	Dictionary d;
+	String name = "";
+	int32_t size = 0;
+	if(SteamRemoteStorage() != NULL){
+		name = String(SteamRemoteStorage()->GetFileNameAndSize(iFile, &size));
+	}
+	d["name"] = name;
+	d["size"] = size;
+	return d;
+}
+// Gets the number of bytes available, and used on the users Steam Cloud storage
+Dictionary Steam::getQuota(){
+	Dictionary d;
+	uint64_t total = 0;
+	uint64_t available = 0;
+	if(SteamRemoteStorage() != NULL){
+		SteamRemoteStorage()->GetQuota(&total, &available);
+	}
+	d["total_bytes"] = total;
+	d["available_bytes"] = available;
+	return d;
+}
+// Obtains the platforms that the specified file will syncronize to
+uint32_t Steam::getSyncPlatforms(const String& chFile){
+	if(SteamRemoteStorage() == NULL){
+		return 0;
+	}
+	return SteamRemoteStorage()->GetSyncPlatforms(chFile.utf8().get_data());
+}
 /////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
@@ -1254,6 +1285,9 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isCloudEnabledForAccount", &Steam::isCloudEnabledForAccount);
 	ObjectTypeDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
 	ObjectTypeDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
+	ObjectTypeDB::bind_method("getFileNameAndSize", &Steam::getFileNameAndSize);
+	ObjectTypeDB::bind_method("getQuota", &Steam::getQuota);
+	ObjectTypeDB::bind_method("getSyncPlatforms", &Steam::getSyncPlatforms);
 	// Screenshoot Bind Methods /////////////////
 	ObjectTypeDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
 	ObjectTypeDB::bind_method("isScreenshotsHooked", &Steam::isScreenshotsHooked);
@@ -1376,6 +1410,14 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LOBBY_FAIL);				// Server responded, but with an unknown internal error
 	BIND_CONSTANT(LOBBY_ACCESS_DENIED);		// Game isn't set to allow lobbies, or your client does haven't rights to play the game
 	BIND_CONSTANT(LOBBY_LIMIT_EXCEEDED);	// Game client has created too many lobbies
+	// Remote storage ///////////////////////////
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_NONE);
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_WINDOWS);
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_OSX);
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_PS3);
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_LINUX);
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_RESERVED2);
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);
 	// Workshop item characters /////////////////
 	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);		// 128
 	BIND_CONSTANT(UGC_MAX_DESC_CHARS);		// 8000
