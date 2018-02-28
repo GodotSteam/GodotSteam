@@ -19,6 +19,8 @@ Current Build
 You can download pre-compiled versions of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 1.5.1 Update**
+- Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions
+- Added: related signals to new functions
 - Added: minor notes
 - Removed: is_valid for updateLeaderboardHandle
 - Removed: depreciated function requestAppProofOfPurchaseKey
