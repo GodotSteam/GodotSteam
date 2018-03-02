@@ -598,7 +598,7 @@ Dictionary Steam::getQuota(){
 	uint64_t total = 0;
 	uint64_t available = 0;
 	if(SteamRemoteStorage() != NULL){
-		SteamRemoteStorage()->GetQuota(&total, &available);
+		SteamRemoteStorage()->GetQuota((uint64*)&total, (uint64*)&available);
 	}
 	d["total_bytes"] = total;
 	d["available_bytes"] = available;
