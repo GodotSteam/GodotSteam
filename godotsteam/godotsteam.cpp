@@ -316,11 +316,11 @@ void Steam::activateGameOverlay(const String& url){
 	SteamFriends()->ActivateGameOverlay(url.utf8().get_data());
 }
 // Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore"
-void Steam::activateGameOverlayToUser(const String& url, int steamID){
+void Steam::activateGameOverlayToUser(const String& url, int steam_id){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID overlayUserID = createSteamID(steamID);
+	CSteamID overlayUserID = createSteamID(steam_id);
 	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), overlayUserID);
 }
 // Activates the overlay with specified web address
@@ -376,11 +376,11 @@ Array Steam::getUserSteamFriends(){
 	return steamFriends;
 }
 // Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby
-void Steam::activateGameOverlayInviteDialog(int steamID){
+void Steam::activateGameOverlayInviteDialog(int steam_id){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamID);
+	CSteamID lobbyID = createSteamID(steam_id);
 	SteamFriends()->ActivateGameOverlayInviteDialog(lobbyID);
 }
 /////////////////////////////////////////////////
@@ -1254,7 +1254,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ObjectTypeDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
 	ObjectTypeDB::bind_method(_MD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
-	ObjectTypeDB::bind_method(_MD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""));
+	ObjectTypeDB::bind_method(_MD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""), DEFVAL(0));
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToStore", "appID"), &Steam::activateGameOverlayToStore, DEFVAL(0));
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
@@ -1334,7 +1334,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
 	ObjectTypeDB::bind_method("getAppID", &Steam::getAppID);
 	ObjectTypeDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
-	ObjectTypeDB::bind_method(_MD("setOverlayNotificationPosition", "0-3"), &Steam::setOverlayNotificationPosition);
+	ObjectTypeDB::bind_method(_MD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
 	ObjectTypeDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
 	ObjectTypeDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
 	ObjectTypeDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);

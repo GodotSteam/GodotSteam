@@ -20,6 +20,7 @@ You can download pre-compiled versions _(currently v1.5.1)_ of this repo here: h
 
 **Version 1.6.0 Update**
 - Added: getFileNameAndSize, getQuota, getSyncPlatforms functions
+- Changed: small corrections with Steam ID variable
 - Fixed: small things with getQuota
 
 Quick How-To
