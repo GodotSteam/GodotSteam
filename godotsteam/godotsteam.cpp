@@ -315,11 +315,11 @@ void Steam::activateGameOverlay(const String& url){
 	SteamFriends()->ActivateGameOverlay(url.utf8().get_data());
 }
 // Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore"
-void Steam::activateGameOverlayToUser(const String& url, int steamID){
+void Steam::activateGameOverlayToUser(const String& url, int steam_id){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID overlayUserID = createSteamID(steamID);
+	CSteamID overlayUserID = createSteamID(steam_id);
 	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), overlayUserID);
 }
 // Activates the overlay with specified web address
@@ -375,11 +375,11 @@ Array Steam::getUserSteamFriends(){
 	return steamFriends;
 }
 // Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby
-void Steam::activateGameOverlayInviteDialog(int steamID){
+void Steam::activateGameOverlayInviteDialog(int steam_id){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamID);
+	CSteamID lobbyID = createSteamID(steam_id);
 	SteamFriends()->ActivateGameOverlayInviteDialog(lobbyID);
 }
 /////////////////////////////////////////////////
@@ -1257,7 +1257,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
 	ClassDB::bind_method(D_METHOD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
-	ClassDB::bind_method(D_METHOD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
 	ClassDB::bind_method(D_METHOD("activateGameOverlayToStore", "appID"), &Steam::activateGameOverlayToStore, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
@@ -1337,7 +1337,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
 	ClassDB::bind_method("getAppID", &Steam::getAppID);
 	ClassDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
-	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "0-3"), &Steam::setOverlayNotificationPosition);
+	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
 	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
 	ClassDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
 	ClassDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
