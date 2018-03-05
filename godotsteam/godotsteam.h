@@ -71,7 +71,7 @@ public:
 	void activateGameOverlayToUser(const String& type, int steam_id);
 	void activateGameOverlayToWebPage(const String& url);
 	void activateGameOverlayToStore(int appid=0);
-	void activateGameOverlayInviteDialog(int id);
+	void activateGameOverlayInviteDialog(int steam_id);
 	// Matchmaking //////////////////////////////
 	void createLobby(int lobbyType, int cMaxMembers);
 	void joinLobby(int steamIDLobby);
