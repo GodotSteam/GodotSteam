@@ -32,7 +32,7 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 - Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
 	- Unpack the Steamworks SDK then copy the **public** and **redistributable_bin** to the /include/sdk folder in the unpacked repo folder.
 - Download the [Godot 3.0 binary](https://github.com/GodotBuilder/godot-builds/releases) if you do not have it already.
-	- _Preferably you use the Godot 3.0.3 binary, at this time of writing._
+	- _Preferably you use the Godot 3.0.2 binary, at this time of writing._
 	- Unpack it and place it GDNative folder.
 - Download the [CPP bindings](https://github.com/GodotNativeTools/cpp_bindings) and [Godot headers](https://github.com/GodotNativeTools/godot_headers).
 	- Unpack both cpp_bindings and godot_header into the GDNative folder.
