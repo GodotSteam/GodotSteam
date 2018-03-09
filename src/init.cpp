@@ -1,4 +1,4 @@
-//#include "Godot.hpp"
+#include <core/Godot.hpp>
 #include "godotsteam.h"
 
 // GDNative initialize

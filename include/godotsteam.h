@@ -5,7 +5,6 @@
 #include "steam/steam_api.h"
 
 #include "core/Godot.hpp"
-#include "Object.hpp"
 #include "Reference.hpp"
 #include "Image.hpp"			// For avatars; perhaps should be Texture.hpp
 #include "core/Dictionary.hpp" 	// Contains array.h as well
@@ -13,7 +12,7 @@
 using namespace godot;
 
 class Steam : public GodotScript<Reference>{
-	GODOT_CLASS(Steam)
+	GODOT_CLASS(Steam);
 
 	public:
 		enum {
@@ -29,16 +28,16 @@ class Steam : public GodotScript<Reference>{
 			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
 			UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1,
 			UGC_STATE_NONE=0, UGC_STATE_SUBSCRIBED=1, UGC_STATE_LEGACY=2, UGC_STATE_INSTALLED=4, UGC_STATE_UPDATE=8, UGC_STATE_DOWNLOADING=16, UGC_STATE_PENDING=32,
-			STATUS_INVALID=0, STATUS_PREPARING_CONFIG=1, STATUS_PREPARING_CONTENT=2, STATUS_UPLOADING_CONTENT=3, STATUS_UPLOADING_PREVIEW=4, STATUS_COMMITTING_CHANGES=5
+			STATUS_INVALID=0, STATUS_PREPARING_CONFIG=1, STATUS_PREPARING_CONTENT=2, STATUS_UPLOADING_CONTENT=3, STATUS_UPLOADING_PREVIEW=4, STATUS_COMMITTING_CHANGES=5,
+			REMOTE_STORAGE_PLATFORM_NONE=0, REMOTE_STORAGE_PLATFORM_WINDOWS=(1<<0), REMOTE_STORAGE_PLATFORM_OSX=(1<<1), REMOTE_STORAGE_PLATFORM_PS3=(1<<2), 
+			REMOTE_STORAGE_PLATFORM_LINUX=(1<<3), REMOTE_STORAGE_PLATFORM_RESERVED2=(1<<4), REMOTE_STORAGE_PLATFORM_ALL=0xffffffff
 		};
-
 		static Steam *get_singleton();
-
 		Steam();
 		~Steam();
 
-		CSteamID createSteamID(uint32 steamID, int accountType = -1);
-		Image drawAvatar(int size, uint8 *buffer);
+		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
+		Image drawAvatar(int size, uint8* buffer);
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
 		bool steamInit();
@@ -47,7 +46,6 @@ class Steam : public GodotScript<Reference>{
 		bool hasOtherApp(int value);
 		int getDLCCount();
 		bool isDLCInstalled(int value);
-		void requestAppProofOfPurchaseKey(int value);
 		bool isAppInstalled(int value);
 		String getCurrentGameLanguage();
 		bool isVACBanned();
@@ -63,22 +61,22 @@ class Steam : public GodotScript<Reference>{
 		// Friends //////////////////////////////////
 		int getFriendCount();
 		String getPersonaName();
-		String getFriendPersonaName(int steam_id);
-		void setGameInfo(const String &s_key, const String &s_value);
+		String getFriendPersonaName(int steamID);
+		void setGameInfo(const String& key, const String& value);
 		void clearGameInfo();
-		void inviteFriend(int id, const String &conString);
-		void setPlayedWith(int steam_id);
+		void inviteFriend(int id, const String& connectString);
+		void setPlayedWith(int steamID);
 		Array getRecentPlayers();
-		void getFriendAvatar(int size = AVATAR_MEDIUM);
+		void getFriendAvatar(int size=AVATAR_MEDIUM);
 		Array getUserSteamGroups();
 		Array getUserSteamFriends();
-		void activateGameOverlay(const String &type);
-		void activateGameOverlayToUser(const String &type, int steam_id);
-		void activateGameOverlayToWebPage(const String &url);
-		void activateGameOverlayToStore(int appid = 0);
-		void activateGameOverlayInviteDialog(int id);
+		void activateGameOverlay(const String& type);
+		void activateGameOverlayToUser(const String& type, int steamID);
+		void activateGameOverlayToWebPage(const String& url);
+		void activateGameOverlayToStore(int appID=0);
+		void activateGameOverlayInviteDialog(int steamID);
 		// Matchmaking //////////////////////////////
-		void createLobby(int lobbyType, int cMaxMembers);
+		void createLobby(int lobbyType, int maxMembers);
 		void joinLobby(int steamIDLobby);
 		void leaveLobby(int steamIDLobby);
 		bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
@@ -92,57 +90,63 @@ class Steam : public GodotScript<Reference>{
 		void musicPlayPrev();
 		void musicSetVolume(float value);
 		// Remote Storage ///////////////////////////
-		bool fileWrite(const String &chFile, const PoolByteArray &vData, int32 cubData);
-		Dictionary fileRead(const String &chFile, int32 cubDataToRead);
-		bool fileForget(const String &chFile);
-		bool fileDelete(const String &chFile);
-		bool fileExists(const String &chFile);
-		bool filePersisted(const String &chFile);
-		int32_t getFileSize(const String &chFile);
-		int64_t getFileTimestamp(const String &chFile);
+		bool fileWrite(const String& file, const PoolByteArray& vData, int32_t cubData);
+		Dictionary fileRead(const String& file, int32_t cubDataToRead);
+		bool fileForget(const String& file);
+		bool fileDelete(const String& file);
+		bool fileExists(const String& file);
+		bool filePersisted(const String& file);
+		int32_t getFileSize(const String& file);
+		int64_t getFileTimestamp(const String& file);
 		int32_t getFileCount();
+		Dictionary getFileNameAndSize(int file);
+		Dictionary getQuota();
+		uint32_t getSyncPlatforms(const String& file);
 		bool isCloudEnabledForAccount();
 		bool isCloudEnabledForApp();
-		void setCloudEnabledForApp(bool bEnabled);
+		void setCloudEnabledForApp(bool enabled);
 		// Screenshots //////////////////////////////
-		void hookScreenshots(bool bHook);
+		void hookScreenshots(bool hook);
 		bool isScreenshotsHooked();
 		void triggerScreenshot();
-		uint32_t writeScreenshot(const PoolByteArray &RGB, int nWidth, int nHeight);
+		uint32_t writeScreenshot(const PoolByteArray& RGB, int width, int height);
 		// Users ////////////////////////////////////
-		// uint32_t getAuthSessionTicket();
-		// void cancelAuthTicket(uint32_t hAuthTicket);
-		// int beginAuthSession(uint32_t hAuthTicket, uint64_t steamID);
-		void endAuthSession(uint64_t steamID);
+//		uint32_t getAuthSessionTicket();
+//		void cancelAuthTicket(uint32_t authTicket);
+//		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
+//		void endAuthSession(uint64_t steamID);
 		uint64_t getSteamID();
 		bool loggedOn();
 		int getPlayerSteamLevel();
 		String getUserDataFolder();
-		// void advertiseGame(const String &server_ip, int port);
+//		void advertiseGame(const String& serverIP, int port);
 		int getGameBadgeLevel(int series, bool foil);
 		// User Stats ///////////////////////////////
-		bool clearAchievement(const String &s_key);
+		bool clearAchievement(const String& name);
+		uint32_t getNumAchievements();
 		void getNumberOfCurrentPlayers();
-		bool getAchievement(const String &s_key);
-		float getStatFloat(const String &s_key);
-		int getStatInt(const String &s_key);
-		bool resetAllStats(bool bAchievementsToo = true);
+		bool getAchievement(const String& name);
+		Dictionary getAchievementAchievedPercent(const String& name);
+		float getStatFloat(const String& name);
+		int getStatInt(const String& name);
+		bool resetAllStats(bool achievementsToo=true);
 		bool requestCurrentStats();
-		bool setAchievement(const String &s_key);
-		bool setStatFloat(const String &s_key, float value);
-		bool setStatInt(const String &s_key, int value);
+		void requestGlobalAchievementPercentages();
+		bool setAchievement(const String& name);
+		bool setStatFloat(const String& name, float value);
+		bool setStatInt(const String& name, int value);
 		bool storeStats();
-		void findLeaderboard(const String &lName);
+		void findLeaderboard(const String& name);
 		String getLeaderboardName();
 		int getLeaderboardEntryCount();
-		void downloadLeaderboardEntries(int rStart, int rEnd, int type = GLOBAL);
+		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
 		void downloadLeaderboardEntriesForUsers(Array usersID);
-		void uploadLeaderboardScore(int score, bool keepBest = false);
+		void uploadLeaderboardScore(int score, bool keepBest=false);
 		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
-		bool getAchievementAndUnlockTime(const String &name, bool achieved, int unlockTime);
-		bool indicateAchievementProgress(const String &name, int curProgress, int maxProgress);
+		bool getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime);
+		bool indicateAchievementProgress(const String& name, int curProgress, int maxProgress);
 		// Utils ////////////////////////////////////
 		String getIPCountry();
 		bool isOverlayEnabled();
@@ -158,69 +162,71 @@ class Steam : public GodotScript<Reference>{
 		// Workshop /////////////////////////////////
 		int getNumSubscribedItems();
 		int getItemState(int publishedFileID);
-		bool downloadItem(int nPublishedFileID, bool bHighPriority);
-		void suspendDownloads(bool bSuspend);
+		bool downloadItem(int publishedFileID, bool highPriority);
+		void suspendDownloads(bool suspend);
 
 	protected:
 		static void _bind_methods();
 		static Steam *singleton;
-		// static void updateFriendList(int filter=9);
 
 	private:
 		bool isInitSuccess;
-		// Leaderboard
+		// Leaderboards
 		SteamLeaderboard_t leaderboard_handle;
 		Array leaderboard_entries;
 		// Authentication
-		struct TicketData{
+		struct TicketData {
 			uint32_t id;
 			uint32_t *buf;
 			uint32_t size;
 		};
-		// Vector<TicketData> tickets;
+//		Vector<TicketData> tickets;	//-> Errors with 'Vector' does not name a type
 		// Steam Callbacks //////////////////////////
-		CCallResult<Steam, LobbyCreated_t> callResultLobbyCreated;
-		void _lobby_created(LobbyCreated_t *callData);
-		CCallResult<Steam, LobbyEnter_t> callResultLobbyEntered;
-		void _lobby_joined(LobbyEnter_t *callData);
-		CCallResult<Steam, LobbyInvite_t> callResultLobbyInvite;
-		void _lobby_invite(LobbyInvite_t *callData);
-		CCallResult<Steam, GameRichPresenceJoinRequested_t> callResultJoinRequest;
-		void _join_requested(GameRichPresenceJoinRequested_t *callData);
-		CCallResult<Steam, GameOverlayActivated_t> callResultOverlayActivated;
-		void _overlay_toggled(GameOverlayActivated_t *callData);
-		CCallResult<Steam, LowBatteryPower_t> callResultLowPower;
-		void _low_power(LowBatteryPower_t *callData);
-		CCallResult<Steam, AvatarImageLoaded_t> callResultImageLoaded;
-		void _avatar_loaded(AvatarImageLoaded_t *callData);
-		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
-		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
-		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
-		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
-		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
-		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
-		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
-		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
-		CCallResult<Steam, SteamServersConnected_t> callResultServerConnected;
-		void _server_connected(SteamServersConnected_t *callData);
-		CCallResult<Steam, SteamServersDisconnected_t> callResultServerDisconnected;
-		void _server_disconnected(SteamServersDisconnected_t *callData);
-		CCallResult<Steam, AppProofOfPurchaseKeyResponse_t> callResultKeyRequest;
-		void _request_proofofpurchase(AppProofOfPurchaseKeyResponse_t *callData);
-		CCallResult<Steam, DlcInstalled_t> callResultDLCInstall;
-		void  _dlc_installed(DlcInstalled_t *callData);
-		CCallResult<Steam, GetAuthSessionTicketResponse_t> callResultGetAuth;
-		void _get_auth_session_ticket_response(GetAuthSessionTicketResponse_t *callData);
-		CCallResult<Steam, ValidateAuthTicketResponse_t> callResultValidateAuth;
-		void _validate_auth_ticket_response(ValidateAuthTicketResponse_t *callData);
-		CCallResult<Steam, ScreenshotReady_t> callResultScreenshotReady;
-		void _screenshot_ready(ScreenshotReady_t *callData);
-
+//		CCallResult<Steam, LobbyCreated_t> callCreatedLobby;
+//		void _lobby_created(LobbyCreated_t *callData);
+//		CCallResult<Steam, LobbyEnter_t> callEnteredLobby;
+//		void _lobby_joined(LobbyEnter_t *callData);
+//		CCallResult<Steam, LobbyInvite_t> callInviteLobby;
+//		void _lobby_invite(LobbyInvite_t *callData);
+//		CCallResult<Steam, GameRichPresenceJoinRequested_t> callJoinRequested;
+//		void _join_requested(GameRichPresenceJoinRequested_t *callData);
+//		CCallResult<Steam, GameOverlayActivated_t> callOverlayActivated;
+//		void _overlay_toggled(GameOverlayActivated_t *callData);
+//		CCallResult<Steam, LowBatteryPower_t> callLowPower;
+//		void _low_power(LowBatteryPower_t *callData);
+//		CCallResult<Steam, AvatarImageLoaded_t> callImageLoaded;
+//		void _avatar_loaded(AvatarImageLoaded_t *callData);
+//		CCallResult<Steam, SteamServersConnected_t> callServerConnected;
+//		void _server_connected(SteamServersConnected_t *callData);
+//		CCallResult<Steam, SteamServersDisconnected_t> callServerDisconnected;
+//		void _server_disconnected(SteamServersDisconnected_t *callData);
+//		CCallResult<Steam, DlcInstalled_t> callInstallDLC;
+//		void _dlc_installed(DlcInstalled_t *callData);
+//		CCallResult<Steam, GetAuthSessionTicketResponse_t> callAuthResponse;
+//		void _get_auth_session_ticket_response(GetAuthSessionTicketResponse_t *callData);
+//		CCallResult<Steam, ValidateAuthTicketResponse_t> callAuthValidation;
+//		void _validate_auth_ticket_response(ValidateAuthTicketResponse_t *callData);
+//		CCallResult<Steam, ScreenshotReady_t> callReadyScreenshot;
+//		void _screenshot_ready(ScreenshotReady_t *callData);
+//		CCallResult<Steam, UserStatsReceived_t> callUserStatsReceived;
+//		void _user_stats_received(UserStatsReceived_t *callData);
+//		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
+//		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
+//		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
+//		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+//		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+//		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+//		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
+//		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
+//		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
+//		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
+		// Run callbacks
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();
 		}
 
 	public:
+		// Register methods /////////////////////////
 		static void _register_methods(){
 			register_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
 			register_method("steamInit", &Steam::steamInit);
@@ -230,7 +236,6 @@ class Steam : public GodotScript<Reference>{
 			register_method("hasOtherApp", &Steam::hasOtherApp);
 			register_method("getDLCCount", &Steam::getDLCCount);
 			register_method("isDLCInstalled", &Steam::isDLCInstalled);
-			register_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
 			register_method("isAppInstalled", &Steam::isAppInstalled);
 			register_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
 			register_method("isVACBanned", &Steam::isVACBanned);
@@ -284,6 +289,9 @@ class Steam : public GodotScript<Reference>{
 			register_method("getFileSize", &Steam::getFileSize);
 			register_method("getFileTimestamp", &Steam::getFileTimestamp);
 			register_method("getFileCount", &Steam::getFileCount);
+			register_method("getFileNameAndSize", &Steam::getFileNameAndSize);
+			register_method("getQuota", &Steam::getQuota);
+			register_method("getSyncPlatforms", &Steam::getSyncPlatforms);
 			register_method("isCloudEnabledForAccount", &Steam::isCloudEnabledForAccount);
 			register_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
 			register_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
@@ -293,24 +301,27 @@ class Steam : public GodotScript<Reference>{
 			register_method("triggerScreenshot", &Steam::triggerScreenshot);
 			register_method("writeScreenshot", &Steam::writeScreenshot);
 			// User Bind Methods ////////////////////////
-			// register_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
-			// register_method("cancelAuthTicket", &Steam::cancelAuthTicket);
-			// register_method("beginAuthSession", &Steam::beginAuthSession);
-			register_method("endAuthSession", &Steam::endAuthSession);
+//			register_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
+//			register_method("cancelAuthTicket", &Steam::cancelAuthTicket);
+//			register_method("beginAuthSession", &Steam::beginAuthSession);
+//			register_method("endAuthSession", &Steam::endAuthSession);
 			register_method("getSteamID", &Steam::getSteamID);
 			register_method("loggedOn", &Steam::loggedOn);
 			register_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
 			register_method("getUserDataFolder", &Steam::getUserDataFolder);
-			// register_method("advertiseGame", &Steam::advertiseGame);
+//			register_method("advertiseGame", &Steam::advertiseGame);
 			register_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
 			// User Stats Bind Methods //////////////////
 			register_method("clearAchievement", &Steam::clearAchievement);
 			register_method("getAchievement", &Steam::getAchievement);
+			register_method("getAchievementAchievedPercent", &Steam::getAchievementAchievedPercent);
+			register_method("getNumAchievements", &Steam::getNumAchievements);
 			register_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 			register_method("getStatFloat", &Steam::getStatFloat);
 			register_method("getStatInt", &Steam::getStatInt);
 			register_method("resetAllStats", &Steam::resetAllStats);
 			register_method("requestCurrentStats", &Steam::requestCurrentStats);
+			register_method("requestGlobalAchievementPercentages", &Steam::requestGlobalAchievementPercentages);
 			register_method("setAchievement", &Steam::setAchievement);
 			register_method("setStatFloat", &Steam::setStatFloat);
 			register_method("setStatInt", &Steam::setStatInt);
@@ -341,7 +352,6 @@ class Steam : public GodotScript<Reference>{
 			register_method("getItemState", &Steam::getItemState);
 			register_method("downloadItem", &Steam::downloadItem);
 			register_method("suspendDownloads", &Steam::suspendDownloads);
-
 			// Signals //////////////////////////////////
 			Dictionary args;
 
@@ -351,7 +361,6 @@ class Steam : public GodotScript<Reference>{
 			args.clear();
 
 			args["size"] = Variant::INT;
-			args["avatar"] = Variant::OBJECT;  // Should pass an image
 			register_signal<Steam>("avatar_loaded", args);
 			args.clear();
 
@@ -360,7 +369,8 @@ class Steam : public GodotScript<Reference>{
 			register_signal<Steam>("number_of_current_players", args);
 			args.clear();
 
-			args["SteamLeaderboard"] = Variant::OBJECT;
+			args["leaderboard"] = Variant::INT;
+			args["found"] = Variant::INT;
 			register_signal<Steam>("leaderboard_loaded", args);
 			args.clear();
 
@@ -404,12 +414,6 @@ class Steam : public GodotScript<Reference>{
 			args.clear();
 
 			args["app"] = Variant::INT;
-			args["length"] = Variant::INT;
-			args["key"] = Variant::STRING;
-			register_signal<Steam>("request_proofofpurchase", args);
-			args.clear();
-
-			args["app"] = Variant::INT;
 			register_signal<Steam>("dlc_installed", args);
 			args.clear();
 
@@ -427,6 +431,17 @@ class Steam : public GodotScript<Reference>{
 			args["screenshot_handle"] = Variant::INT;
 			args["result"] = Variant::INT;
 			register_signal<Steam>("screenshot_ready", args);
+			args.clear();
+
+			args["gameID"] = Variant::INT;
+			args["result"] = Variant::INT;
+			args["userID"] = Variant::INT;
+			register_signal<Steam>("user_stats_received", args);
+			args.clear();
+
+			args["gameID"] = Variant::INT;
+			args["result"] = Variant::INT;
+			register_signal<Steam>("global_achievement_percentages_ready", args);
 			args.clear();
 		}
 };

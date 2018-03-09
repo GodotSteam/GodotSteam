@@ -2,8 +2,7 @@
 
 import os, sys, platform
 #################################################
-# Project name can be changed
-# Using GodotSteam
+# Project name can be changed, using GodotSteam
 project_name = "godotsteam"
 # Set up the environment
 env = Environment()
@@ -26,10 +25,12 @@ target = ARGUMENTS.get('target', 'debug')
 if ARGUMENTS.get('use_llvm', 'no') == 'yes':
 	env['CXX'] = 'clang++'
 # Local dependency paths, adapt them to your setup
-cpp_bindings = ARGUMENTS.get('cpp_bindings', 'cpp_bindings')
-godot_headers = ARGUMENTS.get('headers', 'godot_headers')
-result_path = "bin"
-result_name = "godotsteam"
+cpp_bindings = ARGUMENTS.get('cpp_bindings', '../cpp_bindings')
+godot_headers = ARGUMENTS.get('headers', '../godot_headers')
+result_path = "bin/"
+result_name = project_name
+steam_lib_path = "include/sdk/redistributable_bin"
+steam_lib = "steam_api"
 # Add all files that have a .cpp extension from the path
 def add_sources(sources, dir, extension):
 		for f in os.listdir(dir):
@@ -40,6 +41,9 @@ if target_platform == 'linux' or target_platform == 'x11':
 	result_name += '.linux.' + target_arch
 	# Set compiler variables
 	env['CXX']='gcc-5'
+	# If using Clang
+	if ARGUMENTS.get('use_llvm', 'no') == 'yes':
+		env['CXX'] = 'clang++'
 	env.Append(CCFLAGS = [ '-fPIC', '-g', '-O3', '-std=c++14' ])
 	env.Append(LINKFLAGS = [ '-Wl,-R,\'$$ORIGIN\'' ])
 	# If 32-bit
@@ -47,13 +51,15 @@ if target_platform == 'linux' or target_platform == 'x11':
 		env.Append(CCFLAGS = [ '-m32' ])
 		env.Append(LINKFLAGS = [ '-m32' ])
 		# Set correct Steam library
-		env.Append(LIBPATH=["include/sdk/redistributable_bin/linux32"])
+		steam_lib_path += "/linux32"
 	# If 64-bit
 	elif target_arch == '64':
 		env.Append(CCFLAGS = [ '-m64' ])
 		env.Append(LINKFLAGS = [ '-m64' ])
 		# Set correct Steam library
-		env.Append(LIBPATH=["include/sdk/redistributable_bin/linux64"])
+		steam_lib_path += "/linux64"
+	# Attach the CPP bindings lib
+	env.Append(LIBS = [ 'libcpp_bindings.' + target_platform + '.' + target_arch + '.a' ])
 # If platform is Windows
 if target_platform == 'windows':
 	result_name += '.windows.' + target_arch
@@ -76,33 +82,30 @@ if target_platform == 'windows':
 		env.Append(CCFLAGS = [ '-g', '-O3', '-std=c++14', '-Wwrite-strings' ])
 		env.Append(LINKFLAGS = [ '--static', '-Wl,--no-undefined', '-static-libgcc', '-static-libstdc++' ])
 	# Set correct Steam library
-	steamlib = "steam_api.lib"
-	steamlib_path = "include/sdk/redistributable_bin"
+	steam_lib = "steam_api.lib"
 	# If using 64-bit
 	if target_arch == "64":
 		steamlib = "steam_api64.lib"
-		steamlib_path = "include/sdk/redistributable_bin/win64"
-	# Mostly VisualStudio
-	if env["CC"] == "cl":
-		env.Append(LINKFLAGS=[ steamlib ])
-	# Mostly GCC
-	else:
-		env.Append(LIBS=[ steamlib ])
-	# Finally add the Steam lib path
-	env.Append(LIBPATH=[ steamlib_path ])
+		steam_lib_path += "/win64"
+		# Mostly VisualStudio
+		if env["CC"] == "cl":
+			env.Append(LINKFLAGS=[ steamlib ])
 # If platform is OSX
 if target_platform == 'osx':
 	result_name += '.osx.' + target_arch + '.dylib'
+	# If using Clang
+	if ARGUMENTS.get('use_llvm', 'no') == 'yes':
+		env['CXX'] = 'clang++'
 	# Set compiler variables
 	env.Append(CCFLAGS = [ '-g','-O3', '-std=c++14', '-arch', 'x86_64' ])
 	env.Append(LINKFLAGS = [ '-arch', 'x86_64', '-framework', 'Cocoa', '-Wl,-undefined,dynamic_lookup' ])
 	env.Append(RPATH=env.Literal("\\$$ORIGIN"))
 	# Set correct Steam library
-	env.Append(LIBPATH=["../include/sdk/redistributable_bin/osx32"])
+	steam_lib_path += "/osx32"
 # Append the last paths
 env.Append(CPPPATH = [ '.', 'src', 'include', godot_headers, cpp_bindings + '/include', cpp_bindings + '/include/core', 'include/sdk/public' ])
-env.Append(LIBS = [ "steam_api" ])
-env.Append(LIBPATH = [ cpp_bindings + '/include', cpp_bindings + '/bin', 'lib' ])
+env.Append(LIBS = [ steam_lib ])
+env.Append(LIBPATH = [ cpp_bindings + '/include', cpp_bindings + '/bin', 'lib', steam_lib_path ])
 # Finally add the CPP sources
 sources = []
 add_sources(sources, 'src', 'cpp')
