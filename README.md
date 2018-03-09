@@ -115,7 +115,7 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 	````
 		scons platform=<your platform>
 	````
-		- You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.
+	- You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.
 - Copy the resulting file into your game project folder and matching Steam API file; preferably the root folder.
 	- For Windows, you want godotsteam.windows.<your arch>.dll and steam_api.dll or steam_api64.dll.
 	- For Linux, you want libgodotsteam.linux.<your arch>.so and libsteam_api.so.
@@ -130,10 +130,10 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 	reloadable=true
 
 	[entry]
-	_(read below)_
+	(read below)
 
 	[dependencies]
-	_(read below)_
+	(read below)
 	````
 	- If using Windows enter either of these pairs (do not put both 32 and 64 lines unless including all files):
 	````
