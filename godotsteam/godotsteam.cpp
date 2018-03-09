@@ -614,6 +614,13 @@ void Steam::setCloudEnabledForApp(bool bEnabled){
 /////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
+// Adds a screenshot to the user's Steam screenshot library from disk
+uint32_t Steam::addScreenshotToLibrary(const String& chFilename, const String& chThumbnailFilename, int nWidth, int nHeight){
+	if(SteamScreenshots() == NULL){
+		return 0;
+	}
+	return SteamScreenshots()->AddScreenshotToLibrary(chFilename.utf8().get_data(), chThumbnailFilename.utf8().get_data(), nWidth, nHeight);
+}
 // Toggles whether the overlay handles screenshots
 void Steam::hookScreenshots(bool bHook){
 	if(SteamScreenshots() == NULL){
@@ -627,6 +634,14 @@ bool Steam::isScreenshotsHooked(){
 		return false;
 	}
 	return SteamScreenshots()->IsScreenshotsHooked();
+}
+// Sets optional metadata about a screenshot's location
+bool Steam::setLocation(uint32_t hScreenshot, const String& chLocation){
+	if(SteamScreenshots() == NULL){
+		return false;
+	}
+	ScreenshotHandle handle = (ScreenshotHandle)hScreenshot;
+	return SteamScreenshots()->SetLocation(handle, chLocation.utf8().get_data());
 }
 // Causes Steam overlay to take a screenshot
 void Steam::triggerScreenshot(){
@@ -1292,8 +1307,10 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
 	ClassDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
 	// Screenshoot Bind Methods /////////////////
+	ClassDB::bind_method("addScreenshotToLibrary", &Steam::addScreenshotToLibrary);
 	ClassDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
 	ClassDB::bind_method("isScreenshotsHooked", &Steam::isScreenshotsHooked);
+	ClassDB::bind_method("setLocation", &Steam::setLocation);
 	ClassDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	ClassDB::bind_method("writeScreenshot", &Steam::writeScreenshot);
 	// User Bind Methods ////////////////////////

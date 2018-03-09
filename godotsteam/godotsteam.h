@@ -103,8 +103,10 @@ public:
 	bool isCloudEnabledForApp();
 	void setCloudEnabledForApp(bool bEnabled);
 	// Screenshots //////////////////////////////
+	uint32_t addScreenshotToLibrary(const String& chFilename, const String& chThumbnailFilename, int nWidth, int nHeight);
 	void hookScreenshots(bool bHook);
 	bool isScreenshotsHooked();
+	bool setLocation(uint32_t hScreenshot, const String& chLocation);
 	void triggerScreenshot();
 	uint32_t writeScreenshot(const PoolByteArray& RGB, int nWidth, int nHeight);
 	// Users ////////////////////////////////////
