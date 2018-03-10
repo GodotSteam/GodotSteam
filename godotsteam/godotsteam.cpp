@@ -87,6 +87,17 @@ bool Steam::isAppInstalled(int value){
 	}
 	return SteamApps()->BIsAppInstalled((AppId_t)value);
 }
+// Checks if the user is running from a beta branch, and gets the name of the branch if they are
+String Steam::getCurrentBetaName(){
+	String ret = "";
+	if(SteamApps() != NULL){
+		char str[1024];
+		if (SteamApps()->GetCurrentBetaName(str, 1024)) {
+			ret = String(str);
+		}
+	}
+	return ret;
+}
 // Get the user's game language
 String Steam::getCurrentGameLanguage(){
 	if(SteamApps() == NULL){
@@ -1248,6 +1259,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getDLCCount", &Steam::getDLCCount);
 	ClassDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
 	ClassDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
+	ClassDB::bind_method("getCurrentBetaName", &Steam::getCurrentBetaName);
 	ClassDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
 	ClassDB::bind_method("isVACBanned", &Steam::isVACBanned);
 	ClassDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);

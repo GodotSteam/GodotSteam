@@ -44,6 +44,7 @@ public:
 	int getDLCCount();
 	bool isDLCInstalled(int value);
 	bool isAppInstalled(int value);
+	String getCurrentBetaName();
 	String getCurrentGameLanguage();
 	bool isVACBanned();
 	int getEarliestPurchaseUnixTime(int value);
