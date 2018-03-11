@@ -17,7 +17,8 @@ Current Build
 You can download pre-compiled versions _(currently v2.4.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 2.5.0 Changes**
-- Added: getFileNameAndSize, getQuota, getSyncPlatforms functions
+- Added: getFileNameAndSize, getQuota, getSyncPlatforms, getCurrentBetaName, addScreenshotToLibrary, and setLocation functions (courtesy of marcelofg55)
+- Added: Steam controller functionality (courtesy of marcelofg55)
 - Changed: small corrections with Steam ID variable
 - Fixed: small things with getQuota
 
