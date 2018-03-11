@@ -56,6 +56,25 @@ public:
 	bool isCybercafe();
 	bool isSubscribedApp(int value);
 	int getAppBuildId();
+	// Controller ///////////////////////////////
+	void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
+	uint64_t getActionSetHandle(const String& szActionSetName);
+	Dictionary getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle);
+	uint64_t getAnalogActionHandle(const String& szActionName);
+	Array getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle);
+	Array getConnectedControllers();
+	uint64_t getControllerForGamepadIndex(int nIndex);
+	uint64_t getCurrentActionSet(uint64_t controllerHandle);
+	Dictionary getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle);
+	uint64_t getDigitalActionHandle(const String& szActionName);
+	Array getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle);
+	int getGamepadIndexForController(uint64_t controllerHandle);
+	Dictionary getMotionData(uint64_t controllerHandle);
+	bool init();
+	void runFrame();
+	bool showBindingPanel(uint64_t controllerHandle);
+	bool shutdown();
+	void triggerVibration(uint64_t controllerHandle, uint16_t usLeftSpeed, uint16_t usRightSpeed);
 	// Friends //////////////////////////////////
 	int getFriendCount();
 	String getPersonaName();

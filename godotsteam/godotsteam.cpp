@@ -177,6 +177,172 @@ int Steam::getAppBuildId(){
 	return SteamApps()->GetAppBuildId();
 }
 /////////////////////////////////////////////////
+///// CONTROLLERS////////////////////////////////
+//
+// Reconfigure the controller to use the specified action set
+void Steam::activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle){
+	if(SteamController() != NULL){
+		SteamController()->ActivateActionSet((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle);
+	}
+}
+// Lookup the handle for an Action Set
+uint64_t Steam::getActionSetHandle(const String& szActionSetName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetActionSetHandle(szActionSetName.utf8().get_data());
+	}
+	return 0;
+}
+// Returns the current state of the supplied analog game action
+Dictionary Steam::getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle){
+	ControllerAnalogActionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamController() != NULL){
+		data = SteamController()->GetAnalogActionData((ControllerHandle_t)controllerHandle, (ControllerAnalogActionHandle_t)analogActionHandle);
+	}
+	d["eMode"] = data.eMode;
+	d["x"] = data.x;
+	d["y"] = data.y;
+	d["bActive"] = data.bActive;
+	return d;
+}
+// Get the handle of the specified Analog action
+uint64_t Steam::getAnalogActionHandle(const String& szActionName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetAnalogActionHandle(szActionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action
+Array Steam::getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle){
+	Array list;
+	if(SteamController() != NULL){
+		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
+		int ret = SteamController()->GetAnalogActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
+		for (int i=0; i<ret; i++){
+			list.push_back((int)out[i]);
+		}
+	}
+	return list;
+}
+// Get current controllers handles
+Array Steam::getConnectedControllers(){
+	Array list;
+	if(SteamController() != NULL){
+		ControllerHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
+		int ret = SteamController()->GetConnectedControllers(handles);
+		for (int i=0; i<ret; i++){
+			list.push_back((uint64_t)handles[i]);
+		}
+	}
+	return list;
+}
+// Returns the associated controller handle for the specified emulated gamepad
+uint64_t Steam::getControllerForGamepadIndex(int nIndex){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetControllerForGamepadIndex(nIndex);
+	}
+	return 0;
+}
+// Get the currently active action set for the specified controller
+uint64_t Steam::getCurrentActionSet(uint64_t controllerHandle){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetCurrentActionSet((ControllerHandle_t)controllerHandle);
+	}
+	return 0;
+}
+// Returns the current state of the supplied digital game action
+Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle){
+	ControllerDigitalActionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamController() != NULL){
+		data = SteamController()->GetDigitalActionData((ControllerHandle_t)controllerHandle, (ControllerDigitalActionHandle_t)digitalActionHandle);
+	}
+	d["bState"] = data.bState;
+	d["bActive"] = data.bActive;
+	return d;
+}
+// Get the handle of the specified digital action
+uint64_t Steam::getDigitalActionHandle(const String& szActionName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetDigitalActionHandle(szActionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action
+Array Steam::getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle){
+	Array list;
+	if(SteamController() != NULL){
+		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
+		int ret = SteamController()->GetDigitalActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerDigitalActionHandle_t)digitalActionHandle, out);
+		for (int i=0; i<ret; i++){
+			list.push_back((int)out[i]);
+		}
+	}
+	return list;
+}
+// Returns the associated gamepad index for the specified controller
+int Steam::getGamepadIndexForController(uint64_t controllerHandle){
+	if(SteamController() != NULL){
+		return SteamController()->GetGamepadIndexForController((ControllerHandle_t)controllerHandle);
+	}
+	return -1;
+}
+// Returns raw motion data for the specified controller
+Dictionary Steam::getMotionData(uint64_t controllerHandle){
+	ControllerMotionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamController() != NULL){
+		data = SteamController()->GetMotionData((ControllerHandle_t)controllerHandle);
+	}
+	d["rotQuatX"] = data.rotQuatX;
+	d["rotQuatY"] = data.rotQuatY;
+	d["rotQuatZ"] = data.rotQuatZ;
+	d["rotQuatW"] = data.rotQuatW;
+	d["posAccelX"] = data.posAccelX;
+	d["posAccelY"] = data.posAccelY;
+	d["posAccelZ"] = data.posAccelZ;
+	d["rotVelX"] = data.rotVelX;
+	d["rotVelY"] = data.rotVelY;
+	d["rotVelZ"] = data.rotVelZ;
+	return d;
+}
+// Start SteamControllers interface
+bool Steam::init(){
+	if(SteamController() != NULL){
+		return SteamController()->Init();
+	}
+	return false;
+}
+// Syncronize controllers
+void Steam::runFrame(){
+	if(SteamController() != NULL){
+		SteamController()->RunFrame();
+	}
+}
+// Invokes the Steam overlay and brings up the binding screen
+bool Steam::showBindingPanel(uint64_t controllerHandle){
+	if(SteamController() != NULL){
+		return SteamController()->ShowBindingPanel((ControllerHandle_t)controllerHandle);
+	}
+	return false;
+}
+// Stop SteamControllers interface
+bool Steam::shutdown(){
+	if(SteamController() != NULL){
+		return SteamController()->Shutdown();
+	}
+	return false;
+}
+// Trigger a vibration event on supported controllers
+void Steam::triggerVibration(uint64_t controllerHandle, uint16_t usLeftSpeed, uint16_t usRightSpeed){
+	if(SteamController() != NULL){
+		SteamController()->TriggerVibration((ControllerHandle_t)controllerHandle, (unsigned short)usLeftSpeed, (unsigned short)usRightSpeed);
+	}
+}
+/////////////////////////////////////////////////
 ///// FRIENDS ///////////////////////////////////
 //
 // Get number of friends user has
@@ -1271,6 +1437,24 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isCybercafe", &Steam::isCybercafe);
 	ClassDB::bind_method("isSubscribedApp", &Steam::isSubscribedApp);
 	ClassDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
+	// Controllers Bind Methods /////////////////
+	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
+	ClassDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
+	ClassDB::bind_method("getAnalogActionData", &Steam::getAnalogActionData);
+	ClassDB::bind_method("getAnalogActionHandle", &Steam::getAnalogActionHandle);
+	ClassDB::bind_method("getAnalogActionOrigins", &Steam::getAnalogActionOrigins);
+	ClassDB::bind_method("getConnectedControllers", &Steam::getConnectedControllers);
+	ClassDB::bind_method("getControllerForGamepadIndex", &Steam::getControllerForGamepadIndex);
+	ClassDB::bind_method("getCurrentActionSet", &Steam::getCurrentActionSet);
+	ClassDB::bind_method("getDigitalActionData", &Steam::getDigitalActionData);
+	ClassDB::bind_method("getDigitalActionHandle", &Steam::getDigitalActionHandle);
+	ClassDB::bind_method("getDigitalActionOrigins", &Steam::getDigitalActionOrigins);
+	ClassDB::bind_method("getMotionData", &Steam::getMotionData);
+	ClassDB::bind_method("init", &Steam::init);
+	ClassDB::bind_method("runFrame", &Steam::runFrame);
+	ClassDB::bind_method("showBindingPanel", &Steam::showBindingPanel);
+	ClassDB::bind_method("shutdown", &Steam::shutdown);
+	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
 	// Friends Bind Methods /////////////////////
 	ClassDB::bind_method("getFriendCount", &Steam::getFriendCount);
 	ClassDB::bind_method("getPersonaName", &Steam::getPersonaName);
