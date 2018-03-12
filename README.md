@@ -19,6 +19,8 @@ You can download pre-compiled versions _(currently v2.5.0)_ of this repo here: h
 **Version 2.6.0 Changes**
 - Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
 - Added: Steam controller functionality (courtesy of marcelofg55)
+- Added: more workshop functionality
+- Changed: various small maintenance changes
 
 **Version 2.5.0 Changes**
 - Added: getFileNameAndSize, getQuota, and getSyncPlatforms functions (courtesy of marcelofg55)
