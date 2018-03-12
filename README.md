@@ -22,11 +22,6 @@ You can download pre-compiled versions _(currently v2.5.0)_ of this repo here: h
 - Added: more workshop functionality
 - Changed: various small maintenance changes
 
-**Version 2.5.0 Changes**
-- Added: getFileNameAndSize, getQuota, and getSyncPlatforms functions (courtesy of marcelofg55)
-- Changed: small corrections with Steam ID variable
-- Fixed: small things with getQuota
-
 Known Issues
 ----------
 - User avatar functions do not work due to changes in Godot's image class
