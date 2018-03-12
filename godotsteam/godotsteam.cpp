@@ -1315,7 +1315,7 @@ Array Steam::getLeaderboardEntries(){
 	return leaderboard_entries;
 }
 // Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).
-bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t* unlockTime){
+bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
@@ -1430,10 +1430,10 @@ int Steam::getItemState(int publishedFileID){
 	return SteamUGC()->GetItemState(fileID);
 }
 // Gets the progress of an item update.
-int Steam::getItemUpdateProgress(uint64_t updateHandle, uint64_t *bytesProcessed, uint64_t* bytesTotal){
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->GetItemUpdateProgress(handle, bytesProcessed, bytesTotal);
-}
+//int Steam::getItemUpdateProgress(uint64_t updateHandle, uint64_t *bytesProcessed, uint64_t* bytesTotal){
+//	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
+//	return SteamUGC()->GetItemUpdateProgress(handle, (uint64*)&bytesProcessed, bytesTotal);
+//}
 //
 void Steam::createItem(AppId_t appID, int fileType){
 	if(SteamUGC() == NULL){
@@ -1598,7 +1598,7 @@ void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
 //	}
 //	int numItems = SteamUGC()->GetNumSubscribedItems();
 //	// Need array for list of PublishedFileId_t
-//	return SteamUGC()->GetSubscribedItems(subscribedItems, numItems);
+//	return SteamUGC()->GetSubscribedItems(items, numItems);
 //}
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
 //bool Steam::getItemInstallInfo(int publishedFileID, uint64_t *sizeOnDisk, OUT_STRING_COUNT(folderSize) String *folder, uint32_t folderSize, uint32_t *timeStamp){
@@ -1609,13 +1609,13 @@ void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
 //	return SteamUGC()->GetItemInstallInfo(fileID, sizeOnDisk, folder, folderSize, timeStamp);
 //}
 // Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
-bool Steam::getItemDownloadInfo(int publishedFileID, uint64_t *bytesDownloaded, uint64_t *bytesTotal){
-	if(SteamUGC() == NULL){
-		return false;
-	}
-	PublishedFileId_t fileID = int(publishedFileID);
-	return SteamUGC()->GetItemDownloadInfo(fileID, bytesDownloaded, bytesTotal);
-}
+//bool Steam::getItemDownloadInfo(int publishedFileID, uint64_t *bytesDownloaded, uint64_t *bytesTotal){
+//	if(SteamUGC() == NULL){
+//		return false;
+//	}
+//	PublishedFileId_t fileID = int(publishedFileID);
+//	return SteamUGC()->GetItemDownloadInfo(fileID, bytesDownloaded, bytesTotal);
+//}
 /////////////////////////////////////////////////
 ///// BIND METHODS //////////////////////////////
 //
@@ -1765,7 +1765,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
 	ClassDB::bind_method("startItemUpdate", &Steam::startItemUpdate);
 	ClassDB::bind_method("getItemState", &Steam::getItemState);
-	ClassDB::bind_method("getItemUpdateProgress", &Steam::getItemUpdateProgress);
+//	ClassDB::bind_method("getItemUpdateProgress", &Steam::getItemUpdateProgress);
 	ClassDB::bind_method("createItem", &Steam::createItem);
 	ClassDB::bind_method("setItemTitle", &Steam::setItemTitle);
 	ClassDB::bind_method("setItemDescription", &Steam::setItemDescription);
@@ -1778,7 +1778,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("submitItemUpdate", &Steam::submitItemUpdate);
 //	ClassDB::bind_method("getSubscribedItems", &Steam::getSubscribedItems);
 //	ClassDB::bind_method("getItemInstallInfo", &Steam::getItemInstallInfo);
-	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
+//	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size")));

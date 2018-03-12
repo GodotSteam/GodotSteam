@@ -167,7 +167,7 @@ public:
 	void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 	uint64_t getLeaderboardHandle();
 	Array getLeaderboardEntries();
-	bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t* unlockTime);
+	bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 	bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 	// Utils ////////////////////////////////////
 	String getIPCountry();
@@ -186,7 +186,7 @@ public:
 	void suspendDownloads(bool suspend);
 	uint64_t startItemUpdate(AppId_t appID, int fileId);
 	int getItemState(int publishedFileID);
-	int getItemUpdateProgress(uint64_t handle, uint64_t *bytesProcessed, uint64_t* bytesTotal);
+//	int getItemUpdateProgress(uint64_t handle, uint64_t *bytesProcessed, uint64_t* bytesTotal);
 	void createItem(AppId_t appID, int fileType);
 	bool setItemTitle(uint64_t updateHandle, const String& title);
 	bool setItemDescription(uint64_t updateHandle, const String& description);
@@ -199,7 +199,7 @@ public:
 	void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
 //	Array getSubscribedItems();
 //	bool getItemInstallInfo(int fileID, uint64_t *sizeOnDisk, char *folder, uint32_t folderSize, uint32_t *timeStamp);
-	bool getItemDownloadInfo(int fileID, uint64_t *bytesDownloaded, uint64_t *bytesTotal);
+//	bool getItemDownloadInfo(int fileID, uint64_t *bytesDownloaded, uint64_t *bytesTotal);
 
 protected:
 	static void _bind_methods();
