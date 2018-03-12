@@ -61,6 +61,7 @@ public:
 	int getAppBuildId();
 	// Controller ///////////////////////////////
 	void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
+<<<<<<< HEAD
 	uint64_t getActionSetHandle(const String& actionSetName);
 	Dictionary getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle);
 	uint64_t getAnalogActionHandle(const String& actionName);
@@ -70,6 +71,17 @@ public:
 	uint64_t getCurrentActionSet(uint64_t controllerHandle);
 	Dictionary getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle);
 	uint64_t getDigitalActionHandle(const String& actionName);
+=======
+	uint64_t getActionSetHandle(const String& szActionSetName);
+	Dictionary getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle);
+	uint64_t getAnalogActionHandle(const String& szActionName);
+	Array getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle);
+	Array getConnectedControllers();
+	uint64_t getControllerForGamepadIndex(int nIndex);
+	uint64_t getCurrentActionSet(uint64_t controllerHandle);
+	Dictionary getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle);
+	uint64_t getDigitalActionHandle(const String& szActionName);
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 	Array getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle);
 	int getGamepadIndexForController(uint64_t controllerHandle);
 	Dictionary getMotionData(uint64_t controllerHandle);
@@ -77,7 +89,11 @@ public:
 	void runFrame();
 	bool showBindingPanel(uint64_t controllerHandle);
 	bool shutdown();
+<<<<<<< HEAD
 	void triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed);
+=======
+	void triggerVibration(uint64_t controllerHandle, uint16_t usLeftSpeed, uint16_t usRightSpeed);
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 	// Friends //////////////////////////////////
 	int getFriendCount();
 	String getPersonaName();

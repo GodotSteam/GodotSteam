@@ -14,10 +14,14 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v2.4.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.5.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+
+**Version 2.6.0 Changes**
+- Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
+- Added: Steam controller functionality (courtesy of marcelofg55)
 
 **Version 2.5.0 Changes**
-- Added: getFileNameAndSize, getQuota, getSyncPlatforms functions
+- Added: getFileNameAndSize, getQuota, and getSyncPlatforms functions (courtesy of marcelofg55)
 - Changed: small corrections with Steam ID variable
 - Fixed: small things with getQuota
 

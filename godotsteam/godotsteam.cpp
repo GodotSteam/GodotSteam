@@ -87,7 +87,11 @@ bool Steam::isAppInstalled(int value){
 	}
 	return SteamApps()->BIsAppInstalled((AppId_t)value);
 }
+<<<<<<< HEAD
 // Checks if the user is running from a beta branch, and gets the name of the branch if they are.
+=======
+// Checks if the user is running from a beta branch, and gets the name of the branch if they are
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 String Steam::getCurrentBetaName(){
 	String ret = "";
 	if(SteamApps() != NULL){
@@ -98,7 +102,11 @@ String Steam::getCurrentBetaName(){
 	}
 	return ret;
 }
+<<<<<<< HEAD
 // Get the user's game language.
+=======
+// Get the user's game language
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 String Steam::getCurrentGameLanguage(){
 	if(SteamApps() == NULL){
 		return "None";
@@ -179,12 +187,17 @@ int Steam::getAppBuildId(){
 /////////////////////////////////////////////////
 ///// CONTROLLERS////////////////////////////////
 //
+<<<<<<< HEAD
 // Reconfigure the controller to use the specified action set.
+=======
+// Reconfigure the controller to use the specified action set
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 void Steam::activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle){
 	if(SteamController() != NULL){
 		SteamController()->ActivateActionSet((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle);
 	}
 }
+<<<<<<< HEAD
 // Lookup the handle for an Action Set.
 uint64_t Steam::getActionSetHandle(const String& actionSetName){
 	if(SteamController() != NULL){
@@ -193,6 +206,16 @@ uint64_t Steam::getActionSetHandle(const String& actionSetName){
 	return 0;
 }
 // Returns the current state of the supplied analog game action.
+=======
+// Lookup the handle for an Action Set
+uint64_t Steam::getActionSetHandle(const String& szActionSetName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetActionSetHandle(szActionSetName.utf8().get_data());
+	}
+	return 0;
+}
+// Returns the current state of the supplied analog game action
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 Dictionary Steam::getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle){
 	ControllerAnalogActionData_t data;
 	Dictionary d;
@@ -206,6 +229,7 @@ Dictionary Steam::getAnalogActionData(uint64_t controllerHandle, uint64_t analog
 	d["bActive"] = data.bActive;
 	return d;
 }
+<<<<<<< HEAD
 // Get the handle of the specified Analog action.
 uint64_t Steam::getAnalogActionHandle(const String& actionName){
 	if(SteamController() != NULL){
@@ -214,29 +238,52 @@ uint64_t Steam::getAnalogActionHandle(const String& actionName){
 	return 0;
 }
 // Get the origin(s) for an analog action within an action.
+=======
+// Get the handle of the specified Analog action
+uint64_t Steam::getAnalogActionHandle(const String& szActionName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetAnalogActionHandle(szActionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 Array Steam::getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle){
 	Array list;
 	if(SteamController() != NULL){
 		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
 		int ret = SteamController()->GetAnalogActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
+<<<<<<< HEAD
 		for (int i = 0; i < ret; i++){
+=======
+		for (int i=0; i<ret; i++){
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 			list.push_back((int)out[i]);
 		}
 	}
 	return list;
 }
+<<<<<<< HEAD
 // Get current controllers handles.
+=======
+// Get current controllers handles
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 Array Steam::getConnectedControllers(){
 	Array list;
 	if(SteamController() != NULL){
 		ControllerHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
 		int ret = SteamController()->GetConnectedControllers(handles);
+<<<<<<< HEAD
 		for (int i = 0; i < ret; i++){
+=======
+		for (int i=0; i<ret; i++){
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 			list.push_back((uint64_t)handles[i]);
 		}
 	}
 	return list;
 }
+<<<<<<< HEAD
 // Returns the associated controller handle for the specified emulated gamepad.
 uint64_t Steam::getControllerForGamepadIndex(int index){
 	if(SteamController() != NULL){
@@ -245,13 +292,27 @@ uint64_t Steam::getControllerForGamepadIndex(int index){
 	return 0;
 }
 // Get the currently active action set for the specified controller.
+=======
+// Returns the associated controller handle for the specified emulated gamepad
+uint64_t Steam::getControllerForGamepadIndex(int nIndex){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetControllerForGamepadIndex(nIndex);
+	}
+	return 0;
+}
+// Get the currently active action set for the specified controller
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 uint64_t Steam::getCurrentActionSet(uint64_t controllerHandle){
 	if(SteamController() != NULL){
 		return (uint64_t)SteamController()->GetCurrentActionSet((ControllerHandle_t)controllerHandle);
 	}
 	return 0;
 }
+<<<<<<< HEAD
 // Returns the current state of the supplied digital game action.
+=======
+// Returns the current state of the supplied digital game action
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle){
 	ControllerDigitalActionData_t data;
 	Dictionary d;
@@ -263,6 +324,7 @@ Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digit
 	d["bActive"] = data.bActive;
 	return d;
 }
+<<<<<<< HEAD
 // Get the handle of the specified digital action.
 uint64_t Steam::getDigitalActionHandle(const String& actionName){
 	if(SteamController() != NULL){
@@ -271,6 +333,16 @@ uint64_t Steam::getDigitalActionHandle(const String& actionName){
 	return 0;
 }
 // Get the origin(s) for an analog action within an action.
+=======
+// Get the handle of the specified digital action
+uint64_t Steam::getDigitalActionHandle(const String& szActionName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetDigitalActionHandle(szActionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 Array Steam::getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle){
 	Array list;
 	if(SteamController() != NULL){
@@ -282,14 +354,22 @@ Array Steam::getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionS
 	}
 	return list;
 }
+<<<<<<< HEAD
 // Returns the associated gamepad index for the specified controller.
+=======
+// Returns the associated gamepad index for the specified controller
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 int Steam::getGamepadIndexForController(uint64_t controllerHandle){
 	if(SteamController() != NULL){
 		return SteamController()->GetGamepadIndexForController((ControllerHandle_t)controllerHandle);
 	}
 	return -1;
 }
+<<<<<<< HEAD
 // Returns raw motion data for the specified controller.
+=======
+// Returns raw motion data for the specified controller
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 Dictionary Steam::getMotionData(uint64_t controllerHandle){
 	ControllerMotionData_t data;
 	Dictionary d;
@@ -309,37 +389,60 @@ Dictionary Steam::getMotionData(uint64_t controllerHandle){
 	d["rotVelZ"] = data.rotVelZ;
 	return d;
 }
+<<<<<<< HEAD
 // Start SteamControllers interface.
+=======
+// Start SteamControllers interface
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 bool Steam::init(){
 	if(SteamController() != NULL){
 		return SteamController()->Init();
 	}
 	return false;
 }
+<<<<<<< HEAD
 // Syncronize controllers.
+=======
+// Syncronize controllers
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 void Steam::runFrame(){
 	if(SteamController() != NULL){
 		SteamController()->RunFrame();
 	}
 }
+<<<<<<< HEAD
 // Invokes the Steam overlay and brings up the binding screen.
+=======
+// Invokes the Steam overlay and brings up the binding screen
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 bool Steam::showBindingPanel(uint64_t controllerHandle){
 	if(SteamController() != NULL){
 		return SteamController()->ShowBindingPanel((ControllerHandle_t)controllerHandle);
 	}
 	return false;
 }
+<<<<<<< HEAD
 // Stop SteamControllers interface.
+=======
+// Stop SteamControllers interface
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 bool Steam::shutdown(){
 	if(SteamController() != NULL){
 		return SteamController()->Shutdown();
 	}
 	return false;
 }
+<<<<<<< HEAD
 // Trigger a vibration event on supported controllers.
 void Steam::triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed){
 	if(SteamController() != NULL){
 		SteamController()->TriggerVibration((ControllerHandle_t)controllerHandle, (unsigned short)leftSpeed, (unsigned short)rightSpeed);
+=======
+// Trigger a vibration event on supported controllers
+void Steam::triggerVibration(uint64_t controllerHandle, uint16_t usLeftSpeed, uint16_t usRightSpeed){
+	if(SteamController() != NULL){
+		SteamController()->TriggerVibration((ControllerHandle_t)controllerHandle, (unsigned short)usLeftSpeed, (unsigned short)usRightSpeed);
+>>>>>>> d50ff66347b615600f38102c1398cab262c40de6
 	}
 }
 /////////////////////////////////////////////////
