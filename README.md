@@ -16,7 +16,7 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.6.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.7.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 1.7.0 Changes**
 - Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
