@@ -21,6 +21,7 @@ You can download pre-compiled versions _(currently v2.5.0)_ of this repo here: h
 - Added: Steam controller functionality (courtesy of marcelofg55)
 - Added: more workshop functionality
 - Changed: various small maintenance changes
+- Fixed: compiling error on Linux
 
 Known Issues
 ----------

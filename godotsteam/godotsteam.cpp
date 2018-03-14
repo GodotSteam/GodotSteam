@@ -1003,7 +1003,7 @@ void Steam::_workshop_item_created(CreateItemResult_t *callData, bool bIOFailure
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	bool acceptTOS = callData->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-	emit_signal("workshop_item_created", result, fileID, acceptTOS);
+	emit_signal("workshop_item_created", result, (uint64_t)fileID, acceptTOS);
 }
 // Result of a workshop item being updated.
 void Steam::_workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure){
@@ -1015,7 +1015,7 @@ void Steam::_workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOF
 void Steam::_workshop_item_installed(ItemInstalled_t* callData){
 	AppId_t appID = callData->m_unAppID;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	emit_signal("workshop_item_installed", appID, fileID);
+	emit_signal("workshop_item_installed", appID, (uint64_t)fileID);
 }
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
