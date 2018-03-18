@@ -85,11 +85,13 @@ if target_platform == 'windows':
 	steam_lib = "steam_api.lib"
 	# If using 64-bit
 	if target_arch == "64":
-		steamlib = "steam_api64.lib"
-		steam_lib_path += "/win64"
+		steam_lib = "steam_api64.lib"
+		steam_lib_path += "\win64"
 		# Mostly VisualStudio
 		if env["CC"] == "cl":
-			env.Append(LINKFLAGS=[ steamlib ])
+			env.Append(LINKFLAGS=[ steam_lib ])
+	# Attach the CPP bindings lib
+	env.Append(LIBS = [ 'cpp_bindings.' + target_platform + '.' + target_arch + '.lib' ])
 # If platform is OSX
 if target_platform == 'osx':
 	result_name += '.osx.' + target_arch + '.dylib'
