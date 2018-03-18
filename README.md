@@ -21,6 +21,7 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 - Added: godotsteam.h file
 - Changed: compile process; big thanks to **willnationsdev**
 - Changed: various parts of the CPP files
+- Fixed: issue with compiling in Windows 64bit with SConstruct file instead of VStudio
 - Removed: pre-compiled TSCN and TRES files
 
 "Quick" How-To
