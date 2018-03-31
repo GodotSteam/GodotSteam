@@ -1164,6 +1164,20 @@ Dictionary Steam::getAchievementAchievedPercent(const String& name){
 	d["percent"] = percent;
 	return d;
 }
+// Get general attributes for an achievement
+String Steam::getAchievementDisplayAttribute(const String& name, const String& key){
+	if(SteamUserStats() != NULL){
+		return SteamUserStats()->GetAchievementDisplayAttribute(name.utf8().get_data(), key.utf8().get_data());
+	}
+	return "";
+}
+// Gets the 'API name' for an achievement index
+String Steam::getAchievementName(uint32_t iAchievement){
+	if(SteamUserStats() != NULL){
+		return SteamUserStats()->GetAchievementName((uint32)iAchievement);
+	}
+	return "";
+}
 //  Get the amount of players currently playing the current game (online + offline).
 void Steam::getNumberOfCurrentPlayers(){
 	if(SteamUserStats() == NULL){
@@ -1728,6 +1742,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ClassDB::bind_method("getAchievement", &Steam::getAchievement);
 	ClassDB::bind_method("getAchievementAchievedPercent", &Steam::getAchievementAchievedPercent);
+	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "name", "key"), &Steam::getAchievementDisplayAttribute);
+	ClassDB::bind_method(D_METHOD("getAchievementName", "iAchievement"), &Steam::getAchievementName);
 	ClassDB::bind_method("getNumAchievements", &Steam::getNumAchievements);
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);
