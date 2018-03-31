@@ -16,12 +16,8 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v2.6.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.6.0 Changes**
-- Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
-- Added: Steam controller functionality (courtesy of marcelofg55)
-- Added: more workshop functionality
-- Changed: various small maintenance changes
-- Fixed: compiling error on Linux
+**Version 2.7.0 Changes**
+- Added: getAchievementDisplayAttribute and getAchievementName (courtesy of marcelofg55)
 
 Known Issues
 ----------
