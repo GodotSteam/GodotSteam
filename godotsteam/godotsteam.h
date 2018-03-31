@@ -149,6 +149,8 @@ public:
 	void getNumberOfCurrentPlayers();
 	bool getAchievement(const String& name);
 	Dictionary getAchievementAchievedPercent(const String& name);
+	String getAchievementDisplayAttribute(const String& name, const String& key);
+	String getAchievementName(uint32_t iAchievement);
 	float getStatFloat(const String& name);
 	int getStatInt(const String& name);
 	bool resetAllStats(bool achievementsToo=true);
