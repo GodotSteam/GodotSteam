@@ -992,6 +992,14 @@ void Steam::_user_stats_received(UserStatsReceived_t* callData){
 	uint64_t userID = callData->m_steamIDUser.ConvertToUint64();
 	emit_signal("user_stats_received", gameID, result, userID);
 }
+// Result of an achievement icon that has been fetched.
+void Steam::_user_achievement_icon_fetched(UserAchievementIconFetched_t* callData){
+	uint64_t gameID = callData->m_nGameID.ToUint64();
+	String achievementName = callData->m_rgchAchievementName;
+	bool achieved = callData->m_bAchieved;
+	int iconHandle = callData->m_nIconHandle;
+	emit_signal("user_achievement_icon_fetched", gameID, achievementName, achieved, iconHandle);
+}
 // Global achievements percentages are ready.
 void Steam::_global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t* callData, bool bIOFailure){
 	uint64_t gameID = callData->m_nGameID;
@@ -1143,12 +1151,17 @@ int Steam::getGameBadgeLevel(int series, bool foil){
 //
 // Clears a given achievement.
 bool Steam::clearAchievement(const String& name){
-	return SteamUserStats()->ClearAchievement(name.utf8().get_data());
+	if(SteamUserStats() != NULL){
+		return SteamUserStats()->ClearAchievement(name.utf8().get_data());
+	}
+	return false;
 }
 // Return true/false if use has given achievement.
 bool Steam::getAchievement(const String& name){
 	bool achieved = false;
-	SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	if(SteamUserStats() != NULL){
+		SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	}
 	return achieved;
 }
 // Returns the percentage of users who have unlocked the specified achievement.
@@ -1170,6 +1183,13 @@ String Steam::getAchievementDisplayAttribute(const String& name, const String& k
 		return SteamUserStats()->GetAchievementDisplayAttribute(name.utf8().get_data(), key.utf8().get_data());
 	}
 	return "";
+}
+//Gets the icon for an achievement
+int Steam::getAchievementIcon(const String& name){
+	if(SteamUserStats() != NULL){
+		return SteamUserStats()->GetAchievementIcon(name.utf8().get_data());
+	}
+	return 0;
 }
 // Gets the 'API name' for an achievement index
 String Steam::getAchievementName(uint32_t iAchievement){
@@ -1371,6 +1391,43 @@ int Steam::getAppID(){
 		return 0;
 	}
 	return SteamUtils()->GetAppID();
+}
+// Gets the image bytes from an image handle.
+Dictionary Steam::getImageRGBA(int iImage){
+	Dictionary d;
+	bool ret = false;
+	if(SteamUtils() != NULL){
+		uint32 width;
+		uint32 height;
+
+		ret = SteamUtils()->GetImageSize(iImage, &width, &height);
+		if (ret){
+			PoolByteArray data;
+
+			data.resize(width * height * 4);
+			ret = SteamUtils()->GetImageRGBA(iImage, data.write().ptr(), data.size());
+			if (ret){
+				d["buf"] = data;
+			}
+		}
+	}
+	d["ret"] = ret;
+	return d;
+}
+// Gets the size of a Steam image handle.
+Dictionary Steam::getImageSize(int iImage){
+	Dictionary d;
+	bool ret = false;
+	if(SteamUtils() != NULL){
+		uint32 width;
+		uint32 height;
+
+		ret = SteamUtils()->GetImageSize(iImage, &width, &height);
+		d["width"] = width;
+		d["height"] = height;
+	}
+	d["ret"] = ret;
+	return d;
 }
 // Return amount of time, in seconds, user has spent in this session.
 int Steam::getSecondsSinceAppActive(){
@@ -1743,6 +1800,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getAchievement", &Steam::getAchievement);
 	ClassDB::bind_method("getAchievementAchievedPercent", &Steam::getAchievementAchievedPercent);
 	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "name", "key"), &Steam::getAchievementDisplayAttribute);
+	ClassDB::bind_method(D_METHOD("getAchievementIcon", "name"), &Steam::getAchievementIcon);
 	ClassDB::bind_method(D_METHOD("getAchievementName", "iAchievement"), &Steam::getAchievementName);
 	ClassDB::bind_method("getNumAchievements", &Steam::getNumAchievements);
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
@@ -1769,6 +1827,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
 	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
 	ClassDB::bind_method("getAppID", &Steam::getAppID);
+	ClassDB::bind_method(D_METHOD("getImageRGBA", "iImage"), &Steam::getImageRGBA);
+	ClassDB::bind_method(D_METHOD("getImageSize", "iImage"), &Steam::getImageSize);
 	ClassDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
 	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
 	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
@@ -1813,6 +1873,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
+	ADD_SIGNAL(MethodInfo("user_achievement_icon_fetched", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::STRING, "achievementName"), PropertyInfo(Variant::BOOL, "achieved"), PropertyInfo(Variant::INT, "iconHandle")));
 	ADD_SIGNAL(MethodInfo("global_achievement_percentages_ready", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("workshop_item_created"));
 	ADD_SIGNAL(MethodInfo("workshop_item_updated"));
