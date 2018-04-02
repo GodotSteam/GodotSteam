@@ -150,6 +150,7 @@ public:
 	bool getAchievement(const String& name);
 	Dictionary getAchievementAchievedPercent(const String& name);
 	String getAchievementDisplayAttribute(const String& name, const String& key);
+	int getAchievementIcon(const String& name);
 	String getAchievementName(uint32_t iAchievement);
 	float getStatFloat(const String& name);
 	int getStatInt(const String& name);
@@ -176,6 +177,8 @@ public:
 	bool isOverlayEnabled();
 	String getSteamUILanguage();
 	int getAppID();
+	Dictionary getImageRGBA(int iImage);
+	Dictionary getImageSize(int iImage);
 	int getSecondsSinceAppActive();
 	void setOverlayNotificationPosition(int pos);
 	int getCurrentBatteryPower();
@@ -234,6 +237,7 @@ private:
 	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 	STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
 	STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
+	STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
 	// Callback for workshop item installing
 	STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 	// Callback for number of current players.
