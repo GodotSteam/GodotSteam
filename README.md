@@ -17,7 +17,7 @@ Current Build
 You can download pre-compiled versions _(currently v2.6.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 2.7.0 Changes**
-- Added: getAchievementDisplayAttribute and getAchievementName (courtesy of marcelofg55)
+- Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)
 
 Known Issues
 ----------
