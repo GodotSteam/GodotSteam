@@ -256,9 +256,6 @@ void Steam::getFileDetails(const String& filename){
 //	callResultFileDetails.Set(apiCall, this, &Steam::_file_details_result);
 	SteamApps()->GetFileDetails(filename.utf8().get_data());
 }
-
-//	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
-
 /////////////////////////////////////////////////
 ///// CONTROLLERS////////////////////////////////
 //
