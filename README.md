@@ -18,6 +18,8 @@ You can download pre-compiled versions _(currently v2.6.0)_ of this repo here: h
 
 **Version 2.7.0 Changes**
 - Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)
+- Added: all missing SteamApps functions
+- Changed: NULL statements for achievement functions
 
 Known Issues
 ----------
