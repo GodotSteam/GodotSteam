@@ -43,22 +43,30 @@ public:
 	bool steamInit();
 	bool isSteamRunning();
 	// Apps /////////////////////////////////////
-	bool hasOtherApp(int value);
-	int getDLCCount();
-	bool isDLCInstalled(int value);
-	bool isAppInstalled(int value);
-	String getCurrentBetaName();
-	String getCurrentGameLanguage();
-	bool isVACBanned();
-	int getEarliestPurchaseUnixTime(int value);
-	bool isSubscribedFromFreeWeekend();
-	void installDLC(int value);
-	void uninstallDLC(int value);
 	bool isSubscribed();
 	bool isLowViolence();
 	bool isCybercafe();
+	bool isVACBanned();
+	String getCurrentGameLanguage();
+	String getAvailableGameLanguages();
 	bool isSubscribedApp(int value);
+	bool isDLCInstalled(int value);
+	int getEarliestPurchaseUnixTime(int value);
+	bool isSubscribedFromFreeWeekend();
+	int getDLCCount();
+	Array getDLCDataByIndex();
+	void installDLC(int value);
+	void uninstallDLC(int value);
+	String getCurrentBetaName();
+	bool markContentCorrupt(bool missingFilesOnly);
+//	uint32_t getInstalledDepots(int appID, uint32* depots, uint32 maxDepots);
+	String getAppInstallDir(AppId_t appID);
+	bool isAppInstalled(int value);
+	uint64_t getAppOwner();
+	String getLaunchQueryParam(const String& key);
+//	bool getDLCDownloadProgress(int appID, uint64* bytesDownloaded, uint64* bytesTotal);
 	int getAppBuildId();
+	void getFileDetails(const String& filename);
 	// Controller ///////////////////////////////
 	void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
 	uint64_t getActionSetHandle(const String& actionSetName);
@@ -222,7 +230,16 @@ private:
 		uint32_t size;
 	};
 	Vector<TicketData> tickets;
-	// Steam Callbacks //////////////////////////
+	/////////////////////////////////////////////
+	// STEAM CALLBACKS //////////////////////////
+	//
+	// Apps callbacks
+	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
+	STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
+//	CCallResult<Steam, FileDetailsResult_t> callResultFileDetails;
+//	void _file_details_result(FileDetailsResult_t *callData);
+	// Friends callbacks
+
 	STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
 	STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
 	STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
@@ -232,7 +249,7 @@ private:
 	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
-	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
+
 	STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 	STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);

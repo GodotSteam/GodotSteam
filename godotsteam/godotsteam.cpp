@@ -59,60 +59,63 @@ bool Steam::isSteamRunning(void){
 /////////////////////////////////////////////////
 ///// APPS //////////////////////////////////////
 //
-// Check if the user has a given application/game.
-bool Steam::hasOtherApp(int value){
+// Checks if the active user is subscribed to the current App ID.
+bool Steam::isSubscribed(){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+	return SteamApps()->BIsSubscribed();
 }
-// Get the number of DLC the user owns for a parent application/game.
-int Steam::getDLCCount(){
+// Checks if the license owned by the user provides low violence depots.
+bool Steam::isLowViolence(){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->GetDLCCount();
+	return SteamApps()->BIsLowViolence();
 }
-// Takes AppID of DLC and checks if the user owns the DLC & if the DLC is installed.
-bool Steam::isDLCInstalled(int value){
+// Checks whether the current App ID is for Cyber Cafes.
+bool Steam::isCybercafe(){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsDlcInstalled(value);
+	return SteamApps()->BIsCybercafe();
 }
-// Check if given application/game is installed, not necessarily owned.
-bool Steam::isAppInstalled(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsAppInstalled((AppId_t)value);
-}
-// Checks if the user is running from a beta branch, and gets the name of the branch if they are.
-String Steam::getCurrentBetaName(){
-	String ret = "";
-	if(SteamApps() != NULL){
-		char str[1024];
-		if (SteamApps()->GetCurrentBetaName(str, 1024)) {
-			ret = String(str);
-		}
-	}
-	return ret;
-}
-// Get the user's game language.
-String Steam::getCurrentGameLanguage(){
-	if(SteamApps() == NULL){
-		return "None";
-	}
-	return SteamApps()->GetCurrentGameLanguage();
-}
-// Does the user have a VAC ban for this game.
+// Checks if the user has a VAC ban on their account.
 bool Steam::isVACBanned(){
 	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsVACBanned();
 }
-// Returns the Unix time of the purchase of the app.
+// Gets the current language that the user has set.
+String Steam::getCurrentGameLanguage(){
+	if(SteamApps() == NULL){
+		return "None";
+	}
+	return SteamApps()->GetCurrentGameLanguage();
+}
+// Gets a comma separated list of the languages the current app supports.
+String Steam::getAvailableGameLanguages(){
+	if(SteamApps() == NULL){
+		return "None";
+	}
+	return SteamApps()->GetAvailableGameLanguages();
+}
+// Checks if the active user is subscribed to a specified AppId.
+bool Steam::isSubscribedApp(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+}
+// Checks if the user owns a specific DLC and if the DLC is installed
+bool Steam::isDLCInstalled(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsDlcInstalled(value);
+}
+// Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).
 int Steam::getEarliestPurchaseUnixTime(int value){
 	if(SteamApps() == NULL){
 		return 0;
@@ -128,47 +131,115 @@ bool Steam::isSubscribedFromFreeWeekend(){
 	}
 	return SteamApps()->BIsSubscribedFromFreeWeekend();
 }
-// Install/Uninstall control for optional DLC.
+// Get the number of DLC the user owns for a parent application/game.
+int Steam::getDLCCount(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->GetDLCCount();
+}
+// Returns metadata for a DLC by index.
+Array Steam::getDLCDataByIndex(){
+	if(SteamApps() == NULL){
+		return Array();
+	}
+	int count = SteamApps()->GetDLCCount();
+	Array dlcData;
+	for(int i = 0; i < count; i++){
+		AppId_t appID;
+		bool available;
+		char name[128];
+		bool success = SteamApps()->BGetDLCDataByIndex(i, &appID, &available, name, 128);
+		if(success){
+			Dictionary dlc;
+			dlc['id'] = appID;
+			dlc['available'] = available;
+			dlc['name'] = name;
+			dlcData.append(dlc);
+		}
+	}
+	return dlcData;
+}
+// Allows you to install an optional DLC.
 void Steam::installDLC(int value){
 	if(SteamApps() == NULL){
 		return;
 	}
 	SteamApps()->InstallDLC((AppId_t)value);
 }
+// Allows you to uninstall an optional DLC.
 void Steam::uninstallDLC(int value){
 	if(SteamApps() == NULL){
 		return;
 	}
 	SteamApps()->UninstallDLC((AppId_t)value);
 }
-// Is subscribed lacks notes from Valve.
-bool Steam::isSubscribed(){
+// Checks if the user is running from a beta branch, and gets the name of the branch if they are.
+String Steam::getCurrentBetaName(){
+	String ret = "";
+	if(SteamApps() != NULL){
+		char str[1024];
+		if (SteamApps()->GetCurrentBetaName(str, 1024)) {
+			ret = String(str);
+		}
+	}
+	return ret;
+}
+// Allows you to force verify game content on next launch.
+bool Steam::markContentCorrupt(bool missingFilesOnly){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsSubscribed();
+	return SteamApps()->MarkContentCorrupt(missingFilesOnly);
 }
-// Presumably if Steam is set to low violence; lacks notes from Valve.
-bool Steam::isLowViolence(){
+// Gets a list of all installed depots for a given App ID in mount order.
+//uint32_t Steam::getInstalledDepots(int appID, uint32* depots, uint32 maxDepots){
+//	if(SteamApps() == NULL){
+//		return 0;
+//	}
+//	return SteamApps()->GetInstalledDepots((AppId_t)appID, (DepotId_t*)depots, maxDepots);
+//}
+// Gets the install folder for a specific AppID.
+String Steam::getAppInstallDir(AppId_t appID){
+	if(SteamApps() == NULL){
+		return "";
+	}
+	const uint32 folderBuffer = 256;
+	char *buffer = new char[folderBuffer];
+	SteamApps()->GetAppInstallDir(appID, (char*)buffer, folderBuffer);
+	String appDir = buffer;
+	delete buffer;
+	return appDir;
+}
+// Check if given application/game is installed, not necessarily owned.
+bool Steam::isAppInstalled(int value){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsLowViolence();
+	return SteamApps()->BIsAppInstalled((AppId_t)value);
 }
-// Presumably if users is a cyber cafe; lacks notes from Valve.
-bool Steam::isCybercafe(){
+// Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.
+uint64_t Steam::getAppOwner(){
 	if(SteamApps() == NULL){
-		return false;
+		return 0;
 	}
-	return SteamApps()->BIsCybercafe();
+	CSteamID cSteamID = SteamApps()->GetAppOwner();
+	return cSteamID.ConvertToUint64();
 }
-// Only use to check ownership of another game related to yours: a demo, etc.
-bool Steam::isSubscribedApp(int value){
+// Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
+String Steam::getLaunchQueryParam(const String& key){
 	if(SteamApps() == NULL){
-		return false;
+		return "";
 	}
-	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+	return SteamApps()->GetLaunchQueryParam(key.utf8().get_data());
 }
+// Gets the download progress for optional DLC.
+//bool Steam::getDLCDownloadProgress(int appID, uint64* bytesDownloaded, uint64* bytesTotal){
+//	if(SteamApps() == NULL){
+//		return false;
+//	}
+//	return SteamApps()->GetDlcDownloadProgress((AppId_t)appID, bytesDownloaded, bytesTotal);
+//}
 // Return the build ID for this app; will change based on backend updates.
 int Steam::getAppBuildId(){
 	if(SteamApps() == NULL){
@@ -176,6 +247,18 @@ int Steam::getAppBuildId(){
 	}
 	return SteamApps()->GetAppBuildId();
 }
+// Asynchronously retrieves metadata details about a specific file in the depot manifest.
+void Steam::getFileDetails(const String& filename){
+	if(SteamApps() == NULL){
+		return;
+	}
+//	SteamAPICall_t apiCall = SteamApps()->GetFileDetails(filename.utf8().get_data());
+//	callResultFileDetails.Set(apiCall, this, &Steam::_file_details_result);
+	SteamApps()->GetFileDetails(filename.utf8().get_data());
+}
+
+//	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
+
 /////////////////////////////////////////////////
 ///// CONTROLLERS////////////////////////////////
 //
@@ -837,6 +920,14 @@ uint32_t Steam::writeScreenshot(const PoolByteArray& RGB, int width, int height)
 /////////////////////////////////////////////////
 ///// SIGNALS ///////////////////////////////////
 //
+// Signal for file details acquired.
+void Steam::_file_details_result(FileDetailsResult_t* fileData){
+	uint32_t result = fileData->m_eResult;
+	uint64_t fileSize = fileData->m_ulFileSize;
+	int fileHash = fileData->m_FileSHA[20];
+	uint32_t flags = fileData->m_unFlags;
+	emit_signal("file_details_result", result, fileSize, fileHash, flags);
+}
 // Signal the lobby has been created.
 void Steam::_lobby_created(LobbyCreated_t* lobbyData){
 	int connect;
@@ -1151,18 +1242,17 @@ int Steam::getGameBadgeLevel(int series, bool foil){
 //
 // Clears a given achievement.
 bool Steam::clearAchievement(const String& name){
-	if(SteamUserStats() != NULL){
-		return SteamUserStats()->ClearAchievement(name.utf8().get_data());
+	if(SteamUserStats() == NULL){
+		return false;
 	}
-	return false;
+	return SteamUserStats()->ClearAchievement(name.utf8().get_data());
 }
 // Return true/false if use has given achievement.
 bool Steam::getAchievement(const String& name){
-	bool achieved = false;
-	if(SteamUserStats() != NULL){
-		SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	if(SteamUserStats() == NULL){
+		return false;
 	}
-	return achieved;
+	return SteamUserStats()->GetAchievement(name.utf8().get_data(), false);
 }
 // Returns the percentage of users who have unlocked the specified achievement.
 Dictionary Steam::getAchievementAchievedPercent(const String& name){
@@ -1179,24 +1269,24 @@ Dictionary Steam::getAchievementAchievedPercent(const String& name){
 }
 // Get general attributes for an achievement
 String Steam::getAchievementDisplayAttribute(const String& name, const String& key){
-	if(SteamUserStats() != NULL){
-		return SteamUserStats()->GetAchievementDisplayAttribute(name.utf8().get_data(), key.utf8().get_data());
+	if(SteamUserStats() == NULL){
+		return "";
 	}
-	return "";
+	return SteamUserStats()->GetAchievementDisplayAttribute(name.utf8().get_data(), key.utf8().get_data());
 }
 //Gets the icon for an achievement
 int Steam::getAchievementIcon(const String& name){
-	if(SteamUserStats() != NULL){
-		return SteamUserStats()->GetAchievementIcon(name.utf8().get_data());
+	if(SteamUserStats() == NULL){
+		return 0;
 	}
-	return 0;
+	return SteamUserStats()->GetAchievementIcon(name.utf8().get_data());
 }
 // Gets the 'API name' for an achievement index
 String Steam::getAchievementName(uint32_t iAchievement){
-	if(SteamUserStats() != NULL){
-		return SteamUserStats()->GetAchievementName((uint32)iAchievement);
+	if(SteamUserStats() == NULL){
+		return "";
 	}
-	return "";
+	return SteamUserStats()->GetAchievementName((uint32)iAchievement);
 }
 //  Get the amount of players currently playing the current game (online + offline).
 void Steam::getNumberOfCurrentPlayers(){
@@ -1393,19 +1483,17 @@ int Steam::getAppID(){
 	return SteamUtils()->GetAppID();
 }
 // Gets the image bytes from an image handle.
-Dictionary Steam::getImageRGBA(int iImage){
+Dictionary Steam::getImageRGBA(int image){
 	Dictionary d;
 	bool ret = false;
 	if(SteamUtils() != NULL){
 		uint32 width;
 		uint32 height;
-
-		ret = SteamUtils()->GetImageSize(iImage, &width, &height);
-		if (ret){
+		ret = SteamUtils()->GetImageSize(image, &width, &height);
+		if(ret){
 			PoolByteArray data;
-
 			data.resize(width * height * 4);
-			ret = SteamUtils()->GetImageRGBA(iImage, data.write().ptr(), data.size());
+			ret = SteamUtils()->GetImageRGBA(image, data.write().ptr(), data.size());
 			if (ret){
 				d["buf"] = data;
 			}
@@ -1415,14 +1503,13 @@ Dictionary Steam::getImageRGBA(int iImage){
 	return d;
 }
 // Gets the size of a Steam image handle.
-Dictionary Steam::getImageSize(int iImage){
+Dictionary Steam::getImageSize(int image){
 	Dictionary d;
 	bool ret = false;
 	if(SteamUtils() != NULL){
 		uint32 width;
 		uint32 height;
-
-		ret = SteamUtils()->GetImageSize(iImage, &width, &height);
+		ret = SteamUtils()->GetImageSize(image, &width, &height);
 		d["width"] = width;
 		d["height"] = height;
 	}
@@ -1696,22 +1783,30 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	// Apps Bind Methods ////////////////////////
-	ClassDB::bind_method("hasOtherApp", &Steam::hasOtherApp);
-	ClassDB::bind_method("getDLCCount", &Steam::getDLCCount);
-	ClassDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
-	ClassDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
-	ClassDB::bind_method("getCurrentBetaName", &Steam::getCurrentBetaName);
-	ClassDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
-	ClassDB::bind_method("isVACBanned", &Steam::isVACBanned);
-	ClassDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);
-	ClassDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
-	ClassDB::bind_method("installDLC", &Steam::installDLC);
-	ClassDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
 	ClassDB::bind_method("isSubscribed", &Steam::isSubscribed);
 	ClassDB::bind_method("isLowViolence", &Steam::isLowViolence);
 	ClassDB::bind_method("isCybercafe", &Steam::isCybercafe);
+	ClassDB::bind_method("isVACBanned", &Steam::isVACBanned);
+	ClassDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
+	ClassDB::bind_method("getAvailableGameLanguages", &Steam::getAvailableGameLanguages);
 	ClassDB::bind_method("isSubscribedApp", &Steam::isSubscribedApp);
+	ClassDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
+	ClassDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);
+	ClassDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
+	ClassDB::bind_method("getDLCCount", &Steam::getDLCCount);
+	ClassDB::bind_method("getDLCDataByIndex", &Steam::getDLCDataByIndex);
+	ClassDB::bind_method("installDLC", &Steam::installDLC);
+	ClassDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
+	ClassDB::bind_method("getCurrentBetaName", &Steam::getCurrentBetaName);
+	ClassDB::bind_method("markContentCorrupt", &Steam::markContentCorrupt);
+//	ClassDB::bind_method("getInstalledDepots", &Steam::getInstalledDepots);
+	ClassDB::bind_method("getAppInstallDir", &Steam::getAppInstallDir);
+	ClassDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
+	ClassDB::bind_method("getAppOwner", &Steam::getAppOwner);
+	ClassDB::bind_method("getLaunchQueryParam", &Steam::getLaunchQueryParam);
+//	ClassDB::bind_method("getDLCDownloadProgress", &Steam::getDLCDownloadProgress);
 	ClassDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
+	ClassDB::bind_method("getFileDetails", &Steam::getFileDetails);
 	// Controllers Bind Methods /////////////////
 	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
 	ClassDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
@@ -1827,8 +1922,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
 	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
 	ClassDB::bind_method("getAppID", &Steam::getAppID);
-	ClassDB::bind_method(D_METHOD("getImageRGBA", "iImage"), &Steam::getImageRGBA);
-	ClassDB::bind_method(D_METHOD("getImageSize", "iImage"), &Steam::getImageSize);
+	ClassDB::bind_method(D_METHOD("getImageRGBA", "image"), &Steam::getImageRGBA);
+	ClassDB::bind_method(D_METHOD("getImageSize", "image"), &Steam::getImageSize);
 	ClassDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
 	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
 	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
@@ -1856,6 +1951,7 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method("getItemInstallInfo", &Steam::getItemInstallInfo);
 //	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
 	// Signals //////////////////////////////////
+	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size")));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
