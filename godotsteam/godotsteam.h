@@ -43,22 +43,30 @@ public:
 	bool steamInit();
 	bool isSteamRunning();
 	// Apps /////////////////////////////////////
-	bool hasOtherApp(int value);
-	int getDLCCount();
-	bool isDLCInstalled(int value);
-	bool isAppInstalled(int value);
-	String getCurrentBetaName();
-	String getCurrentGameLanguage();
-	bool isVACBanned();
-	int getEarliestPurchaseUnixTime(int value);
-	bool isSubscribedFromFreeWeekend();
-	void installDLC(int value);
-	void uninstallDLC(int value);
 	bool isSubscribed();
 	bool isLowViolence();
 	bool isCybercafe();
+	bool isVACBanned();
+	String getCurrentGameLanguage();
+	String getAvailableGameLanguages();
 	bool isSubscribedApp(int value);
+	bool isDLCInstalled(int value);
+	int getEarliestPurchaseUnixTime(int value);
+	bool isSubscribedFromFreeWeekend();
+	int getDLCCount();
+	Array getDLCDataByIndex();
+	void installDLC(int value);
+	void uninstallDLC(int value);
+	String getCurrentBetaName();
+	bool markContentCorrupt(bool missingFilesOnly);
+//	uint32_t getInstalledDepots(int appID, uint32* depots, uint32 maxDepots);
+	String getAppInstallDir(AppId_t appID);
+	bool isAppInstalled(int value);
+	uint64_t getAppOwner();
+	String getLaunchQueryParam(const String& key);
+//	bool getDLCDownloadProgress(int appID, uint64* bytesDownloaded, uint64* bytesTotal);
 	int getAppBuildId();
+	void getFileDetails(const String& filename);
 	// Controller ///////////////////////////////
 	void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
 	uint64_t getActionSetHandle(const String& actionSetName);
@@ -149,6 +157,9 @@ public:
 	void getNumberOfCurrentPlayers();
 	bool getAchievement(const String& name);
 	Dictionary getAchievementAchievedPercent(const String& name);
+	String getAchievementDisplayAttribute(const String& name, const String& key);
+	int getAchievementIcon(const String& name);
+	String getAchievementName(uint32_t iAchievement);
 	float getStatFloat(const String& name);
 	int getStatInt(const String& name);
 	bool resetAllStats(bool achievementsToo=true);
@@ -174,6 +185,8 @@ public:
 	bool isOverlayEnabled();
 	String getSteamUILanguage();
 	int getAppID();
+	Dictionary getImageRGBA(int iImage);
+	Dictionary getImageSize(int iImage);
 	int getSecondsSinceAppActive();
 	void setOverlayNotificationPosition(int pos);
 	int getCurrentBatteryPower();
@@ -217,42 +230,48 @@ private:
 		uint32_t size;
 	};
 	Vector<TicketData> tickets;
-	// Steam Callbacks //////////////////////////
+	/////////////////////////////////////////////
+	// STEAM CALLBACKS //////////////////////////
+	//
+	// Apps callbacks
+	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
+	STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
+//	CCallResult<Steam, FileDetailsResult_t> callResultFileDetails;
+//	void _file_details_result(FileDetailsResult_t *callData);
+	// Friends callbacks
+	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
+	// Matchmaking callbacks
 	STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
 	STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
 	STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
 	STEAM_CALLBACK(Steam, _join_requested, GameRichPresenceJoinRequested_t);
-	STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
-	STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
-	STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
 	STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 	STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
-	STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
+	// Screenshot callbacks
+	STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
+	// User callbacks
 	STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 	STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
-	STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
-	STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
-	// Callback for workshop item installing
-	STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
-	// Callback for number of current players.
+	// User stat callbacks
 	CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
 	void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
-	// Callback for leaderboard score uploading.
+	STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
+	STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
 	CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
 	void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
-	// Callback for finding leaderboard results.
 	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 	void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
-	// Callback for downloading leaderboard scores.
 	CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
 	void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
-	// Callback for global achievement percentages.
 	CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 	void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
-	// Callback for workshop item creation
+	// Utility callbacks
+	STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
+	STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
+	// Workshop callbacks
+	STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 	CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 	void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);
-	// Callback for workshop item updating
 	CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
 	void _workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
 	// Run the Steamworks API callbacks

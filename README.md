@@ -18,12 +18,13 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v1.7.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.7.0 Changes**
-- Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
-- Added: Steam controller functionality (courtesy of marcelofg55)
-- Added: more workshop functionality
-- Changed: various small maintenance changes
-- Fixed: compiling error on Linux
+**Version 1.8.0 Changes**
+- Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)
+- Added: all missing SteamApps functions
+- Changed: NULL statements for achievement functions
+- Changed: cleaned up and organized signal functions in godotteam.h
+- Removed: hasOtherApp function
+
 
 Quick How-To
 ----------
