@@ -152,9 +152,9 @@ Array Steam::getDLCDataByIndex(){
 		bool success = SteamApps()->BGetDLCDataByIndex(i, &appID, &available, name, 128);
 		if(success){
 			Dictionary dlc;
-			dlc['id'] = appID;
-			dlc['available'] = available;
-			dlc['name'] = name;
+			dlc["id"] = appID;
+			dlc["available"] = &available;
+			dlc["name"] = name;
 			dlcData.append(dlc);
 		}
 	}
@@ -673,6 +673,9 @@ void Steam::joinLobby(int steamIDLobby){
 }
 // Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback.
 void Steam::leaveLobby(int steamIDLobby){
+	if(SteamMatchmaking() == NULL){
+		return;
+	}
 	CSteamID lobbyID = createSteamID(steamIDLobby);
 	return SteamMatchmaking()->LeaveLobby(lobbyID);
 }

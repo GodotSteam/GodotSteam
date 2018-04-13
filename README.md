@@ -21,6 +21,8 @@ You can download pre-compiled versions _(currently v2.6.0)_ of this repo here: h
 - Added: all missing SteamApps functions
 - Changed: NULL statements for achievement functions
 - Changed: cleaned up and organized signal functions in godotteam.h
+- Fixed: issue with dictionary formatting in a function
+- Fixed: missing NULL statement
 - Removed: hasOtherApp function
 
 Known Issues
