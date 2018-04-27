@@ -56,111 +56,368 @@ bool Steam::isSteamRunning(void){
 /////////////////////////////////////////////////
 ///// APPS //////////////////////////////////////
 //
-// Check if the user has a given application/game
-bool Steam::hasOtherApp(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsSubscribedApp((AppId_t)value);
-}
-// Get the number of DLC the user owns for a parent application/game
-int Steam::getDLCCount(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->GetDLCCount();
-}
-// Takes AppID of DLC and checks if the user owns the DLC & if the DLC is installed
-bool Steam::isDLCInstalled(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsDlcInstalled(value);
-}
-// Check if given application/game is installed, not necessarily owned
-bool Steam::isAppInstalled(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsAppInstalled((AppId_t)value);
-}
-// Get the user's game language
-String Steam::getCurrentGameLanguage(){
-	if(SteamApps() == NULL){
-		return "None";
-	}
-	return SteamApps()->GetCurrentGameLanguage();
-}
-// Does the user have a VAC ban for this game
-bool Steam::isVACBanned(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsVACBanned();
-}
-// Returns the Unix time of the purchase of the app
-int Steam::getEarliestPurchaseUnixTime(int value){
-	if(SteamApps() == NULL){
-		return 0;
-	}
-	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)value);
-}
-// Checks if the user is subscribed to the current app through a free weekend
-// This function will return false for users who have a retail or other type of license
-// Suggested you contact Valve on how to package and secure your free weekend properly
-bool Steam::isSubscribedFromFreeWeekend(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsSubscribedFromFreeWeekend();
-}
-// Install/Uninstall control for optional DLC
-void Steam::installDLC(int value){
-	if(SteamApps() == NULL){
-		return;
-	}
-	SteamApps()->InstallDLC((AppId_t)value);
-}
-void Steam::uninstallDLC(int value){
-	if(SteamApps() == NULL){
-		return;
-	}
-	SteamApps()->UninstallDLC((AppId_t)value);
-}
-// Is subscribed lacks notes from Valve
+// Checks if the active user is subscribed to the current App ID.
 bool Steam::isSubscribed(){
 	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsSubscribed();
 }
-// Presumably if Steam is set to low violence; lacks notes from Valve
+// Checks if the license owned by the user provides low violence depots.
 bool Steam::isLowViolence(){
 	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsLowViolence();
 }
-// Presumably if users is a cyber cafe; lacks notes from Valve
+// Checks whether the current App ID is for Cyber Cafes.
 bool Steam::isCybercafe(){
 	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsCybercafe();
 }
-// Only use to check ownership of another game related to yours: a demo, etc.
+// Checks if the user has a VAC ban on their account.
+bool Steam::isVACBanned(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsVACBanned();
+}
+// Gets the current language that the user has set.
+String Steam::getCurrentGameLanguage(){
+	if(SteamApps() == NULL){
+		return "None";
+	}
+	return SteamApps()->GetCurrentGameLanguage();
+}
+// Gets a comma separated list of the languages the current app supports.
+String Steam::getAvailableGameLanguages(){
+	if(SteamApps() == NULL){
+		return "None";
+	}
+	return SteamApps()->GetAvailableGameLanguages();
+}
+// Checks if the active user is subscribed to a specified AppId.
 bool Steam::isSubscribedApp(int value){
 	if(SteamApps() == NULL){
 		return false;
 	}
 	return SteamApps()->BIsSubscribedApp((AppId_t)value);
 }
-// Return the build ID for this app; will change based on backend updates
+// Checks if the user owns a specific DLC and if the DLC is installed
+bool Steam::isDLCInstalled(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsDlcInstalled(value);
+}
+// Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).
+int Steam::getEarliestPurchaseUnixTime(int value){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)value);
+}
+// Checks if the user is subscribed to the current app through a free weekend.
+// This function will return false for users who have a retail or other type of license.
+// Suggested you contact Valve on how to package and secure your free weekend properly.
+bool Steam::isSubscribedFromFreeWeekend(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedFromFreeWeekend();
+}
+// Get the number of DLC the user owns for a parent application/game.
+int Steam::getDLCCount(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->GetDLCCount();
+}
+// Returns metadata for a DLC by index.
+Array Steam::getDLCDataByIndex(){
+	if(SteamApps() == NULL){
+		return Array();
+	}
+	int count = SteamApps()->GetDLCCount();
+	Array dlcData;
+	for(int i = 0; i < count; i++){
+		AppId_t appID;
+		bool available;
+		char name[128];
+		bool success = SteamApps()->BGetDLCDataByIndex(i, &appID, &available, name, 128);
+		if(success){
+			Dictionary dlc;
+			dlc["id"] = appID;
+			dlc["available"] = &available;
+			dlc["name"] = name;
+			dlcData.append(dlc);
+		}
+	}
+	return dlcData;
+}
+// Allows you to install an optional DLC.
+void Steam::installDLC(int value){
+	if(SteamApps() == NULL){
+		return;
+	}
+	SteamApps()->InstallDLC((AppId_t)value);
+}
+// Allows you to uninstall an optional DLC.
+void Steam::uninstallDLC(int value){
+	if(SteamApps() == NULL){
+		return;
+	}
+	SteamApps()->UninstallDLC((AppId_t)value);
+}
+// Checks if the user is running from a beta branch, and gets the name of the branch if they are.
+String Steam::getCurrentBetaName(){
+	String ret = "";
+	if(SteamApps() != NULL){
+		char str[1024];
+		if (SteamApps()->GetCurrentBetaName(str, 1024)) {
+			ret = String(str);
+		}
+	}
+	return ret;
+}
+// Allows you to force verify game content on next launch.
+bool Steam::markContentCorrupt(bool missingFilesOnly){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->MarkContentCorrupt(missingFilesOnly);
+}
+// Gets a list of all installed depots for a given App ID in mount order.
+//uint32_t Steam::getInstalledDepots(int appID, uint32* depots, uint32 maxDepots){
+//	if(SteamApps() == NULL){
+//		return 0;
+//	}
+//	return SteamApps()->GetInstalledDepots((AppId_t)appID, (DepotId_t*)depots, maxDepots);
+//}
+// Gets the install folder for a specific AppID.
+String Steam::getAppInstallDir(AppId_t appID){
+	if(SteamApps() == NULL){
+		return "";
+	}
+	const uint32 folderBuffer = 256;
+	char *buffer = new char[folderBuffer];
+	SteamApps()->GetAppInstallDir(appID, (char*)buffer, folderBuffer);
+	String appDir = buffer;
+	delete buffer;
+	return appDir;
+}
+// Check if given application/game is installed, not necessarily owned.
+bool Steam::isAppInstalled(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsAppInstalled((AppId_t)value);
+}
+// Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.
+uint64_t Steam::getAppOwner(){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	CSteamID cSteamID = SteamApps()->GetAppOwner();
+	return cSteamID.ConvertToUint64();
+}
+// Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
+String Steam::getLaunchQueryParam(const String& key){
+	if(SteamApps() == NULL){
+		return "";
+	}
+	return SteamApps()->GetLaunchQueryParam(key.utf8().get_data());
+}
+// Gets the download progress for optional DLC.
+//bool Steam::getDLCDownloadProgress(int appID, uint64* bytesDownloaded, uint64* bytesTotal){
+//	if(SteamApps() == NULL){
+//		return false;
+//	}
+//	return SteamApps()->GetDlcDownloadProgress((AppId_t)appID, bytesDownloaded, bytesTotal);
+//}
+// Return the build ID for this app; will change based on backend updates.
 int Steam::getAppBuildId(){
 	if(SteamApps() == NULL){
 		return 0;
 	}
 	return SteamApps()->GetAppBuildId();
+}
+// Asynchronously retrieves metadata details about a specific file in the depot manifest.
+void Steam::getFileDetails(const String& filename){
+	if(SteamApps() == NULL){
+		return;
+	}
+//	SteamAPICall_t apiCall = SteamApps()->GetFileDetails(filename.utf8().get_data());
+//	callResultFileDetails.Set(apiCall, this, &Steam::_file_details_result);
+	SteamApps()->GetFileDetails(filename.utf8().get_data());
+}
+/////////////////////////////////////////////////
+///// CONTROLLERS////////////////////////////////
+//
+// Reconfigure the controller to use the specified action set.
+void Steam::activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle){
+	if(SteamController() != NULL){
+		SteamController()->ActivateActionSet((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle);
+	}
+}
+// Lookup the handle for an Action Set.
+uint64_t Steam::getActionSetHandle(const String& actionSetName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetActionSetHandle(actionSetName.utf8().get_data());
+	}
+	return 0;
+}
+// Returns the current state of the supplied analog game action.
+Dictionary Steam::getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle){
+	ControllerAnalogActionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamController() != NULL){
+		data = SteamController()->GetAnalogActionData((ControllerHandle_t)controllerHandle, (ControllerAnalogActionHandle_t)analogActionHandle);
+	}
+	d["eMode"] = data.eMode;
+	d["x"] = data.x;
+	d["y"] = data.y;
+	d["bActive"] = data.bActive;
+	return d;
+}
+// Get the handle of the specified Analog action.
+uint64_t Steam::getAnalogActionHandle(const String& actionName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetAnalogActionHandle(actionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action.
+Array Steam::getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle){
+	Array list;
+	if(SteamController() != NULL){
+		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
+		int ret = SteamController()->GetAnalogActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
+		for (int i = 0; i < ret; i++){
+			list.push_back((int)out[i]);
+		}
+	}
+	return list;
+}
+// Get current controllers handles.
+Array Steam::getConnectedControllers(){
+	Array list;
+	if(SteamController() != NULL){
+		ControllerHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
+		int ret = SteamController()->GetConnectedControllers(handles);
+		for (int i = 0; i < ret; i++){
+			list.push_back((uint64_t)handles[i]);
+		}
+	}
+	return list;
+}
+// Returns the associated controller handle for the specified emulated gamepad.
+uint64_t Steam::getControllerForGamepadIndex(int index){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetControllerForGamepadIndex(index);
+	}
+	return 0;
+}
+// Get the currently active action set for the specified controller.
+uint64_t Steam::getCurrentActionSet(uint64_t controllerHandle){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetCurrentActionSet((ControllerHandle_t)controllerHandle);
+	}
+	return 0;
+}
+// Returns the current state of the supplied digital game action.
+Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle){
+	ControllerDigitalActionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamController() != NULL){
+		data = SteamController()->GetDigitalActionData((ControllerHandle_t)controllerHandle, (ControllerDigitalActionHandle_t)digitalActionHandle);
+	}
+	d["bState"] = data.bState;
+	d["bActive"] = data.bActive;
+	return d;
+}
+// Get the handle of the specified digital action.
+uint64_t Steam::getDigitalActionHandle(const String& actionName){
+	if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetDigitalActionHandle(actionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action.
+Array Steam::getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle){
+	Array list;
+	if(SteamController() != NULL){
+		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
+		int ret = SteamController()->GetDigitalActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerDigitalActionHandle_t)digitalActionHandle, out);
+		for (int i=0; i<ret; i++){
+			list.push_back((int)out[i]);
+		}
+	}
+	return list;
+}
+// Returns the associated gamepad index for the specified controller.
+int Steam::getGamepadIndexForController(uint64_t controllerHandle){
+	if(SteamController() != NULL){
+		return SteamController()->GetGamepadIndexForController((ControllerHandle_t)controllerHandle);
+	}
+	return -1;
+}
+// Returns raw motion data for the specified controller.
+Dictionary Steam::getMotionData(uint64_t controllerHandle){
+	ControllerMotionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamController() != NULL){
+		data = SteamController()->GetMotionData((ControllerHandle_t)controllerHandle);
+	}
+	d["rotQuatX"] = data.rotQuatX;
+	d["rotQuatY"] = data.rotQuatY;
+	d["rotQuatZ"] = data.rotQuatZ;
+	d["rotQuatW"] = data.rotQuatW;
+	d["posAccelX"] = data.posAccelX;
+	d["posAccelY"] = data.posAccelY;
+	d["posAccelZ"] = data.posAccelZ;
+	d["rotVelX"] = data.rotVelX;
+	d["rotVelY"] = data.rotVelY;
+	d["rotVelZ"] = data.rotVelZ;
+	return d;
+}
+// Start SteamControllers interface.
+bool Steam::init(){
+	if(SteamController() != NULL){
+		return SteamController()->Init();
+	}
+	return false;
+}
+// Syncronize controllers.
+void Steam::runFrame(){
+	if(SteamController() != NULL){
+		SteamController()->RunFrame();
+	}
+}
+// Invokes the Steam overlay and brings up the binding screen.
+bool Steam::showBindingPanel(uint64_t controllerHandle){
+	if(SteamController() != NULL){
+		return SteamController()->ShowBindingPanel((ControllerHandle_t)controllerHandle);
+	}
+	return false;
+}
+// Stop SteamControllers interface.
+bool Steam::shutdown(){
+	if(SteamController() != NULL){
+		return SteamController()->Shutdown();
+	}
+	return false;
+}
+// Trigger a vibration event on supported controllers.
+void Steam::triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed){
+	if(SteamController() != NULL){
+		SteamController()->TriggerVibration((ControllerHandle_t)controllerHandle, (unsigned short)leftSpeed, (unsigned short)rightSpeed);
+	}
 }
 /////////////////////////////////////////////////
 ///// FRIENDS ///////////////////////////////////
@@ -641,6 +898,205 @@ uint32_t Steam::writeScreenshot(const PoolByteArray& RGB, int width, int height)
 	return SteamScreenshots()->WriteScreenshot((void*)RGB.read().ptr(), RGB.size(), width, height);
 }
 /////////////////////////////////////////////////
+///// SIGNALS ///////////////////////////////////
+//
+// Signal for file details acquired.
+void Steam::_file_details_result(FileDetailsResult_t* fileData){
+	uint32_t result = fileData->m_eResult;
+	uint64_t fileSize = fileData->m_ulFileSize;
+	int fileHash = fileData->m_FileSHA[20];
+	uint32_t flags = fileData->m_unFlags;
+	owner->emit_signal("file_details_result", result, fileSize, fileHash, flags);
+}
+// Signal the lobby has been created.
+void Steam::_lobby_created(LobbyCreated_t* lobbyData){
+	int connect;
+	// Convert the lobby response back over.
+	if(lobbyData->m_eResult == k_EResultOK){
+		connect = LOBBY_OK;
+	}
+	else if(lobbyData->m_eResult == k_EResultNoConnection){
+		connect = LOBBY_NO_CONNECTION;
+	}
+	else if(lobbyData->m_eResult == k_EResultTimeout){
+		connect = LOBBY_TIMEOUT;
+	}
+	else if(lobbyData->m_eResult == k_EResultFail){
+		connect = LOBBY_FAIL;
+	}
+	else if(lobbyData->m_eResult == k_EResultAccessDenied){
+		connect = LOBBY_ACCESS_DENIED;
+	}
+	else{
+		connect = LOBBY_LIMIT_EXCEEDED;
+	}
+	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
+	owner->emit_signal("lobby_created", connect, lobbyID);
+}
+// Signal that lobby has been joined.
+void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
+	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
+	uint32_t permissions = lobbyData->m_rgfChatPermissions;
+	bool locked = lobbyData->m_bLocked;
+	uint32_t response = lobbyData->m_EChatRoomEnterResponse;
+	owner->emit_signal("lobby_joined", lobbyID, permissions, locked, response);
+}
+// Signal that a lobby invite was sent.
+void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
+	int inviterID = (uint64)lobbyData->m_ulSteamIDUser;
+	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
+	int gameID = (uint64)lobbyData->m_ulGameID;
+	owner->emit_signal("lobby_invite", inviterID, lobbyID, gameID);
+}
+// Signal a game/lobby join has been requested.
+void Steam::_join_requested(GameRichPresenceJoinRequested_t* callData){
+	int steamID = callData->m_steamIDFriend.GetAccountID();
+	String con_string = callData->m_rgchConnect;
+	owner->emit_signal("join_requested", steamID, con_string);
+}
+// Signal that the avatar has been loaded.
+void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
+	if(avatarData->m_steamID != SteamUser()->GetSteamID()){
+		return;
+	}
+	int size = avatarData->m_iWide;
+	// Get image buffer
+	int bufferSize = 4 * size * size;
+	uint8* buffer = new uint8[bufferSize];
+	bool success = SteamUtils()->GetImageRGBA(avatarData->m_iImage, buffer, bufferSize);
+	if(!success){
+		printf("[Steam] Failed to load image buffer from callback\n");
+		return;
+	}
+	int avatarSize;
+	if(size == 32){
+		avatarSize = AVATAR_SMALL;
+	}
+	else if(size == 64){
+		avatarSize = AVATAR_MEDIUM;
+	}
+	else if(size == 184){
+		avatarSize = AVATAR_LARGE;
+	}
+	else{
+		printf("[Steam] Invalid avatar size from callback\n");
+		return;
+	}
+	Image avatar = drawAvatar(size, buffer);
+//	call_deferred("owner->emit_signal", "avatar_loaded", avatarSize, avatar);	Temporarily disabled because of Image change in Godot.
+}
+// Signal number of current players (online + offline).
+void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure){
+	owner->emit_signal("number_of_current_players", callData->m_bSuccess && bIOFailure, callData->m_cPlayers);
+}
+// Signal a leaderboard has been loaded or has failed.
+void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
+	leaderboard_handle = callData->m_hSteamLeaderboard;
+	uint8_t found = callData->m_bLeaderboardFound;
+	owner->emit_signal("leaderboard_loaded", (uint64_t)leaderboard_handle, found);
+}
+// Signal a leaderboard entry has been uploaded.
+void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure){
+	// Incorrect leaderboard
+	if(callData->m_hSteamLeaderboard != leaderboard_handle){
+		return;
+	}
+	owner->emit_signal("leaderboard_uploaded", callData->m_bSuccess && bIOFailure, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
+}
+// Signal leaderboard entries are downloaded.
+void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure){
+	// Incorrect leaderboard
+	if(callData->m_hSteamLeaderboard != leaderboard_handle){
+		return;
+	}
+	getDownloadedLeaderboardEntry(callData->m_hSteamLeaderboardEntries, callData->m_cEntryCount);
+	owner->emit_signal("leaderboard_entries_loaded");
+}
+// Signal when overlay is triggered.
+void Steam::_overlay_toggled(GameOverlayActivated_t* callData){
+	if(callData->m_bActive){
+		owner->emit_signal("overlay_toggled", true);
+	}
+	else{
+		owner->emit_signal("overlay_toggled", false);
+	}
+}
+// Signal when battery power is running low, less than 10 minutes left.
+void Steam::_low_power(LowBatteryPower_t* timeLeft){
+	uint8 power = timeLeft->m_nMinutesBatteryLeft;
+	owner->emit_signal("low_power", power);
+}
+// When connected to a server.
+void Steam::_server_connected(SteamServersConnected_t* connectData){
+	owner->emit_signal("connection_changed", true);
+}
+// When disconnected from a server.
+void Steam::_server_disconnected(SteamServersDisconnected_t* connectData){
+	owner->emit_signal("connection_changed", false);
+}
+// Posted after the user gains ownership of DLC & that DLC is installed.
+void Steam::_dlc_installed(DlcInstalled_t* callData){
+	int appID = (AppId_t)callData->m_nAppID;
+	owner->emit_signal("dlc_installed", appID);
+}
+// Response from getAuthSessionTicket.
+void Steam::_get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* callData){
+	owner->emit_signal("get_auth_session_ticket_response", callData->m_hAuthTicket, callData->m_eResult);
+}
+// Called when an auth ticket has been validated.
+void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* callData){
+	uint64_t authID = callData->m_SteamID.ConvertToUint64();
+	uint32_t response = callData->m_eAuthSessionResponse;
+	uint64_t ownerID = callData->m_OwnerSteamID.ConvertToUint64();
+	owner->emit_signal("validate_auth_ticket_response", authID, response, ownerID);
+}
+// A screenshot has been requested by the user.
+void Steam::_screenshot_ready(ScreenshotReady_t* callData){
+	uint32_t handle = callData->m_hLocal;
+	uint32_t result = callData->m_eResult;
+	owner->emit_signal("screenshot_ready", handle, result);
+}
+// User stats are ready.
+void Steam::_user_stats_received(UserStatsReceived_t* callData){
+	uint64_t gameID = callData->m_nGameID;
+	uint32_t result = callData->m_eResult;
+	uint64_t userID = callData->m_steamIDUser.ConvertToUint64();
+	owner->emit_signal("user_stats_received", gameID, result, userID);
+}
+// Result of an achievement icon that has been fetched.
+void Steam::_user_achievement_icon_fetched(UserAchievementIconFetched_t* callData){
+	uint64_t gameID = callData->m_nGameID.ToUint64();
+	String achievementName = callData->m_rgchAchievementName;
+	bool achieved = callData->m_bAchieved;
+	int iconHandle = callData->m_nIconHandle;
+	owner->emit_signal("user_achievement_icon_fetched", gameID, achievementName, achieved, iconHandle);
+}
+// Global achievements percentages are ready.
+void Steam::_global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t* callData, bool bIOFailure){
+	uint64_t gameID = callData->m_nGameID;
+	uint32_t result = callData->m_eResult;
+	owner->emit_signal("global_achievement_percentages_ready", gameID, result);
+}
+// Result of a workshop item being created.
+void Steam::_workshop_item_created(CreateItemResult_t *callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	bool acceptTOS = callData->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+	owner->emit_signal("workshop_item_created", result, (uint64_t)fileID, acceptTOS);
+}
+// Result of a workshop item being updated.
+void Steam::_workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	bool acceptTOS = callData->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+	owner->emit_signal("workshop_item_updated", result, acceptTOS);
+}
+// Called when a workshop item has been installed or updated.
+void Steam::_workshop_item_installed(ItemInstalled_t* callData){
+	AppId_t appID = callData->m_unAppID;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	owner->emit_signal("workshop_item_installed", appID, (uint64_t)fileID);
+}
+/////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
 //
 // Get an authentication ticket
@@ -1026,23 +1482,6 @@ void Steam::startVRDashboard(){
 /////////////////////////////////////////////////
 ///// WORKSHOP //////////////////////////////////
 //
-// Get the number of subscribed items for the user
-int Steam::getNumSubscribedItems(){
-	if(SteamUGC() == NULL){
-		return 0;
-	}
-	return SteamUGC()->GetNumSubscribedItems();
-}
-// Get the item's state
-int Steam::getItemState(int publishedFileID){
-	if(SteamUGC() == NULL){
-		return 0;
-	}
-	PublishedFileId_t fileID = (int)publishedFileID;
-	return SteamUGC()->GetItemState(fileID);
-}
-// Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.
-// If item is not subscribed to, it will be cached for some time. If highPriority is set, any other item download will be suspended and this item downloaded ASAP.
 bool Steam::downloadItem(int publishedFileID, bool highPriority){
 	if(SteamUGC() == NULL){
 		return 0;
@@ -1050,10 +1489,210 @@ bool Steam::downloadItem(int publishedFileID, bool highPriority){
 	PublishedFileId_t fileID = (int)publishedFileID;
 	return SteamUGC()->DownloadItem(fileID, highPriority);
 }
-// SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends
+// SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.
 void Steam::suspendDownloads(bool suspend){
 	return SteamUGC()->SuspendDownloads(suspend);
 }
+// Starts the item update process.
+uint64_t Steam::startItemUpdate(AppId_t appID, int publishedFileID){
+	PublishedFileId_t fileID = (int)publishedFileID;
+	return SteamUGC()->StartItemUpdate(appID, fileID);
+}
+// Gets the current state of a workshop item on this client.
+int Steam::getItemState(int publishedFileID){
+	if(SteamUGC() == NULL){
+		return 0;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	return SteamUGC()->GetItemState(fileID);
+}
+// Gets the progress of an item update.
+//int Steam::getItemUpdateProgress(uint64_t updateHandle, uint64_t *bytesProcessed, uint64_t* bytesTotal){
+//	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
+//	return SteamUGC()->GetItemUpdateProgress(handle, (uint64*)&bytesProcessed, bytesTotal);
+//}
+//
+void Steam::createItem(AppId_t appID, int fileType){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	EWorkshopFileType workshopType;
+	// Convert the file type back over.
+	if(fileType == UGC_ITEM_MAX){
+		workshopType = k_EWorkshopFileTypeMax;
+	}
+	else if(fileType == UGC_ITEM_MICROTRANSACTION){
+		workshopType = k_EWorkshopFileTypeMicrotransaction;
+	}
+	else if(fileType == UGC_ITEM_COLLECTION){
+		workshopType = k_EWorkshopFileTypeCollection;
+	}
+	else if(fileType == UGC_ITEM_ART){
+		workshopType = k_EWorkshopFileTypeArt;
+	}
+	else if(fileType == UGC_ITEM_VIDEO){
+		workshopType = k_EWorkshopFileTypeVideo;
+	}
+	else if(fileType == UGC_ITEM_SCREENSHOT){
+		workshopType = k_EWorkshopFileTypeScreenshot;
+	}
+	else if(fileType == UGC_ITEM_GAME){
+		workshopType = k_EWorkshopFileTypeGame;
+	}
+	else if(fileType == UGC_ITEM_SOFTWARE){
+		workshopType = k_EWorkshopFileTypeSoftware;
+	}
+	else if(fileType == UGC_ITEM_CONCEPT){
+		workshopType = k_EWorkshopFileTypeConcept;
+	}
+	else if(fileType == UGC_ITEM_WEBGUIDE){
+		workshopType = k_EWorkshopFileTypeWebGuide;
+	}
+	else if(fileType == UGC_ITEM_INTEGRATEDGUIDE){
+		workshopType = k_EWorkshopFileTypeIntegratedGuide;
+	}
+	else if(fileType == UGC_ITEM_MERCH){
+		workshopType = k_EWorkshopFileTypeMerch;
+	}
+	else if(fileType == UGC_ITEM_CONTROLLERBINDING){
+		workshopType = k_EWorkshopFileTypeControllerBinding;
+	}
+	else if(fileType == UGC_ITEM_STEAMWORKSACCESSINVITE){
+		workshopType = k_EWorkshopFileTypeSteamworksAccessInvite;
+	}
+	else if(fileType == UGC_ITEM_STEAMVIDEO){
+		workshopType = k_EWorkshopFileTypeSteamVideo;
+	}
+	else if(fileType == UGC_ITEM_GAMEMANAGEDITEM){
+		workshopType = k_EWorkshopFileTypeGameManagedItem;
+	}
+	else{
+		workshopType = k_EWorkshopFileTypeCommunity;
+	}
+	SteamAPICall_t apiCall = SteamUGC()->CreateItem(appID, workshopType);
+	callResultItemCreate.Set(apiCall, this, &Steam::_workshop_item_created);
+}
+// Sets a new title for an item.
+bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	if (title.length() > UGC_MAX_TITLE_CHARS){
+		printf("Title cannot have more than %d ASCII characters. Title not set.", UGC_MAX_TITLE_CHARS);
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemTitle(handle, title.utf8().get_data());
+}
+// Sets a new description for an item.
+bool Steam::setItemDescription(uint64_t updateHandle, const String& description){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	if (description.length() > UGC_MAX_DESC_CHARS){
+		printf("Description cannot have more than %d ASCII characters. Description not set.", UGC_MAX_DESC_CHARS);
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemDescription(handle, description.utf8().get_data());
+}
+// Sets the language of the title and description that will be set in this item update.
+bool Steam::setItemUpdateLanguage(uint64_t updateHandle, const String& language){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemUpdateLanguage(handle, language.utf8().get_data());
+}
+// Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.
+bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	if (metadata.length() > UGC_MAX_METADATA_CHARS){
+		printf("Metadata cannot have more than %d ASCII characters. Metadata not set.", UGC_MAX_METADATA_CHARS);
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
+}
+// Sets the visibility of an item.
+bool Steam::setItemVisibility(uint64_t updateHandle, int visibility){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	ERemoteStoragePublishedFileVisibility itemVisibility;
+	// Convert the visibility type back over.
+	if(visibility == UGC_FILE_VISIBLE_PUBLIC){
+		itemVisibility = k_ERemoteStoragePublishedFileVisibilityPublic;
+	}
+	else if(visibility == UGC_FILE_VISIBLE_FRIENDS){
+		itemVisibility = k_ERemoteStoragePublishedFileVisibilityFriendsOnly;
+	}
+	else{
+		itemVisibility = k_ERemoteStoragePublishedFileVisibilityPrivate;
+	}
+	return SteamUGC()->SetItemVisibility(handle, itemVisibility);
+}
+// Sets arbitrary developer specified tags on an item.
+//bool Steam::setItemTags(uint64_t updateHandle, const char ** stringArray, const int32 stringCount){
+//	if(SteamUGC() == NULL){
+//		return false;
+//	}
+//	UGCUpdateHandle_t handle = uint64(updateHandle);
+//	SteamParamStringArray_t tags = { stringArray, stringCount };
+//	return SteamUGC()->SetItemTags(updateHandle, &tags);
+//}
+// Sets the folder that will be stored as the content for an item.
+bool Steam::setItemContent(uint64_t updateHandle, const String& contentFolder){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemContent(handle, contentFolder.utf8().get_data());
+}
+// Sets the primary preview image for the item.
+bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemPreview(handle, previewFile.utf8().get_data());
+}
+// Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.
+void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	SteamAPICall_t apiCall = SteamUGC()->SubmitItemUpdate(handle, changeNote.utf8().get_data());
+	callResultItemUpdate.Set(apiCall, this, &Steam::_workshop_item_updated);
+}
+// Gets a list of all of the items the current user is subscribed to for the current game.
+//Array Steam::getSubscribedItems(){
+//	if(SteamUGC() == NULL){
+//		return Array();
+//	}
+//	int numItems = SteamUGC()->GetNumSubscribedItems();
+//	// Need array for list of PublishedFileId_t
+//	return SteamUGC()->GetSubscribedItems(items, numItems);
+//}
+// Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
+//bool Steam::getItemInstallInfo(int publishedFileID, uint64_t *sizeOnDisk, OUT_STRING_COUNT(folderSize) String *folder, uint32_t folderSize, uint32_t *timeStamp){
+//	if(SteamUGC() == NULL){
+//		return false;
+//	}
+//	PublishedFileId_t fileID = (int)publishedFileID;
+//	return SteamUGC()->GetItemInstallInfo(fileID, sizeOnDisk, folder, folderSize, timeStamp);
+//}
+// Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
+//bool Steam::getItemDownloadInfo(int publishedFileID, uint64_t *bytesDownloaded, uint64_t *bytesTotal){
+//	if(SteamUGC() == NULL){
+//		return false;
+//	}
+//	PublishedFileId_t fileID = int(publishedFileID);
+//	return SteamUGC()->GetItemDownloadInfo(fileID, bytesDownloaded, bytesTotal);
+//}
 
 Steam::~Steam(){
 	if(isInitSuccess){
