@@ -223,6 +223,8 @@ private:
 	// Leaderboards
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries;
+	// Workshop
+	UGCUpdateHandle_t workshop_handle;
 	// Authentication
 	struct TicketData {
 		uint32_t id;

@@ -1249,10 +1249,8 @@ bool Steam::clearAchievement(const String& name){
 }
 // Return true/false if use has given achievement.
 bool Steam::getAchievement(const String& name){
-	if(SteamUserStats() == NULL){
-		return false;
-	}
-	return SteamUserStats()->GetAchievement(name.utf8().get_data(), false);
+	bool achieved = false;
+	return SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
 }
 // Returns the percentage of users who have unlocked the specified achievement.
 Dictionary Steam::getAchievementAchievedPercent(const String& name){
