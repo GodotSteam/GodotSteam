@@ -82,6 +82,10 @@ Quick How-To
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
 
+Donate
+-------------
+If you feel like buying me a beer, feel free to do so here: https://www.paypal.me/sithlordkyle
+
 License
 -------------
 MIT license
