@@ -1,18 +1,16 @@
 #include "register_types.h"
-#include "object_type_db.h"
-#include "godotsteam.h"
-#include "globals.h"
+#include "class_db.h"
+#include "engine.h"
+#include "godotsteam_server.h"
 
-static Steam* SteamPtr = NULL;
+static SteamServer* SteamServerPtr = NULL;
 
-void register_godotsteam_types(){
-	SteamPtr = memnew(Steam);
-
-	Globals::get_singleton()->add_singleton(Globals::Singleton("Steam",Steam::get_singleton()));
-
-	ObjectTypeDB::register_virtual_type<Steam>();
+void register_godotsteam_server_types(){
+	ClassDB::register_class<SteamServer>();
+	SteamServerPtr = memnew(SteamServer);
+	Engine::get_singleton()->add_singleton(Engine::Singleton("SteamServer",SteamServer::get_singleton()));
 }
 
-void unregister_godotsteam_types(){
-	memdelete(SteamPtr);
+void unregister_godotsteam_server_types(){
+	memdelete(SteamServerPtr);
 }
