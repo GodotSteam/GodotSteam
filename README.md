@@ -19,8 +19,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-**Version 0.0.1 Changes**
-- Added: basically everything in Steam server main
+**Version 0.0.2 Changes**
+- Added: all of the result enums
+- Added: missing signals
+- Changed: module folder name
+- Removed: depreciated functions
 
 Donate
 -------------
