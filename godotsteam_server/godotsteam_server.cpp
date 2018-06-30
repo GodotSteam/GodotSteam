@@ -27,7 +27,7 @@ CSteamID SteamServer::createSteamID(uint32_t steamID, int accountType){
 //
 // Initialize the server to Steam.
 bool SteamServer::serverInit(uint32 ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, EServerMode serverMode, const String& versionString){
-	if(!SteamInternal_GameServer_Init(ip, steamPort, gamePort, queryPort, serverMode, versionString)){
+	if(!SteamInternal_GameServer_Init(ip, steamPort, gamePort, queryPort, serverMode, versionString.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -51,7 +51,7 @@ bool SteamServer::initGameServer(uint32 ip, uint16 steamPort, uint16 gamePort, u
 	if(SteamGameServer() == NULL){
 		return false;
 	}
-	if(!SteamInternal_GameServer_Init(ip, steamPort, gamePort, queryPort, serverMode, versionString)){
+	if(!SteamInternal_GameServer_Init(ip, steamPort, gamePort, queryPort, serverMode, versionString.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -61,21 +61,21 @@ void SteamServer::setProduct(const String& product){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetProduct(product);
+	SteamGameServer()->SetProduct(product.utf8().get_data());
 }
 // Description of the game; required field and is displayed in the Steam server browser.
 void SteamServer::setGameDescription(const String& description){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetGameDescription(description);
+	SteamGameServer()->SetGameDescription(description.utf8().get_data());
 }
 // If your game is a mod, pass the string that identifies it. Default is empty meaning the app is the original game.
 void SteamServer::setModDir(const String& modDir){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetModDir(modDir);
+	SteamGameServer()->SetModDir(modDir.utf8().get_data());
 }
 // Is this a dedicated server? Default is false.
 void SteamServer::setDedicatedServer(bool dedicated){
@@ -91,8 +91,7 @@ void SteamServer::logOn(const String& token){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamAPICall_t apiCall = SteamGameServer()->LogOn(token);
-	callResultLogOn.Set(apiCall, this, &SteamServer::_log_on);
+	SteamGameServer()->LogOn(token.utf8().get_data());
 }
 // Login to a generic, anonymous account.
 void SteamServer::logOnAnonymous(){
@@ -156,21 +155,21 @@ void SteamServer::setServerName(const String& name){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetServerName(name);
+	SteamGameServer()->SetServerName(name.utf8().get_data());
 }
 // Set name of map to report in server browser.
 void SteamServer::setMapName(const String& map){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetMapName(map);
+	SteamGameServer()->SetMapName(map.utf8().get_data());
 }
 // Let people know if your server requires a password.
-void SteamServer::setPasswordProtected(bool protected){
+void SteamServer::setPasswordProtected(bool password){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetPasswordProtected(protected);
+	SteamGameServer()->SetPasswordProtected(password);
 }
 // Spectator server. Default is zero, meaning it is now used.
 void SteamServer::setSpectatorPort(uint16 port){
@@ -184,7 +183,7 @@ void SteamServer::setSpectatorServerName(const String& name){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetSpectatorServerName(name);
+	SteamGameServer()->SetSpectatorServerName(name.utf8().get_data());
 }
 // Call this to clear the whole list of key/values that are sent in rule queries.
 void SteamServer::clearAllKeyValues(){
@@ -198,28 +197,28 @@ void SteamServer::setKeyValue(const String& key, const String& value){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetKeyValue(key, value);
+	SteamGameServer()->SetKeyValue(key.utf8().get_data(), value.utf8().get_data());
 }
 // Set a string defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.
 void SteamServer::setGameTags(const String& tags){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetGameTags(tags);
+	SteamGameServer()->SetGameTags(tags.utf8().get_data());
 }
 // Set a string defining game data for this server; optional. Allows users to filter in matchmaking/server browser.
 void SteamServer::setGameData(const String& data){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetGameData(data);
+	SteamGameServer()->SetGameData(data.utf8().get_data());
 }
 // Region identifier; optional. Default is empty meaning 'world'.
 void SteamServer::setRegion(const String& region){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetRegion(region);
+	SteamGameServer()->SetRegion(region.utf8().get_data());
 }
 // NOTE: These functions are player list management / authentication.
 //
@@ -228,19 +227,20 @@ void SteamServer::setRegion(const String& region){
 // are off-line, then it will validate the cached ticket itself which will validate app ownership 
 // and identity.  The AuthBlob here should be acquired on the game client using SteamUser()->InitiateGameConnection()
 // and must then be sent up to the game server for authentication.
-bool SteamServer::sendUserConnectAndAuthenticate(uint32 ipClient, const void *authBlob, uint32 authBlobSize, int steamID){
+bool SteamServer::sendUserConnectAndAuthenticate(uint32 ipClient, const void *authBlob, uint32 authBlobSize, uint32_t steamID){
 	if(SteamGameServer() == NULL){
 		return false;
 	}
 	CSteamID authID = createSteamID(steamID);
-	return SteamGameServer()->SendUserConnectAndAuthenticate(ipClient, *authBlob, authBlobSize, authID);
+	return SteamGameServer()->SendUserConnectAndAuthenticate(ipClient, authBlob, authBlobSize, &authID);
 }
 // Creates a fake user (ie, a bot) which will be listed as playing on the server, but skips validation.
 uint64_t SteamServer::createUnauthenticatedUserConnection(){
 	if(SteamGameServer() == NULL){
 		return 0;
 	}
-	return SteamGameServer()->CreateUnauthenticatedUserConnection();
+	CSteamID steamID = SteamGameServer()->CreateUnauthenticatedUserConnection();
+	return steamID.ConvertToUint64();
 }
 // Should be called whenever a user leaves server; lets Steam internally track which users are currently on which servers.
 void SteamServer::sendUserDisconnect(int steamID){
@@ -251,12 +251,12 @@ void SteamServer::sendUserDisconnect(int steamID){
 	SteamGameServer()->SendUserDisconnect(disconnectID);
 }
 // Update the data to be displayed in the server browser; for regular users you must call this after you recieve a GSUserValidationSuccess callback.
-bool SteamServer::updateUserData(int steamID, const String& *name, uint32 score){
+bool SteamServer::updateUserData(int steamID, const String& name, uint32 score){
 	if(SteamGameServer() == NULL){
 		return false;
 	}
 	CSteamID updateID = createSteamID(steamID);
-	return SteamGameServer()->BUpdateUserData(updateID, *name, score);
+	return SteamGameServer()->BUpdateUserData(updateID, name.utf8().get_data(), score);
 }
 // NOTES: These are new auth system APIs, do not mix with old auth system APIs.
 //
@@ -272,7 +272,7 @@ int SteamServer::beginAuthSession(const void *authTicket, int cbAuthTicket, int 
 		return 1;
 	}
 	CSteamID authID = createSteamID(steamID);
-	return SteamGameServer()->BeginAuthSession(authTicket, cbAuthTicket, authID)
+	return SteamGameServer()->BeginAuthSession(authTicket, cbAuthTicket, authID);
 }
 // Stop tracking started by beginAuthSession; called when no longer playing game with this entity;
 void SteamServer::endAuthSession(int steamID){
@@ -292,7 +292,7 @@ void SteamServer::cancelAuthTicket(int authTicket){
 // After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC
 int SteamServer::userHasLicenceForApp(int steamID, AppId_t appID){
 	if(SteamGameServer() == NULL){
-		return;
+		return 0;
 	}
 	CSteamID userID = createSteamID(steamID);
 	return SteamGameServer()->UserHasLicenseForApp(userID, appID);
@@ -320,7 +320,7 @@ int SteamServer::getNextOutgoingPacket(void *out, int maxOut, uint32 *address, u
 	if(SteamGameServer() == NULL){
 		return 0;
 	}
-	return SteamGameServer()->GetNextOutgoingPacket(*out, maxOut, *address, *port);
+	return SteamGameServer()->GetNextOutgoingPacket(out, maxOut, address, port);
 }
 // NOTE: These are heartbeat/advertisement functions.
 //
@@ -365,6 +365,21 @@ void SteamServer::computeNewPlayerCompatibility(int steamID){
 /////////////////////////////////////////////////
 // SIGNALS //////////////////////////////////////
 //
+// Logging the game server onto Steam
+void SteamServer::_server_Connect_Failure(SteamServerConnectFailure_t* serverData){
+	int result = serverData->m_eResult;
+	bool retrying = serverData->m_bStillRetrying;
+	emit_signal("server_failure", result, retrying);
+}
+// Server has connected to the Steam back-end; serverData has no fields.
+void SteamServer::_server_Connected(SteamServersConnected_t* serverData){
+	emit_signal("server_connected");
+}
+// Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching SteamServersConnected_t has been posted.
+void SteamServer::_server_Disconnected(SteamServersDisconnected_t* serverData){
+	int result = serverData->m_eResult;
+	emit_signal("server_disconnected", result);
+}
 // Client has been approved to connect to this game server.
 void SteamServer::_client_Approved(GSClientApprove_t* clientData){
 	uint64_t steamID = clientData->m_SteamID.ConvertToUint64();
@@ -424,8 +439,7 @@ void SteamServer::_client_Denied(GSClientDeny_t* clientData){
 	else{
 		reason = DENY_STEAM_OWNER_LEFT_GUEST;
 	}
-	String text = clientData->m_rgchOptionalText[128];
-	emit_signal("client_denied", steamID, reason, text);
+	emit_signal("client_denied", steamID, reason);
 }
 // Request the game server should kick the user.
 void SteamServer::_client_Kick(GSClientKick_t* clientData){
@@ -482,13 +496,6 @@ void SteamServer::_client_Kick(GSClientKick_t* clientData){
 	}
 	emit_signal("client_kick", steamID, reason);
 }
-// Client achievement info.
-void SteamServer::_client_Achieve_Status(GSClientAchievementStatus_t* clientData){
-	uint64_t steamID = clientData->m_SteamID.ConvertToUint64();
-	String achievement = cliendData->m_pchAchievement[128];
-	bool unlocked = clientData->m_bUnlocked;
-	emit_signal("client_achievement", steamID, achievement, unlocked);
-}
 // Received when the game server requests to be displayed as secure (VAC protected).
 // m_bSecure is true if the game server should display itself as secure to users, false otherwise.
 void SteamServer::_policy_Response(GSPolicyResponse_t* policyData){
@@ -516,23 +523,6 @@ void SteamServer::_client_Group_Status(GSClientGroupStatus_t* clientData){
 	bool member = clientData->m_bMember;
 	bool officer = clientData->m_bOfficer;
 	emit_signal("group_status", steamID, groupID, member, officer);
-}
-// Sent as a reply to GetServerReputation().
-void SteamServer::_reputation(GSReputation_t* repData){
-	int result;
-	if(repData->m_eResult == k_EResultOK){
-		result = RESULT_OK;
-	}
-	else{
-		result = RESULT_FAIL;
-	}
-	uint32 score = repData->m_unReputationScore;
-	bool banned = repData->m_bBanned;
-	uint32 bannedIP = repData->m_unBannedIP;
-	uint16 bannedPort = repData->m_usBannedPort
-	uint64 bannedGameID = repData->m_ulBannedGameID;
-	uint32 banExpires = repData->m_unBanExpires;
-	emit_signal("server_reputation", result, score, banned, bannedIP, bannedPort, bannedGameID, banExpires);
 }
 // Sent as a reply to AssociateWithClan().
 void SteamServer::_associate_Clan(AssociateWithClanResult_t* clanData){
@@ -614,21 +604,125 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("setHeartbeatInterval", &SteamServer::setHeartbeatInterval);
 	ClassDB::bind_method("forceHeartbeat", &SteamServer::forceHeartbeat);
 	// Signals //////////////////////////////////
-	ADD_SIGNAL(MethodInfo("client_approved"), PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "ownerID"));
-	ADD_SIGNAL(MethodInfo("client_denied"), PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "reason"));
-	ADD_SIGNAL(MethodInfo("client_kick"), PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "reason"));
-	ADD_SIGNAL(MethodInfo("client_achievement"), PropertyInfo(Variant::INT, "steamID"));
-	ADD_SIGNAL(MethodInfo("server_secure"), PropertyInfo(Variant::INT, "secure"));
-	ADD_SIGNAL(MethodInfo("gameplay_stats"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "rank"), PropertyInfo(Variant::INT, "totalConnects"), PropertyInfo(Variant::INT, "totalMinutesPlayed"));
-	ADD_SIGNAL(MethodInfo("group_status"), PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "groupID"));
-	ADD_SIGNAL(MethodInfo("server_reputation"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::INT, "bannedIP"), PropertyInfo(Variant::INT, "bannedPort"), PropertyInfo(Variant::INT, "bannedGameID"), PropertyInfo(Variant::INT, "banExpires"));
-	ADD_SIGNAL(MethodInfo("clan_associate"), PropertyInfo(Variant::INT, "result"));
-	ADD_SIGNAL(MethodInfo("player_compatibility"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steamID"));
+	ADD_SIGNAL(MethodInfo("server_failure", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
+	ADD_SIGNAL(MethodInfo("server_connected"));
+	ADD_SIGNAL(MethodInfo("server_disconnected", PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("client_approved", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "ownerID")));
+	ADD_SIGNAL(MethodInfo("client_denied", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "reason")));
+	ADD_SIGNAL(MethodInfo("client_kick", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "reason")));
+	ADD_SIGNAL(MethodInfo("server_secure", PropertyInfo(Variant::INT, "secure")));
+	ADD_SIGNAL(MethodInfo("gameplay_stats", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "rank"), PropertyInfo(Variant::INT, "totalConnects"), PropertyInfo(Variant::INT, "totalMinutesPlayed")));
+	ADD_SIGNAL(MethodInfo("group_status", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "groupID"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
+	ADD_SIGNAL(MethodInfo("clan_associate", PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("player_compatibility", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steamID")));
 	// Result constants /////////////////////////
 	BIND_CONSTANT(RESULT_OK);						// 1
 	BIND_CONSTANT(RESULT_FAIL);						// 2
 	BIND_CONSTANT(RESULT_NO_CONNECT);				// 3
+	BIND_CONSTANT(RESULT_INVALID_PASSWORD);			// 5
+	BIND_CONSTANT(RESULT_LOGGED_IN_ESLEWHERE);		// 6
+	BIND_CONSTANT(RESULT_INVALID_PROTOCAL);			// 7
+	BIND_CONSTANT(RESULT_INALID_PARAM);				// 8
+	BIND_CONSTANT(RESULT_FILE_NOT_FOUND);			// 9
+	BIND_CONSTANT(RESULT_BUSY);						// 10
+	BIND_CONSTANT(RESULT_INVALID_STATE);			// 11
+	BIND_CONSTANT(RESULT_INVALID_NAME);				// 12
+	BIND_CONSTANT(RESULT_INVALID_EMAIL);			// 13
+	BIND_CONSTANT(RESULT_DUPLICATE_NAME);			// 14
+	BIND_CONSTANT(RESULT_ACCESS_DENIED);			// 15
 	BIND_CONSTANT(RESULT_TIMEOUT);					// 16
+	BIND_CONSTANT(RESULT_BANNED);					// 17
+	BIND_CONSTANT(RESULT_ACCOUNT_NOT_FOUND);		// 18
+	BIND_CONSTANT(RESULT_INVALID_STEAM_ID);			// 19
+	BIND_CONSTANT(RESULT_SERVICE_UNAVAILABLE);		// 20
+	BIND_CONSTANT(RESULT_NOT_LOGGED_ON);			// 21
+	BIND_CONSTANT(RESULT_PENDING);					// 22
+	BIND_CONSTANT(RESULT_ENCRYPT_FAILURE);			// 23
+	BIND_CONSTANT(RESULT_INSUFFICIENT_PRIVILEGE);	// 24
+	BIND_CONSTANT(RESULT_LIMIT_EXCEEDED);			// 25
+	BIND_CONSTANT(RESULT_REVOKED);					// 26
+	BIND_CONSTANT(RESULT_EXPIRED);					// 27
+	BIND_CONSTANT(RESULT_ALREADY_REDEEMED);			// 28
+	BIND_CONSTANT(RESULT_DUPLICATE_REQUEST);		// 29
+	BIND_CONSTANT(RESULT_ALREADY_OWNED);			// 30
+	BIND_CONSTANT(RESULT_IP_NOT_FOUND);				// 31
+	BIND_CONSTANT(RESULT_PERSIST_FAILED);			// 32
+	BIND_CONSTANT(RESULT_LOCKING_FAILED);			// 33
+	BIND_CONSTANT(RESULT_LOGON_SESSION_REPLACED);	// 34
+	BIND_CONSTANT(RESULT_CONNECT_FAILED);			// 35
+	BIND_CONSTANT(RESULT_HANDSHAKE_FAILED);			// 36
+	BIND_CONSTANT(RESULT_IO_FAILURE);				// 37
+	BIND_CONSTANT(RESULT_REMOTE_DISCONNECT);		// 38
+	BIND_CONSTANT(RESULT_SHOPPING_CART_NOT_FOUND);	// 39
+	BIND_CONSTANT(RESULT_BLOCKED);					// 40
+	BIND_CONSTANT(RESULT_IGNORED);					// 41
+	BIND_CONSTANT(RESULT_NO_MATCH);					// 42
+	BIND_CONSTANT(RESULT_ACCOUNT_DISABLED);			// 43
+	BIND_CONSTANT(RESULT_SERVICE_READY_ONLY);		// 44
+	BIND_CONSTANT(RESULT_ACCOUNT_NOT_FEATURED);		// 45
+	BIND_CONSTANT(RESULT_ADMINISTRATOR_OK);			// 46
+	BIND_CONSTANT(RESULT_CONTENT_VERSION);			// 47
+	BIND_CONSTANT(RESULT_TRY_ANOTHER_CM);			// 48
+	BIND_CONSTANT(RESULT_PASSWORD_REQUIRED_TO_KICK);// 49
+	BIND_CONSTANT(RESULT_ALREADY_LOGGED_ELSEWHERE);	// 50
+	BIND_CONSTANT(RESULT_SUSPENDED);				// 51
+	BIND_CONSTANT(RESULT_CANCELLED);				// 52
+	BIND_CONSTANT(RESULT_DATA_CORRUPTION);			// 53
+	BIND_CONSTANT(RESULT_DISK_FULL);				// 54
+	BIND_CONSTANT(RESULT_REMOTE_CALL_FAILED);		// 55
+	BIND_CONSTANT(RESULT_PASSWORD_UNSET);			// 56
+	BIND_CONSTANT(RESULT_EXTERNAL_ACCOUNT_UNLINKED);// 57
+	BIND_CONSTANT(RESULT_PSN_TICKET_INVALID);		// 58
+	BIND_CONSTANT(RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED);	// 59
+	BIND_CONSTANT(RESULT_REMOTE_FILE_CONFLICT);		// 60
+	BIND_CONSTANT(RESULT_ILLEGAL_PASSWORD);			// 61
+	BIND_CONSTANT(RESULT_SAME_AS_PREVIOUS_VALUE);	// 62
+	BIND_CONSTANT(RESULT_ACCOUNT_LOGON_DENIED);		// 63
+	BIND_CONSTANT(RESULT_CANNOT_USE_OLD_PASSWORD);	// 64
+	BIND_CONSTANT(RESULT_INVALID_LOGIN_AUTH_CODE);	// 65
+	BIND_CONSTANT(RESULT_ACCOUNT_LOGON_DENIED_NO_MAIL);	// 66
+	BIND_CONSTANT(RESULT_HARDWARE_NOT_CAPABLE);		// 67
+	BIND_CONSTANT(RESULT_IP_INIT_ERROR);			// 68
+	BIND_CONSTANT(RESULT_PARENTAL_CONTROL_RESTRICTED);	// 69
+	BIND_CONSTANT(RESULT_FACEBOOK_QUERY_ERROR);		// 70
+	BIND_CONSTANT(RESULT_EXPIRED_LOGIN_AUTH_CODE);	// 71
+	BIND_CONSTANT(RESULT_IP_LOGIN_RESTRICTION_FAILED);	// 72
+	BIND_CONSTANT(RESULT_ACCOUNT_LOCKED_DOWN);		// 73
+	BIND_CONSTANT(RESULT_ACCOUNT_LOGON_DENIED_VERIFIED_EMAIL_REQUIRED);	// 74
+	BIND_CONSTANT(RESULT_NO_MATCHING_URL);			// 75
+	BIND_CONSTANT(RESULT_BAD_RESPONSE);				// 76
+	BIND_CONSTANT(RESULT_REQUIRED_PASSWORD_REENTRY);// 77
+	BIND_CONSTANT(RESULT_VALUE_OUT_OF_RANGE);		// 78
+	BIND_CONSTANT(RESULT_UNEXPECTED_ERROR);			// 79
+	BIND_CONSTANT(RESULT_DISABLED);					// 80
+	BIND_CONSTANT(RESULT_INVALID_CEG_SUBMISSION);	// 81
+	BIND_CONSTANT(RESULT_RESTRICTED_DEVICE);		// 82
+	BIND_CONSTANT(RESULT_REGION_LOCKED);			// 83
+	BIND_CONSTANT(RESULT_RATE_LIMIT_EXCEEDED);		// 84
+	BIND_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR);	// 85
+	BIND_CONSTANT(RESULT_ITEM_DELETED);				// 86
+	BIND_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE);	// 87
+	BIND_CONSTANT(RESULT_TWO_FACTOR_CODE_MISMATCH);	// 88
+	BIND_CONSTANT(RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH);	// 89
+	BIND_CONSTANT(RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS);	// 90
+	BIND_CONSTANT(RESULT_NOT_MODIFIED);				// 91
+	BIND_CONSTANT(RESULT_NO_MOBILE_DEVICE);			// 92
+	BIND_CONSTANT(RESULT_TIME_NOT_SYNCED);			// 93
+	BIND_CONSTANT(RESULT_SMS_CODE_FAILED);			// 94
+	BIND_CONSTANT(RESULT_ACCOUNT_LIMIT_EXCEEDED);	// 95
+	BIND_CONSTANT(RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED);	// 96
+	BIND_CONSTANT(RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED);	// 97
+	BIND_CONSTANT(RESULT_REFUND_TO_WALLET);			// 98
+	BIND_CONSTANT(RESULT_EMAIL_SEND_FAILURE);		// 99
+	BIND_CONSTANT(RESULT_NOT_SETTLED);				// 100
+	BIND_CONSTANT(RESULT_NEED_CAPTCHA);				// 101
+	BIND_CONSTANT(RESULT_GSLT_DENIED);				// 102
+	BIND_CONSTANT(RESULT_GS_OWNER_DENIED);			// 103
+	BIND_CONSTANT(RESULT_INVALID_ITEM_TYPE);		// 104
+	BIND_CONSTANT(RESULT_IP_BANNED);				// 105
+	BIND_CONSTANT(RESULT_GSLT_EXPIRED);				// 106
+	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);		// 107
+	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);			// 108
 	// Authorization mode constants /////////////
 	BIND_CONSTANT(MODE_INVALID);					// 0
 	BIND_CONSTANT(MODE_NO_AUTH);					// 1
@@ -669,7 +763,7 @@ SteamServer::~SteamServer(){
 		SteamGameServer_Shutdown();
 	}
 	for(int i = 0; i < tickets.size(); i++){
-		TicketData ticket = ticktes.get(i);
+		TicketData ticket = tickets.get(i);
 		memdelete_arr(ticket.buffer);
 	}
 	tickets.clear();
