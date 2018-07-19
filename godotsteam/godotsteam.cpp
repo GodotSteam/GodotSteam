@@ -552,6 +552,7 @@ void Steam::getFriendAvatar(int size){
 Image Steam::drawAvatar(int size, uint8* buffer){
 	// Apply buffer to Image.
 	Image avatar(size, size, false, Image::FORMAT_RGBA8);	// Might need tweaked.
+	avatar.lock();
 	for(int y = 0; y < size; y++){
 		for(int x = 0; x < size; x++){
 			int i = 4*(x+y*size);
@@ -562,6 +563,7 @@ Image Steam::drawAvatar(int size, uint8* buffer){
 			avatar.set_pixel(x, y, Color(r, g, b, a));
 		}
 	}
+	avatar.unlock();
 	return avatar;
 }
 // Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".
@@ -1003,6 +1005,7 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 		return;
 	}
 	Image avatar = drawAvatar(size, buffer);
+	printf("[Steam] avatar_loaded signal temporarily disabled because of Image change in Godot.\n");
 //	call_deferred("emit_signal", "avatar_loaded", avatarSize, avatar);	Temporarily disabled because of Image change in Godot.
 }
 // Signal number of current players (online + offline).
