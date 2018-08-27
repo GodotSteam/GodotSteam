@@ -155,7 +155,7 @@ public:
 	bool clearAchievement(const String& name);
 	uint32_t getNumAchievements();
 	void getNumberOfCurrentPlayers();
-	bool getAchievement(const String& name);
+	Dictionary getAchievement(const String& name);
 	Dictionary getAchievementAchievedPercent(const String& name);
 	String getAchievementDisplayAttribute(const String& name, const String& key);
 	int getAchievementIcon(const String& name);
@@ -178,7 +178,7 @@ public:
 	void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 	uint64_t getLeaderboardHandle();
 	Array getLeaderboardEntries();
-	bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
+	Dictionary getAchievementAndUnlockTime(const String& name);
 	bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 	// Utils ////////////////////////////////////
 	String getIPCountry();
