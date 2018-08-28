@@ -1251,9 +1251,16 @@ bool Steam::clearAchievement(const String& name){
 	return SteamUserStats()->ClearAchievement(name.utf8().get_data());
 }
 // Return true/false if use has given achievement.
-bool Steam::getAchievement(const String& name){
+Dictionary Steam::getAchievement(const String& name){
+	Dictionary d;
 	bool achieved = false;
-	return SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	if(SteamUserStats() == NULL){
+		d["ret"] = false;
+	} else {
+		d["ret"] = SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	}
+	d["achieved"] = achieved;
+	return d;
 }
 // Returns the percentage of users who have unlocked the specified achievement.
 Dictionary Steam::getAchievementAchievedPercent(const String& name){
@@ -1440,11 +1447,18 @@ Array Steam::getLeaderboardEntries(){
 	return leaderboard_entries;
 }
 // Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).
-bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime){
+Dictionary Steam::getAchievementAndUnlockTime(const String& name){
+	Dictionary d;
+	bool achieved = false;
+	uint32_t unlockTime = 0;
 	if(SteamUserStats() == NULL){
-		return 0;
+		d["ret"] = false;
+	} else {
+		d["ret"] = SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), &achieved, &unlockTime);
 	}
-	return SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), (bool *)achieved, (uint32_t *)unlockTime);
+	d["achieved"] = achieved;
+	d["unlockTime"] = unlockTime;
+	return d;
 }
 // Achievement progress, triggers an AchievementProgress callback, that is all.
 // Calling this with X out of X progress will NOT set the achievement, the game must still do that.
