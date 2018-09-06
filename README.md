@@ -24,6 +24,7 @@ You can download pre-compiled versions _(currently v1.7.0)_ of this repo here: h
 - Added: all missing SteamApps functions
 - Changed: NULL statements for achievement functions
 - Changed: cleaned up and organized signal functions in godotteam.h
+- Changed: getAchievement responses when called (courtesy of jandrewlong)
 - Fixed: issue with getAchievement failing to compile
 - Removed: hasOtherApp function
 
