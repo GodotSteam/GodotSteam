@@ -15,17 +15,17 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v2.6.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.8.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.7.0 Changes**
-- Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)
-- Added: all missing SteamApps functions
-- Changed: NULL statements for achievement functions
-- Changed: cleaned up and organized signal functions in godotteam.h
-- Fixed: issue with dictionary formatting in a function
-- Fixed: issue with getAchievement failing to compile
-- Fixed: missing NULL statement
-- Removed: hasOtherApp function
+**Version 2.8.0 Changes**
+- Added: all remaining matchmaking functions
+- Added: all remaining friend functions
+- Changed: getRecentPlayers to include timestamp
+- Changed: naming of leaderboard_handle and leaderboard_entries for consistency
+- Changed: getAchievement to dictionary (courtesy of jandrewlong)
+- Fixed: invite functions giving incorrect steam ids
+- Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems
+- Removed: setGameInfo, clearGameInfo, inviteFriend
 
 Known Issues
 ----------
