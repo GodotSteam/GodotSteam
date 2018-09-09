@@ -3,7 +3,6 @@ Steam API for the Godot game engine (versions 2 to 2.1.5). For the Windows, Linu
 
 - View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 - View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
-- View the GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
 
 **THIS VERSION IS NOT COMPATIBLE WITH GODOT 3.  Please use the Godot 3 branch instead.**
 
@@ -17,17 +16,17 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.7.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.9.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.8.0 Changes**
-- Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)
-- Added: all missing SteamApps functions
-- Changed: NULL statements for achievement functions
-- Changed: cleaned up and organized signal functions in godotteam.h
-- Changed: getAchievement responses when called (courtesy of jandrewlong)
-- Fixed: issue with getAchievement failing to compile
-- Removed: hasOtherApp function
-
+**Version 1.9.0 Changes**
+- Added: all remaining matchmaking functions
+- Added: all remaining friend functions
+- Changed: getRecentPlayers to include timestamp
+- Changed: naming of leaderboard_handle and leaderboard_entries for consistency
+- Changed: getAchievement to dictionary (courtesy of jandrewlong)
+- Fixed: invite functions giving incorrect steam ids
+- Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems
+- Removed: setGameInfo, clearGameInfo, inviteFriend
 
 Quick How-To
 ----------
@@ -83,10 +82,6 @@ Quick How-To
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
-
-Donate
--------------
-If you feel like buying me a beer, feel free to do so here: https://www.paypal.me/sithlordkyle
 
 License
 -------------
