@@ -32,7 +32,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.0.3 to 2.1.4.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.0.3 to 2.1.5.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
