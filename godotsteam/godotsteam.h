@@ -4,10 +4,10 @@
 #include <inttypes.h>
 #include <steam/steam_api.h>
 
-#include "object.h"
+#include "core/object.h"
 #include "scene/resources/texture.h"	// For avatars
-#include "reference.h"
-#include "dictionary.h"					// Contains array.h as well
+#include "core/reference.h"
+#include "core/dictionary.h"					// Contains array.h as well
 
 class Steam: public Object {
 	GDCLASS(Steam, Object);
