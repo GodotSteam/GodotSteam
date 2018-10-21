@@ -2812,7 +2812,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isClanPublic", &Steam::isClanPublic);
 	ClassDB::bind_method("isClanOfficialGameGroup", &Steam::isClanOfficialGameGroup);
 	ClassDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
-	ClassDB::bind_method(D_METHOD("getFriendAvatar", "size"), &Steam::getFriendAvatar, DEFVAL(AVATAR_MEDIUM));
+	ClassDB::bind_method(D_METHOD("getFriendAvatar", "size"), &Steam::getFriendAvatar, DEFVAL(int(AVATAR_MEDIUM)));
 	ClassDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
 	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
@@ -2914,7 +2914,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("findLeaderboard", "name"), &Steam::findLeaderboard);
 	ClassDB::bind_method("getLeaderboardName", &Steam::getLeaderboardName);
 	ClassDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
-	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(GLOBAL));
+	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(int(GLOBAL)));
 	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntriesForUsers", "usersID"), &Steam::downloadLeaderboardEntriesForUsers);
 	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
 	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
