@@ -17,18 +17,16 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v2.8.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.8.0 Changes**
-- Added: all remaining matchmaking functions
-- Added: all remaining friend functions
-- Changed: getRecentPlayers to include timestamp
-- Changed: naming of leaderboard_handle and leaderboard_entries for consistency
-- Changed: getAchievement to dictionary (courtesy of jandrewlong)
-- Fixed: invite functions giving incorrect steam ids
-- Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems
-- Removed: setGameInfo, clearGameInfo, inviteFriend
+**Version 2.8.1 Changes**
+- Added: additional missing lobby signals
+- Fixed: various lobby functions due to incorrect Steam lobby ID
+- Fixed: some bind methods
+- Fixed: config.py still using env
+- Fixed: location of core Godot includes
 
 Known Issues
 ----------
+- Lobby message will crash game, favoriting lobbies does not work yet
 - User avatar functions do not work due to changes in Godot's image class
 - getFriendGamePlayed is incomplete; should be a dictionary.
 
