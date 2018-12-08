@@ -15,7 +15,7 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v2.8.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.8.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 2.8.1 Changes**
 - Added: additional missing lobby signals
