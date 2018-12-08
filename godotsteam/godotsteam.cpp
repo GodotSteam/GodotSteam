@@ -1041,13 +1041,13 @@ Array Steam::getFavoriteGames(){
 	Array favorites;
 	for(int i = 0; i < count; i++){
 		Dictionary favorite;
-		AppId_t *appID;
-		uint32 *ip;
-		uint16 *port;
-		uint16 *queryPort;
-		uint32 *flags;
-		uint32 *lastPlayed;
-		favorite["ret"] = SteamMatchmaking()->GetFavoriteGame(i, appID, ip, port, queryPort, flags, lastPlayed);
+		AppId_t appID;
+		uint32 ip;
+		uint16 port;
+		uint16 queryPort;
+		uint32 flags;
+		uint32 lastPlayed;
+		favorite["ret"] = SteamMatchmaking()->GetFavoriteGame(i, &appID, &ip, &port, &queryPort, &flags, &lastPlayed);
 		if(favorite["ret"]){
 			favorite["app"] = appID;
 			favorite["ip"] = ip;
@@ -1189,179 +1189,194 @@ void Steam::createLobby(int lobbyType, int maxMembers){
 		eLobbyType = k_ELobbyTypeFriendsOnly;
 	}
 	else if(lobbyType == PUBLIC){
-		eLobbyType = k_ELobbyTypePublic;	
+		eLobbyType = k_ELobbyTypePublic;
 	}
 	else{
 		eLobbyType = k_ELobbyTypeInvisible;
 	}
-	SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
+	SteamAPICall_t apiCall = SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
+	callResultCreateLobby.Set(apiCall, this, &Steam::_lobby_created);
 }
 // Join an existing lobby.
-void Steam::joinLobby(int steamIDLobby){
+void Steam::joinLobby(uint64 steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	SteamMatchmaking()->JoinLobby(lobbyID);
+	SteamMatchmaking()->JoinLobby((CSteamID)steamIDLobby);
 }
 // Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback.
-void Steam::leaveLobby(int steamIDLobby){
+void Steam::leaveLobby(uint64 steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->LeaveLobby(lobbyID);
+	return SteamMatchmaking()->LeaveLobby((CSteamID)steamIDLobby);
 }
 // Invite another user to the lobby, the target user will receive a LobbyInvite_t callback, will return true if the invite is successfully sent, whether or not the target responds.
-bool Steam::inviteUserToLobby(int steamIDLobby, int steamIDInvitee){
+bool Steam::inviteUserToLobby(uint64 steamIDLobby, uint64 steamIDInvitee){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID inviteeID = createSteamID(steamIDInvitee);
-	return SteamMatchmaking()->InviteUserToLobby(lobbyID, inviteeID);
+	return SteamMatchmaking()->InviteUserToLobby((CSteamID)steamIDLobby, (CSteamID)steamIDInvitee);
 }
 // Lobby iteration, for viewing details of users in a lobby.
-int Steam::getNumLobbyMembers(uint64_t steamIDLobby){
+int Steam::getNumLobbyMembers(uint64 steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->GetNumLobbyMembers(lobbyID);
+	return SteamMatchmaking()->GetNumLobbyMembers((CSteamID)steamIDLobby);
 }
 // Returns the CSteamID of a user in the lobby.
-uint64_t Steam::getLobbyMemberByIndex(uint64_t steamIDLobby, int member){
+uint64_t Steam::getLobbyMemberByIndex(uint64 steamIDLobby, int member){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(createSteamID(steamIDLobby), member);
+	CSteamID lobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex((CSteamID)steamIDLobby, member);
 	return lobbyMember.ConvertToUint64();
 }
 // Get data associated with this lobby.
-String Steam::getLobbyData(uint64_t steamIDLobby, const String& key){
+String Steam::getLobbyData(uint64 steamIDLobby, const String& key){
 	if(SteamMatchmaking() == NULL){
 		return "";
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->GetLobbyData(lobbyID, key.utf8().get_data());
+	return SteamMatchmaking()->GetLobbyData((CSteamID)steamIDLobby, key.utf8().get_data());
 }
 // Sets a key/value pair in the lobby metadata.
-bool Steam::setLobbyData(uint64_t steamIDLobby, const String& key, const String& value){
+bool Steam::setLobbyData(uint64 steamIDLobby, const String& key, const String& value){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->SetLobbyData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
+	return SteamMatchmaking()->SetLobbyData((CSteamID)steamIDLobby, key.utf8().get_data(), value.utf8().get_data());
 }
 // Get lobby data by the lobby's ID
-Dictionary Steam::getLobbyDataByIndex(uint64_t steamIDLobby){
+Dictionary Steam::getLobbyDataByIndex(uint64 steamIDLobby){
 	Dictionary data;
 	if(SteamMatchmaking() == NULL){
 		return data;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobbyID);
-	char* key;
-	char* value;
+	int dataCount = SteamMatchmaking()->GetLobbyDataCount((CSteamID)steamIDLobby);
+	char key;
+	char value;
 	for(int i = 0; i < dataCount; i++){
-		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, key, LOBBY_KEY_LENGTH, value, CHAT_METADATA_MAX);
+		bool success = SteamMatchmaking()->GetLobbyDataByIndex((CSteamID)steamIDLobby, i, &key, LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
 		if(success){
 			data["index"] = i;
-			String dataKey = key;
 			data["key"] = key;
-			String dataValue = value;
 			data["value"] = value;
 		}
 	}
 	return data;
 }
 // Removes a metadata key from the lobby.
-bool Steam::deleteLobbyData(uint64_t steamIDLobby, const String& key){
+bool Steam::deleteLobbyData(uint64 steamIDLobby, const String& key){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->DeleteLobbyData(lobbyID, key.utf8().get_data());
+	return SteamMatchmaking()->DeleteLobbyData((CSteamID)steamIDLobby, key.utf8().get_data());
 }
 // Gets per-user metadata for someone in this lobby.
-String Steam::getLobbyMemberData(uint64_t steamIDLobby, uint64_t steamIDUser, const String& key){
+String Steam::getLobbyMemberData(uint64 steamIDLobby, uint64 steamIDUser, const String& key){
 	if(SteamMatchmaking() == NULL){
 		return "";
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID userID = createSteamID(steamIDUser);
-	return SteamMatchmaking()->GetLobbyMemberData(lobbyID, userID, key.utf8().get_data());
+	return SteamMatchmaking()->GetLobbyMemberData((CSteamID)steamIDLobby, (CSteamID)steamIDUser, key.utf8().get_data());
 }
 // Sets per-user metadata (for the local user implicitly).
-void Steam::setLobbyMemberData(uint64_t steamIDLobby, const String& key, const String& value){
+void Steam::setLobbyMemberData(uint64 steamIDLobby, const String& key, const String& value){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->SetLobbyMemberData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
+	return SteamMatchmaking()->SetLobbyMemberData((CSteamID)steamIDLobby, key.utf8().get_data(), value.utf8().get_data());
 }
 // Broadcasts a chat message to the all the users in the lobby.
-bool Steam::sendLobbyChatMsg(uint64_t steamIDLobby, const String& messageBody){
+bool Steam::sendLobbyChatMsg(uint64 steamIDLobby, const String& messageBody){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
 	int messageLength = messageBody.length();
 	const void * message = messageBody.c_str();
-	return SteamMatchmaking()->SendLobbyChatMsg(createSteamID(steamIDLobby), message, messageLength);
+	return SteamMatchmaking()->SendLobbyChatMsg((CSteamID)steamIDLobby, message, messageLength);
 }
 // Refreshes metadata for a lobby you're not necessarily in right now.
-bool Steam::requestLobbyData(uint64_t steamIDLobby){
+bool Steam::requestLobbyData(uint64 steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->RequestLobbyData(lobbyID);
+	return SteamMatchmaking()->RequestLobbyData((CSteamID)steamIDLobby);
 }
 // Sets the game server associated with the lobby.
-void Steam::setLobbyGameServer(uint64_t steamIDLobby, uint32 serverIP, uint16 serverPort, uint64_t steamIDGameServer){
+void Steam::setLobbyGameServer(uint64 steamIDLobby, const String& serverIP, uint16 serverPort, uint64 steamIDGameServer){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID serverID = createSteamID(steamIDGameServer);
-	return SteamMatchmaking()->SetLobbyGameServer(lobbyID,serverIP, serverPort, serverID);
+	// Resolve address and convert it from IP_Address struct to uint32_t
+	IP_Address address;
+	if(serverIP.is_valid_ip_address()){
+		address = serverIP;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(serverIP, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(address == IP_Address()){
+		return;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	// If setting a game server with no server (fake) Steam ID
+	if(steamIDGameServer == 0){
+		SteamMatchmaking()->SetLobbyGameServer((CSteamID)steamIDLobby, *((uint32_t *)ip4_p), serverPort, k_steamIDNil);
+	}
+	else{
+		SteamMatchmaking()->SetLobbyGameServer((CSteamID)steamIDLobby, *((uint32_t *)ip4_p), serverPort, (CSteamID)steamIDGameServer);	
+	}
 }
 // Returns the details of a game server set in a lobby - returns false if there is no game server set, or that lobby doesn't exist.
-Dictionary Steam::getLobbyGameServer(uint64_t steamIDLobby){
+Dictionary Steam::getLobbyGameServer(uint64 steamIDLobby){
 	Dictionary server;
-	uint32 *serverIP;
-	uint16 *serverPort;
-	CSteamID *serverID;
-	server["ret"] = SteamMatchmaking()->GetLobbyGameServer(createSteamID(steamIDLobby), serverIP, serverPort, serverID);
+	uint32 serverIP = 0;
+	uint16 serverPort = 0;
+	uint64 serverID = 0;
+	server["ret"] = SteamMatchmaking()->GetLobbyGameServer((CSteamID)steamIDLobby, &serverIP, &serverPort, &(CSteamID)serverID);
 	if(server["ret"]){
-		server["ip"] = serverIP;
+		// Convert the IP address back to a string
+		const int NBYTES = 4;
+		uint8 octet[NBYTES];
+		char ip[16];
+		for(int i = 0; i < NBYTES; i++){
+			octet[i] = serverIP >> (i * 8);
+		}
+		sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+		server["ip"] = ip;
 		server["port"] = serverPort;
 		server["id"] = serverID;
 	}
 	return server;
 }
 // Set the limit on the # of users who can join the lobby.
-bool Steam::setLobbyMemberLimit(uint64_t steamIDLobby, int maxMembers){
+bool Steam::setLobbyMemberLimit(uint64 steamIDLobby, int maxMembers){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->SetLobbyMemberLimit(lobbyID, maxMembers);
+	return SteamMatchmaking()->SetLobbyMemberLimit((CSteamID)steamIDLobby, maxMembers);
 }
 // Returns the current limit on the # of users who can join the lobby; returns 0 if no limit is defined.
-int Steam::getLobbyMemberLimit(uint64_t steamIDLobby){
+int Steam::getLobbyMemberLimit(uint64 steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->GetLobbyMemberLimit(lobbyID);
+	return SteamMatchmaking()->GetLobbyMemberLimit((CSteamID)steamIDLobby);
 }
 // Updates which type of lobby it is.
-bool Steam::setLobbyType(uint64_t steamIDLobby, int eLobbyType){
+bool Steam::setLobbyType(uint64 steamIDLobby, int eLobbyType){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
 	// Set the lobby type correctly
 	ELobbyType lobbyType;
 	if(eLobbyType == PRIVATE){
@@ -1376,41 +1391,36 @@ bool Steam::setLobbyType(uint64_t steamIDLobby, int eLobbyType){
 	else{
 		lobbyType = k_ELobbyTypeInvisible;
 	}
-	return SteamMatchmaking()->SetLobbyType(lobbyID, lobbyType);
+	return SteamMatchmaking()->SetLobbyType((CSteamID)steamIDLobby, lobbyType);
 }
 // Sets whether or not a lobby is joinable - defaults to true for a new lobby.
-bool Steam::setLobbyJoinable(uint64_t steamIDLobby, bool joinable){
+bool Steam::setLobbyJoinable(uint64 steamIDLobby, bool joinable){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->SetLobbyJoinable(lobbyID, joinable);
+	return SteamMatchmaking()->SetLobbyJoinable((CSteamID)steamIDLobby, joinable);
 }
 // Returns the current lobby owner.
-uint64_t Steam::getLobbyOwner(uint64_t steamIDLobby){
+uint64_t Steam::getLobbyOwner(uint64 steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyID = SteamMatchmaking()->GetLobbyOwner(createSteamID(steamIDLobby));
+	CSteamID lobbyID = SteamMatchmaking()->GetLobbyOwner((CSteamID)steamIDLobby);
 	return lobbyID.ConvertToUint64();
 }
 // Changes who the lobby owner is.
-bool Steam::setLobbyOwner(uint64_t steamIDLobby, uint64_t steamIDNewOwner){
+bool Steam::setLobbyOwner(uint64 steamIDLobby, uint64 steamIDNewOwner){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID ownerID = createSteamID(steamIDNewOwner);
-	return SteamMatchmaking()->SetLobbyOwner(lobbyID, ownerID);
+	return SteamMatchmaking()->SetLobbyOwner((CSteamID)steamIDLobby, (CSteamID)steamIDNewOwner);
 }
 // Link two lobbies for the purposes of checking player compatibility.
-bool Steam::setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent){
+bool Steam::setLinkedLobby(uint64 steamIDLobby, uint64 steamIDLobbyDependent){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID dependentID = createSteamID(steamIDLobbyDependent);
-	return SteamMatchmaking()->SetLinkedLobby(lobbyID, dependentID);
+	return SteamMatchmaking()->SetLinkedLobby((CSteamID)steamIDLobby, (CSteamID)steamIDLobbyDependent);
 }
 /////////////////////////////////////////////////
 ///// MUSIC /////////////////////////////////////
@@ -1653,8 +1663,8 @@ void Steam::_file_details_result(FileDetailsResult_t* fileData){
 	emit_signal("file_details_result", result, fileSize, fileHash, flags);
 }
 // Signal the lobby has been created.
-void Steam::_lobby_created(LobbyCreated_t* lobbyData){
-	int connect;
+void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
+	int connect = lobbyData->m_eResult;
 	// Convert the lobby response back over.
 	if(lobbyData->m_eResult == k_EResultOK){
 		connect = LOBBY_OK;
@@ -1675,7 +1685,7 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData){
 		connect = LOBBY_LIMIT_EXCEEDED;
 	}
 	CSteamID lobbyID = lobbyData->m_ulSteamIDLobby;
-	uint64_t lobby = lobbyID.ConvertToUint64();
+	uint64 lobby = lobbyID.ConvertToUint64();
 	emit_signal("lobby_created", connect, lobby);
 }
 // Signal that lobby has been joined.
@@ -1871,7 +1881,6 @@ void Steam::_enumerate_following_list(FriendsEnumerateFollowingList_t *callData,
 	emit_signal("following_list", message, following);
 }
 // Signal for list of matching lobbies
-//////////////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MISSING CODE
 void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure){
 	uint32 lobbyCount = callData->m_nLobbiesMatching;
 	Array lobbies;
@@ -1882,17 +1891,71 @@ void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure){
 	}	
 	emit_signal("lobby_match_list", lobbies);
 }
+// Signal when a lobby game is created
+void Steam::_lobby_game_created(LobbyGameCreated_t *callData){
+	uint64 lobbyID = callData->m_ulSteamIDLobby;
+	uint64 serverID = callData->m_ulSteamIDGameServer;
+	uint32 ip = callData->m_unIP;
+	uint16 port = callData->m_usPort;
+	// Convert the IP address back to a string
+	const int NBYTES = 4;
+	uint8 octet[NBYTES];
+	char serverIP[16];
+	for(int i = 0; i < NBYTES; i++){
+		octet[i] = ip >> (i * 8);
+	}
+	sprintf(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	emit_signal("lobby_game_created", lobbyID, serverID, serverIP, port);
+}
 // Signal when a lobby chat message is received
 void Steam::_lobby_Message(LobbyChatMsg_t *callData){
 	uint64 lobbyID = callData->m_ulSteamIDLobby;
+	uint64 userID = callData->m_ulSteamIDUser;
 	uint8 chatType = callData->m_eChatEntryType;
 	uint32 chatID = callData->m_iChatID;
 	// Get the chat message data
-	String *data;
-	CSteamID *userID;
-	EChatEntryType *type;
-	int messageSize = SteamMatchmaking()->GetLobbyChatEntry(createSteamID(lobbyID), chatID, userID, data, 4096, type);
-	emit_signal("lobby_message_received", data);
+	String data;
+	// Get chat type
+	EChatEntryType type;
+	if(chatType == CHAT_INVALID){
+		type = k_EChatEntryTypeInvalid;
+	}
+	else if(chatType == CHAT_MESSAGE){
+		type = k_EChatEntryTypeChatMsg;
+	}
+	else if(chatType == CHAT_TYPING){
+		type = k_EChatEntryTypeTyping;
+	}
+	else if(chatType == CHAT_INVITE_GAME){
+		type = k_EChatEntryTypeInviteGame;
+	}
+	else if(chatType == CHAT_EMOTE){
+		type = k_EChatEntryTypeEmote;
+	}
+	else if(chatType == CHAT_LEFT){
+		type = k_EChatEntryTypeLeftConversation;
+	}
+	else if(chatType == CHAT_ENTERED){
+		type = k_EChatEntryTypeEntered;
+	}
+	else if(chatType == CHAT_KICKED){
+		type = k_EChatEntryTypeWasKicked;
+	}
+	else if(chatType == CHAT_BANNED){
+		type = k_EChatEntryTypeWasBanned;
+	}
+	else if(chatType == CHAT_DISCONNECTED){
+		type = k_EChatEntryTypeDisconnected;
+	}
+	else if(chatType == CHAT_HISTORICAL){
+		type = k_EChatEntryTypeHistoricalChat;
+	}
+	else if(chatType == CHAT_LINK_BLOCKED){
+		type = k_EChatEntryTypeLinkBlocked;
+	}
+	CSteamID steamID = userID;
+	int ret = SteamMatchmaking()->GetLobbyChatEntry((CSteamID)lobbyID, chatID, &steamID, &data, 4096, &type);
+	emit_signal("lobby_message_received", data.utf8().get_data());
 }
 // Signal number of current players (online + offline).
 void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure){
@@ -2969,7 +3032,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("is_following"));
 	ADD_SIGNAL(MethodInfo("enumerate_following_list"));
 	ADD_SIGNAL(MethodInfo("lobby_match_list"));
-	ADD_SIGNAL(MethodInfo("lobby_message"));
+	ADD_SIGNAL(MethodInfo("lobby_game_created"));
+	ADD_SIGNAL(MethodInfo("lobby_message_received"));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
 	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::INT, "leaderboard"), PropertyInfo(Variant::INT, "found")));
 	ADD_SIGNAL(MethodInfo("leaderboard_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));

@@ -183,28 +183,28 @@ class Steam: public Object {
 		void addRequestLobbyListDistanceFilter(int distanceFilter);
 		void addRequestLobbyListResultCountFilter(int maxResults);
 		void createLobby(int lobbyType, int maxMembers);
-		void joinLobby(int steamIDLobby);
-		void leaveLobby(int steamIDLobby);
-		bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
-		int getNumLobbyMembers(uint64_t steamIDLobby);
-		uint64_t getLobbyMemberByIndex(uint64_t steamIDLobby, int member);
-		String getLobbyData(uint64_t steamIDLobby, const String& key);
-		bool setLobbyData(uint64_t steamIDLobby, const String& key, const String& value);
-		Dictionary getLobbyDataByIndex(uint64_t steamIDLobby);
-		bool deleteLobbyData(uint64_t steamIDLobby, const String& key);
-		String getLobbyMemberData(uint64_t steamIDLobby,uint64_t steamIDUser, const String& key);
-		void setLobbyMemberData(uint64_t steamIDLobby, const String& key, const String& value);
-		bool sendLobbyChatMsg(uint64_t steamIDLobby, const String& messageBody);
-		bool requestLobbyData(uint64_t steamIDLobby);
-		void setLobbyGameServer(uint64_t steamIDLobby, uint32 serverIP, uint16 serverPort, uint64_t steamIDGameServer);
-		Dictionary getLobbyGameServer(uint64_t steamIDLobby);
-		bool setLobbyMemberLimit(uint64_t steamIDLobby, int maxMembers);
-		int getLobbyMemberLimit(uint64_t steamIDLobby);
-		bool setLobbyType(uint64_t steamIDLobby, int eLobbyType);
-		bool setLobbyJoinable(uint64_t steamIDLobby, bool joinable);
-		uint64_t getLobbyOwner(uint64_t steamIDLobby);
-		bool setLobbyOwner(uint64_t steamIDLobby, uint64_t steamIDNewOwner);
-		bool setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent);
+		void joinLobby(uint64 steamIDLobby);
+		void leaveLobby(uint64 steamIDLobby);
+		bool inviteUserToLobby(uint64 steamIDLobby, uint64 steamIDInvitee);
+		int getNumLobbyMembers(uint64 steamIDLobby);
+		uint64_t getLobbyMemberByIndex(uint64 steamIDLobby, int member);
+		String getLobbyData(uint64 steamIDLobby, const String& key);
+		bool setLobbyData(uint64 steamIDLobby, const String& key, const String& value);
+		Dictionary getLobbyDataByIndex(uint64 steamIDLobby);
+		bool deleteLobbyData(uint64 steamIDLobby, const String& key);
+		String getLobbyMemberData(uint64 steamIDLobby, uint64 steamIDUser, const String& key);
+		void setLobbyMemberData(uint64 steamIDLobby, const String& key, const String& value);
+		bool sendLobbyChatMsg(uint64 steamIDLobby, const String& messageBody);
+		bool requestLobbyData(uint64 steamIDLobby);
+		void setLobbyGameServer(uint64 steamIDLobby, const String& serverIP, uint16 serverPort, uint64 steamIDGameServer);
+		Dictionary getLobbyGameServer(uint64 steamIDLobby);
+		bool setLobbyMemberLimit(uint64 steamIDLobby, int maxMembers);
+		int getLobbyMemberLimit(uint64 steamIDLobby);
+		bool setLobbyType(uint64 steamIDLobby, int eLobbyType);
+		bool setLobbyJoinable(uint64 steamIDLobby, bool joinable);
+		uint64_t getLobbyOwner(uint64 steamIDLobby);
+		bool setLobbyOwner(uint64 steamIDLobby, uint64 steamIDNewOwner);
+		bool setLinkedLobby(uint64 steamIDLobby, uint64 steamIDLobbyDependent);
 		// Music ////////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
@@ -344,15 +344,15 @@ class Steam: public Object {
 			uint8 publishedToFriendsSessionInstance;
 		};
 		Vector<FriendSessionStateInfo> sessionInfo;
-		/////////////////////////////////////////////
-		// STEAM CALLBACKS //////////////////////////
+		/////////////////////////////////////////
+		// STEAM CALLBACKS //////////////////////
 		//
-		// Apps callbacks
+		// Apps callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
 	//	CCallResult<Steam, FileDetailsResult_t> callResultFileDetails;
 	//	void _file_details_result(FileDetailsResult_t *callData);
-		// Friends callbacks
+		// Friends callbacks ////////////////////
 		STEAM_CALLBACK(Steam,_name_changed, SetPersonaNameResponse_t);
 		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
 		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
@@ -370,22 +370,24 @@ class Steam: public Object {
 		void _is_following(FriendsIsFollowing_t *callData, bool bIOFailure);
 		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
 		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
-		// Matchmaking callbacks
-		STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
+		// Matchmaking callbacks ////////////////
+		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
+		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
 		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
 		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
+		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t);
 		STEAM_CALLBACK(Steam, _join_requested, GameRichPresenceJoinRequested_t);
 		STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 		STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
-		// Screenshot callbacks
+		// Screenshot callbacks /////////////////
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
-		// User callbacks
+		// User callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
-		// User stat callbacks
+		// User stat callbacks //////////////////
 		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
 		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
@@ -398,16 +400,16 @@ class Steam: public Object {
 		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
-		// Utility callbacks
+		// Utility callbacks ////////////////////
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
-		// Workshop callbacks
+		// Workshop callbacks ///////////////////
 		STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 		void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
 		void _workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
-		// Run the Steamworks API callbacks
+		// Run the Steamworks API callbacks /////
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();
 		}
