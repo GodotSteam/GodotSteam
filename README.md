@@ -30,6 +30,7 @@ You can download pre-compiled versions _(currently v2.8.0)_ of this repo here: h
 Known Issues
 ----------
 - User avatar functions do not work due to changes in Godot's image class
+- getFriendGamePlayed is incomplete; should be a dictionary.
 
 Quick How-To
 ----------
