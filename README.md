@@ -19,6 +19,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
+**Version 0.0.2 Changes**
+- Removed: depreciated signal __client_Achieve_Status_.
+- Removed: depreciated signal __gameplay_Stats_.
+- Removed: depreciated signal __reputation_.
+
 **Version 0.0.1 Changes**
 - Added: basically everything in Steam server main
 

@@ -56,19 +56,21 @@ class SteamServer: public Object {
 		void setRegion(const String& region);
 		bool sendUserConnectAndAuthenticate(uint32 ipClient, const void *authBlob, uint32 authBlobSize, int steamID);
 		uint64_t createUnauthenticatedUserConnection();
-		void sendUserDisconnect(int steamID);
-		bool updateUserData(int steamID, const String& *name, uint32 score);
+		void sendUserDisconnect(uint64_t steamID);
+		bool updateUserData(uint64_t steamID, const String& *name, uint32 score);
 		uint32 getAuthSessionTicket(void *ticket, int maxTicket, uint32 *pcbTicket);
 		int beginAuthSession(const void *authTicket, int cbAuthTicket, int steamID);
-		void endAuthSession(int steamID);
+		void endAuthSession(uint64_t steamID);
 		void cancelAuthTicket(int authTicket);
-		int userHasLicenceForApp(int steamID, AppId_t appID);
+		int userHasLicenceForApp(uint64_t steamID, AppId_t appID);
 		bool requestUserGroupStatus(int steamID, int groupID);
 		bool handleIncomingPacket(const void *data, int cbData, uint32 ip, uint16 port);
 		int getNextOutgoingPacket(void *out, int maxOut, uint32 *address, uint16 *port);
 		void enableHeartbeats(bool active);
 		void setHeartbeatInterval(int interval);
 		void forceHeartbeat();
+		void associateWithClan(uint64_t clanID);
+		void computeNewPlayerCompatibility(uint64_t steamID);
 
 	protected:
 		static void _bind_methods();
@@ -89,11 +91,8 @@ class SteamServer: public Object {
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _client_Approved, GSClientApprove_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _client_Denied, GSClientDeny_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _client_Kick, GSClientKick_t);
-		STEAM_GAMESERVER_CALLBACK(SteamServer, _client_Achieve_Status, GSClientAchievementStatus_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _policy_Response, GSPolicyResponse_t);
-		STEAM_GAMESERVER_CALLBACK(SteamServer, _gameplay_Stats, GSGameplayStats_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _client_Group_Status, GSClientGroupStatus_t);
-		STEAM_GAMESERVER_CALLBACK(SteamServer, _reputation, GSReputation_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _associate_Clan, AssociateWithClanResult_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _player_Compat, ComputeNewPlayerCompatibilityResult_t);
 		// Run the Steamworks server API callbacks

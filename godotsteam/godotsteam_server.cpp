@@ -346,7 +346,7 @@ void SteamServer::forceHeartbeat(){
 	SteamGameServer()->ForceHeartbeat();
 }
 // Associate this game server with this clan for the purposes of computing player compatibility.
-void SteamServer::associateWithClan(int clanID){
+void SteamServer::associateWithClan(uint64_t clanID){
 	if(SteamGameServer() == NULL){
 		return;
 	}
@@ -354,7 +354,7 @@ void SteamServer::associateWithClan(int clanID){
 	SteamGameServer()->AssociateWithClan(groupID);
 }
 // Ask if any of the current players dont want to play with this new player - or vice versa.
-void SteamServer::computeNewPlayerCompatibility(int steamID){
+void SteamServer::computeNewPlayerCompatibility(uint64_t steamID){
 	if(SteamGameServer() == NULL){
 		return;
 	}
@@ -482,32 +482,11 @@ void SteamServer::_client_Kick(GSClientKick_t* clientData){
 	}
 	emit_signal("client_kick", steamID, reason);
 }
-// Client achievement info.
-void SteamServer::_client_Achieve_Status(GSClientAchievementStatus_t* clientData){
-	uint64_t steamID = clientData->m_SteamID.ConvertToUint64();
-	String achievement = cliendData->m_pchAchievement[128];
-	bool unlocked = clientData->m_bUnlocked;
-	emit_signal("client_achievement", steamID, achievement, unlocked);
-}
 // Received when the game server requests to be displayed as secure (VAC protected).
 // m_bSecure is true if the game server should display itself as secure to users, false otherwise.
 void SteamServer::_policy_Response(GSPolicyResponse_t* policyData){
 	uint8 secure = policyData->m_bSecure;
 	emit_signal("server_secure", secure);
-}
-// Game server gameplay stats info.
-void SteamServer::_gameplay_Stats(GSGameplayStats_t* statData){
-	int result;
-	if(statData->m_eResult == k_EResultOK){
-		result = RESULT_OK;
-	}
-	else{
-		result = RESULT_FAIL;
-	}
-	int32 rank = statData->m_nRank;
-	uint32 totalConnects = statData->m_unTotalConnects;
-	uint32 totalMinutesPlayed = statData->m_unTotalMinutesPlayed;
-	emit_signal("gameplay_stats", result, rank, totalConnects, totalMinutesPlayed);
 }
 // Sent as a reply to RequestUserGroupStatus().
 void SteamServer::_client_Group_Status(GSClientGroupStatus_t* clientData){
@@ -516,23 +495,6 @@ void SteamServer::_client_Group_Status(GSClientGroupStatus_t* clientData){
 	bool member = clientData->m_bMember;
 	bool officer = clientData->m_bOfficer;
 	emit_signal("group_status", steamID, groupID, member, officer);
-}
-// Sent as a reply to GetServerReputation().
-void SteamServer::_reputation(GSReputation_t* repData){
-	int result;
-	if(repData->m_eResult == k_EResultOK){
-		result = RESULT_OK;
-	}
-	else{
-		result = RESULT_FAIL;
-	}
-	uint32 score = repData->m_unReputationScore;
-	bool banned = repData->m_bBanned;
-	uint32 bannedIP = repData->m_unBannedIP;
-	uint16 bannedPort = repData->m_usBannedPort
-	uint64 bannedGameID = repData->m_ulBannedGameID;
-	uint32 banExpires = repData->m_unBanExpires;
-	emit_signal("server_reputation", result, score, banned, bannedIP, bannedPort, bannedGameID, banExpires);
 }
 // Sent as a reply to AssociateWithClan().
 void SteamServer::_associate_Clan(AssociateWithClanResult_t* clanData){
