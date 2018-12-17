@@ -19,7 +19,7 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-**Version 0.0.2 Changes**
+**Version 0.0.3 Changes**
 - Removed: depreciated signal __client_Achieve_Status_.
 - Removed: depreciated signal __gameplay_Stats_.
 - Removed: depreciated signal __reputation_.
