@@ -16,7 +16,7 @@ Steam* Steam::get_singleton(){
 	return singleton;
 }
 
-CSteamID Steam::createSteamID(uint32 steamID, int accountType){
+CSteamID Steam::createSteamID(uint32_t steamID, int accountType){
 	CSteamID cSteamID;
 	if(accountType < 0 || accountType >= k_EAccountTypeMax){
 		accountType = 1;
@@ -50,6 +50,8 @@ bool Steam::steamInit(){
 		// Load stats and achievements automatically.
 		SteamUserStats()->RequestCurrentStats();
 	}
+	// Get this app ID
+	currentAppID = SteamUtils()->GetAppID();
 	return err;
 }
 // Returns true/false if Steam is running.
@@ -479,112 +481,115 @@ uint64_t Steam::getFriendByIndex(int friendNum, int friendFlags){
 	return friendID.ConvertToUint64();
 }
 // Returns a relationship to a user.
-int Steam::getFriendRelationship(int steamID){
+int Steam::getFriendRelationship(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->GetFriendRelationship(friendID);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetFriendRelationship(userID);
 }
 // Returns the current status of the specified user.
-int Steam::getFriendPersonaState(int steamID){
+int Steam::getFriendPersonaState(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->GetFriendPersonaState(friendID);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetFriendPersonaState(userID);
 }
 // Get given friend's Steam username.
-String Steam::getFriendPersonaName(int steamID){
+String Steam::getFriendPersonaName(uint64_t steamID){
 	if(SteamFriends() != NULL && steamID > 0){
-		CSteamID friendID = createSteamID(steamID);
-		bool isDataLoading = SteamFriends()->RequestUserInformation(friendID, true);
+		CSteamID userID = (uint64)steamID;
+		bool isDataLoading = SteamFriends()->RequestUserInformation(userID, true);
 		if(!isDataLoading){
-			return SteamFriends()->GetFriendPersonaName(friendID);
+			return SteamFriends()->GetFriendPersonaName(userID);
 		}
 	}
 	return "";
 }
 // Returns true if the friend is actually in game and fills in pFriendGameInfo with an extra details. 
-bool Steam::getFriendGamePlayed(int steamID){
+bool Steam::getFriendGamePlayed(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID friendID = createSteamID(steamID);
 	FriendGameInfo_t gameInfo;
-	bool isFriend = SteamFriends()->GetFriendGamePlayed(friendID, &gameInfo);
+	CSteamID userID = (uint64)steamID;
+	bool isFriend = SteamFriends()->GetFriendGamePlayed(userID, &gameInfo);
 	return isFriend;
 }
 // Accesses old friends names; returns an empty string when there are no more items in the history.
-String Steam::getFriendPersonaNameHistory(int steamID, int nameHistory){
+String Steam::getFriendPersonaNameHistory(uint64_t steamID, int nameHistory){
 	if(SteamFriends() == NULL){
 		return "";
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->GetFriendPersonaNameHistory(friendID, nameHistory);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetFriendPersonaNameHistory(userID, nameHistory);
 }
 // Get friend's steam level, obviously.
-int Steam::getFriendSteamLevel(int steamID){
+int Steam::getFriendSteamLevel(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->GetFriendSteamLevel(friendID);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetFriendSteamLevel(userID);
 }
 // Returns nickname the current user has set for the specified player. Returns NULL if the no nickname has been set for that player.
-String Steam::getPlayerNickname(int steamID){
+String Steam::getPlayerNickname(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return "";
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->GetPlayerNickname(friendID);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetPlayerNickname(userID);
 }
 // Returns true if the specified user meets any of the criteria specified in iFriendFlags.
-bool Steam::hasFriend(int steamID, int friendFlags){
+bool Steam::hasFriend(uint64_t steamID, int friendFlags){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->HasFriend(friendID, friendFlags);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->HasFriend(userID, friendFlags);
 }
 // For clans a user is a member of, they will have reasonably up-to-date information, but for others you'll have to download the info to have the latest.
-void Steam::downloadClanActivityCounts(int clanID, int clansToRequest){
+void Steam::downloadClanActivityCounts(uint64_t clanID, int clansToRequest){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	clanActivity = createSteamID(clanID);
-	SteamFriends()->DownloadClanActivityCounts(&clanActivity, clansToRequest);
+	CSteamID clan = (uint64)clanID;
+	SteamFriends()->DownloadClanActivityCounts(&clan, clansToRequest);
 }
 // Iterators for getting users in a chat room, lobby, game server or clan.
-int Steam::getFriendCountFromSource(int clansID){
+int Steam::getFriendCountFromSource(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID clan = createSteamID(clansID);
+	CSteamID clan = (uint64)clanID;
 	return SteamFriends()->GetFriendCountFromSource(clan);
 }
 // Returns true if the local user can see that steamIDUser is a member or in steamIDSource.
-uint64_t Steam::getFriendFromSourceByIndex(int sourceID, int friendNum){
+uint64_t Steam::getFriendFromSourceByIndex(uint64_t sourceID, int friendNum){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID friendID = SteamFriends()->GetFriendFromSourceByIndex(createSteamID(sourceID), friendNum);
+	CSteamID source = (uint64)sourceID;
+	CSteamID friendID = SteamFriends()->GetFriendFromSourceByIndex(source, friendNum);
 	return friendID.ConvertToUint64();
 }
 // Returns true if the local user can see that steamIDUser is a member or in steamIDSource.
-bool Steam::isUserInSource(int steamID, int sourceID){
+bool Steam::isUserInSource(uint64_t steamID, uint64_t sourceID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	return SteamFriends()->IsUserInSource(createSteamID(steamID), createSteamID(sourceID));
+	CSteamID userID = (uint64)steamID;
+	CSteamID source = (uint64)sourceID;
+	return SteamFriends()->IsUserInSource(userID, source);
 }
 // User is in a game pressing the talk button (will suppress the microphone for all voice comms from the Steam friends UI).
-void Steam::setInGameVoiceSpeaking(int steamID, bool speaking){
+void Steam::setInGameVoiceSpeaking(uint64_t steamID, bool speaking){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID user = createSteamID(steamID);
-	SteamFriends()->SetInGameVoiceSpeaking(user, speaking);
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->SetInGameVoiceSpeaking(userID, speaking);
 }
 // Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".
 void Steam::activateGameOverlay(const String& url){
@@ -594,12 +599,12 @@ void Steam::activateGameOverlay(const String& url){
 	SteamFriends()->ActivateGameOverlay(url.utf8().get_data());
 }
 // Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".
-void Steam::activateGameOverlayToUser(const String& url, int steamID){
+void Steam::activateGameOverlayToUser(const String& url, uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID overlayUser = createSteamID(steamID);
-	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), overlayUser);
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), userID);
 }
 // Activates the overlay with specified web address.
 void Steam::activateGameOverlayToWebPage(const String& url){
@@ -616,84 +621,86 @@ void Steam::activateGameOverlayToStore(int appID){
 	SteamFriends()->ActivateGameOverlayToStore(AppId_t(appID), EOverlayToStoreFlag(0));
 }
 // Set player as 'Played With' for game.
-void Steam::setPlayedWith(int steamID){
+void Steam::setPlayedWith(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID friendID = createSteamID(steamID);
-	SteamFriends()->SetPlayedWith(friendID);
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->SetPlayedWith(userID);
 }
 // Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.
-void Steam::activateGameOverlayInviteDialog(int steamID){
+void Steam::activateGameOverlayInviteDialog(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID lobby = createSteamID(steamID);
-	SteamFriends()->ActivateGameOverlayInviteDialog(lobby);
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->ActivateGameOverlayInviteDialog(userID);
 }
 // Gets the small (32x32) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
-int Steam::getSmallFriendAvatar(int steamID){
+int Steam::getSmallFriendAvatar(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID avatar = createSteamID(steamID);
-	return SteamFriends()->GetSmallFriendAvatar(avatar);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetSmallFriendAvatar(userID);
 }
 // Gets the medium (64x64) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
-int Steam::getMediumFriendAvatar(int steamID){
+int Steam::getMediumFriendAvatar(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID avatar = createSteamID(steamID);
-	return SteamFriends()->GetMediumFriendAvatar(avatar);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetMediumFriendAvatar(userID);
 }
 // Gets the large (184x184) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
-int Steam::getLargeFriendAvatar(int steamID){
+int Steam::getLargeFriendAvatar(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID avatar = createSteamID(steamID);
-	return SteamFriends()->GetLargeFriendAvatar(avatar);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetLargeFriendAvatar(userID);
 }
 // Requests information about a user - persona name & avatar; if bRequireNameOnly is set, then the avatar of a user isn't downloaded.
-bool Steam::requestUserInformation(int steamID, bool requireNameOnly){
+bool Steam::requestUserInformation(uint64_t steamID, bool requireNameOnly){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID user = createSteamID(steamID);
-	return SteamFriends()->RequestUserInformation(user, requireNameOnly);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->RequestUserInformation(userID, requireNameOnly);
 }
 // Requests information about a clan officer list; when complete, data is returned in ClanOfficerListResponse_t call result.
-void Steam::requestClanOfficerList(int clanID){
+void Steam::requestClanOfficerList(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(clan);
 	callResultClanOfficerList.Set(apiCall, this, &Steam::_request_clan_officer_list);
 }
 // Returns the steamID of the clan owner.
-uint64_t Steam::getClanOwner(int clanID){
+uint64_t Steam::getClanOwner(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID ownerID = SteamFriends()->GetClanOwner(createSteamID(clanID));
+	CSteamID clan = (uint64)clanID;
+	CSteamID ownerID = SteamFriends()->GetClanOwner(clan);
 	return ownerID.ConvertToUint64();
 }
 // Returns the number of officers in a clan (including the owner).
-int Steam::getClanOfficerCount(int clanID){
+int Steam::getClanOfficerCount(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	return SteamFriends()->GetClanOfficerCount(clan);
 }
 // Returns the steamID of a clan officer, by index, of range [0,GetClanOfficerCount).
-uint64_t Steam::getClanOfficerByIndex(int clanID, int officer){
+uint64_t Steam::getClanOfficerByIndex(uint64_t clanID, int officer){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID officerID = SteamFriends()->GetClanOfficerByIndex(createSteamID(clanID), officer);
+	CSteamID clan = (uint64)clanID;
+	CSteamID officerID = SteamFriends()->GetClanOfficerByIndex(clan, officer);
 	return officerID.ConvertToUint64();
 }
 // If current user is chat restricted, he can't send or receive any text/voice chat messages. The user can't see custom avatars. But the user can be online and send/recv game invites.
@@ -722,116 +729,117 @@ void Steam::clearRichPresence(){
 	SteamFriends()->ClearRichPresence();
 }
 // Get a Rich Presence value from a specified friend (typically only used for debugging).
-String Steam::getFriendRichPresence(int friendID, const String& key){
+String Steam::getFriendRichPresence(uint64_t friendID, const String& key){
 	if(SteamFriends() == NULL){
 		return "";
 	}
-	CSteamID steamID = createSteamID(friendID);
-	return SteamFriends()->GetFriendRichPresence(steamID, key.utf8().get_data());
+	CSteamID user = (uint64)friendID;
+	return SteamFriends()->GetFriendRichPresence(user, key.utf8().get_data());
 }
 // Gets the number of Rich Presence keys that are set on the specified user.
-int Steam::getFriendRichPresenceKeyCount(int friendID){
+int Steam::getFriendRichPresenceKeyCount(uint64_t friendID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID steamID = createSteamID(friendID);
-	return SteamFriends()->GetFriendRichPresenceKeyCount(steamID);
+	CSteamID user = (uint64)friendID;
+	return SteamFriends()->GetFriendRichPresenceKeyCount(user);
 }
 // Returns an empty string ("") if the index is invalid or the specified user has no Rich Presence data available.
-String Steam::getFriendRichPresenceKeyByIndex(int friendID, int key){
+String Steam::getFriendRichPresenceKeyByIndex(uint64_t friendID, int key){
 	if(SteamFriends() == NULL){
 		return "";
 	}
-	CSteamID steamID = createSteamID(friendID);
-	return SteamFriends()->GetFriendRichPresenceKeyByIndex(steamID, key);
+	CSteamID user = (uint64)friendID;
+	return SteamFriends()->GetFriendRichPresenceKeyByIndex(user, key);
 }
 // Requests rich presence for a specific user.
-void Steam::requestFriendRichPresence(int friendID){
+void Steam::requestFriendRichPresence(uint64_t friendID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID steamID = createSteamID(friendID);
-	return SteamFriends()->RequestFriendRichPresence(steamID);
+	CSteamID user = (uint64)friendID;
+	return SteamFriends()->RequestFriendRichPresence(user);
 }
 // Invite friend to current game/lobby.
-bool Steam::inviteUserToGame(int steamID, const String& connectString){
+bool Steam::inviteUserToGame(uint64_t steamID, const String& connectString){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID friendID = createSteamID(steamID);
-	return SteamFriends()->InviteUserToGame(friendID, connectString.utf8().get_data());
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->InviteUserToGame(userID, connectString.utf8().get_data());
 }
 // Allows the user to join Steam group (clan) chats right within the game.
-void Steam::joinClanChatRoom(int clanID){
+void Steam::joinClanChatRoom(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	SteamFriends()->JoinClanChatRoom(clan);
 }
 // Leaves a Steam group chat that the user has previously entered with JoinClanChatRoom.
-bool Steam::leaveClanChatRoom(int clanID){
+bool Steam::leaveClanChatRoom(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	return SteamFriends()->LeaveClanChatRoom(clan);
 }
 // Get the number of users in a Steam group chat.
-int Steam::getClanChatMemberCount(int clanID){
+int Steam::getClanChatMemberCount(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	return SteamFriends()->GetClanChatMemberCount(clan);
 }
 // Gets the Steam ID at the given index in a Steam group chat.
-uint64_t Steam::getChatMemberByIndex(int clanID, int user){
+uint64_t Steam::getChatMemberByIndex(uint64_t clanID, int user){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID chatID = SteamFriends()->GetChatMemberByIndex(createSteamID(clanID), user);
+	CSteamID clan = (uint64)clanID;
+	CSteamID chatID = SteamFriends()->GetChatMemberByIndex(clan, user);
 	return chatID.ConvertToUint64();
 }
 // Sends a message to a Steam group chat room.
-bool Steam::sendClanChatMessage(int chatID, const String& text){
+bool Steam::sendClanChatMessage(uint64_t chatID, const String& text){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID chat = createSteamID(chatID);
+	CSteamID chat = (uint64)chatID;
 	return SteamFriends()->SendClanChatMessage(chat, text.utf8().get_data());
 }
 // Checks if a user in the Steam group chat room is an admin.
-bool Steam::isClanChatAdmin(int chatID, int steamID){
+bool Steam::isClanChatAdmin(uint64_t chatID, uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID chat = createSteamID(chatID);
-	CSteamID user = createSteamID(steamID);
-	return SteamFriends()->IsClanChatAdmin(chat, user);
+	CSteamID chat = (uint64)chatID;
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->IsClanChatAdmin(chat, userID);
 }
 // Checks if the Steam Group chat room is open in the Steam UI.
-bool Steam::isClanChatWindowOpenInSteam(int chatID){
+bool Steam::isClanChatWindowOpenInSteam(uint64_t chatID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID chat = createSteamID(chatID);
+	CSteamID chat = (uint64)chatID;
 	return SteamFriends()->IsClanChatWindowOpenInSteam(chat);
 }
 // Opens the specified Steam group chat room in the Steam UI.
-bool Steam::openClanChatWindowInSteam(int chatID){
+bool Steam::openClanChatWindowInSteam(uint64_t chatID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID chat = createSteamID(chatID);
+	CSteamID chat = (uint64)chatID;
 	return SteamFriends()->OpenClanChatWindowInSteam(chat);
 }
 // Closes the specified Steam group chat room in the Steam UI.
-bool Steam::closeClanChatWindowInSteam(int chatID){
+bool Steam::closeClanChatWindowInSteam(uint64_t chatID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID chat = createSteamID(chatID);
+	CSteamID chat = (uint64)chatID;
 	return SteamFriends()->CloseClanChatWindowInSteam(chat);
 }
 // Listens for Steam friends chat messages.
@@ -842,29 +850,29 @@ bool Steam::setListenForFriendsMessages(bool intercept){
 	return SteamFriends()->SetListenForFriendsMessages(intercept);
 }
 // Sends a message to a Steam friend.
-bool Steam::replyToFriendMessage(int steamID, const String& message){
+bool Steam::replyToFriendMessage(uint64_t steamID, const String& message){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID user = createSteamID(steamID);
-	return SteamFriends()->ReplyToFriendMessage(user, message.utf8().get_data());
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->ReplyToFriendMessage(userID, message.utf8().get_data());
 }
 // Gets the number of users following the specified user.
-void Steam::getFollowerCount(int steamID){
+void Steam::getFollowerCount(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID user = createSteamID(steamID);
-	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(user);
+	CSteamID userID = (uint64)steamID;
+	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(userID);
 	callResultFollowerCount.Set(apiCall, this, &Steam::_get_follower_count);
 }
 // Checks if the current user is following the specified user.
-void Steam::isFollowing(int steamID){
+void Steam::isFollowing(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID user = createSteamID(steamID);
-	SteamAPICall_t apiCall = SteamFriends()->IsFollowing(user);
+	CSteamID userID = (uint64)steamID;
+	SteamAPICall_t apiCall = SteamFriends()->IsFollowing(userID);
 	callResultIsFollowing.Set(apiCall, this, &Steam::_is_following);
 }
 // Gets the list of users that the current user is following.
@@ -876,19 +884,19 @@ void Steam::enumerateFollowingList(uint32 startIndex){
 	callResultEnumerateFollowingList.Set(apiCall, this, &Steam::_enumerate_following_list);
 }
 // Checks if the Steam group is public.
-bool Steam::isClanPublic(int clanID){
+bool Steam::isClanPublic(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	return SteamFriends()->IsClanPublic(clan);
 }
 // Checks if the Steam group is an official game group/community hub.
-bool Steam::isClanOfficialGameGroup(int clanID){
+bool Steam::isClanOfficialGameGroup(uint64_t clanID){
 	if(SteamFriends() == NULL){
 		return false;
 	}
-	CSteamID clan = createSteamID(clanID);
+	CSteamID clan = (uint64)clanID;
 	return SteamFriends()->IsClanOfficialGameGroup(clan);
 }
 // Get list of players user has recently played game with.
@@ -1041,16 +1049,24 @@ Array Steam::getFavoriteGames(){
 	Array favorites;
 	for(int i = 0; i < count; i++){
 		Dictionary favorite;
-		AppId_t *appID;
-		uint32 *ip;
-		uint16 *port;
-		uint16 *queryPort;
-		uint32 *flags;
-		uint32 *lastPlayed;
-		favorite["ret"] = SteamMatchmaking()->GetFavoriteGame(i, appID, ip, port, queryPort, flags, lastPlayed);
+		AppId_t appID;
+		uint32 ip;
+		uint16 port;
+		uint16 queryPort;
+		uint32 flags;
+		uint32 lastPlayed;
+		favorite["ret"] = SteamMatchmaking()->GetFavoriteGame(i, &appID, &ip, &port, &queryPort, &flags, &lastPlayed);
 		if(favorite["ret"]){
 			favorite["app"] = appID;
-			favorite["ip"] = ip;
+			// Convert the IP address back to a string
+			const int NBYTES = 4;
+			uint8 octet[NBYTES];
+			char favoriteIP[16];
+			for(int i = 0; i < NBYTES; i++){
+				octet[i] = ip >> (i * 8);
+			}
+			sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			favorite["ip"] = favoriteIP;
 			favorite["port"] = port;
 			favorite["query"] = queryPort;
 			favorite["flags"] = flags;
@@ -1189,36 +1205,37 @@ void Steam::createLobby(int lobbyType, int maxMembers){
 		eLobbyType = k_ELobbyTypeFriendsOnly;
 	}
 	else if(lobbyType == PUBLIC){
-		eLobbyType = k_ELobbyTypePublic;	
+		eLobbyType = k_ELobbyTypePublic;
 	}
 	else{
 		eLobbyType = k_ELobbyTypeInvisible;
 	}
-	SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
+	SteamAPICall_t apiCall = SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
+	callResultCreateLobby.Set(apiCall, this, &Steam::_lobby_created);
 }
 // Join an existing lobby.
-void Steam::joinLobby(int steamIDLobby){
+void Steam::joinLobby(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	SteamMatchmaking()->JoinLobby(lobbyID);
 }
 // Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback.
-void Steam::leaveLobby(int steamIDLobby){
+void Steam::leaveLobby(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->LeaveLobby(lobbyID);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	SteamMatchmaking()->LeaveLobby(lobbyID);
 }
 // Invite another user to the lobby, the target user will receive a LobbyInvite_t callback, will return true if the invite is successfully sent, whether or not the target responds.
-bool Steam::inviteUserToLobby(int steamIDLobby, int steamIDInvitee){
+bool Steam::inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID inviteeID = createSteamID(steamIDInvitee);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	CSteamID inviteeID = (uint64)steamIDInvitee;
 	return SteamMatchmaking()->InviteUserToLobby(lobbyID, inviteeID);
 }
 // Lobby iteration, for viewing details of users in a lobby.
@@ -1226,7 +1243,7 @@ int Steam::getNumLobbyMembers(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->GetNumLobbyMembers(lobbyID);
 }
 // Returns the CSteamID of a user in the lobby.
@@ -1234,7 +1251,8 @@ uint64_t Steam::getLobbyMemberByIndex(uint64_t steamIDLobby, int member){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(createSteamID(steamIDLobby), member);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	CSteamID lobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(lobbyID, member);
 	return lobbyMember.ConvertToUint64();
 }
 // Get data associated with this lobby.
@@ -1242,7 +1260,7 @@ String Steam::getLobbyData(uint64_t steamIDLobby, const String& key){
 	if(SteamMatchmaking() == NULL){
 		return "";
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->GetLobbyData(lobbyID, key.utf8().get_data());
 }
 // Sets a key/value pair in the lobby metadata.
@@ -1250,7 +1268,7 @@ bool Steam::setLobbyData(uint64_t steamIDLobby, const String& key, const String&
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->SetLobbyData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
 }
 // Get lobby data by the lobby's ID
@@ -1259,17 +1277,15 @@ Dictionary Steam::getLobbyDataByIndex(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return data;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobbyID);
-	char* key;
-	char* value;
+	char key;
+	char value;
 	for(int i = 0; i < dataCount; i++){
-		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, key, LOBBY_KEY_LENGTH, value, CHAT_METADATA_MAX);
+		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, &key, LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
 		if(success){
 			data["index"] = i;
-			String dataKey = key;
 			data["key"] = key;
-			String dataValue = value;
 			data["value"] = value;
 		}
 	}
@@ -1280,7 +1296,7 @@ bool Steam::deleteLobbyData(uint64_t steamIDLobby, const String& key){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->DeleteLobbyData(lobbyID, key.utf8().get_data());
 }
 // Gets per-user metadata for someone in this lobby.
@@ -1288,8 +1304,8 @@ String Steam::getLobbyMemberData(uint64_t steamIDLobby, uint64_t steamIDUser, co
 	if(SteamMatchmaking() == NULL){
 		return "";
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID userID = createSteamID(steamIDUser);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	CSteamID userID = (uint64)steamIDUser;
 	return SteamMatchmaking()->GetLobbyMemberData(lobbyID, userID, key.utf8().get_data());
 }
 // Sets per-user metadata (for the local user implicitly).
@@ -1297,8 +1313,8 @@ void Steam::setLobbyMemberData(uint64_t steamIDLobby, const String& key, const S
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	return SteamMatchmaking()->SetLobbyMemberData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	SteamMatchmaking()->SetLobbyMemberData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
 }
 // Broadcasts a chat message to the all the users in the lobby.
 bool Steam::sendLobbyChatMsg(uint64_t steamIDLobby, const String& messageBody){
@@ -1306,46 +1322,83 @@ bool Steam::sendLobbyChatMsg(uint64_t steamIDLobby, const String& messageBody){
 		return false;
 	}
 	int messageLength = messageBody.length();
-	const void * message = messageBody.c_str();
-	return SteamMatchmaking()->SendLobbyChatMsg(createSteamID(steamIDLobby), message, messageLength);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	return SteamMatchmaking()->SendLobbyChatMsg(lobbyID, messageBody.utf8().get_data(), messageLength);
 }
 // Refreshes metadata for a lobby you're not necessarily in right now.
 bool Steam::requestLobbyData(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->RequestLobbyData(lobbyID);
 }
 // Sets the game server associated with the lobby.
-void Steam::setLobbyGameServer(uint64_t steamIDLobby, uint32 serverIP, uint16 serverPort, uint64_t steamIDGameServer){
+void Steam::setLobbyGameServer(uint64_t steamIDLobby, const String& serverIP, uint16 serverPort, uint64_t steamIDGameServer){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID serverID = createSteamID(steamIDGameServer);
-	return SteamMatchmaking()->SetLobbyGameServer(lobbyID,serverIP, serverPort, serverID);
+	// Resolve address and convert it from IP_Address struct to uint32_t
+	IP_Address address;
+	if(serverIP.is_valid_ip_address()){
+		address = serverIP;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(serverIP, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(address == IP_Address()){
+		return;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	// If setting a game server with no server (fake) Steam ID
+	if(steamIDGameServer == 0){
+		SteamMatchmaking()->SetLobbyGameServer(lobbyID, *((uint32_t *)ip4_p), serverPort, k_steamIDNil);
+	}
+	else{
+		CSteamID gameID = (uint64)steamIDGameServer;
+		SteamMatchmaking()->SetLobbyGameServer(lobbyID, *((uint32_t *)ip4_p), serverPort, gameID);
+	}
 }
 // Returns the details of a game server set in a lobby - returns false if there is no game server set, or that lobby doesn't exist.
 Dictionary Steam::getLobbyGameServer(uint64_t steamIDLobby){
-	Dictionary server;
-	uint32 *serverIP;
-	uint16 *serverPort;
-	CSteamID *serverID;
-	server["ret"] = SteamMatchmaking()->GetLobbyGameServer(createSteamID(steamIDLobby), serverIP, serverPort, serverID);
-	if(server["ret"]){
-		server["ip"] = serverIP;
-		server["port"] = serverPort;
-		server["id"] = serverID;
+	Dictionary gameServer;
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	uint32 serverIP = 0;
+	uint16 serverPort = 0;
+	CSteamID serverID;
+	gameServer["ret"] = SteamMatchmaking()->GetLobbyGameServer(lobbyID, &serverIP, &serverPort, &serverID);
+	if(gameServer["ret"]){
+		// Convert the IP address back to a string
+		const int NBYTES = 4;
+		uint8 octet[NBYTES];
+		char ip[16];
+		for(int i = 0; i < NBYTES; i++){
+			octet[i] = serverIP >> (i * 8);
+		}
+		sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+		gameServer["ip"] = ip;
+		gameServer["port"] = serverPort;
+		// Convert the server ID
+		int server = serverID.ConvertToUint64();
+		gameServer["id"] = server;
 	}
-	return server;
+	return gameServer;
 }
 // Set the limit on the # of users who can join the lobby.
 bool Steam::setLobbyMemberLimit(uint64_t steamIDLobby, int maxMembers){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->SetLobbyMemberLimit(lobbyID, maxMembers);
 }
 // Returns the current limit on the # of users who can join the lobby; returns 0 if no limit is defined.
@@ -1353,7 +1406,7 @@ int Steam::getLobbyMemberLimit(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->GetLobbyMemberLimit(lobbyID);
 }
 // Updates which type of lobby it is.
@@ -1361,7 +1414,6 @@ bool Steam::setLobbyType(uint64_t steamIDLobby, int eLobbyType){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
 	// Set the lobby type correctly
 	ELobbyType lobbyType;
 	if(eLobbyType == PRIVATE){
@@ -1376,6 +1428,7 @@ bool Steam::setLobbyType(uint64_t steamIDLobby, int eLobbyType){
 	else{
 		lobbyType = k_ELobbyTypeInvisible;
 	}
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->SetLobbyType(lobbyID, lobbyType);
 }
 // Sets whether or not a lobby is joinable - defaults to true for a new lobby.
@@ -1383,7 +1436,7 @@ bool Steam::setLobbyJoinable(uint64_t steamIDLobby, bool joinable){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
+	CSteamID lobbyID = (uint64)steamIDLobby;
 	return SteamMatchmaking()->SetLobbyJoinable(lobbyID, joinable);
 }
 // Returns the current lobby owner.
@@ -1391,16 +1444,17 @@ uint64_t Steam::getLobbyOwner(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	CSteamID lobbyID = SteamMatchmaking()->GetLobbyOwner(createSteamID(steamIDLobby));
-	return lobbyID.ConvertToUint64();
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	CSteamID ownerID = SteamMatchmaking()->GetLobbyOwner(lobbyID);
+	return ownerID.ConvertToUint64();
 }
 // Changes who the lobby owner is.
 bool Steam::setLobbyOwner(uint64_t steamIDLobby, uint64_t steamIDNewOwner){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID ownerID = createSteamID(steamIDNewOwner);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	CSteamID ownerID = (uint64)steamIDNewOwner;
 	return SteamMatchmaking()->SetLobbyOwner(lobbyID, ownerID);
 }
 // Link two lobbies for the purposes of checking player compatibility.
@@ -1408,8 +1462,8 @@ bool Steam::setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	CSteamID lobbyID = createSteamID(steamIDLobby);
-	CSteamID dependentID = createSteamID(steamIDLobbyDependent);
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	CSteamID dependentID = (uint64)steamIDLobbyDependent;
 	return SteamMatchmaking()->SetLinkedLobby(lobbyID, dependentID);
 }
 /////////////////////////////////////////////////
@@ -1653,7 +1707,7 @@ void Steam::_file_details_result(FileDetailsResult_t* fileData){
 	emit_signal("file_details_result", result, fileSize, fileHash, flags);
 }
 // Signal the lobby has been created.
-void Steam::_lobby_created(LobbyCreated_t* lobbyData){
+void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 	int connect;
 	// Convert the lobby response back over.
 	if(lobbyData->m_eResult == k_EResultOK){
@@ -1674,27 +1728,32 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData){
 	else{
 		connect = LOBBY_LIMIT_EXCEEDED;
 	}
-	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
-	emit_signal("lobby_created", connect, lobbyID);
+	CSteamID lobbyID = lobbyData->m_ulSteamIDLobby;
+	uint64_t lobby = lobbyID.ConvertToUint64();
+	emit_signal("lobby_created", connect, lobby);
 }
 // Signal that lobby has been joined.
 void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
-	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
-	uint32 permissions = lobbyData->m_rgfChatPermissions;
+	CSteamID steamLobbyID = lobbyData->m_ulSteamIDLobby;
+	uint64_t lobbyID = steamLobbyID.ConvertToUint64();
+	uint32_t permissions = lobbyData->m_rgfChatPermissions;
 	bool locked = lobbyData->m_bLocked;
-	uint32 response = lobbyData->m_EChatRoomEnterResponse;
+	uint32_t response = lobbyData->m_EChatRoomEnterResponse;
 	emit_signal("lobby_joined", lobbyID, permissions, locked, response);
 }
 // Signal that a lobby invite was sent.
 void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
-	int inviterID = (uint64)lobbyData->m_ulSteamIDUser;
-	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
-	int gameID = (uint64)lobbyData->m_ulGameID;
-	emit_signal("lobby_invite", inviterID, lobbyID, gameID);
+	CSteamID inviterID = lobbyData->m_ulSteamIDUser;
+	uint64_t inviter = inviterID.ConvertToUint64();
+	CSteamID lobbyID = lobbyData->m_ulSteamIDLobby;
+	uint64_t lobby = lobbyID.ConvertToUint64();
+	CSteamID gameID = lobbyData->m_ulGameID;
+	uint64_t game = gameID.ConvertToUint64();
+	emit_signal("lobby_invite", inviter, lobby, game);
 }
 // Signal a game/lobby join has been requested.
 void Steam::_join_requested(GameRichPresenceJoinRequested_t* callData){
-	int steamID = callData->m_steamIDFriend.GetAccountID();
+	uint64_t steamID = callData->m_steamIDFriend.GetAccountID();
 	String con_string = callData->m_rgchConnect;
 	emit_signal("join_requested", steamID, con_string);
 }
@@ -1875,17 +1934,71 @@ void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure){
 	}	
 	emit_signal("lobby_match_list", lobbies);
 }
+// Signal when a lobby game is created
+void Steam::_lobby_game_created(LobbyGameCreated_t *callData){
+	uint64_t lobbyID = callData->m_ulSteamIDLobby;
+	uint64_t serverID = callData->m_ulSteamIDGameServer;
+	uint32 ip = callData->m_unIP;
+	uint16 port = callData->m_usPort;
+	// Convert the IP address back to a string
+	const int NBYTES = 4;
+	uint8 octet[NBYTES];
+	char serverIP[16];
+	for(int i = 0; i < NBYTES; i++){
+		octet[i] = ip >> (i * 8);
+	}
+	sprintf(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	emit_signal("lobby_game_created", lobbyID, serverID, serverIP, port);
+}
 // Signal when a lobby chat message is received
 void Steam::_lobby_Message(LobbyChatMsg_t *callData){
 	uint64 lobbyID = callData->m_ulSteamIDLobby;
+	uint64 userID = callData->m_ulSteamIDUser;
 	uint8 chatType = callData->m_eChatEntryType;
 	uint32 chatID = callData->m_iChatID;
 	// Get the chat message data
-	String *data;
-	CSteamID *userID;
-	EChatEntryType *type;
-	int messageSize = SteamMatchmaking()->GetLobbyChatEntry(createSteamID(lobbyID), chatID, userID, data, 4096, type);
-	emit_signal("lobby_message_received", data);
+	String data;
+	// Get chat type
+	EChatEntryType type;
+	if(chatType == CHAT_INVALID){
+		type = k_EChatEntryTypeInvalid;
+	}
+	else if(chatType == CHAT_MESSAGE){
+		type = k_EChatEntryTypeChatMsg;
+	}
+	else if(chatType == CHAT_TYPING){
+		type = k_EChatEntryTypeTyping;
+	}
+	else if(chatType == CHAT_INVITE_GAME){
+		type = k_EChatEntryTypeInviteGame;
+	}
+	else if(chatType == CHAT_EMOTE){
+		type = k_EChatEntryTypeEmote;
+	}
+	else if(chatType == CHAT_LEFT){
+		type = k_EChatEntryTypeLeftConversation;
+	}
+	else if(chatType == CHAT_ENTERED){
+		type = k_EChatEntryTypeEntered;
+	}
+	else if(chatType == CHAT_KICKED){
+		type = k_EChatEntryTypeWasKicked;
+	}
+	else if(chatType == CHAT_BANNED){
+		type = k_EChatEntryTypeWasBanned;
+	}
+	else if(chatType == CHAT_DISCONNECTED){
+		type = k_EChatEntryTypeDisconnected;
+	}
+	else if(chatType == CHAT_HISTORICAL){
+		type = k_EChatEntryTypeHistoricalChat;
+	}
+	else if(chatType == CHAT_LINK_BLOCKED){
+		type = k_EChatEntryTypeLinkBlocked;
+	}
+	CSteamID steamID = userID;
+	int ret = SteamMatchmaking()->GetLobbyChatEntry((CSteamID)lobbyID, chatID, &steamID, &data, 4096, &type);
+	emit_signal("lobby_message_received", data.utf8().get_data(), type);
 }
 // Signal number of current players (online + offline).
 void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure){
@@ -1960,10 +2073,29 @@ void Steam::_screenshot_ready(ScreenshotReady_t* callData){
 }
 // User stats are ready.
 void Steam::_user_stats_received(UserStatsReceived_t* callData){
-	uint64_t gameID = callData->m_nGameID;
+	CSteamID gameID = callData->m_nGameID;
+	uint64_t game = gameID.ConvertToUint64();
 	uint32_t result = callData->m_eResult;
-	uint64_t userID = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("user_stats_received", gameID, result, userID);
+	CSteamID userID = callData->m_steamIDUser;
+	uint64_t user = userID.ConvertToUint64();
+	emit_signal("user_stats_received", game, result, user);
+}
+// User stats were stored correctly.
+void Steam::_user_stats_stored(UserStatsStored_t* callData){
+	CSteamID gameID = callData->m_nGameID;
+	uint64_t game = gameID.ConvertToUint64();
+	uint32_t result = callData->m_eResult;
+	emit_signal("user_stats_stored", game, result);
+}
+// User achievement was stored correctly.
+void Steam::_user_achievement_stored(UserAchievementStored_t* callData){
+	CSteamID gameID = callData->m_nGameID;
+	uint64_t game = gameID.ConvertToUint64();
+	bool groupAchieve = callData->m_bGroupAchievement;
+	String name = callData->m_rgchAchievementName;
+	uint32_t currentProgress = callData->m_nCurProgress;
+	uint32_t maxProgress = callData->m_nMaxProgress;
+	emit_signal("user_achievement_stored", game, groupAchieve, name, currentProgress, maxProgress);
 }
 // Result of an achievement icon that has been fetched.
 void Steam::_user_achievement_icon_fetched(UserAchievementIconFetched_t* callData){
@@ -2054,8 +2186,8 @@ uint64_t Steam::getSteamID(){
 	if(SteamUser() == NULL){
 		return 0;
 	}
-	CSteamID cSteamID = SteamUser()->GetSteamID();
-	return cSteamID.ConvertToUint64();
+	CSteamID steamID = SteamUser()->GetSteamID();
+	return steamID.ConvertToUint64();
 }
 // Check, true/false, if user is logged into Steam currently.
 bool Steam::loggedOn(){
@@ -2210,6 +2342,13 @@ bool Steam::resetAllStats(bool achievementsToo){
 }
 // Request all statistics and achievements from Steam servers.
 bool Steam::requestCurrentStats(){
+	if(SteamUserStats() == NULL){
+		return false;
+	}
+	// If the user isn't logged in, you can't get stats
+	if(!SteamUser()->BLoggedOn()){
+		return false;
+	}
 	return SteamUserStats()->RequestCurrentStats();
 }
 // Asynchronously fetch the data for the percentages.
@@ -2957,7 +3096,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("is_following"));
 	ADD_SIGNAL(MethodInfo("enumerate_following_list"));
 	ADD_SIGNAL(MethodInfo("lobby_match_list"));
-	ADD_SIGNAL(MethodInfo("lobby_message"));
+	ADD_SIGNAL(MethodInfo("lobby_game_created"));
+	ADD_SIGNAL(MethodInfo("lobby_message_received"));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
 	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::INT, "leaderboard"), PropertyInfo(Variant::INT, "found")));
 	ADD_SIGNAL(MethodInfo("leaderboard_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
@@ -2973,21 +3113,23 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
+	ADD_SIGNAL(MethodInfo("user_stats_stored"));
+	ADD_SIGNAL(MethodInfo("user_achievement_stored"));
 	ADD_SIGNAL(MethodInfo("user_achievement_icon_fetched", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::STRING, "achievementName"), PropertyInfo(Variant::BOOL, "achieved"), PropertyInfo(Variant::INT, "iconHandle")));
 	ADD_SIGNAL(MethodInfo("global_achievement_percentages_ready", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("workshop_item_created"));
 	ADD_SIGNAL(MethodInfo("workshop_item_updated"));
 	ADD_SIGNAL(MethodInfo("workshop_item_installed"));
-	// Status constants //////////////////////////
-	BIND_CONSTANT(OFFLINE);		// 0
-	BIND_CONSTANT(ONLINE);		// 1
-	BIND_CONSTANT(BUSY);		// 2
-	BIND_CONSTANT(AWAY);		// 3
-	BIND_CONSTANT(SNOOZE);		// 4
-	BIND_CONSTANT(LF_TRADE);	// 5
-	BIND_CONSTANT(LF_PLAY);		// 6
-	BIND_CONSTANT(NOT_OFFLINE); // Custom
-	BIND_CONSTANT(ALL); 		// Custom
+	// Status constants /////////////////////////
+	BIND_CONSTANT(OFFLINE);						// 0
+	BIND_CONSTANT(ONLINE);						// 1
+	BIND_CONSTANT(BUSY);						// 2
+	BIND_CONSTANT(AWAY);						// 3
+	BIND_CONSTANT(SNOOZE);						// 4
+	BIND_CONSTANT(LF_TRADE);					// 5
+	BIND_CONSTANT(LF_PLAY);						// 6
+	BIND_CONSTANT(NOT_OFFLINE);					// Custom
+	BIND_CONSTANT(ALL); 						// Custom
 	// Friend flags /////////////////////////////
 	BIND_CONSTANT(FLAG_NONE);						// 0x00
 	BIND_CONSTANT(FLAG_BLOCKED);					// 0x01
@@ -3075,12 +3217,6 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);			// 1
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW);	// 2
 	// Matchmaking types ////////////////////////
-	BIND_CONSTANT(PRIVATE);				// Only way to join the lobby is to invite to someone else
-	BIND_CONSTANT(FRIENDS_ONLY);		// Shows for friends or invitees, but not in lobby list
-	BIND_CONSTANT(PUBLIC);				// Visible for friends and in lobby list
-	BIND_CONSTANT(INVISIBLE);			// Returned by search, but not visible to other friends
-	BIND_CONSTANT(LOBBY_KEY_LENGTH);	// Maximum number of characters a lobby metadata key can be
-	// Matchmaking types ////////////////////////
 	BIND_CONSTANT(PRIVATE);						// Only way to join the lobby is to invite to someone else.
 	BIND_CONSTANT(FRIENDS_ONLY);				// Shows for friends or invitees, but not in lobby list.
 	BIND_CONSTANT(PUBLIC);						// Visible for friends and in lobby list.
@@ -3103,7 +3239,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LOBBY_FAIL);					// Server responded, but with an unknown internal error.
 	BIND_CONSTANT(LOBBY_ACCESS_DENIED);			// Game isn't set to allow lobbies, or your client does haven't rights to play the game.
 	BIND_CONSTANT(LOBBY_LIMIT_EXCEEDED);		// Game client has created too many lobbies.
-	// Remote storage ///////////////////////////
+	// Remote Storage
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_NONE);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_WINDOWS);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_OSX);
@@ -3112,9 +3248,9 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_RESERVED2);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);
 	// Workshop item characters /////////////////
-	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);		// 128
-	BIND_CONSTANT(UGC_MAX_DESC_CHARS);		// 8000
-	BIND_CONSTANT(UGC_MAX_METADATA_CHARS);	// 5000
+	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);			// 128
+	BIND_CONSTANT(UGC_MAX_DESC_CHARS);			// 8000
+	BIND_CONSTANT(UGC_MAX_METADATA_CHARS);		// 5000
 	// Workshop item types //////////////////////
 	BIND_CONSTANT(UGC_ITEM_COMMUNITY);				// Normal items that can be subscribed to.
 	BIND_CONSTANT(UGC_ITEM_MICROTRANSACTION);		// Item that is meant to be voted on for the purpose of selling in-game.
@@ -3133,25 +3269,25 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_ITEM_STEAMVIDEO);				// Steam video.
 	BIND_CONSTANT(UGC_ITEM_GAMEMANAGEDITEM);		// Managed completely by the game, not the user, and not shown on the web.
 	BIND_CONSTANT(UGC_ITEM_MAX);					// Only used for enumerating.
-	// Workshop item stats //////////////////////
-	BIND_CONSTANT(UGC_STATE_NONE);			// Not tracked on client
-	BIND_CONSTANT(UGC_STATE_SUBSCRIBED);	// Current user is subscribed to this item, not just cached
-	BIND_CONSTANT(UGC_STATE_LEGACY);		// Was created with ISteamRemoteStorage
-	BIND_CONSTANT(UGC_STATE_INSTALLED);		// Is installed and usable (but maybe out of date)
-	BIND_CONSTANT(UGC_STATE_UPDATE);		// Needs an update, either because it's not installed yet or creator updated content
-	BIND_CONSTANT(UGC_STATE_DOWNLOADING);	// Update is currently downloading
-	BIND_CONSTANT(UGC_STATE_PENDING);		// DownloadItem() was called for this item, content isn't available until DownloadItemResult_t is fired
+	// Workshop item states /////////////////////
+	BIND_CONSTANT(UGC_STATE_NONE);				// Not tracked on client.
+	BIND_CONSTANT(UGC_STATE_SUBSCRIBED);		// Current user is subscribed to this item, not just cached.
+	BIND_CONSTANT(UGC_STATE_LEGACY);			// Was created with ISteamRemoteStorage.
+	BIND_CONSTANT(UGC_STATE_INSTALLED);			// Is installed and usable (but maybe out of date).
+	BIND_CONSTANT(UGC_STATE_UPDATE);			// Needs an update, either because it's not installed yet or creator updated content.
+	BIND_CONSTANT(UGC_STATE_DOWNLOADING);		// Update is currently downloading.
+	BIND_CONSTANT(UGC_STATE_PENDING);			// DownloadItem() was called for this item, content isn't available until DownloadItemResult_t is fired.
 	// Workshop item visibility//////////////////
 	BIND_CONSTANT(UGC_FILE_VISIBLE_PUBLIC);
 	BIND_CONSTANT(UGC_FILE_VISIBLE_FRIENDS);
 	BIND_CONSTANT(UGC_FILE_VISIBLE_PRIVATE);
 	// Workshop item update status //////////////
-	BIND_CONSTANT(STATUS_INVALID);				// Update handle was invalid, job might be finished, listen to SubmitItemUpdateResult_t
-	BIND_CONSTANT(STATUS_PREPARING_CONFIG);		// Update is processing configuration data
-	BIND_CONSTANT(STATUS_PREPARING_CONTENT);	// Update is reading and processing content files
-	BIND_CONSTANT(STATUS_UPLOADING_CONTENT);	// Update is uploading content changes to Steam
-	BIND_CONSTANT(STATUS_UPLOADING_PREVIEW);	// Update is uploading new preview file image
-	BIND_CONSTANT(STATUS_COMMITTING_CHANGES);	// Update is committing all changes
+	BIND_CONSTANT(STATUS_INVALID);				// Update handle was invalid, job might be finished, listen to SubmitItemUpdateResult_t.
+	BIND_CONSTANT(STATUS_PREPARING_CONFIG);		// Update is processing configuration data.
+	BIND_CONSTANT(STATUS_PREPARING_CONTENT);	// Update is reading and processing content files.
+	BIND_CONSTANT(STATUS_UPLOADING_CONTENT);	// Update is uploading content changes to Steam.
+	BIND_CONSTANT(STATUS_UPLOADING_PREVIEW);	// Update is uploading new preview file image.
+	BIND_CONSTANT(STATUS_COMMITTING_CHANGES);	// Update is committing all changes.
 	// Result constants /////////////////////////
 	BIND_CONSTANT(RESULT_OK);						// 1
 	BIND_CONSTANT(RESULT_FAIL);						// 2

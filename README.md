@@ -16,17 +16,19 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.9.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.9.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.9.0 Changes**
-- Added: all remaining matchmaking functions
-- Added: all remaining friend functions
-- Changed: getRecentPlayers to include timestamp
-- Changed: naming of leaderboard_handle and leaderboard_entries for consistency
-- Changed: getAchievement to dictionary (courtesy of jandrewlong)
-- Fixed: invite functions giving incorrect steam ids
-- Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems
-- Removed: setGameInfo, clearGameInfo, inviteFriend
+**Version 1.9.1 Changes**
+- Added: additional user statistics and achievement signals
+- Changed: minor notations
+- Fixed: Linux not compiling correctly with new Friends and Matchmaking updates
+- Fixed: various Friends functions not providing correct data
+- Fixed: missing bind methods for integers
+
+Known Issues
+----------
+- Lobby message will crash game, favoriting lobbies does not work yet
+- getFriendGamePlayed is incomplete; should be a dictionary
 
 Quick How-To
 ----------

@@ -58,7 +58,7 @@ class Steam: public Object {
 		Steam();
 		~Steam();
 
-		CSteamID createSteamID(uint32 steamID, int accountType=-1);
+		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
 		Image drawAvatar(int size, uint8* buffer);
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
@@ -108,63 +108,63 @@ class Steam: public Object {
 		bool showBindingPanel(uint64_t controllerHandle);
 		bool shutdown();
 		void triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed);
-// Friends //////////////////////////////////
+		// Friends //////////////////////////////////
 		String getPersonaName();
 		void setPersonaName(const String& name);
 		int getPersonaState();
 		int getFriendCount();
 		uint64_t getFriendByIndex(int friendNum, int friendFlags);
-		int getFriendRelationship(int steamID);
-		int getFriendPersonaState(int steamID);
-		String getFriendPersonaName(int steamID);
-		bool getFriendGamePlayed(int steamID);
-		String getFriendPersonaNameHistory(int steamID, int nameHistory);
-		int getFriendSteamLevel(int steamID);
-		String getPlayerNickname(int steamID);
-		bool hasFriend(int steamID, int friendFlags);
-		void downloadClanActivityCounts(int clanID, int clansToRequest);
-		int getFriendCountFromSource(int clansID);
-		uint64_t getFriendFromSourceByIndex(int sourceID, int friendNum);
-		bool isUserInSource(int steamID, int sourceID);
-		void setInGameVoiceSpeaking(int steamID, bool speaking);
+		int getFriendRelationship(uint64_t steamID);
+		int getFriendPersonaState(uint64_t steamID);
+		String getFriendPersonaName(uint64_t steamID);
+		bool getFriendGamePlayed(uint64_t steamID);
+		String getFriendPersonaNameHistory(uint64_t steamID, int nameHistory);
+		int getFriendSteamLevel(uint64_t steamID);
+		String getPlayerNickname(uint64_t steamID);
+		bool hasFriend(uint64_t steamID, int friendFlags);
+		void downloadClanActivityCounts(uint64_t clanID, int clansToRequest);
+		int getFriendCountFromSource(uint64_t clanID);
+		uint64_t getFriendFromSourceByIndex(uint64_t sourceID, int friendNum);
+		bool isUserInSource(uint64_t steamID, uint64_t sourceID);
+		void setInGameVoiceSpeaking(uint64_t steamID, bool speaking);
 		void activateGameOverlay(const String& type);
-		void activateGameOverlayToUser(const String& type, int steamID);
+		void activateGameOverlayToUser(const String& type, uint64_t steamID);
 		void activateGameOverlayToWebPage(const String& url);
 		void activateGameOverlayToStore(int appID=0);
-		void setPlayedWith(int steamID);
-		void activateGameOverlayInviteDialog(int steamID);
-		int getSmallFriendAvatar(int steamID);
-		int getMediumFriendAvatar(int steamID);
-		int getLargeFriendAvatar(int steamID);
-		bool requestUserInformation(int steamID, bool requireNameOnly);
-		void requestClanOfficerList(int clanID);
-		uint64_t getClanOwner(int clanID);
-		int getClanOfficerCount(int clanID);
-		uint64_t getClanOfficerByIndex(int clanID, int officer);
+		void setPlayedWith(uint64_t steamID);
+		void activateGameOverlayInviteDialog(uint64_t steamID);
+		int getSmallFriendAvatar(uint64_t steamID);
+		int getMediumFriendAvatar(uint64_t steamID);
+		int getLargeFriendAvatar(uint64_t steamID);
+		bool requestUserInformation(uint64_t steamID, bool requireNameOnly);
+		void requestClanOfficerList(uint64_t clanID);
+		uint64_t getClanOwner(uint64_t clanID);
+		int getClanOfficerCount(uint64_t clanID);
+		uint64_t getClanOfficerByIndex(uint64_t clanID, int officer);
 		uint32 getUserRestrictions();
 		bool setRichPresence(const String& key, const String& value);
 		void clearRichPresence();
-		String getFriendRichPresence(int friendID, const String& key);
-		int getFriendRichPresenceKeyCount(int friendID);
-		String getFriendRichPresenceKeyByIndex(int friendID, int key);
-		void requestFriendRichPresence(int friendID);
-		bool inviteUserToGame(int friendID, const String& connectString);
-		void joinClanChatRoom(int clanID);
-		bool leaveClanChatRoom(int clanID);
-		int getClanChatMemberCount(int clanID);
-		uint64_t getChatMemberByIndex(int clanID, int user);
-		bool sendClanChatMessage(int chatID, const String& text);
-		bool isClanChatAdmin(int chatID, int steamID);
-		bool isClanChatWindowOpenInSteam(int chatID);
-		bool openClanChatWindowInSteam(int chatID);
-		bool closeClanChatWindowInSteam(int chatID);
+		String getFriendRichPresence(uint64_t friendID, const String& key);
+		int getFriendRichPresenceKeyCount(uint64_t friendID);
+		String getFriendRichPresenceKeyByIndex(uint64_t friendID, int key);
+		void requestFriendRichPresence(uint64_t friendID);
+		bool inviteUserToGame(uint64_t friendID, const String& connectString);
+		void joinClanChatRoom(uint64_t clanID);
+		bool leaveClanChatRoom(uint64_t clanID);
+		int getClanChatMemberCount(uint64_t clanID);
+		uint64_t getChatMemberByIndex(uint64_t clanID, int user);
+		bool sendClanChatMessage(uint64_t chatID, const String& text);
+		bool isClanChatAdmin(uint64_t chatID, uint64_t steamID);
+		bool isClanChatWindowOpenInSteam(uint64_t chatID);
+		bool openClanChatWindowInSteam(uint64_t chatID);
+		bool closeClanChatWindowInSteam(uint64_t chatID);
 		bool setListenForFriendsMessages(bool intercept);
-		bool replyToFriendMessage(int steamID, const String& message);
-		void getFollowerCount(int steamID);
-		void isFollowing(int steamID);
+		bool replyToFriendMessage(uint64_t steamID, const String& message);
+		void getFollowerCount(uint64_t steamID);
+		void isFollowing(uint64_t steamID);
 		void enumerateFollowingList(uint32 startIndex);
-		bool isClanPublic(int clanID);
-		bool isClanOfficialGameGroup(int clanID);
+		bool isClanPublic(uint64_t clanID);
+		bool isClanOfficialGameGroup(uint64_t clanID);
 		Array getRecentPlayers();
 		void getFriendAvatar(int size=AVATAR_MEDIUM);
 		Array getUserFriendsGroups();
@@ -182,20 +182,20 @@ class Steam: public Object {
 		void addRequestLobbyListDistanceFilter(int distanceFilter);
 		void addRequestLobbyListResultCountFilter(int maxResults);
 		void createLobby(int lobbyType, int maxMembers);
-		void joinLobby(int steamIDLobby);
-		void leaveLobby(int steamIDLobby);
-		bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
+		void joinLobby(uint64_t steamIDLobby);
+		void leaveLobby(uint64_t steamIDLobby);
+		bool inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee);
 		int getNumLobbyMembers(uint64_t steamIDLobby);
 		uint64_t getLobbyMemberByIndex(uint64_t steamIDLobby, int member);
 		String getLobbyData(uint64_t steamIDLobby, const String& key);
 		bool setLobbyData(uint64_t steamIDLobby, const String& key, const String& value);
 		Dictionary getLobbyDataByIndex(uint64_t steamIDLobby);
 		bool deleteLobbyData(uint64_t steamIDLobby, const String& key);
-		String getLobbyMemberData(uint64_t steamIDLobby,uint64_t steamIDUser, const String& key);
+		String getLobbyMemberData(uint64_t steamIDLobby, uint64_t steamIDUser, const String& key);
 		void setLobbyMemberData(uint64_t steamIDLobby, const String& key, const String& value);
 		bool sendLobbyChatMsg(uint64_t steamIDLobby, const String& messageBody);
 		bool requestLobbyData(uint64_t steamIDLobby);
-		void setLobbyGameServer(uint64_t steamIDLobby, uint32 serverIP, uint16 serverPort, uint64_t steamIDGameServer);
+		void setLobbyGameServer(uint64_t steamIDLobby, const String& serverIP, uint16 serverPort, uint64_t steamIDGameServer);
 		Dictionary getLobbyGameServer(uint64_t steamIDLobby);
 		bool setLobbyMemberLimit(uint64_t steamIDLobby, int maxMembers);
 		int getLobbyMemberLimit(uint64_t steamIDLobby);
@@ -316,11 +316,19 @@ class Steam: public Object {
 
 	private:
 		bool isInitSuccess;
+		// Apps
+		uint64 currentAppID;
 		// Matchmaking
 		CSteamID clanActivity;
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntries;
+		// User stats
+		int numAchievements;
+		bool statsInitialized;
+		/////////////////////////////////////////
+		// STRUCTS //////////////////////////////
+		//
 		// Authentication
 		struct TicketData {
 			uint32_t id;
@@ -328,7 +336,7 @@ class Steam: public Object {
 			uint32_t size;
 		};
 		Vector<TicketData> tickets;
-		// Friend info //////////////////////////
+		// Friend info
 		struct FriendGameInfo {
 			uint64_t gameID;
 			uint32 gameIP;
@@ -337,21 +345,29 @@ class Steam: public Object {
 			uint64_t steamIDLobby;
 		};
 		Vector<FriendGameInfo> gameInfo;
-		// Friend session state info ////////////
+		// Friend session state info
 		struct FriendSessionStateInfo {
 			uint32 onlineSessionInstance;
 			uint8 publishedToFriendsSessionInstance;
 		};
 		Vector<FriendSessionStateInfo> sessionInfo;
-		/////////////////////////////////////////////
-		// STEAM CALLBACKS //////////////////////////
+		// Achievement data
+		struct AchievementData {
+			int achievementID;
+			const char achievement;
+			char name[128];
+			char description[256];
+			bool achieved;
+			int icon;
+		};
+		Vector<AchievementData> achievementData;
+		/////////////////////////////////////////
+		// STEAM CALLBACKS //////////////////////
 		//
-		// Apps callbacks
+		// Apps callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
-	//	CCallResult<Steam, FileDetailsResult_t> callResultFileDetails;
-	//	void _file_details_result(FileDetailsResult_t *callData);
-		// Friends callbacks
+		// Friends callbacks ////////////////////
 		STEAM_CALLBACK(Steam,_name_changed, SetPersonaNameResponse_t);
 		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
 		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
@@ -369,38 +385,55 @@ class Steam: public Object {
 		void _is_following(FriendsIsFollowing_t *callData, bool bIOFailure);
 		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
 		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
-		// Matchmaking callbacks
-		STEAM_CALLBACK(Steam, _lobby_created, LobbyCreated_t);
+		// Matchmaking callbacks ////////////////
+		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
+		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
 		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
+		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t);
 		STEAM_CALLBACK(Steam, _join_requested, GameRichPresenceJoinRequested_t);
 		STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 		STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
-		// Screenshot callbacks
+		// Screenshot callbacks /////////////////
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
-		// User callbacks
+		// User callback ////////////////////////
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
-		// User stat callbacks
+		// User stat callbacks //////////////////
+		//
+		// Getting the current number of players
 		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
 		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
+		// Getting all statistics and achievements from Steam
 		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
+		// Getting the achievement icon
 		STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
+		// Upoading scores to the leaderboard
 		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
 		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+		// Finding a leaderboard
 		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+		// Downloading scores from a leaderboard
 		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
 		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
+		// Getting global achievement percentages
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
-		// Utility callbacks
+		// Storing user stats
+		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
+		// Storing user achievements
+		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
+		// Utility callbacks ////////////////////
+		//
+		// Finding if the overlay is toggled or not
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
+		// Signaling that the battery power is low
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
-		// Workshop callbacks
+		// Workshop callbacks ///////////////////
 		STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 		void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);
