@@ -67,13 +67,8 @@ class SteamServer: public Object {
 		void setRegion(const String& region);
 		bool sendUserConnectAndAuthenticate(uint32 ipClient, const void *authBlob, uint32 authBlobSize, uint32_t steamID);
 		uint64_t createUnauthenticatedUserConnection();
-<<<<<<< HEAD:godotsteam/godotsteam_server.h
 		void sendUserDisconnect(uint64_t steamID);
 		bool updateUserData(uint64_t steamID, const String& *name, uint32 score);
-=======
-		void sendUserDisconnect(int steamID);
-		bool updateUserData(int steamID, const String& name, uint32 score);
->>>>>>> bcb36607dd1fc27ed462b35a47cdf322950f44a8:godotsteam_server/godotsteam_server.h
 		uint32 getAuthSessionTicket(void *ticket, int maxTicket, uint32 *pcbTicket);
 		int beginAuthSession(const void *authTicket, int cbAuthTicket, int steamID);
 		void endAuthSession(uint64_t steamID);
@@ -85,13 +80,8 @@ class SteamServer: public Object {
 		void enableHeartbeats(bool active);
 		void setHeartbeatInterval(int interval);
 		void forceHeartbeat();
-<<<<<<< HEAD:godotsteam/godotsteam_server.h
 		void associateWithClan(uint64_t clanID);
 		void computeNewPlayerCompatibility(uint64_t steamID);
-=======
-		void associateWithClan(int clanID);
-		void computeNewPlayerCompatibility(int steamID);
->>>>>>> bcb36607dd1fc27ed462b35a47cdf322950f44a8:godotsteam_server/godotsteam_server.h
 
 	protected:
 		static void _bind_methods();
