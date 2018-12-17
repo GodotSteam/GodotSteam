@@ -50,6 +50,8 @@ bool Steam::steamInit(){
 		// Load stats and achievements automatically.
 		SteamUserStats()->RequestCurrentStats();
 	}
+	// Get this app ID
+	currentAppID = SteamUtils()->GetAppID();
 	return err;
 }
 // Returns true/false if Steam is running.
@@ -2079,6 +2081,23 @@ void Steam::_user_stats_received(UserStatsReceived_t* callData){
 	uint64_t user = userID.ConvertToUint64();
 	emit_signal("user_stats_received", game, result, user);
 }
+// User stats were stored correctly.
+void Steam::_user_stats_stored(UserStatsStored_t* callData){
+	CSteamID gameID = callData->m_nGameID;
+	uint64_t game = gameID.ConvertToUint64();
+	uint32_t result = callData->m_eResult;
+	emit_signal("user_stats_stored", game, result);
+}
+// User achievement was stored correctly.
+void Steam::_user_achievement_stored(UserAchievementStored_t* callData){
+	CSteamID gameID = callData->m_nGameID;
+	uint64_t game = gameID.ConvertToUint64();
+	bool groupAchieve = callData->m_bGroupAchievement;
+	String name = callData->m_rgchAchievementName;
+	uint32_t currentProgress = callData->m_nCurProgress;
+	uint32_t maxProgress = callData->m_nMaxProgress;
+	emit_signal("user_achievement_stored", game, groupAchieve, name, currentProgress, maxProgress);
+}
 // Result of an achievement icon that has been fetched.
 void Steam::_user_achievement_icon_fetched(UserAchievementIconFetched_t* callData){
 	uint64_t gameID = callData->m_nGameID.ToUint64();
@@ -2169,8 +2188,8 @@ uint64_t Steam::getSteamID(){
 	if(SteamUser() == NULL){
 		return 0;
 	}
-	CSteamID cSteamID = SteamUser()->GetSteamID();
-	return cSteamID.ConvertToUint64();
+	CSteamID steamID = SteamUser()->GetSteamID();
+	return steamID.ConvertToUint64();
 }
 // Check, true/false, if user is logged into Steam currently.
 bool Steam::loggedOn(){
@@ -2325,6 +2344,13 @@ bool Steam::resetAllStats(bool achievementsToo){
 }
 // Request all statistics and achievements from Steam servers.
 bool Steam::requestCurrentStats(){
+	if(SteamUserStats() == NULL){
+		return false;
+	}
+	// If the user isn't logged in, you can't get stats
+	if(!SteamUser()->BLoggedOn()){
+		return false;
+	}
 	return SteamUserStats()->RequestCurrentStats();
 }
 // Asynchronously fetch the data for the percentages.
@@ -3091,6 +3117,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "auth_session_reponse"), PropertyInfo(Variant::INT, "owner_steamID")));
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
+	ADD_SIGNAL(MethodInfo("user_stats_stored"));
+	ADD_SIGNAL(MethodInfo("user_achievement_stored"));
 	ADD_SIGNAL(MethodInfo("user_achievement_icon_fetched", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::STRING, "achievementName"), PropertyInfo(Variant::BOOL, "achieved"), PropertyInfo(Variant::INT, "iconHandle")));
 	ADD_SIGNAL(MethodInfo("global_achievement_percentages_ready", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("workshop_item_created"));

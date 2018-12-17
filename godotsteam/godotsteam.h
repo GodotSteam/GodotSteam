@@ -317,11 +317,19 @@ class Steam: public Object {
 
 	private:
 		bool isInitSuccess;
+		// Apps
+		uint64 currentAppID;
 		// Matchmaking
 		CSteamID clanActivity;
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntries;
+		// User stats
+		int numAchievements;
+		bool statsInitialized;
+		/////////////////////////////////////////
+		// STRUCTS //////////////////////////////
+		//
 		// Authentication
 		struct TicketData {
 			uint32_t id;
@@ -344,15 +352,25 @@ class Steam: public Object {
 			uint8 publishedToFriendsSessionInstance;
 		};
 		Vector<FriendSessionStateInfo> sessionInfo;
+		// Achievement data
+		struct AchievementData {
+			int achievementID;
+			const char achievement;
+			char name[128];
+			char description[256];
+			bool achieved;
+			int icon;
+		};
+		Vector<AchievementData> achievementData;
 		/////////////////////////////////////////
 		// STEAM CALLBACKS //////////////////////
 		//
 		// Apps callbacks ///////////////////////
+		//
 		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
-	//	CCallResult<Steam, FileDetailsResult_t> callResultFileDetails;
-	//	void _file_details_result(FileDetailsResult_t *callData);
 		// Friends callbacks ////////////////////
+		//
 		STEAM_CALLBACK(Steam,_name_changed, SetPersonaNameResponse_t);
 		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
 		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
@@ -371,6 +389,7 @@ class Steam: public Object {
 		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
 		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
 		// Matchmaking callbacks ////////////////
+		//
 		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
 		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
@@ -383,27 +402,43 @@ class Steam: public Object {
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
 		// Screenshot callbacks /////////////////
+		//
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
 		// User callbacks ///////////////////////
+		//
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 		// User stat callbacks //////////////////
+		//
+		// Getting the current number of players
 		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
 		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
+		// Getting all statistics and achievements from Steam
 		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
+		// Getting the achievement icon
 		STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
+		// Upoading scores to the leaderboard
 		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
 		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+		// Finding a leaderboard
 		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+		// Downloading scores from a leaderboard
 		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
-		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);		
+		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
+		// Getting global achievement percentages
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
+		// Storing user stats
+		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
+		// Storing user achievements
+		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
 		// Utility callbacks ////////////////////
+		//
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
 		// Workshop callbacks ///////////////////
+		//
 		STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 		void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);

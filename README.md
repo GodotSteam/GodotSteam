@@ -15,24 +15,17 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v2.8.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.8.3)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.8.2 Changes**
-- Fixed: Linux not compiling correctly with new Friends and Matchmaking updates
-- Fixed: various Friends functions not providing correct data
-
-**Version 2.8.1 Changes**
-- Added: additional missing lobby signals
-- Fixed: various lobby functions due to incorrect Steam lobby ID
-- Fixed: some bind methods
-- Fixed: config.py still using env
-- Fixed: location of core Godot includes
+**Version 2.8.3 Changes**
+- Added: additional user statistics and achievement signals
+- Changed: minor notations
 
 Known Issues
 ----------
 - Lobby message will crash game, favoriting lobbies does not work yet
 - User avatar functions do not work due to changes in Godot's image class
-- getFriendGamePlayed is incomplete; should be a dictionary.
+- getFriendGamePlayed is incomplete; should be a dictionary
 
 Quick How-To
 ----------
