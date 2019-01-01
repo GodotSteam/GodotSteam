@@ -1,4 +1,4 @@
-# Godot Steam for Godot 2
+# GodotSteam for Godot 2
 Steam API for the Godot game engine (versions 2 to 2.1.5). For the Windows, Linux, and Mac platforms. 
 
 - View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
