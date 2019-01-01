@@ -1,10 +1,11 @@
-# Godot Steam for Godot 2
-Steam API for the Godot game engine (versions 2 to 2.1.5). For the Windows, Linux, and Mac platforms. 
+# GodotSteam Minimal
+Steam API for the Godot game engine (version 2 or higher). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
 
+- View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
 - View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
+- View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
 - View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
-
-**THIS VERSION IS NOT COMPATIBLE WITH GODOT 3.  Please use the Godot 3 branch instead.**
+- View the GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
 
 Documentation
 ----------
@@ -16,25 +17,20 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.9.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.0.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.9.1 Changes**
-- Added: additional user statistics and achievement signals
-- Changed: minor notations
-- Fixed: Linux not compiling correctly with new Friends and Matchmaking updates
-- Fixed: various Friends functions not providing correct data
-- Fixed: missing bind methods for integers
+**Version 1.0.0 Changes**
+- Added: all the minimal useful functions for Steam
 
 Known Issues
 ----------
-- Lobby message will crash game, favoriting lobbies does not work yet
-- getFriendGamePlayed is incomplete; should be a dictionary
+- None so far
 
 Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.0.3 to 2.1.5.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0 or higher.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -55,8 +51,7 @@ Quick How-To
 - Recompile for your platform:
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
   - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
-    - If not using Godot 2.0.3 or higher, you must add openssl=no when compiling because it has problems with libcrypto (class StreamPeerSSL can't use).
-    - Ubuntu 16.10 may have issues with PIE security in GCC. If so, use LINKFLAGS=('no-pie') to get around this.
+    - If using Ubuntu 16.10 or higher and having issues with PIE security in GCC, use LINKFLAGS='-no-pie' to get an executable instead of a shared library.
   - OSX ( http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html )
     - When creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( http://steamcommunity.com/app/404790/discussions/0/364042703865087202/ ).
 - When recompiling the engine is finished, copy the shared library (steam_api) from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder). It should look like this:
@@ -84,6 +79,10 @@ Quick How-To
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
+
+Donate
+-------------
+If you feel like buying me a beer, feel free to do so here: https://www.paypal.me/sithlordkyle
 
 License
 -------------
