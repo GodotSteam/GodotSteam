@@ -1,4 +1,4 @@
-# GodotSteam Minimal For Godot 2
+# GodotSteam Minimal for Godot 2
 Steam API for the Godot game engine (version 2 or higher). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
 
 - View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
