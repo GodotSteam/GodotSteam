@@ -1,0 +1,352 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Change Log</h1>
+						</header>
+						<p>The change log for the repository. Since the change logs start well after the project had been going, versioning will be a bit weird! The Godot 3 version of the module will start a version 2.0.0 as it will eventually replace the Godot 2 version outright.</p>
+						<ul class="actions">
+							<li><a class="button" href="#godot2">Godot 2</a></li>
+							<li><a class="button" href="#godot3">Godot 3</a></li>
+							<li><a class="button" href="#godot2-min">Godot 2 Minimal</a></li>
+							<li><a class="button" href="#godot3-min">Godot 3 Minimal</a></li>
+							<li><a class="button" href="#gdnative">GDNative</a></li>
+							<li><a class="button" href="#server">Server</a></li>
+						</ul>
+						<hr />
+						<h2>Godot 2 Module</h2>
+						<a id="godot2"></a>
+						<h3>Version 1.9.1 Changes</h3>
+						<ul>
+							<li>Added: additional user statistics and achievement signals</li>
+							<li>Changed: minor notations</li>
+							<li>Fixed: Linux not compiling correctly with new Friends and Matchmaking updates</li>
+							<li>Fixed: various Friends functions not providing correct data</li>
+							<li>Fixed: missing bind methods for integers</li>
+						</ul>
+						<h3>Version 1.9.0 Changes</h3>
+						<ul>
+							<li>Added: all remaining matchmaking functions</li>
+							<li>Added: all remaining friend functions</li>
+							<li>Changed: getRecentPlayers to include timestamp</li>
+							<li>Changed: naming of leaderboard_handle and leaderboard_entries for consistency</li>
+							<li>Changed: getAchievement to dictionary (courtesy of jandrewlong)</li>
+							<li>Fixed: invite functions giving incorrect steam ids</li>
+							<li>Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems</li>
+							<li>Removed: setGameInfo, clearGameInfo, inviteFriend</li>
+						</ul>
+						<h3>Version 1.8.0 Changes</h3>
+						<ul>
+							<li>Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)</li>
+							<li>Added: all missing SteamApps functions</li>
+							<li>Changed: NULL statements for achievement functions</li>
+							<li>Changed: cleaned up and organized signal functions in godotteam.h</li>
+							<li>Fixed: issue with getAchievement failing to compile</li>
+							<li>Removed: hasOtherApp function</li>
+						</ul>
+						<h3>Version 1.7.0 Changes</h3>
+						<ul>
+							<li>Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)</li>
+							<li>Added: Steam controller functionality (courtesy of marcelofg55)</li>
+							<li>Added: more workshop functionality</li>
+							<li>Changed: various small maintenance changes</li>
+							<li>Fixed: compiling error on Linux</li>
+						</ul>
+						<h3>Version 1.6.0 Changes</h3>
+						<ul>
+							<li>Added: getFileNameAndSize, getQuota, getSyncPlatforms functions</li>
+							<li>Changed: small corrections with Steam ID variable</li>
+							<li>Fixed: small things with getQuota</li>
+						</ul>
+						<h3>Version 1.5.1 Update</h3>
+						<ul>
+							<li>Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions</li>
+							<li>Added: related signals to new functions</li>
+							<li>Added: minor notes</li>
+							<li>Removed: is_valid for updateLeaderboardHandle</li>
+							<li>Removed: depreciated function requestAppProofOfPurchaseKey</li>
+							<li>Removed: callback for requestAppProofOfPurchaseKey</li>
+							<li>Removed: commented out depreciated functions</li>
+						</ul>
+						<h3>Version 1.5.0 Update</h3>
+						<ul>
+							<li>Added: more Screenshot features</li>
+							<li>Added: notes for callback</li>
+							<li>Changed: documentation to reflect new features and signals</li>
+							<li>Fixed: types in _validate_auth_ticket_response</li>
+						</ul>
+						<h3>Version 1.4.0 Update</h3>
+						<ul>
+							<li>Added: Auth Session functions added to Godot 3 branch thanks to marcelofg55</li>
+							<li>Added: Auth Session constants</li>
+						</ul>
+						<h3>Version 1.3.0 Updates</h3>
+						<ul>
+							<li>Added: getNumberOfCurrentPlayers, thanks to marcelofg55</li>
+							<li>Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55</li>
+							<li>Changed: signals in godotsteam.h with CCallback instead of SteamCallback</li>
+						</ul>
+						<h3>Version 1.2.1 Updates</h3>
+						<ul>
+							<li>Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation</li>
+							<li>Changed: readme to reflect Godot 3 release</li>
+						</ul>
+						<h3>Version 1.2.0 Updates</h3>
+						<ul>
+							<li>Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55</li>
+							<li>Added: new functions to documentation</li>
+							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
+						</ul>
+						<h3>Version 1.1.0</h3>
+						<ul>
+							<li>Added: getCurrentGameLanguage</li>
+							<li>Added: Pre-compiled engines and templates for Windows</li>
+							<li>Added: change log to documentation</li>
+							<li>Changed: minor things in godotsteam.cpp</li>
+						</ul>
+						<hr />
+						<h2>Godot 3 Module</h2>
+						<a id="godot3"></a>
+						<h3>Version 2.8.3 Changes</h3>
+						<ul>
+							<li>Added: additional user statistics and achievement signals</li>
+							<li>Changed: minor notations</li>
+						</ul>
+						<h3>Version 2.8.2 Changes</h3>
+						<ul>
+							<li>Fixed: Linux not compiling correctly with new Friends and Matchmaking updates</li>
+							<li>Fixed: various Friends functions not providing correct data</li>
+						</ul>
+						<h3>Version 2.8.1 Changes</h3>
+						<ul>
+							<li>Added: additional missing lobby signals</li>
+							<li>Fixed: various lobby functions due to incorrect Steam lobby ID</li>
+							<li>Fixed: some bind methods</li>
+							<li>Fixed: config.py still using env</li>
+							<li>Fixed: location of core Godot includes</li>
+						</ul>
+						<h3>Version 2.8.0 Changes</h3>
+						<ul>
+							<li>Added: all remaining matchmaking functions</li>
+							<li>Added: all remaining friend functions</li>
+							<li>Changed: getRecentPlayers to include timestamp</li>
+							<li>Changed: naming of leaderboard_handle and leaderboard_entries for consistency</li>
+							<li>Changed: getAchievement to dictionary (courtesy of jandrewlong)</li>
+							<li>Fixed: invite functions giving incorrect steam ids</li>
+							<li>Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems</li>
+							<li>Removed: setGameInfo, clearGameInfo, inviteFriend</li>
+						</ul>
+						<h3>Version 2.7.0 Changes</h3>
+						<ul>
+							<li>Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)</li>
+							<li>Added: all missing SteamApps functions</li>
+							<li>Changed: NULL statements for achievement functions</li>
+							<li>Changed: cleaned up and organized signal functions in godotteam.h</li>
+							<li>Fixed: issue with dictionary formatting in a function</li>
+							<li>Fixed: missing NULL statement</li>
+							<li>Fixed: issue with getAchievement failing to compile</li>
+							<li>Removed: hasOtherApp function</li>
+						</ul>
+						<h3>Version 2.6.0 Changes</h3>
+						<ul>
+							<li>Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)</li>
+							<li>Added: Steam controller functionality (courtesy of marcelofg55)</li>
+							<li>Added: more workshop functionality</li>
+							<li>Changed: various small maintenance changes</li>
+						</ul>
+						<h3>Version 2.5.0 Changes</h3>
+						<ul>
+							<li>Added: getFileNameAndSize, getQuota, getSyncPlatforms functions</li>
+							<li>Changed: small corrections with Steam ID variable</li>
+							<li>Fixed: small things with getQuota</li>
+						</ul>
+						<h3>Version 2.4.1 Changes</h3>
+						<ul>
+							<li>Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions</li>
+							<li>Added: related signals to new functions</li>
+							<li>Added: some notes</li>
+							<li>Fixed: leaderboard_update signal</li>
+							<li>Removed: depreciated function requestAppProofOfPurchaseKey</li>
+							<li>Removed: related callback to requestAppProofOfPurchaseKey</li>
+							<li>Removed: commented out depreciated functions</li>
+						</ul>
+						<h3>Version 2.4.0 Changes</h3>
+						<ul>
+							<li>Added: more Screenshot features</li>
+							<li>Added: notes for callback</li>
+							<li>Fixed: types in _validate_auth_ticket_response</li>
+						</ul>
+						<h3>Version 2.3.0 Changes</h3>
+						<ul>
+							<li>Added: implemented Auth Session functions, thanks to marcelofg55</li>
+						</ul>
+						<h3>Version 2.2.1 Changes</h3>
+						<ul>
+							<li>Fixed: getFileTimestamp and getSteamID return types, thanks to marcelofg55</li>
+						</ul>
+						<h3>Version 2.2.0 Changes</h3>
+						<ul>
+							<li>Added: getNumberOfCurrentPlayers, thanks to marcelofg55</li>
+							<li>Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55</li>
+						</ul>
+						<h3>Version 2.1.1 Changes</h3>
+						<ul>
+							<li>Fixed: fileRead and fileWrite, thanks to marcelofg55</li>
+						</ul>
+						<h3>Version 2.1.0 Changes</h3>
+						<ul>
+							<li>Added: two more functions for Remote Storage</li>
+							<li>Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation</li>
+							<li>Removed: -no-pie from SCsub; now suggested for Ubuntu 16.10 and higher</li>
+						</ul>
+						<h3>Version 2.0.0 Changes</h3>
+						<ul>
+							<li>Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55</li>
+							<li>Added: new functions to documentation</li>
+							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
+						</ul>
+						<hr />
+						<h2>Godot 2 Minimal</h2>
+						<a id="godot2-min"></a>
+						<h3>Version 1.0.0</h3>
+						<ul>
+							<li>Added: all the minimal useful functions for Steam</li>
+						</ul>
+						<hr />
+						<h2>Godot 3 Minimal</h2>
+						<a id="godot3-min"></a>
+						<h3>Version 1.0.0</h3>
+						<ul>
+							<li>Added: all the minimal useful functions for Steam</li>
+						</ul>
+						<hr />
+						<h2>GDNative</h2>
+						<a id="gdnative"></a>
+						<h3>Version 2.0.0</h3>
+						<ul>
+							<li>Added: all current GodotSteam functions and signals</li>
+							<li>Added: godotsteam.h file</li>
+							<li>Changed: compile process; big thanks to willnationsdev</li>
+							<li>Changed: various parts of the CPP files</li>
+							<li>Removed: pre-compiled TSCN and TRES files</li>
+						</ul>
+						<h3>Version 1.1.0</h3>
+						<ul>
+							<li>Added: godotsteam.h file</li>
+							<li>Added: getCurrentGameLanguage</li>
+							<li>Changed: various parts of the CPP files</li>
+							<li>Added: Pre-compiled engines and templates for Linux, Mac, and Windows</li>
+							<li>Removed: pre-compiled TSCN and TRES files</li>
+							<li>Added: change log to documentation</li>
+							<li>Changed: minor things in godotsteam.cpp</li>
+						</ul>
+						<h3>Version 1.0.0</h3>
+						<ul>
+							<li>Added: most pre-existing GodotSteam code over</li>
+							<li>Added: GodotSteam GDNative documentation</li>
+							<li>Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS</li>
+							<li>Bugs: Windows does not work for compiling yet, waiting for GDNative update</li>
+						</ul>
+						<hr />
+						<h2>Server</h2>
+						<a id="server"></a>
+						<h3>Version 0.0.3</h3>
+						<ul>
+							<li>Removed: depreciated signal _client_Achieve_Status</li>
+							<li>Removed: depreciated signal _gameplay_Stats</li>
+							<li>Removed: depreciated signal _reputation</li>
+						</ul>
+						<h3>Version 0.0.2</h3>
+						<ul>
+							<li>Added: all of the result enums</li>
+							<li>Added: missing signals</li>
+							<li>Changed: module folder name</li>
+							<li>Removed: depreciated functions</li>
+						</ul>
+						<h3>Version 0.0.1</h3>
+						<ul>
+							<li>Added: Added: basically everything in Steam server main</li>
+						</ul>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

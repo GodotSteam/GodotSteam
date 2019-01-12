@@ -1,0 +1,341 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Signals For Modules</h1>
+						</header>
+						<p>Here is a list of all the currently available signals in the GodotSteam modules.</p>
+						<hr />
+						<h3>_avatar_loaded</h3>
+						<ul>
+							<li>Called when a large avatar is loaded if you have tried requesting it when it was unavailable.</li>
+							<li>Emits signal <strong><em>avatar_loaded</em></strong> in response to function <strong><em>getFriendAvatar</em></strong>.</li>
+							<li>Sends along the avatar size and image data.</li>
+						</ul>
+						<h3>_clan_activity_downloaded</h3>
+						<ul>
+							<li>Called when a Steam group activity has received.</li>
+							<li>Emits signal <strong><em>clan_activity_downloaded</em></strong> in response to function <strong><em>downloadClanActivityCounts</em></strong>.</li>
+							<li>Sends along the activity as a DICTIONARY.</li>
+						</ul>
+						<h3>_connected_clan_chat_message</h3>
+						<ul>
+							<li>Called when a chat message has been received in a Steam group chat that we are in.</li>
+							<li>Emits signal <strong><em>connected_clan_chat_message</em></strong>.</li>
+							<li>Sends along the chat message.</li>
+						</ul>
+						<h3>_connected_chat_leave</h3>
+						<ul>
+							<li>Called when a user has left a Steam group chat that the we are in.</li>
+							<li>Emits signal <strong><em>connected_chat_leave</em></strong>.</li>
+							<li>Sends along the chat ID, the user's Steam ID, if they were kicked, and if they were dropped.</li>
+						</ul>
+						<h3>_connected_chat_join</h3>
+						<ul>
+							<li>Called when a user has joined a Steam group chat that the we are in.</li>
+							<li>Emits signal <strong><em>connected_chat_join</em></strong>.</li>
+							<li>Sends along the chat ID and the user's Steam ID.</li>
+						</ul>
+						<h3>_connected_friend_chat_message</h3>
+						<ul>
+							<li>Called when chat message has been received from a friend.</li>
+							<li>Emits signal <strong><em>connected_friend_chat_message</em></strong>.</li>
+							<li>Sends along the chat message.</li>
+						</ul>
+						<h3>_dlc_installed</h3>
+						<ul>
+							<li>Triggered after the current user gains ownership of DLC and that DLC is installed.</li>
+							<li>Emits signal <strong><em>dlc_installed</em></strong> in response to function <strong><em>installDLC</em></strong>.</li>
+							<li>Sends along the app ID.</li>
+						</ul>
+						<h3>_enumerate_following_list</h3>
+						<ul>
+							<li>Returns the result of <strong><em>enumerateFollowingList</em></strong>.</li>
+							<li>Emits signal <strong><em>enumerate_following_list</em></strong> in response to function <strong><em></em></strong>.</li>
+							<li>Sends along the message and list as an ARRAY.</li>
+						</ul>
+						<h3>_file_details_result</h3>
+						<ul>
+							<li>Called after requesting the details of a specific file.</li>
+							<li>Emits signal <strong><em>file_details_result</em></strong> in response to function <strong><em>getFileDetails</em></strong>.</li>
+							<li>Sends along the result as an INT, the file size, the file hash, and related flags.</li>
+						</ul>
+						<h3>_friend_rich_presence_update</h3>
+						<ul>
+							<li>Called when rich presence data has been updated for a user, this can happen automatically when friends in the same game update their rich presence, or after a call to <strong><em>requestFriendRichPresence</em></strong>.</li>
+							<li>Emits signal <strong><em>friend_rich_presence_update</em></strong>.</li>
+							<li>Sends along their Steam ID and the app's ID.</li>
+						</ul>
+						<h3>_get_auth_session_ticket_response</h3>
+						<ul>
+							<li>Result when creating an auth session ticket.</li>
+							<li>Emits signal <strong><em>get_auth_session_ticket_response</em></strong> in response to function <strong><em>getAuthSessionTicket</em></strong>.</li>
+							<li>Sends along the auth ID and the result as an INT.</li>
+						</ul>
+						<h3>_get_follower_count</h3>
+						<ul>
+							<li>Returns the result of <strong><em>getFollowerCount</em></strong>.</li>
+							<li>Emits signal <strong><em>get_follower_count</em></strong>.</li>
+							<li>Sends along the result as an INT, the user's Steam ID, and the count.</li>
+						</ul>
+						<h3>_global_achievement_percentages_ready</h3>
+						<ul>
+							<li>Called when the global achievement percentages have been received from the server.</li>
+							<li>Emits signal <strong><em>global_achievement_percentages_ready</em></strong> in response to function <strong><em>requestGlobalAchievementPercentages</em></strong>.</li>
+							<li>Sends along the game ID and result as an INT.</li>
+						</ul>
+						<h3>_is_following</h3>
+						<ul>
+							<li>Returns the result of <strong><em>isFollowing</em></strong>.</li>
+							<li>Emits signal <strong><em>is_following</em></strong>.</li>
+							<li>Sends along the result as an INT, the user's Steam ID, and if they are following.</li>
+						</ul>
+						<h3>_join_clan_chat_complete</h3>
+						<ul>
+							<li>Posted when the user has attempted to join a Steam group chat via <strong><em>joinClanChatRoom</em></strong>.</li>
+							<li>Emits signal <strong><em>join_clan_chat_complete</em></strong>.</li>
+							<li>Sends along the chat ID and response as an INT.</li>
+						</ul>
+						<h3>_join_requested</h3>
+						<ul>
+							<li>Called when the user tries to join a game from their friends list or after a user accepts an invite by a friend with <strong><em>inviteUserToGame</em></strong>.</li>
+							<li>Emits signal <strong><em>join_requested</em></strong> in response to receiving a Steam invite.</li>
+							<li>Sends along user's Steam ID and the game connection string, usually an IP and port.</li>
+						</ul>
+						<h3>_leaderboard_entries_loaded</h3>
+						<ul>
+							<li>Called when scores for a leaderboard have been downloaded and are ready to be retrieved.</li>
+							<li>Emits signal <strong><em>leaderboard_entries_loaded</em></strong> in response to function <strong><em>downloadLeaderboardEntries</em></strong>.</li>
+							<li>Sends along the leaderboards as an ARRAY.</li>
+						</ul>
+						<h3>_leaderboard_loaded</h3>
+						<ul>
+							<li>Result when finding a leaderboard.</li>
+							<li>Emits signal <strong><em>leaderboard_loaded</em></strong> in response to function <strong><em>findLeaderboard</em></strong>.</li>
+							<li>Sends along the leaderboard handle and if it was found.</li>
+						</ul>
+						<h3>_leaderboard_uploaded</h3>
+						<ul>
+							<li>Result indicating that a leaderboard score has been uploaded.</li>
+							<li>Emits signal <strong><em>leaderboard_uploaded</em></strong> in response to function <strong><em>uploadLeaderboardScore</em></strong>.</li>
+							<li>Sends along the success, the score, the scored changed, the new global rank, and the previous global rank.</li>
+						</ul>
+						<h3>_lobby_created</h3>
+						<ul>
+							<li>Result of our request to create a Lobby. At this point, the lobby has been joined and is ready for use.</li>
+							<li>Emits signal <strong><em>lobby_created</em></strong> in response to function <strong><em>createLobby</em></strong>.</li>
+							<li>Sends along the connect status as an INT and the lobby ID.</li>
+						</ul>
+						<h3>_lobby_game_created</h3>
+						<ul>
+							<li>A game server has been set via <strong><em>setLobbyGameServer</em></strong> for all of the members of the lobby to join. It's up to the individual clients to take action on this; the typical game behavior is to leave the lobby and connect to the specified game server; but the lobby may stay open throughout the session if desired.</li>
+							<li>Emits signal <strong><em>lobby_game_created</em></strong>.</li>
+							<li>Sends along the lobby ID, the server ID, the server's IP, and the server's port.</li>
+						</ul>
+						<h3>_lobby_invite</h3>
+						<ul>
+							<li>Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.</li>
+							<li>Emits signal <strong><em>lobby_invite</em></strong> in response to sending a Steam invite.</li>
+							<li>Sends along inviter's Steam ID, the lobby ID, and the game ID.</li>
+						</ul>
+
+						<h3>_lobby_joined</h3>
+						<ul>
+							<li>Recieved upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this.</li>
+							<li>Emits signal <strong><em>lobby_joined</em></strong>.</li>
+							<li>Sends along lobby ID, permssions, if locked or not, and the response as an INT.</li>
+						</ul>
+
+						<h3>_lobby_match_list</h3>
+						<ul>
+							<li>Result when requesting the lobby list.</li>
+							<li>Emits signal <strong><em>lobby_match_list</em></strong> in response to function <strong><em>requestLobbyList</em></strong>.</li>
+							<li>Sends along an ARRAY of lobbies.</li>
+						</ul>
+						<h3>_lobby_Message</h3>
+						<ul>
+							<li>A chat (text or binary) message for this lobby has been received.</li>
+							<li>Emits signal <strong><em>lobby_Message</em></strong> in response to an incoming message.</li>
+							<li>Sends along the message and the type.</li>
+						</ul>
+						<h3>_low_power</h3>
+						<ul>
+							<li>Called when running on a laptop and less than 10 minutes of battery is left, and then fires then every minute afterwards.</li>
+							<li>Emits signal <strong><em>low_power</em></strong>.</li>
+							<li>Sends along the power as an INT.</li>
+						</ul>
+						<h3>_name_changed</h3>
+						<ul>
+							<li>Reports the result of an attempt to change the current user's persona name.</li>
+							<li>Emits signal <strong><em>name_changed</em></strong> in response to function <strong><em>setPersonaName</em></strong>.</li>
+							<li>Sends along the remote success as a BOOL, local success as a BOOL, and result as an INT.</li>
+						</ul>
+						<h3>_number_of_current_players</h3>
+						<ul>
+							<li>Gets the current number of players for the current app ID.</li>
+							<li>Emits signal <strong><em>number_of_current_players</em></strong> in response to function <strong><em>getNumberOfCurrentPlayers</em></strong>.</li>
+							<li>Sends along the success and player numbers.</li>
+						</ul>
+						<h3>_overlay_toggled</h3>
+						<ul>
+							<li>Posted when the Steam Overlay activates or deactivates. The game can use this to be pause or resume single player games.</li>
+							<li>Emits signal <strong><em>overlay_toggled</em></strong>.</li>
+							<li>Sends along true/false.</li>
+						</ul>
+						<h3>_request_clan_officer_list</h3>
+						<ul>
+							<li>Marks the return of a request officer list call.</li>
+							<li>Emits signal <strong><em>request_clan_officer_list</em></strong> in response to function <strong><em>requestClanOfficerList</em></strong>.</li>
+							<li>Sends along the message and list as an ARRAY.</li>
+						</ul>
+						<h3>_screenshot_ready</h3>
+						<ul>
+							<li>A screenshot successfully written or otherwise added to the library and can now be tagged.</li>
+							<li>Emits signal <strong><em>screenshot_ready</em></strong> in response to function <strong><em>writeScreenshot</em></strong>, <strong><em>addScreenshotToLibrary</em></strong>, or <strong><em>triggerScreenshot</em></strong>.</li>
+							<li>Sends along the handle and result as an INT.</li>
+						</ul>
+						<h3>_server_connected</h3>
+						<ul>
+							<li>Called when a connections to the Steam back-end has been established. This means the Steam client now has a working connection to the Steam servers. Usually this will have occurred before the game has launched, and should only be seen if the user has dropped connection due to a networking issue or a Steam server update.</li>
+							<li>Emits signal <strong><em>server_connected</em></strong> in response to function <strong><em></em></strong>.</li>
+							<li>Sends along true.</li>
+						</ul>
+						<h3>_server_disconnected</h3>
+						<ul>
+							<li>Called if the client has lost connection to the Steam servers.</li>
+							<li>Emits signal <strong><em>server_disconnected</em></strong> in response to function <strong><em></em></strong>.</li>
+							<li>Sends along false.</li>
+						</ul>
+						<h3>_user_achievement_icon_fetched</h3>
+						<ul>
+							<li>Result of an achievement icon that has been fetched.</li>
+							<li>Emits signal <strong><em>user_achievement_icon_fetched</em></strong> in response to function <strong><em>getAchievementIcon</em></strong>.</li>
+							<li>Sends along </li>
+							emit_signal("user_achievement_icon_fetched", gameID, achievementName, achieved, iconHandle);
+						</ul>
+						<h3>_user_achievement_stored</h3>
+						<ul>
+							<li>Result of a request to store the achievements on the server, or an "indicate progress" call. If both current progress and max progress are zero, that means the achievement has been fully unlocked.</li>
+							<li>Emits signal <strong><em>user_achievement_stored</em></strong> in response to function <strong><em>setAchievement</em></strong>.</li>
+							<li>Sends along the game ID, the achievement group, the name, the current progress and the maximum progress.</li>
+						</ul>
+						<h3>_user_stats_received</h3>
+						<ul>
+							<li>Called when the latest stats and achievements for a specific user (including the local user) have been received from the server.</li>
+							<li>Emits signal <strong><em>user_stats_received</em></strong> in response to function <strong><em>requestCurrentStats</em></strong> or <strong><em>requestUserStats</em></strong>.</li>
+							<li>Sends along the game ID, the result as an INT, and the user's Steam ID.</li>
+						</ul>
+						<h3>_user_stats_stored</h3>
+						<ul>
+							<li>Result of a request to store the user stats.</li>
+							<li>Emits signal <strong><em>user_stats_stored</em></strong> in response to function <strong><em>storeStats</em></strong> or <strong><em>indicateAchievementProgress</em></strong>.</li>
+							<li>Sends along the game ID and result as an INT.</li>
+						</ul>
+						<h3>_validate_auth_ticket_response</h3>
+						<ul>
+							<li>Called when an auth ticket has been validated.</li>
+							<li>Emits signal <strong><em>validate_auth_ticket_response</em></strong> in response to function <strong><em>beginAuthSession</em></strong>.</li>
+							<li>Sends along the auth ID, the response as an INT, and the owner's Steam ID.</li>
+						</ul>
+						<h3>_workshop_item_created</h3>
+						<ul>
+							<li>Called when a new workshop item has been created.</li>
+							<li>Emits signal <strong><em>workshop_item_created</em></strong> in response to function <strong><em>createItem</em></strong>.</li>
+							<li>Sends along </li>
+							emit_signal("workshop_item_created", result, (uint64_t)fileID, acceptTOS);
+						</ul>
+						<h3>_workshop_item_updated</h3>
+						<ul>
+							<li>Called when an item update has completed.</li>
+							<li>Emits signal <strong><em>workshop_item_updated</em></strong> in response to function <strong><em>submitItemUpdate</em></strong>.</li>
+							<li>Sends along the result as an INT and if the TOS is accepted.</li>
+						</ul>
+						<h3>_workshop_item_installed</h3>
+						<ul>
+							<li>Called when a workshop item has been installed or updated.</li>
+							<li>Emits signal <strong><em>workshop_item_installed</em></strong>.</li>
+							<li>Sends along the app ID and file ID.</li>
+						</ul>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

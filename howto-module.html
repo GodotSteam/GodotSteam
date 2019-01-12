@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>How-To For Modules</h1>
+						</header>
+						<p>These instructions should work for both versions of the GodotSteam module.</p>
+						<hr />
+						<h2>1. Preparing</h2>
+						<ul>
+							<li>Download the branch corresponding to your Godot version.</li>
+							<li>Download and unpack the Steamworks SDK; this requires a Steam developer account.</li>
+							<li>Download and unpack the Godot source.
+								<ul>
+									<li>For GodotSteam with Godot 2, preferably use 2.0.3 or higher.</li>
+									<li>For GodotSteam with Godot 3, preferably use 3.0 or higher.</li>
+								</ul>
+							</li>
+						</ul>
+						<h2>2. Copy The Steamworks SDK</h2>
+						<p>Move the following to <strong><em>godotsteam/sdk/</em></strong> from the Steamworks SDK you unpacked:
+							<blockquote>
+								sdk/public/<br />
+								sdk/redistributable_bin/
+							</blockquote>
+						</p>
+						<h2>3. Folder Layout</h2>
+						<p>The repo's directory contents should now look like this:
+							<blockquote>
+								godotsteam/sdk/public/*<br />
+								godotsteam/sdk/redistributable_bin/*<br />
+								godotsteam/SCsub<br />
+								godotsteam/config.py<br />
+								godotsteam/godotsteam.cpp<br />
+								godotsteam/godotsteam.h<br />
+								godotsteam/register_types.cpp<br />
+								godotsteam/register_types.h
+							</blockquote>
+							Now move the <Strong><em>godotsteam</em></Strong> directory into the <strong><em>modules</em></strong> directory of the unpacked Godot Engine source.
+						</p>
+						<h2>4. Compiling</h2>
+						<p>Recompile for your platform.</p>
+						<p>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )</p>
+						<p>On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )</p>
+						<p>On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
+						<em>Note: when creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em>
+						<h2>5. Copy Steamworks Redistributables</h2>
+						<p>When recompiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong> from <strong><em>sdk/redistributable_bin/</em></strong> folders to the Godot binary location (by default in the Godot source /bin/ file but you can move them to a new folder).</p>
+						<p>It should look like this:</p>
+						<strong>Linux 32/64-bit</strong>
+						<blockquote>
+							libsteam_api.so<br />
+							./godot.linux.tools.32 or ./godot.linux.tools.64
+						</blockquote>
+						<strong>OSX</strong>
+						<blockquote>
+							libsteam_api.dylib<br />
+							./godot.osx.tools.32 or ./godot.osx.tools.64
+						</blockquote>
+						<strong>Windows 32-bit</strong>
+						<blockquote>
+							steam_api.dll<br />
+							./godot.windows.tools.32.exe
+						</blockquote>
+						<strong>Windows 64-bit</strong>
+						<blockquote>
+							steam_api64.dll<br />
+							./godot.windows.tools.64.exe
+						</blockquote>
+						<h2>6. Done / Shipping</h2>
+						<p>Your game must ship with the executable, Steam API DLL/SO/DyLIB, and steam_appid.txt to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.</p>
+						<p>NOTE: For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.</p>
+						<p>From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.</p>
+						<p>You may notice that achievements and stats do not work properly if the game is tested outside of Steam (as in running it from the Steam client itself). This behavior seems to be new within the last few weeks and is most likely a changed on Valve's end.</p>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

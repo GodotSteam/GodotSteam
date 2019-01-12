@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Signals For Server</h1>
+						</header>
+						<p>Here is a list of all the currently available signals in the GodotSteam Server module.</p>
+						<hr />
+						<h3>_associate_Clan</h3>
+						<ul>
+							<li>Sent when the game server attempted to be associated with a Steam Group.</li>
+							<li>Emits signal <strong><em>clan_associate</em></strong> in response to function <strong><em>associateWithClan</em></strong>.</li>
+							<li>Sends along the result as an INT; 1 for success and 2 for failure.
+						</ul>
+						<h3>_client_Approved</h3>
+						<ul>
+							<li>Client has been approved to connect to this game server.</li>
+							<li>Emits signal <strong><em>client_approved</em></strong> in response to function <strong><em>sendUserConnectAndAuthenticate</em></strong>, if successful.</li>
+							<li>Sends along the Steam ID of the user wanting to connect and the Steam ID that owns the game. The second will be different if it is borrowed from Family Sharing.</li>
+						</ul>
+						<h3>_client_Denied</h3>
+						<ul>
+							<li>Client has been denied to connection to this game server.</li>
+							<li>Emits signal <strong><em>client_denied</em></strong> in response to function <strong><em>sendUserConnectAndAuthenticate</em></strong>, if failed.</li>
+							<li>Sends along the Steam ID of the user wanting to connect, the reason they were denied as an INT, and any additional text message about the denial.</li> 
+						</ul>
+						<h3>_client_Group_Status</h3>
+						<ul>
+							<li>Called when we have recieved the group status of a user.</li>
+							<li>Emits signal <strong><em>group_status</em></strong> in response to function <strong><em>RequestUserGroupStatus</em></strong>.</li>
+							<li> Sends along the Steam ID whose group status is queried, the Steam ID of the group queried, is the user a member as a BOOL, and is the user an officer of the group as a BOOL.</li>
+						</ul>
+						<h3>_client_Kick</h3>
+						<ul>
+							<li>Called when the game server should kick the user.</li>
+							<li>Emits signal <strong><em>client_kick</em></strong>.</li>
+							<li>Sends along the Steam ID of the user being kicked and the reason they were kicked as an INT.</li>
+						</ul>
+						<h3>_player_Compat</h3>
+						<ul>
+							<li>Sent when the game server is checking if the new player is a good fit for the server based on the frenemy system.</li>
+							<li>Emits signal <strong><em>player_compatibility</em></strong> in response to function <strong><em>computeNewPlayerCompatibility</em></strong>.</li>
+							<li>Sends along the result as an INT, number of players that don't like playing with the given player, number of players on the server that the given player doesn't like playing with, number of players in the associated Steam group that don't like playing with the player, and the Steam ID of the given player.</li>
+						</ul>
+						<h3>_policy_Response</h3>
+						<ul>
+							<li>Received when the game server requests to be displayed as secure (VAC protected).</li>
+							<li>Emits signal <strong><em>server_secure</em></strong>.</li>
+							<li>Sends along security response as a BOOL. If true, the game server should display itself as secure to users, false otherwise.</li>
+						</ul>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

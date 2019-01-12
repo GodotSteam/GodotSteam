@@ -1,0 +1,317 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Functions For Servers</h1>
+						</header>
+						<p>Here is a list of all the functions available in the GodotSteam Server module. Many will reference appID or steamID. AppID always references to a game, applications, or DLC's ID number in Steam. The steamID, however, can reference a user, lobby session, server, or such.</p>
+						<hr />
+						<header class="major">
+							<h3>Basics</h3>
+						</header>
+						<h4>serverInit( <sup>int</sup> ip, <sup>int</sup> steamPort, <sup>int</sup> gamePort, <sup>int</sup> queryPort, <sup>int</sup> serverMode, <sup>string</sup> versionString )</h4>
+						<ul>
+							<li>Initialize the server to Steam.</li>
+							<li>BOOL; returns true if successful and false if not.</li>
+						</ul>
+						<h4>serverReleaseCurrentThreadMemory()</h4>
+						<ul>
+							<li>Frees all API-related memory associated with the calling thread. This memory is released automatically by RunCallbacks so single-threaded servers do not need to call this.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>serverShutdown()</h4>
+						<ul>
+							<li>Shut down the server connection to Steam.</li>
+							<li>VOID.</li>
+						</ul>
+						<header class="major">
+							<h3>Server</h3>
+						</header>
+						<h4>initGameServer( <sup>int</sup> ip, <sup>int</sup> steamPort, <sup>int</sup> gamePort, <sup>int</sup> queryPort, <sup>int</sup> serverMode, <sup>string</sup> versionString )</h4>
+						<ul>
+							<li>This is called by SteamGameServer_Init and will usually not need to be called directly.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setProduct( <sup>string</sup> product )</h4>
+						<ul>
+							<li>Game product identifier; currently used by the master server for version checking purposes.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setGameDescription( <sup>string</sup> description )</h4>
+						<ul>
+							<li>Description of the game; required field and is displayed in the Steam server browser.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setModDir( <sup>string</sup> modDir )</h4>
+						<ul>
+							<li>If your game is a mod, pass the <sup>string</sup> that identifies it. Default is empty meaning the app is the original game.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setDedicatedServer( <sup>bool</sup> dedicated )</h4>
+						<ul>
+							<li>Is this a dedicated server? Default is false.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>logOn( <sup>string</sup> token )</h4>
+						<ul>
+							<li>Being process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>logOnAnonymous()</h4>
+						<ul>
+							<li>Login to a generic, anonymous account.</li>
+							<li>VOID</li>
+						</ul>
+						<h4>logOff()</h4>
+						<ul>
+							<li>Begin process of logging game server out of Steam.</li>
+							<li>VOID</li>
+						</ul>
+						<h4>loggedOn()</h4>
+						<ul>
+							<li>Status functions.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>secure()</h4>
+						<ul>
+							<li>Check if game server is secured.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getSteamID()</h4>
+						<ul>
+							<li>Get the game server's Steam ID.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>wasRestartRequested()</h4>
+						<ul>
+							<li>Returns true if the master server has requested a restart. Only returns true once per request.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setMaxPlayerCount( <sup>int</sup> max )</h4>
+						<ul>
+							<li>Max player count that will be reported to server browser and client queries.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setBotPlayerCount( <sup>int</sup> bots )</h4>
+						<ul>
+							<li>Number of bots. Default is zero.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setServerName( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Set the naem of the server as it will appear in the server browser.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setMapName( <sup>string</sup> map )</h4>
+						<ul>
+							<li>Set name of map to report in server browser.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setPasswordProtected( <sup>bool</sup> protected )</h4>
+						<ul>
+							<li>Let people know if your server requires a password.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setSpectatorPort( <sup>int</sup> port )</h4>
+						<ul>
+							<li>Spectator server. Default is zero, meaning it is now used.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setSpectatorServerName( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Name of spectator server. Only used if spectator port is non-zero.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>clearAllKeyValues()</h4>
+						<ul>
+							<li>Call this to clear the whole list of key/values that are sent in rule queries.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setKeyValue( <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Call this to add/update a key/value pair.</li>
+							<li>VOID></li>
+						</ul>
+						<h4>setGameTags( <sup>string</sup> tags )</h4>
+						<ul>					
+							<li>Set a <sup>string</sup> defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setGameData( <sup>string</sup> data )</h4>
+						<ul>
+							<li>Set a <sup>string</sup> defining game data for this server; optional. Allows users to filter in matchmaking/server browser.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setRegion( <sup>string</sup> region )</h4>
+						<ul>
+							<li>Region identifier; optional. Default is empty meaning 'world'.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>sendUserConnectAndAuthenticate( <sup>int</sup> ipClient, <sup>void</sup> authBlob, <sup>int</sup> authBlobSize, <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Handles receiving a new connection from a Steam user. This call will ask the Steam servers to validate the users identity, app ownership, and VAC status. If the Steam servers are off-line, then it will validate the cached ticket itself which will validate app ownership and identity. The AuthBlob here should be acquired on the game client using SteamUser()->InitiateGameConnection() and must then be sent up to the game server for authentication.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>createUnauthenticatedUserConnection()</h4>
+						<ul>
+							<li>Creates a fake user (ie, a bot) which will be listed as playing on the server, but skips validation.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>sendUserDisconnect( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Should be called whenever a user leaves server; lets Steam internally track which users are currently on which servers.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>updateUserData( <sup>int</sup> steamID, <sup>string</sup> name, <sup>int</sup> score )</h4>
+						<ul>
+							<li>Update the data to be displayed in the server browser; for regular users you must call this after you recieve a GSUserValidationSuccess callback.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getAuthSessionTicket( <sup>void</sup> ticket, <sup>int</sup> maxTicket, <sup>int</sup> pcbTicket )</h4>
+						<ul>
+							<li>Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).</li>
+							<li>INT.</li>
+						</ul>
+						<h4>beginAuthSession( <sup>void</sup> authTicket, <sup>int</sup> cbAuthTicket, <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Begin an authenticated session.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>endAuthSession( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Stop tracking started by beginAuthSession; called when no longer playing game with this entity.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>cancelAuthTicket( <sup>int</sup> authTicket )</h4>
+						<ul>
+							<li>Cancel auth ticket from getAuthSessionTicket; called when no longer playing game with the entity you gave the ticket to.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>userHasLicenceForApp( <sup>int</sup> steamID, <sup>int</sup> appID )</h4>
+						<ul>
+							<li>After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>requestUserGroupStatus( <sup>int</sup> steamID, <sup>int</sup> groupID )</h4>
+						<ul>
+							<li>Ask if user is in specified group; results returned by GSUserGroupStatus_t.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>handleIncomingPacket( <sup>void</sup> data, <sup>int</sup> cbData, <sup>int</sup> ip, <sup>int</sup> port )</h4>
+						<ul>
+							<li>These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getNextOutgoingPacket( <sup>void</sup> out, <sup>int</sup> maxOut, <sup>int</sup> address, <sup>int</sup> port )</h4>
+						<ul>
+							<li>AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>enableHeartbeats( <sup>bool</sup> active )</h4>
+						<ul>
+							<li>Call this as often as you like to tell the master server updater whether or not you want it to be active (default: off).</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setHeartbeatInterval( <sup>int</sup> interval )</h4>
+						<ul>
+							<li>You usually don't need to modify this. Pass -1 to use the default value for iHeartbeatInterval. Some mods change this.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>forceHeartbeat()</h4>
+						<ul>
+							<li>Force a heartbeat to Steam at next opportunity.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>associateWithClan( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Associate this game server with this clan for the purposes of computing player compatibility.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>computeNewPlayerCompatibility( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Ask if any of the current players dont want to play with this new player - or vice versa.</li>
+							<li>VOID.</li>
+						</ul>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>To-Do List</h1>
+						</header>
+						<p>Short lists of things still needed to do with the project.</p>
+						<hr />
+						<h2>Both Modules</h2>
+						<ul>
+							<li>Fix getFriendGamePlayed; only returns bool and not full friend game info struct.</li>
+							<li>Fix getFriendPersonaNameHistory; should be in a loop to create an array instead.</li>
+							<li>Put getFriendFromSourceByIndex into a new function for iteration.</li>
+							<li>Connect LobbyChatUpdate_t to callback for leaveLobby.</li>
+							<li>Connect requestUserInformation to a callback.</li>
+							<li>Make responses from getSyncPlatforms more user-friendly.</li>
+							<li>Fix indicateAchievementProgress.</li>
+							<li>Fix getAchievementAndUnlockTime to provide all data as a Dictionary.</li>
+							<li>Add DownloadItemResult_t callback for downloadItem.</li>
+							<li>Hook up both auth callbacks.</li>
+							<li>Fix setItemTags.</li>
+							<li>Fix getItemInstallInfo.</li>
+							<li>Make friend flags for hasFriend more simplified.</li>
+							<li>Add in more features from the Steamworks SDK.</li>
+							<li>Optimize C++ code by someone better at C++.</li>
+							<li>Test, test, test!</li>
+						</ul>
+						<hr />
+						<h2>GDNative</h2>
+						<ul>
+							<li>Fix signals, leaderboards, and callbacks in GDNative version.</li>
+							<li>Re-work everything for newest NativeScript / GDNative.</li>
+						</ul>
+						<hr />
+						<h2>Server</h2>
+						<ul>
+							<li>Continue work on basic Steam server functionality.</li>
+						</ul>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

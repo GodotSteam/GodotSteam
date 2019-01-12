@@ -1,0 +1,1409 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Functions For Modules</h1>
+						</header>
+						<p>Here is a list of all the functions available in the GodotSteam module. Many will reference appID or steamID. AppID always references a game, application, or DLC's ID number in Steam. The steamID, however, can reference a user, lobby session, server, or such.</p>
+						<hr />
+						<header class="major">
+							<h3>Basics</h3>
+						</header>
+						<h4>steamInit()</h4>
+						<ul>
+							<li>Starts up the Steam API.</li>
+							<li>BOOL; returns true or false.</li>
+							<li>This will also return a lot of information about connecting to Steam, mostly useless.</li>
+						</ul>
+						<h4>isSteamRunning()</h4>
+						<ul>
+							<li>Check if the Steam client is running. Returns 1 if so and 0 if not.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>restartAppIfNecessary( <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Checks if your executable was launched through Steam and relaunches it through Steam if it wasn't.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>run_callbacks()</h4>
+						<ul>
+							<li>This should be run often; best if called in the _process(delta) function.</li>
+							<li>VOID.</li>
+						</ul>
+						<header class="major">
+							<h3>Apps</h3>
+						</header>
+						<h4>isSubscribed()</h4>
+						<ul>
+							<li>Checks if the active user is subscribed to the current App ID.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isLowViolence()</h4>
+						<ul>
+							<li>Checks if the license owned by the user provides low violence depots.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isCybercafe()</h4>
+						<ul>
+							<li>Checks whether the current App ID is for Cyber Cafes.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isVACBanned()</h4>
+						<ul>
+							<li>Does the user have a VAC ban for this game.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getCurrentGameLanguage()</h4>
+						<ul>
+							<li>Get the user's current game language (ie. english, russian, french).</li>
+							<li>STRING; returns two-letter country language code.</li>
+						</ul>
+						<h4>getAvailableGameLanguages()</h4>
+						<ul>
+							<li>Get a list of the languages the current app supports.</li>
+							<li>STRING; returns comma-separated list of two-letter country language codes.</li>
+						</ul>
+						<h4>isSubscribedApp( <sup>int</sup> value )</h4>
+						<ul>
+							<li>Checks ownership of another game related to yours: a demo, etc.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isDLCInstalled( <sup>int</sup> value )</h4>
+						<ul>
+							<li>Checks if the user owns a specific DLC and if the DLC is installed.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getEarliestPurchaseUnixTime( <sup>int</sup> value )</h4>
+						<ul>
+							<li>Get the datetime of the purchase of the app.</li>
+							<li>INT; returns the Unix timestamp.</li>
+						</ul>
+						<h4>isSubscribedFromFreeWeekend()</h4>
+						<ul>
+							<li>Checks if the user is subscribed to the current app through a free weekend.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getDLCCount()</h4>
+						<ul>
+							<li>Get the total number of DLC installed for this application/game.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getDLCDataByIndex()</h4>
+						<ul>
+							<li>Get metadata for a DLC, by index.</li>
+							<li>ARRAY; returns an array of dictionaries with ID, available or not, and name.</li>
+						</ul>
+						<h4>installDLC( <sup>int</sup> value )</h4>
+						<ul>
+							<li>Install control for optional DLC.</li>
+							<li>VOID; triggers <strong>_dlc_installed</strong> callback.</li>
+						</ul>
+						<h4>uninstallDLC( <sup>int</sup> value )</h4>
+						<ul>
+							<li>Uninstall control for optional DLC.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getCurrentBetaName()</h4>
+						<ul>
+							<li>Checks if the user is running from a beta branch, and gets the name of the branch if they are.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>markContentCorrupt( <sup>bool</sup> missingFilesOnly )</h4>
+						<ul>
+							<li>Allows you to force verify game content on next launch. Returns true/false depending on success.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getInstalledDepots( <sup>int</sup> appID, <sup>int</sup> depots, <sup>int</sup> maxDepots )</h4>
+						<ul>
+							<li>Gets a list of all installed depots for a given App ID.</li>
+							<li>ARRAY; returns the app ID's </li>
+						</ul>
+						<h4>getAppInstallDir( <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Gets the install folder for a specific AppID.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>isAppInstalled( <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Check if given application/game is installed, not necessarily owned.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getAppOwner()</h4>
+						<ul>
+							<li>Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getLaunchQueryParam( <sup>string</sup> key )</h4>
+						<ul>
+							<li>Gets the associated launch parameter if the game is run via steam://run//?param1=value1;param2=value2;param3=value3 etc.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getDLCDownloadProgress( <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Gets the download progress for optional DLC.</li>
+							<li>DICTIONARY; returns success, downloaded, and total.</li>
+						</ul>
+						<h4>getAppBuildId()</h4>
+						<ul>
+							<li>Gets the build ID for this application; will change based on backend updates.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getFileDetails( <sup>string</sup> filename )</h4>
+						<ul>
+							<li>Asynchronously retrieves metadata details about a specific file in the depot manifest.</li>
+							<li>VOID; triggers <strong>_file_details_result</strong> callback.</li>
+						</ul>
+						<header class="major">
+							<h3>Controller</h3>
+						</header>
+						<h4>activateActionSet( <sup>int</sup> controllerHandle, <sup>int</sup> actionSetHandle )</h4>
+						<ul>
+							<li>Reconfigure the controller to use the specified action set.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getActionSetHandle( <sup>string</sup> actionSetName )</h4>
+						<ul>
+							<li>Lookup the handle for an action set.</li>
+							<li>INT; returns the handle ID.</li>
+						</ul>
+						<h4>getAnalogActionData( <sup>int</sup> controllerHandle, <sup>int</sup> analogActionHandle )</h4>
+						<ul>
+							<li>Gets the current state of the supplied analog game action.</li>
+							<li>DICTIONARY; returns mode, x, y, and active.</li>
+						</ul>
+						<h4>getAnalogActionHandle( <sup>string</sup> actionName )</h4>
+						<ul>
+							<li>Get the handle of the specified analog action.</li>
+							<li>INT; returns the handle ID.</li>
+						</ul>
+						<h4>getAnalogActionOrigins( <sup>int</sup> controllerHandle, <sup>int</sup> actionSetHandle, <sup>int</sup> analogActionHandle )</h4>
+						<ul>
+							<li>Get the origin(s) for an analog action within an action.</li>
+							<li>ARRAY; returns handle IDs.</li>
+						</ul>
+						<h4>getConnectedControllers()</h4>
+						<ul>
+							<li>Get current controllers handles.</li>
+							<li>ARRAY; returns handle IDs.</li>
+						</ul>
+						<h4>getControllerForGamepadIndex( <sup>int</sup> index )</h4>
+						<ul>
+							<li>Get the associated controller handle for the specified emulated gamepad.</li>
+							<li>INT; returns the handle ID.</li>
+						</ul>
+						<h4>getCurrentActionSet( <sup>int</sup> controllerHandle )</h4>
+						<ul>
+							<li>Get the currently active action set for the specified controller.</li>
+							<li>INT; returns the handle ID.</li>
+						</ul>
+						<h4>getDigitalActionData( <sup>int</sup> controllerHandle, <sup>int</sup> digitalActionHandle )</h4>
+						<ul>
+							<li>Gets the current state of the supplied digital game action.</li>
+							<li>DICTIONARY; contains state and active.</li>
+						</ul>
+						<h4>getDigitalActionHandle( <sup>string</sup> actionName )</h4>
+						<ul>
+							<li>Get the handle of the specified digital action</li>
+							<li>INT; returns the handle ID.</li>
+						</ul>
+						<h4>getDigitalActionOrigins( <sup>int</sup> controllerHandle, <sup>int</sup> actionSetHandle, <sup>int</sup> digitalActionHandle )</h4>
+						<ul>
+							<li>Get the origin(s) for an analog action within an action.</li>
+							<li>ARRAY; returns handle IDs.</li>
+						</ul>
+						<h4>getGamepadIndexForController( <sup>int</sup> controllerHandle )</h4>
+						<ul>
+							<li>Get the associated gamepad index for the specified controller.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getMotionData( <sup>int</sup> controllerHandle )</h4>
+						<ul>
+							<li>Get raw motion data for the specified controller.</li>
+							<li>DICTIONARY; contains rotQuatX, rotQuatY, rotQuatZ, rotQuatW, posAccelX, posAccelY, posAccelZ, rotVelX, rotVelY, and rotVelZ.</li>
+						</ul>
+						<h4>init()</h4>
+						<ul>
+							<li>Start SteamControllers interface.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>runFrame()</h4>
+						<ul>
+							<li>Syncronize controllers.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>showBindingPanel( <sup>int</sup> controllerHandle )</h4>
+						<ul>
+							<li>Invokes the Steam overlay and brings up the binding screen.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>shutdown()</h4>
+						<ul>
+							<li>Stop SteamControllers interface.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>triggerVibration( <sup>int</sup> controllerHandle, <sup>int</sup> leftSpeed, <sup>int</sup> rightSpeed )</h4>
+						<ul>
+							<li>Trigger a vibration event on supported controllers.</li>
+							<li>VOID.</li>
+						</ul>
+						<header class="major">
+							<h3>Friends</h3>
+						</header>
+						<h4>getPersonaName()</h4>
+						<ul>
+							<li>Get the user's Steam username.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>setPersonaName( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Sets the player name, stores it on the server and publishes the changes to all friends who are online.</li>
+							<li>VOID; triggers <strong>_name_changed</strong> callback.</li>
+						</ul>
+						<h4>getPersonaState()</h4>
+						<ul>
+							<li>Gets the status of the current user.</li>
+							<li>INT; should be one of the following:
+								<ul>
+									<li>0 - Offline</li>
+									<li>1 - Online</li>
+									<li>2 - Busy</li>
+									<li>3 - Away</li>
+									<li>4 - Snooze</li>
+									<li>5 - Looking For Trade</li>
+									<li>6 - Looking for Play</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getFriendCount()</h4>
+						<ul>
+							<li>Get the number of friends the user has.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getFriendByIndex( <sup>int</sup> friendNum, <sup>int</sup> friendFlags )</h4>
+						<ul>
+							<li>Get the Steam ID of a user.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getFriendRelationship( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Returns a relationship to a user.</li>
+							<li>INT; should be one of the following:
+								<ul>
+									<li>0 - None</li>
+									<li>1 - Blocked</li>
+									<li>2 - Request Recipient</li>
+									<li>3 - Friend</li>
+									<li>4 - Request Initiator</li>
+									<li>5 - Ignored</li>
+									<li>6 - Ignored Friend</li>
+									<li>7 - Suggested</li>
+									<li>8 - Max</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getFriendPersonaState( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Returns the current status of the specified user.</li>
+							<li>INT; should be one of the following:
+								<ul>
+									<li>0 - Offline</li>
+									<li>1 - Online</li>
+									<li>2 - Busy</li>
+									<li>3 - Away</li>
+									<li>4 - Snooze</li>
+									<li>5 - Looking For Trade</li>
+									<li>6 - Looking for Play</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getFriendPersonaName( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Get the given user's Steam username.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getFriendGamePlayed( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>If the friend is actually in game and, if so, fills in FriendGameInfo with an extra details.</li>
+							<li>BOOL; though it should also return the friend's game info.</li>
+							<li>Currently incomplete.</li>
+						</ul>
+						<h4>getFriendPersonaNameHistory( <sup>int</sup> steamID, <sup>int</sup> nameHistory )</h4>
+						<ul>
+							<li>Accesses old friends names; returns an empty <sup>string</sup> when there are no more items in the history.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getFriendSteamLevel( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Get friend's steam level, obviously.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getPlayerNickname( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Returns nickname the current user has set for the specified player. Returns NULL if the no nickname has been set for that player.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>hasFriend( <sup>int</sup> steamID, <sup>int</sup> friendFlags )</h4>
+						<ul>
+							<li>Returns true if the specified user meets any of the criteria specified in friendFlags:
+								<ul>
+									<li>0x00 - None</li>
+									<li>0x01 - Blocked</li>
+									<li>0x02 - Friendship Requested</li>
+									<li>0x04 - Immediate</li>
+									<li>0x08 - Clan Member</li>
+									<li>0x10 - On Game Server</li>
+									<li>0x80 - Requesting Friendship</li>
+									<li>0x100 - Requesting Info</li>
+									<li>0x200 - Ignored</li>
+									<li>0x400 - Ignored Friend</li>
+									<li>0x0000 - Chat Member</li>
+									<li>0xFFFF - All</li>
+								</ul>
+							</li>
+							<li>BOOL; return true or false.</li>
+						</ul>
+						<h4>downloadClanActivityCounts( <sup>int</sup> clanID, <sup>int</sup> clansToRequest )</h4>
+						<ul>
+							<li>For clans a user is a member of, they will have reasonably up-to-date information, but for others you'll have to download the info to have the latest.</li>
+							<li>VOID; triggers <strong>_clan_activity_downloaded</strong> callback.</li>
+						</ul>
+						<h4>getFriendCountFromSource( <sup>int</sup> sourceID )</h4>
+						<ul>
+							<li>Iterator for getting users in a chat room, lobby, game server or clan. The clansID can actually be the Steam ID of a group, game server, lobby, or chat room.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getFriendFromSourceByIndex( <sup>int</sup> sourceID, <sup>int</sup> friendNum )</h4>
+						<ul>
+							<li>Same as getFriendCountFromSource except it requires a specific number for iteration.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>isUserInSource( <sup>int</sup> steamID, <sup>int</sup> sourceID )</h4>
+						<ul>
+							<li>Find out if the local user can see that steamIDUser is a member or in steamIDSource.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setInGameVoiceSpeaking( <sup>int</sup> steamID, <sup>bool</sup> speaking )</h4>
+						<ul>
+							<li>User is in a game pressing the talk button (will suppress the microphone for all voice comms from the Steam friends UI).</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>activateGameOverlay( <sup>string</sup> dialog )</h4>
+						<ul>
+							<li>Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>activateGameOverlayToUser( <sup>string</sup> url, <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>activateGameOverlayToWebPage( <sup>string</sup> url )</h4>
+						<ul>
+							<li>Activates the overlay with specified web address.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>activateGameOverlayToStore( <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Activates the overlay with the application/game Steam store page.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>setPlayedWith( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Set player as 'Played With' for current game.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>activateGameOverlayInviteDialog( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getSmallFriendAvatar( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Gets the small (32x32) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getMediumFriendAvatar( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Gets the medium (64x64) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getLargeFriendAvatar( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Gets the large (184x184) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>requestUserInformation( <sup>int</sup> steamID, <sup>bool</sup> requireNameOnly )</h4>
+						<ul>
+							<li>Requests information about a user, basically the persona name and avatar. If requireNameOnly is set, then the avatar of a user isn't downloaded.</li>
+							<li>BOOL; returns true or false. Should trigger a callback, but currently does not.</li>
+						</ul>
+						<h4>requestClanOfficerList( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Requests information about a clan officer list; when complete, data is returned in ClanOfficerListResponse_t call result.</li>
+							<li>VOID; triggers <strong>_request_clan_officer_list</strong> callback.</li>
+						</ul>
+						<h4>getClanOwner( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Get the steamID of the clan owner.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getClanOfficerCount( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Returns the number of officers in a clan (including the owner).</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getClanOfficerByIndex( <sup>int</sup> clanID, <sup>int</sup> officer )</h4>
+						<ul>
+							<li>Returns the steamID of a clan officer, by index, of range [0, GetClanOfficerCount).</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getUserRestrictions()</h4>
+						<ul>
+							<li>If current user is chat restricted, they can't send or receive any text or voice chat messages. The user can't see custom avatars. But the user can be online and send or receive game invites. A chat restricted user cannot add friends or join any groups.</li>
+							<li>INT; it should be one of the following:
+								<ul>
+									<li>0 - None</li>
+									<li>1 - Unknown</li>
+									<li>2 - Any Chat</li>
+									<li>4 - Voice Chat</li>
+									<li>8 - Group Chat</li>
+									<li>16 - Rating</li>
+									<li>32 - Game Invites</li>
+									<li>64 - Trading</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>setRichPresence( <sup>string</sup> key, <sup>string</sup> value)</h4>
+						<ul>
+							<li>Set the game information in Steam; used in 'View Game Info'.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>clearRichPresence()</h4>
+						<ul>
+							<li>Clear the game information in Steam; used in 'View Game Info'.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getFriendRichPresence( <sup>int</sup> friendID, <sup>string</sup> key )</h4>
+						<ul>
+							<li>Get a Rich Presence value from a specified friend (typically only used for debugging).</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getFriendRichPresenceKeyCount( <sup>int</sup> friendID )</h4>
+						<ul>
+							<li>Gets the number of Rich Presence keys that are set on the specified user.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getFriendRichPresenceKeyByIndex( <sup>int</sup> friendID, <sup>int</sup> key )</h4>
+						<ul>
+							<li>Gets an empty <sup>string</sup> ("") if the index is invalid or the specified user has no Rich Presence data available.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>requestFriendRichPresence( <sup>int</sup> friendID )</h4>
+						<ul>
+							<li>Requests rich presence for a specific user.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>inviteUserToGame( <sup>int</sup> steamID, <sup>string</sup> connectString )</h4>
+						<ul>
+							<li>Invite friend to current game/lobby.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>joinClanChatRoom( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Allows the user to join Steam group (clan) chats right within the game.</li>
+							<li>VOID; triggers <strong>_join_clan_chat_complete</strong></li>
+						</ul>
+						<h4>leaveClanChatRoom( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Leaves a Steam group chat that the user has previously entered with JoinClanChatRoom.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getClanChatMemberCount( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Get the number of users in a Steam group chat.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getChatMemberByIndex( <sup>int</sup> clanID, <sup>int</sup> user )</h4>
+						<ul>
+							<li>Gets the Steam ID at the given index in a Steam group chat.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>sendClanChatMessage( <sup>int</sup> chatID, <sup>string</sup> text )</h4>
+						<ul>
+							<li>Sends a message to a Steam group chat room.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isClanChatAdmin( <sup>int</sup> chatID, <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Checks if a user in the Steam group chat room is an admin.</li>
+							<li>BOOL; returns true or false.</li> 
+						</ul>
+						<h4>isClanChatWindowOpenInSteam( <sup>int</sup> chatID )</h4>
+						<ul>
+							<li>Checks if the Steam Group chat room is open in the Steam UI.</li>
+							<li>BOOL; returns true or false.</li> 
+						</ul>
+						<h4>openClanChatWindowInSteam( <sup>int</sup> chatID )</h4>
+						<ul>
+							<li>Opens the specified Steam group chat room in the Steam UI.</li>
+							<li>BOOL; returns true or false.</li> 
+						</ul>
+						<h4>closeClanChatWindowInSteam( <sup>int</sup> chatID )</h4>
+						<ul>
+							<li>Closes the specified Steam group chat room in the Steam UI.
+							<li>BOOL; returns true or false.</li> 
+						</ul>
+						<h4>setListenForFriendsMessages( <sup>bool</sup> intercept )</h4>
+						<ul>
+							<li>Listens for Steam friends chat messages.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>replyToFriendMessage( <sup>int</sup> steamID, <sup>string</sup> message )</h4>
+						<ul>
+							<li>Sends a message to a Steam friend.</li>
+							<li>BOOL; returns true or false.</li> 
+						</ul>
+						<h4>getFollowerCount( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Gets the number of users following the specified user.</li>
+							<li>VOID; triggers <strong>_get_follower_count</strong> callback.</li>
+						</ul>
+						<h4>isFollowing( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Checks if the current user is following the specified user.</li>
+							<li>VOID; triggers <strong>_is_following</strong> callback.</li>
+						</ul>
+						<h4>enumerateFollowingList( <sup>int</sup> startIndex )</h4>
+						<ul>
+							<li>Gets the list of users that the current user is following.</li>
+							<li>VOID; triggers <strong>_enumerate_following_list</strong></li>
+						</ul>
+						<h4>isClanPublic( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Checks if the Steam group is public.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isClanOfficialGameGroup( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Checks if the Steam group is an official game group/community hub.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getRecentPlayers()</h4>
+						<ul>
+							<li>Get list of players user has recently played game with.</li>
+							<li>ARRAY; returns a list of dictionaries, each containing Steam ID, name, time, and status.</li>
+						</ul>
+						<h4>getFriendAvatar( <sup>int</sup> size )</h4>
+						<ul>
+							<li>Get player's avatar.</li>
+							<li>VOID; triggers <strong>_avatar_loaded</strong> callback.</li>
+						</ul>
+						<h4>drawAvatar( <sup>int</sup> size, <sup>int</sup> buffer )</h4>
+						<ul>
+							<li>Draw the given avatar.</li>
+							<li>IMAGE; currently does not work in Godot 3 due to changes.</li>
+						</ul>
+						<h4>getUserFriendsGroups()</h4>
+						<ul>
+							<li>Get list of friends groups (tags) the user has created. This is not to be confused with Steam groups.</li>
+							<li>ARRAY; returns a list of dictionaries, each  containing Steam ID, name, and members.</li>
+						</ul>
+						<h4>getUserSteamGroups()</h4>
+						<ul>
+							<li>Get list of user's Steam groups; a mix of different Steamworks API group functions.</li>
+							<li>ARRAY; returns a list of dictionaries, each  containing Steam ID, name, and tag.</li>
+						</ul>
+						<h4>getUserSteamFriends()</h4>
+						<ul>
+							<li>Get a list of user's Steam friends; a mix of different Steamworks API friend functions.</li>
+							<li>ARRAY; returns a list of dictionaries, each containing Steam ID, name, and status.</li>
+						</ul>
+						<header class="major">
+							<h3>Matchmaking</h3>
+						</header>
+						<h4>getFavoriteGames()</h4>
+						<ul>
+							<li>Get an array of the user's favorite game servers.</li>
+							<li>ARRAY; returns a list of dictionaries, each containing IP address, port, query port, flags, and last played.</li>
+						</ul>
+						<h4>addFavoriteGame( <sup>int</sup> appID, <sup>int</sup> ip, <sup>int</sup> port, <sup>int</sup> queryPort, <sup>int</sup> flags, <sup>int</sup> lastPlayed )</h4>
+						<ul>
+							<li>Adds the game server to the local list; updates the time played of the server if it already exists in the list.</li>
+							<li>INT; not currently functional.</li>
+						</ul>
+						<h4>removeFavoriteGame( <sup>int</sup> appID, <sup>int</sup> ip, <sup>int</sup> port, <sup>int</sup> queryPort, <sup>int</sup> flags )</h4>
+						<ul>
+							<li>Removes the game server from the local storage.</li>
+							<li>BOOL; returns true if it was removed or false if not.</li>
+						</ul>
+						<h4>requestLobbyList()</h4>
+						<ul>
+							<li>Get a list of relevant lobbies.</li>
+							<li>VOID; triggers <strong>_lobby_match_list</strong> callback.</li>
+						</ul>
+						<h4>addRequestLobbyListStringFilter( <sup>string</sup> keyToMatch, <sup>string</sup> valueToMatch, <sup>int</sup> comparisonType )</h4>
+						<ul>
+							<li>Adds a <sup>string</sup> comparison filter to the next RequestLobbyList call.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>addRequestLobbyListNumericalFilter( <sup>string</sup> keyToMatch, <sup>int</sup> valueToMatch, <sup>int</sup> comparisonType )</h4>
+						<ul>
+							<li>Adds a numerical comparison filter to the next RequestLobbyList call.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>addRequestLobbyListNearValueFilter( <sup>string</sup> keyToMatch, <sup>int</sup> valueToBeCloseTo )</h4>
+						<ul>
+							<li>Gets results closest to the specified value. Multiple near filters can be added, with early filters taking precedence.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>addRequestLobbyListFilterSlotsAvailable( <sup>int</sup> slotsAvailable )</h4>
+						<ul>
+							<li>Gets only lobbies with the specified number of slots available.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>addRequestLobbyListDistanceFilter( <sup>int</sup> distanceFilter )</h4>
+						<ul>
+							<li>Sets the distance for which we should search for lobbies (based on users IP address to location map on the Steam backed).</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>addRequestLobbyListResultCountFilter( <sup>int</sup> maxResults )</h4>
+						<ul>
+							<li>Sets how many results to return, the lower the count the faster it is to download the lobby results & details to the client.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>createLobby( <sup>int</sup> lobbyType, <sup>int</sup> maxMembers )</h4>
+						<ul>
+							<li>Create a lobby on the Steam servers, if private the lobby will not be returned by any RequestLobbyList() call.</li>
+							<li>VOID; triggers <strong>_lobby_created</strong> callback.</li>
+						</ul>
+						<h4>joinLobby( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Join an existing lobby.</li>
+							<li>VOID; triggers <strong>_lobby_joined</strong> callback for other users.</li>
+						</ul>
+						<h4>leaveLobby( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Leave a lobby, this will take effect immediately on the client side, other users will be notified by callback.</li>
+							<li>VOID; callback has not been enabled yet.</li>
+						</ul>
+						<h4>inviteUserToLobby( <sup>int</sup> steamIDLobby, <sup>int</sup> steamIDInvitee )</h4>
+						<ul>
+							<li>Invite another user to the lobby. The target user will receive a <strong>_lobby_invite</strong> callback.</
+							<li>BOOL; returns true if the invite is successfully sent, whether or not the target responds.</li>
+						</ul>
+						<h4>getNumLobbyMembers( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Lobby iteration; for viewing details of users in a lobby.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getLobbyMemberByIndex( <sup>int</sup> steamIDLobby, <sup>int</sup> member )</h4>
+						<ul>
+							<li>Gets the Steam ID of a user in the lobby.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getLobbyData( <sup>int</sup> steamIDLobby, <sup>string</sup> key )</h4>
+						<ul>
+							<li>Get data associated with this lobby.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>setLobbyData( <sup>int</sup> steamIDLobby, <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Sets a key/value pair in the lobby metadata.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getLobbyDataByIndex( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Get lobby data by the lobby's ID.</li>
+							<li>DICTIONARY; contains the count, key, and value.</li>
+						</ul>
+						<h4>deleteLobbyData( <sup>int</sup> steamIDLobby, <sup>string</sup> key )</h4>
+						<ul>
+							<li>Removes a metadata key from the lobby.</li>
+							<li>BOOL: returns true or false.</li>
+						</ul>
+						<h4>getLobbyMemberData( <sup>int</sup> steamIDLobby, <sup>int</sup> steamIDUser, <sup>string</sup> key )</h4>
+						<ul>
+							<li>Gets per-user metadata for someone in this lobby.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>setLobbyMemberData( <sup>int</sup> steamIDLobby, <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Sets per-user metadata (for the local user implicitly).</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>sendLobbyChatMsg( <sup>int</sup> steamIDLobby, <sup>string</sup> messageBody )</h4>
+						<ul>
+							<li>Broadcasts a chat message to the all the users in the lobby. Those users should receive a <strong>_lobby_Message</strong> callback.</li>
+							<li>BOOL; returns true if sent successfully or false.</li>
+						</ul>
+						<h4>requestLobbyData( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Refreshes metadata for a lobby you're not necessarily in right now.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setLobbyGameServer( <sup>int</sup> steamIDLobby, <sup>string</sup> serverIP, <sup>int</sup> serverPort, <sup>int</sup> steamIDGameServer )</h4>
+						<ul>
+							<li>Sets the game server associated with the lobby.</li>
+							<li>VOID; triggers <strong>_lobby_game_created</strong> callback.</li>
+						</ul>
+						<h4>getLobbyGameServer( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Gets the details of a game server set in a lobby.</li>
+							<li>DICTIONARY; returns false if there is no game server set or that lobby doesn't exist. Otherwise it returns the lobby's Steam ID, IP address, and port.</li>
+						</ul>
+						<h4>setLobbyMemberLimit( <sup>int</sup> steamIDLobby, <sup>int</sup> maxMembers )</h4>
+						<ul>
+							<li>Set the limit on the number of users who can join the lobby.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getLobbyMemberLimit( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Returns the current limit on the # of users who can join the lobby.</li>
+							<li>INT; returns 0 if no limit is defined.</li>
+						</ul>
+						<h4>setLobbyType( <sup>int</sup> steamIDLobby, <sup>int</sup> eLobbyType )</h4>
+						<ul>
+							<li>Updates which type of lobby it is.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setLobbyJoinable( <sup>int</sup> steamIDLobby, <sup>bool</sup> joinable )</h4>
+						<ul>
+							<li>Sets whether or not a lobby is joinable; defaults to true for a new lobby.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getLobbyOwner( <sup>int</sup> steamIDLobby )</h4>
+						<ul>
+							<li>Get the current lobby owner.</li>
+							<li>INT; returns owner's Steam ID.</li>
+						</ul>
+						<h4>setLobbyOwner( <sup>int</sup> steamIDLobby, <sup>int</sup> steamIDNewOwner )</h4>
+						<ul>
+							<li>Changes who the lobby owner is.</li>
+							<li>BOOL; returns true or false depending on success.</li>
+						</ul>
+						<h4>setLinkedLobby( <sup>int</sup> steamIDLobby, <sup>int</sup> steamIDLobbyDependent )</h4>
+						<ul>
+							<li>Link two lobbies for the purposes of checking player compatibility.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<header class="major">
+							<h3>Music</h3>
+						</header>
+						<h4>musicIsEnabled()</h4>
+						<ul>
+							<li>Is Steam music enabled?</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>musicIsPlaying()</h4>
+						<ul>
+							<li>Is Steam music playing something?</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>musicGetVolume()</h4>
+						<ul>
+							<li>Get the volume level of the music.</li>
+							<li>FLOAT.</li>
+						</ul>
+						<h4>musicPause()</h4>
+						<ul>
+							<li>Pause whatever Steam music is playing.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>musicPlay()</h4>
+						<ul>
+							<li>Play current track/album.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>musicPlayNext()</h4>
+						<ul>
+							<li>Play next track/album.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>musicPlayPrev()</h4>
+						<ul>
+							<li>Play previous track/album.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>musicSetVolume( <sup>float</sup> value )</h4>
+						<ul>
+							<li>Set the volume of Steam music. Must pass a float between 0.0 and 1.0.</li>
+							<li>VOID.</li>
+						</ul>
+						<header class="major">
+							<h3>Remote Storage</h3>
+						</header>
+						<h4>fileWrite( <sup>string</sup> file, void data, <sup>int</sup> data )</h4>
+						<ul>
+							<li>Write user file to remote online storage.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>fileRead( <sup>string</sup> file, void data, <sup>int</sup> data to read )</h4>
+						<ul>
+							<li>Read user file from remote online storage.</li>
+							<li>DICTIONARY; returns with a response and data.</li>
+						</ul>
+						<h4>fileForget( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Deletes the file from remote storage, but leaves it on the local disk and remains accessible from the API.</li>
+							<li>BOOL; returns true if forgotten or false if not.</li>
+						</ul>
+						<h4>fileDelete( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Delete user file from remote online storage.</li>
+							<li>BOOL; returns true if deleted or false if not.</li>
+						</ul>
+						<h4>fileExists( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Check if a remote file exists.</li>
+							<li>BOOL; return true if it does or false if it does not.</li>
+						</ul>
+						<h4>filePersisted( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Checks if a specific file is persisted in the Steam Cloud. Depreciated: PS3 Only</li>
+							<li>BOOL; returns true if it has or false if it has not.</li>
+						</ul>
+						<h4>getFileSize( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Get the size of the current file.</li>
+							<li>INT; returns the file size in bytes.</li>
+						</ul>
+						<h4>getFileTimestamp( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Get the timestamp of when the file was uploaded.</li>
+							<li>INT; returns datetime in Unix format.</li>
+						</ul>
+						<h4>getFileCount()</h4>
+						<ul>
+							<li>Get the number of files saved on Steam Cloud.</li>
+							<li>INT; returns the number of files present for the current user, including files in subfolders.</li>
+						</ul>
+						<h4>isCloudEnabledForAccount()</h4>
+						<ul>
+							<li>Check if Cloud Saves/Storage is enabled for the user's account.</li>
+							<li>BOOL; returns true if enabled or false if not.</li>
+						</ul>
+						<h4>isCloudEnabledForApp()</h4>
+						<ul>
+							<li>Check if Cloud Saves/Storage is enabled for the application.</li>
+							<li>BOOL; returns true if enabled or false if not.</li>
+						</ul>
+						<h4>setCloudEnabledForApp( <sup>bool</sup> enabled )</h4>
+						<ul>
+							<li>Enable or disable Steam Cloud for this application. This must only ever be called as the direct result of the user explicitly requesting that it's enabled or not. This is typically accomplished with a checkbox within your in-game options.</li>
+							<li>BOOL.</li>
+						</ul>
+						<h4>getFileNameAndSize( <sup>int</sup> file )</h4>
+						<ul>
+							<li>Gets the file name and size of a file from the index.</li>
+							<li>DICTIONARY.</li>
+						</ul>
+						<h4>getQuota()</h4>
+						<ul>
+							<li>Gets the number of bytes available, and used on the users Steam Cloud storage.</li>
+							<li>DICTIONARY; returns the total and used bytes.</li>
+						</ul>
+						<h4>getSyncPlatforms( <sup>string</sup> file )</h4>
+						<ul>
+							<li>Obtains the platforms that the specified file will synchronize to.</li>
+							<li>INT; should return one of the following:
+								<ul>
+									<li>0 - None</li>
+									<li>1<<0 - Windows</li>
+									<li>1<<1 - OSX</li>
+									<li>1<<2 - PS3</li>
+									<li>1<<3 - Linux</li>
+									<li>1<<4 - Reserved</li>
+									<li>0xffffffff - All</li>
+								</ul>
+							</li>
+						</ul>
+						<header class="major">
+							<h3>Screenshots</h3>
+						</header>
+						<h4>hookScreenshots( <sup>bool</sup> hook )</h4>
+						<ul>
+							<li>Toggles whether the overlay handles screenshots.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>isScreenshotsHooked()</h4>
+						<ul>
+							<li>Checks if the app is hooking screenshots.</li>
+							<li>BOOL; returns true of false.</li>
+						</ul>
+						<h4>triggerScreenshot()</h4>
+						<ul>
+							<li>Causes the Steam overlay to take a screenshot.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>writeScreenshot( <sup>array</sup> data, <sup>int</sup> width, <sup>int</sup> height )</h4>
+						<ul>
+							<li>Writes a screenshot to the user's Steam screenshot library.</li>
+							<li>INT; should also trigger <strong>_screenshot_ready</strong> callback.</li>
+						</ul>
+						<h4>addScreenshotToLibrary( <sup>string</sup> filename, <sup>string</sup> thumbnail name, <sup>int</sup> width, <sup>int</sup> height )</h4>
+						<ul>
+							<li>Adds a screenshot to the user's Steam screenshot library from disk.</li>
+							<li>INT; should also trigger <strong>_screenshot_ready</strong> callback.</li>
+						</ul>
+						<h4>setLocation( <sup>int</sup> screenshot, <sup>string</sup> location )</h4>
+						<ul>
+							<li>Sets optional metadata about a screenshot's location.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<header class="major">
+							<h3>Users</h3>
+						</header>
+						<h4>getSteamID()</h4>
+						<ul>
+							<li>Get the user's Steam ID (ID64).</li>
+							<li>INT.</li>
+						</ul>
+						<h4>loggedOn()</h4>
+						<ul>
+							<li>Check if user is logged into Steam currently.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getPlayerSteamLevel()</h4>
+						<ul>
+							<li>Get the user's Steam level.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getUserDataFolder()</h4>
+						<ul>
+							<li>Get the user's Steam installation path.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>advertiseGame( <sup>string</sup> server IP, <sup>int</sup> port )</h4>
+						<ul>
+							<li>(LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getGameBadgeLevel( <sup>int</sup> series, <sup>bool</sup> foil )</h4>
+						<ul>
+							<li>Trading Card badges data access, if you only have one set of cards, the series will be 1.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getAuthSessionTicket()</h4>
+						<ul>
+							<li>Get an authentication ticket.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>cancelAuthTicket( <sup>int</sup> ticket )</h4>
+						<ul>
+							<li>Cancels an authentication ticket.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>beginAuthSession( <sup>int</sup> ticket, <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Authenticate the ticket from the entity's Steam ID to be sure it is valid and isn't reused.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>endAuthSession(( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Ends an authentication session.</li>
+							<li>VOID.</li>
+						</ul>
+						<header class="major">
+							<h3>User Statistics</h3>
+						</header>
+						<h4>getAchievement( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets if the achievement exist and if it was earned. Must be name given in Steamworks backend.</li>
+							<li>DICTIONARY; returns true or false if the achievement exists and true or false if the achievement was earned.</li>
+						</ul>
+						<h4>getStatInt( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Get the value of an integer statistic. Must be name given in Steamworks backend.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getStatFloat( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Get the value of a float statistic. Must be name given in Steamworks backend.</li>
+							<li>FLOAT.</li>
+						</ul>
+						<h4>resetAllStats( <sup>bool</sup> achievements too )</h4>
+						<ul>
+							<li>Reset all Steam statistics; optional to reset achievements.</li>
+							<li>BOOL; returns true if reset or false if not.</li>
+						</ul>
+						<h4>requestCurrentStats()</h4>
+						<ul>
+							<li>Request all statistics and achievements from Steam servers.</li>
+							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_received</strong> callback.</li>
+						</ul>
+						<h4>setAchievement( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Set a given achievement. Must be the name given in Steamworks backend.</li>
+							<li>BOOL; returns true or false. Should also trigger <strong>_user_achievement_stored</strong> callback.</li>
+						</ul>
+						<h4>setStatFloat( <sup>string</sup> name, <sup>float</sup> value )</h4>
+						<ul>
+							<li>Set a statistic. Must be the name given in Steamworks backend.</li>
+							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_stored</strong> callback.</li>
+						</ul>
+						<h4>setStatInt( <sup>string</sup> name, <sup>int</sup> value )</h4>
+						<ul>
+							<li>Set a statistic. Must be the name given in Steamworks backend.</li>
+							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_stored</strong> callback.</li>
+						</ul>
+						<h4>storeStats()</h4>
+						<ul>
+							<li>Store all statistics, and achievements, on Steam servers; must be called to "pop" achievements.</li>
+							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_stored</strong> callback.</li>
+						</ul>
+						<h4>clearAchievement( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Clears a given achievement. Must be the name given in Steamworks backend.</li>
+							<li>BOOL; returns true if cleared and false if not.</li>
+						</ul>
+						<h4>getAchievementDisplayAttribute( <sup>string</sup> name, <sup>string</sup> key )</h4>
+						<ul>
+							<li>Get general attributes for an achievement.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getAchievementName( <sup>int</sup> achievement )</h4>
+						<ul>
+							<li>Gets the 'API name' for an achievement index.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getAchievementIcon( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the icon for an achievement.</li>
+							<li>INT; should also trigger <strong>_user_achievement_icon_fetched</strong> callback.</li>
+						</ul>
+						<h4>getNumberOfCurrentPlayers()</h4>
+						<ul>
+							<li>Asynchronously retrieves the total number of players currently playing the current game. Both online and in offline mode.</li>
+							<li>VOID; triggers <strong>_number_of_current_players</strong> callback.</li>
+						</ul>
+						<h4>findLeaderboard( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Find a given leaderboard, by name.</li>
+							<li>VOID; triggers <strong>_leaderboard_loaded</strong> callback.</li>
+						</ul>
+						<h4>getLeaderboardName()</h4>
+						<ul>
+							<li>Get the name of a leaderboard.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getLeaderboardEntryCount()</h4>
+						<ul>
+							<li>Get the total number of entries in a leaderboard, as of the last request.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>downloadLeaderboardEntries( <sup>int</sup> start, <sup>int</sup> end, <sup>int</sup> type )</h4>
+						<ul>
+							<li>Request all rows for friends of user.</li>
+							<li>VOID; triggers <strong>_leaderboard_entries_loaded</strong> callback.</li>
+						</ul>
+						<h4>downloadLeaderboardEntriesForUsers( <sup>array</sup> users ID )</h4>
+						<ul>
+							<li>Request a maximum of 100 users with only one outstanding call at a time.</li>
+							<li>VOID; triggers <strong>_leaderboard_entries_loaded</strong> callback.</li>
+						</ul>
+						<h4>uploadLeaderboardScore( <sup>int</sup> score, <sup>bool</sup> keep best )</h4>
+						<ul>
+							<li>Upload a leaderboard score for the user.</li>
+							<li>VOID; triggers <strong>_leaderboard_uploaded</strong> callback.</li>
+						</ul>
+						<h4>getDownloadedLeaderboardEntry( <sup>string</sup> handle, <sup>int</sup> entry count )</h4>
+						<ul>
+							<li>Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getLeaderboardHandle()</h4>
+						<ul>
+							<li>Get the currently used leaderboard handle.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getLeaderboardEntries()</h4>
+						<ul>
+							<li>Get the currently used leaderboard entries.</li>
+							<li>ARRAY.</li>
+						</ul>
+						<h4>getAchievementAndUnlockTime( <sup>string</sup> name, <sup>bool</sup> achieved, <sup>int</sup> unlock time )</h4>
+						<ul>
+							<li>Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).</li>
+							<li>BOOL; returns true or false. Currently incomplete.</li>
+						</ul>
+						<h4>indicateAchievementProgress( <sup>string</sup> name, <sup>int</sup> current progress, <sup>int</sup> max progress )</h4>
+						<ul>
+							<li>Achievement progress, triggers an AchievementProgress callback, that is all.</li>
+							<li>BOOL; returns true or false. Currently incomplete.</li>
+						</ul>
+						<h4>getNumAchievements()</h4>
+						<ul>
+							<li>Get the number of achievements.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getAchievementAchievedPercent( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns the percentage of users who have unlocked the specified achievement.</li>
+							<li>DICTIONARY; returns if it exists and the percentage.</li>
+						</ul>
+						<h4>requestGlobalAchievementPercentages()</h4>
+						<ul>
+							<li>Asynchronously fetch the data for the percentages.</li>
+							<li>VOID; triggers <strong>_global_achievement_percentages_ready</strong> callback.</li>
+						</ul>
+						<header class="major">
+							<h3>Utilities</h3>
+						</header>
+						<h4>getCurrentBatteryPower()</h4>
+						<ul>
+							<li>Get the amount of battery power, clearly for laptops.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getIPCountry()</h4>
+						<ul>
+							<li>Get the user's country by IP.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getSecondsSinceAppActive()</h4>
+						<ul>
+							<li>Time since application/game was started.</li>
+							<li>INT; returns time in seconds.</li>
+						</ul>
+						<h4>getServerRealTime()</h4>
+						<ul>
+							<li>Get the actual time.</li>
+							<li>INT; returns UNIX time from Steam servers.</li>
+						</ul>
+						<h4>isOverlayEnabled()</h4>
+						<ul>
+							<li>Check if Steam overlay is enabled.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isSteamRunningInVR()</h4>
+						<ul>
+							<li>Is Steam running in VR?</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getSteamUILanguage()</h4>
+						<ul>
+							<li>Get the Steam user interface language.</li>
+							<li>STRING; should return two-letter language code.</li>
+						</ul>
+						<h4>getAppID()</h4>
+						<ul>
+							<li>Get the Steam ID of the running application/game.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>setOverlayNotificationPosition( <sup>int</sup> pos )</h4>
+						<ul>
+							<li>Set the position where overlay shows notifications. Accepts the following integer inputs:
+								<ul>
+									<li>0 - Top Left</li>
+									<li>1 - Top Right</li>
+									<li>2 - Bottom Left</li>
+									<li>3 - Bottom Right</li>
+								</ul>
+							</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>isSteamInBigPictureMode()</h4>
+						<ul>
+							<li>Returns true if Steam and the Steam Overlay are running in Big Picture mode.</li>
+							<li>BOOL.</li>
+						</ul>
+						<h4>startVRDashboard()</h4>
+						<ul>
+							<li>Ask SteamUI to create and render its OpenVR dashboard.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getImageRGBA( <sup>int</sup> image )</h4>
+						<ul>
+							<li>Gets the image bytes from an image handle.</li>
+							<li>DICTIONARY; returns the buffer.</li>
+						</ul>
+						<h4>getImageSize ( <sup>int</sup> image )</h4>
+						<ul>
+							<li>Gets the size of a Steam image handle.</li>
+							<li>DICTIONARY; returns the width and height.</li>
+						</ul>
+						<header class="major">
+							<h3>UGC / Workshop</h3>
+						</header>
+						<h4>downloadItem( <sup>int</sup> publishedFileID, <sup>bool</sup> highPriority )</h4>
+						<ul>
+							<li>Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received. If item is not subscribed to, it will be cached for some time. If highPriority is set, any other item download will be suspended and this item downloaded ASAP.</li>
+							<li>BOOL.</li>
+						</ul>
+						<h4>suspendDownloads( <sup>bool</sup> suspend )</h4>
+						<ul>
+							<li>SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>startItemUpdate( <sup>int</sup> appID, <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Starts the item update process.</li>
+							<li>INT; returns an update handle.</li>
+						</ul>
+						<h4>getItemState( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Gets the current state of a workshop item on this client.</li>
+							<li>INT; should return one of the following:
+								<ul>
+									<li>0 - None</li>
+									<li>1 - Subscribed</li>
+									<li>2 - Legacy</li>
+									<li>4 - Installed</li>
+									<li>8 - Update</li>
+									<li>16 - Downloading</li>
+									<li>32 - Pending</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getItemUpdateProgress( <sup>int</sup> handle )</h4>
+						<ul>
+							<li>Gets the progress of an item update.</li>
+							<li>DICTIONARY; contains the status, bytes processed, and bytes total.</li>
+						</ul>
+						<h4>createItem( <sup>int</sup> appID, <sup>int</sup> fileType )</h4>
+						<ul>
+							<li>Create new item for this app with no content attached yet.</li>
+							<li>VOID; triggers <strong>_workshop_item_created</strong> callback.</li>
+						</ul>
+						<h4>setItemTitle( <sup>int</sup> updateHandle, <sup>string</sup> title )</h4>
+						<ul>
+							<li>Sets a new title for an item.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>setItemDescription( <sup>int</sup> updateHandle, <sup>string</sup> description )</h4>
+						<ul>
+							<li>Sets a new description for an item.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>setItemUpdateLanguage( <sup>int</sup> updateHandle, <sup>string</sup> language )</h4>
+						<ul>
+							<li>Sets the language of the title and description that will be set in this item update.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>setItemMetadata( <sup>int</sup> updateHandle, <sup>string</sup> metadata )</h4>
+						<ul>
+							<li>Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>setItemVisibility( <sup>int</sup> updateHandle, <sup>int</sup> visibility )</h4>
+						<ul>
+							<li>Sets the visibility of an item.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>setItemTags( <sup>int</sup> updateHandle, <sup>string</sup> stringArray, <sup>int</sup> stringCount )</h4>
+						<ul>
+							<li>Sets arbitrary developer specified tags on an item.</li>
+							<li>BOOL; returns true if succesful or false if not. Currently not functional.</li>
+						</ul>
+						<h4>setItemContent( <sup>int</sup> updateHandle, <sup>string</sup> contentFolder )</h4>
+						<ul>
+							<li>Sets the folder that will be stored as the content for an item.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>setItemPreview( <sup>int</sup> updateHandle, <sup>string</sup> previewFile )</h4>
+						<ul>
+							<li>Sets the primary preview image for the item.</li>
+							<li>BOOL; returns true if succesful or false if not.</li>
+						</ul>
+						<h4>submitItemUpdate( <sup>int</sup> updateHandle, <sup>string</sup> changeNote )</h4>
+						<ul>
+							<li>Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.</li>
+							<li>VOID; triggers <strong>_workshop_item_updated</strong> callback.</li>
+						</ul>
+						<h4>getSubscribedItems()</h4>
+						<ul>
+							<li>Gets a list of all of the items the current user is subscribed to for the current game.</li>
+							<li>ARRAY; returns a list of item ID's.</li>
+						</ul>
+						<h4>getItemInstallInfo( <sup>int</sup> fileID )</h4>
+						<ul>
+							<li>Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.</li>
+							<li>DICTIONARY; contains size, folder, folder size, and timestamp. Doest not currently work.</li>
+						</ul>
+						<h4>getItemDOwnloadInfo( <sup>int</sup> fileID)</h4>
+						<ul>
+							<li>Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.</li>
+							<li>DICTIONARY; contains bytes downloaded and bytes total.</li>
+						</ul>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>How-To For GDNative</h1>
+						</header>
+						<p>These steps most likely will not work correctly as the branch is still under development and I have been waiting for them to finalize GDNative first. It changes so much from iteration to iteration it has not been worth developing this branch further in the meantime.</p>
+						<hr />
+						<h2>1. Preparing</h2>
+						<ul>
+							<li>Create a new folder and call it <strong><em>GDNative</em></strong> (or whatever you want).</li>
+							<li>Download this repository.
+								<ul>
+									<li>Unpack this repo and place it inside the <strong><em>GDNative</em></strong> folder.
+										<ul>
+											<li>I usually rename it <strong><em>GodotSteam</em></strong> for the sake of ease.</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li>Download the Steamworks SDK; this requires a Steam developer account.
+								<ul>
+									<li>Unpack the Steamworks SDK then copy the <strong><em>public</em></strong> and <strong><em>redistributable_bin</em></strong> to the <strong><em>/include/sdk</em></strong> folder in the unpacked repo folder.</li>
+								</ul>
+							</li>
+							<li>Download the Godot 3.0 binary if you do not have it already.
+								<ul>
+									<li>Preferably you use the Godot 3.0.2 binary, at this time of writing.</li>
+									<li>Unpack it and place it <strong><em>GDNative</em></strong> folder.</li>
+								</ul>
+							</li>
+							<li>Download the CPP bindings and Godot headers.
+								<ul>
+									<li>Unpack both <strong><em>cpp_bindings</em></strong> and <strong><em>godot_header</em></strong> into the <strong><em>GDNative</em></strong> folder.</li>
+									<li>Alternatively, you can just use these commands inside the <strong><em>GDNative</em></strong> folder to clone them:
+										<blockquote>
+											 git clone https://github.com/GodotNativeTools/cpp_bindings<br />
+											 git clone https://github.com/GodotNativeTools/godot_headers
+										</blockquote>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h2>2. Compiling Bindings</h2>
+						<p>CD into the <strong><em>cpp_bindings</em></strong> folder and compile the bindings (make sure your slashes are OS appropriate):</p>
+						<blockquote>
+							scons godotbinpath="../<your binary>" headers="../godot_headers" platform=<your platform> generate_bindings=yes
+						</blockquote>
+						<p>Once this is finished, copy the resulting file from the <strong><em>cpp_bindings/bin</em></strong> folder to the <strong><em>cpp_bindings/lib</em></strong> folder.</p>
+						<h2>3. Fold Layout</h2>
+						<p>You should end up with a GDNative folder that looks something like this:</p>
+						<blockquote>
+							Godot_v3.0.2-stable_x11.64 (or whatever your binary is for your platform)<br />
+							cpp_bindings/<br />
+							--- bin/*<br />
+							--- lib/* (this should contain your compiled cpp_bindings)<br />
+							--- src/*<br />
+							--- binding_generator.py<br />
+							--- binding_generator.pyc<br />
+							--- godot_api.json<br />
+							--- LICENSE<br />
+							--- Makefile<br />
+							--- README.md<br />
+							--- SConstruct<br />
+							godot_headers/<br />
+							--- arvr/*<br />
+							--- gdnative/*<br />
+							--- images/*<br />
+							--- nativescript/*<br />
+							--- pluginscript/*<br />
+							--- gdnative_api.json<br />
+							--- gdnative_ap_struct.gen.h<br />
+							--- LICENSE<br />
+							--- README.md<br />
+							GodotSteam/<br />
+							--- include/<br />
+							--- --- sdk/<br />
+							--- --- --- public/steam/*<br />
+							--- --- --- redistributable_bin/*<br />
+							--- --- godotsteam.h<br />
+							--- lib/<br />
+							--- src/<br />
+							--- --- godotsteam.cpp<br />
+							--- --- init.cpp<br />
+							--- SConstruct<br />
+							--- README.md<br />
+							--- LICENSE.txt
+						</blockquote>
+						<h2>4. Compile It</h2>
+						<p>Windows users, follow these steps for Visual Studio (big thanks to willnationsdev):</p>
+						<ul>
+							<li>Create a new Visual Studio project.</li>
+							<li>Name it <strong><em>GDNative</em></strong> and make sure it DOES NOT create a directory.
+								<ul>
+									<li>Uncheck the box here.</li>
+								</ul>
+							</li>
+							<li>Select the <strong><em>GDNative</em></strong> folder we were working in.</li>
+							<li>Choose <strong><em>Win32 Desktop Wizard</em></strong> template.</li>
+							<li>Select options for both a <strong><em>dynamic library (.dll)</em></strong> and an <strong><em>empty project</em></strong>.</li>
+							<li>Things should look like this:
+								<blockquote>
+									 GDNative -cpp_bindings -godot_headers -lib -GDNative --.vs --GDNative.sln --GDNative.vcxproj --GDNative.vcsproj.filters -src
+								</blockquote>
+							</li>
+							<li>Make sure you have a debug, x64 configuration for the solution.
+								<ul>
+									<li>The options are located in the toolbar at the top left.</li>
+								</ul>
+							</li>
+							<li>Go to <strong><em>Project > GDNative Properties</em></strong> to open the project properties.</li>
+							<li>Ensure you are on the <strong><em>x64 Debug</em></strong> configurations at the top and make these changes:
+								<ul>
+									<li>VC++ Directories > Include Directories. Add 'GDNative\cpp_bindings\include', 'GDNative\cpp_bindings\include\core', and 'GDNative\godot_headers' to the list.</li>
+									<li>VC++ Directories > Library Directories. Add 'GDNative\GodotSteam\lib'.</li>
+									<li>VC++ Directories > Source Directories. Add 'GDNative\GodotSteam\src'.</li>
+									<li>C/C++ > Linker > System. Subsystem = "Console (/SUBSYSTEM:CONSOLE)"</li>
+									<li>C/C++ > Linker > Input. Add <strong><em>cpp_bindings.windows.64.lib</em></strong> to the Additional Dependencies parameter.</li>
+								</ul>
+							</li>
+							<li>Click on <strong><em>Apply</em></strong> and then <strong><em>Save</em></strong>.</li>
+							<li>Now build the solution.</li>
+							<li>Alternatively, you can also run the following in the VS Command Prompt:
+								<blockquote>
+									scons platform=windows
+								</blockquote>
+							</li>
+						</ul>
+						<p>Linux and Mac users, follow these steps:</p>
+						<ul>
+							<li>Simply CD into the <strong><em>GodotSteam</em></strong> folder and run:
+								<blockquote>
+									scons platform=<your platform>
+								</blockquote>
+							</li>
+							<li>You can enter the bit architecture with <strong><em>bits</em></strong> or <strong><em>b</em></strong> arguments or not. There is a fallback to automatically find this. However, I recommend you use one.</li>
+						</ul>
+						<h2>5. Adding It To Your Project</h2>
+						<p>Copy the resulting file into your game project folder and matching Steam API file; preferably the root folder.</p>
+						<ul>
+							<li>For Windows, you want <strong><em>godotsteam.windows.dll</em></strong> and <strong><em>steam_api.dll</em></strong> or <strong><em>steam_api64.dll</em></strong>.</li>
+							<li>For Linux, you want <strong><em>libgodotsteam.linux.so</em></strong> and <strong><em>libsteam_api.so</em></strong>.</li>
+							<li>For Mac, you want <strong><em>libgodotsteam.osx.dylib</em></strong> and <strong><em>libsteam_api.dylib</em></strong>.</li>
+						</ul>
+						<p>In a text editor, create a file called <strong><em>godotsteam.gdnlib</em></strong> (this may need to be renamed as such if using Windows). Place the following inside this file and save it in the root of your project (game) folder:</p>
+						<blockquote>
+							[general]<br />
+							singleton=false<br />
+							load_once=true<br />
+							symbol_prefix="godot_"<br />
+							reloadable=true<br /><br />
+							[entry]<br />
+							(read below)<br /><br />
+							[dependencies]<br />
+							(read below)
+						</blockquote>
+						<p>If using Windows enter either of these pairs (do not put both 32 and 64 lines unless including all files):
+						<blockquote>
+							[entry]<br />
+							Windows.32="res://godotsteam.windows.32.dll"<br />
+							(or)<br />
+							Windows.64="res://godotsteam.windows.64.dll"<br /><br />
+							[dependencies]<br />
+							Windows.32=["res://steam_api.dll"]<br />
+							(or)<br /><br />
+							Windows.64=["res://steam_api64.dll"]
+						</blockquote>
+						<p>If using Linux enter either of these pairs (do not put both 32 and 64 lines as Steam does not use separate naming conventions):</p>
+						<blockquote>
+							[entry]<br />
+							X11.32="res://libgodotsteam.linux.32.so"<br />
+							(or)<br />
+							X11.64="res://libgodotsteam.linux.64.so"<br /><br />
+							[dependencies]<br />
+							X11.32=["res://libsteam_api.so"]<br />
+							(or)<br />
+							X11.64=["res://libsteam_api.so"]
+						</blockquote>
+						<p>To double-check this worked, in your Godot project, open the <strong><em>.gdnlib</em></strong> file in the <strong><em>Inspector</em></strong>. It will have the correct data in the GUI editor that pops up in the bottom panel.
+						<p>In the Script Editor, cerate a new script.</p>
+						<ul>
+							<li>Set the type as NativeScript.</li>
+							<li>Set the Inherits as Reference.</li>
+							<li>Set the class as Steam.</li>
+							<li>Set the filename as godotsteam.gdns.</li>
+							<li>Hit create to save it.</li>
+						</ul>
+						<p>Open the new <strong><em>godotsteam.gdns</em></strong> file in the <strong><em>Inspector</em></strong>.</p>
+						<ul>
+							<li>It will have a null GDNativeLibrary field.</li>
+							<li>Click the arrow and select Load to add the godotsteam.gdnlib file.</li>
+							<li>Click the save icon in the Inspector.</li>
+						</ul>
+						<p>Create a new scene in your game project.</p>
+						<ul>
+							<li>Add a Node node with a built-in GDScript as the script.</li>
+							<li>Add the following code:
+								<blockquote>
+									extends Node<br /><br />
+									onready var Steam = preload("godotsteam.gdns").new()<br /><br />
+									func _ready():<br />
+									&nbsp;&nbsp;Steam.steamInit()
+								</blockquote>
+							</li>
+						</ul>
+						<p>Save the scene as <strong><em>godotsteam.tscn</em></strong> and place it where ever you want.
+						<h2>6. Adding Singleton</h2>
+						<p>Go to <strong><em>Project > Project Settings</em></strong> then click on <strong><em>Autoload</em></strong>. Add your <strong><em>godotsteam.tscn</em></strong> as a singleton, with the node name of <strong><em>godotsteam</em></strong>. Done!</p>
+						<h2>7. Use It</h2>
+						<p>Now you should be able to call functions from GodotSteam like you would normally with the GodotSteam module. They will, however, have to be added to your script in the godotsteam.tscn like this:</p>
+						<blockquote>
+							name = Steam.getPersonaName()<br />
+							country = Steam.getIPCountry()<br />
+							running = Steam.isSteamRunning()<br /><br />
+							func setAchievement(achieve):<br />
+							&nbsp;&nbsp;Steam.setAchievement(achieve)
+						</blockquote>
+						<p>These can then be called in any other script (since godotsteam.tscn is a singleton) like this:</p>
+						<blockquote>
+							print(godosteam.name)<br />
+							print(godotsteam.country)<br /><br />
+							if godotsteam.running:<br />
+							&nbsp;&nbsp;runFunction()<br /><br />
+							godotsteam.setAchievement(achieve)
+						</blockquote>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="donate.html">Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>
