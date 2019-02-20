@@ -271,10 +271,11 @@ class Steam: public Object {
 		int getLeaderboardEntryCount();
 		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
 		void downloadLeaderboardEntriesForUsers(Array usersID);
-		void uploadLeaderboardScore(int score, bool keepBest=false);
+		void uploadLeaderboardScore(int score, bool keepBest=false, PoolIntArray details=PoolIntArray());
 		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
+		void setLeaderboardDetailsMax(int detailsMax);
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 		// Utils ////////////////////////////////////
@@ -324,6 +325,7 @@ class Steam: public Object {
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntries;
+		int leaderboardDetailsMax;
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
