@@ -9,6 +9,7 @@ Steam* Steam::singleton = NULL;
 Steam::Steam(){
 	isInitSuccess = false;
 	singleton = this;
+	leaderboardDetailsMax = 0;
 	tickets.clear();
 }
 
@@ -2434,12 +2435,18 @@ void Steam::downloadLeaderboardEntriesForUsers(Array usersID){
 	delete[] users;
 }
 // Upload a leaderboard score for the user.
-void Steam::uploadLeaderboardScore(int score, bool keepBest){
+void Steam::uploadLeaderboardScore(int score, bool keepBest, PoolIntArray details){
 	if(SteamUserStats() == NULL){
 		return;
 	}
 	ELeaderboardUploadScoreMethod method = keepBest ? k_ELeaderboardUploadScoreMethodKeepBest : k_ELeaderboardUploadScoreMethodForceUpdate;
-	SteamAPICall_t apiCall = SteamUserStats()->UploadLeaderboardScore(leaderboardHandle, method, (int32)score, NULL, 0);
+	int detailsSize = details.size();
+	const int32 *detailsPointer = NULL;
+	if(detailsSize > 0){
+		PoolIntArray::Read r = details.read();
+		detailsPointer = r.ptr();
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->UploadLeaderboardScore(leaderboardHandle, method, (int32)score, detailsPointer, detailsSize);
 	callResultUploadScore.Set(apiCall, this, &Steam::_leaderboard_uploaded);
 }
 // Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.
@@ -2449,15 +2456,38 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int 
 	}
 	leaderboardEntries.clear();
 	LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
+	PoolIntArray details;
+	int32 *detailsPointer = NULL;
+	if(leaderboardDetailsMax > 0) {
+		details.resize(leaderboardDetailsMax);
+		PoolIntArray::Write w = details.write();
+		detailsPointer = w.ptr();
+		for(int i = 0; i < leaderboardDetailsMax; i++){
+			detailsPointer[i] = 0;
+		}
+	}
 	for(int i = 0; i < entryCount; i++){
-		SteamUserStats()->GetDownloadedLeaderboardEntry(handle, i, entry, NULL, 0);
+		SteamUserStats()->GetDownloadedLeaderboardEntry(handle, i, entry, detailsPointer, leaderboardDetailsMax);
 		Dictionary entryDict;
 		entryDict["score"] = entry->m_nScore;
 		entryDict["steamID"] = entry->m_steamIDUser.GetAccountID();
 		entryDict["global_rank"] = entry->m_nGlobalRank;
+		if(leaderboardDetailsMax > 0) {
+			PoolIntArray array;
+			array.resize(leaderboardDetailsMax);
+			PoolIntArray::Write w = array.write();
+			int32_t *ptr = w.ptr();
+			for(int j=0; j<leaderboardDetailsMax; j++){
+				w[j] = detailsPointer[j];
+			}
+			entryDict["details"] = array;
+		}
 		leaderboardEntries.append(entryDict);
 	}
 	memdelete(entry);
+}
+void Steam::setLeaderboardDetailsMax(int detailsMax) {
+	leaderboardDetailsMax = detailsMax;
 }
 // Get the currently used leaderboard handle.
 uint64_t Steam::getLeaderboardHandle(){
@@ -3047,7 +3077,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
 	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(int(GLOBAL)));
 	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntriesForUsers", "usersID"), &Steam::downloadLeaderboardEntriesForUsers);
-	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best", "details"), &Steam::uploadLeaderboardScore, DEFVAL(true), DEFVAL(PoolIntArray()));
+	ClassDB::bind_method(D_METHOD("setLeaderboardDetailsMax", "details_max"), &Steam::setLeaderboardDetailsMax);
 	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
 	ClassDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
 	ClassDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
