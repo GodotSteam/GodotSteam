@@ -149,14 +149,14 @@ Array Steam::getDLCDataByIndex(){
 	int count = SteamApps()->GetDLCCount();
 	Array dlcData;
 	for(int i = 0; i < count; i++){
-		AppId_t appID;
-		bool available;
+		AppId_t appID = 0;
+		bool available = false;
 		char name[128];
 		bool success = SteamApps()->BGetDLCDataByIndex(i, &appID, &available, name, 128);
 		if(success){
 			Dictionary dlc;
 			dlc["id"] = appID;
-			dlc["available"] = &available;
+			dlc["available"] = available;
 			dlc["name"] = name;
 			dlcData.append(dlc);
 		}
@@ -249,10 +249,10 @@ Dictionary Steam::getDLCDownloadProgress(int appID){
 		progress["ret"] = false;
 	}
 	else{
-		uint64 *downloaded;
-		uint64 *total;
+		uint64 downloaded = 0;
+		uint64 total = 0;
 		// Get the progress
-		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)appID, downloaded, total);
+		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)appID, &downloaded, &total);
 		if(progress["ret"]){
 			progress["downloaded"] = downloaded;
 			progress["total"] = total;
@@ -1050,12 +1050,12 @@ Array Steam::getFavoriteGames(){
 	Array favorites;
 	for(int i = 0; i < count; i++){
 		Dictionary favorite;
-		AppId_t appID;
-		uint32 ip;
-		uint16 port;
-		uint16 queryPort;
-		uint32 flags;
-		uint32 lastPlayed;
+		AppId_t appID = 0;
+		uint32 ip = 0;
+		uint16 port = 0;
+		uint16 queryPort = 0;
+		uint32 flags = 0;
+		uint32 lastPlayed = 0;
 		favorite["ret"] = SteamMatchmaking()->GetFavoriteGame(i, &appID, &ip, &port, &queryPort, &flags, &lastPlayed);
 		if(favorite["ret"]){
 			favorite["app"] = appID;
@@ -1703,8 +1703,13 @@ uint32_t Steam::writeScreenshot(const PoolByteArray& RGB, int width, int height)
 void Steam::_file_details_result(FileDetailsResult_t* fileData){
 	uint32_t result = fileData->m_eResult;
 	uint64_t fileSize = fileData->m_ulFileSize;
-	int fileHash = fileData->m_FileSHA[20];
 	uint32_t flags = fileData->m_unFlags;
+	PoolByteArray fileHash;
+	fileHash.resize(20);
+	PoolByteArray::Write w = fileHash.write();
+	for (int i=0; i<20; i++){
+		w[i] = fileData->m_FileSHA[i];
+	}
 	emit_signal("file_details_result", result, fileSize, fileHash, flags);
 }
 // Signal the lobby has been created.
@@ -1803,10 +1808,10 @@ void Steam::_clan_activity_downloaded(DownloadClanActivityCountsResult_t *callDa
 	// Set up the dictionary to populate
 	Dictionary activity;
 	if(success){
-		int *online;
-		int *inGame;
-		int *chatting;
-		activity["ret"] = SteamFriends()->GetClanActivityCounts(clanActivity, online, inGame, chatting);
+		int online = 0;
+		int inGame = 0;
+		int chatting = 0;
+		activity["ret"] = SteamFriends()->GetClanActivityCounts(clanActivity, &online, &inGame, &chatting);
 		if(activity["ret"]){
 			activity["online"] = online;
 			activity["ingame"] = inGame;
@@ -1825,7 +1830,7 @@ void Steam::_request_clan_officer_list(ClanOfficerListResponse_t *callData, bool
 	else{
 		CSteamID ownerSteamID = SteamFriends()->GetClanOwner(callData->m_steamIDClan);
 		int officers = SteamFriends()->GetClanOfficerCount(callData->m_steamIDClan);
-		message = "The owner of the clan is: %s (%lld) and there are %d officers.\n", SteamFriends()->GetFriendPersonaName(ownerSteamID), ownerSteamID.ConvertToUint64(), callData->m_cOfficers;
+		message = "The owner of the clan is: " + String(SteamFriends()->GetFriendPersonaName(ownerSteamID)) + " (" + itos(ownerSteamID.ConvertToUint64()) + ") and there are " + itos(callData->m_cOfficers) + " officers.";
 		for(int i = 0; i < officers; i++){
 			Dictionary officer;
 			CSteamID officerSteamID = SteamFriends()->GetClanOfficerByIndex(callData->m_steamIDClan, i);
@@ -1852,13 +1857,13 @@ void Steam::_join_clan_chat_complete(JoinClanChatRoomCompletionResult_t *callDat
 // A chat message has been received for a clan chat the game has joined.
 void Steam::_connected_clan_chat_message(GameConnectedClanChatMsg_t *callData){
 	Dictionary chat;
-	String *text;
-	EChatEntryType *type;
-	CSteamID *userID;
-	chat["ret"] = SteamFriends()->GetClanChatMessage(callData->m_steamIDClanChat, callData->m_iMessageID, text, 2048, type, userID);
-	chat["text"] = text;
+	char text[2048];
+	EChatEntryType type = k_EChatEntryTypeInvalid;
+	CSteamID userID;
+	chat["ret"] = SteamFriends()->GetClanChatMessage(callData->m_steamIDClanChat, callData->m_iMessageID, text, 2048, &type, &userID);
+	chat["text"] = String(text);
 	chat["type"] = type;
-	chat["chatter"] = userID;
+	chat["chatter"] = userID.ConvertToUint64();
 	emit_signal("clan_chat_message", chat);
 }
 // A chat message has been received from a friend.
@@ -1866,10 +1871,10 @@ void Steam::_connected_friend_chat_message(GameConnectedFriendChatMsg_t *callDat
 	uint64_t steamID = callData->m_steamIDUser.ConvertToUint64();
 	int message = callData->m_iMessageID;
 	Dictionary chat;
-	String *text;
-	EChatEntryType *type;
-	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(steamID), message, text, 2048, type);
-	chat["text"] = text;
+	char text[2048];
+	EChatEntryType type = k_EChatEntryTypeInvalid;
+	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(steamID), message, text, 2048, &type);
+	chat["text"] = String(text);
 	emit_signal("friend_chat_message", chat);
 }
 // A user has joined a clan chat.
@@ -1906,7 +1911,7 @@ void Steam::_enumerate_following_list(FriendsEnumerateFollowingList_t *callData,
 		message = "Failed to acquire list.";
 	}
 	else{
-		message = "Retrieved %d of %d people followed.",callData->m_nResultsReturned, callData->m_nTotalResultCount;
+		message = "Retrieved " + itos(callData->m_nResultsReturned) + " of " + itos(callData->m_nTotalResultCount) + " people followed.";
 		int32 count = callData->m_nTotalResultCount;
 		for(int i = 0; i < count; i++){
 			Dictionary follow;
@@ -1999,7 +2004,7 @@ void Steam::_lobby_Message(LobbyChatMsg_t *callData){
 		type = k_EChatEntryTypeLinkBlocked;
 	}
 	CSteamID steamID = userID;
-	int ret = SteamMatchmaking()->GetLobbyChatEntry((CSteamID)lobbyID, chatID, &steamID, &data, 4096, &type);
+	SteamMatchmaking()->GetLobbyChatEntry((CSteamID)lobbyID, chatID, &steamID, &data, 4096, &type);
 	emit_signal("lobby_message_received", data.utf8().get_data(), type);
 }
 // Signal number of current players (online + offline).
@@ -2281,7 +2286,6 @@ Dictionary Steam::getAchievement(const String& name){
 Dictionary Steam::getAchievementAchievedPercent(const String& name){
 	Dictionary d;
 	float percent = 0.f;
-	bool achieved = false;
 	if(SteamUserStats() == NULL){
 		d["ret"] = false;
 	} else {
@@ -2478,7 +2482,7 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int 
 			PoolIntArray::Write w = array.write();
 			int32_t *ptr = w.ptr();
 			for(int j=0; j<leaderboardDetailsMax; j++){
-				w[j] = detailsPointer[j];
+				ptr[j] = detailsPointer[j];
 			}
 			entryDict["details"] = array;
 		}
@@ -2502,7 +2506,7 @@ bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, uint3
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
-	return SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), (bool *)achieved, (uint32_t *)unlockTime);
+	return SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), (bool *)achieved, (uint32*)&unlockTime);
 }
 // Achievement progress, triggers an AchievementProgress callback, that is all.
 // Calling this with X out of X progress will NOT set the achievement, the game must still do that.
@@ -2650,9 +2654,9 @@ int Steam::getItemState(int publishedFileID){
 Dictionary Steam::getItemUpdateProgress(uint64_t updateHandle){
 	Dictionary updateProgress;
 	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
-	uint64 *processed;
-	uint64 *total;
-	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress(handle, processed, total);
+	uint64 processed = 0;
+	uint64 total = 0;
+	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress(handle, &processed, &total);
 	updateProgress["status"] = status;
 	updateProgress["processed"] = processed;
 	updateProgress["total"] = total;
@@ -2725,7 +2729,7 @@ bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
 		return false;
 	}
 	if (title.length() > UGC_MAX_TITLE_CHARS){
-		printf("Title cannot have more than %d ASCII characters. Title not set.", UGC_MAX_TITLE_CHARS);
+		printf("Title cannot have more than %ld ASCII characters. Title not set.", UGC_MAX_TITLE_CHARS);
 		return false;
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
@@ -2737,7 +2741,7 @@ bool Steam::setItemDescription(uint64_t updateHandle, const String& description)
 		return false;
 	}
 	if (description.length() > UGC_MAX_DESC_CHARS){
-		printf("Description cannot have more than %d ASCII characters. Description not set.", UGC_MAX_DESC_CHARS);
+		printf("Description cannot have more than %ld ASCII characters. Description not set.", UGC_MAX_DESC_CHARS);
 		return false;
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
@@ -2757,7 +2761,7 @@ bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
 		return false;
 	}
 	if (metadata.length() > UGC_MAX_METADATA_CHARS){
-		printf("Metadata cannot have more than %d ASCII characters. Metadata not set.", UGC_MAX_METADATA_CHARS);
+		printf("Metadata cannot have more than %ld ASCII characters. Metadata not set.", UGC_MAX_METADATA_CHARS);
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
 	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
@@ -2821,8 +2825,8 @@ Array Steam::getSubscribedItems(){
 		return Array();
 	}
 	Array subscribed;
-	PublishedFileId_t *items;
 	int numItems = SteamUGC()->GetNumSubscribedItems();
+	PublishedFileId_t items[numItems];
 	uint32 itemList = SteamUGC()->GetSubscribedItems(items, numItems);
 	for(int i = 0; i < itemList; i++){
 		subscribed.append((uint64_t)items[i]);
@@ -2855,9 +2859,9 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 	if(SteamUGC() == NULL){
 		info["ret"] = false;
 	}
-	uint64 *downloaded;
-	uint64 *total;
-	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)fileID, downloaded, total);
+	uint64 downloaded = 0;
+	uint64 total = 0;
+	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)fileID, &downloaded, &total);
 	if(info["ret"]){
 		info["downloaded"] = downloaded;
 		info["total"] = total;
