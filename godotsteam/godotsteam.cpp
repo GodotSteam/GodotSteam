@@ -2470,7 +2470,7 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int 
 		SteamUserStats()->GetDownloadedLeaderboardEntry(handle, i, entry, detailsPointer, leaderboardDetailsMax);
 		Dictionary entryDict;
 		entryDict["score"] = entry->m_nScore;
-		entryDict["steamID"] = entry->m_steamIDUser.GetAccountID();
+		entryDict["steamID"] = entry->m_steamIDUser.ConvertToUint64();
 		entryDict["global_rank"] = entry->m_nGlobalRank;
 		if(leaderboardDetailsMax > 0) {
 			PoolIntArray array;
