@@ -2474,7 +2474,7 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int 
 		SteamUserStats()->GetDownloadedLeaderboardEntry(handle, i, entry, detailsPointer, leaderboardDetailsMax);
 		Dictionary entryDict;
 		entryDict["score"] = entry->m_nScore;
-		entryDict["steamID"] = entry->m_steamIDUser.ConvertToUint64();
+		entryDict["steamID"] = uint64_t(entry->m_steamIDUser.ConvertToUint64());
 		entryDict["global_rank"] = entry->m_nGlobalRank;
 		if(leaderboardDetailsMax > 0) {
 			PoolIntArray array;
@@ -2826,11 +2826,12 @@ Array Steam::getSubscribedItems(){
 	}
 	Array subscribed;
 	int numItems = SteamUGC()->GetNumSubscribedItems();
-	PublishedFileId_t items[numItems];
+	PublishedFileId_t *items = new PublishedFileId_t[numItems];
 	uint32 itemList = SteamUGC()->GetSubscribedItems(items, numItems);
 	for(int i = 0; i < itemList; i++){
 		subscribed.append((uint64_t)items[i]);
 	}
+	delete items;
 	return subscribed;
 }
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
