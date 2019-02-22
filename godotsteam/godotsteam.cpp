@@ -254,8 +254,8 @@ Dictionary Steam::getDLCDownloadProgress(int appID){
 		// Get the progress
 		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)appID, &downloaded, &total);
 		if(progress["ret"]){
-			progress["downloaded"] = downloaded;
-			progress["total"] = total;
+			progress["downloaded"] = uint64_t(downloaded);
+			progress["total"] = uint64_t(total);
 		}
 	}
 	return progress;
@@ -1063,8 +1063,8 @@ Array Steam::getFavoriteGames(){
 			const int NBYTES = 4;
 			uint8 octet[NBYTES];
 			char favoriteIP[16];
-			for(int i = 0; i < NBYTES; i++){
-				octet[i] = ip >> (i * 8);
+			for(int j = 0; j < NBYTES; j++){
+				octet[j] = ip >> (j * 8);
 			}
 			sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			favorite["ip"] = favoriteIP;
@@ -1863,7 +1863,7 @@ void Steam::_connected_clan_chat_message(GameConnectedClanChatMsg_t *callData){
 	chat["ret"] = SteamFriends()->GetClanChatMessage(callData->m_steamIDClanChat, callData->m_iMessageID, text, 2048, &type, &userID);
 	chat["text"] = String(text);
 	chat["type"] = type;
-	chat["chatter"] = userID.ConvertToUint64();
+	chat["chatter"] = uint64_t(userID.ConvertToUint64());
 	emit_signal("clan_chat_message", chat);
 }
 // A chat message has been received from a friend.
@@ -2658,8 +2658,8 @@ Dictionary Steam::getItemUpdateProgress(uint64_t updateHandle){
 	uint64 total = 0;
 	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress(handle, &processed, &total);
 	updateProgress["status"] = status;
-	updateProgress["processed"] = processed;
-	updateProgress["total"] = total;
+	updateProgress["processed"] = uint64_t(processed);
+	updateProgress["total"] = uint64_t(total);
 	return updateProgress;
 }
 //
@@ -2864,8 +2864,8 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 	uint64 total = 0;
 	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)fileID, &downloaded, &total);
 	if(info["ret"]){
-		info["downloaded"] = downloaded;
-		info["total"] = total;
+		info["downloaded"] = uint64_t(downloaded);
+		info["total"] = uint64_t(total);
 	}
 	return info;
 }
