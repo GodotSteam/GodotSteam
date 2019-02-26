@@ -924,7 +924,11 @@ Array Steam::getRecentPlayers(){
 	return recents;
 }
 // Get player's avatar.
-void Steam::getFriendAvatar(int size){
+void Steam::getPlayerAvatar(int size, uint64_t steamID){
+	// If no Steam ID is given, use the current user's
+	if(steamID == 0){
+		steamID = getSteamID();
+	}
 	if(size < AVATAR_SMALL || size > AVATAR_LARGE){
 		return;
 	}
@@ -934,53 +938,31 @@ void Steam::getFriendAvatar(int size){
 	int handle = -2;
 	switch(size){
 		case AVATAR_SMALL:{
-			handle = SteamFriends()->GetSmallFriendAvatar( SteamUser()->GetSteamID() );
+			handle = getSmallFriendAvatar(steamID);
 			size = 32; break;
 		}
 		case AVATAR_MEDIUM:{
-			handle = SteamFriends()->GetMediumFriendAvatar( SteamUser()->GetSteamID() );
+			handle = getMediumFriendAvatar(steamID);
 			size = 64; break;
 		}
 		case AVATAR_LARGE:{
-			handle = SteamFriends()->GetLargeFriendAvatar( SteamUser()->GetSteamID() );
+			handle = getLargeFriendAvatar(steamID);
 			size = 184; break;
 		}
 		default:
 			return;
 	}
 	if(handle <= 0){
-		if(handle == -1){
-			// Still loading.
-			return;
-		}
-		// Invalid
+		printf("[Steam] Error retrieving avatar handle.");
 		return;
 	}
-	// Has already loaded, simulate callback.
 	AvatarImageLoaded_t* avatarData = new AvatarImageLoaded_t;
-	avatarData->m_steamID = SteamUser()->GetSteamID();
+	avatarData->m_steamID = steamID;
 	avatarData->m_iImage = handle;
 	avatarData->m_iWide = size;
 	avatarData->m_iTall = size;
 	_avatar_loaded(avatarData);
-	delete avatarData;
 	return;
-}
-// Draw the given avatar.
-Image Steam::drawAvatar(int size, uint8* buffer){
-	// Apply buffer to Image.
-	Image avatar(size, size, false, Image::FORMAT_RGBA8);	// Might need tweaked.
-	for(int y = 0; y < size; y++){
-		for(int x = 0; x < size; x++){
-			int i = 4*(x+y*size);
-			float r = float(buffer[i])/255;
-			float g = float(buffer[i+1])/255;
-			float b = float(buffer[i+2])/255;
-			float a = float(buffer[i+3])/255;
-			avatar.set_pixel(x, y, Color(r, g, b, a));
-		}
-	}
-	return avatar;
 }
 // Get list of friends groups (tags) the user has created. This is not to be confused with Steam groups.
 Array Steam::getUserFriendsGroups(){
@@ -1765,35 +1747,20 @@ void Steam::_join_requested(GameRichPresenceJoinRequested_t* callData){
 }
 // Signal that the avatar has been loaded.
 void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
-	if(avatarData->m_steamID != SteamUser()->GetSteamID()){
+	uint32 width, height;
+	bool success = SteamUtils()->GetImageSize(avatarData->m_iImage, &width, &height);
+	if(!success){
+		printf("[Steam] Failed to get image size.\n");
 		return;
 	}
-	int size = avatarData->m_iWide;
-	// Get image buffer
-	int bufferSize = 4 * size * size;
-	uint8* buffer = new uint8[bufferSize];
-	bool success = SteamUtils()->GetImageRGBA(avatarData->m_iImage, buffer, bufferSize);
+	PoolByteArray data;
+	data.resize(width * height * 4);
+	success = SteamUtils()->GetImageRGBA(avatarData->m_iImage, data.write().ptr(), data.size());
 	if(!success){
 		printf("[Steam] Failed to load image buffer from callback\n");
 		return;
 	}
-	int avatarSize;
-	if(size == 32){
-		avatarSize = AVATAR_SMALL;
-	}
-	else if(size == 64){
-		avatarSize = AVATAR_MEDIUM;
-	}
-	else if(size == 184){
-		avatarSize = AVATAR_LARGE;
-	}
-	else{
-		printf("[Steam] Invalid avatar size from callback\n");
-		return;
-	}
-	Image avatar = drawAvatar(size, buffer);
-	printf("[Steam] avatar_loaded signal temporarily disabled because of Image change in Godot.\n");
-//	call_deferred("emit_signal", "avatar_loaded", avatarSize, avatar);	Temporarily disabled because of Image change in Godot.
+	call_deferred("emit_signal", "avatar_loaded", width, data);
 }
 // Reports the result of an attempt to change the user's persona name.
 void Steam::_name_changed(SetPersonaNameResponse_t *callData){
@@ -1929,6 +1896,12 @@ void Steam::_enumerate_following_list(FriendsEnumerateFollowingList_t *callData,
 		}
 	}
 	emit_signal("following_list", message, following);
+}
+// Signal for a user change
+void Steam::_persona_state_change(PersonaStateChange_t *callData){
+	uint64_t steamID = callData->m_ulSteamID;
+	int flags = callData->m_nChangeFlags;
+	emit_signal("persona_state_change", steamID, flags);
 }
 // Signal for list of matching lobbies
 void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure){
@@ -2548,35 +2521,35 @@ int Steam::getAppID(){
 // Gets the image bytes from an image handle.
 Dictionary Steam::getImageRGBA(int image){
 	Dictionary d;
-	bool ret = false;
+	bool success = false;
 	if(SteamUtils() != NULL){
 		uint32 width;
 		uint32 height;
-		ret = SteamUtils()->GetImageSize(image, &width, &height);
-		if(ret){
+		success = SteamUtils()->GetImageSize(image, &width, &height);
+		if(success){
 			PoolByteArray data;
 			data.resize(width * height * 4);
-			ret = SteamUtils()->GetImageRGBA(image, data.write().ptr(), data.size());
-			if (ret){
-				d["buf"] = data;
+			success = SteamUtils()->GetImageRGBA(image, data.write().ptr(), data.size());
+			if(success){
+				d["buffer"] = data;
 			}
 		}
 	}
-	d["ret"] = ret;
+	d["success"] = success;
 	return d;
 }
 // Gets the size of a Steam image handle.
 Dictionary Steam::getImageSize(int image){
 	Dictionary d;
-	bool ret = false;
+	bool success = false;
 	if(SteamUtils() != NULL){
 		uint32 width;
 		uint32 height;
-		ret = SteamUtils()->GetImageSize(image, &width, &height);
+		success = SteamUtils()->GetImageSize(image, &width, &height);
 		d["width"] = width;
 		d["height"] = height;
 	}
-	d["ret"] = ret;
+	d["success"] = success;
 	return d;
 }
 // Return amount of time, in seconds, user has spent in this session.
@@ -2978,7 +2951,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isClanPublic", &Steam::isClanPublic);
 	ClassDB::bind_method("isClanOfficialGameGroup", &Steam::isClanOfficialGameGroup);
 	ClassDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
-	ClassDB::bind_method(D_METHOD("getFriendAvatar", "size"), &Steam::getFriendAvatar, DEFVAL(int(AVATAR_MEDIUM)));
+	ClassDB::bind_method(D_METHOD("getPlayerAvatar", "size", "steamID"), &Steam::getPlayerAvatar, DEFVAL(int(AVATAR_MEDIUM)), DEFVAL(0));
 	ClassDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
 	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
@@ -3135,6 +3108,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("get_follower_count"));
 	ADD_SIGNAL(MethodInfo("is_following"));
 	ADD_SIGNAL(MethodInfo("enumerate_following_list"));
+	ADD_SIGNAL(MethodInfo("persona_state_change"));
 	ADD_SIGNAL(MethodInfo("lobby_match_list"));
 	ADD_SIGNAL(MethodInfo("lobby_game_created"));
 	ADD_SIGNAL(MethodInfo("lobby_message_received"));
@@ -3436,6 +3410,21 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RESULT_GSLT_EXPIRED);				// 106
 	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);		// 107
 	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);			// 108
+	// Persona changes //////////////////////////
+	BIND_CONSTANT(PERSONA_CHANGE_NAME);				// 0x0001
+	BIND_CONSTANT(PERSONA_CHANGE_STATUS); 			// 0x0002
+	BIND_CONSTANT(PERSONA_CHANGE_COME_ONLINE); 		// 0x0004
+	BIND_CONSTANT(PERSONA_CHANGE_GONE_OFFLINE);		// 0x0008
+	BIND_CONSTANT(PERSONA_CHANGE_GAME_PLAYED);		// 0x0010
+	BIND_CONSTANT(PERSONA_CHANGE_GAME_SERVER);		// 0x0020
+	BIND_CONSTANT(PERSONA_CHANGE_AVATAR);			// 0x0040
+	BIND_CONSTANT(PERSONA_CHANGE_JOINED_SOURCE);	// 0x0080
+	BIND_CONSTANT(PERSONA_CHANGE_LEFT_SOURCE);		// 0x0100
+	BIND_CONSTANT(PERSONA_CHANGE_RELATIONSHIP_CHANGED);	// 0x0200
+	BIND_CONSTANT(PERSONA_CHANGE_NAME_FIRST_SET);	// 0x0400
+	BIND_CONSTANT(PERSONA_CHANGE_FACEBOOK_INFO);	// 0x0800
+	BIND_CONSTANT(PERSONA_CHANGE_NICKNAME);			// 0x1000
+	BIND_CONSTANT(PERSONA_CHANGE_STEAM_LEVEL);		// 0x2000
 	// Chat room responses //////////////////////
 	BIND_CONSTANT(CHAT_ROOM_SUCCESS);				// 1
 	BIND_CONSTANT(CHAT_ROOM_DOESNT_EXIST);			// 2

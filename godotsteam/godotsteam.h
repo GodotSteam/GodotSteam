@@ -24,6 +24,8 @@ class Steam: public Object {
 			AVATAR_SMALL=0, AVATAR_MEDIUM, AVATAR_LARGE,
 			GLOBAL=0, GLOBAL_AROUND_USER=1, FRIENDS=2, USERS=3,
 			PERSONA_NAME_MAX_UTF16=128, PERSONA_NAME_MAX_UTF8=128,
+			PERSONA_CHANGE_NAME=0x0001, PERSONA_CHANGE_STATUS=0x0002, PERSONA_CHANGE_COME_ONLINE=0x0004, PERSONA_CHANGE_GONE_OFFLINE=0x0008, PERSONA_CHANGE_GAME_PLAYED=0x0010, PERSONA_CHANGE_GAME_SERVER=0x0020, PERSONA_CHANGE_AVATAR=0x0040, PERSONA_CHANGE_JOINED_SOURCE=0x0080,
+			PERSONA_CHANGE_LEFT_SOURCE=0x0100, PERSONA_CHANGE_RELATIONSHIP_CHANGED=0x0200, PERSONA_CHANGE_NAME_FIRST_SET=0x0400, PERSONA_CHANGE_FACEBOOK_INFO=0x0800, PERSONA_CHANGE_NICKNAME=0x1000, PERSONA_CHANGE_STEAM_LEVEL=0x2000,
 			RESTRICTION_NONE=0, RESTRICTION_UNKNOWN=1, RESTRICTION_ANY_CHAT=2, RESTRICTION_VOICE_CHAT=4, RESTRICTION_GROUP_CHAT=8, RESTRICTION_RATING=16, RESTRICTION_GAME_INVITES=32, RESTRICTION_TRADING=64,
 			CHAT_INVALID=0, CHAT_MESSAGE=1, CHAT_TYPING=2, CHAT_INVITE_GAME=3, CHAT_EMOTE=4, CHAT_LEFT=6, CHAT_ENTERED=7, CHAT_KICKED=8, CHAT_BANNED=9, CHAT_DISCONNECTED=10, CHAT_HISTORICAL=11, CHAT_LINK_BLOCKED=14,
 			CHAT_METADATA_MAX=8192, MAX_RICH_PRESENCE_KEYS=20, MAX_RICH_PRESENCE_KEY_LENGTH=64, MAX_RICH_PRESENCE_VALUE_LENGTH=256,
@@ -60,7 +62,6 @@ class Steam: public Object {
 		~Steam();
 
 		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
-		Image drawAvatar(int size, uint8* buffer);
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
 		bool steamInit();
@@ -167,7 +168,7 @@ class Steam: public Object {
 		bool isClanPublic(uint64_t clanID);
 		bool isClanOfficialGameGroup(uint64_t clanID);
 		Array getRecentPlayers();
-		void getFriendAvatar(int size=AVATAR_MEDIUM);
+		void getPlayerAvatar(int size=AVATAR_MEDIUM, uint64_t steamID=0);
 		Array getUserFriendsGroups();
 		Array getUserSteamGroups();
 		Array getUserSteamFriends();
@@ -390,6 +391,7 @@ class Steam: public Object {
 		void _is_following(FriendsIsFollowing_t *callData, bool bIOFailure);
 		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
 		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t);
 		// Matchmaking callbacks ////////////////
 		//
 		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
