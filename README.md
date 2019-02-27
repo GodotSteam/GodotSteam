@@ -17,18 +17,16 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v2.8.3)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.8.4)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.8.3 Changes**
+**Version 2.8.4 Changes**
 - Added: persona_state_change callback
 - Added: additional user statistics and achievement signals
 - Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize
 - Changed: dictionary term 'buf' to 'buffer' in getImageRGBA
 - Changed: getFriendAvatar to getPlayerAvatar
-- Changed: minor notations
 - Fixed: lots of fixes by marcelofg55
 - Fixed: getImageRGBA
-- Fixed: linker issue with Linux not looking in local directory for libsteam_api.so
 - Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55
 - Removed: drawAvatar
 
