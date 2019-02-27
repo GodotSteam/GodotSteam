@@ -1760,7 +1760,7 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 		printf("[Steam] Failed to load image buffer from callback\n");
 		return;
 	}
-	call_deferred("emit_signal", "avatar_loaded", width, data);
+	call_deferred("emit_signal", "avatar_loaded", avatarData->m_steamID.ConvertToUint64(), width, data);
 }
 // Reports the result of an attempt to change the user's persona name.
 void Steam::_name_changed(SetPersonaNameResponse_t *callData){
@@ -3096,7 +3096,7 @@ void Steam::_bind_methods(){
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
-	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "size")));
+	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "size")));
 	ADD_SIGNAL(MethodInfo("name_changed"));
 	ADD_SIGNAL(MethodInfo("clan_activity_downloaded"));
 	ADD_SIGNAL(MethodInfo("request_clan_officer_list"));
