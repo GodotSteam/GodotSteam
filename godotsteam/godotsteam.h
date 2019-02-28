@@ -392,6 +392,7 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
 		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t);
 		STEAM_CALLBACK(Steam, _join_requested, GameLobbyJoinRequested_t);
+		STEAM_CALLBACK(Steam, _join_game_requested, GameRichPresenceJoinRequested_t);
 		STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
 		STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
