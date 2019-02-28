@@ -1752,10 +1752,11 @@ void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
 	emit_signal("lobby_invite", inviter, lobby, game);
 }
 // Signal a game/lobby join has been requested.
-void Steam::_join_requested(GameRichPresenceJoinRequested_t* callData){
+void Steam::_join_requested(GameLobbyJoinRequested_t* callData){
 	uint64_t steamID = callData->m_steamIDFriend.GetAccountID();
-	String con_string = callData->m_rgchConnect;
-	emit_signal("join_requested", steamID, con_string);
+	CSteamID lobbyID = callData->m_steamIDLobby;
+	uint64_t lobby = lobbyID.ConvertToUint64();
+	emit_signal("join_requested", steamID, lobby);
 }
 // Signal that the avatar has been loaded.
 void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
