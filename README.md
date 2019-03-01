@@ -218,7 +218,7 @@ The documentation for GodotSteam should apply to GodotSteam GDNative as they are
 
 Donate
 -------------
-Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or ]Paypal](https://www.paypal.me/sithlordkyle)!
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
