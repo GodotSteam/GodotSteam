@@ -1,10 +1,14 @@
-# Godot Steam for GDNative
+# GodotSteam for GDNative
 Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms. 
 
 **WARNING**: This GDNative branch is still in active development! While functional, I do not suggest using it for production code for your game; testing only.  Please use one of the GodotSteam modules instead.
 
-- View the GodotSteam module for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
-- View the GodotSteam module for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
+- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
+- View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
+- View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
+- View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
+- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
 
 Documentation
 ----------
@@ -211,6 +215,10 @@ These can then be called in any other script (since godotsteam.tscn is a singlet
 ````
 
 The documentation for GodotSteam should apply to GodotSteam GDNative as they are built from the same code and have all the same functions; generally speaking.
+
+Donate
+-------------
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or ]Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
