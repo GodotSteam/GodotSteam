@@ -5,7 +5,7 @@ def configure(env):
   env.Append(CPPPATH=["#modules/godotsteam/sdk/public/"])
   if env["platform"]== "x11":
     env.Append(LIBS=["steam_api"])
-    #env.Append(RPATH=["."])
+    env.Append(RPATH=["."])
     if env["bits"]=="32":
       env.Append(RPATH=env.Literal('\\$$ORIGIN/linux32'))
       env.Append(LIBPATH=["#modules/godotsteam/sdk/redistributable_bin/linux32"])
