@@ -1,0 +1,276 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Tutorials</h1>
+						</header>
+						<p>These tutorials should walk you through setting up different facets of the Steamworks API system. They are almost all based on my own personal use and should be modified to fit your own practices.</p>
+						<ul class="actions">
+							<li><a class="button" href="#initialize">Initializing Steam</a></li>
+							<li><a class="button" href="#stats">Stats and Achievements</a></li>
+							<li><a class="button" href="#avatars">Avatars</a></li>
+						</ul>
+						<hr />
+						<h2>Initializing Steamworks</h2>
+						<a id="initialize"></a>
+						<p>I usually create an auto-load GDscript called global.gd which is added as a singleton. I add this code to the _ready() function:</p>
+<pre><code>
+var ERR = Steam.steamInit()
+if ERR != true:
+	print("Failed to initialize Steam. Shutting down...")
+	get_tree().quit()
+</code></pre><br/>
+						<p>This code will obviously shut down the game if Steam does not initialize. You can check for a few additional things at boot like:</p>
+<pre><code>
+var ONLINE = Steam.loggedOn()
+var STEAM_ID = Steam.getSteamID()
+var OWNED = Steam.isSubscribed()
+</code></pre><br/>
+						<p>This will check if Steam is online, get the current user's Steam ID64, and check if the current user owns the game. You can also have the game turn itself off if the current user does not own the game by simply doing this:</p>
+<pre><code>
+if OWNED == false:
+	print("User does not own this game")
+	get_tree().quit()
+</code></pre><br/>
+						<p>There are other things you may want to do during a boot-up process after Steamworks is initialized, like getting current achievements or statistics, and we'll cover that next. Last, but not least, anywhere you want or need to retrieve callbacks from Steam, you'll need to add this:</p>
+<pre><code>
+func _process(delta):
+	Steam.run_callbacks()
+</code></pre><br/>
+						<p>This covers the initialization and basic set-up.</p>
+						<hr />
+						<h2>Statistics and Achievements</h2>
+						<a id="stats"></a>
+						<p>At some point you may want to save statistics to Steam's database and/or use their achievement system.  You will want to <a href="https://partner.steamgames.com/doc/features/achievements" target="_blank">read up about these in Steam's documentation</a> as I won't be covering the basics on how to set it up in the Steamworks interface.</p>
+						<p>When starting up your game, you'll want to pull all related achievements and statistics from Steam's servers.  This is done simply by requesting the user's information like so:</p>
+<pre><code>
+Steam.requestCurrentStats()
+</code></pre><br/>
+						<p>This will query Steam's server and provide a callback when that data is available. Speaking of, you need to connect that callback to a function. I usually use something like this:</p>
+<pre><code>
+Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
+</code></pre><br/>
+						<p>
+						For our example, here is the <strong><em>_steam_Stats_Ready</em></strong> function we listed in the connected signal:</p>
+<pre><code>
+func _steam_Stats_Ready(game, result, user):
+	print("This game's ID: "+str(game))
+	print("Call result: "+str(result))
+	print("This user's Steam ID: "+str(user))
+</code></pre><br/>
+						<p>In this function you can check if the result is what you expect (ideally it is 1), see if the given stats are for the current player, and check that the game's ID matches.  Also you can now pass the achievements and stats to local variables or functions. I will often pass the achievement to a function to parse them correctly as they send back a BOOL for retrieval and a BOOL for earned or not. <strong>Note:</strong> that this will get triggered again by storing stats, so I usually add an intial load variable to prevent that:</p>
+<pre><code>
+func _steam_Stats_Ready(game, result, user):
+	print("This game's ID: "+str(game))
+	print("Call result: "+str(result))
+	print("This user's Steam ID: "+str(user))
+
+	# Prevent it from loading again
+	if INIT_LOAD == false:
+		INIT_LOAD = true
+	
+		# Get achievements and pass them to variables
+		_get_Achievement("acheive1")
+		_get_Achievement("acheive2")
+		_get_Achievement("acheive3")
+
+		# Get statistics (int) and pass them to variables
+		var HIGHSCORE = Steam.getStatInt("HighScore")
+		var HEALTH = Steam.getStatInt("Health")
+		var MONEY = Steam.getStatInt("Money")
+
+# Process achievements
+func _get_Achievement(value):
+	var ACHIEVEMENT = Steam.getAchievement(value)
+	# Achievement exists
+	if ACHIEVEMENT['ret']:
+		# Achievement is unlocked
+		if ACHIEVEMENT['achieved']:
+			ACHIEVEMENTS[value] = true
+		# Achievement is locked
+		else:
+			ACHIEVEMENTS[value] = false
+	# Achievement does not exist
+	else:
+		ACHIEVEMENTS[value] = false
+</code></pre><br/>
+						<p>Setting the achievements and statistics is pretty simple too. We'll start with achievements. You need to tell Steam the achievement is unlocked and then store it so 'pops':</p>
+<pre><code>
+Steam.setAchievement("achieve1")
+Steam.storeStats()
+</code></pre><br/>
+						<p>If you don't call storeStats() the achievement pop-up won't trigger but the achievement should be recorded. However, you will still have to call storeStats() at some point to upload them.  I generally make a generic function to house this process then call it when needed:</p>
+<pre><code>
+func _fire_Steam_Achievement(value):
+	# Set the achievement to an in-game variable
+	player.ACHIEVEMENTS[value] = true
+	# Pass the value to Steam then fire it
+	Steam.setAchievement(value)
+	Steam.storeStats()
+</code></pre><br/>
+						<p>Statistics follow a pretty similar process; both int and float based ones.  Set them like so:</p>
+<pre><code>
+Steam.setStatInt("stat1", value)
+Steam.setStatFloat("stat2", value)
+Steam.storeStats()
+</code></pre><br/>
+						<p>That covers the basics of statistics and achievements.</p>
+						<hr />
+						<h2>Avatars</h2>
+						<a id="avatars"></a>
+						<p>You may want to get the current player's avatar, or someone else's. This can be achieved by requesting it with the following line:</p>
+<pre><code>
+Steam.getPlayerAvatar(Steam.AVATAR_MEDIUM)
+</code></pre><br/>
+						<p>You may pass it either <strong>Steam.AVATAR_SMALL</strong>, <strong>Steam.AVATAR_MEDIUM</strong>, or <strong>Steam.AVATAR_LARGE</strong>. Additionally you can pass along a Steam ID64 to get a specific user or, if no ID is provided, it will get the current user.</p>
+						<p>To retrieve the avatar data buffer, you'll need to hook the signal for the callback:</p>
+<pre><code>
+Steam.connect("avatar_loaded", self, "loaded_avatar")
+</code></pre><br/>
+						<p>This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  Our <strong>loaded_avatar</strong> function will look something like this:</p>
+<pre><code>
+func loaded_avatar(id, size, buffer):
+	print("Avatar for user: "+str(id))
+	print("Size: "+str(size))
+	# Create a new image and texture to fill out
+	var AVATAR = Image.new()
+	var AVATAR_TEXTURE = ImageTexture.new()
+	AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
+
+	# Lock the image and fill the pixels from the data buffer
+	AVATAR.lock()
+	for y in range(0, size):
+		for x in range(0, size):
+			var pixel = 4 * (x + y * size)
+			var r = float(buffer[pixel]) / 255
+			var g = float(buffer[pixel+1]) / 255
+			var b = float(buffer[pixel+2]) / 255
+			var a = float(buffer[pixel+3]) / 255
+			AVATAR.set_pixel(x, y, Color(r, g, b, a))
+	AVATAR.unlock()
+
+	# Now apply the texture
+	AVATAR_TEXTURE.create_from_image(AVATAR)
+
+	# For our purposes, set a sprite with the avatar texture
+	$Sprite.set_texture(AVATAR_TEXTURE)
+</code></pre><br/>
+					<p>Naturally that texture could be applied elsewhere, depending on where you place this function.</p>
+					<p>A longer, but similar way to get the end result could look like this:</p>
+<pre><code>
+# Request one or all sizes
+var HANDLE1 = Steam.getSmallFriendAvatar(steamID)
+#var HANDLE2 = Steam.getMediumFriendAvatar(steamID)
+#var HANDLE3 = Steam.getLargeFriendAvatar(steamID)
+
+# Using the small avatar handle
+var IMAGE = Steam.getImageSize(HANDLE1)
+var IMAGE_DATA = Steam.getImageRGBA(HANDLE3)
+
+# Now create the avatar like before
+var AVATAR = Image.new()
+var AVATAR_TEXTURE = ImageTexture.new()
+AVATAR.create(IMAGE['width'], IMAGE['height'], false, Image.FORMAT_RGBAF)
+
+# Lock the image and fill the pixels from the data buffer
+AVATAR.lock()
+for y in range(0, size):
+	for x in range(0, size):
+		var pixel = 4 * (x + y * size)
+		var r = float(IMAGE_DATA['buffer'][pixel]) / 255
+		var g = float(IMAGE_DATA['buffer'][pixel+1]) / 255
+		var b = float(IMAGE_DATA['buffer'][pixel+2]) / 255
+		var a = float(IMAGE_DATA['buffer'][pixel+3]) / 255
+		AVATAR.set_pixel(x, y, Color(r, g, b, a))
+AVATAR.unlock()
+
+# Now apply the texture
+AVATAR_TEXTURE.create_from_image(AVATAR)
+
+# For our purposes, set a sprite with the avatar texture
+$Sprite.set_texture(AVATAR_TEXTURE)
+</code></pre><br/>
+						<p>That covers the basics of getting player avatars.</p>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li><a href="tutorials.html">Tutorials</a></li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="contributors.html">Contributors / Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

@@ -267,7 +267,7 @@ input, select, textarea {
 	}
 
 	code {
-		background: rgba(230, 235, 237, 0.25);
+		background: rgba(221, 221, 221, 1);
 		border-radius: 0.375em;
 		border: solid 1px rgba(210, 215, 217, 0.75);
 		font-family: "Courier New", monospace;
@@ -284,9 +284,9 @@ input, select, textarea {
 	}
 
 		pre code {
-			display: block;
+			display: inline-block;
 			line-height: 1.75;
-			padding: 1em 1.5em;
+			padding: 0em 1.5em 1.5em;
 			overflow-x: auto;
 		}
 
@@ -1784,7 +1784,16 @@ input, select, textarea {
 
 	section.special, article.special {
 		text-align: center;
-	}
+}
+div.contributors {
+	display: inline-block;
+	width: 48%;
+	vertical-align: top;
+	
+}
+div.contributors strong {
+	text-decoration: underline;
+}
 
 	header p {
 		font-family: "Roboto Slab", serif;

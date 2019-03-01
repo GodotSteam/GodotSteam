@@ -35,7 +35,7 @@
 						<ul>
 							<li>Called when a large avatar is loaded if you have tried requesting it when it was unavailable.</li>
 							<li>Emits signal <strong><em>avatar_loaded</em></strong> in response to function <strong><em>getFriendAvatar</em></strong>.</li>
-							<li>Sends along the avatar size and image data.</li>
+							<li>Sends along the Steam ID associated with the avatar, the avatar size, and data buffer ot be turned into an image.</li>
 						</ul>
 						<h3>_clan_activity_downloaded</h3>
 						<ul>
@@ -123,9 +123,15 @@
 						</ul>
 						<h3>_join_requested</h3>
 						<ul>
-							<li>Called when the user tries to join a game from their friends list or after a user accepts an invite by a friend with <strong><em>inviteUserToGame</em></strong>.</li>
+							<li>Called when the user tries to join a lobby from their friends list or after a user accepts an invite by a friend with <strong><em>inviteUserToGame</em></strong>.</li>
 							<li>Emits signal <strong><em>join_requested</em></strong> in response to receiving a Steam invite.</li>
-							<li>Sends along user's Steam ID and the game connection string, usually an IP and port.</li>
+							<li>Sends along requesting user's Steam ID and the lobby ID.</li>
+						</ul>
+						<h3>_join_game_requested</h3>
+						<ul>
+							<li>Called when the user tries to join a game from their friends list or after a user accepts an invite by a friend with <strong><em>inviteUserToGame</em></strong>.</li>
+							<li>Emits signal <strong><em>join_game_requested</em></strong> in response to receiving a Steam invite.</li>
+							<li>Send along the requesting user's Steam ID and a connection string from Rich Presense. Generally that is set when the game or lobby is created.</li>
 						</ul>
 						<h3>_leaderboard_entries_loaded</h3>
 						<ul>
@@ -303,7 +309,6 @@
 							<li>
 								<span class="opener">How-To's</span>
 								<ul>
-									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
 									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
 									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
@@ -322,10 +327,11 @@
 									<li><a href="signals-server.html">Signals (Server)</a></li>
 								</ul>
 							</li>
+							<li><a href="tutorials.html">Tutorials</a></li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
 							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="donate.html">Donate</a></li>
+							<li><a href="contributors.html">Contributors / Donate</a></li>
 						</ul>
 					</nav>
 				</div>

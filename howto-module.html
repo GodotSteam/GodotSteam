@@ -44,58 +44,56 @@
 						</ul>
 						<h2>2. Copy The Steamworks SDK</h2>
 						<p>Move the following to <strong><em>godotsteam/sdk/</em></strong> from the Steamworks SDK you unpacked:
-							<blockquote>
-								sdk/public/<br />
-								sdk/redistributable_bin/
-							</blockquote>
+<pre><code>
+sdk/public/
+sdk/redistributable_bin/
+</code></pre>
 						</p>
 						<h2>3. Folder Layout</h2>
 						<p>The repo's directory contents should now look like this:
-							<blockquote>
-								godotsteam/sdk/public/*<br />
-								godotsteam/sdk/redistributable_bin/*<br />
-								godotsteam/SCsub<br />
-								godotsteam/config.py<br />
-								godotsteam/godotsteam.cpp<br />
-								godotsteam/godotsteam.h<br />
-								godotsteam/register_types.cpp<br />
-								godotsteam/register_types.h
-							</blockquote>
+<pre><code>
+godotsteam/sdk/public/*
+godotsteam/sdk/redistributable_bin/*
+godotsteam/SCsub
+godotsteam/config.py
+godotsteam/godotsteam.cpp
+godotsteam/godotsteam.h
+godotsteam/register_types.cpp
+godotsteam/register_types.h
+</code></pre><br/>
 							Now move the <Strong><em>godotsteam</em></Strong> directory into the <strong><em>modules</em></strong> directory of the unpacked Godot Engine source.
 						</p>
 						<h2>4. Compiling</h2>
-						<p>Recompile for your platform.</p>
-						<p>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )</p>
-						<p>On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )</p>
-						<p>On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
-						<em>Note: when creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em>
+						<p>Recompile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
+						On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )<br/>
+						On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
+						<p><em>Note: when creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em></p>
 						<h2>5. Copy Steamworks Redistributables</h2>
-						<p>When recompiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong> from <strong><em>sdk/redistributable_bin/</em></strong> folders to the Godot binary location (by default in the Godot source /bin/ file but you can move them to a new folder).</p>
-						<p>It should look like this:</p>
+						<p>When recompiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong> from <strong><em>sdk/redistributable_bin/</em></strong> folders to the Godot binary location (by default in the Godot source /bin/ file but you can move them to a new folder). It should look like this:</p>
 						<strong>Linux 32/64-bit</strong>
-						<blockquote>
-							libsteam_api.so<br />
-							./godot.linux.tools.32 or ./godot.linux.tools.64
-						</blockquote>
+<pre><code>
+libsteam_api.so
+./godot.linux.tools.32 or ./godot.linux.tools.64
+</code></pre>
 						<strong>OSX</strong>
-						<blockquote>
-							libsteam_api.dylib<br />
-							./godot.osx.tools.32 or ./godot.osx.tools.64
-						</blockquote>
+<pre><code>
+libsteam_api.dylib
+./godot.osx.tools.32 or ./godot.osx.tools.64
+</code></pre>
 						<strong>Windows 32-bit</strong>
-						<blockquote>
-							steam_api.dll<br />
-							./godot.windows.tools.32.exe
-						</blockquote>
+<pre><code>
+steam_api.dll
+./godot.windows.tools.32.exe
+</code></pre>
 						<strong>Windows 64-bit</strong>
-						<blockquote>
-							steam_api64.dll<br />
-							./godot.windows.tools.64.exe
-						</blockquote>
+<pre><code>
+steam_api64.dll
+./godot.windows.tools.64.exe
+</code></pre><br/>
 						<h2>6. Done / Shipping</h2>
 						<p>Your game must ship with the executable, Steam API DLL/SO/DyLIB, and steam_appid.txt to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.</p>
 						<p>NOTE: For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.</p>
-						<p>From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.</p>
+						<p>From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam. You can also check out the tutorial section.</p>
 						<p>You may notice that achievements and stats do not work properly if the game is tested outside of Steam (as in running it from the Steam client itself). This behavior seems to be new within the last few weeks and is most likely a changed on Valve's end.</p>
 					</section>
 					<footer id="footer">
@@ -119,7 +117,6 @@
 							<li>
 								<span class="opener">How-To's</span>
 								<ul>
-									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
 									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
 									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
@@ -138,10 +135,11 @@
 									<li><a href="signals-server.html">Signals (Server)</a></li>
 								</ul>
 							</li>
+							<li><a href="tutorials.html">Tutorials</a></li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
 							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="donate.html">Donate</a></li>
+							<li><a href="contributors.html">Contributors / Donate</a></li>
 						</ul>
 					</nav>
 				</div>

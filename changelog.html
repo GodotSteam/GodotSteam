@@ -132,6 +132,22 @@
 						<hr />
 						<h2>Godot 3 Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 2.8.4 Changes</h3>
+						<ul>
+							<li>Added: persona_state_change callback</li>
+							<li>Added: additional user statistics and achievement signals</li>
+							<li>Added: join_game_requested signal by Fischer96</li>
+							<li>Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize</li>
+							<li>Changed: dictionary term 'buf' to 'buffer' in getImageRGBA</li>
+							<li>Changed: getFriendAvatar to getPlayerAvatar</li>
+							<li>Changed: avatar_loaded now sends back Steam ID of avatar by avencherus</li>
+							<li>Fixed: lots of fixes by marcelofg55</li>
+							<li>Fixed: issue with avatar and Steam ID on Linux compile</li>
+							<li>Fixed: join_requested signal by Fischer96 (requires further work)</li>
+							<li>Fixed: getImageRGBA</li>
+							<li>Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55</li>
+							<li>Removed: drawAvatar</li>
+						</ul>
 						<h3>Version 2.8.3 Changes</h3>
 						<ul>
 							<li>Added: additional user statistics and achievement signals</li>
@@ -245,34 +261,6 @@
 							<li>Added: all the minimal useful functions for Steam</li>
 						</ul>
 						<hr />
-						<h2>GDNative</h2>
-						<a id="gdnative"></a>
-						<h3>Version 2.0.0</h3>
-						<ul>
-							<li>Added: all current GodotSteam functions and signals</li>
-							<li>Added: godotsteam.h file</li>
-							<li>Changed: compile process; big thanks to willnationsdev</li>
-							<li>Changed: various parts of the CPP files</li>
-							<li>Removed: pre-compiled TSCN and TRES files</li>
-						</ul>
-						<h3>Version 1.1.0</h3>
-						<ul>
-							<li>Added: godotsteam.h file</li>
-							<li>Added: getCurrentGameLanguage</li>
-							<li>Changed: various parts of the CPP files</li>
-							<li>Added: Pre-compiled engines and templates for Linux, Mac, and Windows</li>
-							<li>Removed: pre-compiled TSCN and TRES files</li>
-							<li>Added: change log to documentation</li>
-							<li>Changed: minor things in godotsteam.cpp</li>
-						</ul>
-						<h3>Version 1.0.0</h3>
-						<ul>
-							<li>Added: most pre-existing GodotSteam code over</li>
-							<li>Added: GodotSteam GDNative documentation</li>
-							<li>Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS</li>
-							<li>Bugs: Windows does not work for compiling yet, waiting for GDNative update</li>
-						</ul>
-						<hr />
 						<h2>Server</h2>
 						<a id="server"></a>
 						<h3>Version 0.0.3</h3>
@@ -314,7 +302,6 @@
 							<li>
 								<span class="opener">How-To's</span>
 								<ul>
-									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
 									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
 									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
@@ -333,10 +320,11 @@
 									<li><a href="signals-server.html">Signals (Server)</a></li>
 								</ul>
 							</li>
+							<li><a href="tutorials.html">Tutorials</a></li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
 							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="donate.html">Donate</a></li>
+							<li><a href="contributors.html">Contributors / Donate</a></li>
 						</ul>
 					</nav>
 				</div>
