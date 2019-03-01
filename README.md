@@ -25,7 +25,10 @@ You can download pre-compiled versions _(currently v2.8.4)_ of this repo here: h
 - Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize
 - Changed: dictionary term 'buf' to 'buffer' in getImageRGBA
 - Changed: getFriendAvatar to getPlayerAvatar
+- Changed: avatar_loaded now sends back Steam ID of avatar by avencherus
 - Fixed: lots of fixes by marcelofg55
+- Fixed: issue with avatar and Steam ID on Linux compile
+- Fixed: join_requested signal by Fischer96 (requires further work)
 - Fixed: getImageRGBA
 - Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55
 - Removed: drawAvatar

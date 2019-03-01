@@ -957,7 +957,8 @@ void Steam::getPlayerAvatar(int size, uint64_t steamID){
 		return;
 	}
 	AvatarImageLoaded_t* avatarData = new AvatarImageLoaded_t;
-	avatarData->m_steamID = steamID;
+	CSteamID avatarID = (uint64)steamID;
+	avatarData->m_steamID = avatarID;
 	avatarData->m_iImage = handle;
 	avatarData->m_iWide = size;
 	avatarData->m_iTall = size;
@@ -1740,10 +1741,11 @@ void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
 	emit_signal("lobby_invite", inviter, lobby, game);
 }
 // Signal a game/lobby join has been requested.
-void Steam::_join_requested(GameRichPresenceJoinRequested_t* callData){
+void Steam::_join_requested(GameLobbyJoinRequested_t* callData){
 	uint64_t steamID = callData->m_steamIDFriend.GetAccountID();
-	String con_string = callData->m_rgchConnect;
-	emit_signal("join_requested", steamID, con_string);
+	CSteamID lobbyID = callData->m_steamIDLobby;
+	uint64_t lobby = lobbyID.ConvertToUint64();
+	emit_signal("join_requested", steamID, lobby);
 }
 // Signal that the avatar has been loaded.
 void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
@@ -1760,7 +1762,9 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 		printf("[Steam] Failed to load image buffer from callback\n");
 		return;
 	}
-	call_deferred("emit_signal", "avatar_loaded", avatarData->m_steamID.ConvertToUint64(), width, data);
+	CSteamID steamID = avatarData->m_steamID;
+	uint64_t avatarID = steamID.ConvertToUint64();
+	call_deferred("emit_signal", "avatar_loaded", avatarID, width, data);
 }
 // Reports the result of an attempt to change the user's persona name.
 void Steam::_name_changed(SetPersonaNameResponse_t *callData){
