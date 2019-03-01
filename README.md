@@ -16,6 +16,10 @@ Quick How-To
 - Make sure the steam_appid.txt is in the same folder as your Godot editor executable.
 - Make sure Steam is running.
 
+Donate
+-------------
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
+
 License
 -------------
 MIT license
