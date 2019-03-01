@@ -1,7 +1,7 @@
 # GodotSteam Minimal for Godot 3
 Steam API for the Godot game engine (version 3 or higher). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
 
-- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
 - View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
 - View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 - View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
@@ -17,10 +17,10 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.0.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.0.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.0.0 Changes**
-- Added: all the minimal useful functions for Steam
+**Version 1.0.1 Changes**
+- Fixed: Linux version now looks for libsteam_api.so in local directory
 
 Known Issues
 ----------
