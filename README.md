@@ -1,13 +1,14 @@
-# Godot Steam Server for Godot 3
-Steam Server API for the Godot game engine (versions 3 to 3.0.3). For the Windows, Linux, and Mac platforms. 
+# GodotSteam Server for Godot 3
+Steam Server API for the Godot game engine (versions 3 to 3.0.6). For the Windows, Linux, and Mac platforms. 
 
-- View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
-- View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
-- View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
+- View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
+- View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
+- View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
+- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
 **This is experimental still, do not use for production games.**  This branch is meant for testing out Steam server functionality before being folded into the main GodotSteam branches.  Please feel free to make pull requests and/or test what is here.
-
-**THIS VERSION IS NOT COMPATIBLE WITH GODOT 2.**
 
 Documentation
 ----------
@@ -26,7 +27,7 @@ Current Build
 
 Donate
 -------------
-If you feel like buying me a beer, feel free to do so here: https://www.paypal.me/sithlordkyle
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
