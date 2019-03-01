@@ -923,7 +923,11 @@ Array Steam::getRecentPlayers(){
 	return recents;
 }
 // Get player's avatar.
-void Steam::getFriendAvatar(int size){
+void Steam::getPlayerAvatar(int size, uint64_t steamID){
+	// If no Steam ID sent, get the current user
+	if(steamID == 0){
+		steamID = getSteamID();
+	}
 	if(size < AVATAR_SMALL || size > AVATAR_LARGE){
 		return;
 	}
@@ -933,15 +937,15 @@ void Steam::getFriendAvatar(int size){
 	int handle = -2;
 	switch(size){
 		case AVATAR_SMALL:{
-			handle = SteamFriends()->GetSmallFriendAvatar( SteamUser()->GetSteamID() );
+			handle = getSmallFriendAvatar(steamID);
 			size = 32; break;
 		}
 		case AVATAR_MEDIUM:{
-			handle = SteamFriends()->GetMediumFriendAvatar( SteamUser()->GetSteamID() );
+			handle = getMediumFriendAvatar(steamID);
 			size = 64; break;
 		}
 		case AVATAR_LARGE:{
-			handle = SteamFriends()->GetLargeFriendAvatar( SteamUser()->GetSteamID() );
+			handle = getLargeFriendAvatar(steamID);
 			size = 184; break;
 		}
 		default:
@@ -957,7 +961,8 @@ void Steam::getFriendAvatar(int size){
 	}
 	// Has already loaded, simulate callback.
 	AvatarImageLoaded_t* avatarData = new AvatarImageLoaded_t;
-	avatarData->m_steamID = SteamUser()->GetSteamID();
+	CSteamID avatarID = (uint64)steamID;
+	avatarData->m_steamID = avatarID;
 	avatarData->m_iImage = handle;
 	avatarData->m_iWide = size;
 	avatarData->m_iTall = size;
@@ -1929,6 +1934,12 @@ void Steam::_enumerate_following_list(FriendsEnumerateFollowingList_t *callData,
 		}
 	}
 	emit_signal("following_list", message, following);
+}
+// Signal for a user change
+void Steam::_persona_state_change(PersonaStateChange_t *callData){
+	uint64_t steamID = callData->m_ulSteamID;
+	int flags = callData->m_nChangeFlags;
+	emit_signal("persona_state_change", steamID, flags);
 }
 // Signal for list of matching lobbies
 void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure){
@@ -2947,7 +2958,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isClanPublic", &Steam::isClanPublic);
 	ObjectTypeDB::bind_method("isClanOfficialGameGroup", &Steam::isClanOfficialGameGroup);
 	ObjectTypeDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
-	ObjectTypeDB::bind_method(_MD("getFriendAvatar", "size"), &Steam::getFriendAvatar, DEFVAL(AVATAR_MEDIUM));
+	ObjectTypeDB::bind_method(_MD("getPlayerAvatar", "size", "steamID"), &Steam::getPlayerAvatar, DEFVAL(AVATAR_MEDIUM), DEFVAL(0));
 	ObjectTypeDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
 	ObjectTypeDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ObjectTypeDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
@@ -3102,6 +3113,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("get_follower_count"));
 	ADD_SIGNAL(MethodInfo("is_following"));
 	ADD_SIGNAL(MethodInfo("enumerate_following_list"));
+	ADD_SIGNAL(MethodInfo("persona_state_change"));
 	ADD_SIGNAL(MethodInfo("lobby_match_list"));
 	ADD_SIGNAL(MethodInfo("lobby_game_created"));
 	ADD_SIGNAL(MethodInfo("lobby_message_received"));
@@ -3403,6 +3415,21 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RESULT_GSLT_EXPIRED);				// 106
 	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);		// 107
 	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);			// 108
+	// Persona changes //////////////////////////
+	BIND_CONSTANT(PERSONA_CHANGE_NAME);				// 0x0001
+	BIND_CONSTANT(PERSONA_CHANGE_STATUS); 			// 0x0002
+	BIND_CONSTANT(PERSONA_CHANGE_COME_ONLINE); 		// 0x0004
+	BIND_CONSTANT(PERSONA_CHANGE_GONE_OFFLINE);		// 0x0008
+	BIND_CONSTANT(PERSONA_CHANGE_GAME_PLAYED);		// 0x0010
+	BIND_CONSTANT(PERSONA_CHANGE_GAME_SERVER);		// 0x0020
+	BIND_CONSTANT(PERSONA_CHANGE_AVATAR);			// 0x0040
+	BIND_CONSTANT(PERSONA_CHANGE_JOINED_SOURCE);	// 0x0080
+	BIND_CONSTANT(PERSONA_CHANGE_LEFT_SOURCE);		// 0x0100
+	BIND_CONSTANT(PERSONA_CHANGE_RELATIONSHIP_CHANGED);	// 0x0200
+	BIND_CONSTANT(PERSONA_CHANGE_NAME_FIRST_SET);	// 0x0400
+	BIND_CONSTANT(PERSONA_CHANGE_FACEBOOK_INFO);	// 0x0800
+	BIND_CONSTANT(PERSONA_CHANGE_NICKNAME);			// 0x1000
+	BIND_CONSTANT(PERSONA_CHANGE_STEAM_LEVEL);		// 0x2000
 	// Chat room responses //////////////////////
 	BIND_CONSTANT(CHAT_ROOM_SUCCESS);				// 1
 	BIND_CONSTANT(CHAT_ROOM_DOESNT_EXIST);			// 2
