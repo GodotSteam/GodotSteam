@@ -1740,12 +1740,18 @@ void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
 	uint64_t game = gameID.ConvertToUint64();
 	emit_signal("lobby_invite", inviter, lobby, game);
 }
-// Signal a game/lobby join has been requested.
+// Signal a lobby join has been requested.
 void Steam::_join_requested(GameLobbyJoinRequested_t* callData){
 	uint64_t steamID = callData->m_steamIDFriend.GetAccountID();
 	CSteamID lobbyID = callData->m_steamIDLobby;
 	uint64_t lobby = lobbyID.ConvertToUint64();
 	emit_signal("join_requested", steamID, lobby);
+}
+// Signal that a game join has been requested
+void Steam::_join_game_requested(GameRichPresenceJoinRequested_t* callData){
+	uint64_t steamID = callData->m_steamIDFriend.GetAccountID();
+	String con_string = callData->m_rgchConnect;
+	emit_signal("join_game_requested", steamID, con_string);
 }
 // Signal that the avatar has been loaded.
 void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
