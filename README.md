@@ -4,9 +4,9 @@ Steam API for the Godot game engine (versions 2 to 2.1.5). For the Windows, Linu
 - View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
 - View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 - View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
+- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
 - View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
-
-**THIS VERSION IS NOT COMPATIBLE WITH GODOT 3.  Please use the Godot 3 branch instead.**
 
 Documentation
 ----------
@@ -36,7 +36,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.0.3 to 2.1.5.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.1.5.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -86,6 +86,10 @@ Quick How-To
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
+
+Donate
+-------------
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
