@@ -49,10 +49,73 @@ bool Steam::steamInit(){
 	}
 	return err;
 }
+bool Steam::initGameServer() {
+	printf("initGameServer()\n");
+	uint32 unIP = INADDR_ANY;
+	uint16 usMasterServerUpdaterPort = GAME_MASTER_SERVER_UPDATER_PORT;
+
+#ifdef USE_GS_AUTH_API
+	EServerMode eMode = eServerModeAuthenticationAndSecure;
+#else
+	// Don't let Steam do authentication
+	EServerMode eMode = eServerModeNoAuthentication;
+#endif
+	bool initRes = SteamGameServer_Init(unIP, GAME_AUTHENTICATION_PORT, GAME_SERVER_PORT, usMasterServerUpdaterPort, eMode, GAME_SERVER_VERSION);
+	if (initRes) {
+		if (SteamGameServer())
+		{
+
+			// Set the "game dir".
+			// This is currently required for all games.  However, soon we will be
+			// using the AppID for most purposes, and this string will only be needed
+			// for mods.  it may not be changed after the server has logged on
+			SteamGameServer()->SetModDir(".");
+
+			// These fields are currently required, but will go away soon.
+			// See their documentation for more info
+			SteamGameServer()->SetProduct("SteamworksExample");
+			SteamGameServer()->SetGameDescription("Steamworks Example");
+
+			// We don't support specators in our game.
+			// .... but if we did:
+			//SteamGameServer()->SetSpectatorPort( ... );
+			//SteamGameServer()->SetSpectatorServerName( ... );
+
+			// Initiate Anonymous logon.
+			// Coming soon: Logging into authenticated, persistent game server account
+			SteamGameServer()->LogOnAnonymous();
+
+			// We want to actively update the master server with our presence so players can
+			// find us via the steam matchmaking/server browser interfaces
+#ifdef USE_GS_AUTH_API
+			SteamGameServer()->EnableHeartbeats(true);
+#endif
+		}
+		else
+		{
+			printf("SteamGameServer() interface is invalid\n");
+		}
+	}
+	return initRes;
+}
 // Returns true/false if Steam is running
 bool Steam::isSteamRunning(void){
 	return SteamAPI_IsSteamRunning();
 }
+uint32 Steam::getServerPublicIP() {
+	if (SteamGameServer() == NULL) {
+		return 0;
+	}
+	printf("Getting public IP\n");
+	return SteamGameServer()->GetPublicIP();
+}
+void Steam::_steam_servers_connected(SteamServersConnected_t *pLogonSuccess) {
+	printf("Connected to Steam successfully\n");
+}
+void Steam::_steam_servers_connect_failure(SteamServerConnectFailure_t *pConnectFailure) {
+	printf("Failed to connect to Steam\n");
+}
+
 /////////////////////////////////////////////////
 ///// APPS //////////////////////////////////////
 //
@@ -659,7 +722,18 @@ void Steam::createLobby(int lobbyType, int maxMembers){
 	else{
 		eLobbyType = k_ELobbyTypeInvisible;
 	}
-	SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
+	callCreatedLobby.Set(hSteamAPICall, this, &Steam::_lobby_created);
+}
+void Steam::requestLobbyList() {
+	if (SteamMatchmaking() == NULL) {
+		return;
+	}
+	requestingLobbies = true;
+	// request all lobbies for this game
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
+	// set the function to call when this API call has completed
+	steamCallResultLobbyMatchList.Set(hSteamAPICall, this, &Steam::_lobby_match_list);
 }
 // Join an existing lobby
 void Steam::joinLobby(int steamIDLobby){
@@ -869,6 +943,11 @@ void Steam::setCloudEnabledForApp(bool enabled){
 /////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
+uint32_t Steam::addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height) {
+	// TODO: implement
+	return 0;
+}
+
 // Toggles whether the overlay handles screenshots
 void Steam::hookScreenshots(bool hook){
 	if(SteamScreenshots() == NULL){
@@ -883,6 +962,12 @@ bool Steam::isScreenshotsHooked(){
 	}
 	return SteamScreenshots()->IsScreenshotsHooked();
 }
+
+bool Steam::setLocation(uint32_t screenshot, const String& location) {
+	// TODO: implement
+	return false;
+}
+
 // Causes Steam overlay to take a screenshot
 void Steam::triggerScreenshot(){
 	if(SteamScreenshots() == NULL){
@@ -909,7 +994,7 @@ void Steam::_file_details_result(FileDetailsResult_t* fileData){
 	owner->emit_signal("file_details_result", result, fileSize, fileHash, flags);
 }
 // Signal the lobby has been created.
-void Steam::_lobby_created(LobbyCreated_t* lobbyData){
+void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 	int connect;
 	// Convert the lobby response back over.
 	if(lobbyData->m_eResult == k_EResultOK){
@@ -930,8 +1015,29 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData){
 	else{
 		connect = LOBBY_LIMIT_EXCEEDED;
 	}
-	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
+	uint64 lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
 	owner->emit_signal("lobby_created", connect, lobbyID);
+}
+// Signal the lobby match list was performed
+void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
+	listLobbies.clear();
+	requestingLobbies = false;
+
+	if (bIOFailure)
+	{
+		// we had a Steam I/O failure - we probably timed out talking to the Steam back-end servers
+		// doesn't matter in this case, we can just act if no lobbies were received
+	}
+
+	// lobbies are returned in order of closeness to the user, so add them to the list in that order
+	for (uint32 iLobby = 0; iLobby < pCallback->m_nLobbiesMatching; iLobby++)
+	{
+		CSteamID steamIDLobby = SteamMatchmaking()->GetLobbyByIndex(iLobby);
+		Dictionary entryDict;
+		entryDict["steamIDLobby"] = steamIDLobby.ConvertToUint64();
+		listLobbies.append(entryDict);
+	}
+	owner->emit_signal("lobby_match_list");
 }
 // Signal that lobby has been joined.
 void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
@@ -1155,6 +1261,13 @@ uint64_t Steam::getSteamID(){
 	CSteamID cSteamID = SteamUser()->GetSteamID();
 	return cSteamID.ConvertToUint64();
 }
+AccountID_t Steam::getSteamAccountID() {
+	if (SteamUser() == NULL) {
+		return 0;
+	}
+	CSteamID cSteamID = SteamUser()->GetSteamID();
+	return cSteamID.GetAccountID();
+}
 // Check, true/false, if user is logged into Steam currently
 bool Steam::loggedOn(){
 	if(SteamUser() == NULL){
@@ -1243,6 +1356,22 @@ Dictionary Steam::getAchievementAchievedPercent(const String& name){
 	d["percent"] = percent;
 	return d;
 }
+
+String Steam::getAchievementDisplayAttribute(const String& name, const String& key) {
+	// TODO: implement
+	return "";
+}
+
+int Steam::getAchievementIcon(const String& name) {
+	// TODO: implement
+	return 0;
+}
+
+String Steam::getAchievementName(uint32_t iAchievement) {
+	// TODO: implement
+	return "";
+}
+
 //  Get the amount of players currently playing the current game (online + offline)
 void Steam::getNumberOfCurrentPlayers(){
 	if(SteamUserStats() == NULL){
@@ -1317,7 +1446,15 @@ void Steam::findLeaderboard(const String& name){
 		return;
 	}
 	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard(name.utf8().get_data());
-//	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
+	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
+}
+// Find hardcoded leaderboard for "I Know Everything"
+void Steam::findIKELeaderboard() {
+	if (SteamUserStats() == NULL) {
+		return;
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard("Top Erudites");
+	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
 }
 // Get the name of a leaderboard
 String Steam::getLeaderboardName(){
@@ -1339,7 +1476,7 @@ void Steam::downloadLeaderboardEntries(int start, int end, int type){
 		return;
 	}
 	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntries(leaderboard_handle, ELeaderboardDataRequest(type), start, end);
-//	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
+	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
 }
 // Request a maximum of 100 users with only one outstanding call at a time
 void Steam::downloadLeaderboardEntriesForUsers(Array usersID){
@@ -1356,7 +1493,7 @@ void Steam::downloadLeaderboardEntriesForUsers(Array usersID){
 		users[i] = user;
 	}
 	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntriesForUsers(leaderboard_handle, users, users_count);
-//	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
+	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
 	delete[] users;
 }
 // Upload a leaderboard score for the user
@@ -1366,7 +1503,7 @@ void Steam::uploadLeaderboardScore(int score, bool keepBest){
 	}
 	ELeaderboardUploadScoreMethod method = keepBest ? k_ELeaderboardUploadScoreMethodKeepBest : k_ELeaderboardUploadScoreMethodForceUpdate;
 	SteamAPICall_t apiCall = SteamUserStats()->UploadLeaderboardScore(leaderboard_handle, method, (int32)score, NULL, 0);
-//	callResultUploadScore.Set(apiCall, this, &Steam::_leaderboard_uploaded);
+	callResultUploadScore.Set(apiCall, this, &Steam::_leaderboard_uploaded);
 }
 // Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it
 void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount){
@@ -1392,6 +1529,10 @@ uint64_t Steam::getLeaderboardHandle(){
 // Get the currently used leaderboard entries
 Array Steam::getLeaderboardEntries(){
 	return leaderboard_entries;
+}
+// Get the currently used lobbies list
+Array Steam::getLobbiesList() {
+	return listLobbies;
 }
 // Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19)
 bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime){
@@ -1437,6 +1578,17 @@ int Steam::getAppID(){
 	}
 	return SteamUtils()->GetAppID();
 }
+
+Dictionary Steam::getImageRGBA(int iImage) {
+	// TODO: implement
+	return Dictionary();
+}
+
+Dictionary Steam::getImageSize(int iImage) {
+	// TODO: implement
+	return Dictionary();
+}
+
 // Return amount of time, in seconds, user has spent in this session
 int Steam::getSecondsSinceAppActive(){
 	if(SteamUtils() == NULL){

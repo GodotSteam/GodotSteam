@@ -1,7 +1,25 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
 
+//#define USE_GS_AUTH_API
+
+// INADDR_ANY constant, can be found in winsock.h on Windows
+#define INADDR_ANY (uint32)0x00000000
+
+// Current game server version
+#define GAME_SERVER_VERSION "1.0.0.0"
+
+// UDP port for the game server to do authentication on (ie, talk to Steam on)
+#define GAME_AUTHENTICATION_PORT 8766
+
+// UDP port for the game server to listen on
+#define GAME_SERVER_PORT 27015
+
+// UDP port for the master server updater to listen on
+#define GAME_MASTER_SERVER_UPDATER_PORT 27016
+
 #include <inttypes.h>
+#include "steam/steam_gameserver.h"
 #include "steam/steam_api.h"
 
 #include "core/Godot.hpp"
@@ -44,6 +62,8 @@ class Steam : public GodotScript<Reference>{
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
 		bool steamInit();
+		bool initGameServer();
+		uint32 getServerPublicIP();
 		bool isSteamRunning();
 		// Apps /////////////////////////////////////
 		bool isSubscribed();
@@ -108,6 +128,7 @@ class Steam : public GodotScript<Reference>{
 		void activateGameOverlayInviteDialog(int steamID);
 		// Matchmaking //////////////////////////////
 		void createLobby(int lobbyType, int maxMembers);
+		void requestLobbyList();
 		void joinLobby(int steamIDLobby);
 		void leaveLobby(int steamIDLobby);
 		bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
@@ -149,6 +170,7 @@ class Steam : public GodotScript<Reference>{
 //		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
 //		void endAuthSession(uint64_t steamID);
 		uint64_t getSteamID();
+		AccountID_t getSteamAccountID();
 		bool loggedOn();
 		int getPlayerSteamLevel();
 		String getUserDataFolder();
@@ -173,6 +195,7 @@ class Steam : public GodotScript<Reference>{
 		bool setStatInt(const String& name, int value);
 		bool storeStats();
 		void findLeaderboard(const String& name);
+		void findIKELeaderboard();
 		String getLeaderboardName();
 		int getLeaderboardEntryCount();
 		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
@@ -181,6 +204,7 @@ class Steam : public GodotScript<Reference>{
 		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
+		Array getLobbiesList();
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime);
 		bool indicateAchievementProgress(const String& name, int curProgress, int maxProgress);
 		// Utils ////////////////////////////////////
@@ -223,9 +247,11 @@ class Steam : public GodotScript<Reference>{
 
 	private:
 		bool isInitSuccess;
+		bool requestingLobbies = false;
 		// Leaderboards
 		SteamLeaderboard_t leaderboard_handle;
 		Array leaderboard_entries;
+		Array listLobbies;
 		// Authentication
 		struct TicketData {
 			uint32_t id;
@@ -236,6 +262,13 @@ class Steam : public GodotScript<Reference>{
 		/////////////////////////////////////////
 		// Steam Callbacks //////////////////////
 		//
+
+		// Tells us when we have successfully connected to Steam
+		STEAM_GAMESERVER_CALLBACK(Steam, _steam_servers_connected, SteamServersConnected_t);
+
+		// Tells us when there was a failure to connect to Steam
+		STEAM_GAMESERVER_CALLBACK(Steam, _steam_servers_connect_failure, SteamServerConnectFailure_t);
+
 		// Apps callbacks
 		CCallResult<Steam, DlcInstalled_t> callInstallDLC;
 		void _dlc_installed(DlcInstalled_t *callData);
@@ -246,7 +279,9 @@ class Steam : public GodotScript<Reference>{
 		void _avatar_loaded(AvatarImageLoaded_t *callData);
 		// Matchmaking callbacks
 		CCallResult<Steam, LobbyCreated_t> callCreatedLobby;
-		void _lobby_created(LobbyCreated_t *callData);
+		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
+		CCallResult<Steam, LobbyMatchList_t> steamCallResultLobbyMatchList;
+		void _lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure);
 		CCallResult<Steam, LobbyEnter_t> callEnteredLobby;
 		void _lobby_joined(LobbyEnter_t *callData);
 		CCallResult<Steam, LobbyInvite_t> callInviteLobby;
@@ -296,14 +331,20 @@ class Steam : public GodotScript<Reference>{
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();
 		}
+		void run_server_callbacks() {
+			SteamGameServer_RunCallbacks();
+		}
 
 	public:
 		// Register methods /////////////////////////
 		static void _register_methods(){
 			register_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
 			register_method("steamInit", &Steam::steamInit);
+			register_method("initGameServer", &Steam::initGameServer);
+			register_method("getServerPublicIP", &Steam::getServerPublicIP);
 			register_method("isSteamRunning", &Steam::isSteamRunning);
 			register_method("run_callbacks", &Steam::run_callbacks);
+			register_method("run_server_callbacks", &Steam::run_server_callbacks);
 			// Apps Bind Methods ////////////////////////
 			register_method("isSubscribed", &Steam::isSubscribed);
 			register_method("isLowViolence", &Steam::isLowViolence);
@@ -366,6 +407,8 @@ class Steam : public GodotScript<Reference>{
 			register_method("activateGameOverlayInviteDialog", &Steam::activateGameOverlayInviteDialog);
 			// Matchmaking Bind Methods /////////////////
 			register_method("createLobby", &Steam::createLobby);
+			register_method("requestLobbyList", &Steam::requestLobbyList);
+			register_method("getLobbiesList", &Steam::getLobbiesList);
 			register_method("joinLobby", &Steam::joinLobby);
 			register_method("leaveLobby", &Steam::leaveLobby);
 			register_method("inviteUserToLobby", &Steam::inviteUserToLobby);
@@ -407,6 +450,7 @@ class Steam : public GodotScript<Reference>{
 //			register_method("beginAuthSession", &Steam::beginAuthSession);
 //			register_method("endAuthSession", &Steam::endAuthSession);
 			register_method("getSteamID", &Steam::getSteamID);
+			register_method("getSteamAccountID", &Steam::getSteamAccountID);
 			register_method("loggedOn", &Steam::loggedOn);
 			register_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
 			register_method("getUserDataFolder", &Steam::getUserDataFolder);
@@ -431,6 +475,7 @@ class Steam : public GodotScript<Reference>{
 			register_method("setStatInt", &Steam::setStatInt);
 			register_method("storeStats", &Steam::storeStats);
 			register_method("findLeaderboard", &Steam::findLeaderboard);
+			register_method("findIKELeaderboard", &Steam::findIKELeaderboard);
 			register_method("getLeaderboardName", &Steam::getLeaderboardName);
 			register_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
 			register_method("downloadLeaderboardEntries", &Steam::downloadLeaderboardEntries);
@@ -509,6 +554,8 @@ class Steam : public GodotScript<Reference>{
 			args.clear();
 
 			register_signal<Steam>("leaderboard_entries_loaded");
+
+			register_signal<Steam>("lobby_match_list");
 
 			args["active"] = Variant::BOOL;
 			register_signal<Steam>("overlay_toggled", args);
