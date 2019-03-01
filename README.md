@@ -18,14 +18,14 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.9.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.9.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.9.1 Changes**
-- Added: additional user statistics and achievement signals
-- Changed: minor notations
-- Fixed: Linux not compiling correctly with new Friends and Matchmaking updates
-- Fixed: various Friends functions not providing correct data
-- Fixed: missing bind methods for integers
+**Version 1.9.2 Changes**
+- Added: persona_state_change callback
+- Changed: getFriendAvatar to getPlayerAvatar
+- Changed: avatar_loaded now sends back Steam ID of avatar by avencherus
+- Fixed: issue with avatar and Steam ID on Linux compile
+- Fixed: join_requested signal by Fischer96 (requires further work)
 
 Known Issues
 ----------
