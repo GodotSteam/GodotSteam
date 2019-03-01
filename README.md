@@ -1,19 +1,12 @@
 # GodotSteam Minimal for Godot 2
-Steam API for the Godot game engine (version 2 or higher). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
+Steam API for the Godot game engine (version 2 to 2.1.5). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
 
-<<<<<<< HEAD
 - View the GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
 - View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 - View the GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
-- View the GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
-- View the GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
-=======
-- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
-- View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
-- View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
-- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
 - View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
->>>>>>> 9fc9f42d25b5c8298d2919ec04d21139ec14808c
+- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
 Documentation
 ----------
@@ -38,7 +31,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0 or higher.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.1.5.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -90,7 +83,7 @@ From here you should be able to call various functions of Steamworks. You should
 
 Donate
 -------------
-If you feel like buying me a beer, feel free to do so here: https://www.paypal.me/sithlordkyle
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
