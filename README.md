@@ -1,11 +1,12 @@
 # GodotSteam for Godot 3
-Steam API for the Godot game engine (version 3 or higher). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3 to 3.0.6). For the Windows, Linux, and Mac platforms. 
 
-- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
 - View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
 - View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
-- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
 - View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
+- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
 Documentation
 ----------
@@ -42,7 +43,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0 or higher.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -94,7 +95,7 @@ From here you should be able to call various functions of Steamworks. You should
 
 Donate
 -------------
-If you feel like buying me a beer, feel free to do so here: https://www.paypal.me/sithlordkyle
+Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
