@@ -1511,16 +1511,15 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int
 		return;
 	}
 	leaderboard_entries.clear();
-	static LeaderboardEntry_t *entry = new LeaderboardEntry_t;
 	for(int i = 0; i < entryCount; i++){
-		SteamUserStats()->GetDownloadedLeaderboardEntry(eHandle, i, entry, NULL, 0);
+		LeaderboardEntry_t entry;
+		SteamUserStats()->GetDownloadedLeaderboardEntry(eHandle, i, &entry, NULL, 0);
 		Dictionary entryDict;
-		entryDict["score"] = entry->m_nScore;
-		entryDict["steamID"] = entry->m_steamIDUser.GetAccountID();
-		entryDict["global_rank"] = entry->m_nGlobalRank;
+		entryDict["score"] = entry.m_nScore;
+		entryDict["steamID"] = entry.m_steamIDUser.GetAccountID();
+		entryDict["global_rank"] = entry.m_nGlobalRank;
 		leaderboard_entries.append(entryDict);
 	}
-	delete entry;
 }
 // Get the currently used leaderboard handle
 uint64_t Steam::getLeaderboardHandle(){
