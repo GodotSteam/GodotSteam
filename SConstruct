@@ -25,8 +25,8 @@ target = ARGUMENTS.get('target', 'debug')
 if ARGUMENTS.get('use_llvm', 'no') == 'yes':
 	env['CXX'] = 'clang++'
 # Local dependency paths, adapt them to your setup
-cpp_bindings = ARGUMENTS.get('cpp_bindings', '../cpp_bindings')
-godot_headers = ARGUMENTS.get('headers', '../godot_headers')
+cpp_bindings = ARGUMENTS.get('cpp_bindings', '../godot-cpp')
+godot_headers = ARGUMENTS.get('headers', '../godot-cpp/godot_headers')
 result_path = "bin/"
 result_name = project_name
 steam_lib_path = "include/sdk/redistributable_bin"
@@ -40,7 +40,7 @@ def add_sources(sources, dir, extension):
 if target_platform == 'linux' or target_platform == 'x11':
 	result_name += '.linux.' + target_arch
 	# Set compiler variables
-	env['CXX']='gcc-5'
+	env['CXX']='gcc-7'
 	# If using Clang
 	if ARGUMENTS.get('use_llvm', 'no') == 'yes':
 		env['CXX'] = 'clang++'
@@ -59,7 +59,7 @@ if target_platform == 'linux' or target_platform == 'x11':
 		# Set correct Steam library
 		steam_lib_path += "/linux64"
 	# Attach the CPP bindings lib
-	env.Append(LIBS = [ 'libcpp_bindings.' + target_platform + '.' + target_arch + '.a' ])
+	env.Append(LIBS = [ 'libgodot-cpp.' + target_platform + '.' + target_arch + '.a' ])
 # If platform is Windows
 if target_platform == 'windows':
 	result_name += '.windows.' + target_arch
@@ -91,7 +91,7 @@ if target_platform == 'windows':
 		if env["CC"] == "cl":
 			env.Append(LINKFLAGS=[ steam_lib ])
 	# Attach the CPP bindings lib
-	env.Append(LIBS = [ 'cpp_bindings.' + target_platform + '.' + target_arch + '.lib' ])
+	env.Append(LIBS = [ 'godot-cpp.' + target_platform + '.' + target_arch + '.lib' ])
 # If platform is OSX
 if target_platform == 'osx':
 	result_name += '.osx.' + target_arch + '.dylib'

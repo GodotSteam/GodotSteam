@@ -1015,7 +1015,7 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 	else{
 		connect = LOBBY_LIMIT_EXCEEDED;
 	}
-	uint64 lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
+	uint64_t lobbyID = (uint64_t) lobbyData->m_ulSteamIDLobby;
 	owner->emit_signal("lobby_created", connect, lobbyID);
 }
 // Signal the lobby match list was performed
@@ -1034,7 +1034,8 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 	{
 		CSteamID steamIDLobby = SteamMatchmaking()->GetLobbyByIndex(iLobby);
 		Dictionary entryDict;
-		entryDict["steamIDLobby"] = steamIDLobby.ConvertToUint64();
+		uint64_t lobbyID = (uint64_t) steamIDLobby.ConvertToUint64();
+		entryDict["steamIDLobby"] = lobbyID;
 		listLobbies.append(entryDict);
 	}
 	owner->emit_signal("lobby_match_list");
