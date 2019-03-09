@@ -22,7 +22,9 @@ CSteamID Steam::createSteamID(uint32_t steamID, int accountType){
 	return cSteamID;
 }
 CSteamID Steam::createSteamID(uint64_t steamID) {
-	return CSteamID(steamID);
+	CSteamID cSteamID;
+	cSteamID.SetFromUint64((uint64) steamID);
+	return cSteamID;
 }
 /////////////////////////////////////////////////
 ///// STEAMWORKS FUNCTIONS //////////////////////
