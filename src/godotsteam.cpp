@@ -775,21 +775,16 @@ Array Steam::getLobbyData(uint64_t steamIDLobby) {
 	for (int i = 0; i < cLobbyMembers; i++) {
 		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(lobbyID, i);
 
-		// we get the details of a user from the ISteamFriends interface
-		///const char *pchName = SteamFriends()->GetFriendPersonaName(steamIDLobbyMember);
-		// we may not know the name of the other users in the lobby immediately; but we'll receive
-		// a PersonaStateUpdate_t callback when they do, and we'll rebuild the list then
-		///if (pchName && *pchName) {
-			const char *pchReady = SteamMatchmaking()->GetLobbyMemberData(lobbyID, steamIDLobbyMember, "ready");
-			bool bReady = (pchReady && atoi(pchReady) == 1);
-			bool bLobbyOwner = steamIDLobbyMember == steamIDLobbyOwner;
-			Dictionary entryDict;
-			uint64_t lobbyMemberID = (uint64_t)steamIDLobbyMember.ConvertToUint64();
-			entryDict["steamIDLobbyMember"] = lobbyMemberID;
-			entryDict["ready"] = bReady;
-			entryDict["owner"] = bLobbyOwner;
-			lobbyData.append(entryDict);
-		///}
+		const char *pchReady = SteamMatchmaking()->GetLobbyMemberData(lobbyID, steamIDLobbyMember, "ready");
+		bool bReady = (pchReady && atoi(pchReady) == 1);
+		bool bLobbyOwner = steamIDLobbyMember == steamIDLobbyOwner;
+		Dictionary entryDict;
+		uint64_t lobbyMemberID = (uint64_t)steamIDLobbyMember.ConvertToUint64();
+		entryDict["steamIDLobbyMember"] = lobbyMemberID;
+		entryDict["steamAccountIDLobbyMember"] = steamIDLobbyMember.GetAccountID();
+		entryDict["ready"] = bReady;
+		entryDict["owner"] = bLobbyOwner;
+		lobbyData.append(entryDict);
 	}
 
 	return lobbyData;
@@ -1053,6 +1048,9 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 		connect = LOBBY_LIMIT_EXCEEDED;
 	}
 	uint64_t lobbyID = (uint64_t) lobbyData->m_ulSteamIDLobby;
+	if (connect == LOBBY_OK) {
+		SteamMatchmaking()->SetLobbyData(lobbyID, "name", SteamFriends()->GetPersonaName());
+	}
 	owner->emit_signal("lobby_created", connect, lobbyID);
 }
 // Signal the lobby match list was performed
@@ -1071,8 +1069,9 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 	{
 		CSteamID steamIDLobby = SteamMatchmaking()->GetLobbyByIndex(iLobby);
 		uint64_t lobbyID = (uint64_t) steamIDLobby.ConvertToUint64();
-				Dictionary entryDict;
-				entryDict["steamIDLobby"] = lobbyID;
+		Dictionary entryDict;
+		entryDict["steamIDLobby"] = lobbyID;
+		entryDict["lobbyName"] = SteamMatchmaking()->GetLobbyData(lobbyID, "name");
 		listLobbies.append(entryDict);
 	}
 	owner->emit_signal("lobby_match_list");
