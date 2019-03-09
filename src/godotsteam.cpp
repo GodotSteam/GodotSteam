@@ -1049,7 +1049,7 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 	}
 	uint64_t lobbyID = (uint64_t) lobbyData->m_ulSteamIDLobby;
 	if (connect == LOBBY_OK) {
-		SteamMatchmaking()->SetLobbyData(lobbyID, "name", SteamFriends()->GetPersonaName());
+		SteamMatchmaking()->SetLobbyData(createSteamID(lobbyID), "name", SteamFriends()->GetPersonaName());
 	}
 	owner->emit_signal("lobby_created", connect, lobbyID);
 }
@@ -1071,7 +1071,7 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 		uint64_t lobbyID = (uint64_t) steamIDLobby.ConvertToUint64();
 		Dictionary entryDict;
 		entryDict["steamIDLobby"] = lobbyID;
-		entryDict["lobbyName"] = SteamMatchmaking()->GetLobbyData(lobbyID, "name");
+		entryDict["lobbyName"] = SteamMatchmaking()->GetLobbyData(steamIDLobby, "name");
 		listLobbies.append(entryDict);
 	}
 	owner->emit_signal("lobby_match_list");
