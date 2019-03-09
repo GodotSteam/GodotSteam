@@ -21,6 +21,9 @@ CSteamID Steam::createSteamID(uint32_t steamID, int accountType){
 	cSteamID.Set(steamID, EUniverse(k_EUniversePublic), EAccountType(accountType));
 	return cSteamID;
 }
+CSteamID Steam::createSteamID(uint64_t steamID) {
+	return CSteamID(steamID);
+}
 /////////////////////////////////////////////////
 ///// STEAMWORKS FUNCTIONS //////////////////////
 //
@@ -736,7 +739,7 @@ void Steam::requestLobbyList() {
 	steamCallResultLobbyMatchList.Set(hSteamAPICall, this, &Steam::_lobby_match_list);
 }
 // Join an existing lobby
-void Steam::joinLobby(int steamIDLobby){
+void Steam::joinLobby(uint64_t steamIDLobby){
 	if(SteamMatchmaking() == NULL){
 		return;
 	}
@@ -744,12 +747,12 @@ void Steam::joinLobby(int steamIDLobby){
 	SteamMatchmaking()->JoinLobby(lobbyID);
 }
 // Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback
-void Steam::leaveLobby(int steamIDLobby){
+void Steam::leaveLobby(uint64_t steamIDLobby){
 	CSteamID lobbyID = createSteamID(steamIDLobby);
 	return SteamMatchmaking()->LeaveLobby(lobbyID);
 }
 // Invite another user to the lobby, the target user will receive a LobbyInvite_t callback, will return true if the invite is successfully sent, whether or not the target responds
-bool Steam::inviteUserToLobby(int steamIDLobby, int steamIDInvitee){
+bool Steam::inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee){
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
@@ -758,32 +761,33 @@ bool Steam::inviteUserToLobby(int steamIDLobby, int steamIDInvitee){
 	return SteamMatchmaking()->InviteUserToLobby(lobbyID, inviteeID);
 }
 
-Array Steam::getLobbyData(int steamIDLobby) {
+Array Steam::getLobbyData(uint64_t steamIDLobby) {
 	lobbyData.clear();
 	CSteamID lobbyID = createSteamID(steamIDLobby);
 
 	// list of users in lobby
 	// iterate all the users in the lobby and show their details
 	int cLobbyMembers = SteamMatchmaking()->GetNumLobbyMembers(lobbyID);
+	printf("Lobby id = %lld; members = %d\n", steamIDLobby, cLobbyMembers);
 	CSteamID steamIDLobbyOwner = SteamMatchmaking()->GetLobbyOwner(lobbyID);
 	for (int i = 0; i < cLobbyMembers; i++) {
 		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(lobbyID, i);
 
 		// we get the details of a user from the ISteamFriends interface
-		const char *pchName = SteamFriends()->GetFriendPersonaName(steamIDLobbyMember);
+		///const char *pchName = SteamFriends()->GetFriendPersonaName(steamIDLobbyMember);
 		// we may not know the name of the other users in the lobby immediately; but we'll receive
 		// a PersonaStateUpdate_t callback when they do, and we'll rebuild the list then
-		if (pchName && *pchName) {
+		///if (pchName && *pchName) {
 			const char *pchReady = SteamMatchmaking()->GetLobbyMemberData(lobbyID, steamIDLobbyMember, "ready");
 			bool bReady = (pchReady && atoi(pchReady) == 1);
 			bool bLobbyOwner = steamIDLobbyMember == steamIDLobbyOwner;
 			Dictionary entryDict;
-			uint64_t lobbyID = (uint64_t)steamIDLobbyMember.ConvertToUint64();
-			entryDict["steamIDLobbyMember"] = lobbyID;
+			uint64_t lobbyMemberID = (uint64_t)steamIDLobbyMember.ConvertToUint64();
+			entryDict["steamIDLobbyMember"] = lobbyMemberID;
 			entryDict["ready"] = bReady;
 			entryDict["owner"] = bLobbyOwner;
 			lobbyData.append(entryDict);
-		}
+		///}
 	}
 
 	return lobbyData;
@@ -1064,16 +1068,16 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 	for (uint32 iLobby = 0; iLobby < pCallback->m_nLobbiesMatching; iLobby++)
 	{
 		CSteamID steamIDLobby = SteamMatchmaking()->GetLobbyByIndex(iLobby);
-		Dictionary entryDict;
 		uint64_t lobbyID = (uint64_t) steamIDLobby.ConvertToUint64();
-		entryDict["steamIDLobby"] = lobbyID;
+				Dictionary entryDict;
+				entryDict["steamIDLobby"] = lobbyID;
 		listLobbies.append(entryDict);
 	}
 	owner->emit_signal("lobby_match_list");
 }
 // Signal that lobby has been joined.
 void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
-	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
+	uint64_t lobbyID = (uint64_t) lobbyData->m_ulSteamIDLobby;
 	uint32_t permissions = lobbyData->m_rgfChatPermissions;
 	bool locked = lobbyData->m_bLocked;
 	uint32_t response = lobbyData->m_EChatRoomEnterResponse;
@@ -1081,9 +1085,9 @@ void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
 }
 // Signal that a lobby invite was sent.
 void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
-	int inviterID = (uint64)lobbyData->m_ulSteamIDUser;
-	int lobbyID = (uint64)lobbyData->m_ulSteamIDLobby;
-	int gameID = (uint64)lobbyData->m_ulGameID;
+	uint64_t inviterID = (uint64_t)lobbyData->m_ulSteamIDUser;
+	uint64_t lobbyID = (uint64_t)lobbyData->m_ulSteamIDLobby;
+	uint64_t gameID = (uint64_t)lobbyData->m_ulGameID;
 	owner->emit_signal("lobby_invite", inviterID, lobbyID, gameID);
 }
 // Signal a game/lobby join has been requested.
@@ -1566,11 +1570,13 @@ Array Steam::getLobbiesList() {
 	return listLobbies;
 }
 // Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19)
-bool Steam::getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime){
+bool Steam::getAchievementAndUnlockTime(const String& name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
-	return SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), (bool *)achieved, (uint32_t *)unlockTime);
+	bool achieved;
+	uint32_t unlockTime;
+	return SteamUserStats()->GetAchievementAndUnlockTime(name.utf8().get_data(), &achieved, &unlockTime);
 }
 // Achievement progress, triggers an AchievementProgress callback, that is all.
 // Calling this with X out of X progress will NOT set the achievement, the game must still do that.

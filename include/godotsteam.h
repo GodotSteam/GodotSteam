@@ -57,7 +57,8 @@ class Steam : public GodotScript<Reference>{
 		Steam();
 		~Steam();
 
-		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
+		CSteamID createSteamID(uint32_t steamID, int accountType/*=-1*/);
+		CSteamID createSteamID(uint64_t steamID);
 		Image drawAvatar(int size, uint8* buffer);
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
@@ -129,10 +130,10 @@ class Steam : public GodotScript<Reference>{
 		// Matchmaking //////////////////////////////
 		void createLobby(int lobbyType, int maxMembers);
 		void requestLobbyList();
-		void joinLobby(int steamIDLobby);
-		void leaveLobby(int steamIDLobby);
-		bool inviteUserToLobby(int steamIDLobby, int steamIDInvitee);
-		Array getLobbyData(int steamIDLobby);
+		void joinLobby(uint64_t steamIDLobby);
+		void leaveLobby(uint64_t steamIDLobby);
+		bool inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee);
+		Array getLobbyData(uint64_t steamIDLobby);
 		// Music ////////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
@@ -206,7 +207,7 @@ class Steam : public GodotScript<Reference>{
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
 		Array getLobbiesList();
-		bool getAchievementAndUnlockTime(const String& name, bool achieved, int unlockTime);
+		bool getAchievementAndUnlockTime(const String& name);  // TODO: rework return values
 		bool indicateAchievementProgress(const String& name, int curProgress, int maxProgress);
 		// Utils ////////////////////////////////////
 		String getIPCountry();
