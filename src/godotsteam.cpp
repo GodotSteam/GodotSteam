@@ -757,6 +757,37 @@ bool Steam::inviteUserToLobby(int steamIDLobby, int steamIDInvitee){
 	CSteamID inviteeID = createSteamID(steamIDInvitee);
 	return SteamMatchmaking()->InviteUserToLobby(lobbyID, inviteeID);
 }
+
+Array Steam::getLobbyData(int steamIDLobby) {
+	lobbyData.clear();
+	CSteamID lobbyID = createSteamID(steamIDLobby);
+
+	// list of users in lobby
+	// iterate all the users in the lobby and show their details
+	int cLobbyMembers = SteamMatchmaking()->GetNumLobbyMembers(lobbyID);
+	CSteamID steamIDLobbyOwner = SteamMatchmaking()->GetLobbyOwner(lobbyID);
+	for (int i = 0; i < cLobbyMembers; i++) {
+		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(lobbyID, i);
+
+		// we get the details of a user from the ISteamFriends interface
+		const char *pchName = SteamFriends()->GetFriendPersonaName(steamIDLobbyMember);
+		// we may not know the name of the other users in the lobby immediately; but we'll receive
+		// a PersonaStateUpdate_t callback when they do, and we'll rebuild the list then
+		if (pchName && *pchName) {
+			const char *pchReady = SteamMatchmaking()->GetLobbyMemberData(lobbyID, steamIDLobbyMember, "ready");
+			bool bReady = (pchReady && atoi(pchReady) == 1);
+			bool bLobbyOwner = steamIDLobbyMember == steamIDLobbyOwner;
+			Dictionary entryDict;
+			uint64_t lobbyID = (uint64_t)steamIDLobbyMember.ConvertToUint64();
+			entryDict["steamIDLobbyMember"] = lobbyID;
+			entryDict["ready"] = bReady;
+			entryDict["owner"] = bLobbyOwner;
+			lobbyData.append(entryDict);
+		}
+	}
+
+	return lobbyData;
+}
 /////////////////////////////////////////////////
 ///// MUSIC /////////////////////////////////////
 //
