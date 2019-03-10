@@ -4,12 +4,13 @@
 #include <inttypes.h>
 #include <steam/steam_api.h>
 
-#include "object.h"
+#include "core/object.h"
 #include "scene/resources/texture.h"	// For avatars
-#include "reference.h"
-#include "dictionary.h"					// Contains array.h as well
+#include "core/reference.h"
+#include "core/dictionary.h"					// Contains array.h as well
 
 class Steam: public Object {
+	GDCLASS(Steam, Object);
 	public:
 		enum {
 			OFFLINE=0, ONLINE=1, BUSY=2, AWAY=3, SNOOZE=4, LF_TRADE, LF_PLAY, STATE_MAX, NOT_OFFLINE=8, ALL=9,
@@ -61,7 +62,6 @@ class Steam: public Object {
 		~Steam();
 
 		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
-		Image drawAvatar(int size, uint8* buffer);
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
 		bool steamInit();
@@ -216,7 +216,7 @@ class Steam: public Object {
 		void musicPlayPrev();
 		void musicSetVolume(float value);
 		// Remote Storage ///////////////////////////
-		bool fileWrite(const String& file, const DVector<uint8_t>& data, int32_t dataSize);
+		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
 		Dictionary fileRead(const String& file, int32_t dataToRead);
 		bool fileForget(const String& file);
 		bool fileDelete(const String& file);
@@ -237,7 +237,7 @@ class Steam: public Object {
 		bool isScreenshotsHooked();
 		bool setLocation(uint32_t screenshot, const String& location);
 		void triggerScreenshot();
-		uint32_t writeScreenshot(const DVector<uint8_t>& RGB, int width, int height);
+		uint32_t writeScreenshot(const PoolByteArray& RGB, int width, int height);
 		// Users ////////////////////////////////////
 		uint32_t getAuthSessionTicket();
 		void cancelAuthTicket(uint32_t authTicket);
@@ -272,10 +272,11 @@ class Steam: public Object {
 		int getLeaderboardEntryCount();
 		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
 		void downloadLeaderboardEntriesForUsers(Array usersID);
-		void uploadLeaderboardScore(int score, bool keepBest=false);
+		void uploadLeaderboardScore(int score, bool keepBest=false, PoolIntArray details=PoolIntArray());
 		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
+		void setLeaderboardDetailsMax(int detailsMax);
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 		// Utils ////////////////////////////////////
@@ -325,6 +326,7 @@ class Steam: public Object {
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntries;
+		int leaderboardDetailsMax;
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
@@ -338,7 +340,7 @@ class Steam: public Object {
 			uint32_t size;
 		};
 		Vector<TicketData> tickets;
-		// Friend info
+		// Friend info //////////////////////////
 		struct FriendGameInfo {
 			uint64_t gameID;
 			uint32 gameIP;
@@ -347,7 +349,7 @@ class Steam: public Object {
 			uint64_t steamIDLobby;
 		};
 		Vector<FriendGameInfo> gameInfo;
-		// Friend session state info
+		// Friend session state info ////////////
 		struct FriendSessionStateInfo {
 			uint32 onlineSessionInstance;
 			uint8 publishedToFriendsSessionInstance;
@@ -367,9 +369,11 @@ class Steam: public Object {
 		// STEAM CALLBACKS //////////////////////
 		//
 		// Apps callbacks ///////////////////////
+		//
 		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
 		// Friends callbacks ////////////////////
+		//
 		STEAM_CALLBACK(Steam,_name_changed, SetPersonaNameResponse_t);
 		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
 		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
@@ -389,6 +393,7 @@ class Steam: public Object {
 		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t);
 		// Matchmaking callbacks ////////////////
+		//
 		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
 		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
@@ -402,8 +407,10 @@ class Steam: public Object {
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
 		// Screenshot callbacks /////////////////
+		//
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
-		// User callback ////////////////////////
+		// User callbacks ///////////////////////
+		//
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 		// User stat callbacks //////////////////
@@ -433,21 +440,18 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
 		// Utility callbacks ////////////////////
 		//
-		// Finding if the overlay is toggled or not
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
-		// Signaling that the battery power is low
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
 		// Workshop callbacks ///////////////////
+		//
 		STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 		void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
 		void _workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
-		// Run the Steamworks API callbacks
+		// Run the Steamworks API callbacks /////
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();
 		}
-		OBJ_TYPE(Steam, Object);
-		OBJ_CATEGORY("Steam");
 };
 #endif // GODOTSTEAM_H
