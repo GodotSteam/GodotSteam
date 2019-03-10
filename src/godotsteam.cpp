@@ -292,7 +292,7 @@ uint64_t Steam::getAppOwner(){
 	return cSteamID.ConvertToUint64();
 }
 // Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
-String Steam::getLaunchQueryParam(const String& key){
+String Steam::getLaunchQueryParam(String key){
 	if(SteamApps() == NULL){
 		return "";
 	}
@@ -313,7 +313,7 @@ int Steam::getAppBuildId(){
 	return SteamApps()->GetAppBuildId();
 }
 // Asynchronously retrieves metadata details about a specific file in the depot manifest.
-void Steam::getFileDetails(const String& filename){
+void Steam::getFileDetails(String filename){
 	if(SteamApps() == NULL){
 		return;
 	}
@@ -331,7 +331,7 @@ void Steam::activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandl
 	}
 }
 // Lookup the handle for an Action Set.
-uint64_t Steam::getActionSetHandle(const String& actionSetName){
+uint64_t Steam::getActionSetHandle(String actionSetName){
 	if(SteamController() != NULL){
 		return (uint64_t)SteamController()->GetActionSetHandle(actionSetName.utf8().get_data());
 	}
@@ -352,7 +352,7 @@ Dictionary Steam::getAnalogActionData(uint64_t controllerHandle, uint64_t analog
 	return d;
 }
 // Get the handle of the specified Analog action.
-uint64_t Steam::getAnalogActionHandle(const String& actionName){
+uint64_t Steam::getAnalogActionHandle(String actionName){
 	if(SteamController() != NULL){
 		return (uint64_t)SteamController()->GetAnalogActionHandle(actionName.utf8().get_data());
 	}
@@ -409,7 +409,7 @@ Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digit
 	return d;
 }
 // Get the handle of the specified digital action.
-uint64_t Steam::getDigitalActionHandle(const String& actionName){
+uint64_t Steam::getDigitalActionHandle(String actionName){
 	if(SteamController() != NULL){
 		return (uint64_t)SteamController()->GetDigitalActionHandle(actionName.utf8().get_data());
 	}
@@ -505,7 +505,7 @@ String Steam::getPersonaName(){
 	return SteamFriends()->GetPersonaName();
 }
 // Get given friend's Steam username
-String Steam::getFriendPersonaName(int steamID){
+String Steam::getFriendPersonaName(uint64_t steamID){
 	if(SteamFriends() != NULL && steamID > 0){
 		CSteamID friendID = createSteamID(steamID);
 		bool isDataLoading = SteamFriends()->RequestUserInformation(friendID, true);
@@ -516,7 +516,7 @@ String Steam::getFriendPersonaName(int steamID){
 	return "";
 }
 // Set the game information in Steam; used in 'View Game Info'
-void Steam::setGameInfo(const String& key, const String& value){
+void Steam::setGameInfo(String key, String value){
 	// Rich presence data is automatically shared between friends in the same game
 	// Each user has a set of key/value pairs, up to 20 can be set
 	// Two magic keys (status, connect)
@@ -534,7 +534,7 @@ void Steam::clearGameInfo(){
 	SteamFriends()->ClearRichPresence();
 }
 // Invite friend to current game/lobby
-void Steam::inviteFriend(int steamID, const String& connectString){
+void Steam::inviteFriend(uint64_t steamID, String connectString){
 	if(SteamFriends() == NULL){
 		return;
 	}
@@ -542,7 +542,7 @@ void Steam::inviteFriend(int steamID, const String& connectString){
 	SteamFriends()->InviteUserToGame(friendID, connectString.utf8().get_data());
 }
 // Set player as 'Played With' for game
-void Steam::setPlayedWith(int steamID){
+void Steam::setPlayedWith(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
@@ -631,14 +631,14 @@ Image Steam::drawAvatar(int size, uint8* buffer){
 	return avatar;
 }
 // Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite"
-void Steam::activateGameOverlay(const String& url){
+void Steam::activateGameOverlay(String url){
 	if(SteamFriends() == NULL){
 		return;
 	}
 	SteamFriends()->ActivateGameOverlay(url.utf8().get_data());
 }
 // Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore"
-void Steam::activateGameOverlayToUser(const String& url, int steamID){
+void Steam::activateGameOverlayToUser(String url, uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return;
 	}
@@ -646,18 +646,18 @@ void Steam::activateGameOverlayToUser(const String& url, int steamID){
 	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), overlayUserID);
 }
 // Activates the overlay with specified web address
-void Steam::activateGameOverlayToWebPage(const String& url){
+void Steam::activateGameOverlayToWebPage(String url){
 	if(SteamFriends() == NULL){
 		return;
 	}
 	SteamFriends()->ActivateGameOverlayToWebPage(url.utf8().get_data());
 }
 // Activates the overlay with the application/game Steam store page
-void Steam::activateGameOverlayToStore(int appID){
+void Steam::activateGameOverlayToStore(AppId_t appID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	SteamFriends()->ActivateGameOverlayToStore(AppId_t(appID), EOverlayToStoreFlag(0));
+	SteamFriends()->ActivateGameOverlayToStore(appID, EOverlayToStoreFlag(0));
 }
 // Get list of user's Steam groups; a mix of different Steamworks API group functions
 Array Steam::getUserSteamGroups(){
@@ -852,14 +852,14 @@ void Steam::musicSetVolume(float value){
 ///// REMOTE STORAGE ////////////////////////////
 //
 // Write to given file from Steam Cloud
-bool Steam::fileWrite(const String& file, const PoolByteArray& vData, int32_t cubData){
+bool Steam::fileWrite(String file, const PoolByteArray& vData, int32_t cubData){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
 	return SteamRemoteStorage()->FileWrite(file.utf8().get_data(), vData.read().ptr(), cubData);
 }
 // Read given file from Steam Cloud
-Dictionary Steam::fileRead(const String& file, int32_t cubDataToRead){
+Dictionary Steam::fileRead(String file, int32_t cubDataToRead){
 	Dictionary d;
 	if(SteamRemoteStorage() == NULL){
 		d["ret"] = false;
@@ -872,42 +872,42 @@ Dictionary Steam::fileRead(const String& file, int32_t cubDataToRead){
 	return d;
 }
 // Delete file from remote storage but leave it on local disk to remain accessible
-bool Steam::fileForget(const String& file){
+bool Steam::fileForget(String file){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
 	return SteamRemoteStorage()->FileForget(file.utf8().get_data());
 }
 // Delete a given file in Steam Cloud
-bool Steam::fileDelete(const String& file){
+bool Steam::fileDelete(String file){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
 	return SteamRemoteStorage()->FileDelete(file.utf8().get_data());
 }
 // Check if a given file exists in Steam Cloud
-bool Steam::fileExists(const String& file){
+bool Steam::fileExists(String file){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
 	return SteamRemoteStorage()->FileExists(file.utf8().get_data());
 }
 // Check if a given file is persisted in Steam Cloud
-bool Steam::filePersisted(const String& file){
+bool Steam::filePersisted(String file){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
 	return SteamRemoteStorage()->FilePersisted(file.utf8().get_data());
 }
 // Get the size of a given file
-int32_t Steam::getFileSize(const String& file){
+int32_t Steam::getFileSize(String file){
 	if(SteamRemoteStorage() == NULL){
 		return -1;
 	}
 	return SteamRemoteStorage()->GetFileSize(file.utf8().get_data());
 }
 // Get the timestamp of when the file was uploaded/changed
-int64_t Steam::getFileTimestamp(const String& file){
+int64_t Steam::getFileTimestamp(String file){
 	if(SteamRemoteStorage() == NULL){
 		return -1;
 	}
@@ -945,7 +945,7 @@ Dictionary Steam::getQuota(){
 	return d;
 }
 // Obtains the platforms that the specified file will syncronize to
-uint32_t Steam::getSyncPlatforms(const String& file){
+uint32_t Steam::getSyncPlatforms(String file){
 	if(SteamRemoteStorage() == NULL){
 		return 0;
 	}
@@ -975,7 +975,7 @@ void Steam::setCloudEnabledForApp(bool enabled){
 /////////////////////////////////////////////////
 ///// SCREENSHOTS ///////////////////////////////
 //
-uint32_t Steam::addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height) {
+uint32_t Steam::addScreenshotToLibrary(String filename, String thumbnailFilename, int width, int height) {
 	// TODO: implement
 	return 0;
 }
@@ -995,7 +995,7 @@ bool Steam::isScreenshotsHooked(){
 	return SteamScreenshots()->IsScreenshotsHooked();
 }
 
-bool Steam::setLocation(uint32_t screenshot, const String& location) {
+bool Steam::setLocation(uint32_t screenshot, String location) {
 	// TODO: implement
 	return false;
 }
@@ -1332,7 +1332,7 @@ String Steam::getUserDataFolder(){
 	return data_path;
 }
 // (LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game
-//void Steam::advertiseGame(const String& serverIP, int port){
+//void Steam::advertiseGame(String serverIP, int port){
 //	if(SteamUser() == NULL){
 //		return;
 //	}
@@ -1371,17 +1371,17 @@ int Steam::getGameBadgeLevel(int series, bool foil){
 ///// USER STATS ////////////////////////////////
 //
 // Clears a given achievement
-bool Steam::clearAchievement(const String& name){
+bool Steam::clearAchievement(String name){
 	return SteamUserStats()->ClearAchievement(name.utf8().get_data());
 }
 // Return true/false if use has given achievement
-bool Steam::getAchievement(const String& name){
+bool Steam::getAchievement(String name){
 	bool achieved = false;
 	SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
 	return achieved;
 }
 // Returns the percentage of users who have unlocked the specified achievement
-Dictionary Steam::getAchievementAchievedPercent(const String& name){
+Dictionary Steam::getAchievementAchievedPercent(String name){
 	Dictionary d;
 	float percent = 0.f;
 	bool achieved = false;
@@ -1394,12 +1394,12 @@ Dictionary Steam::getAchievementAchievedPercent(const String& name){
 	return d;
 }
 
-String Steam::getAchievementDisplayAttribute(const String& name, const String& key) {
+String Steam::getAchievementDisplayAttribute(String name, String key) {
 	// TODO: implement
 	return "";
 }
 
-int Steam::getAchievementIcon(const String& name) {
+int Steam::getAchievementIcon(String name) {
 	// TODO: implement
 	return 0;
 }
@@ -1425,13 +1425,13 @@ uint32_t Steam::getNumAchievements(){
 	return SteamUserStats()->GetNumAchievements();
 }
 // Get the value of a float statistic
-float Steam::getStatFloat(const String& name){
+float Steam::getStatFloat(String name){
 	float statval = 0;
 	SteamUserStats()->GetStat(name.utf8().get_data(), &statval);
 	return statval;
 }
 // Get the value of an integer statistic
-int Steam::getStatInt(const String& name){
+int Steam::getStatInt(String name){
 	int32_t statval = 0;
 	SteamUserStats()->GetStat(name.utf8().get_data(), &statval);
 	return statval;
@@ -1454,7 +1454,7 @@ void Steam::requestGlobalAchievementPercentages(){
 //	callResultGlobalAchievementPercentagesReady.Set(apiCall, this, &Steam::_global_achievement_percentages_ready);
 }
 // Set a given achievement
-bool Steam::setAchievement(const String& name){
+bool Steam::setAchievement(String name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
@@ -1462,11 +1462,11 @@ bool Steam::setAchievement(const String& name){
 	return SteamUserStats()->StoreStats();
 }
 // Set a float statistic
-bool Steam::setStatFloat(const String& name, float value){
+bool Steam::setStatFloat(String name, float value){
 	return SteamUserStats()->SetStat(name.utf8().get_data(), value);
 }
 // Set an integer statistic
-bool Steam::setStatInt(const String& name, int value){
+bool Steam::setStatInt(String name, int value){
 	return SteamUserStats()->SetStat(name.utf8().get_data(), value);
 }
 // Store all statistics, and achievements, on Steam servers; must be called to "pop" achievements
@@ -1478,19 +1478,11 @@ bool Steam::storeStats(){
 	return SteamUserStats()->RequestCurrentStats();
 }
 // Find a given leaderboard, by name
-void Steam::findLeaderboard(const String& name){
+void Steam::findLeaderboard(String name){
 	if(SteamUserStats() == NULL){
 		return;
 	}
 	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard(name.utf8().get_data());
-	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
-}
-// Find hardcoded leaderboard for "I Know Everything"
-void Steam::findIKELeaderboard() {
-	if (SteamUserStats() == NULL) {
-		return;
-	}
-	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard("Top Erudites");
 	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
 }
 // Get the name of a leaderboard
@@ -1552,8 +1544,9 @@ void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t eHandle, int
 		LeaderboardEntry_t entry;
 		SteamUserStats()->GetDownloadedLeaderboardEntry(eHandle, i, &entry, NULL, 0);
 		Dictionary entryDict;
+		uint64_t steamID = (uint64_t) entry.m_steamIDUser.ConvertToUint64();
 		entryDict["score"] = entry.m_nScore;
-		entryDict["steamID"] = entry.m_steamIDUser.GetAccountID();
+		entryDict["steamID"] = steamID;
 		entryDict["global_rank"] = entry.m_nGlobalRank;
 		leaderboard_entries.append(entryDict);
 	}
@@ -1571,7 +1564,7 @@ Array Steam::getLobbiesList() {
 	return listLobbies;
 }
 // Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19)
-bool Steam::getAchievementAndUnlockTime(const String& name){
+bool Steam::getAchievementAndUnlockTime(String name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
@@ -1581,7 +1574,7 @@ bool Steam::getAchievementAndUnlockTime(const String& name){
 }
 // Achievement progress, triggers an AchievementProgress callback, that is all.
 // Calling this with X out of X progress will NOT set the achievement, the game must still do that.
-bool Steam::indicateAchievementProgress(const String& name, int curProgress, int maxProgress){
+bool Steam::indicateAchievementProgress(String name, int curProgress, int maxProgress){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
@@ -1763,7 +1756,7 @@ void Steam::createItem(AppId_t appID, int fileType){
 	callResultItemCreate.Set(apiCall, this, &Steam::_workshop_item_created);
 }
 // Sets a new title for an item.
-bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
+bool Steam::setItemTitle(uint64_t updateHandle, String title){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -1775,7 +1768,7 @@ bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
 	return SteamUGC()->SetItemTitle(handle, title.utf8().get_data());
 }
 // Sets a new description for an item.
-bool Steam::setItemDescription(uint64_t updateHandle, const String& description){
+bool Steam::setItemDescription(uint64_t updateHandle, String description){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -1787,7 +1780,7 @@ bool Steam::setItemDescription(uint64_t updateHandle, const String& description)
 	return SteamUGC()->SetItemDescription(handle, description.utf8().get_data());
 }
 // Sets the language of the title and description that will be set in this item update.
-bool Steam::setItemUpdateLanguage(uint64_t updateHandle, const String& language){
+bool Steam::setItemUpdateLanguage(uint64_t updateHandle, String language){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -1795,7 +1788,7 @@ bool Steam::setItemUpdateLanguage(uint64_t updateHandle, const String& language)
 	return SteamUGC()->SetItemUpdateLanguage(handle, language.utf8().get_data());
 }
 // Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.
-bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
+bool Steam::setItemMetadata(uint64_t updateHandle, String metadata){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -1834,7 +1827,7 @@ bool Steam::setItemVisibility(uint64_t updateHandle, int visibility){
 //	return SteamUGC()->SetItemTags(updateHandle, &tags);
 //}
 // Sets the folder that will be stored as the content for an item.
-bool Steam::setItemContent(uint64_t updateHandle, const String& contentFolder){
+bool Steam::setItemContent(uint64_t updateHandle, String contentFolder){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -1842,7 +1835,7 @@ bool Steam::setItemContent(uint64_t updateHandle, const String& contentFolder){
 	return SteamUGC()->SetItemContent(handle, contentFolder.utf8().get_data());
 }
 // Sets the primary preview image for the item.
-bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
+bool Steam::setItemPreview(uint64_t updateHandle, String previewFile){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -1850,7 +1843,7 @@ bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
 	return SteamUGC()->SetItemPreview(handle, previewFile.utf8().get_data());
 }
 // Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.
-void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
+void Steam::submitItemUpdate(uint64_t updateHandle, String changeNote){
 	if(SteamUGC() == NULL){
 		return;
 	}

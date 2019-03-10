@@ -87,21 +87,21 @@ class Steam : public GodotScript<Reference>{
 		String getAppInstallDir(AppId_t appID);
 		bool isAppInstalled(int value);
 		uint64_t getAppOwner();
-		String getLaunchQueryParam(const String& key);
+		String getLaunchQueryParam(String key);
 	//	bool getDLCDownloadProgress(int appID, uint64* bytesDownloaded, uint64* bytesTotal);
 		int getAppBuildId();
-		void getFileDetails(const String& filename);
+		void getFileDetails(String filename);
 		// Controller ///////////////////////////////
 		void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
-		uint64_t getActionSetHandle(const String& actionSetName);
+		uint64_t getActionSetHandle(String actionSetName);
 		Dictionary getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle);
-		uint64_t getAnalogActionHandle(const String& actionName);
+		uint64_t getAnalogActionHandle(String actionName);
 		Array getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle);
 		Array getConnectedControllers();
 		uint64_t getControllerForGamepadIndex(int index);
 		uint64_t getCurrentActionSet(uint64_t controllerHandle);
 		Dictionary getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle);
-		uint64_t getDigitalActionHandle(const String& actionName);
+		uint64_t getDigitalActionHandle(String actionName);
 		Array getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle);
 		int getGamepadIndexForController(uint64_t controllerHandle);
 		Dictionary getMotionData(uint64_t controllerHandle);
@@ -113,19 +113,19 @@ class Steam : public GodotScript<Reference>{
 		// Friends //////////////////////////////////
 		int getFriendCount();
 		String getPersonaName();
-		String getFriendPersonaName(int steamID);
-		void setGameInfo(const String& key, const String& value);
+		String getFriendPersonaName(uint64_t steamID);
+		void setGameInfo(String key, String value);
 		void clearGameInfo();
-		void inviteFriend(int id, const String& connectString);
-		void setPlayedWith(int steamID);
+		void inviteFriend(uint64_t id, String connectString);
+		void setPlayedWith(uint64_t steamID);
 		Array getRecentPlayers();
 		void getFriendAvatar(int size=AVATAR_MEDIUM);
 		Array getUserSteamGroups();
 		Array getUserSteamFriends();
-		void activateGameOverlay(const String& type);
-		void activateGameOverlayToUser(const String& type, int steamID);
-		void activateGameOverlayToWebPage(const String& url);
-		void activateGameOverlayToStore(int appID=0);
+		void activateGameOverlay(String type);
+		void activateGameOverlayToUser(String type, uint64_t steamID);
+		void activateGameOverlayToWebPage(String url);
+		void activateGameOverlayToStore(AppId_t appID=0);
 		void activateGameOverlayInviteDialog(int steamID);
 		// Matchmaking //////////////////////////////
 		void createLobby(int lobbyType, int maxMembers);
@@ -144,26 +144,26 @@ class Steam : public GodotScript<Reference>{
 		void musicPlayPrev();
 		void musicSetVolume(float value);
 		// Remote Storage ///////////////////////////
-		bool fileWrite(const String& file, const PoolByteArray& vData, int32_t cubData);
-		Dictionary fileRead(const String& file, int32_t cubDataToRead);
-		bool fileForget(const String& file);
-		bool fileDelete(const String& file);
-		bool fileExists(const String& file);
-		bool filePersisted(const String& file);
-		int32_t getFileSize(const String& file);
-		int64_t getFileTimestamp(const String& file);
+		bool fileWrite(String file, const PoolByteArray& vData, int32_t cubData);
+		Dictionary fileRead(String file, int32_t cubDataToRead);
+		bool fileForget(String file);
+		bool fileDelete(String file);
+		bool fileExists(String file);
+		bool filePersisted(String file);
+		int32_t getFileSize(String file);
+		int64_t getFileTimestamp(String file);
 		int32_t getFileCount();
 		Dictionary getFileNameAndSize(int file);
 		Dictionary getQuota();
-		uint32_t getSyncPlatforms(const String& file);
+		uint32_t getSyncPlatforms(String file);
 		bool isCloudEnabledForAccount();
 		bool isCloudEnabledForApp();
 		void setCloudEnabledForApp(bool enabled);
 		// Screenshots //////////////////////////////
-		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height);
+		uint32_t addScreenshotToLibrary(String filename, String thumbnailFilename, int width, int height);
 		void hookScreenshots(bool hook);
 		bool isScreenshotsHooked();
-		bool setLocation(uint32_t screenshot, const String& location);
+		bool setLocation(uint32_t screenshot, String location);
 		void triggerScreenshot();
 		uint32_t writeScreenshot(const PoolByteArray& RGB, int width, int height);
 		// Users ////////////////////////////////////
@@ -176,28 +176,27 @@ class Steam : public GodotScript<Reference>{
 		bool loggedOn();
 		int getPlayerSteamLevel();
 		String getUserDataFolder();
-//		void advertiseGame(const String& serverIP, int port);
+//		void advertiseGame(String serverIP, int port);
 		int getGameBadgeLevel(int series, bool foil);
 		// User Stats ///////////////////////////////
-		bool clearAchievement(const String& name);
+		bool clearAchievement(String name);
 		uint32_t getNumAchievements();
 		void getNumberOfCurrentPlayers();
-		bool getAchievement(const String& name);
-		Dictionary getAchievementAchievedPercent(const String& name);
-		String getAchievementDisplayAttribute(const String& name, const String& key);
-		int getAchievementIcon(const String& name);
+		bool getAchievement(String name);
+		Dictionary getAchievementAchievedPercent(String name);
+		String getAchievementDisplayAttribute(String name, String key);
+		int getAchievementIcon(String name);
 		String getAchievementName(uint32_t iAchievement);
-		float getStatFloat(const String& name);
-		int getStatInt(const String& name);
+		float getStatFloat(String name);
+		int getStatInt(String name);
 		bool resetAllStats(bool achievementsToo=true);
 		bool requestCurrentStats();
 		void requestGlobalAchievementPercentages();
-		bool setAchievement(const String& name);
-		bool setStatFloat(const String& name, float value);
-		bool setStatInt(const String& name, int value);
+		bool setAchievement(String name);
+		bool setStatFloat(String name, float value);
+		bool setStatInt(String name, int value);
 		bool storeStats();
-		void findLeaderboard(const String& name);
-		void findIKELeaderboard();
+		void findLeaderboard(String name);
 		String getLeaderboardName();
 		int getLeaderboardEntryCount();
 		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
@@ -207,8 +206,8 @@ class Steam : public GodotScript<Reference>{
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
 		Array getLobbiesList();
-		bool getAchievementAndUnlockTime(const String& name);  // TODO: rework return values
-		bool indicateAchievementProgress(const String& name, int curProgress, int maxProgress);
+		bool getAchievementAndUnlockTime(String name);  // TODO: rework return values
+		bool indicateAchievementProgress(String name, int curProgress, int maxProgress);
 		// Utils ////////////////////////////////////
 		String getIPCountry();
 		bool isOverlayEnabled();
@@ -230,15 +229,15 @@ class Steam : public GodotScript<Reference>{
 		int getItemState(int publishedFileID);
 	//	int getItemUpdateProgress(uint64_t handle, uint64_t *bytesProcessed, uint64_t* bytesTotal);
 		void createItem(AppId_t appID, int fileType);
-		bool setItemTitle(uint64_t updateHandle, const String& title);
-		bool setItemDescription(uint64_t updateHandle, const String& description);
-		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
-		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
+		bool setItemTitle(uint64_t updateHandle, String title);
+		bool setItemDescription(uint64_t updateHandle, String description);
+		bool setItemUpdateLanguage(uint64_t updateHandle, String language);
+		bool setItemMetadata(uint64_t updateHandle, String metadata);
 		bool setItemVisibility(uint64_t updateHandle, int visibility);
 	//	bool setItemTags(uint64_t updateHandle, const PoolStringArray ** stringArray, const int32 stringCount);
-		bool setItemContent(uint64_t updateHandle, const String& contentFolder);
-		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
-		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
+		bool setItemContent(uint64_t updateHandle, String contentFolder);
+		bool setItemPreview(uint64_t updateHandle, String previewFile);
+		void submitItemUpdate(uint64_t updateHandle, String changeNote);
 	//	Array getSubscribedItems();
 	//	bool getItemInstallInfo(int fileID, uint64_t *sizeOnDisk, char *folder, uint32_t folderSize, uint32_t *timeStamp);
 	//	bool getItemDownloadInfo(int fileID, uint64_t *bytesDownloaded, uint64_t *bytesTotal);
@@ -479,7 +478,6 @@ class Steam : public GodotScript<Reference>{
 			register_method("setStatInt", &Steam::setStatInt);
 			register_method("storeStats", &Steam::storeStats);
 			register_method("findLeaderboard", &Steam::findLeaderboard);
-			register_method("findIKELeaderboard", &Steam::findIKELeaderboard);
 			register_method("getLeaderboardName", &Steam::getLeaderboardName);
 			register_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
 			register_method("downloadLeaderboardEntries", &Steam::downloadLeaderboardEntries);
