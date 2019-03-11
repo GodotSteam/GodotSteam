@@ -1,23 +1,6 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
 
-//#define USE_GS_AUTH_API
-
-// INADDR_ANY constant, can be found in winsock.h on Windows
-#define INADDR_ANY (uint32)0x00000000
-
-// Current game server version
-#define GAME_SERVER_VERSION "1.0.0.0"
-
-// UDP port for the game server to do authentication on (ie, talk to Steam on)
-#define GAME_AUTHENTICATION_PORT 8766
-
-// UDP port for the game server to listen on
-#define GAME_SERVER_PORT 27015
-
-// UDP port for the master server updater to listen on
-#define GAME_MASTER_SERVER_UPDATER_PORT 27016
-
 #include <inttypes.h>
 #include "steam/steam_gameserver.h"
 #include "steam/steam_api.h"
@@ -26,6 +9,11 @@
 #include "Reference.hpp"
 #include "Image.hpp"			// For avatars; perhaps should be Texture.hpp
 #include "core/Dictionary.hpp" 	// Contains array.h as well
+
+//#define USE_GS_AUTH_API
+
+// INADDR_ANY constant, can be found in winsock.h on Windows
+#define INADDR_ANY (uint32)0x00000000
 
 using namespace godot;
 
@@ -63,7 +51,7 @@ class Steam : public GodotScript<Reference>{
 		// Steamworks ///////////////////////////////
 		bool restartAppIfNecessary(int value);
 		bool steamInit();
-		bool initGameServer();
+		bool initGameServer(String product, String gameDescription, String versionString, String modDir, uint16_t usSteamPort, uint16_t usGamePort, uint16_t usMasterServerUpdaterPort);
 		uint32 getServerPublicIP();
 		bool isSteamRunning();
 		// Apps /////////////////////////////////////

@@ -54,32 +54,28 @@ bool Steam::steamInit(){
 	}
 	return err;
 }
-bool Steam::initGameServer() {
-	printf("initGameServer()\n");
+bool Steam::initGameServer(String product, String gameDescription, String versionString, String modDir, uint16_t usSteamPort, uint16_t usGamePort, uint16_t usMasterServerUpdaterPort) {
 	uint32 unIP = INADDR_ANY;
-	uint16 usMasterServerUpdaterPort = GAME_MASTER_SERVER_UPDATER_PORT;
-
 #ifdef USE_GS_AUTH_API
 	EServerMode eMode = eServerModeAuthenticationAndSecure;
 #else
 	// Don't let Steam do authentication
 	EServerMode eMode = eServerModeNoAuthentication;
 #endif
-	bool initRes = SteamGameServer_Init(unIP, GAME_AUTHENTICATION_PORT, GAME_SERVER_PORT, usMasterServerUpdaterPort, eMode, GAME_SERVER_VERSION);
+	printf("Trying to init game server for %s (%s), version %s, mod dir = '%s'\n", product.utf8().get_data(), gameDescription.utf8().get_data(), versionString.utf8().get_data(), modDir.utf8().get_data());
+	bool initRes = SteamGameServer_Init(unIP, usSteamPort, usGamePort, usMasterServerUpdaterPort, eMode, versionString.utf8().get_data());
 	if (initRes) {
-		if (SteamGameServer())
-		{
-
+		if (SteamGameServer()) {
 			// Set the "game dir".
 			// This is currently required for all games.  However, soon we will be
 			// using the AppID for most purposes, and this string will only be needed
 			// for mods.  it may not be changed after the server has logged on
-			SteamGameServer()->SetModDir(".");
+			SteamGameServer()->SetModDir(modDir.utf8().get_data());
 
 			// These fields are currently required, but will go away soon.
 			// See their documentation for more info
-			SteamGameServer()->SetProduct("SteamworksExample");
-			SteamGameServer()->SetGameDescription("Steamworks Example");
+			SteamGameServer()->SetProduct(product.utf8().get_data());
+			SteamGameServer()->SetGameDescription(gameDescription.utf8().get_data());
 
 			// We don't support specators in our game.
 			// .... but if we did:
@@ -95,9 +91,7 @@ bool Steam::initGameServer() {
 #ifdef USE_GS_AUTH_API
 			SteamGameServer()->EnableHeartbeats(true);
 #endif
-		}
-		else
-		{
+		} else {
 			printf("SteamGameServer() interface is invalid\n");
 		}
 	}
@@ -111,7 +105,6 @@ uint32 Steam::getServerPublicIP() {
 	if (SteamGameServer() == NULL) {
 		return 0;
 	}
-	printf("Getting public IP\n");
 	return SteamGameServer()->GetPublicIP();
 }
 void Steam::_steam_servers_connected(SteamServersConnected_t *pLogonSuccess) {
@@ -770,7 +763,6 @@ Array Steam::getLobbyData(uint64_t steamIDLobby) {
 	// list of users in lobby
 	// iterate all the users in the lobby and show their details
 	int cLobbyMembers = SteamMatchmaking()->GetNumLobbyMembers(lobbyID);
-	printf("Lobby id = %lld; members = %d\n", steamIDLobby, cLobbyMembers);
 	CSteamID steamIDLobbyOwner = SteamMatchmaking()->GetLobbyOwner(lobbyID);
 	for (int i = 0; i < cLobbyMembers; i++) {
 		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(lobbyID, i);
