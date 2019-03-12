@@ -756,8 +756,8 @@ bool Steam::inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee){
 	return SteamMatchmaking()->InviteUserToLobby(lobbyID, inviteeID);
 }
 
-Array Steam::getLobbyData(uint64_t steamIDLobby) {
-	lobbyData.clear();
+Array Steam::getLobbyMembersData(uint64_t steamIDLobby) {
+	lobbyMembersData.clear();
 	CSteamID lobbyID = createSteamID(steamIDLobby);
 
 	// list of users in lobby
@@ -776,10 +776,10 @@ Array Steam::getLobbyData(uint64_t steamIDLobby) {
 		entryDict["steamAccountIDLobbyMember"] = steamIDLobbyMember.GetAccountID();
 		entryDict["ready"] = bReady;
 		entryDict["owner"] = bLobbyOwner;
-		lobbyData.append(entryDict);
+		lobbyMembersData.append(entryDict);
 	}
 
-	return lobbyData;
+	return lobbyMembersData;
 }
 /////////////////////////////////////////////////
 ///// MUSIC /////////////////////////////////////
@@ -1040,10 +1040,21 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 		connect = LOBBY_LIMIT_EXCEEDED;
 	}
 	uint64_t lobbyID = (uint64_t) lobbyData->m_ulSteamIDLobby;
-	if (connect == LOBBY_OK) {
-		SteamMatchmaking()->SetLobbyData(createSteamID(lobbyID), "name", SteamFriends()->GetPersonaName());
-	}
 	owner->emit_signal("lobby_created", connect, lobbyID);
+}
+// Sets lobby data
+bool Steam::setLobbyData(uint64_t lobbyID, String key, String value) {
+	if (SteamMatchmaking() == NULL) {
+		return false;
+	}
+	return SteamMatchmaking()->SetLobbyData(createSteamID(lobbyID), key.utf8().get_data(), value.utf8().get_data());
+}
+// Gets lobby data
+String Steam::getLobbyData(uint64_t lobbyID, String key) {
+	if (SteamMatchmaking() == NULL) {
+		return String();
+	}
+	return SteamMatchmaking()->GetLobbyData(createSteamID(lobbyID), key.utf8().get_data());
 }
 // Signal the lobby match list was performed
 void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
@@ -1063,7 +1074,6 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 		uint64_t lobbyID = (uint64_t) steamIDLobby.ConvertToUint64();
 		Dictionary entryDict;
 		entryDict["steamIDLobby"] = lobbyID;
-		entryDict["lobbyName"] = SteamMatchmaking()->GetLobbyData(steamIDLobby, "name");
 		listLobbies.append(entryDict);
 	}
 	owner->emit_signal("lobby_match_list");
