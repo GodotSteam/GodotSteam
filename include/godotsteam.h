@@ -123,6 +123,7 @@ class Steam : public GodotScript<Reference>{
 		bool inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee);
 		bool setLobbyData(uint64_t lobbyID, String key, String value);
 		String getLobbyData(uint64_t steamIDLobby, String key);
+		int getNumLobbyMembers(uint64_t steamIDLobby);
 		Array getLobbyMembersData(uint64_t steamIDLobby);
 		// Music ////////////////////////////////////
 		bool musicIsEnabled();
@@ -406,6 +407,7 @@ class Steam : public GodotScript<Reference>{
 			register_method("inviteUserToLobby", &Steam::inviteUserToLobby);
 			register_method("setLobbyData", &Steam::setLobbyData);
 			register_method("getLobbyData", &Steam::getLobbyData);
+			register_method("getNumLobbyMembers", &Steam::getNumLobbyMembers);
 			register_method("getLobbyMembersData", &Steam::getLobbyMembersData);
 			// Music Bind Methods ///////////////////////
 			register_method("musicIsEnabled", &Steam::musicIsEnabled);
