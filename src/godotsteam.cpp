@@ -756,8 +756,20 @@ bool Steam::inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee){
 	return SteamMatchmaking()->InviteUserToLobby(lobbyID, inviteeID);
 }
 
+int Steam::getNumLobbyMembers(uint64_t steamIDLobby) {
+	if (SteamMatchmaking() == NULL) {
+		return 0;
+	}
+	CSteamID lobbyID = createSteamID(steamIDLobby);
+	return SteamMatchmaking()->GetNumLobbyMembers(lobbyID);
+}
+
 Array Steam::getLobbyMembersData(uint64_t steamIDLobby) {
 	lobbyMembersData.clear();
+	if (SteamMatchmaking() == NULL) {
+		return lobbyMembersData;
+	}
+
 	CSteamID lobbyID = createSteamID(steamIDLobby);
 
 	// list of users in lobby
