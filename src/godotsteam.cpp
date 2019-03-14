@@ -739,7 +739,8 @@ void Steam::joinLobby(uint64_t steamIDLobby){
 		return;
 	}
 	CSteamID lobbyID = createSteamID(steamIDLobby);
-	SteamMatchmaking()->JoinLobby(lobbyID);
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->JoinLobby(lobbyID);
+	callEnteredLobby.Set(hSteamAPICall, this, &Steam::_lobby_joined);
 }
 // Leave a lobby, this will take effect immediately on the client side, other users will be notified by LobbyChatUpdate_t callback
 void Steam::leaveLobby(uint64_t steamIDLobby){
@@ -1091,12 +1092,13 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 	owner->emit_signal("lobby_match_list");
 }
 // Signal that lobby has been joined.
-void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
+void Steam::_lobby_joined(LobbyEnter_t* lobbyData, bool bIOFailure){
 	uint64_t lobbyID = (uint64_t) lobbyData->m_ulSteamIDLobby;
 	uint32_t permissions = lobbyData->m_rgfChatPermissions;
 	bool locked = lobbyData->m_bLocked;
 	uint32_t response = lobbyData->m_EChatRoomEnterResponse;
-	owner->emit_signal("lobby_joined", lobbyID, permissions, locked, response);
+	bool connection_failure = bIOFailure || (lobbyData->m_EChatRoomEnterResponse != k_EChatRoomEnterResponseSuccess);
+	owner->emit_signal("lobby_joined", lobbyID, permissions, locked, response, connection_failure);
 }
 // Signal that a lobby invite was sent.
 void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
