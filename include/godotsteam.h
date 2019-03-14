@@ -276,7 +276,7 @@ class Steam : public GodotScript<Reference>{
 		CCallResult<Steam, LobbyMatchList_t> steamCallResultLobbyMatchList;
 		void _lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure);
 		CCallResult<Steam, LobbyEnter_t> callEnteredLobby;
-		void _lobby_joined(LobbyEnter_t *callData);
+		void _lobby_joined(LobbyEnter_t *callData, bool bIOFailure);
 		CCallResult<Steam, LobbyInvite_t> callInviteLobby;
 		void _lobby_invite(LobbyInvite_t *callData);
 		CCallResult<Steam, GameRichPresenceJoinRequested_t> callJoinRequested;
@@ -569,6 +569,7 @@ class Steam : public GodotScript<Reference>{
 			args["permissions"] = Variant::INT;
 			args["locked"] = Variant::BOOL;
 			args["response"] = Variant::INT;
+			args["connection_failure"] = Variant::BOOL;
 			register_signal<Steam>("lobby_joined", args);
 			args.clear();
 
