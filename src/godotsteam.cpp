@@ -864,7 +864,7 @@ bool Steam::closeP2PSessionWithUser(uint64_t steamIDRemote) {
  * This should only needed for debugging purposes.
  */
 Dictionary Steam::getP2PSessionState(uint64_t steamIDRemote) {
-	Dictionary result = Dictionary();
+	Dictionary result;
 	if (SteamNetworking() == NULL) {
 		return result;
 	}
@@ -905,21 +905,26 @@ uint32_t Steam::getAvailableP2PPacketSize(int nChannel) {
  * Returns: bool
  * Filled dictionary if a packet was successfully read; otherwise, empty dictionary if no packet was available.
  */
-PoolByteArray Steam::readP2PPacket(uint32_t cubDest, uint64_t steamIDRemote, int nChannel) {
-	PoolByteArray result;
+Dictionary Steam::readP2PPacket(uint32_t cubDest, int nChannel) {
+	Dictionary result;
 	if (SteamNetworking() == NULL) {
-		result.resize(0);
 		return result;
 	}
-	result.resize(cubDest);
-	CSteamID steamID = createSteamID(steamIDRemote);
-	uint32 bytesRead = 0;
-	if (!SteamNetworking()->ReadP2PPacket(result.write().ptr(), cubDest, &bytesRead, &steamID)) {
-		result.resize(0);
+	PoolByteArray data;
+	data.resize(cubDest);
+	CSteamID steamID;
+	uint32_t bytesRead = 0;
+	if (SteamNetworking()->ReadP2PPacket(data.write().ptr(), cubDest, &bytesRead, &steamID)) {
+		data.resize(bytesRead);
+		uint64_t steamIDRemote = steamID.ConvertToUint64();
+		result["data"] = data;
+		result["steamIDRemote"] = steamIDRemote;
+	}
+	else {
+		data.resize(0);
 	}
 	return result;
 }
-
 /**
  * Sends a P2P packet to the specified user.
  * This is a session-less API which automatically establishes NAT-traversing or Steam relay server connections.
