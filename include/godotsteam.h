@@ -134,7 +134,7 @@ class Steam : public GodotScript<Reference>{
 		bool closeP2PSessionWithUser(uint64_t steamIDRemote);
 		Dictionary getP2PSessionState(uint64_t steamIDRemote);
 		uint32_t getAvailableP2PPacketSize(int nChannel = 0);
-		PoolByteArray readP2PPacket(uint32_t cubDest, uint64_t steamIDRemote, int nChannel = 0);
+		Dictionary readP2PPacket(uint32_t cubDest, int nChannel = 0);
 		bool sendP2PPacket(uint64_t steamIDRemote, PoolByteArray vData, int eP2PSendType, int nChannel = 0);
 		// Music ////////////////////////////////////
 		bool musicIsEnabled();
