@@ -3,7 +3,11 @@
 
 Steam *Steam::singleton = NULL;
 
-Steam::Steam(){
+Steam::Steam()
+:
+	callSessionRequest(this, &Steam::_p2p_session_request),
+	callSessionConnectFail(this, &Steam::_p2p_session_connect_fail)
+{
 	isInitSuccess = false;
 	singleton = this;
 //	tickets.clear();
@@ -793,6 +797,170 @@ Array Steam::getLobbyMembersData(uint64_t steamIDLobby) {
 	}
 
 	return lobbyMembersData;
+}
+// P2P //////////////////////////////
+// see https://partner.steamgames.com/doc/api/ISteamNetworking
+/**
+ * This allows the game to specify accept an incoming packet.
+ * This needs to be called before a real connection is established to a remote host, the game will get a chance to say whether or not the remote user is allowed to talk to them.
+ * If you've called SendP2PPacket on the other user, this implicitly accepts the session request.
+ * Note that this call should only be made in response to a P2PSessionRequest_t callback!
+ * Returns: bool
+ * true upon success; false only if steamIDRemote is invalid.
+ */
+bool Steam::acceptP2PSessionWithUser(uint64_t steamIDRemote) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->AcceptP2PSessionWithUser(steamID);
+}
+
+/**
+ * Allow or disallow P2P connections to fall back to being relayed through the Steam servers if a direct connection or NAT-traversal cannot be established.
+ * This only applies to connections created after setting this value, or to existing connections that need to automatically reconnect after this value is set.
+ * P2P packet relay is allowed by default.
+ * Returns: bool
+ * This function always returns true.
+ */
+bool Steam::allowP2PPacketRelay(bool bAllow) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	return SteamNetworking()->AllowP2PPacketRelay(bAllow);
+}
+
+/**
+ * Closes a P2P channel when you're done talking to a user on the specific channel.
+ * Once all channels to a user have been closed, the open session to the user will be closed and new data from this user will trigger a new P2PSessionRequest_t callback.
+ * Returns: bool
+ * true if the channel was successfully closed; otherwise, false if there was no active session or channel with the user.
+ */
+bool Steam::closeP2PChannelWithUser(uint64_t steamIDRemote, int nChannel) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->CloseP2PChannelWithUser(steamID, nChannel);
+}
+
+/**
+ * This should be called when you're done communicating with a user, as this will free up all of the resources allocated for the connection under-the-hood.
+ * If the remote user tries to send data to you again, a new P2PSessionRequest_t callback will be posted.
+ * Returns: bool
+ * true if the session was successfully closed; otherwise, false if no connection was open with steamIDRemote.
+ */
+bool Steam::closeP2PSessionWithUser(uint64_t steamIDRemote) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->CloseP2PSessionWithUser(steamID);
+}
+
+/**
+ * Fills out a P2PSessionState_t structure with details about the connection like whether or not there is an active connection;
+ * number of bytes queued on the connection; the last error code, if any; whether or not a relay server is being used; and the IP and Port of the remote user, if known
+ * This should only needed for debugging purposes.
+ */
+Dictionary Steam::getP2PSessionState(uint64_t steamIDRemote) {
+	Dictionary result = Dictionary();
+	if (SteamNetworking() == NULL) {
+		return result;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	P2PSessionState_t p2pSessionState;
+	bool success = SteamNetworking()->GetP2PSessionState(steamID, &p2pSessionState);
+	if (!success) {
+		return result;
+	}
+	result["connection_active"] = p2pSessionState.m_bConnectionActive; // true if we've got an active open connection
+	result["connecting"] = p2pSessionState.m_bConnecting; // true if we're currently trying to establish a connection
+	result["session_error"] = p2pSessionState.m_eP2PSessionError; // last error recorded (see enum in isteamnetworking.h)
+	result["using_relay"] = p2pSessionState.m_bUsingRelay; // true if it's going through a relay server (TURN)
+	result["bytes_queued_for_send"] = p2pSessionState.m_nBytesQueuedForSend;
+	result["packets_queued_for_send"] = p2pSessionState.m_nPacketsQueuedForSend;
+	result["remote_ip"] = p2pSessionState.m_nRemoteIP; // potential IP:Port of remote host. Could be TURN server.
+	result["remote_port"] = p2pSessionState.m_nRemotePort; // Only exists for compatibility with older authentication api's
+	return result;
+}
+
+/**
+ * Calls IsP2PPacketAvailable() under the hood, returns the size of the available packet or zero if there is no such packet.
+ * This should be called in a loop for each channel that you use. If there is a packet available you should call readP2PPacket to get the packet data.
+ */
+uint32_t Steam::getAvailableP2PPacketSize(int nChannel) {
+	if (SteamNetworking() == NULL) {
+		return 0;
+	}
+	uint32_t cubMsgSize = 0;
+	return (SteamNetworking()->IsP2PPacketAvailable(&cubMsgSize, nChannel)) ? cubMsgSize : 0;
+}
+
+/**
+ * Reads in a packet that has been sent from another user via SendP2PPacket.
+ * If the cubDest buffer is too small for the packet, then the message will be truncated.
+ * This call is not blocking, and will return empty dictionary if no data is available.
+ * Before calling this you should have called IsP2PPacketAvailable.
+ * Returns: bool
+ * Filled dictionary if a packet was successfully read; otherwise, empty dictionary if no packet was available.
+ */
+PoolByteArray Steam::readP2PPacket(uint32_t cubDest, uint64_t steamIDRemote, int nChannel) {
+	PoolByteArray result;
+	if (SteamNetworking() == NULL) {
+		result.resize(0);
+		return result;
+	}
+	result.resize(cubDest);
+	CSteamID steamID = createSteamID(steamIDRemote);
+	uint32 bytesRead = 0;
+	if (!SteamNetworking()->ReadP2PPacket(result.write().ptr(), cubDest, &bytesRead, &steamID)) {
+		result.resize(0);
+	}
+	return result;
+}
+
+/**
+ * Sends a P2P packet to the specified user.
+ * This is a session-less API which automatically establishes NAT-traversing or Steam relay server connections.
+ * NOTE: The first packet send may be delayed as the NAT-traversal code runs.
+ * See EP2PSend for descriptions of the different ways of sending packets.
+ * The type of data you send is arbitrary, you can use an off the shelf system like Protocol Buffers or Cap'n Proto to encode your packets in an efficient way,
+ * or you can create your own messaging system.
+ * Returns: bool
+ * Triggers a P2PSessionRequest_t callback.
+ * true if the packet was successfully sent.
+ * Note that this does not mean successfully received, if we can't get through to the user after a timeout of 20 seconds, then an error will be posted
+ * via the P2PSessionConnectFail_t callback.
+ *
+ * false upon the following conditions:
+ * The packet is too large for the send type.
+ * The target Steam ID is not valid.
+ * There are too many bytes queued up to be sent.
+ */
+bool Steam::sendP2PPacket(uint64_t steamIDRemote, PoolByteArray vData, int eP2PSendType, int nChannel) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->SendP2PPacket(steamID, vData.read().ptr(), vData.size(), EP2PSend(eP2PSendType), nChannel);
+}
+
+/**
+ * Purpose: another user has sent us a packet - do we accept?
+ */
+void Steam::_p2p_session_request(P2PSessionRequest_t *callData) {
+	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
+	owner->emit_signal("p2p_session_request", steamIDRemote);
+}
+
+/**
+ * Purpose: we send a packet to another user but it failed
+ */
+void Steam::_p2p_session_connect_fail(P2PSessionConnectFail_t *callData) {
+	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
+	uint8_t p2p_session_error = callData->m_eP2PSessionError;
+	owner->emit_signal("p2p_session_connect_fail", steamIDRemote, p2p_session_error);
 }
 /////////////////////////////////////////////////
 ///// MUSIC /////////////////////////////////////

@@ -31,6 +31,7 @@ class Steam : public GodotScript<Reference>{
 			GLOBAL=0, GLOBAL_AROUND_USER=1, FRIENDS=2, USERS=3,
 			LOBBY_OK=0, LOBBY_NO_CONNECTION=1, LOBBY_TIMEOUT=2, LOBBY_FAIL=3, LOBBY_ACCESS_DENIED=4, LOBBY_LIMIT_EXCEEDED=5,
 			PRIVATE=0, FRIENDS_ONLY=1, PUBLIC=2, INVISIBLE=3, LOBBY_KEY_LENGTH=255,
+			EP2P_SEND_UNRELIABLE = 0, EP2P_SEND_UNRELIABLE_NO_DELAY = 1, EP2P_SEND_RELIABLE = 2, EP2P_SEND_RELIABLE_WITH_BUFFERING = 3,
 			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
 			UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1, UGC_ITEM_COLLECTION=2, UGC_ITEM_ART=3, UGC_ITEM_VIDEO=4, UGC_ITEM_SCREENSHOT=5, UGC_ITEM_GAME=6, UGC_ITEM_SOFTWARE=7,
 			UGC_ITEM_CONCEPT=8, UGC_ITEM_WEBGUIDE=9, UGC_ITEM_INTEGRATEDGUIDE=10, UGC_ITEM_MERCH=11, UGC_ITEM_CONTROLLERBINDING=12, UGC_ITEM_STEAMWORKSACCESSINVITE=13,
@@ -125,6 +126,16 @@ class Steam : public GodotScript<Reference>{
 		String getLobbyData(uint64_t steamIDLobby, String key);
 		int getNumLobbyMembers(uint64_t steamIDLobby);
 		Array getLobbyMembersData(uint64_t steamIDLobby);
+		// P2P //////////////////////////////
+		// see https://partner.steamgames.com/doc/api/ISteamNetworking
+		bool acceptP2PSessionWithUser(uint64_t steamIDRemote);
+		bool allowP2PPacketRelay(bool bAllow);
+		bool closeP2PChannelWithUser(uint64_t steamIDRemote, int nChannel);
+		bool closeP2PSessionWithUser(uint64_t steamIDRemote);
+		Dictionary getP2PSessionState(uint64_t steamIDRemote);
+		uint32_t getAvailableP2PPacketSize(int nChannel = 0);
+		PoolByteArray readP2PPacket(uint32_t cubDest, uint64_t steamIDRemote, int nChannel = 0);
+		bool sendP2PPacket(uint64_t steamIDRemote, PoolByteArray vData, int eP2PSendType, int nChannel = 0);
 		// Music ////////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
@@ -285,6 +296,9 @@ class Steam : public GodotScript<Reference>{
 		void _server_connected(SteamServersConnected_t *callData);
 		CCallResult<Steam, SteamServersDisconnected_t> callServerDisconnected;
 		void _server_disconnected(SteamServersDisconnected_t *callData);
+		// P2P callbacks
+		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t, callSessionRequest);
+		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t, callSessionConnectFail);
 		// Screenshot callbacks
 		CCallResult<Steam, ScreenshotReady_t> callReadyScreenshot;
 		void _screenshot_ready(ScreenshotReady_t *callData);
@@ -409,6 +423,15 @@ class Steam : public GodotScript<Reference>{
 			register_method("getLobbyData", &Steam::getLobbyData);
 			register_method("getNumLobbyMembers", &Steam::getNumLobbyMembers);
 			register_method("getLobbyMembersData", &Steam::getLobbyMembersData);
+			// P2P Bind Methods /////////////////
+			register_method("acceptP2PSessionWithUser", &Steam::acceptP2PSessionWithUser);
+			register_method("allowP2PPacketRelay", &Steam::allowP2PPacketRelay);
+			register_method("closeP2PChannelWithUser", &Steam::closeP2PChannelWithUser);
+			register_method("closeP2PSessionWithUser", &Steam::closeP2PSessionWithUser);
+			register_method("getP2PSessionState", &Steam::getP2PSessionState);
+			register_method("getAvailableP2PPacketSize", &Steam::getAvailableP2PPacketSize);
+			register_method("readP2PPacket", &Steam::readP2PPacket);
+			register_method("sendP2PPacket", &Steam::sendP2PPacket);
 			// Music Bind Methods ///////////////////////
 			register_method("musicIsEnabled", &Steam::musicIsEnabled);
 			register_method("musicIsPlaying", &Steam::musicIsPlaying);
@@ -552,6 +575,15 @@ class Steam : public GodotScript<Reference>{
 			register_signal<Steam>("leaderboard_entries_loaded");
 
 			register_signal<Steam>("lobby_match_list");
+
+			args["steamIDRemote"] = Variant::INT;
+			register_signal<Steam>("p2p_session_request", args);
+			args.clear();
+
+			args["steamIDRemote"] = Variant::INT;
+			args["p2p_session_error"] = Variant::INT;
+			register_signal<Steam>("p2p_session_connect_fail", args);
+			args.clear();
 
 			args["active"] = Variant::BOOL;
 			register_signal<Steam>("overlay_toggled", args);
