@@ -5,6 +5,7 @@ Steam *Steam::singleton = NULL;
 
 Steam::Steam()
 :
+	lobbyDataUpdate(this, &Steam::_lobby_data_update),
 	callSessionRequest(this, &Steam::_p2p_session_request),
 	callSessionConnectFail(this, &Steam::_p2p_session_connect_fail)
 {
@@ -1229,18 +1230,43 @@ void Steam::_lobby_created(LobbyCreated_t* lobbyData, bool bIOFailure){
 	owner->emit_signal("lobby_created", connect, lobbyID);
 }
 // Sets lobby data
-bool Steam::setLobbyData(uint64_t lobbyID, String key, String value) {
+bool Steam::setLobbyData(uint64_t steamIDLobby, String key, String value) {
 	if (SteamMatchmaking() == NULL) {
 		return false;
 	}
-	return SteamMatchmaking()->SetLobbyData(createSteamID(lobbyID), key.utf8().get_data(), value.utf8().get_data());
+	return SteamMatchmaking()->SetLobbyData(createSteamID(steamIDLobby), key.utf8().get_data(), value.utf8().get_data());
 }
 // Gets lobby data
-String Steam::getLobbyData(uint64_t lobbyID, String key) {
+String Steam::getLobbyData(uint64_t steamIDLobby, String key) {
 	if (SteamMatchmaking() == NULL) {
 		return String();
 	}
-	return SteamMatchmaking()->GetLobbyData(createSteamID(lobbyID), key.utf8().get_data());
+	return SteamMatchmaking()->GetLobbyData(createSteamID(steamIDLobby), key.utf8().get_data());
+}
+// Sets lobby member data
+void Steam::setLobbyMemberData(uint64_t steamIDLobby, String key, String value) {
+	if (SteamMatchmaking() == NULL) {
+		return;
+	}
+	SteamMatchmaking()->SetLobbyMemberData(createSteamID(steamIDLobby), key.utf8().get_data(), value.utf8().get_data());
+}
+// Gets lobby member data
+String Steam::getLobbyMemberData(uint64_t steamIDLobby, uint64_t steamIDUser, String key) {
+	if (SteamMatchmaking() == NULL) {
+		return String();
+	}
+	return SteamMatchmaking()->GetLobbyMemberData(createSteamID(steamIDLobby), createSteamID(steamIDUser), key.utf8().get_data());
+}
+/**
+ * Triggers on calls to CreateLobby, JoinLobby, SetLobbyMemberData, RequestLobbyData, SetLobbyOwner.
+ * If steamIDMember is a user in the lobby, then use GetLobbyMemberData to access per-user details;
+ * otherwise, if steamIDMember == steamIDLobby, use GetLobbyData to access the lobby metadata.
+ */
+void Steam::_lobby_data_update(LobbyDataUpdate_t *callData) {
+	uint8_t success = callData->m_bSuccess;
+	uint64_t steamIDLobby = callData->m_ulSteamIDLobby;
+	uint64_t steamIDMember = callData->m_ulSteamIDMember;
+	owner->emit_signal("lobby_data_update", success, steamIDLobby, steamIDMember);
 }
 // Signal the lobby match list was performed
 void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {

@@ -122,8 +122,10 @@ class Steam : public GodotScript<Reference>{
 		void joinLobby(uint64_t steamIDLobby);
 		void leaveLobby(uint64_t steamIDLobby);
 		bool inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee);
-		bool setLobbyData(uint64_t lobbyID, String key, String value);
+		bool setLobbyData(uint64_t steamIDLobby, String key, String value);
 		String getLobbyData(uint64_t steamIDLobby, String key);
+		void setLobbyMemberData(uint64_t steamIDLobby, String key, String value);
+		String getLobbyMemberData(uint64_t steamIDLobby, uint64_t steamIDUser, String key);
 		int getNumLobbyMembers(uint64_t steamIDLobby);
 		Array getLobbyMembersData(uint64_t steamIDLobby);
 		// P2P //////////////////////////////
@@ -296,6 +298,7 @@ class Steam : public GodotScript<Reference>{
 		void _server_connected(SteamServersConnected_t *callData);
 		CCallResult<Steam, SteamServersDisconnected_t> callServerDisconnected;
 		void _server_disconnected(SteamServersDisconnected_t *callData);
+		STEAM_CALLBACK(Steam, _lobby_data_update, LobbyDataUpdate_t, lobbyDataUpdate);
 		// P2P callbacks
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t, callSessionRequest);
 		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t, callSessionConnectFail);
@@ -421,6 +424,8 @@ class Steam : public GodotScript<Reference>{
 			register_method("inviteUserToLobby", &Steam::inviteUserToLobby);
 			register_method("setLobbyData", &Steam::setLobbyData);
 			register_method("getLobbyData", &Steam::getLobbyData);
+			register_method("setLobbyMemberData", &Steam::setLobbyMemberData);
+			register_method("getLobbyMemberData", &Steam::getLobbyMemberData);
 			register_method("getNumLobbyMembers", &Steam::getNumLobbyMembers);
 			register_method("getLobbyMembersData", &Steam::getLobbyMembersData);
 			// P2P Bind Methods /////////////////
@@ -573,6 +578,12 @@ class Steam : public GodotScript<Reference>{
 			args.clear();
 
 			register_signal<Steam>("leaderboard_entries_loaded");
+
+			args["success"] = Variant::BOOL;
+			args["steamIDLobby"] = Variant::INT;
+			args["steamIDMember"] = Variant::INT;
+			register_signal<Steam>("lobby_data_update", args);
+			args.clear();
 
 			register_signal<Steam>("lobby_match_list");
 
