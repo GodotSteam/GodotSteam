@@ -6,6 +6,7 @@ Steam Server API for the Godot game engine (versions 3 to 3.0.6). For the Window
 - View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 - View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
 - View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam Minimal for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/godot31-min
 - View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
 
 **This is experimental still, do not use for production games.**  This branch is meant for testing out Steam server functionality before being folded into the main GodotSteam branches.  Please feel free to make pull requests and/or test what is here.
