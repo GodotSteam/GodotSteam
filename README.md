@@ -8,6 +8,7 @@ Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms.
 - View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
 - View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
 - View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
+- View GodotSteam Minimal for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/godot31-min
 - View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
 
 Documentation
