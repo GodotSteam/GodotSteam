@@ -31,17 +31,35 @@
 						</header>
 						<p>The change log for the repository. Since the change logs start well after the project had been going, versioning will be a bit weird! The Godot 3 version of the module will start a version 2.0.0 as it will eventually replace the Godot 2 version outright.</p>
 						<ul class="actions">
-							<li><a class="button" href="#godot3">Godot 3</a></li>
-							<li><a class="button" href="#godot3-min">Godot 3 Minimal</a></li>
 							<li><a class="button" href="#godot31">Godot 3.1</a></li>
+							<li><a class="button" href="#godot3">Godot 3</a></li>
 							<li><a class="button" href="#godot2">Godot 2</a></li>
-							<li><a class="button" href="#godot2-min">Godot 2 Minimal</a></li>
+							<li><a class="button" href="#min">Minimal</a></li>
 							<li><a class="button" href="#gdnative">GDNative</a></li>
 							<li><a class="button" href="#server">Server</a></li>
 						</ul>
 						<hr />
+						<h2>Godot 3.1 Module</h2>
+						<a id="godot31"></a>
+						<h3>Version 1.0.1 Changes</h3>
+						<ul>
+							<li>Added: Networking functionality, thanks to Antokolos</li>
+							<li>Changed: linked against Steamworks 1.44</li>
+							<li>Fixed: leaderboard_uploaded returning false no matter what</li>
+						</ul>
+						<h3>Version 1.0.0 Changes</h3>
+						<ul>
+							<li>First version of module</li>
+						</ul>
+						<hr />
 						<h2>Godot 3 Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 2.8.5 Changes</h3>
+						<ul>
+							<li>Added: Networking functions; courtesy of Antokolos</li>
+							<li>Changed: linked against Steamworks 1.44</li>
+							<li>Fixed: leaderboard_uploaded always returning false even when successful</li>
+						</ul>
 						<h3>Version 2.8.4 Changes</h3>
 						<ul>
 							<li>Added: persona_state_change callback</li>
@@ -156,23 +174,23 @@
 							<li>Added: new functions to documentation</li>
 							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
 						</ul>
-						<hr/>
-						<h2>Godot 3 Minimal</h2>
-						<a id="godot3-min"></a>
-						<h3>Version 1.0.0</h3>
-						<ul>
-							<li>Added: all the minimal useful functions for Steam</li>
-						</ul>
-
 						<hr />
-						<h2>Godot 3.1 Module</h2>
-						<a id="godot31"></a>
-						<h3>Version 1.0.0 Changes</h3>
-						<ul>
-							<li>First version of module</li>
-						</ul>
-						<h2>Godot 2 Module</h2>
+						<h2>Godot 2.x Module</h2>
 						<a id="godot2"></a>
+						<h3>Version 1.9.3 Changes</h3>
+						<ul>
+							<li>Added: networking functions, big thanks to Antokolos</li>
+							<li>Changed: linked against Steamworks 1.44</li>
+							<li>Fixed: issue with leaderboard upload returning false no matter what</li>
+						</ul>
+						<h3>Version 1.9.2 Changes</h3>
+						<ul>
+							<li>Added: persona_state_change callback</li>
+							<li>Changed: getFriendAvatar to getPlayerAvatar</li>
+							<li>Changed: avatar_loaded now sends back Steam ID of avatar by avencherus</li>
+							<li>Fixed: issue with avatar and Steam ID on Linux compile</li>
+							<li>Fixed: join_requested signal by Fischer96 (requires further work)</li>
+						</ul>
 						<h3>Version 1.9.1 Changes</h3>
 						<ul>
 							<li>Added: additional user statistics and achievement signals</li>
@@ -262,8 +280,17 @@
 							<li>Changed: minor things in godotsteam.cpp</li>
 						</ul>
 						<hr />
-						<h2>Godot 2 Minimal</h2>
-						<a id="godot2-min"></a>
+						<h2>Minimal (Godot 2.x and Godot 3.x)</h2>
+						<a id="min"></a>
+						<h3>Version 1.0.2</h3>
+						<ul>
+							<li>Added: leaderboard functionality</li>
+							<li>Changed: linked against Steamworks 1.44</li>
+						</ul>
+						<h3>Version 1.0.1</h3>
+						<ul>
+							<li>Fixed: Linux version now looks for libsteam_api.so in local directory</li>
+						</ul>
 						<h3>Version 1.0.0</h3>
 						<ul>
 							<li>Added: all the minimal useful functions for Steam</li>

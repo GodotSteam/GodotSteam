@@ -855,6 +855,49 @@
 							<li>VOID.</li>
 						</ul>
 						<header class="major">
+							<h3>Networking</h3>
+						</header>
+						<h4>acceptP2PSessionWithUser( <sup>int</sup> steamIDRemote )</h4>
+						<ul>
+							<li>This allows the game to specify accept an incoming packet.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>allowP2PPacketRelay( <sup>bool</sup> allow )</h4>
+						<ul>
+							<li>Allow or disallow P2P connections to fall back to being relayed through the Steam servers if a direct connection or NAT-traversal cannot be established.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>closeP2PChannelWithUser( <sup>int</sup> steamIDRemote, <sup>int</sup> channel )</h4>
+						<ul>
+							<li>Closes a P2P channel when you're done talking to a user on the specific channel.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>closeP2PSessionWithUser( <sup>int</sup> steamIDRemote )</h4>
+						<ul>
+							<li>This should be called when you're done communicating with a user, as this will free up all of the resources allocated for the connection under-the-hood.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getP2PSessionState( <sup>int</sup> steamIDRemote )</h4>
+						<ul>
+							<li>Fills out a P2PSessionState_t structure with details about the connection like whether or not there is an active connection.</li>
+							<li>DICTIONARY; returns false if there is no P2P session active. Otherwise it contains a connection active bool, connecting bool (if trying to establish a connection), a session, whether it is using a relay, bytes queued for sending, packets queued for sending, the remote IP, and the remote port.</li>  
+						</ul>
+						<h4>getAvailableP2PPacketSize( <sup>int</sup> channel )</h4>
+						<ul>
+							<li>Calls IsP2PPacketAvailable() under the hood, returns the size of the available packet or zero if there is no such packet.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>readP2PPacket( <sup>int</sup> packet, <sup>int</sup> channel )</h4>
+						<ul>
+							<li>Reads in a packet that has been sent from another user via SendP2PPacket.</li>
+							<li>DICTIONARY; returns empty if there was an error. Otherwise contains the packet data and the user's Steam ID.</li>
+						</ul>
+						<h4>sendP2PPacket( <sup>int</sup> steamIDRemote, <sup>array</sup> data, <sup>int</sup> sendType, <sup>int</sup> channel )</h4>
+						<ul>
+							<li>Sends a P2P packet to the specified user.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<header class="major">
 							<h3>Remote Storage</h3>
 						</header>
 						<h4>fileWrite( <sup>string</sup> file, void data, <sup>int</sup> data )</h4>

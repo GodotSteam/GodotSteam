@@ -287,6 +287,18 @@
 							<li>Emits signal <strong><em>workshop_item_installed</em></strong>.</li>
 							<li>Sends along the app ID and file ID.</li>
 						</ul>
+						<h3>_p2p_session_request</h3>
+						<ul>
+							<li>Called when a user sends a packet.</li>
+							<li>Emits signal <strong><em>p2p_session_request</em></strong>.</li>
+							<li>Sends along the user's Steam ID.</li>
+						</ul>
+						<h3>_p2p_session_connect_fail</h3>
+						<ul>
+							<li>Called when a user sends a packet and it fails.</li>
+							<li>Emits signal <strong><em>p2p_session_connect_fail</em></strong>.</li>
+							<li>Sends along the user's Steam ID and the failure reason.</li>
+						</ul>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
