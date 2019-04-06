@@ -34,6 +34,7 @@ class Steam: public Object {
 			PRIVATE=0, FRIENDS_ONLY=1, PUBLIC=2, INVISIBLE=3, LOBBY_KEY_LENGTH=255,
 			LOBBY_EQUAL_LESS_THAN=-2, LOBBY_LESS_THAN=-1, LOBBY_EQUAL=0, LOBBY_GREATER_THAN=1, LOBBY_EQUAL_GREATER_THAN=2, LOBBY_NOT_EQUAL=3,
 			LOBBY_DISTANCE_CLOSE=0, LOBBY_DISTANCE_DEFAULT=1, LOBBY_DISTANCE_FAR=2, LOBBY_DISTANCE_WORLDWIDE=3,
+			EP2P_SEND_UNRELIABLE=0, EP2P_SEND_UNRELIABLE_NO_DELAY=1, EP2P_SEND_RELIABLE=2, EP2P_SEND_RELIABLE_WITH_BUFFERING=3,
 			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
 			UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1, UGC_ITEM_COLLECTION=2, UGC_ITEM_ART=3, UGC_ITEM_VIDEO=4, UGC_ITEM_SCREENSHOT=5, UGC_ITEM_GAME=6, UGC_ITEM_SOFTWARE=7,
 			UGC_ITEM_CONCEPT=8, UGC_ITEM_WEBGUIDE=9, UGC_ITEM_INTEGRATEDGUIDE=10, UGC_ITEM_MERCH=11, UGC_ITEM_CONTROLLERBINDING=12, UGC_ITEM_STEAMWORKSACCESSINVITE=13,
@@ -215,6 +216,15 @@ class Steam: public Object {
 		void musicPlayNext();
 		void musicPlayPrev();
 		void musicSetVolume(float value);
+		// Networking ///////////////////////////////
+		bool acceptP2PSessionWithUser(uint64_t steamIDRemote);
+		bool allowP2PPacketRelay(bool allow);
+		bool closeP2PChannelWithUser(uint64_t steamIDRemote, int channel);
+		bool closeP2PSessionWithUser(uint64_t steamIDRemote);
+		Dictionary getP2PSessionState(uint64_t steamIDRemote);
+		uint32_t getAvailableP2PPacketSize(int channel = 0);
+		Dictionary readP2PPacket(uint32_t data, int channel = 0);
+		bool sendP2PPacket(uint64_t steamIDRemote, PoolByteArray data, int sendType, int channel = 0);
 		// Remote Storage ///////////////////////////
 		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
 		Dictionary fileRead(const String& file, int32_t dataToRead);
@@ -406,6 +416,10 @@ class Steam: public Object {
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
+		// Networking callbacks /////////////////
+		//
+		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t);
+		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t);
 		// Screenshot callbacks /////////////////
 		//
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);

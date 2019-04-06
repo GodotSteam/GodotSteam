@@ -1,12 +1,7 @@
 # GodotSteam for Godot 3
 Steam API for the Godot game engine (version 3 to 3.0.6). For the Windows, Linux, and Mac platforms. 
 
-- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
-- View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
-- View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
-- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
-- View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
-- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+Available flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Godot 3.1](https://github.com/Gramps/GodotSteam/tree/master), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
 Documentation
 ----------
@@ -20,19 +15,9 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v2.8.4)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 2.8.4 Changes**
-- Added: persona_state_change callback
-- Added: additional user statistics and achievement signals
-- Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize
-- Changed: dictionary term 'buf' to 'buffer' in getImageRGBA
-- Changed: getFriendAvatar to getPlayerAvatar
-- Changed: avatar_loaded now sends back Steam ID of avatar by avencherus
-- Fixed: lots of fixes by marcelofg55
-- Fixed: issue with avatar and Steam ID on Linux compile
-- Fixed: join_requested signal by Fischer96 (requires further work)
-- Fixed: getImageRGBA
-- Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55
-- Removed: drawAvatar
+**Version 2.8.5 Changes**
+- Added: Networking functions; _courtesy of Antokolos_
+- Fixed: leaderboard_uploaded always returning false even when successful
 
 Known Issues
 ----------
