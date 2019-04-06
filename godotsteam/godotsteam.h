@@ -101,6 +101,16 @@ class Steam: public Object {
 		bool storeStats();
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
+		void findLeaderboard(const String& name);
+		String getLeaderboardName();
+		int getLeaderboardEntryCount();
+		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
+		void downloadLeaderboardEntriesForUsers(Array usersID);
+		void uploadLeaderboardScore(int score, bool keepBest=false, PoolIntArray details=PoolIntArray());
+		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
+		uint64_t getLeaderboardHandle();
+		Array getLeaderboardEntries();
+		void setLeaderboardDetailsMax(int detailsMax);
 		// Utils ////////////////////////////////////
 		String getIPCountry();
 		bool isOverlayEnabled();
@@ -118,6 +128,10 @@ class Steam: public Object {
 		bool isInitSuccess;
 		// Apps
 		uint64 currentAppID;
+		// Leaderboards
+		SteamLeaderboard_t leaderboardHandle;
+		Array leaderboardEntries;
+		int leaderboardDetailsMax;
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
@@ -146,6 +160,15 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
 		// Storing user achievements
 		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
+		// Uploading scores to the leaderboard
+		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
+		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+		// Finding a leaderboard
+		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
+		// Downloading scores from a leaderboard
+		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
+		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 		// Utility callbacks ////////////////////
 		//
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);

@@ -1,13 +1,7 @@
 # GodotSteam Minimal for Godot 3.1
 Steam API for the Godot game engine (version 3.1). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
 
-- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
-- View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
-- View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
-- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
-- View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
-- View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
-- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Godot 3.1](https://github.com/Gramps/GodotSteam/tree/master), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
 Documentation
 ----------
@@ -19,10 +13,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.0.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.0.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.0.0 Changes**
-- First version
+**Version 1.0.1 Changes**
+- Added: leaderboard functions
+- Changed: linked against Steamworks 1.44
 
 Known Issues
 ----------
@@ -32,7 +27,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.1.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/

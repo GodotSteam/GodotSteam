@@ -6,6 +6,7 @@ Steam* Steam::singleton = NULL;
 Steam::Steam(){
 	isInitSuccess = false;
 	singleton = this;
+	leaderboardDetailsMax = 0;
 }
 
 Steam* Steam::get_singleton(){
@@ -196,6 +197,29 @@ void Steam::_global_achievement_percentages_ready(GlobalAchievementPercentagesRe
 	uint32_t result = callData->m_eResult;
 	emit_signal("global_achievement_percentages_ready", game, result);
 }
+// Signal a leaderboard has been loaded or has failed.
+void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
+	leaderboardHandle = callData->m_hSteamLeaderboard;
+	uint8_t found = callData->m_bLeaderboardFound;
+	emit_signal("leaderboard_loaded", (uint64_t)leaderboardHandle, found);
+}
+// Signal a leaderboard entry has been uploaded.
+void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure){
+	// Incorrect leaderboard
+	if(callData->m_hSteamLeaderboard != leaderboardHandle){
+		return;
+	}
+	emit_signal("leaderboard_uploaded", callData->m_bSuccess, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
+}
+// Signal leaderboard entries are downloaded.
+void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure){
+	// Incorrect leaderboard
+	if(callData->m_hSteamLeaderboard != leaderboardHandle){
+		return;
+	}
+	getDownloadedLeaderboardEntry(callData->m_hSteamLeaderboardEntries, callData->m_cEntryCount);
+	emit_signal("leaderboard_entries_loaded");
+}
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
 //
@@ -346,6 +370,117 @@ bool Steam::indicateAchievementProgress(const String& name, int currentProgress,
 	}
 	return SteamUserStats()->IndicateAchievementProgress(name.utf8().get_data(), currentProgress, maxProgress);
 }
+// Find a given leaderboard, by name.
+void Steam::findLeaderboard(const String& name){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->FindLeaderboard(name.utf8().get_data());
+	callResultFindLeaderboard.Set(apiCall, this, &Steam::_leaderboard_loaded);
+}
+// Get the name of a leaderboard.
+String Steam::getLeaderboardName(){
+	if(SteamUserStats() == NULL){
+		return "";
+	}
+	return SteamUserStats()->GetLeaderboardName(leaderboardHandle);
+}
+// Get the total number of entries in a leaderboard, as of the last request.
+int Steam::getLeaderboardEntryCount(){
+	if(SteamUserStats() == NULL){
+		return -1;
+	}
+	return SteamUserStats()->GetLeaderboardEntryCount(leaderboardHandle);
+}
+// Request all rows for friends of user.
+void Steam::downloadLeaderboardEntries(int start, int end, int type){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntries(leaderboardHandle, ELeaderboardDataRequest(type), start, end);
+	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
+}
+// Request a maximum of 100 users with only one outstanding call at a time.
+void Steam::downloadLeaderboardEntriesForUsers(Array usersID){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	int usersCount = usersID.size();
+	if(usersCount == 0){
+		return;
+	}
+	CSteamID *users = new CSteamID[usersCount];
+	for(int i = 0; i < usersCount; i++){
+		CSteamID user = createSteamID(usersID[i]);
+		users[i] = user;
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->DownloadLeaderboardEntriesForUsers(leaderboardHandle, users, usersCount);
+	callResultEntries.Set(apiCall, this, &Steam::_leaderboard_entries_loaded);
+	delete[] users;
+}
+// Upload a leaderboard score for the user.
+void Steam::uploadLeaderboardScore(int score, bool keepBest, PoolIntArray details){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	ELeaderboardUploadScoreMethod method = keepBest ? k_ELeaderboardUploadScoreMethodKeepBest : k_ELeaderboardUploadScoreMethodForceUpdate;
+	int detailsSize = details.size();
+	const int32 *detailsPointer = NULL;
+	if(detailsSize > 0){
+		PoolIntArray::Read r = details.read();
+		detailsPointer = r.ptr();
+	}
+	SteamAPICall_t apiCall = SteamUserStats()->UploadLeaderboardScore(leaderboardHandle, method, (int32)score, detailsPointer, detailsSize);
+	callResultUploadScore.Set(apiCall, this, &Steam::_leaderboard_uploaded);
+}
+// Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.
+void Steam::getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount){
+	if(SteamUserStats() == NULL){
+		return;
+	}
+	leaderboardEntries.clear();
+	LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
+	PoolIntArray details;
+	int32 *detailsPointer = NULL;
+	if(leaderboardDetailsMax > 0) {
+		details.resize(leaderboardDetailsMax);
+		PoolIntArray::Write w = details.write();
+		detailsPointer = w.ptr();
+		for(int i = 0; i < leaderboardDetailsMax; i++){
+			detailsPointer[i] = 0;
+		}
+	}
+	for(int i = 0; i < entryCount; i++){
+		SteamUserStats()->GetDownloadedLeaderboardEntry(handle, i, entry, detailsPointer, leaderboardDetailsMax);
+		Dictionary entryDict;
+		entryDict["score"] = entry->m_nScore;
+		entryDict["steamID"] = uint64_t(entry->m_steamIDUser.ConvertToUint64());
+		entryDict["global_rank"] = entry->m_nGlobalRank;
+		if(leaderboardDetailsMax > 0) {
+			PoolIntArray array;
+			array.resize(leaderboardDetailsMax);
+			PoolIntArray::Write w = array.write();
+			int32_t *ptr = w.ptr();
+			for(int j=0; j<leaderboardDetailsMax; j++){
+				ptr[j] = detailsPointer[j];
+			}
+			entryDict["details"] = array;
+		}
+		leaderboardEntries.append(entryDict);
+	}
+	memdelete(entry);
+}
+void Steam::setLeaderboardDetailsMax(int detailsMax) {
+	leaderboardDetailsMax = detailsMax;
+}
+// Get the currently used leaderboard handle.
+uint64_t Steam::getLeaderboardHandle(){
+	return leaderboardHandle;
+}
+// Get the currently used leaderboard entries.
+Array Steam::getLeaderboardEntries(){
+	return leaderboardEntries;
+}
 /////////////////////////////////////////////////
 ///// UTILS /////////////////////////////////////
 //
@@ -425,6 +560,14 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("storeStats", &Steam::storeStats);
 	ClassDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
 	ClassDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
+	ClassDB::bind_method(D_METHOD("findLeaderboard", "name"), &Steam::findLeaderboard);
+	ClassDB::bind_method("getLeaderboardName", &Steam::getLeaderboardName);
+	ClassDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
+	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(int(GLOBAL)));
+	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntriesForUsers", "usersID"), &Steam::downloadLeaderboardEntriesForUsers);
+	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best", "details"), &Steam::uploadLeaderboardScore, DEFVAL(true), DEFVAL(PoolIntArray()));
+	ClassDB::bind_method(D_METHOD("setLeaderboardDetailsMax", "details_max"), &Steam::setLeaderboardDetailsMax);
+	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
 	// Utils Bind Methods ///////////////////////
 	ClassDB::bind_method("getIPCountry", &Steam::getIPCountry);
 	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
@@ -439,6 +582,9 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("user_stats_stored"));
 	ADD_SIGNAL(MethodInfo("user_achievement_stored"));
 	ADD_SIGNAL(MethodInfo("global_achievement_percentages_ready", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::INT, "leaderboard"), PropertyInfo(Variant::INT, "found")));
+	ADD_SIGNAL(MethodInfo("leaderboard_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
+	ADD_SIGNAL(MethodInfo("leaderboard_entries_loaded"));
 	// Status constants /////////////////////////
 	BIND_CONSTANT(OFFLINE);						// 0
 	BIND_CONSTANT(ONLINE);						// 1
