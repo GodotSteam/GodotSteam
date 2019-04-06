@@ -32,6 +32,7 @@ class Steam: public Object {
 			OVERLAY_TO_STORE_FLAG_NONE=0, OVERLAY_TO_STORE_FLAG_ADD_TO_CART=1, OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW=2,
 			LOBBY_OK=0, LOBBY_NO_CONNECTION=1, LOBBY_TIMEOUT=2, LOBBY_FAIL=3, LOBBY_ACCESS_DENIED=4, LOBBY_LIMIT_EXCEEDED=5,
 			PRIVATE=0, FRIENDS_ONLY=1, PUBLIC=2, INVISIBLE=3, LOBBY_KEY_LENGTH=255,
+			EP2P_SEND_UNRELIABLE = 0, EP2P_SEND_UNRELIABLE_NO_DELAY = 1, EP2P_SEND_RELIABLE = 2, EP2P_SEND_RELIABLE_WITH_BUFFERING = 3,
 			LOBBY_EQUAL_LESS_THAN=-2, LOBBY_LESS_THAN=-1, LOBBY_EQUAL=0, LOBBY_GREATER_THAN=1, LOBBY_EQUAL_GREATER_THAN=2, LOBBY_NOT_EQUAL=3,
 			LOBBY_DISTANCE_CLOSE=0, LOBBY_DISTANCE_DEFAULT=1, LOBBY_DISTANCE_FAR=2, LOBBY_DISTANCE_WORLDWIDE=3,
 			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
@@ -62,11 +63,11 @@ class Steam: public Object {
 		~Steam();
 
 		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
-		// Steamworks ///////////////////////////////
+		// Steamworks ///////////////////////////
 		bool restartAppIfNecessary(int value);
 		bool steamInit();
 		bool isSteamRunning();
-		// Apps /////////////////////////////////////
+		// Apps /////////////////////////////////
 		bool isSubscribed();
 		bool isLowViolence();
 		bool isCybercafe();
@@ -91,7 +92,7 @@ class Steam: public Object {
 		Dictionary getDLCDownloadProgress(int appID);
 		int getAppBuildId();
 		void getFileDetails(const String& filename);
-		// Controller ///////////////////////////////
+		// Controller ///////////////////////////
 		void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
 		uint64_t getActionSetHandle(const String& actionSetName);
 		Dictionary getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle);
@@ -110,7 +111,7 @@ class Steam: public Object {
 		bool showBindingPanel(uint64_t controllerHandle);
 		bool shutdown();
 		void triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed);
-		// Friends //////////////////////////////////
+		// Friends //////////////////////////////
 		String getPersonaName();
 		void setPersonaName(const String& name);
 		int getPersonaState();
@@ -172,7 +173,7 @@ class Steam: public Object {
 		Array getUserFriendsGroups();
 		Array getUserSteamGroups();
 		Array getUserSteamFriends();
-		// Matchmaking //////////////////////////////
+		// Matchmaking //////////////////////////
 		Array getFavoriteGames();
 //		int addFavoriteGame(int appID, uint32 ip, uint16 port, uint16 queryPort, uint32 flags, uint32 lastPlayed);
 		bool removeFavoriteGame(AppId_t appID, uint32 ip, uint16 port, uint16 queryPort, uint32 flags);
@@ -206,7 +207,7 @@ class Steam: public Object {
 		uint64_t getLobbyOwner(uint64_t steamIDLobby);
 		bool setLobbyOwner(uint64_t steamIDLobby, uint64_t steamIDNewOwner);
 		bool setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent);
-		// Music ////////////////////////////////////
+		// Music ////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
 		float musicGetVolume();
@@ -215,7 +216,16 @@ class Steam: public Object {
 		void musicPlayNext();
 		void musicPlayPrev();
 		void musicSetVolume(float value);
-		// Remote Storage ///////////////////////////
+		// Networking ///////////////////////////
+		bool acceptP2PSessionWithUser(uint64_t steamIDRemote);
+		bool allowP2PPacketRelay(bool allow);
+		bool closeP2PChannelWithUser(uint64_t steamIDRemote, int channel);
+		bool closeP2PSessionWithUser(uint64_t steamIDRemote);
+		Dictionary getP2PSessionState(uint64_t steamIDRemote);
+		uint32_t getAvailableP2PPacketSize(int channel = 0);
+		Dictionary readP2PPacket(uint32_t packet, int channel = 0);
+		bool sendP2PPacket(uint64_t steamIDRemote, const PoolByteArray data, int eP2PSendType, int channel = 0);
+		// Remote Storage ///////////////////////
 		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
 		Dictionary fileRead(const String& file, int32_t dataToRead);
 		bool fileForget(const String& file);
@@ -231,14 +241,14 @@ class Steam: public Object {
 		bool isCloudEnabledForAccount();
 		bool isCloudEnabledForApp();
 		void setCloudEnabledForApp(bool enabled);
-		// Screenshots //////////////////////////////
+		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height);
 		void hookScreenshots(bool hook);
 		bool isScreenshotsHooked();
 		bool setLocation(uint32_t screenshot, const String& location);
 		void triggerScreenshot();
 		uint32_t writeScreenshot(const PoolByteArray& RGB, int width, int height);
-		// Users ////////////////////////////////////
+		// Users ////////////////////////////////
 		uint32_t getAuthSessionTicket();
 		void cancelAuthTicket(uint32_t authTicket);
 		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
@@ -249,7 +259,7 @@ class Steam: public Object {
 		String getUserDataFolder();
 		void advertiseGame(const String& serverIP, int port);
 		int getGameBadgeLevel(int series, bool foil);
-		// User Stats ///////////////////////////////
+		// User Stats ///////////////////////////
 		bool clearAchievement(const String& name);
 		uint32_t getNumAchievements();
 		void getNumberOfCurrentPlayers();
@@ -279,7 +289,7 @@ class Steam: public Object {
 		void setLeaderboardDetailsMax(int detailsMax);
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
-		// Utils ////////////////////////////////////
+		// Utils ////////////////////////////////
 		String getIPCountry();
 		bool isOverlayEnabled();
 		String getSteamUILanguage();
@@ -293,7 +303,7 @@ class Steam: public Object {
 		int getServerRealTime();
 		bool isSteamInBigPictureMode();
 		void startVRDashboard();
-		// Workshop /////////////////////////////////
+		// Workshop /////////////////////////////
 		bool downloadItem(int publishedFileID, bool highPriority);
 		void suspendDownloads(bool suspend);
 		uint64_t startItemUpdate(AppId_t appID, int fileId);
@@ -406,6 +416,10 @@ class Steam: public Object {
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
+		// Networking callbacks ////////////////////////
+		//
+		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t);
+		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t);
 		// Screenshot callbacks /////////////////
 		//
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
