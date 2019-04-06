@@ -1,13 +1,7 @@
 # GodotSteam for Godot 2
 Steam API for the Godot game engine (versions 2 to 2.1.5). For the Windows, Linux, and Mac platforms. 
 
-- View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
-- View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
-- View GodotSteam Minimal for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3-min
-- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
-- View GodotSteam Minimal for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/godot31-min
-- View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
-- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+Additional flavors include: [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3),[Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Godot 3.1](https://github.com/Gramps/GodotSteam/tree/master), [Godot 3.1 Minimal](https://github.com/Gramps/GodotSteam/tree/godot31-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
 Documentation
 ----------
@@ -19,14 +13,12 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.9.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.9.3)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.9.2 Changes**
-- Added: persona_state_change callback
-- Changed: getFriendAvatar to getPlayerAvatar
-- Changed: avatar_loaded now sends back Steam ID of avatar by avencherus
-- Fixed: issue with avatar and Steam ID on Linux compile
-- Fixed: join_requested signal by Fischer96 (requires further work)
+**Version 1.9.3 Changes**
+- Added: networking functions, _big thanks to Antokolos_
+- Changed: linked against Steamworks 1.44
+- Fixed: issue with leaderboard upload returning false no matter what
 
 Known Issues
 ----------

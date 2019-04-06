@@ -1531,6 +1531,99 @@ void Steam::musicSetVolume(float value){
 	return SteamMusic()->SetVolume(value);
 }
 /////////////////////////////////////////////////
+///// NETWORKING ////////////////////////////////
+//
+// This allows the game to specify accept an incoming packet.
+bool Steam::acceptP2PSessionWithUser(uint64_t steamIDRemote) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->AcceptP2PSessionWithUser(steamID);
+}
+// Allow or disallow P2P connections to fall back to being relayed through the Steam servers if a direct connection or NAT-traversal cannot be established.
+bool Steam::allowP2PPacketRelay(bool allow) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	return SteamNetworking()->AllowP2PPacketRelay(allow);
+}
+// Closes a P2P channel when you're done talking to a user on the specific channel.
+bool Steam::closeP2PChannelWithUser(uint64_t steamIDRemote, int channel) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->CloseP2PChannelWithUser(steamID, channel);
+}
+// This should be called when you're done communicating with a user, as this will free up all of the resources allocated for the connection under-the-hood.
+bool Steam::closeP2PSessionWithUser(uint64_t steamIDRemote) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->CloseP2PSessionWithUser(steamID);
+}
+// Fills out a P2PSessionState_t structure with details about the connection like whether or not there is an active connection.
+Dictionary Steam::getP2PSessionState(uint64_t steamIDRemote) {
+	Dictionary result;
+	if (SteamNetworking() == NULL) {
+		return result;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	P2PSessionState_t p2pSessionState;
+	bool success = SteamNetworking()->GetP2PSessionState(steamID, &p2pSessionState);
+	if (!success) {
+		return result;
+	}
+	result["connection_active"] = p2pSessionState.m_bConnectionActive; // true if we've got an active open connection
+	result["connecting"] = p2pSessionState.m_bConnecting; // true if we're currently trying to establish a connection
+	result["session_error"] = p2pSessionState.m_eP2PSessionError; // last error recorded (see enum in isteamnetworking.h)
+	result["using_relay"] = p2pSessionState.m_bUsingRelay; // true if it's going through a relay server (TURN)
+	result["bytes_queued_for_send"] = p2pSessionState.m_nBytesQueuedForSend;
+	result["packets_queued_for_send"] = p2pSessionState.m_nPacketsQueuedForSend;
+	result["remote_ip"] = p2pSessionState.m_nRemoteIP; // potential IP:Port of remote host. Could be TURN server.
+	result["remote_port"] = p2pSessionState.m_nRemotePort; // Only exists for compatibility with older authentication api's
+	return result;
+}
+// Calls IsP2PPacketAvailable() under the hood, returns the size of the available packet or zero if there is no such packet.
+uint32_t Steam::getAvailableP2PPacketSize(int channel) {
+	if (SteamNetworking() == NULL) {
+		return 0;
+	}
+	uint32_t messageSize = 0;
+	return (SteamNetworking()->IsP2PPacketAvailable(&messageSize, channel)) ? messageSize : 0;
+}
+// Reads in a packet that has been sent from another user via SendP2PPacket.
+Dictionary Steam::readP2PPacket(uint32_t packet, int channel) {
+	Dictionary result;
+	if (SteamNetworking() == NULL) {
+		return result;
+	}
+	DVector<uint8_t> data;
+	data.resize(packet);
+	CSteamID steamID;
+	uint32_t bytesRead = 0;
+	if (SteamNetworking()->ReadP2PPacket(data.write().ptr(), packet, &bytesRead, &steamID, channel)) {
+		data.resize(bytesRead);
+		uint64_t steamIDRemote = steamID.ConvertToUint64();
+		result["data"] = data;
+		result["steamIDRemote"] = steamIDRemote;
+	}
+	else {
+		data.resize(0);
+	}
+	return result;
+}
+// Sends a P2P packet to the specified user.
+bool Steam::sendP2PPacket(uint64_t steamIDRemote, DVector<uint8_t> data, int sendType, int channel) {
+	if (SteamNetworking() == NULL) {
+		return false;
+	}
+	CSteamID steamID = createSteamID(steamIDRemote);
+	return SteamNetworking()->SendP2PPacket(steamID, data.read().ptr(), data.size(), EP2PSend(sendType), channel);
+}
+/////////////////////////////////////////////////
 ///// REMOTE STORAGE ////////////////////////////
 //
 // Write to given file from Steam Cloud.
@@ -2034,7 +2127,7 @@ void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIO
 	if(callData->m_hSteamLeaderboard != leaderboardHandle){
 		return;
 	}
-	emit_signal("leaderboard_uploaded", callData->m_bSuccess && bIOFailure, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
+	emit_signal("leaderboard_uploaded", callData->m_bSuccess, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
 }
 // Signal leaderboard entries are downloaded.
 void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure){
@@ -2147,6 +2240,17 @@ void Steam::_workshop_item_installed(ItemInstalled_t* callData){
 	AppId_t appID = callData->m_unAppID;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	emit_signal("workshop_item_installed", appID, (uint64_t)fileID);
+}
+// User has sent another packet
+void Steam::_p2p_session_request(P2PSessionRequest_t *callData) {
+	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
+	emit_signal("p2p_session_request", steamIDRemote);
+}
+// User has sent another packet but it failed
+void Steam::_p2p_session_connect_fail(P2PSessionConnectFail_t *callData) {
+	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
+	uint8_t p2pSessionError = callData->m_eP2PSessionError;
+	emit_signal("p2p_session_connect_fail", steamIDRemote, p2pSessionError);
 }
 /////////////////////////////////////////////////
 ///// USERS /////////////////////////////////////
@@ -3004,6 +3108,15 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
 	ObjectTypeDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ObjectTypeDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
+	// Networking Bind Methods //////////////////
+	ObjectTypeDB::bind_method("acceptP2PSessionWithUser", &Steam::acceptP2PSessionWithUser);
+	ObjectTypeDB::bind_method("allowP2PPacketRelay", &Steam::allowP2PPacketRelay);
+	ObjectTypeDB::bind_method("closeP2PChannelWithUser", &Steam::closeP2PChannelWithUser);
+	ObjectTypeDB::bind_method("closeP2PSessionWithUser", &Steam::closeP2PSessionWithUser);
+	ObjectTypeDB::bind_method("getP2PSessionState", &Steam::getP2PSessionState);
+	ObjectTypeDB::bind_method("getAvailableP2PPacketSize", &Steam::getAvailableP2PPacketSize);
+	ObjectTypeDB::bind_method("readP2PPacket", &Steam::readP2PPacket);
+	ObjectTypeDB::bind_method("sendP2PPacket", &Steam::sendP2PPacket);
 	// Remote Storage Bind Methods //////////////
 	ObjectTypeDB::bind_method("fileWrite", &Steam::fileWrite);
 	ObjectTypeDB::bind_method("fileRead", &Steam::fileRead);
@@ -3139,6 +3252,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("workshop_item_created"));
 	ADD_SIGNAL(MethodInfo("workshop_item_updated"));
 	ADD_SIGNAL(MethodInfo("workshop_item_installed"));
+	ADD_SIGNAL(MethodInfo("p2p_session_request"));
+	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail"));
 	// Status constants /////////////////////////
 	BIND_CONSTANT(OFFLINE);						// 0
 	BIND_CONSTANT(ONLINE);						// 1
@@ -3442,6 +3557,11 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_ROOM_COMMUNITY_BAN);			// 9
 	BIND_CONSTANT(CHAT_ROOM_MEMBER_BLOCKED_YOU);	// 10
 	BIND_CONSTANT(CHAT_ROOM_YOU_BLOCKED_MEMBER);	// 11
+	// Networking constants /////////////////////
+	BIND_CONSTANT(EP2P_SEND_UNRELIABLE);			// 0
+	BIND_CONSTANT(EP2P_SEND_UNRELIABLE_NO_DELAY);	// 1
+	BIND_CONSTANT(EP2P_SEND_RELIABLE);				// 2
+	BIND_CONSTANT(EP2P_SEND_RELIABLE_WITH_BUFFERING);	//3
 }
 
 Steam::~Steam(){
