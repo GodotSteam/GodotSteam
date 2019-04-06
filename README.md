@@ -1,12 +1,11 @@
 # GodotSteam Minimal for Godot 3
 Steam API for the Godot game engine (version 3 to 3.0.6). For the Windows, Linux, and Mac platforms.  This minimal build contains all the basic stuff that the majority of games use; cutting out the more advanced and less common functions.
 
-- View GodotSteam for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2
-- View GodotSteam Minimal for Godot 2 here: https://github.com/Gramps/GodotSteam/tree/godot2-min
-- View GodotSteam for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/godot3
-- View GodotSteam for Godot 3.1 here: https://github.com/Gramps/GodotSteam/tree/master
-- View GodotSteam Server for Godot 3 here: https://github.com/Gramps/GodotSteam/tree/server
-- View GodotSteam for GDNative here: https://github.com/Gramps/GodotSteam/tree/gdnative
+Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3), [Godot 3.1](https://github.com/Gramps/GodotSteam/tree/master), [Godot 3.1 Minimal](https://github.com/Gramps/GodotSteam/tree/godot31-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
+
+Notice
+----------
+Upon the release of Godot 3.2, the Godot3 and Master branch will merge as there is no difference between the two.  The **godot3 branch** will be deleted and all Godot 3.x version will run off the **master branch**.  The **godot3-min** and **godot31-min** will also be merged into the same **godot3-min** branch.
 
 Documentation
 ----------
@@ -18,10 +17,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.0.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.0.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.0.1 Changes**
-- Fixed: Linux version now looks for libsteam_api.so in local directory
+**Version 1.0.2 Changes**
+- Added: leaderboard functionality
+- Changed: linked against Steamworks 1.44
 
 Known Issues
 ----------
