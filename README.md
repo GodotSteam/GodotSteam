@@ -1,7 +1,7 @@
 # GodotSteam for Godot 3
 Steam API for the Godot game engine (version 3 to 3.0.6). For the Windows, Linux, and Mac platforms. 
 
-Available flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Godot 3.1](https://github.com/Gramps/GodotSteam/tree/master), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
+Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Godot 3.1](https://github.com/Gramps/GodotSteam/tree/master), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
 Documentation
 ----------
@@ -13,10 +13,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v2.8.4)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v2.8.5)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 2.8.5 Changes**
 - Added: Networking functions; _courtesy of Antokolos_
+- Changed: linked against Steamworks 1.44
 - Fixed: leaderboard_uploaded always returning false even when successful
 
 Known Issues
