@@ -45,7 +45,7 @@ if target_platform == 'linux' or target_platform == 'x11':
 	if ARGUMENTS.get('use_llvm', 'no') == 'yes':
 		env['CXX'] = 'clang++'
 	env.Append(CCFLAGS = [ '-fPIC', '-g', '-O3', '-std=c++14' ])
-	env.Append(LINKFLAGS = [ '-Wl,-R,\'$$ORIGIN\'' ])
+	env.Append(LINKFLAGS = [ '-Wl,-R,\'$$ORIGIN\'', '-static-libgcc', '-static-libstdc++' ])
 	# If 32-bit
 	if target_arch == '32':
 		env.Append(CCFLAGS = [ '-m32' ])
@@ -69,9 +69,9 @@ if target_platform == 'windows':
 		# Set compiler variables
 		env.Append(LINKFLAGS = [ '/WX' ])
 		if target == 'debug':
-			env.Append(CCFLAGS = ['-EHsc', '-D_DEBUG', '/MDd' ])
+			env.Append(CCFLAGS = ['-EHsc', '-D_DEBUG', '/MTd' ])
 		else:
-			env.Append(CCFLAGS = ['-O2', '-EHsc', '-DNDEBUG', '/MD' ])
+			env.Append(CCFLAGS = ['-O2', '-EHsc', '-DNDEBUG', '/MT' ])
 	# If the host is not actually Windows
 	else:
 		# Set compiler variables
