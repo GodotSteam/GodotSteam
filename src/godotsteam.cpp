@@ -785,14 +785,11 @@ Array Steam::getLobbyMembersData(uint64_t steamIDLobby) {
 	for (int i = 0; i < cLobbyMembers; i++) {
 		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(lobbyID, i);
 
-		const char *pchReady = SteamMatchmaking()->GetLobbyMemberData(lobbyID, steamIDLobbyMember, "ready");
-		bool bReady = (pchReady && atoi(pchReady) == 1);
 		bool bLobbyOwner = steamIDLobbyMember == steamIDLobbyOwner;
 		Dictionary entryDict;
 		uint64_t lobbyMemberID = (uint64_t)steamIDLobbyMember.ConvertToUint64();
 		entryDict["steamIDLobbyMember"] = lobbyMemberID;
 		entryDict["steamAccountIDLobbyMember"] = steamIDLobbyMember.GetAccountID();
-		entryDict["ready"] = bReady;
 		entryDict["owner"] = bLobbyOwner;
 		lobbyMembersData.append(entryDict);
 	}
