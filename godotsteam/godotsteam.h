@@ -9,6 +9,21 @@
 #include "core/reference.h"
 #include "core/dictionary.h"					// Contains array.h as well
 
+// Friend info //////////////////////////
+struct FriendGameInfo {
+	uint64_t gameID;
+	uint32 gameIP;
+	uint16 gamePort;
+	uint16 queryPort;
+	uint64_t steamIDLobby;
+};
+
+class FriendGameInfoRef: public Reference {
+	GDCLASS(FriendGameInfoRef, Reference);
+	public:
+		FriendGameInfo_t gameInfo;
+};
+
 class Steam: public Object {
 	GDCLASS(Steam, Object);
 	public:
@@ -120,7 +135,7 @@ class Steam: public Object {
 		int getFriendRelationship(uint64_t steamID);
 		int getFriendPersonaState(uint64_t steamID);
 		String getFriendPersonaName(uint64_t steamID);
-		bool getFriendGamePlayed(uint64_t steamID);
+		bool getFriendGamePlayed(uint64_t steamID, RefPtr gameInfo);
 		String getFriendPersonaNameHistory(uint64_t steamID, int nameHistory);
 		int getFriendSteamLevel(uint64_t steamID);
 		String getPlayerNickname(uint64_t steamID);
@@ -351,13 +366,6 @@ class Steam: public Object {
 		};
 		Vector<TicketData> tickets;
 		// Friend info //////////////////////////
-		struct FriendGameInfo {
-			uint64_t gameID;
-			uint32 gameIP;
-			uint16 gamePort;
-			uint16 queryPort;
-			uint64_t steamIDLobby;
-		};
 		Vector<FriendGameInfo> gameInfo;
 		// Friend session state info ////////////
 		struct FriendSessionStateInfo {

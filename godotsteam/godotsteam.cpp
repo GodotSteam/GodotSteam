@@ -509,13 +509,25 @@ String Steam::getFriendPersonaName(uint64_t steamID){
 	return "";
 }
 // Returns true if the friend is actually in game and fills in pFriendGameInfo with an extra details. 
-bool Steam::getFriendGamePlayed(uint64_t steamID){
+bool Steam::getFriendGamePlayed(uint64_t steamID, RefPtr gameInfo){
 	if(SteamFriends() == NULL){
+		//you have no friends :'c
 		return false;
 	}
-	FriendGameInfo_t gameInfo;
+	//parameters to pass into the steam api
 	CSteamID userID = (uint64)steamID;
-	bool isFriend = SteamFriends()->GetFriendGamePlayed(userID, &gameInfo);
+	FriendGameInfo_t gameInfoT;
+	//call the steamworks api function
+	bool isFriend = SteamFriends()->GetFriendGamePlayed(userID, &gameInfoT);
+	//make a nice little pocket of memory for the game info to sit in
+	Ref<FriendGameInfoRef> infoRefLocation(memnew(FriendGameInfoRef));
+	//copy data from our struct into our cozy little pocket of memory
+	infoRefLocation->gameInfo = gameInfoT;
+	//return pointer of new memory address to our gameInfo parameter
+	gameInfo = infoRefLocation.get_ref_ptr();
+
+	if(!gameInfoT.m_steamIDLobby.IsValid()) {return false;}//return false if lobby is not valid
+	
 	return isFriend;
 }
 // Accesses old friends names; returns an empty string when there are no more items in the history.
@@ -3016,7 +3028,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getFriendRelationship", &Steam::getFriendRelationship);
 	ClassDB::bind_method("getFriendPersonaState", &Steam::getFriendPersonaState);
 	ClassDB::bind_method("getFriendPersonaName", &Steam::getFriendPersonaName);
-	ClassDB::bind_method("getFriendGamePlayed", &Steam::getFriendGamePlayed);
+	ClassDB::bind_method(D_METHOD("getFriendGamePlayed", "steamid", "gameinfo"), &Steam::getFriendGamePlayed);
 	ClassDB::bind_method("getFriendPersonaNameHistory", &Steam::getFriendPersonaNameHistory);
 	ClassDB::bind_method("getFriendSteamLevel", &Steam::getFriendSteamLevel);
 	ClassDB::bind_method("getPlayerNickname", &Steam::getPlayerNickname);
