@@ -20,8 +20,16 @@ struct FriendGameInfo {
 
 class FriendGameInfoRef: public Reference {
 	GDCLASS(FriendGameInfoRef, Reference);
+	private:
+		FriendGameInfo_t game_info;
 	public:
-		FriendGameInfo_t gameInfo;
+		//setter and getter methods (overloaded)
+		//pointer versions of these could be added as well.
+		_FORCE_INLINE_ void set_game_info(const Ref<FriendGameInfoRef> &p_game_info) {game_info = p_game_info->game_info;}
+		_FORCE_INLINE_ void set_game_info(const FriendGameInfo_t p_game_info) {game_info = p_game_info;}
+		_FORCE_INLINE_ FriendGameInfo_t get_game_info() {return game_info;}
+	protected:
+		static void _bind_methods();
 };
 
 class Steam: public Object {

@@ -522,7 +522,7 @@ bool Steam::getFriendGamePlayed(uint64_t steamID, RefPtr gameInfo){
 	//make a nice little pocket of memory for the game info to sit in
 	Ref<FriendGameInfoRef> infoRefLocation(memnew(FriendGameInfoRef));
 	//copy data from our struct into our cozy little pocket of memory
-	infoRefLocation->gameInfo = gameInfoT;
+	infoRefLocation->set_game_info(gameInfoT);
 	//return pointer of new memory address to our gameInfo parameter
 	gameInfo = infoRefLocation.get_ref_ptr();
 
@@ -2971,6 +2971,11 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 /////////////////////////////////////////////////
 ///// BIND METHODS //////////////////////////////
 //
+
+void FriendGameInfoRef::_bind_methods(){
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "game_info"), "set_game_info", "get_game_info");
+}
+
 void Steam::_bind_methods(){
 	ClassDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
 	ClassDB::bind_method("steamInit", &Steam::steamInit);
