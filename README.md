@@ -25,6 +25,7 @@ You can download pre-compiled versions _(currently v1.0.1)_ of this repo here: h
 - Added: Networking functionality, _thanks to Antokolos_
 - Changed: linked against Steamworks 1.44
 - Fixed: leaderboard_uploaded returning false no matter what
+- Fixed: getFriendGamePlayed now responds with correct dictionary of data
 
 Known Issues
 ----------

@@ -508,15 +508,38 @@ String Steam::getFriendPersonaName(uint64_t steamID){
 	}
 	return "";
 }
-// Returns true if the friend is actually in game and fills in pFriendGameInfo with an extra details. 
-bool Steam::getFriendGamePlayed(uint64_t steamID){
+// Returns dictionary of friend game played if valid
+Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
+	Dictionary friendGame;
 	if(SteamFriends() == NULL){
-		return false;
+		return friendGame;
 	}
 	FriendGameInfo_t gameInfo;
 	CSteamID userID = (uint64)steamID;
-	bool isFriend = SteamFriends()->GetFriendGamePlayed(userID, &gameInfo);
-	return isFriend;
+	bool success = SteamFriends()->GetFriendGamePlayed(userID, &gameInfo);
+	// If successful
+	if(success){
+		// Is there a valid lobby?
+		if(gameInfo.m_steamIDLobby.IsValid()){
+			friendGame["id"] = gameInfo.m_gameID.AppID();
+			// Convert the IP address back to a string
+			const int NBYTES = 4;
+			uint8 octet[NBYTES];
+			char gameIP[16];
+			for(int j = 0; j < NBYTES; j++){
+				octet[j] = gameInfo.m_unGameIP >> (j * 8);
+			}
+			sprintf_s(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			friendGame["ip"] = gameIP;
+			friendGame["gamePort"] = gameInfo.m_usGamePort;
+			friendGame["queryPort"] = (char)gameInfo.m_usQueryPort;
+			friendGame["lobby"] = uint64_t(gameInfo.m_steamIDLobby.ConvertToUint64());
+		}
+		else{
+			friendGame["error"] = "No valid lobby";
+		}
+	}
+	return friendGame;
 }
 // Accesses old friends names; returns an empty string when there are no more items in the history.
 String Steam::getFriendPersonaNameHistory(uint64_t steamID, int nameHistory){
@@ -1049,7 +1072,7 @@ Array Steam::getFavoriteGames(){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = ip >> (j * 8);
 			}
-			sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf_s(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			favorite["ip"] = favoriteIP;
 			favorite["port"] = port;
 			favorite["query"] = queryPort;
@@ -1368,7 +1391,7 @@ Dictionary Steam::getLobbyGameServer(uint64_t steamIDLobby){
 		for(int i = 0; i < NBYTES; i++){
 			octet[i] = serverIP >> (i * 8);
 		}
-		sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+		sprintf_s(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 		gameServer["ip"] = ip;
 		gameServer["port"] = serverPort;
 		// Convert the server ID
@@ -2030,7 +2053,7 @@ void Steam::_lobby_game_created(LobbyGameCreated_t *callData){
 	for(int i = 0; i < NBYTES; i++){
 		octet[i] = ip >> (i * 8);
 	}
-	sprintf(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf_s(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	emit_signal("lobby_game_created", lobbyID, serverID, serverIP, port);
 }
 // Signal when a lobby chat message is received
@@ -3567,6 +3590,11 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(EP2P_SEND_UNRELIABLE_NO_DELAY);	// 1 
 	BIND_CONSTANT(EP2P_SEND_RELIABLE);				// 2
 	BIND_CONSTANT(EP2P_SEND_RELIABLE_WITH_BUFFERING);	//3
+	// Game ID types ////////////////////////////
+	BIND_CONSTANT(GAMEID_TYPE_APP);					// 0
+	BIND_CONSTANT(GAMEID_TYPE_MOD);					// 1
+	BIND_CONSTANT(GAMEID_TYPE_SHORTCUT);			// 2
+	BIND_CONSTANT(GAMEID_TYPE_P2P);					// 3
 }
 
 Steam::~Steam(){
