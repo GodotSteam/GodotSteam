@@ -348,9 +348,8 @@
 						</ul>
 						<h4>getFriendGamePlayed( <sup>int</sup> steamID )</h4>
 						<ul>
-							<li>If the friend is actually in game and, if so, fills in FriendGameInfo with an extra details.</li>
-							<li>BOOL; though it should also return the friend's game info.</li>
-							<li>Currently incomplete.</li>
+							<li>Gets the details of a friend playing a joinable game.</li>
+							<li>DICTIONARY; if friend is in a valid lobby, it returns a dictionary containing the game ID, IP address, game port, query port, and lobby ID.</li>
 						</ul>
 						<h4>getFriendPersonaNameHistory( <sup>int</sup> steamID, <sup>int</sup> nameHistory )</h4>
 						<ul>
