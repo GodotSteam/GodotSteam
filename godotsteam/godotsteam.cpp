@@ -3062,7 +3062,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isClanPublic", &Steam::isClanPublic);
 	ObjectTypeDB::bind_method("isClanOfficialGameGroup", &Steam::isClanOfficialGameGroup);
 	ObjectTypeDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
-	ObjectTypeDB::bind_method(_MD("getPlayerAvatar", "size", "steamID"), &Steam::getPlayerAvatar, DEFVAL(AVATAR_MEDIUM), DEFVAL(0));
+	ObjectTypeDB::bind_method(_MD("getPlayerAvatar", "size", "steamID"), &Steam::getPlayerAvatar, DEFVAL(int(AVATAR_MEDIUM)), DEFVAL(0));
 	ObjectTypeDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
 	ObjectTypeDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ObjectTypeDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
@@ -3172,7 +3172,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method(_MD("findLeaderboard", "name"), &Steam::findLeaderboard);
 	ObjectTypeDB::bind_method("getLeaderboardName", &Steam::getLeaderboardName);
 	ObjectTypeDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
-	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(GLOBAL));
+	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(int(GLOBAL)));
 	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntriesForUsers", "usersID"), &Steam::downloadLeaderboardEntriesForUsers);
 	ObjectTypeDB::bind_method(_MD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
 	ObjectTypeDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
