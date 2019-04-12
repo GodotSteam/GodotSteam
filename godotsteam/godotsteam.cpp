@@ -3021,15 +3021,44 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 //
 
 void FriendGameInfo::_bind_methods(){
+	
+	//
+	//define properties so that godot likes us :)
+	//
+
+	//set and gets
+
+	ClassDB::bind_method(D_METHOD("set_gameID", "_gameID"), &FriendGameInfo::set_gameID);
+	ClassDB::bind_method(D_METHOD("get_gameID"), &FriendGameInfo::get_gameID);
+
+	ClassDB::bind_method(D_METHOD("set_appID", "_appID"), &FriendGameInfo::set_appID);
+	ClassDB::bind_method(D_METHOD("get_appID"), &FriendGameInfo::get_appID);
+
+	ClassDB::bind_method(D_METHOD("set_gameIP", "_gameIP"), &FriendGameInfo::set_gameIP);
+	ClassDB::bind_method(D_METHOD("get_gameIP"), &FriendGameInfo::get_gameIP);
+	ClassDB::bind_method(D_METHOD("get_gameIP_str"), &FriendGameInfo::get_gameIP_str);
+
+	ClassDB::bind_method(D_METHOD("set_gamePort", "_gamePort"), &FriendGameInfo::set_gamePort);
+	ClassDB::bind_method(D_METHOD("get_gamePort"), &FriendGameInfo::get_gamePort);
+
+	ClassDB::bind_method(D_METHOD("set_queryPort", "_queryPort"), &FriendGameInfo::set_queryPort);
+	ClassDB::bind_method(D_METHOD("get_queryPort"), &FriendGameInfo::get_queryPort);
+
+	ClassDB::bind_method(D_METHOD("set_steamIDLobby", "_steamIDLobby"), &FriendGameInfo::set_steamIDLobby);
+	ClassDB::bind_method(D_METHOD("get_steamIDLobby"), &FriendGameInfo::get_steamIDLobby);
+
+
+	//extra helper functions
+	ClassDB::bind_method(D_METHOD("get_dictionary"), &FriendGameInfo::get_dictionary);
+	ClassDB::bind_method(D_METHOD("m_steamIDLobbyIsValid"), &FriendGameInfo::m_steamIDLobbyIsValid);
+
+	//properties need the set and get methods registered so they get defined after the methods
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "gameID"), "set_gameID", "get_gameID");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "gameIP"), "set_gameIP", "get_gameIP");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "gamePort"), "set_gamePort", "get_gamePort");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "queryPort"), "set_queryPort", "get_queryPort");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "steamIDLobby"), "set_steamIDLobby", "get_steamIDLobby");
 
-	ClassDB::bind_method(D_METHOD("get_dictionary"), &FriendGameInfo::get_dictionary);
-	ClassDB::bind_method(D_METHOD("get_gameIP_str"), &FriendGameInfo::get_gameIP_str);
-	ClassDB::bind_method(D_METHOD("m_steamIDLobbyIsValid"), &FriendGameInfo::m_steamIDLobbyIsValid);
 
 	//ClassDB::bind_method(D_METHOD("new_from_struct", "gameInfoStruct"), &FriendGameInfo::get_dictionary);//probably shouldn't be bound
 }
