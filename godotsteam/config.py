@@ -32,3 +32,12 @@ def configure(env):
   elif env["platform"] == "osx":
     env.Append(LIBS=["steam_api"])
     env.Append(LIBPATH=['#modules/godotsteam/sdk/redistributable_bin/osx32'])
+
+def get_doc_classes():
+    return [
+        "Steam",
+        "FriendGameInfo",
+    ]
+
+def get_doc_path():
+    return "doc_classes"

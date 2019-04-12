@@ -1,0 +1,2868 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Steam" inherits="Object" category="Core" version="3.1.1">
+	<brief_description>
+		SteamWorks API bindings for the Godot game engine.
+	</brief_description>
+	<description>
+		There are a few things you'll need to start working with the module:
+
+			- GodotSteam Module For Godot 2 / 3
+			- The Steamworks SDK (https://partner.steamgames.com/).
+			- A Steamworks account.
+			- The Godot Engine source code; preferably 2.0.3 or higher (https://github.com/godotengine/godot). Make sure this source matches the GodotSteam branch you are using or vice-versa.
+		
+		Those are the basics to working with the wrapper. How, to get the most out of it, you'll need these too:
+			- Logged into your Steam client if testing your game or any scenes.
+
+		From here either navigate to the Module How-To or Tutorials.
+	</description>
+	<tutorials>
+		https://gramps.github.io/GodotSteam/tutorials.html
+		https://gramps.github.io/GodotSteam/functions-module.html
+		https://gramps.github.io/GodotSteam/signals-modules.html
+	</tutorials>
+	<demos>
+	</demos>
+	<methods>
+		<method name="acceptP2PSessionWithUser">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="activateActionSet">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="activateGameOverlay">
+			<return type="void">
+			</return>
+			<argument index="0" name="type" type="String" default="&quot;&quot;">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="activateGameOverlayInviteDialog">
+			<return type="void">
+			</return>
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="activateGameOverlayToStore">
+			<return type="void">
+			</return>
+			<argument index="0" name="appID" type="int" default="0">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="activateGameOverlayToUser">
+			<return type="void">
+			</return>
+			<argument index="0" name="type" type="String" default="&quot;&quot;">
+			</argument>
+			<argument index="1" name="steamID" type="int" default="0">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="activateGameOverlayToWebPage">
+			<return type="void">
+			</return>
+			<argument index="0" name="url" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addRequestLobbyListDistanceFilter">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addRequestLobbyListFilterSlotsAvailable">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addRequestLobbyListNearValueFilter">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addRequestLobbyListNumericalFilter">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addRequestLobbyListResultCountFilter">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addRequestLobbyListStringFilter">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="addScreenshotToLibrary">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<argument index="3" name="arg3" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="advertiseGame">
+			<return type="void">
+			</return>
+			<argument index="0" name="serverIP" type="String">
+			</argument>
+			<argument index="1" name="port" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="allowP2PPacketRelay">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="beginAuthSession">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="cancelAuthTicket">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="clearAchievement">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="clearRichPresence">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="closeClanChatWindowInSteam">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="closeP2PChannelWithUser">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="closeP2PSessionWithUser">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="createItem">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="createLobby">
+			<return type="void">
+			</return>
+			<argument index="0" name="type" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int" default="2">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="deleteLobbyData">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="downloadClanActivityCounts">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="downloadItem">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="downloadLeaderboardEntries">
+			<return type="void">
+			</return>
+			<argument index="0" name="range_start" type="int">
+			</argument>
+			<argument index="1" name="range_end" type="int">
+			</argument>
+			<argument index="2" name="type" type="int" default="0">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="downloadLeaderboardEntriesForUsers">
+			<return type="void">
+			</return>
+			<argument index="0" name="usersID" type="Array">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="endAuthSession">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="enumerateFollowingList">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="fileDelete">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="fileExists">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="fileForget">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="filePersisted">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="fileRead">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="fileWrite">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="PoolByteArray">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="findLeaderboard">
+			<return type="void">
+			</return>
+			<argument index="0" name="name" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAchievement">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAchievementAchievedPercent">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAchievementAndUnlockTime">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAchievementDisplayAttribute">
+			<return type="String">
+			</return>
+			<argument index="0" name="name" type="String">
+			</argument>
+			<argument index="1" name="key" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAchievementIcon">
+			<return type="int">
+			</return>
+			<argument index="0" name="name" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAchievementName">
+			<return type="String">
+			</return>
+			<argument index="0" name="iAchievement" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getActionSetHandle">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAnalogActionData">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAnalogActionHandle">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAnalogActionOrigins">
+			<return type="Array">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAppBuildId">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getAppID">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getAppInstallDir">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getAppOwner">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getAuthSessionTicket">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getAvailableGameLanguages">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getAvailableP2PPacketSize">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getChatMemberByIndex">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getClanChatMemberCount">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getClanOfficerByIndex">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getClanOfficerCount">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getClanOwner">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getConnectedControllers">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getControllerForGamepadIndex">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getCurrentActionSet">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getCurrentBatteryPower">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getCurrentBetaName">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getCurrentGameLanguage">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getDLCCount">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getDLCDataByIndex">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getDLCDownloadProgress">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getDigitalActionData">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getDigitalActionHandle">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getDigitalActionOrigins">
+			<return type="Array">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getEarliestPurchaseUnixTime">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFavoriteGames">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getFileCount">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getFileDetails">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFileNameAndSize">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFileSize">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFileTimestamp">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFollowerCount">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendByIndex">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendCount">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendCountFromSource">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendFromSourceByIndex">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendGameLobbies">
+			<return type="Array">
+			</return>
+			<description>
+				Returns an Array of game lobbies (as FriendGameInfo objects) from the users friends list.
+			</description>
+		</method>
+		<method name="getFriendGamePlayed">
+			<return type="bool">
+			</return>
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<argument index="1" name="friendGameInfo" type="FriendGameInfo">
+			</argument>
+			<description>
+				Checks if friend with *steamID* has this game. Returns FriendGameInfo object to the passed in friendGameInfo parameter.
+			</description>
+		</method>
+		<method name="getFriendGamePlayedD">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<description>
+				Checks if friend with *steamID* has this game. Returns friendGameInfo as a Dictionary of values. Possible keys include: id, ip, gamePort, queryPort, lobby, and error
+			</description>
+		</method>
+		<method name="getFriendPersonaName">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+				Returns the local player's user name.
+			</description>
+		</method>
+		<method name="getFriendPersonaNameHistory">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendPersonaState">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendRelationship">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendRichPresence">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendRichPresenceKeyByIndex">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendRichPresenceKeyCount">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getFriendSteamLevel">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getGameBadgeLevel">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getIPCountry">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getImageRGBA">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="image" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getImageSize">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="image" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getInstalledDepots">
+			<return type="Array">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getItemDownloadInfo">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getItemState">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getItemUpdateProgress">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLargeFriendAvatar">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLaunchQueryParam">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLeaderboardEntries">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getLeaderboardEntryCount">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getLeaderboardName">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyData">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyDataByIndex">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyGameServer">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyMemberByIndex">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyMemberData">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyMemberLimit">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getLobbyOwner">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getMediumFriendAvatar">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getMotionData">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getNumAchievements">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getNumLobbyMembers">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getNumberOfCurrentPlayers">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getP2PSessionState">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getPersonaName">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getPersonaState">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getPlayerAvatar">
+			<return type="void">
+			</return>
+			<argument index="0" name="size" type="int" default="1">
+			</argument>
+			<argument index="1" name="steamID" type="int" default="0">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getPlayerNickname">
+			<return type="String">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getPlayerSteamLevel">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getQuota">
+			<return type="Dictionary">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getRecentPlayers">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getSecondsSinceAppActive">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getServerRealTime">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getSmallFriendAvatar">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getStatFloat">
+			<return type="float">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getStatInt">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getSteamID">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getSteamUILanguage">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getSubscribedItems">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getSyncPlatforms">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getUserDataFolder">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getUserFriendsGroups">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getUserRestrictions">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getUserSteamFriends">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="getUserSteamGroups">
+			<return type="Array">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="hasFriend">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="hookScreenshots">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="indicateAchievementProgress">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="init">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="installDLC">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="inviteUserToGame">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="inviteUserToLobby">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isAppInstalled">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isClanChatAdmin">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isClanChatWindowOpenInSteam">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isClanOfficialGameGroup">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isClanPublic">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isCloudEnabledForAccount">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isCloudEnabledForApp">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isCybercafe">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isDLCInstalled">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isFollowing">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isLowViolence">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isOverlayEnabled">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isScreenshotsHooked">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isSteamInBigPictureMode">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isSteamRunning">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isSteamRunningInVR">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isSubscribed">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isSubscribedApp">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isSubscribedFromFreeWeekend">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="isUserInSource">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="isVACBanned">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="joinClanChatRoom">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="joinLobby">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="leaveClanChatRoom">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="leaveLobby">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="loggedOn">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="markContentCorrupt">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="musicGetVolume">
+			<return type="float">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicIsEnabled">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicIsPlaying">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicPause">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicPlay">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicPlayNext">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicPlayPrev">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="musicSetVolume">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="float">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="openClanChatWindowInSteam">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="readP2PPacket">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="removeFavoriteGame">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<argument index="3" name="arg3" type="int">
+			</argument>
+			<argument index="4" name="arg4" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="replyToFriendMessage">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="requestClanOfficerList">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="requestCurrentStats">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="requestFriendRichPresence">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="requestGlobalAchievementPercentages">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="requestLobbyData">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="requestLobbyList">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="requestUserInformation">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="resetAllStats">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="restartAppIfNecessary">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="runFrame">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="run_callbacks">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="sendClanChatMessage">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="sendLobbyChatMsg">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="sendP2PPacket">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="PoolByteArray">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<argument index="3" name="arg3" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setAchievement">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setCloudEnabledForApp">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setInGameVoiceSpeaking">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemContent">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemDescription">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemMetadata">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemPreview">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemTitle">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemUpdateLanguage">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setItemVisibility">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLeaderboardDetailsMax">
+			<return type="void">
+			</return>
+			<argument index="0" name="details_max" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLinkedLobby">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setListenForFriendsMessages">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyData">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<argument index="2" name="arg2" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyGameServer">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<argument index="3" name="arg3" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyJoinable">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyMemberData">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<argument index="2" name="arg2" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyMemberLimit">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyOwner">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLobbyType">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setLocation">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setOverlayNotificationPosition">
+			<return type="void">
+			</return>
+			<argument index="0" name="pos" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setPersonaName">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setPlayedWith">
+			<return type="void">
+			</return>
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setRichPresence">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setStatFloat">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="float">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="setStatInt">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="String">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="showBindingPanel">
+			<return type="bool">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="shutdown">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="startItemUpdate">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="startVRDashboard">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="steamInit">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="storeStats">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="submitItemUpdate">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="suspendDownloads">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="triggerScreenshot">
+			<return type="void">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="triggerVibration">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="uninstallDLC">
+			<return type="void">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="uploadLeaderboardScore">
+			<return type="void">
+			</return>
+			<argument index="0" name="score" type="int">
+			</argument>
+			<argument index="1" name="keep_best" type="bool" default="true">
+			</argument>
+			<argument index="2" name="details" type="PoolIntArray" default="PoolIntArray(  )">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="writeScreenshot">
+			<return type="int">
+			</return>
+			<argument index="0" name="arg0" type="PoolByteArray">
+			</argument>
+			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="avatar_loaded">
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<argument index="1" name="size" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="clan_activity_downloaded">
+			<description>
+			</description>
+		</signal>
+		<signal name="connected_chat_join">
+			<description>
+			</description>
+		</signal>
+		<signal name="connected_chat_leave">
+			<description>
+			</description>
+		</signal>
+		<signal name="connected_clan_chat_message">
+			<description>
+			</description>
+		</signal>
+		<signal name="connection_changed">
+			<argument index="0" name="connected" type="bool">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="dlc_installed">
+			<argument index="0" name="app" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="enumerate_following_list">
+			<description>
+			</description>
+		</signal>
+		<signal name="file_details_result">
+			<argument index="0" name="result" type="int">
+			</argument>
+			<argument index="1" name="fileSize" type="int">
+			</argument>
+			<argument index="2" name="fileHash" type="int">
+			</argument>
+			<argument index="3" name="flags" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="friend_rich_presence_update">
+			<description>
+			</description>
+		</signal>
+		<signal name="get_auth_session_ticket_response">
+			<argument index="0" name="ticket" type="int">
+			</argument>
+			<argument index="1" name="result" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="get_follower_count">
+			<description>
+			</description>
+		</signal>
+		<signal name="global_achievement_percentages_ready">
+			<argument index="0" name="gameID" type="int">
+			</argument>
+			<argument index="1" name="result" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="is_following">
+			<description>
+			</description>
+		</signal>
+		<signal name="join_clan_chat_complete">
+			<description>
+			</description>
+		</signal>
+		<signal name="join_requested">
+			<argument index="0" name="from" type="int">
+			</argument>
+			<argument index="1" name="connect_string" type="String">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="leaderboard_entries_loaded">
+			<description>
+			</description>
+		</signal>
+		<signal name="leaderboard_loaded">
+			<argument index="0" name="leaderboard" type="int">
+			</argument>
+			<argument index="1" name="found" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="leaderboard_uploaded">
+			<argument index="0" name="success" type="bool">
+			</argument>
+			<argument index="1" name="score" type="int">
+			</argument>
+			<argument index="2" name="score_changed" type="bool">
+			</argument>
+			<argument index="3" name="global_rank_new" type="int">
+			</argument>
+			<argument index="4" name="global_rank_previous" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="lobby_created">
+			<argument index="0" name="lobby" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="lobby_game_created">
+			<description>
+			</description>
+		</signal>
+		<signal name="lobby_invite">
+			<argument index="0" name="inviter" type="int">
+			</argument>
+			<argument index="1" name="lobby" type="int">
+			</argument>
+			<argument index="2" name="game" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="lobby_joined">
+			<argument index="0" name="lobby" type="int">
+			</argument>
+			<argument index="1" name="permissions" type="int">
+			</argument>
+			<argument index="2" name="locked" type="bool">
+			</argument>
+			<argument index="3" name="response" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="lobby_match_list">
+			<description>
+			</description>
+		</signal>
+		<signal name="lobby_message_received">
+			<description>
+			</description>
+		</signal>
+		<signal name="low_power">
+			<argument index="0" name="power" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="name_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="number_of_current_players">
+			<argument index="0" name="success" type="bool">
+			</argument>
+			<argument index="1" name="players" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="overlay_toggled">
+			<argument index="0" name="active" type="bool">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="p2p_session_connect_fail">
+			<description>
+			</description>
+		</signal>
+		<signal name="p2p_session_request">
+			<description>
+			</description>
+		</signal>
+		<signal name="persona_state_change">
+			<description>
+			</description>
+		</signal>
+		<signal name="request_clan_officer_list">
+			<description>
+			</description>
+		</signal>
+		<signal name="screenshot_ready">
+			<argument index="0" name="screenshot_handle" type="int">
+			</argument>
+			<argument index="1" name="result" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="user_achievement_icon_fetched">
+			<argument index="0" name="gameID" type="int">
+			</argument>
+			<argument index="1" name="achievementName" type="String">
+			</argument>
+			<argument index="2" name="achieved" type="bool">
+			</argument>
+			<argument index="3" name="iconHandle" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="user_achievement_stored">
+			<description>
+			</description>
+		</signal>
+		<signal name="user_stats_received">
+			<argument index="0" name="gameID" type="int">
+			</argument>
+			<argument index="1" name="result" type="int">
+			</argument>
+			<argument index="2" name="userID" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="user_stats_stored">
+			<description>
+			</description>
+		</signal>
+		<signal name="validate_auth_ticket_response">
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<argument index="1" name="auth_session_reponse" type="int">
+			</argument>
+			<argument index="2" name="owner_steamID" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="workshop_item_created">
+			<description>
+			</description>
+		</signal>
+		<signal name="workshop_item_installed">
+			<description>
+			</description>
+		</signal>
+		<signal name="workshop_item_updated">
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="OFFLINE" value="0">
+		</constant>
+		<constant name="ONLINE" value="1">
+		</constant>
+		<constant name="BUSY" value="2">
+		</constant>
+		<constant name="AWAY" value="3">
+		</constant>
+		<constant name="SNOOZE" value="4">
+		</constant>
+		<constant name="LF_TRADE" value="5">
+		</constant>
+		<constant name="LF_PLAY" value="6">
+		</constant>
+		<constant name="NOT_OFFLINE" value="8">
+		</constant>
+		<constant name="ALL" value="9">
+		</constant>
+		<constant name="FLAG_NONE" value="0">
+		</constant>
+		<constant name="FLAG_BLOCKED" value="1">
+		</constant>
+		<constant name="FLAG_FRIENDSHIP_REQUESTED" value="2">
+		</constant>
+		<constant name="FLAG_IMMEDIATE" value="4">
+		</constant>
+		<constant name="FLAG_CLAN_MEMBER" value="8">
+		</constant>
+		<constant name="FLAG_ON_GAME_SERVER" value="16">
+		</constant>
+		<constant name="FLAG_REQUESTING_FRIENDSHIP" value="128">
+		</constant>
+		<constant name="FLAG_REQUESTING_INFO" value="256">
+		</constant>
+		<constant name="FLAG_IGNORED" value="512">
+		</constant>
+		<constant name="FLAG_IGNORED_FRIEND" value="1024">
+		</constant>
+		<constant name="FLAG_CHAT_MEMBER" value="4096">
+		</constant>
+		<constant name="FLAG_ALL" value="65535">
+		</constant>
+		<constant name="RELATION_NONE" value="0">
+		</constant>
+		<constant name="RELATION_BLOCKED" value="1">
+		</constant>
+		<constant name="RELATION_REQUEST_RECIPIENT" value="2">
+		</constant>
+		<constant name="RELATION_FRIEND" value="3">
+		</constant>
+		<constant name="RELATION_REQUEST_INITIATOR" value="4">
+		</constant>
+		<constant name="RELATION_IGNORED" value="5">
+		</constant>
+		<constant name="RELATION_IGNORED_FRIEND" value="6">
+		</constant>
+		<constant name="RELATION_SUGGESTED" value="7">
+		</constant>
+		<constant name="RELATION_MAX" value="8">
+		</constant>
+		<constant name="ERR_NO_CLIENT" value="2">
+		</constant>
+		<constant name="ERR_NO_CONNECTION" value="3">
+		</constant>
+		<constant name="AUTH_SESSION_OK" value="0">
+		</constant>
+		<constant name="AUTH_SESSION_STEAM_NOT_CONNECTED" value="1">
+		</constant>
+		<constant name="AUTH_SESSION_NO_LICENSE" value="2">
+		</constant>
+		<constant name="AUTH_SESSION_VAC_BANNED" value="3">
+		</constant>
+		<constant name="AUTH_SESSION_LOGGED_IN_ELSEWHERE" value="4">
+		</constant>
+		<constant name="AUTH_SESSION_VAC_CHECK_TIMEOUT" value="5">
+		</constant>
+		<constant name="AUTH_SESSION_TICKET_CANCELED" value="6">
+		</constant>
+		<constant name="AUTH_SESSION_TICKET_ALREADY_USED" value="7">
+		</constant>
+		<constant name="AUTH_SESSION_TICKET_INVALID" value="8">
+		</constant>
+		<constant name="AUTH_SESSION_PUBLISHER_BANNED" value="9">
+		</constant>
+		<constant name="AVATAR_SMALL" value="0">
+		</constant>
+		<constant name="AVATAR_MEDIUM" value="1">
+		</constant>
+		<constant name="AVATAR_LARGE" value="2">
+		</constant>
+		<constant name="TOP_LEFT" value="0">
+		</constant>
+		<constant name="TOP_RIGHT" value="1">
+		</constant>
+		<constant name="BOT_LEFT" value="2">
+		</constant>
+		<constant name="BOT_RIGHT" value="3">
+		</constant>
+		<constant name="GLOBAL" value="0">
+		</constant>
+		<constant name="GLOBAL_AROUND_USER" value="1">
+		</constant>
+		<constant name="FRIENDS" value="2">
+		</constant>
+		<constant name="USERS" value="3">
+		</constant>
+		<constant name="PERSONA_NAME_MAX_UTF16" value="128">
+		</constant>
+		<constant name="PERSONA_NAME_MAX_UTF8" value="128">
+		</constant>
+		<constant name="RESTRICTION_NONE" value="0">
+		</constant>
+		<constant name="RESTRICTION_UNKNOWN" value="1">
+		</constant>
+		<constant name="RESTRICTION_ANY_CHAT" value="2">
+		</constant>
+		<constant name="RESTRICTION_VOICE_CHAT" value="4">
+		</constant>
+		<constant name="RESTRICTION_GROUP_CHAT" value="8">
+		</constant>
+		<constant name="RESTRICTION_RATING" value="16">
+		</constant>
+		<constant name="RESTRICTION_GAME_INVITES" value="32">
+		</constant>
+		<constant name="RESTRICTION_TRADING" value="64">
+		</constant>
+		<constant name="CHAT_METADATA_MAX" value="8192">
+		</constant>
+		<constant name="CHAT_INVALID" value="0">
+		</constant>
+		<constant name="CHAT_MESSAGE" value="1">
+		</constant>
+		<constant name="CHAT_TYPING" value="2">
+		</constant>
+		<constant name="CHAT_INVITE_GAME" value="3">
+		</constant>
+		<constant name="CHAT_EMOTE" value="4">
+		</constant>
+		<constant name="CHAT_LEFT" value="6">
+		</constant>
+		<constant name="CHAT_ENTERED" value="7">
+		</constant>
+		<constant name="CHAT_KICKED" value="8">
+		</constant>
+		<constant name="CHAT_BANNED" value="9">
+		</constant>
+		<constant name="CHAT_DISCONNECTED" value="10">
+		</constant>
+		<constant name="CHAT_HISTORICAL" value="11">
+		</constant>
+		<constant name="CHAT_LINK_BLOCKED" value="14">
+		</constant>
+		<constant name="MAX_RICH_PRESENCE_KEYS" value="20">
+		</constant>
+		<constant name="MAX_RICH_PRESENCE_KEY_LENGTH" value="64">
+		</constant>
+		<constant name="MAX_RICH_PRESENCE_VALUE_LENGTH" value="256">
+		</constant>
+		<constant name="OVERLAY_TO_STORE_FLAG_NONE" value="0">
+		</constant>
+		<constant name="OVERLAY_TO_STORE_FLAG_ADD_TO_CART" value="1">
+		</constant>
+		<constant name="OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW" value="2">
+		</constant>
+		<constant name="PRIVATE" value="0">
+		</constant>
+		<constant name="FRIENDS_ONLY" value="1">
+		</constant>
+		<constant name="PUBLIC" value="2">
+		</constant>
+		<constant name="INVISIBLE" value="3">
+		</constant>
+		<constant name="LOBBY_KEY_LENGTH" value="255">
+		</constant>
+		<constant name="LOBBY_EQUAL_LESS_THAN" value="-2">
+		</constant>
+		<constant name="LOBBY_LESS_THAN" value="-1">
+		</constant>
+		<constant name="LOBBY_EQUAL" value="0">
+		</constant>
+		<constant name="LOBBY_GREATER_THAN" value="1">
+		</constant>
+		<constant name="LOBBY_EQUAL_GREATER_THAN" value="2">
+		</constant>
+		<constant name="LOBBY_NOT_EQUAL" value="3">
+		</constant>
+		<constant name="LOBBY_DISTANCE_CLOSE" value="0">
+		</constant>
+		<constant name="LOBBY_DISTANCE_DEFAULT" value="1">
+		</constant>
+		<constant name="LOBBY_DISTANCE_FAR" value="2">
+		</constant>
+		<constant name="LOBBY_DISTANCE_WORLDWIDE" value="3">
+		</constant>
+		<constant name="LOBBY_OK" value="0">
+		</constant>
+		<constant name="LOBBY_NO_CONNECTION" value="1">
+		</constant>
+		<constant name="LOBBY_TIMEOUT" value="2">
+		</constant>
+		<constant name="LOBBY_FAIL" value="3">
+		</constant>
+		<constant name="LOBBY_ACCESS_DENIED" value="4">
+		</constant>
+		<constant name="LOBBY_LIMIT_EXCEEDED" value="5">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_NONE" value="0">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_WINDOWS" value="1">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_OSX" value="2">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_PS3" value="4">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_LINUX" value="8">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_RESERVED2" value="16">
+		</constant>
+		<constant name="REMOTE_STORAGE_PLATFORM_ALL" value="-1">
+		</constant>
+		<constant name="UGC_MAX_TITLE_CHARS" value="128">
+		</constant>
+		<constant name="UGC_MAX_DESC_CHARS" value="8000">
+		</constant>
+		<constant name="UGC_MAX_METADATA_CHARS" value="5000">
+		</constant>
+		<constant name="UGC_ITEM_COMMUNITY" value="0">
+		</constant>
+		<constant name="UGC_ITEM_MICROTRANSACTION" value="1">
+		</constant>
+		<constant name="UGC_ITEM_COLLECTION" value="2">
+		</constant>
+		<constant name="UGC_ITEM_ART" value="3">
+		</constant>
+		<constant name="UGC_ITEM_VIDEO" value="4">
+		</constant>
+		<constant name="UGC_ITEM_SCREENSHOT" value="5">
+		</constant>
+		<constant name="UGC_ITEM_GAME" value="6">
+		</constant>
+		<constant name="UGC_ITEM_SOFTWARE" value="7">
+		</constant>
+		<constant name="UGC_ITEM_CONCEPT" value="8">
+		</constant>
+		<constant name="UGC_ITEM_WEBGUIDE" value="9">
+		</constant>
+		<constant name="UGC_ITEM_INTEGRATEDGUIDE" value="10">
+		</constant>
+		<constant name="UGC_ITEM_MERCH" value="11">
+		</constant>
+		<constant name="UGC_ITEM_CONTROLLERBINDING" value="12">
+		</constant>
+		<constant name="UGC_ITEM_STEAMWORKSACCESSINVITE" value="13">
+		</constant>
+		<constant name="UGC_ITEM_STEAMVIDEO" value="14">
+		</constant>
+		<constant name="UGC_ITEM_GAMEMANAGEDITEM" value="15">
+		</constant>
+		<constant name="UGC_ITEM_MAX" value="16">
+		</constant>
+		<constant name="UGC_STATE_NONE" value="0">
+		</constant>
+		<constant name="UGC_STATE_SUBSCRIBED" value="1">
+		</constant>
+		<constant name="UGC_STATE_LEGACY" value="2">
+		</constant>
+		<constant name="UGC_STATE_INSTALLED" value="4">
+		</constant>
+		<constant name="UGC_STATE_UPDATE" value="8">
+		</constant>
+		<constant name="UGC_STATE_DOWNLOADING" value="16">
+		</constant>
+		<constant name="UGC_STATE_PENDING" value="32">
+		</constant>
+		<constant name="UGC_FILE_VISIBLE_PUBLIC" value="0">
+		</constant>
+		<constant name="UGC_FILE_VISIBLE_FRIENDS" value="1">
+		</constant>
+		<constant name="UGC_FILE_VISIBLE_PRIVATE" value="2">
+		</constant>
+		<constant name="STATUS_INVALID" value="0">
+		</constant>
+		<constant name="STATUS_PREPARING_CONFIG" value="1">
+		</constant>
+		<constant name="STATUS_PREPARING_CONTENT" value="2">
+		</constant>
+		<constant name="STATUS_UPLOADING_CONTENT" value="3">
+		</constant>
+		<constant name="STATUS_UPLOADING_PREVIEW" value="4">
+		</constant>
+		<constant name="STATUS_COMMITTING_CHANGES" value="5">
+		</constant>
+		<constant name="RESULT_OK" value="1">
+		</constant>
+		<constant name="RESULT_FAIL" value="2">
+		</constant>
+		<constant name="RESULT_NO_CONNECT" value="3">
+		</constant>
+		<constant name="RESULT_INVALID_PASSWORD" value="5">
+		</constant>
+		<constant name="RESULT_LOGGED_IN_ESLEWHERE" value="6">
+		</constant>
+		<constant name="RESULT_INVALID_PROTOCAL" value="7">
+		</constant>
+		<constant name="RESULT_INALID_PARAM" value="8">
+		</constant>
+		<constant name="RESULT_FILE_NOT_FOUND" value="9">
+		</constant>
+		<constant name="RESULT_BUSY" value="10">
+		</constant>
+		<constant name="RESULT_INVALID_STATE" value="11">
+		</constant>
+		<constant name="RESULT_INVALID_NAME" value="12">
+		</constant>
+		<constant name="RESULT_INVALID_EMAIL" value="13">
+		</constant>
+		<constant name="RESULT_DUPLICATE_NAME" value="14">
+		</constant>
+		<constant name="RESULT_ACCESS_DENIED" value="15">
+		</constant>
+		<constant name="RESULT_TIMEOUT" value="16">
+		</constant>
+		<constant name="RESULT_BANNED" value="17">
+		</constant>
+		<constant name="RESULT_ACCOUNT_NOT_FOUND" value="18">
+		</constant>
+		<constant name="RESULT_INVALID_STEAM_ID" value="19">
+		</constant>
+		<constant name="RESULT_SERVICE_UNAVAILABLE" value="20">
+		</constant>
+		<constant name="RESULT_NOT_LOGGED_ON" value="21">
+		</constant>
+		<constant name="RESULT_PENDING" value="22">
+		</constant>
+		<constant name="RESULT_ENCRYPT_FAILURE" value="23">
+		</constant>
+		<constant name="RESULT_INSUFFICIENT_PRIVILEGE" value="24">
+		</constant>
+		<constant name="RESULT_LIMIT_EXCEEDED" value="25">
+		</constant>
+		<constant name="RESULT_REVOKED" value="26">
+		</constant>
+		<constant name="RESULT_EXPIRED" value="27">
+		</constant>
+		<constant name="RESULT_ALREADY_REDEEMED" value="28">
+		</constant>
+		<constant name="RESULT_DUPLICATE_REQUEST" value="29">
+		</constant>
+		<constant name="RESULT_ALREADY_OWNED" value="30">
+		</constant>
+		<constant name="RESULT_IP_NOT_FOUND" value="31">
+		</constant>
+		<constant name="RESULT_PERSIST_FAILED" value="32">
+		</constant>
+		<constant name="RESULT_LOCKING_FAILED" value="33">
+		</constant>
+		<constant name="RESULT_LOGON_SESSION_REPLACED" value="34">
+		</constant>
+		<constant name="RESULT_CONNECT_FAILED" value="35">
+		</constant>
+		<constant name="RESULT_HANDSHAKE_FAILED" value="36">
+		</constant>
+		<constant name="RESULT_IO_FAILURE" value="37">
+		</constant>
+		<constant name="RESULT_REMOTE_DISCONNECT" value="38">
+		</constant>
+		<constant name="RESULT_SHOPPING_CART_NOT_FOUND" value="39">
+		</constant>
+		<constant name="RESULT_BLOCKED" value="40">
+		</constant>
+		<constant name="RESULT_IGNORED" value="41">
+		</constant>
+		<constant name="RESULT_NO_MATCH" value="42">
+		</constant>
+		<constant name="RESULT_ACCOUNT_DISABLED" value="43">
+		</constant>
+		<constant name="RESULT_SERVICE_READY_ONLY" value="44">
+		</constant>
+		<constant name="RESULT_ACCOUNT_NOT_FEATURED" value="45">
+		</constant>
+		<constant name="RESULT_ADMINISTRATOR_OK" value="46">
+		</constant>
+		<constant name="RESULT_CONTENT_VERSION" value="47">
+		</constant>
+		<constant name="RESULT_TRY_ANOTHER_CM" value="48">
+		</constant>
+		<constant name="RESULT_PASSWORD_REQUIRED_TO_KICK" value="49">
+		</constant>
+		<constant name="RESULT_ALREADY_LOGGED_ELSEWHERE" value="50">
+		</constant>
+		<constant name="RESULT_SUSPENDED" value="51">
+		</constant>
+		<constant name="RESULT_CANCELLED" value="52">
+		</constant>
+		<constant name="RESULT_DATA_CORRUPTION" value="53">
+		</constant>
+		<constant name="RESULT_DISK_FULL" value="54">
+		</constant>
+		<constant name="RESULT_REMOTE_CALL_FAILED" value="55">
+		</constant>
+		<constant name="RESULT_PASSWORD_UNSET" value="56">
+		</constant>
+		<constant name="RESULT_EXTERNAL_ACCOUNT_UNLINKED" value="57">
+		</constant>
+		<constant name="RESULT_PSN_TICKET_INVALID" value="58">
+		</constant>
+		<constant name="RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED" value="59">
+		</constant>
+		<constant name="RESULT_REMOTE_FILE_CONFLICT" value="60">
+		</constant>
+		<constant name="RESULT_ILLEGAL_PASSWORD" value="61">
+		</constant>
+		<constant name="RESULT_SAME_AS_PREVIOUS_VALUE" value="62">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LOGON_DENIED" value="63">
+		</constant>
+		<constant name="RESULT_CANNOT_USE_OLD_PASSWORD" value="64">
+		</constant>
+		<constant name="RESULT_INVALID_LOGIN_AUTH_CODE" value="65">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LOGON_DENIED_NO_MAIL" value="66">
+		</constant>
+		<constant name="RESULT_HARDWARE_NOT_CAPABLE" value="67">
+		</constant>
+		<constant name="RESULT_IP_INIT_ERROR" value="68">
+		</constant>
+		<constant name="RESULT_PARENTAL_CONTROL_RESTRICTED" value="69">
+		</constant>
+		<constant name="RESULT_FACEBOOK_QUERY_ERROR" value="70">
+		</constant>
+		<constant name="RESULT_EXPIRED_LOGIN_AUTH_CODE" value="71">
+		</constant>
+		<constant name="RESULT_IP_LOGIN_RESTRICTION_FAILED" value="72">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LOCKED_DOWN" value="73">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LOGON_DENIED_VERIFIED_EMAIL_REQUIRED" value="74">
+		</constant>
+		<constant name="RESULT_NO_MATCHING_URL" value="75">
+		</constant>
+		<constant name="RESULT_BAD_RESPONSE" value="76">
+		</constant>
+		<constant name="RESULT_REQUIRED_PASSWORD_REENTRY" value="77">
+		</constant>
+		<constant name="RESULT_VALUE_OUT_OF_RANGE" value="78">
+		</constant>
+		<constant name="RESULT_UNEXPECTED_ERROR" value="79">
+		</constant>
+		<constant name="RESULT_DISABLED" value="80">
+		</constant>
+		<constant name="RESULT_INVALID_CEG_SUBMISSION" value="81">
+		</constant>
+		<constant name="RESULT_RESTRICTED_DEVICE" value="82">
+		</constant>
+		<constant name="RESULT_REGION_LOCKED" value="83">
+		</constant>
+		<constant name="RESULT_RATE_LIMIT_EXCEEDED" value="84">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR" value="85">
+		</constant>
+		<constant name="RESULT_ITEM_DELETED" value="86">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE" value="87">
+		</constant>
+		<constant name="RESULT_TWO_FACTOR_CODE_MISMATCH" value="88">
+		</constant>
+		<constant name="RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH" value="89">
+		</constant>
+		<constant name="RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS" value="90">
+		</constant>
+		<constant name="RESULT_NOT_MODIFIED" value="91">
+		</constant>
+		<constant name="RESULT_NO_MOBILE_DEVICE" value="92">
+		</constant>
+		<constant name="RESULT_TIME_NOT_SYNCED" value="93">
+		</constant>
+		<constant name="RESULT_SMS_CODE_FAILED" value="94">
+		</constant>
+		<constant name="RESULT_ACCOUNT_LIMIT_EXCEEDED" value="95">
+		</constant>
+		<constant name="RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED" value="96">
+		</constant>
+		<constant name="RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED" value="97">
+		</constant>
+		<constant name="RESULT_REFUND_TO_WALLET" value="98">
+		</constant>
+		<constant name="RESULT_EMAIL_SEND_FAILURE" value="99">
+		</constant>
+		<constant name="RESULT_NOT_SETTLED" value="100">
+		</constant>
+		<constant name="RESULT_NEED_CAPTCHA" value="101">
+		</constant>
+		<constant name="RESULT_GSLT_DENIED" value="102">
+		</constant>
+		<constant name="RESULT_GS_OWNER_DENIED" value="103">
+		</constant>
+		<constant name="RESULT_INVALID_ITEM_TYPE" value="104">
+		</constant>
+		<constant name="RESULT_IP_BANNED" value="105">
+		</constant>
+		<constant name="RESULT_GSLT_EXPIRED" value="106">
+		</constant>
+		<constant name="RESULT_INSUFFICIENT_FUNDS" value="107">
+		</constant>
+		<constant name="RESULT_TOO_MANY_PENDING" value="108">
+		</constant>
+		<constant name="PERSONA_CHANGE_NAME" value="1">
+		</constant>
+		<constant name="PERSONA_CHANGE_STATUS" value="2">
+		</constant>
+		<constant name="PERSONA_CHANGE_COME_ONLINE" value="4">
+		</constant>
+		<constant name="PERSONA_CHANGE_GONE_OFFLINE" value="8">
+		</constant>
+		<constant name="PERSONA_CHANGE_GAME_PLAYED" value="16">
+		</constant>
+		<constant name="PERSONA_CHANGE_GAME_SERVER" value="32">
+		</constant>
+		<constant name="PERSONA_CHANGE_AVATAR" value="64">
+		</constant>
+		<constant name="PERSONA_CHANGE_JOINED_SOURCE" value="128">
+		</constant>
+		<constant name="PERSONA_CHANGE_LEFT_SOURCE" value="256">
+		</constant>
+		<constant name="PERSONA_CHANGE_RELATIONSHIP_CHANGED" value="512">
+		</constant>
+		<constant name="PERSONA_CHANGE_NAME_FIRST_SET" value="1024">
+		</constant>
+		<constant name="PERSONA_CHANGE_FACEBOOK_INFO" value="2048">
+		</constant>
+		<constant name="PERSONA_CHANGE_NICKNAME" value="4096">
+		</constant>
+		<constant name="PERSONA_CHANGE_STEAM_LEVEL" value="8192">
+		</constant>
+		<constant name="CHAT_ROOM_SUCCESS" value="1">
+		</constant>
+		<constant name="CHAT_ROOM_DOESNT_EXIST" value="2">
+		</constant>
+		<constant name="CHAT_ROOM_NOT_ALLOWED" value="3">
+		</constant>
+		<constant name="CHAT_ROOM_FULL" value="4">
+		</constant>
+		<constant name="CHAT_ROOM_ERROR" value="5">
+		</constant>
+		<constant name="CHAT_ROOM_BANNED" value="6">
+		</constant>
+		<constant name="CHAT_ROOM_LIMITED" value="7">
+		</constant>
+		<constant name="CHAT_ROOM_CLAN_DISABLED" value="8">
+		</constant>
+		<constant name="CHAT_ROOM_COMMUNITY_BAN" value="9">
+		</constant>
+		<constant name="CHAT_ROOM_MEMBER_BLOCKED_YOU" value="10">
+		</constant>
+		<constant name="CHAT_ROOM_YOU_BLOCKED_MEMBER" value="11">
+		</constant>
+		<constant name="EP2P_SEND_UNRELIABLE" value="0">
+		</constant>
+		<constant name="EP2P_SEND_UNRELIABLE_NO_DELAY" value="1">
+		</constant>
+		<constant name="EP2P_SEND_RELIABLE" value="2">
+		</constant>
+		<constant name="EP2P_SEND_RELIABLE_WITH_BUFFERING" value="3">
+		</constant>
+		<constant name="GAMEID_TYPE_APP" value="0">
+		</constant>
+		<constant name="GAMEID_TYPE_MOD" value="1">
+		</constant>
+		<constant name="GAMEID_TYPE_SHORTCUT" value="2">
+		</constant>
+		<constant name="GAMEID_TYPE_P2P" value="3">
+		</constant>
+	</constants>
+</class>

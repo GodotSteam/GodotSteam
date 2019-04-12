@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FriendGameInfo" inherits="Reference" category="Core" version="3.1.1">
+	<brief_description>
+		A godot friendly object version of the FriendGameInfo_t struct from the steamworks API.
+	</brief_description>
+	<description>
+		A godot friendly object version of this struct from the steamworks API:
+		struct FriendGameInfo_t
+		{
+			CGameID m_gameID;
+			uint32 m_unGameIP;
+			uint16 m_usGamePort;
+			uint16 m_usQueryPort;
+			CSteamID m_steamIDLobby;
+		};
+	</description>
+	<tutorials>
+	</tutorials>
+	<demos>
+	</demos>
+	<methods>
+		<method name="get_appID">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="get_dictionary">
+			<return type="Dictionary">
+			</return>
+			<description>
+				Returns FriendGameInfo as a Dictionary of values. Possible keys include: id, ip, gamePort, queryPort, and lobby
+			</description>
+		</method>
+		<method name="get_gameIP_str">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="m_steamIDLobbyIsValid">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="set_appID">
+			<return type="void">
+			</return>
+			<argument index="0" name="_appID" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="gameID" type="int" setter="set_gameID" getter="get_gameID">
+		</member>
+		<member name="gameIP" type="int" setter="set_gameIP" getter="get_gameIP">
+		</member>
+		<member name="gamePort" type="int" setter="set_gamePort" getter="get_gamePort">
+		</member>
+		<member name="queryPort" type="int" setter="set_queryPort" getter="get_queryPort">
+		</member>
+		<member name="steamIDLobby" type="int" setter="set_steamIDLobby" getter="get_steamIDLobby">
+		</member>
+	</members>
+	<constants>
+	</constants>
+</class>
