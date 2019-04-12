@@ -8,6 +8,70 @@
 #include "scene/resources/texture.h"	// For avatars
 #include "core/reference.h"
 #include "core/dictionary.h"					// Contains array.h as well
+#include "core/variant.h" //for returning several container types and Strings
+
+class FriendGameInfo: public Reference {
+	GDCLASS(FriendGameInfo, Reference);
+	public:
+
+		uint64_t gameID;
+		uint32_t gameIP;
+		uint16_t gamePort;
+		uint16_t queryPort;
+		uint64_t steamIDLobby;
+
+		uint32_t appID;
+
+		//keep a copy of the original struct so we don't have to attempt to convert back to use functionality
+		FriendGameInfo_t originalStruct;
+		
+		//
+		//setter and getter methods
+		//
+
+		_FORCE_INLINE_ void set_gameID(uint64_t _gameID) {gameID = _gameID;}
+		_FORCE_INLINE_ uint64_t get_gameID()  {return gameID;}
+		_FORCE_INLINE_ void set_appID(uint32_t _appID) {appID = _appID;}
+		_FORCE_INLINE_ uint32_t get_appID()  {return appID;}
+		_FORCE_INLINE_ void set_gameIP(uint32_t _gameIP)  {gameIP = _gameIP;}
+		_FORCE_INLINE_ uint32_t get_gameIP()  {return gameIP;}
+		_FORCE_INLINE_ String get_gameIP_str() {
+			// Convert the IP address back to a string
+			const int NBYTES = 4;
+			uint8 octet[NBYTES];
+			char gameIPstr[16];
+			for(int j = 0; j < NBYTES; j++){
+				octet[j] = gameIP >> (j * 8);
+			}
+			sprintf_s(gameIPstr, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			//lets hope this uses the Godot string instead of steams string because stupid godot doesn't have a namespace for it
+			return String(gameIPstr);
+		}
+		_FORCE_INLINE_ void set_gamePort(uint16_t _gamePort) {gamePort = _gamePort;}
+		_FORCE_INLINE_ uint16_t get_gamePort()  {return gamePort;}
+		_FORCE_INLINE_ void set_queryPort(uint16_t _queryPort)  {queryPort = _queryPort;}
+		_FORCE_INLINE_ uint16_t get_queryPort()  {return queryPort;}
+		_FORCE_INLINE_ void set_steamIDLobby(uint64_t _steamIDLobby)  {steamIDLobby = _steamIDLobby;}
+		_FORCE_INLINE_ uint64_t get_steamIDLobby()  {return steamIDLobby;}
+		
+		_FORCE_INLINE_ FriendGameInfo_t get_struct() {return originalStruct;}//this may be needed later in order to use other steam functions with the struct behind the scenes
+		
+		//
+		//helper methods
+		//
+
+		//returns wether the lobby is valid same as gameInfo.m_steamIDLobby.IsValid()
+		_FORCE_INLINE_ bool m_steamIDLobbyIsValid() {return originalStruct.m_steamIDLobby.IsValid();}
+
+		//returns content as a dictionary
+		Dictionary get_dictionary();
+		
+		//initializes a new Ref<FriendGameInfo> object from the received steam gameInfo struct
+		static Ref<FriendGameInfo> new_from_struct(FriendGameInfo_t gameInfoStruct);
+
+	protected:
+		static void _bind_methods();
+};
 
 class Steam: public Object {
 	GDCLASS(Steam, Object);
@@ -121,7 +185,9 @@ class Steam: public Object {
 		int getFriendRelationship(uint64_t steamID);
 		int getFriendPersonaState(uint64_t steamID);
 		String getFriendPersonaName(uint64_t steamID);
-		Dictionary getFriendGamePlayed(uint64_t steamID);
+		Dictionary getFriendGamePlayedD(uint64_t steamID);
+		bool getFriendGamePlayed(uint64_t steamID, Ref<FriendGameInfo> friendGameInfo);
+		Array getFriendGameLobbies();
 		String getFriendPersonaNameHistory(uint64_t steamID, int nameHistory);
 		int getFriendSteamLevel(uint64_t steamID);
 		String getPlayerNickname(uint64_t steamID);

@@ -508,8 +508,9 @@ String Steam::getFriendPersonaName(uint64_t steamID){
 	}
 	return "";
 }
+
 // Returns dictionary of friend game played if valid
-Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
+Dictionary Steam::getFriendGamePlayedD(uint64_t steamID){
 	Dictionary friendGame;
 	if(SteamFriends() == NULL){
 		return friendGame;
@@ -541,6 +542,42 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
 	}
 	return friendGame;
 }
+
+// Returns an object of friend game played with helper functions if valid and returns true or false for easy if statements
+bool Steam::getFriendGamePlayed(uint64_t steamID, Ref<FriendGameInfo> friendGameInfo) {
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	FriendGameInfo_t gameInfo;
+	CSteamID userID = (uint64)steamID;
+	bool success = SteamFriends()->GetFriendGamePlayed(userID, &gameInfo);
+	// If successful
+	if(success) {// && gameInfo.m_steamIDLobby.IsValid()
+		//m_steamIDLobbyIsValid
+
+			Ref<FriendGameInfo> gameInfoObject = FriendGameInfo::new_from_struct(gameInfo);
+			friendGameInfo = &gameInfoObject;
+	}
+	return success;
+}
+
+Array Steam::getFriendGameLobbies() {
+	Array returnArray;
+	int cFriends = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
+	for ( int i = 0; i < cFriends; i++ )
+	{
+		Ref<FriendGameInfo> friendGameInfo(memnew(FriendGameInfo));
+		CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex( i, k_EFriendFlagImmediate );
+
+		if(getFriendGamePlayed(steamIDFriend.ConvertToUint64(), friendGameInfo) && friendGameInfo->m_steamIDLobbyIsValid())
+		{
+			// friendGameInfo->steamIDLobby is a valid lobby, you can join it or use RequestLobbyData() get its metadata
+			returnArray.push_back(friendGameInfo);
+		}
+	}
+	return returnArray;
+}
+
 // Accesses old friends names; returns an empty string when there are no more items in the history.
 String Steam::getFriendPersonaNameHistory(uint64_t steamID, int nameHistory){
 	if(SteamFriends() == NULL){
@@ -2982,6 +3019,21 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 /////////////////////////////////////////////////
 ///// BIND METHODS //////////////////////////////
 //
+
+void FriendGameInfo::_bind_methods(){
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "gameID"), "set_gameID", "get_gameID");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "gameIP"), "set_gameIP", "get_gameIP");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "gamePort"), "set_gamePort", "get_gamePort");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "queryPort"), "set_queryPort", "get_queryPort");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "steamIDLobby"), "set_steamIDLobby", "get_steamIDLobby");
+
+	ClassDB::bind_method(D_METHOD("get_dictionary"), &FriendGameInfo::get_dictionary);
+	ClassDB::bind_method(D_METHOD("get_gameIP_str"), &FriendGameInfo::get_gameIP_str);
+	ClassDB::bind_method(D_METHOD("m_steamIDLobbyIsValid"), &FriendGameInfo::m_steamIDLobbyIsValid);
+
+	//ClassDB::bind_method(D_METHOD("new_from_struct", "gameInfoStruct"), &FriendGameInfo::get_dictionary);//probably shouldn't be bound
+}
+
 void Steam::_bind_methods(){
 	ClassDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
 	ClassDB::bind_method("steamInit", &Steam::steamInit);
@@ -3039,7 +3091,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getFriendRelationship", &Steam::getFriendRelationship);
 	ClassDB::bind_method("getFriendPersonaState", &Steam::getFriendPersonaState);
 	ClassDB::bind_method("getFriendPersonaName", &Steam::getFriendPersonaName);
-	ClassDB::bind_method("getFriendGamePlayed", &Steam::getFriendGamePlayed);
+	ClassDB::bind_method(D_METHOD("getFriendGamePlayedD", "steamID"), &Steam::getFriendGamePlayedD);
+	ClassDB::bind_method(D_METHOD("getFriendGamePlayed", "steamID", "friendGameInfo"), &Steam::getFriendGamePlayed);
+	ClassDB::bind_method(D_METHOD("getFriendGameLobbies"), &Steam::getFriendGameLobbies);
 	ClassDB::bind_method("getFriendPersonaNameHistory", &Steam::getFriendPersonaNameHistory);
 	ClassDB::bind_method("getFriendSteamLevel", &Steam::getFriendSteamLevel);
 	ClassDB::bind_method("getPlayerNickname", &Steam::getPlayerNickname);
@@ -3608,4 +3662,33 @@ Steam::~Steam(){
 	}
 	tickets.clear();
 	singleton = NULL;
+}
+
+/////////////////////////////////////////////////
+///// FRIEND GAME INFO FUNCTIONS ////////////////
+/////////////////////////////////////////////////
+
+//returns a dictionary of the
+Dictionary FriendGameInfo::get_dictionary() {
+	Dictionary friendGameDictionary;
+
+	friendGameDictionary["id"] = gameID;
+	friendGameDictionary["ip"] = get_gameIP_str();
+	friendGameDictionary["gamePort"] = uint16(gamePort);
+	friendGameDictionary["queryPort"] = uint16(queryPort);
+	friendGameDictionary["lobby"] = uint64_t(steamIDLobby);
+	
+	return friendGameDictionary;
+}
+
+//creates a new FriendGameInfo object from a filled FriendGameInfo_t struct
+Ref<FriendGameInfo> FriendGameInfo::new_from_struct(FriendGameInfo_t gameInfoStruct) {
+	Ref<FriendGameInfo> newGameInfo(memnew(FriendGameInfo));
+	newGameInfo->set_gameID(uint64_t(gameInfoStruct.m_gameID.ToUint64()));
+	newGameInfo->set_appID(uint32_t(gameInfoStruct.m_gameID.AppID()));
+	newGameInfo->set_gameIP(uint32_t(gameInfoStruct.m_unGameIP));
+	newGameInfo->set_gamePort(uint16_t(gameInfoStruct.m_usGamePort));
+	newGameInfo->set_queryPort(uint16_t(gameInfoStruct.m_usQueryPort));
+	newGameInfo->set_steamIDLobby(uint64_t(gameInfoStruct.m_steamIDLobby.ConvertToUint64()));
+	return newGameInfo;
 }
