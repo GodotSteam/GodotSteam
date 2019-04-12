@@ -7,9 +7,9 @@
 		There are a few things you'll need to start working with the module:
 
 			- GodotSteam Module For Godot 2 / 3
-			- The Steamworks SDK (https://partner.steamgames.com/).
+			- The Steamworks SDK (<link>https://partner.steamgames.com/</link>).
 			- A Steamworks account.
-			- The Godot Engine source code; preferably 2.0.3 or higher (https://github.com/godotengine/godot). Make sure this source matches the GodotSteam branch you are using or vice-versa.
+			- The Godot Engine source code; preferably 2.0.3 or higher (<link>https://github.com/godotengine/godot</link>). Make sure this source matches the GodotSteam branch you are using or vice-versa.
 		
 		Those are the basics to working with the wrapper. How, to get the most out of it, you'll need these too:
 			- Logged into your Steam client if testing your game or any scenes.
@@ -17,9 +17,9 @@
 		From here either navigate to the Module How-To or Tutorials.
 	</description>
 	<tutorials>
-		https://gramps.github.io/GodotSteam/tutorials.html
-		https://gramps.github.io/GodotSteam/functions-module.html
-		https://gramps.github.io/GodotSteam/signals-modules.html
+		<link>https://gramps.github.io/GodotSteam/tutorials.html</link>
+		<link>https://gramps.github.io/GodotSteam/functions-module.html</link>
+		<link>https://gramps.github.io/GodotSteam/signals-modules.html</link>
 	</tutorials>
 	<demos>
 	</demos>
