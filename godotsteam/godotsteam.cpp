@@ -535,6 +535,7 @@ Dictionary Steam::getFriendGamePlayedD(uint64_t steamID){
 			friendGame["gamePort"] = gameInfo.m_usGamePort;
 			friendGame["queryPort"] = (char)gameInfo.m_usQueryPort;
 			friendGame["lobby"] = uint64_t(gameInfo.m_steamIDLobby.ConvertToUint64());
+			friendGame["friendID"] = steamID;
 		}
 		else{
 			friendGame["error"] = "No valid lobby";
@@ -555,7 +556,7 @@ bool Steam::getFriendGamePlayed(uint64_t steamID, Ref<FriendGameInfo> friendGame
 	if(success) {// && gameInfo.m_steamIDLobby.IsValid()
 		//m_steamIDLobbyIsValid
 
-			Ref<FriendGameInfo> gameInfoObject = FriendGameInfo::new_from_struct(gameInfo);
+			Ref<FriendGameInfo> gameInfoObject = FriendGameInfo::new_from_struct(gameInfo, steamID);
 			friendGameInfo = &gameInfoObject;
 	}
 	return success;
@@ -3028,6 +3029,9 @@ void FriendGameInfo::_bind_methods(){
 
 	//set and gets
 
+	ClassDB::bind_method(D_METHOD("set_friendID", "_friendID"), &FriendGameInfo::set_friendID);
+	ClassDB::bind_method(D_METHOD("get_friendID"), &FriendGameInfo::get_friendID);
+
 	ClassDB::bind_method(D_METHOD("set_gameID", "_gameID"), &FriendGameInfo::set_gameID);
 	ClassDB::bind_method(D_METHOD("get_gameID"), &FriendGameInfo::get_gameID);
 
@@ -3711,8 +3715,9 @@ Dictionary FriendGameInfo::get_dictionary() {
 }
 
 //creates a new FriendGameInfo object from a filled FriendGameInfo_t struct
-Ref<FriendGameInfo> FriendGameInfo::new_from_struct(FriendGameInfo_t gameInfoStruct) {
+Ref<FriendGameInfo> FriendGameInfo::new_from_struct(FriendGameInfo_t gameInfoStruct, uint64_t _friendID) {
 	Ref<FriendGameInfo> newGameInfo(memnew(FriendGameInfo));
+	newGameInfo->set_friendID(_friendID);
 	newGameInfo->set_gameID(uint64_t(gameInfoStruct.m_gameID.ToUint64()));
 	newGameInfo->set_appID(uint32_t(gameInfoStruct.m_gameID.AppID()));
 	newGameInfo->set_gameIP(uint32_t(gameInfoStruct.m_unGameIP));

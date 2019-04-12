@@ -14,6 +14,8 @@ class FriendGameInfo: public Reference {
 	GDCLASS(FriendGameInfo, Reference);
 	public:
 
+		uint64_t friendID;
+
 		uint64_t gameID;
 		uint32_t gameIP;
 		uint16_t gamePort;
@@ -29,6 +31,8 @@ class FriendGameInfo: public Reference {
 		//setter and getter methods
 		//
 
+		_FORCE_INLINE_ void set_friendID(uint64_t _friendID) {friendID = _friendID;}
+		_FORCE_INLINE_ uint64_t get_friendID()  {return friendID;}
 		_FORCE_INLINE_ void set_gameID(uint64_t _gameID) {gameID = _gameID;}
 		_FORCE_INLINE_ uint64_t get_gameID()  {return gameID;}
 		_FORCE_INLINE_ void set_appID(uint32_t _appID) {appID = _appID;}
@@ -67,7 +71,7 @@ class FriendGameInfo: public Reference {
 		Dictionary get_dictionary();
 		
 		//initializes a new Ref<FriendGameInfo> object from the received steam gameInfo struct
-		static Ref<FriendGameInfo> new_from_struct(FriendGameInfo_t gameInfoStruct);
+		static Ref<FriendGameInfo> new_from_struct(FriendGameInfo_t gameInfoStruct, uint64_t _friendID);
 
 	protected:
 		static void _bind_methods();
