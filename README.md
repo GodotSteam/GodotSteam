@@ -30,7 +30,6 @@ You can download pre-compiled versions _(currently v1.0.1)_ of this repo here: h
 Known Issues
 ----------
 - Lobby message will crash game, favoriting lobbies does not work yet
-- getFriendGamePlayed is incomplete; should be a dictionary
 
 Quick How-To
 ----------
