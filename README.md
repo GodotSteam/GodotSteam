@@ -17,6 +17,7 @@ You can download pre-compiled versions _(currently v1.9.3)_ of this repo here: h
 
 **Version 1.9.3 Changes**
 - Added: networking functions, _big thanks to Antokolos_
+- Added: compiling flag for Linux and Mac, need for new Steamworks 1.44
 - Changed: linked against Steamworks 1.44
 - Fixed: issue with leaderboard upload returning false no matter what
 
