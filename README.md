@@ -16,6 +16,7 @@ Current Build
 You can download pre-compiled versions _(currently v1.0.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 1.0.2 Changes**
+- Added: compiling flag for Linux, need for new Steamworks 1.44
 - Added: leaderboard functionality
 - Changed: linked against Steamworks 1.44
 
