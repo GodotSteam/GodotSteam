@@ -1281,9 +1281,9 @@ void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
 	{
 		CSteamID steamIDLobby = SteamMatchmaking()->GetLobbyByIndex(iLobby);
 		uint64_t lobbyID = (uint64_t) steamIDLobby.ConvertToUint64();
-		CSteamID steamIDLobbyOwner = SteamMatchmaking()->GetLobbyOwner(lobbyID);
+		CSteamID steamIDLobbyOwner = SteamMatchmaking()->GetLobbyOwner(steamIDLobby);
 		uint64_t lobbyOwnerID = (uint64_t) steamIDLobbyOwner.ConvertToUint64();
-		int friendRelationship = SteamFriends()->GetFriendRelationship(steamIDLobbyOwner);
+		int friendRelationship = (int) SteamFriends()->GetFriendRelationship(steamIDLobbyOwner);
 		Dictionary entryDict;
 		entryDict["steamIDLobby"] = lobbyID;
 		entryDict["steamIDLobbyOwner"] = lobbyOwnerID;
