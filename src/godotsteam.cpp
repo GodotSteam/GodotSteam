@@ -1347,7 +1347,7 @@ void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
 }
 // Signal number of current players (online + offline).
 void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure){
-	owner->emit_signal("number_of_current_players", callData->m_bSuccess && bIOFailure, callData->m_cPlayers);
+	owner->emit_signal("number_of_current_players", callData->m_bSuccess && !bIOFailure, callData->m_cPlayers);
 }
 // Signal a leaderboard has been loaded or has failed.
 void Steam::_leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure){
@@ -1361,7 +1361,7 @@ void Steam::_leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIO
 	if(callData->m_hSteamLeaderboard != leaderboard_handle){
 		return;
 	}
-	owner->emit_signal("leaderboard_uploaded", callData->m_bSuccess && bIOFailure, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
+	owner->emit_signal("leaderboard_uploaded", callData->m_bSuccess && !bIOFailure, callData->m_nScore, callData->m_bScoreChanged, callData->m_nGlobalRankNew, callData->m_nGlobalRankPrevious);
 }
 // Signal leaderboard entries are downloaded.
 void Steam::_leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure){
