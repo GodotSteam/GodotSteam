@@ -526,7 +526,7 @@ Dictionary Steam::getFriendGamePlayedD(uint64_t steamID) {
 	if (success) {
 		// Is there a valid lobby?
 		if (gameInfo.m_steamIDLobby.IsValid()) {
-			friendGame["game_id"] = gameInfo.m_gameID.ToUint64();
+			friendGame["game_id"] = (uint64_t) gameInfo.m_gameID.ToUint64();
 			friendGame["id"] = gameInfo.m_gameID.AppID();
 			// Convert the IP address back to a string
 			const int NBYTES = 4;
@@ -535,7 +535,7 @@ Dictionary Steam::getFriendGamePlayedD(uint64_t steamID) {
 			for (int j = 0; j < NBYTES; j++) {
 				octet[j] = gameInfo.m_unGameIP >> (j * 8);
 			}
-			sprintf_s(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			friendGame["ip"] = gameIP;
 			friendGame["gamePort"] = gameInfo.m_usGamePort;
 			friendGame["queryPort"] = (char)gameInfo.m_usQueryPort;
