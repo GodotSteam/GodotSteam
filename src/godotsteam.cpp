@@ -513,6 +513,54 @@ String Steam::getFriendPersonaName(uint64_t steamID){
 	}
 	return "";
 }
+// Returns dictionary of friend game played if valid
+Dictionary Steam::getFriendGamePlayedD(uint64_t steamID) {
+	Dictionary friendGame;
+	if (SteamFriends() == NULL) {
+		return friendGame;
+	}
+	FriendGameInfo_t gameInfo;
+	CSteamID userID = createSteamID(steamID);
+	bool success = SteamFriends()->GetFriendGamePlayed(userID, &gameInfo);
+	// If successful
+	if (success) {
+		// Is there a valid lobby?
+		if (gameInfo.m_steamIDLobby.IsValid()) {
+			friendGame["game_id"] = gameInfo.m_gameID.ToUint64();
+			friendGame["id"] = gameInfo.m_gameID.AppID();
+			// Convert the IP address back to a string
+			const int NBYTES = 4;
+			uint8 octet[NBYTES];
+			char gameIP[16];
+			for (int j = 0; j < NBYTES; j++) {
+				octet[j] = gameInfo.m_unGameIP >> (j * 8);
+			}
+			sprintf_s(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			friendGame["ip"] = gameIP;
+			friendGame["gamePort"] = gameInfo.m_usGamePort;
+			friendGame["queryPort"] = (char)gameInfo.m_usQueryPort;
+			friendGame["lobby"] = uint64_t(gameInfo.m_steamIDLobby.ConvertToUint64());
+			friendGame["friendID"] = steamID;
+		} else {
+			friendGame["error"] = "No valid lobby";
+		}
+	}
+	return friendGame;
+}
+
+Array Steam::getFriendGameLobbies() {
+	Array returnArray;
+	int cFriends = SteamFriends()->GetFriendCount(k_EFriendFlagImmediate);
+	for (int i = 0; i < cFriends; i++) {
+		CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex(i, k_EFriendFlagImmediate);
+		uint64_t steamID = steamIDFriend.ConvertToUint64();
+		Dictionary friendGameDictionary = getFriendGamePlayedD(steamID);
+		if (!friendGameDictionary.empty() && !friendGameDictionary.has("error")) {
+			returnArray.push_back(friendGameDictionary);
+		}
+	}
+	return returnArray;
+}
 // Set the game information in Steam; used in 'View Game Info'
 void Steam::setGameInfo(String key, String value){
 	// Rich presence data is automatically shared between friends in the same game
