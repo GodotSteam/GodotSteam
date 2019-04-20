@@ -31,6 +31,7 @@ class Steam : public GodotScript<Reference>{
 			GLOBAL=0, GLOBAL_AROUND_USER=1, FRIENDS=2, USERS=3,
 			LOBBY_OK=0, LOBBY_NO_CONNECTION=1, LOBBY_TIMEOUT=2, LOBBY_FAIL=3, LOBBY_ACCESS_DENIED=4, LOBBY_LIMIT_EXCEEDED=5,
 			PRIVATE=0, FRIENDS_ONLY=1, PUBLIC=2, INVISIBLE=3, LOBBY_KEY_LENGTH=255,
+			LOBBY_DISTANCE_FILTER_CLOSE=0, LOBBY_DISTANCE_FILTER_DEFAULT=1, LOBBY_DISTANCE_FILTER_FAR=2, LOBBY_DISTANCE_FILTER_WORLDWIDE=3,
 			EP2P_SEND_UNRELIABLE = 0, EP2P_SEND_UNRELIABLE_NO_DELAY = 1, EP2P_SEND_RELIABLE = 2, EP2P_SEND_RELIABLE_WITH_BUFFERING = 3,
 			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
 			UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1, UGC_ITEM_COLLECTION=2, UGC_ITEM_ART=3, UGC_ITEM_VIDEO=4, UGC_ITEM_SCREENSHOT=5, UGC_ITEM_GAME=6, UGC_ITEM_SOFTWARE=7,
@@ -117,10 +118,12 @@ class Steam : public GodotScript<Reference>{
 		void activateGameOverlayToUser(String type, uint64_t steamID);
 		void activateGameOverlayToWebPage(String url);
 		void activateGameOverlayToStore(AppId_t appID=0);
-		void activateGameOverlayInviteDialog(int steamID);
+		void activateGameOverlayInviteDialog(uint64_t lobbyID);
 		// Matchmaking //////////////////////////////
 		void createLobby(int lobbyType, int maxMembers);
+		void addRequestLobbyListDistanceFilter(int lobbyDistanceFilterValue);
 		void requestLobbyList();
+		bool requestLobbyData(uint64_t steamIDLobby);
 		void joinLobby(uint64_t steamIDLobby);
 		void leaveLobby(uint64_t steamIDLobby);
 		bool inviteUserToLobby(uint64_t steamIDLobby, uint64_t steamIDInvitee);
@@ -301,6 +304,7 @@ class Steam : public GodotScript<Reference>{
 		CCallResult<Steam, SteamServersDisconnected_t> callServerDisconnected;
 		void _server_disconnected(SteamServersDisconnected_t *callData);
 		STEAM_CALLBACK(Steam, _lobby_data_update, LobbyDataUpdate_t, lobbyDataUpdate);
+		STEAM_CALLBACK(Steam, _game_lobby_join_requested, GameLobbyJoinRequested_t, gameLobbyJoinRequested);
 		// P2P callbacks
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t, callSessionRequest);
 		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t, callSessionConnectFail);
@@ -421,7 +425,9 @@ class Steam : public GodotScript<Reference>{
 			register_method("activateGameOverlayInviteDialog", &Steam::activateGameOverlayInviteDialog);
 			// Matchmaking Bind Methods /////////////////
 			register_method("createLobby", &Steam::createLobby);
+			register_method("addRequestLobbyListDistanceFilter", &Steam::addRequestLobbyListDistanceFilter);
 			register_method("requestLobbyList", &Steam::requestLobbyList);
+			register_method("requestLobbyData", &Steam::requestLobbyData);
 			register_method("getLobbiesList", &Steam::getLobbiesList);
 			register_method("joinLobby", &Steam::joinLobby);
 			register_method("leaveLobby", &Steam::leaveLobby);
@@ -587,6 +593,11 @@ class Steam : public GodotScript<Reference>{
 			args["steamIDLobby"] = Variant::INT;
 			args["steamIDMember"] = Variant::INT;
 			register_signal<Steam>("lobby_data_update", args);
+			args.clear();
+
+			args["steamIDLobby"] = Variant::INT;
+			args["steamIDFriend"] = Variant::INT;
+			register_signal<Steam>("game_lobby_join_requested", args);
 			args.clear();
 
 			register_signal<Steam>("lobby_match_list");
