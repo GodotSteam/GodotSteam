@@ -776,6 +776,29 @@ void Steam::createLobby(int lobbyType, int maxMembers){
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->CreateLobby(eLobbyType, maxMembers);
 	callCreatedLobby.Set(hSteamAPICall, this, &Steam::_lobby_created);
 }
+void Steam::addRequestLobbyListDistanceFilter(int lobbyDistanceFilterValue) {
+	if (SteamMatchmaking() == NULL) {
+		return;
+	}
+	ELobbyDistanceFilter lobbyDistanceFilter;
+	switch (lobbyDistanceFilterValue) {
+	case LOBBY_DISTANCE_FILTER_CLOSE:
+		lobbyDistanceFilter = k_ELobbyDistanceFilterClose;
+		break;
+	case LOBBY_DISTANCE_FILTER_DEFAULT:
+		lobbyDistanceFilter = k_ELobbyDistanceFilterDefault;
+		break;
+	case LOBBY_DISTANCE_FILTER_FAR:
+		lobbyDistanceFilter = k_ELobbyDistanceFilterFar;
+		break;
+	case LOBBY_DISTANCE_FILTER_WORLDWIDE:
+		lobbyDistanceFilter = k_ELobbyDistanceFilterWorldwide;
+		break;
+	default:
+		lobbyDistanceFilter = k_ELobbyDistanceFilterDefault;
+	}
+	SteamMatchmaking()->AddRequestLobbyListDistanceFilter(lobbyDistanceFilter);
+}
 void Steam::requestLobbyList() {
 	if (SteamMatchmaking() == NULL) {
 		return;
@@ -785,6 +808,13 @@ void Steam::requestLobbyList() {
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
 	// set the function to call when this API call has completed
 	steamCallResultLobbyMatchList.Set(hSteamAPICall, this, &Steam::_lobby_match_list);
+}
+bool Steam::requestLobbyData(uint64_t steamIDLobby) {
+	if (SteamMatchmaking() == NULL) {
+		return false;
+	}
+	CSteamID lobbyID = createSteamID(steamIDLobby);
+	return SteamMatchmaking()->RequestLobbyData(lobbyID);
 }
 // Join an existing lobby
 void Steam::joinLobby(uint64_t steamIDLobby){
