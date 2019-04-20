@@ -6,6 +6,7 @@ Steam *Steam::singleton = NULL;
 Steam::Steam()
 :
 	lobbyDataUpdate(this, &Steam::_lobby_data_update),
+	gameLobbyJoinRequested(this, &Steam::_game_lobby_join_requested),
 	callSessionRequest(this, &Steam::_p2p_session_request),
 	callSessionConnectFail(this, &Steam::_p2p_session_connect_fail)
 {
@@ -744,12 +745,12 @@ Array Steam::getUserSteamFriends(){
 	return steamFriends;
 }
 // Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby
-void Steam::activateGameOverlayInviteDialog(int steamID){
+void Steam::activateGameOverlayInviteDialog(uint64_t lobbyID){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	CSteamID lobbyID = createSteamID(steamID);
-	SteamFriends()->ActivateGameOverlayInviteDialog(lobbyID);
+	CSteamID steamID = createSteamID(lobbyID);
+	SteamFriends()->ActivateGameOverlayInviteDialog(steamID);
 }
 /////////////////////////////////////////////////
 ///// MATCHMAKING ///////////////////////////////
@@ -1342,6 +1343,19 @@ void Steam::_lobby_data_update(LobbyDataUpdate_t *callData) {
 	uint64_t steamIDLobby = callData->m_ulSteamIDLobby;
 	uint64_t steamIDMember = callData->m_ulSteamIDMember;
 	owner->emit_signal("lobby_data_update", success, steamIDLobby, steamIDMember);
+}
+/**
+ * Called when the user tries to join a lobby from their friends list or from an invite.
+ * The game client should attempt to connect to specified lobby when this is received.
+ * If the game isn't running yet then the game will be automatically launched with the command line parameter
+ * +connect_lobby <64-bit lobby Steam ID> instead.
+ */
+void Steam::_game_lobby_join_requested(GameLobbyJoinRequested_t *callData) {
+	// The Steam ID of the lobby to connect to.
+	uint64_t steamIDLobby = (uint64_t) callData->m_steamIDLobby.ConvertToUint64();
+	// The friend they joined through. This will be invalid if not directly via a friend.
+	uint64_t steamIDFriend = (uint64_t) callData->m_steamIDFriend.ConvertToUint64();
+	emit_signal("game_lobby_join_requested", steamIDLobby, steamIDFriend);
 }
 // Signal the lobby match list was performed
 void Steam::_lobby_match_list(LobbyMatchList_t *pCallback, bool bIOFailure) {
