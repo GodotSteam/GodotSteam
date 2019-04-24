@@ -1,13 +1,7 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.1). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.1). For the Windows, Linux, and Mac platforms. 
 
-Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Godot 3.1 Minimal](https://github.com/Gramps/GodotSteam/tree/godot31-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
-
-Important Messages
-----------
-**This master repo contains code for GodotSteam for Godot 3.1! If you are looking for the old master branch, it has been moved to the godot2 branch.**
-
-Upon the release of Godot 3.2, the Godot3 and Master branch will merge as there is no difference between the two.  The **godot3 branch** will be deleted and all Godot 3.x version will run off the **master branch**.  The **godot3-min** and **godot31-min** will also be merged into the same **godot3-min** branch.
+Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
 Documentation
 ----------
@@ -19,23 +13,33 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.0.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.0.1 Changes**
-- Added: Networking functionality, _thanks to Antokolos_
-- Changed: linked against Steamworks 1.44
-- Fixed: leaderboard_uploaded returning false no matter what
-- Fixed: getFriendGamePlayed now responds with correct dictionary of data
+**Version 3.0 Changes**
+- Added: missing Matchmaking signals/callbacks
+- Added: missing User signals/callbacks
+- Added: missing Utility signals/callbacks
+- Added: join_requested, screenshot_requested callback
+- Changed: merged Godot 3.0.6 into Master branch
+- Changed: callback descriptions updated
+- Changed: organization of cpp and h files for better readability
+- Changed: signal lobby_message_received to lobby_message
+- Changed: server_connect and server_disconnected renamed to steam_server_connect and steam_server_disconnected respectively
+- Changed: leaderboard_loaded, leaderboard_uploaded, and _leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively
+- Changed: workshop_item_created, workshop_item_installed, and item_updated renamed to item_created, item_installed, and workshop_item_updated respectively
+- Changed: renamed workshop to UGC to match Steamworks
+- Fixed: addFavoriteGame and getItemInstallInfo functions
+- Removed: connection_changed signal
 
 Known Issues
 ----------
-- Lobby message will crash game, favoriting lobbies does not work yet
+- Lobby message will crash game
 
 Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.1.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.1.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
