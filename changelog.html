@@ -29,32 +29,34 @@
 						<header class="main">
 							<h1>Change Log</h1>
 						</header>
-						<p>The change log for the repository. Since the change logs start well after the project had been going, versioning will be a bit weird! The Godot 3 version of the module will start a version 2.0.0 as it will eventually replace the Godot 2 version outright.</p>
+						<p>The change log for the repository.</p>
 						<ul class="actions">
-							<li><a class="button" href="#godot31">Godot 3.1</a></li>
-							<li><a class="button" href="#godot3">Godot 3</a></li>
-							<li><a class="button" href="#godot2">Godot 2</a></li>
+							<li><a class="button" href="#godot3">Godot 3.x</a></li>
+							<li><a class="button" href="#godot2">Godot 2.x</a></li>
 							<li><a class="button" href="#min">Minimal</a></li>
 							<li><a class="button" href="#gdnative">GDNative</a></li>
 							<li><a class="button" href="#server">Server</a></li>
 						</ul>
 						<hr />
-						<h2>Godot 3.1 Module</h2>
-						<a id="godot31"></a>
-						<h3>Version 1.0.1 Changes</h3>
-						<ul>
-							<li>Added: Networking functionality, thanks to Antokolos</li>
-							<li>Changed: linked against Steamworks 1.44</li>
-							<li>Fixed: leaderboard_uploaded returning false no matter what</li>
-							<li>Fixed: getFriendGamePlayed now responds with correct dictionary of data</li>
-						</ul>
-						<h3>Version 1.0.0 Changes</h3>
-						<ul>
-							<li>First version of module</li>
-						</ul>
-						<hr />
-						<h2>Godot 3 Module</h2>
+						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.0 Changes</h3>
+						<ul>
+							<li>Added: missing Matchmaking signals/callbacks</li>
+							<li>Added: missing User signals/callbacks</li>
+							<li>Added: missing Utility signals/callbacks</li>
+							<li>Added: join_requested, screenshot_requested callback</li>
+							<li>Changed: merged Godot 3.0.6 into Master branch</li>
+							<li>Changed: callback descriptions updated</li>
+							<li>Changed: organization of cpp and h files for better readability</li>
+							<li>Changed: signal lobby_message_received to lobby_message</li>
+							<li>Changed: server_connect and server_disconnected renamed to steam_server_connect and steam_server_disconnected respectively</li>
+							<li>Changed: leaderboard_loaded, leaderboard_uploaded, and _leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively</li>
+							<li>Changed: workshop_item_created, workshop_item_installed, and item_updated renamed to item_created, item_installed, and workshop_item_updated respectively</li>
+							<li>Changed: renamed workshop to UGC to match Steamworks</li>
+							<li>Fixed: addFavoriteGame and getItemInstallInfo functions</li>
+							<li>Removed: connection_changed signal</li>
+						</ul>
 						<h3>Version 2.8.5 Changes</h3>
 						<ul>
 							<li>Added: Networking functions; courtesy of Antokolos</li>
