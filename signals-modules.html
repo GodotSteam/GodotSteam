@@ -34,7 +34,7 @@
 						<header class="major">
 							<h3>App Signals</h3>
 						</header>
-						<h3>_dlc_installed</h4>
+						<h4>_dlc_installed</h4>
 						<ul>
 							<li>Triggered after the current user gains ownership of DLC and that DLC is installed.</li>
 							<li>Emits signal <strong><em>dlc_installed</em></strong> in response to function <strong><em>installDLC</em></strong>.</li>
@@ -51,11 +51,11 @@
 							<li>Triggered after the user executes a steam url with command line or query parameters such as steam://run/<appid>//?param1=value1;param2=value2;param3=value3; while the game is already running. The new params can be queried with getLaunchCommandLine and getLaunchQueryParam.</appid>
 							<li>Emits signal <strong><em>new_launch_url_parameters</em></strong>.</li>
 							<li>Does not send any data.</li>
-						</li>
+						</ul>
 						<header class="major">
 							<h3>Friends Signals</h3>
 						</header>
-						<h3>_avatar_loaded</h4>
+						<h4>_avatar_loaded</h4>
 						<ul>
 							<li>Called when a large avatar is loaded if you have tried requesting it when it was unavailable.</li>
 							<li>Emits signal <strong><em>avatar_loaded</em></strong> in response to function <strong><em>getFriendAvatar</em></strong>.</li>
@@ -202,25 +202,25 @@
 							<li>Emits signals <strong><em>lobby_data_update</em></strong>.</li>
 							<li>Sends along the success as a BOOL, the lobby ID, the member's Steam ID, and the key.</li>
 						</ul>
-						<h3>_lobby_joined</h3>
+						<h4>_lobby_joined</h4>
 						<ul>
 							<li>Recieved upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this.</li>
 							<li>Emits signal <strong><em>lobby_joined</em></strong>.</li>
 							<li>Sends along lobby ID, permssions, if locked or not, and the response as an INT.</li>
 						</ul>
-						<h3>_lobby_game_created</h3>
+						<h4>_lobby_game_created</h4>
 						<ul>
 							<li>A game server has been set via <strong><em>setLobbyGameServer</em></strong> for all of the members of the lobby to join. It's up to the individual clients to take action on this; the typical game behavior is to leave the lobby and connect to the specified game server; but the lobby may stay open throughout the session if desired.</li>
 							<li>Emits signal <strong><em>lobby_game_created</em></strong>.</li>
 							<li>Sends along the lobby ID, the server ID, the server's IP, and the server's port.</li>
 						</ul>
-						<h3>_lobby_invite</h3>
+						<h4>_lobby_invite</h4>
 						<ul>
 							<li>Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.</li>
 							<li>Emits signal <strong><em>lobby_invite</em></strong> in response to sending a Steam invite.</li>
 							<li>Sends along inviter's Steam ID, the lobby ID, and the game ID.</li>
 						</ul>
-						<h3>_lobby_match_list</h3>
+						<h4>_lobby_match_list</h4>
 						<ul>
 							<li>Result when requesting the lobby list.</li>
 							<li>Emits signal <strong><em>lobby_match_list</em></strong> in response to function <strong><em>requestLobbyList</em></strong>.</li>
@@ -229,13 +229,13 @@
 						<header class="major">
 							<h3>Networking Signals</h3>
 						</header>
-						<h3>_p2p_session_connect_fail</h3>
+						<h4>_p2p_session_connect_fail</h4>
 						<ul>
 							<li>Called when a user sends a packet and it fails.</li>
 							<li>Emits signal <strong><em>p2p_session_connect_fail</em></strong>.</li>
 							<li>Sends along the user's Steam ID and the failure reason.</li>
 						</ul>
-						<h3>_p2p_session_request</h3>
+						<h4>_p2p_session_request</h4>
 						<ul>
 							<li>Called when a user sends a packet.</li>
 							<li>Emits signal <strong><em>p2p_session_request</em></strong>.</li>
@@ -244,7 +244,7 @@
 						<header class="major">
 							<h3>Screenshot Signals</h3>
 						</header>
-						<h3>_screenshot_ready</h3>
+						<h4>_screenshot_ready</h4>
 						<ul>
 							<li>A screenshot successfully written or otherwise added to the library and can now be tagged.</li>
 							<li>Emits signal <strong><em>screenshot_ready</em></strong> in response to function <strong><em>writeScreenshot</em></strong>, <strong><em>addScreenshotToLibrary</em></strong>, or <strong><em>triggerScreenshot</em></strong>.</li>
@@ -259,19 +259,19 @@
 						<header class="major">
 							<h3>UGC Signals</h3>
 						</header>
-						<h3>_item_created</h3>
+						<h4>_item_created</h4>
 						<ul>
 							<li>Called when a new workshop item has been created.</li>
 							<li>Emits signal <strong><em>item_created</em></strong> in response to function <strong><em>createItem</em></strong>.</li>
 							<li>Sends along the result as an INT, the file ID, and if the TOS is accepted.</li>
 						</ul>
-						<h3>_item_installed</h3>
+						<h4>_item_installed</h4>
 						<ul>
 							<li>Called when a workshop item has been installed or updated.</li>
 							<li>Emits signal <strong><em>item_installed</em></strong>.</li>
 							<li>Sends along the app ID and file ID.</li>
 						</ul>
-						<h3>_item_updated</h3>
+						<h4>_item_updated</h4>
 						<ul>
 							<li>Called when an item update has completed.</li>
 							<li>Emits signal <strong><em>item_updated</em></strong> in response to function <strong><em>submitItemUpdate</em></strong>.</li>
@@ -298,7 +298,7 @@
 							<li>Emits signal <strong><em>game_web_callback</em></strong>.</li>
 							<li>Sends along the URL.</li>
 						</ul>
-						<h3>_get_auth_session_ticket_response</h3>
+						<h4>_get_auth_session_ticket_response</h4>
 						<ul>
 							<li>Result when creating an auth session ticket.</li>
 							<li>Emits signal <strong><em>get_auth_session_ticket_response</em></strong> in response to function <strong><em>getAuthSessionTicket</em></strong>.</li>
@@ -346,7 +346,7 @@
 							<li>Emits signal <strong><em>store_auth_url_response</em></strong>.</li>
 							<li>Sends along the URL.</li>
 						</ul>
-						<h3>_validate_auth_ticket_response</h3>
+						<h4>_validate_auth_ticket_response</h4>
 						<ul>
 							<li>Called when an auth ticket has been validated.</li>
 							<li>Emits signal <strong><em>validate_auth_ticket_response</em></strong> in response to function <strong><em>beginAuthSession</em></strong>.</li>
@@ -355,7 +355,7 @@
 						<header class="major">
 							<h3>User Stats Signals</h3>
 						</header>
-						<h3>_global_achievement_percentages_ready</h3>
+						<h4>_global_achievement_percentages_ready</h4>
 						<ul>
 							<li>Called when the global achievement percentages have been received from the server.</li>
 							<li>Emits signal <strong><em>global_achievement_percentages_ready</em></strong> in response to function <strong><em>requestGlobalAchievementPercentages</em></strong>.</li>
@@ -367,19 +367,19 @@
 							<li>Emits signal <strong><em>global_stats_received</em></strong>.</li>
 							<li>Sends along the game ID and the result.</li>
 						</ul>
-						<h3>_leaderboard_find_result</h3>
+						<h4>_leaderboard_find_result</h4>
 						<ul>
 							<li>Result when finding a leaderboard.</li>
 							<li>Emits signal <strong><em>leaderboard_find_result</em></strong> in response to function <strong><em>findLeaderboard</em></strong>.</li>
 							<li>Sends along the leaderboard handle and if it was found.</li>
 						</ul>
-						<h3>_leaderboard_scores_downloaded</h3>
+						<h4>_leaderboard_scores_downloaded</h4>
 						<ul>
 							<li>Called when scores for a leaderboard have been downloaded and are ready to be retrieved.</li>
 							<li>Emits signal <strong><em>leaderboard_scores_downloaded</em></strong> in response to function <strong><em>downloadLeaderboardEntries</em></strong>.</li>
 							<li>Sends along the leaderboards as an ARRAY.</li>
 						</ul>
-						<h3>_leaderboard_score_uploaded</h3>
+						<h4>_leaderboard_score_uploaded</h4>
 						<ul>
 							<li>Result indicating that a leaderboard score has been uploaded.</li>
 							<li>Emits signal <strong><em>leaderboard_score_uploaded</em></strong> in response to function <strong><em>uploadLeaderboardScore</em></strong>.</li>
@@ -391,32 +391,32 @@
 							<li>Emits signal <strong><em>leaderboard_ugc_set</em></strong>.</li>
 							<li>Sends along the leaderboard handle and the result.</li>
 						</ul>
-						<h3>_number_of_current_players</h3>
+						<h4>_number_of_current_players</h4>
 						<ul>
 							<li>Gets the current number of players for the current app ID.</li>
 							<li>Emits signal <strong><em>number_of_current_players</em></strong> in response to function <strong><em>getNumberOfCurrentPlayers</em></strong>.</li>
 							<li>Sends along the success and player numbers.</li>
 						</ul>
-						<h3>_user_achievement_icon_fetched</h3>
+						<h4>_user_achievement_icon_fetched</h4>
 						<ul>
 							<li>Result of an achievement icon that has been fetched.</li>
 							<li>Emits signal <strong><em>user_achievement_icon_fetched</em></strong> in response to function <strong><em>getAchievementIcon</em></strong>.</li>
 							<li>Sends along </li>
 							emit_signal("user_achievement_icon_fetched", gameID, achievementName, achieved, iconHandle);
 						</ul>
-						<h3>_user_achievement_stored</h3>
+						<h4>_user_achievement_stored</h4>
 						<ul>
 							<li>Result of a request to store the achievements on the server, or an "indicate progress" call. If both current progress and max progress are zero, that means the achievement has been fully unlocked.</li>
 							<li>Emits signal <strong><em>user_achievement_stored</em></strong> in response to function <strong><em>setAchievement</em></strong>.</li>
 							<li>Sends along the game ID, the achievement group, the name, the current progress and the maximum progress.</li>
 						</ul>
-						<h3>_user_stats_received</h3>
+						<h4>_user_stats_received</h4>
 						<ul>
 							<li>Called when the latest stats and achievements for a specific user (including the local user) have been received from the server.</li>
 							<li>Emits signal <strong><em>user_stats_received</em></strong> in response to function <strong><em>requestCurrentStats</em></strong> or <strong><em>requestUserStats</em></strong>.</li>
 							<li>Sends along the game ID, the result as an INT, and the user's Steam ID.</li>
 						</ul>
-						<h3>_user_stats_stored</h3>
+						<h4>_user_stats_stored</h4>
 						<ul>
 							<li>Result of a request to store the user stats.</li>
 							<li>Emits signal <strong><em>user_stats_stored</em></strong> in response to function <strong><em>storeStats</em></strong> or <strong><em>indicateAchievementProgress</em></strong>.</li>
@@ -449,7 +449,7 @@
 							<li>Emits signal <strong><em>ip_country</em></strong>.</li>
 							<li>Does not send any data.</li>
 						</ul>
-						<h3>_low_power</h3>
+						<h4>_low_power</h4>
 						<ul>
 							<li>Called when running on a laptop and less than 10 minutes of battery is left, and then fires then every minute afterwards.</li>
 							<li>Emits signal <strong><em>low_power</em></strong>.</li>
