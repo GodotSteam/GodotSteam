@@ -1,13 +1,14 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
-
+// Include INT types header
 #include <inttypes.h>
-#include <steam/steam_api.h>
-
+// Include Steamworks API header
+#include "steam/steam_api.h"
+// Include Godot headers
 #include "core/object.h"
-#include "scene/resources/texture.h"	// For avatars
+#include "scene/resources/texture.h"
 #include "core/reference.h"
-#include "core/dictionary.h"					// Contains array.h as well
+#include "core/dictionary.h"
 
 class Steam: public Object {
 	GDCLASS(Steam, Object);

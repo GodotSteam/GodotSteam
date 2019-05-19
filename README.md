@@ -15,21 +15,9 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v3.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.0 Changes**
-- Added: missing Matchmaking signals/callbacks
-- Added: missing User signals/callbacks
-- Added: missing Utility signals/callbacks
-- Added: join_requested, screenshot_requested callback
-- Changed: merged Godot 3.0.6 into Master branch
-- Changed: callback descriptions updated
-- Changed: organization of cpp and h files for better readability
-- Changed: signal lobby_message_received to lobby_message
-- Changed: server_connect and server_disconnected renamed to steam_server_connect and steam_server_disconnected respectively
-- Changed: leaderboard_loaded, leaderboard_uploaded, and _leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively
-- Changed: workshop_item_created, workshop_item_installed, and item_updated renamed to item_created, item_installed, and workshop_item_updated respectively
-- Changed: renamed workshop to UGC to match Steamworks
-- Fixed: addFavoriteGame and getItemInstallInfo functions
-- Removed: connection_changed signal
+**Version 3.0.1 Changes**
+- Added: MacOS C++ rule back in for compiling
+- Changed: output for getFriendGamePlayed to show game information even if no valid lobby
 
 Known Issues
 ----------

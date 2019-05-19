@@ -1,6 +1,8 @@
+// Include GodotSteam headear
 #include "godotsteam.h"
-#include <steam/steam_api.h>
-
+// Include Steamworks API header
+#include "steam/steam_api.h"
+// Include some Godot headers
 #include "core/io/ip_address.h"
 #include "core/io/ip.h"
 
@@ -541,7 +543,11 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
 			friendGame["lobby"] = uint64_t(gameInfo.m_steamIDLobby.ConvertToUint64());
 		}
 		else{
-			friendGame["error"] = "No valid lobby";
+			friendGame["id"] = gameInfo.m_gameID.AppID();
+			friendGame["ip"] = "0.0.0.0";
+			friendGame["gamePort"] = "0";
+			friendGame["queryPort"] = "0";
+			friendGame["lobby"] = "No valid lobby";
 		}
 	}
 	return friendGame;
