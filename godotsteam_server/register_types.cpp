@@ -1,6 +1,6 @@
 #include "register_types.h"
-#include "class_db.h"
-#include "engine.h"
+#include "core/class_db.h"
+#include "core/engine.h"
 #include "godotsteam_server.h"
 
 static SteamServer* SteamServerPtr = NULL;

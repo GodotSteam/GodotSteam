@@ -14,7 +14,7 @@ SteamServer::SteamServer(){
 SteamServer* SteamServer::get_singleton(){
 	return singleton;
 }
-CSteamID SteamServer::createSteamID(uint32_t steamID, int accountType){
+CSteamID SteamServer::createSteamID(uint64_t steamID, int accountType){
 	CSteamID cSteamID;
 	if(accountType < 0 || accountType >= k_EAccountTypeMax){
 		accountType = 1;
@@ -22,12 +22,45 @@ CSteamID SteamServer::createSteamID(uint32_t steamID, int accountType){
 	cSteamID.Set(steamID, EUniverse(k_EUniversePublic), EAccountType(accountType));
 	return cSteamID;
 }
+
 /////////////////////////////////////////////////
-///// STEAMWORKS FUNCTIONS //////////////////////
+///// MAIN FUNCTIONS ////////////////////////////
+/////////////////////////////////////////////////
 //
 // Initialize the server to Steam.
-bool SteamServer::serverInit(uint32 ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, EServerMode serverMode, const String& versionString){
-	if(!SteamInternal_GameServer_Init(ip, steamPort, gamePort, queryPort, serverMode, versionString.utf8().get_data())){
+bool SteamServer::serverInit(const String& ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, int serverMode, const String& versionString){
+	// Conver the server mode back
+	EServerMode mode;
+	if(serverMode == 1){
+		mode = eServerModeNoAuthentication;
+	}
+	else if(serverMode == 2){
+		mode = eServerModeAuthentication;
+	}
+	else{
+		mode = eServerModeAuthenticationAndSecure;
+	}
+	// Resolve address and convert it from IP_Address string to uint32_t
+	IP_Address address;
+	if(ip.is_valid_ip_address()){
+		address = ip;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(address == IP_Address()){
+		return false;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, versionString.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -41,17 +74,50 @@ void SteamServer::serverReleaseCurrentThreadMemory(){
 void SteamServer::serverShutdown(){
 	SteamGameServer_Shutdown();
 }
+
 /////////////////////////////////////////////////
 ///// SERVER FUNCTIONS //////////////////////////
+/////////////////////////////////////////////////
 //
 // NOTE: The following, if set, must be set before calling LogOn; they may not be changed after.
 //
 // This is called by SteamGameServer_Init and will usually not need to be called directly.
-bool SteamServer::initGameServer(uint32 ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, EServerMode serverMode, const String& versionString){
+bool SteamServer::initGameServer(const String& ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, int serverMode, const String& versionString){
 	if(SteamGameServer() == NULL){
 		return false;
 	}
-	if(!SteamInternal_GameServer_Init(ip, steamPort, gamePort, queryPort, serverMode, versionString.utf8().get_data())){
+	// Conver the server mode back
+	EServerMode mode;
+	if(serverMode == 1){
+		mode = eServerModeNoAuthentication;
+	}
+	else if(serverMode == 2){
+		mode = eServerModeAuthentication;
+	}
+	else{
+		mode = eServerModeAuthenticationAndSecure;
+	}
+	// Resolve address and convert it from IP_Address string to uint32_t
+	IP_Address address;
+	if(ip.is_valid_ip_address()){
+		address = ip;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(address == IP_Address()){
+		return false;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, versionString.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -222,64 +288,36 @@ void SteamServer::setRegion(const String& region){
 }
 // NOTE: These functions are player list management / authentication.
 //
-// Handles receiving a new connection from a Steam user.  This call will ask the Steam
-// servers to validate the users identity, app ownership, and VAC status.  If the Steam servers 
-// are off-line, then it will validate the cached ticket itself which will validate app ownership 
-// and identity.  The AuthBlob here should be acquired on the game client using SteamUser()->InitiateGameConnection()
-// and must then be sent up to the game server for authentication.
-bool SteamServer::sendUserConnectAndAuthenticate(uint32 ipClient, const void *authBlob, uint32 authBlobSize, uint32_t steamID){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	CSteamID authID = createSteamID(steamID);
-	return SteamGameServer()->SendUserConnectAndAuthenticate(ipClient, authBlob, authBlobSize, &authID);
-}
-// Creates a fake user (ie, a bot) which will be listed as playing on the server, but skips validation.
-uint64_t SteamServer::createUnauthenticatedUserConnection(){
-	if(SteamGameServer() == NULL){
-		return 0;
-	}
-	CSteamID steamID = SteamGameServer()->CreateUnauthenticatedUserConnection();
-	return steamID.ConvertToUint64();
-}
-// Should be called whenever a user leaves server; lets Steam internally track which users are currently on which servers.
-void SteamServer::sendUserDisconnect(int steamID){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	CSteamID disconnectID = createSteamID(steamID);
-	SteamGameServer()->SendUserDisconnect(disconnectID);
-}
-// Update the data to be displayed in the server browser; for regular users you must call this after you recieve a GSUserValidationSuccess callback.
-bool SteamServer::updateUserData(int steamID, const String& name, uint32 score){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	CSteamID updateID = createSteamID(steamID);
-	return SteamGameServer()->BUpdateUserData(updateID, name.utf8().get_data(), score);
-}
-// NOTES: These are new auth system APIs, do not mix with old auth system APIs.
-//
 // Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).
-uint32 SteamServer::getAuthSessionTicket(void *ticket, int maxTicket, uint32 *pcbTicket){
+uint32_t SteamServer::getAuthSessionTicket(){
 	if(SteamGameServer() == NULL){
 		return 0;
 	}
-	return SteamGameServer()->GetAuthSessionTicket(ticket, maxTicket, pcbTicket);
+	uint32_t ticketSize = 1024;
+	uint32_t *ticket = memnew_arr(uint32_t, ticketSize);
+	uint32_t id = SteamGameServer()->GetAuthSessionTicket(ticket, ticketSize, &ticketSize);
+	return id;
 }
-int SteamServer::beginAuthSession(const void *authTicket, int cbAuthTicket, int steamID){
+// Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.
+int SteamServer::beginAuthSession(uint32_t authTicket, uint64_t steamID){
 	if(SteamGameServer() == NULL){
-		return 1;
+		return -1;
 	}
-	CSteamID authID = createSteamID(steamID);
-	return SteamGameServer()->BeginAuthSession(authTicket, cbAuthTicket, authID);
+	for(int i = 0; i < tickets.size(); i++){
+		TicketData ticket = tickets.get(i);
+		if (ticket.id == authTicket){
+			CSteamID authSteamID = createSteamID(steamID);
+			return SteamGameServer()->BeginAuthSession(ticket.buffer, ticket.size, authSteamID);
+		}
+	}
+	return -1;
 }
 // Stop tracking started by beginAuthSession; called when no longer playing game with this entity;
-void SteamServer::endAuthSession(int steamID){
+void SteamServer::endAuthSession(uint64_t steamID){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	CSteamID authID = createSteamID(steamID);
+	CSteamID authID = (uint64)steamID;
 	SteamGameServer()->EndAuthSession(authID);
 }
 // Cancel auth ticket from getAuthSessionTicket; called when no longer playing game with the entity you gave the ticket to.
@@ -290,37 +328,75 @@ void SteamServer::cancelAuthTicket(int authTicket){
 	SteamGameServer()->CancelAuthTicket(authTicket);
 }
 // After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC
-int SteamServer::userHasLicenceForApp(int steamID, AppId_t appID){
+int SteamServer::userHasLicenceForApp(uint64_t steamID, AppId_t appID){
 	if(SteamGameServer() == NULL){
 		return 0;
 	}
-	CSteamID userID = createSteamID(steamID);
+	CSteamID userID = (uint64)steamID;
 	return SteamGameServer()->UserHasLicenseForApp(userID, appID);
 }
 // Ask if user is in specified group; results returned by GSUserGroupStatus_t.
-bool SteamServer::requestUserGroupStatus(int steamID, int groupID){
+bool SteamServer::requestUserGroupStatus(uint64_t steamID, int groupID){
 	if(SteamGameServer() == NULL){
 		return false;
 	}
-	CSteamID userID = createSteamID(steamID);
-	CSteamID clanID = createSteamID(groupID);
+	CSteamID userID = (uint64)steamID;
+	CSteamID clanID = (uint64)groupID;
 	return SteamGameServer()->RequestUserGroupStatus(userID, clanID);
 }
 // NOTE: These are in GameSocketShare mode, where instead of ISteamGameServer creating sockets to talk to master server, it lets the game use its socket to forward messages back and forth.
 //
 // These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.
-bool SteamServer::handleIncomingPacket(const void *data, int cbData, uint32 ip, uint16 port){
+Dictionary SteamServer::handleIncomingPacket(int packet, const String& ip, uint16 port){
+	Dictionary result;
 	if(SteamGameServer() == NULL){
-		return false;
+		return result;
 	}
-	return SteamGameServer()->HandleIncomingPacket(data, cbData, ip, port);
+	PoolByteArray data;
+	data.resize(packet);
+	// Resolve address and convert it from IP_Address string to uint32_t
+	IP_Address address;
+	if(ip.is_valid_ip_address()){
+		address = ip;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed
+	if(!address.is_valid()){
+		return result;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	if(SteamGameServer()->HandleIncomingPacket(data.write().ptr(), packet, *((uint32_t *)ip4_p), port)){
+		result["data"] = data;
+	}
+	return result;
 }
-// AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP.
-int SteamServer::getNextOutgoingPacket(void *out, int maxOut, uint32 *address, uint16 *port){
+// AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP. Returns 0 if there are no more packets.
+Dictionary SteamServer::getNextOutgoingPacket(){
+	Dictionary packet;
 	if(SteamGameServer() == NULL){
-		return 0;
+		return packet;
 	}
-	return SteamGameServer()->GetNextOutgoingPacket(out, maxOut, address, port);
+	PoolByteArray out;
+	int maxOut = 16 * 1024;
+	uint32 address;
+	uint16 port;
+	// Retrieve the packet information
+	int length = SteamGameServer()->GetNextOutgoingPacket(&out, maxOut, &address, &port);
+	// Place packet information in dictionary and return it
+	packet["length"] = length;
+	packet["out"] = out;
+	packet["address"] = address;
+	packet["port"] = port;
+	return packet;
 }
 // NOTE: These are heartbeat/advertisement functions.
 //
@@ -350,7 +426,7 @@ void SteamServer::associateWithClan(uint64_t clanID){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	CSteamID groupID = createSteamID(clanID);
+	CSteamID groupID = (uint64)clanID;
 	SteamGameServer()->AssociateWithClan(groupID);
 }
 // Ask if any of the current players dont want to play with this new player - or vice versa.
@@ -358,12 +434,13 @@ void SteamServer::computeNewPlayerCompatibility(uint64_t steamID){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	CSteamID userID = createSteamID(steamID);
+	CSteamID userID = (uint64)steamID;
 	SteamGameServer()->ComputeNewPlayerCompatibility(userID);
 }
 
 /////////////////////////////////////////////////
 // SIGNALS //////////////////////////////////////
+/////////////////////////////////////////////////
 //
 // Logging the game server onto Steam
 void SteamServer::_server_Connect_Failure(SteamServerConnectFailure_t* serverData){
@@ -546,9 +623,11 @@ void SteamServer::_player_Compat(ComputeNewPlayerCompatibilityResult_t* playerDa
 // BIND METHODS /////////////////////////////////
 //
 void SteamServer::_bind_methods(){
+	// Main Bind Methods ////////////////////////
 	ClassDB::bind_method("serverInit", &SteamServer::serverInit);
 	ClassDB::bind_method("serverReleaseCurrentThreadMemory", &SteamServer::serverReleaseCurrentThreadMemory);
 	ClassDB::bind_method("serverShutdown", &SteamServer::serverShutdown);
+
 	// Server Bind Methods //////////////////////
 	ClassDB::bind_method("initGameServer", &SteamServer::initGameServer);
 	ClassDB::bind_method("setProduct", &SteamServer::setProduct);
@@ -574,10 +653,6 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("setGameTags", &SteamServer::setGameTags);
 	ClassDB::bind_method("setGameData", &SteamServer::setGameData);
 	ClassDB::bind_method("setRegion", &SteamServer::setRegion);
-	ClassDB::bind_method("sendUserConnectAndAuthenticate", &SteamServer::sendUserConnectAndAuthenticate);
-	ClassDB::bind_method("createUnauthenticatedUserConnection", &SteamServer::createUnauthenticatedUserConnection);
-	ClassDB::bind_method("sendUserDisconnect", &SteamServer::sendUserDisconnect);
-	ClassDB::bind_method("updateUserData", &SteamServer::updateUserData);
 	ClassDB::bind_method("getAuthSessionTicket", &SteamServer::getAuthSessionTicket);
 	ClassDB::bind_method("beginAuthSession", &SteamServer::beginAuthSession);
 	ClassDB::bind_method("endAuthSession", &SteamServer::endAuthSession);
@@ -589,6 +664,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("enableHeartbeats", &SteamServer::enableHeartbeats);
 	ClassDB::bind_method("setHeartbeatInterval", &SteamServer::setHeartbeatInterval);
 	ClassDB::bind_method("forceHeartbeat", &SteamServer::forceHeartbeat);
+
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("server_failure", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
 	ADD_SIGNAL(MethodInfo("server_connected"));
@@ -601,6 +677,7 @@ void SteamServer::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("group_status", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "groupID"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
 	ADD_SIGNAL(MethodInfo("clan_associate", PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("player_compatibility", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steamID")));
+
 	// Result constants /////////////////////////
 	BIND_CONSTANT(RESULT_OK);						// 1
 	BIND_CONSTANT(RESULT_FAIL);						// 2
@@ -709,11 +786,13 @@ void SteamServer::_bind_methods(){
 	BIND_CONSTANT(RESULT_GSLT_EXPIRED);				// 106
 	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);		// 107
 	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);			// 108
+
 	// Authorization mode constants /////////////
 	BIND_CONSTANT(MODE_INVALID);					// 0
 	BIND_CONSTANT(MODE_NO_AUTH);					// 1
 	BIND_CONSTANT(MODE_AUTH);						// 2
 	BIND_CONSTANT(MODE_AUTH_SECURE);				// 3
+
 	// Authorization ticket constants ///////////
 	BIND_CONSTANT(AUTH_OK);							// 0
 	BIND_CONSTANT(AUTH_INVALID_TICKET);				// 1
@@ -721,10 +800,12 @@ void SteamServer::_bind_methods(){
 	BIND_CONSTANT(AUTH_INVALID_VERSION);			// 3
 	BIND_CONSTANT(AUTH_MISMATCH);					// 4
 	BIND_CONSTANT(AUTH_EXPIRED_TICKET);				// 5
+
 	// License constants ////////////////////////
 	BIND_CONSTANT(LICENSE_HAS);						// 0
 	BIND_CONSTANT(LICENSE_DOES_NOT);				// 1
 	BIND_CONSTANT(LICENSE_NO_AUTH);					// 2
+
 	// Client denial constants //////////////////
 	BIND_CONSTANT(DENY_INVALID);					// 0
 	BIND_CONSTANT(DENY_INVALID_VERSION);			// 1

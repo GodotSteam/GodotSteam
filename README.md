@@ -1,5 +1,5 @@
 # GodotSteam Server for Godot 3.x
-Steam Server API for the Godot game engine (versions 3 to 3.1). For the Windows, Linux, and Mac platforms. 
+Steam Server API for the Godot game engine (versions 3 to 3.1.1). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
@@ -15,10 +15,14 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-**Version 0.0.3 Changes**
-- Removed: depreciated signal __client_Achieve_Status_.
-- Removed: depreciated signal __gameplay_Stats_.
-- Removed: depreciated signal __reputation_.
+**Version 1.0.0 Changes**
+- Added: missing server functions
+- Fixed: missing argument in config.py
+- Fixed: missing Godot include that allows more than 5 arguments per function
+- Fixed: a lot of different functions
+- Fixed: issue with include in register_types.cpp
+- Removed: remaining depreciated functions
+- Removed: functions not compatible with new networking functions
 
 Donate
 -------------

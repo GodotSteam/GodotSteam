@@ -4,10 +4,11 @@
 #include <inttypes.h>
 #include <steam/steam_gameserver.h>
 
-#include "object.h"
+#include "core/object.h"
+#include "core/method_bind_ext.gen.inc"
 #include "scene/resources/texture.h"	// For avatars
-#include "reference.h"
-#include "dictionary.h"					// Contains array.h as well
+#include "core/reference.h"
+#include "core/dictionary.h"			// Contains array.h as well
 
 class SteamServer: public Object {
 	GDCLASS(SteamServer, Object);
@@ -35,13 +36,15 @@ class SteamServer: public Object {
 		SteamServer();
 		~SteamServer();
 
-		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
-		// Steamworks ///////////////////////////
-		bool serverInit(uint32 ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, EServerMode serverMode, const String& versionString);
+		CSteamID createSteamID(uint64_t steamID, int accountType=-1);
+
+		// Main /////////////////////////////////
+		bool serverInit(const String& ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, int serverMode, const String& versionString);
 		void serverReleaseCurrentThreadMemory();
 		void serverShutdown();
+
 		// Server ///////////////////////////////
-		bool initGameServer(uint32 ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, EServerMode serverMode, const String& versionString);
+		bool initGameServer(const String& ip, uint16 steamPort, uint16 gamePort, uint16 queryPort, int serverMode, const String& versionString);
 		void setProduct(const String& product);
 		void setGameDescription(const String& description);
 		void setModDir(const String& modDir);
@@ -65,18 +68,14 @@ class SteamServer: public Object {
 		void setGameTags(const String& tags);
 		void setGameData(const String& data);
 		void setRegion(const String& region);
-		bool sendUserConnectAndAuthenticate(uint32 ipClient, const void *authBlob, uint32 authBlobSize, uint32_t steamID);
-		uint64_t createUnauthenticatedUserConnection();
-		void sendUserDisconnect(uint64_t steamID);
-		bool updateUserData(uint64_t steamID, const String& *name, uint32 score);
-		uint32 getAuthSessionTicket(void *ticket, int maxTicket, uint32 *pcbTicket);
-		int beginAuthSession(const void *authTicket, int cbAuthTicket, int steamID);
+		uint32_t getAuthSessionTicket();
+		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
 		void endAuthSession(uint64_t steamID);
 		void cancelAuthTicket(int authTicket);
 		int userHasLicenceForApp(uint64_t steamID, AppId_t appID);
-		bool requestUserGroupStatus(int steamID, int groupID);
-		bool handleIncomingPacket(const void *data, int cbData, uint32 ip, uint16 port);
-		int getNextOutgoingPacket(void *out, int maxOut, uint32 *address, uint16 *port);
+		bool requestUserGroupStatus(uint64_t steamID, int groupID);
+		Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
+		Dictionary getNextOutgoingPacket();
 		void enableHeartbeats(bool active);
 		void setHeartbeatInterval(int interval);
 		void forceHeartbeat();
@@ -86,8 +85,10 @@ class SteamServer: public Object {
 	protected:
 		static void _bind_methods();
 		static SteamServer* singleton;
+
 	private:
 		bool isInitSuccess;
+
 		// Authentication
 		struct TicketData {
 			uint32_t id;
@@ -95,8 +96,10 @@ class SteamServer: public Object {
 			uint32_t size;
 		};
 		Vector<TicketData> tickets;
+
 		/////////////////////////////////////////
 		// STEAM SERVER CALLBACKS ///////////////
+		/////////////////////////////////////////
 		//
 		// Server callbacks
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _server_Connect_Failure, SteamServerConnectFailure_t);
@@ -109,6 +112,7 @@ class SteamServer: public Object {
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _client_Group_Status, GSClientGroupStatus_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _associate_Clan, AssociateWithClanResult_t);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _player_Compat, ComputeNewPlayerCompatibilityResult_t);
+
 		// Run the Steamworks server API callbacks
 		void run_callbacks(){
 			SteamGameServer_RunCallbacks();
