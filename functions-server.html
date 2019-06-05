@@ -172,32 +172,12 @@
 							<li>Region identifier; optional. Default is empty meaning 'world'.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>sendUserConnectAndAuthenticate( <sup>int</sup> ipClient, <sup>void</sup> authBlob, <sup>int</sup> authBlobSize, <sup>int</sup> steamID )</h4>
-						<ul>
-							<li>Handles receiving a new connection from a Steam user. This call will ask the Steam servers to validate the users identity, app ownership, and VAC status. If the Steam servers are off-line, then it will validate the cached ticket itself which will validate app ownership and identity. The AuthBlob here should be acquired on the game client using SteamUser()->InitiateGameConnection() and must then be sent up to the game server for authentication.</li>
-							<li>BOOL; returns true or false.</li>
-						</ul>
-						<h4>createUnauthenticatedUserConnection()</h4>
-						<ul>
-							<li>Creates a fake user (ie, a bot) which will be listed as playing on the server, but skips validation.</li>
-							<li>INT.</li>
-						</ul>
-						<h4>sendUserDisconnect( <sup>int</sup> steamID )</h4>
-						<ul>
-							<li>Should be called whenever a user leaves server; lets Steam internally track which users are currently on which servers.</li>
-							<li>VOID.</li>
-						</ul>
-						<h4>updateUserData( <sup>int</sup> steamID, <sup>string</sup> name, <sup>int</sup> score )</h4>
-						<ul>
-							<li>Update the data to be displayed in the server browser; for regular users you must call this after you recieve a GSUserValidationSuccess callback.</li>
-							<li>BOOL; returns true or false.</li>
-						</ul>
-						<h4>getAuthSessionTicket( <sup>void</sup> ticket, <sup>int</sup> maxTicket, <sup>int</sup> pcbTicket )</h4>
+						<h4>getAuthSessionTicket()</h4>
 						<ul>
 							<li>Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).</li>
-							<li>INT.</li>
+							<li>INT; returns the ticket handle.</li>
 						</ul>
-						<h4>beginAuthSession( <sup>void</sup> authTicket, <sup>int</sup> cbAuthTicket, <sup>int</sup> steamID )</h4>
+						<h4>beginAuthSession( <sup>int</sup> authTicket, <sup>int</sup> steamID )</h4>
 						<ul>
 							<li>Begin an authenticated session.</li>
 							<li>INT.</li>
@@ -222,15 +202,15 @@
 							<li>Ask if user is in specified group; results returned by GSUserGroupStatus_t.</li>
 							<li>BOOL; returns true or false.</li>
 						</ul>
-						<h4>handleIncomingPacket( <sup>void</sup> data, <sup>int</sup> cbData, <sup>int</sup> ip, <sup>int</sup> port )</h4>
+						<h4>handleIncomingPacket( <sup>int</sup> packet, <sup>string</sup> ip, <sup>int</sup> port )</h4>
 						<ul>
 							<li>These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.</li>
-							<li>BOOL; returns true or false.</li>
+							<li>DICTIONARY; contains the packet as a POOLBYTEARRAY.</li>
 						</ul>
-						<h4>getNextOutgoingPacket( <sup>void</sup> out, <sup>int</sup> maxOut, <sup>int</sup> address, <sup>int</sup> port )</h4>
+						<h4>getNextOutgoingPacket()</h4>
 						<ul>
 							<li>AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP.</li>
-							<li>INT.</li>
+							<li>DICTIONARY; contains the length, packet as a POOLBYTEARRAY, the IP address it goes to, and the port. If it fails or there are not more packets, the length will be 0.</li>
 						</ul>
 						<h4>enableHeartbeats( <sup>bool</sup> active )</h4>
 						<ul>

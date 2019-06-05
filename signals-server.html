@@ -73,6 +73,24 @@
 							<li>Emits signal <strong><em>server_secure</em></strong>.</li>
 							<li>Sends along security response as a BOOL. If true, the game server should display itself as secure to users, false otherwise.</li>
 						</ul>
+						<h3>_server_Connect_Failure</h3>
+						<ul>
+							<li>Server has failed connecting to the Steam back-end. Provides a result reason and possibly retrying.</li>
+							<li>Emits signal <strong><em>server_failure</em></strong>.
+							<li>Sends along the result as an INT and if it is retrying to connect as a BOOL.</li>
+						</ul>
+						<h3>_server_Connected</h3>
+						<ul>
+							<li>Server has connected to the Steam back-end; serverData has no fields.</li>
+							<li>Emits signal <strong><em>server_connected</em></strong>.
+							<li>Sends along no additional data.</li>
+						</ul>
+						<h3>_server_Disconnected</h3>
+						<ul>
+							<li>Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching SteamServersConnected_t has been posted.</li>
+							<li>Emits signal <strong><em>server_disconnected</em></strong>.
+							<li>Sends along the result as an INT.</li>
+						</ul>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
