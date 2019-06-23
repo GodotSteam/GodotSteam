@@ -109,6 +109,7 @@ class Steam: public Object {
 		Array getConnectedControllers();
 		uint64_t getControllerForGamepadIndex(int index);
 		uint64_t getCurrentActionSet(uint64_t controllerHandle);
+		uint64_t getInputTypeForHandle(uint64_t controllerHandle);
 		Dictionary getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle);
 		uint64_t getDigitalActionHandle(const String& actionName);
 		Array getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle);
