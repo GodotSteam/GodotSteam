@@ -356,6 +356,13 @@ uint64_t Steam::getCurrentActionSet(uint64_t controllerHandle){
 	}
 	return 0;
 }
+// Get the input type (device model) for the specified controller. 
+uint64_t Steam::getInputTypeForHandle(uint64_t controllerHandle){
+    if(SteamController() != NULL){
+		return (uint64_t)SteamController()->GetInputTypeForHandle((ControllerHandle_t)controllerHandle);
+	}
+	return 0;
+}
 // Returns the current state of the supplied digital game action.
 Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle){
 	ControllerDigitalActionData_t data;
@@ -3307,6 +3314,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getConnectedControllers", &Steam::getConnectedControllers);
 	ClassDB::bind_method("getControllerForGamepadIndex", &Steam::getControllerForGamepadIndex);
 	ClassDB::bind_method("getCurrentActionSet", &Steam::getCurrentActionSet);
+	ClassDB::bind_method("getInputTypeForHandle", &Steam::getInputTypeForHandle);
 	ClassDB::bind_method("getDigitalActionData", &Steam::getDigitalActionData);
 	ClassDB::bind_method("getDigitalActionHandle", &Steam::getDigitalActionHandle);
 	ClassDB::bind_method("getDigitalActionOrigins", &Steam::getDigitalActionOrigins);
