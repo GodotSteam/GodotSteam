@@ -2084,7 +2084,7 @@ void Steam::_lobby_message(LobbyChatMsg_t* callData){
 	CSteamID userID = callData->m_ulSteamIDUser;
 	uint8 chatType = callData->m_eChatEntryType;
 	// Get the chat message data
-	String data;
+	char buffer[4096] = {0};
 	// Get chat type
 	EChatEntryType type;
 	if(chatType == CHAT_INVALID){
@@ -2123,9 +2123,9 @@ void Steam::_lobby_message(LobbyChatMsg_t* callData){
 	else if(chatType == CHAT_LINK_BLOCKED){
 		type = k_EChatEntryTypeLinkBlocked;
 	}
-	int result = SteamMatchmaking()->GetLobbyChatEntry(callData->m_ulSteamIDLobby, callData->m_iChatID, &userID, &data, 4096, &type);
+	int result = SteamMatchmaking()->GetLobbyChatEntry(callData->m_ulSteamIDLobby, callData->m_iChatID, &userID, &buffer, 4096, &type);
 	uint64_t user = userID.ConvertToUint64();
-	emit_signal("lobby_message", result, user, data.utf8().get_data(), type);
+	emit_signal("lobby_message", result, user, String(buffer), type);
 }
 // A lobby chat room state has changed, this is usually sent when a user has joined or left the lobby.
 void Steam::_lobby_chat_update(LobbyChatUpdate_t* callData){
