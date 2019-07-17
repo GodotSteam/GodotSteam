@@ -1216,9 +1216,34 @@
 						<header class="major">
 							<h3>Utilities</h3>
 						</header>
+						<h4>overlayNeedsPresent()</h4>
+						<ul>
+							<li>Checks if the Overlay needs a present. Only required if using event driven render updates.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getAppID()</h4>
+						<ul>
+							<li>Get the Steam ID of the running application/game.</li>
+							<li>INT.</li>
+						</ul>
 						<h4>getCurrentBatteryPower()</h4>
 						<ul>
 							<li>Get the amount of battery power, clearly for laptops.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getImageRGBA( <sup>int</sup> image )</h4>
+						<ul>
+							<li>Gets the image bytes from an image handle.</li>
+							<li>DICTIONARY; returns the buffer.</li>
+						</ul>
+						<h4>getImageSize ( <sup>int</sup> image )</h4>
+						<ul>
+							<li>Gets the size of a Steam image handle.</li>
+							<li>DICTIONARY; returns the width and height.</li>
+						</ul>
+						<h4>getIPCCallCount</h4>
+						<ul>
+							<li>Returns the number of IPC calls made since the last time this function was called.</li>
 							<li>INT.</li>
 						</ul>
 						<h4>getIPCountry()</h4>
@@ -1231,30 +1256,45 @@
 							<li>Time since application/game was started.</li>
 							<li>INT; returns time in seconds.</li>
 						</ul>
+						<h4>getSecondsSinceComputerActive()</h4>
+						<ul>
+							<li>Time since the user last moved the mouse.</li>
+							<li>INT; returns time in seconds.</li>
+						</ul>
 						<h4>getServerRealTime()</h4>
 						<ul>
 							<li>Get the actual time.</li>
 							<li>INT; returns UNIX time from Steam servers.</li>
-						</ul>
-						<h4>isOverlayEnabled()</h4>
-						<ul>
-							<li>Check if Steam overlay is enabled.</li>
-							<li>BOOL; returns true or false.</li>
-						</ul>
-						<h4>isSteamRunningInVR()</h4>
-						<ul>
-							<li>Is Steam running in VR?</li>
-							<li>BOOL; returns true or false.</li>
 						</ul>
 						<h4>getSteamUILanguage()</h4>
 						<ul>
 							<li>Get the Steam user interface language.</li>
 							<li>STRING; should return two-letter language code.</li>
 						</ul>
-						<h4>getAppID()</h4>
+						<h4>isOverlayEnabled()</h4>
 						<ul>
-							<li>Get the Steam ID of the running application/game.</li>
-							<li>INT.</li>
+							<li>Check if Steam overlay is enabled.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isSteamInBigPictureMode()</h4>
+						<ul>
+							<li>Returns true if Steam and the Steam Overlay are running in Big Picture mode.</li>
+							<li>BOOL.</li>
+						</ul>
+						<h4>isSteamRunningInVR()</h4>
+						<ul>
+							<li>Is Steam running in VR?</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>isVRHeadsetStreamingEnabled</h4>
+						<ul>
+							<li>Checks if the HMD view will be streamed via Steam In-Home Streaming.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setOverlayNotificationInset( <sup>int</sup> horizontal, <sup>int</sup> vertical )</h4>
+						<ul>
+							<li>Sets the inset of the overlay notification from the corner specified by SetOverlayNotificationPosition. Integer should be number of pixels.</li>
+							<li>VOID.</li>
 						</ul>
 						<h4>setOverlayNotificationPosition( <sup>int</sup> pos )</h4>
 						<ul>
@@ -1268,25 +1308,20 @@
 							</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>isSteamInBigPictureMode()</h4>
+						<h4>setVRHeadsetStreamingEnabled()</h4>
 						<ul>
-							<li>Returns true if Steam and the Steam Overlay are running in Big Picture mode.</li>
-							<li>BOOL.</li>
+							<li>Set whether the HMD content will be streamed via Steam In-Home Streaming.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>showGamepadTextInput( <sup>int</sup> inputMode, <sup>int</sup> lineInputMode, <sup>string</sup> description, <sup>int</sup> maxText, <sup>string</sup>presetText )</h4>
+						<ul>
+							<li>Activates the Big Picture text input dialog which only supports gamepad input.</li>
+							<li>BOOL; returns true or false if activated correctly.</li>
 						</ul>
 						<h4>startVRDashboard()</h4>
 						<ul>
 							<li>Ask SteamUI to create and render its OpenVR dashboard.</li>
 							<li>VOID.</li>
-						</ul>
-						<h4>getImageRGBA( <sup>int</sup> image )</h4>
-						<ul>
-							<li>Gets the image bytes from an image handle.</li>
-							<li>DICTIONARY; returns the buffer.</li>
-						</ul>
-						<h4>getImageSize ( <sup>int</sup> image )</h4>
-						<ul>
-							<li>Gets the size of a Steam image handle.</li>
-							<li>DICTIONARY; returns the width and height.</li>
 						</ul>
 						<header class="major">
 							<h3>UGC / Workshop</h3>
