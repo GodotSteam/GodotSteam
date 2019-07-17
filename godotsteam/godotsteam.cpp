@@ -2502,10 +2502,12 @@ void Steam::_check_file_signature(CheckFileSignature_t *callData){
 // Called when the big picture gamepad text input has been closed.
 void Steam::_gamepad_text_input_dismissed(GamepadTextInputDismissed_t* callData){
 	char text;
+	uint32 length = 0;
 	if(callData->m_bSubmitted){
 		SteamUtils()->GetEnteredGamepadTextInput(&text, callData->m_unSubmittedText);
+		length = SteamUtils()->GetEnteredGamepadTextLength();
 	}
-	emit_signal("gamepad_text_input_dismissed", text);
+	emit_signal("gamepad_text_input_dismissed", text, length);
 }
 // Called when the country of the user changed. The country should be updated with getIPCountry.
 void Steam::_ip_country(IPCountry_t* callData){
@@ -3165,24 +3167,12 @@ bool Steam::indicateAchievementProgress(const String& name, int currentProgress,
 ///// UTILS /////////////////////////////////////
 /////////////////////////////////////////////////
 //
-// Get the user's country by IP.
-String Steam::getIPCountry(){
-	return SteamUtils()->GetIPCountry();
-}
-// Returns true/false if Steam overlay is enabled.
-bool Steam::isOverlayEnabled(){
-	return SteamUtils()->IsOverlayEnabled();
-}
-// Set the position where overlay shows notifications.
-void Steam::setOverlayNotificationPosition(int pos){
-	if((pos < 0) || (pos > 3) || (SteamUtils() == NULL)){
-		return;
+// Checks if the Overlay needs a present. Only required if using event driven render updates.
+bool Steam::overlayNeedsPresent(){
+	if(SteamUtils() == NULL){
+		return false;
 	}
-	SteamUtils()->SetOverlayNotificationPosition(ENotificationPosition(pos));
-}
-// Get the Steam user interface language.
-String Steam::getSteamUILanguage(){
-	return SteamUtils()->GetSteamUILanguage();
+	return SteamUtils()->BOverlayNeedsPresent();
 }
 // Get the Steam ID of the running application/game.
 int Steam::getAppID(){
@@ -3190,6 +3180,13 @@ int Steam::getAppID(){
 		return 0;
 	}
 	return SteamUtils()->GetAppID();
+}
+// Get the amount of battery power, clearly for laptops.
+int Steam::getCurrentBatteryPower(){
+	if(SteamUtils() == NULL){
+		return 0;
+	}
+	return SteamUtils()->GetCurrentBatteryPower();
 }
 // Gets the image bytes from an image handle.
 Dictionary Steam::getImageRGBA(int image){
@@ -3225,6 +3222,20 @@ Dictionary Steam::getImageSize(int image){
 	d["success"] = success;
 	return d;
 }
+// Returns the number of IPC calls made since the last time this function was called.
+uint32 Steam::getIPCCallCount(){
+	if(SteamUtils() == NULL){
+		return 0;
+	}
+	return SteamUtils()->GetIPCCallCount();
+}
+// Get the user's country by IP.
+String Steam::getIPCountry(){
+	if(SteamUtils() == NULL){
+		return "";
+	}
+	return SteamUtils()->GetIPCountry();
+}
 // Return amount of time, in seconds, user has spent in this session.
 int Steam::getSecondsSinceAppActive(){
 	if(SteamUtils() == NULL){
@@ -3232,19 +3243,12 @@ int Steam::getSecondsSinceAppActive(){
 	}
 	return SteamUtils()->GetSecondsSinceAppActive();
 }
-// Get the amount of battery power, clearly for laptops.
-int Steam::getCurrentBatteryPower(){
+// Returns the number of seconds since the user last moved the mouse.
+int Steam::getSecondsSinceComputerActive(){
 	if(SteamUtils() == NULL){
 		return 0;
 	}
-	return SteamUtils()->GetCurrentBatteryPower();
-}
-// Is Steam running in VR?
-bool Steam::isSteamRunningInVR(){
-	if(SteamUtils() == NULL){
-		return 0;
-	}
-	return SteamUtils()->IsSteamRunningInVR();
+	return SteamUtils()->GetSecondsSinceComputerActive();
 }
 // Get the actual time.
 int Steam::getServerRealTime(){
@@ -3253,12 +3257,83 @@ int Steam::getServerRealTime(){
 	}
 	return SteamUtils()->GetServerRealTime();
 }
+// Get the Steam user interface language.
+String Steam::getSteamUILanguage(){
+	if(SteamUtils() == NULL){
+		return "";
+	}
+	return SteamUtils()->GetSteamUILanguage();
+}
+// Returns true/false if Steam overlay is enabled.
+bool Steam::isOverlayEnabled(){
+	if(SteamUtils() == NULL){
+		return false;
+	}
+	return SteamUtils()->IsOverlayEnabled();
+}
 // Returns true if Steam & the Steam Overlay are running in Big Picture mode.
 bool Steam::isSteamInBigPictureMode(){
 	if(SteamUtils() == NULL){
 		return false;
 	}
 	return SteamUtils()->IsSteamInBigPictureMode();
+}
+// Is Steam running in VR?
+bool Steam::isSteamRunningInVR(){
+	if(SteamUtils() == NULL){
+		return 0;
+	}
+	return SteamUtils()->IsSteamRunningInVR();
+}
+// Checks if the HMD view will be streamed via Steam In-Home Streaming.
+bool Steam::isVRHeadsetStreamingEnabled(){
+	if(SteamUtils() == NULL){
+		return false;
+	}
+	return SteamUtils()->IsVRHeadsetStreamingEnabled();	
+}
+// Sets the inset of the overlay notification from the corner specified by SetOverlayNotificationPosition.
+void Steam::setOverlayNotificationInset(int horizontal, int vertical){
+	if(SteamUtils() == NULL){
+		return;
+	}
+	SteamUtils()->SetOverlayNotificationInset(horizontal, vertical);
+}
+// Set the position where overlay shows notifications.
+void Steam::setOverlayNotificationPosition(int pos){
+	if((pos < 0) || (pos > 3) || (SteamUtils() == NULL)){
+		return;
+	}
+	SteamUtils()->SetOverlayNotificationPosition(ENotificationPosition(pos));
+}
+// Set whether the HMD content will be streamed via Steam In-Home Streaming.
+void Steam::setVRHeadsetStreamingEnabled(bool enabled){
+	if(SteamUtils() == NULL){
+		return;
+	}
+	SteamUtils()->SetVRHeadsetStreamingEnabled(enabled);
+}
+// Activates the Big Picture text input dialog which only supports gamepad input.
+bool Steam::showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText){
+	if(SteamUtils() == NULL){
+		return false;
+	}
+	// Convert modes
+	EGamepadTextInputMode mode;
+	if(inputMode == 0){
+		mode = k_EGamepadTextInputModeNormal;
+	}
+	else{
+		mode = k_EGamepadTextInputModePassword;
+	}
+	EGamepadTextInputLineMode lineMode;
+	if(lineInputMode == 0){
+		lineMode = k_EGamepadTextInputLineModeSingleLine;
+	}
+	else{
+		lineMode = k_EGamepadTextInputLineModeMultipleLines;
+	}
+	SteamUtils()->ShowGamepadTextInput(mode, lineMode, description.utf8().get_data(), maxText, presetText.utf8().get_data());
 }
 // Ask SteamUI to create and render its OpenVR dashboard.
 void Steam::startVRDashboard(){
@@ -3530,18 +3605,25 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
 	
 	// Utils Bind Methods ///////////////////////
-	ClassDB::bind_method("getIPCountry", &Steam::getIPCountry);
-	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
-	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
+	ClassDB::bind_method("overlayNeedsPresent", &Steam::overlayNeedsPresent);
 	ClassDB::bind_method("getAppID", &Steam::getAppID);
+	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
 	ClassDB::bind_method(D_METHOD("getImageRGBA", "image"), &Steam::getImageRGBA);
 	ClassDB::bind_method(D_METHOD("getImageSize", "image"), &Steam::getImageSize);
+	ClassDB::bind_method("getIPCCallCount", &Steam::getIPCCallCount);
+	ClassDB::bind_method("getIPCountry", &Steam::getIPCountry);
 	ClassDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
-	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
-	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
+	ClassDB::bind_method("getSecondsSinceComputerActive", &Steam::getSecondsSinceComputerActive);
 	ClassDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
-	ClassDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
+	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
+	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
 	ClassDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
+	ClassDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
+	ClassDB::bind_method("isVRHeadsetStreamingEnabled", &Steam::isVRHeadsetStreamingEnabled);
+	ClassDB::bind_method("setOverlayNotificationInset", &Steam::setOverlayNotificationInset);
+	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
+	ClassDB::bind_method("setVRHeadsetStreamingEnabled", &Steam::setVRHeadsetStreamingEnabled);
+	ClassDB::bind_method("showGamepadTextInput", &Steam::showGamepadTextInput);
 	ClassDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
 	
 	// Apps Signals /////////////////////////////
@@ -3985,6 +4067,21 @@ void Steam::_bind_methods(){
 	// Failure Types ////////////////////////////
 	BIND_CONSTANT(FAILURE_FLUSHED_CALLBACK_QUEUE);	// 0
 	BIND_CONSTANT(FAILURE_PIPE_FAIL);				// 1
+	
+	// Gamepad Input Line Modes /////////////////
+	BIND_CONSTANT(GAMEPAD_INPUT_LINE_MODE_SINGLE);	// 0
+	BIND_CONSTANT(GAMEPAD_INPUT_LINE_MODE_MULTIPLE);	// 1
+
+	// Gamepad Input Modes //////////////////////
+	BIND_CONSTANT(GAMEPAD_INPUT_MODE_NORMAL);	// 0
+	BIND_CONSTANT(GAMEPAD_INPUT_MODE_PASSWORD);	// 1
+	
+	// Steam API Call Results ///////////////////
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NONE);	// -1
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);	// 0
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);	// 1
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);	// 2
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);	// 3
 }
 
 Steam::~Steam(){

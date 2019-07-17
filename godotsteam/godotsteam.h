@@ -61,7 +61,10 @@ class Steam: public Object {
 			GAMEID_TYPE_APP=0, GAMEID_TYPE_MOD=1, GAMEID_TYPE_SHORTCUT=2, GAMEID_TYPE_P2P=3,
 			FAVORITE_FLAG_FAVORITE=0x01, FAVORITE_FLAG_HISTORY=0x02, FAVORITE_FLAG_NONE=0x00,
 			CHAT_MEMBER_CHANGE_ENTERED=0x0001, CHAT_MEMBER_CHANGE_LEFT=0x0002, CHAT_MEMBER_CHANGE_DISCONNECTED=0x0004, CHAT_MEMBER_CHANGE_KICKED=0x0008, CHAT_MEMBER_CHANGE_BANNED=0x0010,
-			FAILURE_FLUSHED_CALLBACK_QUEUE=0, FAILURE_PIPE_FAIL=1
+			FAILURE_FLUSHED_CALLBACK_QUEUE=0, FAILURE_PIPE_FAIL=1,
+			GAMEPAD_INPUT_LINE_MODE_SINGLE=0, GAMEPAD_INPUT_LINE_MODE_MULTIPLE=1,
+			GAMEPAD_INPUT_MODE_NORMAL=0, GAMEPAD_INPUT_MODE_PASSWORD=1,
+			STEAM_API_CALL_FAILURE_NONE=-1, STEAM_API_CALL_FAILURE_STEAM_GONE=0, STEAM_API_CALL_FAILURE_NETWORK_FAILURE=1, STEAM_API_CALL_FAILURE_INVALID_HANDLE=2, STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK=3
 		};
 		static Steam* get_singleton();
 		Steam();
@@ -328,18 +331,25 @@ class Steam: public Object {
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 
 		// Utils ////////////////////////////////
-		String getIPCountry();
-		bool isOverlayEnabled();
-		String getSteamUILanguage();
+		bool overlayNeedsPresent();
 		int getAppID();
+		int getCurrentBatteryPower();
 		Dictionary getImageRGBA(int iImage);
 		Dictionary getImageSize(int iImage);
+		uint32 getIPCCallCount();
+		String getIPCountry();
 		int getSecondsSinceAppActive();
-		void setOverlayNotificationPosition(int pos);
-		int getCurrentBatteryPower();
-		bool isSteamRunningInVR();
+		int getSecondsSinceComputerActive();
 		int getServerRealTime();
+		String getSteamUILanguage();
+		bool isOverlayEnabled();
 		bool isSteamInBigPictureMode();
+		bool isSteamRunningInVR();
+		bool isVRHeadsetStreamingEnabled();
+		void setOverlayNotificationInset(int horizontal, int vertical);
+		void setOverlayNotificationPosition(int pos);
+		void setVRHeadsetStreamingEnabled(bool enabled);
+		bool showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText);
 		void startVRDashboard();
 
 	protected:

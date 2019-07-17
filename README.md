@@ -13,15 +13,21 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.0.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 3.0.1 Changes**
 - Added: MacOS C++ rule back in for compiling
+- Added: all missing Steam Utils functions (except depreciated or non-relevant functions)
+- Added: additional ENUMS for Steam Utils
+- Added: missing failure conditions for some Steam Utils functions
 - Changed: output for getFriendGamePlayed to show game information even if no valid lobby
+- Changed: order of previous Steam Utils functions to be alphabetical with new ones
+- Changed: gamepad_text_input_dismissed callback
+- Fixed: lobby_message bug, thanks to pull request from _Frostings_
 
 Known Issues
 ----------
-- Lobby message will crash game
+- None... so far
 
 Quick How-To
 ----------
