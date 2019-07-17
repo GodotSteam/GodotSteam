@@ -29,7 +29,7 @@
 						<header class="main">
 							<h1>Signals For Modules</h1>
 						</header>
-						<p>Here is a list of all the currently available signals in the GodotSteam modules.</p>
+						<p>Here is a list of all the signals available in the GodotSteam module.  These are primarily Steam callbacks and require you to run Steam.run_callbacks() in your process() function.</p>
 						<hr />
 						<header class="major">
 							<h3>App Signals</h3>
@@ -441,7 +441,7 @@
 						<ul>
 							<li>Called when the big picture gamepad text input has been closed.</li>
 							<li>Emits signal <strong><em>gamepad_text_input_dismissed</em></strong>.</li>
-							<li>Sends along the tex from input.</li>
+							<li>Sends along the text from input and the length.</li>
 						</ul>
 						<h4>_ip_country</h4>
 						<ul>
