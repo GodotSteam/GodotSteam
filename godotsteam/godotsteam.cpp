@@ -3333,7 +3333,7 @@ bool Steam::showGamepadTextInput(int inputMode, int lineInputMode, const String&
 	else{
 		lineMode = k_EGamepadTextInputLineModeMultipleLines;
 	}
-	SteamUtils()->ShowGamepadTextInput(mode, lineMode, description.utf8().get_data(), maxText, presetText.utf8().get_data());
+	return SteamUtils()->ShowGamepadTextInput(mode, lineMode, description.utf8().get_data(), maxText, presetText.utf8().get_data());
 }
 // Ask SteamUI to create and render its OpenVR dashboard.
 void Steam::startVRDashboard(){
