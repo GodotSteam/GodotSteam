@@ -1,0 +1,429 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Tutorials - Lobbies And P2P Networking</h1>
+						</header>
+						<p>One of the more requested tutorials is multiplayer lobbies and P2P networking through Steam. I highly suggest you <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">check out the Example branch of the repo</a>, specifically the <strong>lobby.tscn</strong> which will have the full working code and test interface for this tutorial.</p>
+						<p>First let's set up some variables to fill in later:</p>
+<pre><code>
+var STEAM_ID = 0
+var STEAM_USERNAME = ""
+var STEAM_LOBBY_ID = 0
+var LOBBY_MEMBERS = []
+var DATA
+</code></pre>
+						<p>Your Steam ID and username may actually be in a different GDScript, especially if you use the <strong>global.gd</strong> the way I do (<a href="https://gramps.github.io/GodotSteam/tutorials-initializing.html" target="_blank">mentioned in the initialization tutorial</a>). The most important will be the <strong>STEAM_LOBBY_ID</strong>, which obviously houses the lobby'S ID, and <strong>LOBBY_MEMBERS</strong>, which will be an array of dictionaries of lobby members and their Steam ID 64's.</p>
+						<p>Next we'll want to set up the signal connections for Steamwork like so:</p>
+<pre><code>
+func _ready():
+	Steam.connect("lobby_created", self, "_on_Lobby_Created")
+	Steam.connect("lobby_match_list", self, "_on_Lobby_Match_List")
+	Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
+	Steam.connect("lobby_chat_update", self, "_on_Lobby_Chat_Update")
+	Steam.connect("lobby_message", self, "_on_Lobby_Message")
+	Steam.connect("lobby_data_update", self, "_on_Lobby_Data_Update")
+	Steam.connect("lobby_invite", self, "_on_Lobby_Invite")
+	Steam.connect("join_requested", self, "_on_Lobby_Join_Requested")
+	Steam.connect("p2p_session_request", self, "_on_P2P_Session_Request")
+	Steam.connect("p2p_session_connect_fail", self, "_on_P2P_Session_Connect_Fail")
+</code></pre>
+						<p>We will get into each of these below. Also, we'll need to set <strong>_read_P2P_Packet</strong> in our <strong>_process()</strong> function so it is always looking for new packets:</p>
+<pre><code>
+func _process(delta):
+	Steam.run_callbacks()
+	_read_P2P_Packet()
+</code></pre>
+						<p>If you are using the <strong>global.gd</strong> autoload singleton then you can omit the <strong>Steam.run_callbacks()</strong> command as they'll be running already.<p>
+						<p>Next we'll set up our lobby creation functions.  You'll probably want to connect this function to a button somewhere in your game:</p>
+<pre><code>
+func _create_Lobby():
+	# Make sure a lobby is not already set
+	if STEAM_LOBBY_ID == 0:
+		Steam.createLobby(2, 2)
+</code></pre>
+						<p>In this example we have <strong>createLobby</strong> using 2's for each variable.  The first variables covers the type of lobby; we are using a public lobby open to all.  There are, of course, four settings in total you can use:
+							<ul>
+								<li>0 - Private</li>
+								<li>1 - Friends only</li>
+								<li>2 - Public</li>
+								<li>3 - Invisible</li>
+							</ul>
+						The second variable is the maximum number of players allowed to join the lobby. This cannot be set higher than 250.</p>
+						<p>Next we'll cover the callback from Steam saying the lobby has been created:</p>
+<pre><code>
+func _on_Lobby_Created(connect, lobbyID):
+	if connect == 0:
+		# Set the lobby ID
+		STEAM_LOBBY_ID = lobbyID
+		print("Created a lobby: "+str(STEAM_LOBBY_ID))
+
+		# Set some lobby data
+		Steam.setLobbyData(lobbyID, "name", "Gramps' Lobby")
+		Steam.setLobbyData(lobbyID, "mode", "GodotSteam test")
+
+		# Allow P2P connections to fallback to being relayed through Steam if needed
+		var RELAY = Steam.allowP2PPacketRelay(true)
+		print("Allowing Steam to be relay backup: "+str(RELAY))
+</code></pre>
+						<p>Once this callback fires, you'll have your lobby ID which you can pass off to our <strong>STEAM_LOBBY_ID</strong> variable for later use.  You can also se some lobby data now; which can be whatever <strong>key / value</strong> pair you want.  I'm not aware of a maximum amount of pairs you can set. And you'll notice I set <strong>allowP2PPacketRelay</strong> to true at this point; this allows, as the note mentions, P2P connections to fallback to being relayed through Steam if needed.  This usually happens if you have NAT or firewall issues.</p>
+						<p>Now that we can create lobbies, let's query and pull a list of lobbies.  I usually have a button that will open a lobby interface which is a list of buttons, one per lobby:</p>
+<pre><code>
+func _on_Open_Lobby_List_pressed():
+	# Set distance to worldwide
+	Steam.addRequestLobbyListDistanceFilter(3)
+
+	print("Requesting a lobby list")
+	Steam.requestLobbyList()
+</code></pre>
+						<p>Before requesting the lobby list with <strong>requestLobbyList</strong> you can add more search queries like:
+							<ul>
+								<li>addRequestLobbyListStringFilter - which allows you to look for specific works in the lobby metadata</li>
+								<li>addRequestLobbyListNumericalFilter - which adds a numerical comparions filter (<=, <, =, >, >=, !=)</li>
+								<li>addRequestLobbyListNearValueFilter - which gives results closes to the specified value you give</li>
+								<li>addRequestLobbyListFilterSlotsAvailable - which only returns lobbies with a specified amount of open slots available</li>
+								<li>addRequestLobbyListResultCountFilter - which sets how many results you want returned</li>
+								<li>addRequestLobbyListDistanceFilter - which sets the distance to search for lobbies, like:
+									<ul>
+										<li>0 - Close</li>
+										<li>1 - Default</li>
+										<li>2 - Far</li>
+										<li>3 - Worldwide</li>
+									</ul>
+								</li>
+							</ul>
+							Once you set all or none of these, you can then call <strong>requestLobbyList</strong>. Once it pulls your lobby list it will fire a callback <strong>_on_Lobby_Match_List</strong>. You can then loop through the lobbies however you want. In our example code, I do something like this to make buttons for each lobby:</p>
+<pre><code>
+func _on_Lobby_Match_List(lobbies):
+	for LOBBY in lobbies:
+
+		# Pull lobby data from Steam, these are specific to our example
+		var LOBBY_NAME = Steam.getLobbyData(LOBBY, "name")
+		var LOBBY_MODE = Steam.getLobbyData(LOBBY, "mode")
+
+		# Get the current number of members
+		var LOBBY_MEMBERS = Steam.getNumLobbyMembers(LOBBY)
+
+		# Create a button for the lobby
+		var LOBBY_BUTTON = Button.new()
+		LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_MEMBERS)+" Player(s)")
+		LOBBY_BUTTON.set_size(Vector2(800, 50))
+		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
+		LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
+
+		# Add the new lobby to the list
+		$"Lobby Panel/Panel/Scroll/VBox".add_child(LOBBY_BUTTON)
+</code></pre>
+							<p>You should now have a way to call lobby lists and display them. Next we'll tackle joining a lobby. Clicking one of the lobby buttons we created in the last step will fire this function:</p>
+<pre><code>
+func _join_Lobby(lobbyID):
+	print("Attempting to join lobby "+str(lobbyID)+"...")
+	
+	# Clear any previous lobby members lists, if you were in a previous lobby
+	LOBBY_MEMBERS.clear()
+
+	# Make the lobby join request to Steam
+	Steam.joinLobby(lobbyID)
+</code></pre>
+							<p>This will attempt to join the lobby you click on and, when it succeeds, it will fire the <strong>_on_Lobby_Joined</strong> callback:</p>
+<pre><code>
+func _on_Lobby_Joined(lobbyID, permissions, locked, response):
+	
+	# Set this lobby ID as your lobby ID
+	STEAM_LOBBY_ID = lobbyID
+	
+	# Get the lobby members
+	_get_Lobby_Members()
+	
+	# Make the initial handshake
+	_make_P2P_Handshake()
+</code></pre>
+							<p>Depending on how you set up your lobby interface, you'll probably want the player to see some kind of chat window with a player list. Our <strong>_get_Lobby_Members</strong> will help with finding out who all is in this lobby:</p>
+<pre><code>
+func _get_Lobby_Members():
+
+	# Clear your previous lobby list
+	LOBBY_MEMBERS.clear()
+
+	# Get the number of members from this lobby from Steam
+	var MEMBERS = Steam.getNumLobbyMembers(STEAM_LOBBY_ID)
+
+	# Get the data of these players from Steam
+	for MEMBER in range(0, MEMBERS):
+
+		# Get the member's Steam ID
+		var MEMBER_STEAM_ID = Steam.getLobbyMemberByIndex(STEAM_LOBBY_ID, MEMBER)
+
+		# Get the member's Steam name
+		var MEMBER_STEAM_NAME = Steam.getFriendPersonaName(MEMBER_STEAM_ID)
+
+		# Add them to the list
+		LOBBY_MEMBERS.append({"steam_id":steam_id, "steam_name":steam_name})
+</code></pre>
+							<p>This will get the lobby members from Steam then loop through and get their names and Steam ID's then append them to our <strong>LOBBY_MEMBERS</strong> array for later use.  You can then display this list in your lobby room. You'll also note in the last part we fire the initial P2P handshake; this just opens and checks our P2P session:
+<pre><code>
+func _make_P2P_Handshake():
+
+	print("Sending P2P handshake to the lobby")
+	var DATA = PoolByteArray()
+	DATA.append(256)
+	DATA.append_array(var2bytes({"message":"handshake", "from":STEAM_ID}))
+	_send_P2P_Packet(DATA, 2, 0)
+</code></pre>
+							<p>We won't get into what all this means just yet, but I wanted to show the code for the handshake function here since it is referenced. Your handshake messages can be anything and disregarded for the most part. Again, it is just to test our P2P session.</p>
+							<p>Now that a player has joined the lobby, everyone in the lobby will receive a callback notifying of the change.  We will handle it like this:</p>
+<pre><code>
+func _on_Lobby_Chat_Update(lobbyID, changedID, makingChangeID, chatState):
+
+	# Get the user who has made the lobby change
+	var CHANGER = Steam.getFriendPersonaName(makingChangeID)
+
+	# If a player has joined the lobby
+	if chatState == 1:
+		print(str(CHANGER)+" has joined the lobby.")
+
+	# Else if a player has left the lobby
+	elif chatState == 2:
+		print(str(CHANGER)+" has left the lobby.")
+
+	# Else if a player has been kicked
+	elif chatState == 8:
+		print(str(CHANGER)+" has been kicked from the lobby.")
+
+	# Else if a player has been banned
+	elif chatState == 16:
+		print(str(CHANGER)+" has been banned from the lobby.")
+
+	# Else there was some unknown change
+	else:
+		print(str(CHANGER)+" did... something.")
+
+	# Update the lobby now that a change has occurred
+	_get_Lobby_Members()
+</code></pre>
+							<p>For the most part this will update when players join or leave the lobby. However, if you add functionality to kick or ban players, it will show that too.  At the end of this function, I always update the player list so we can show the correct list of players i the lobby.</p>
+							<p>You may also want players to be able to chat while in the lobby and waiting for a game to start. If you have a <strong>LineEdit</strong> node for messaging, clicking a "send" button should trigger something like this:</p>
+<pre><code>
+func _on_Send_Chat_pressed():
+
+	# Get the entered chat message
+	var MESSAGE = $Chat.get_text()
+
+	# Pass the message to Steam
+	var SENT = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, MESSAGE)
+
+	# Was it sent successfully?
+	if not SENT:
+		print("ERROR: Chat message failed to send.")
+
+	# Clear the chat input
+	$Chat.clear()
+</code></pre>
+							<p>The $Chat is your <strong>LineEdit</strong> and will probably be different in your project. Most importantly is your get the text and send it to <strong>sendLobbyChatMsg</strong>.
+							<p>Next we'll handle leaving a lobby. If you have a button do to so, have it connect to this function:</p>
+<pre><code>
+func _leave_Lobby():
+
+	# If in a lobby, leave it
+	if STEAM_LOBBY_ID != 0:
+
+		# Send leave request to Steam
+		Steam.leaveLobby(STEAM_LOBBY_ID)
+
+		# Wipe the Steam lobby ID then display the default lobby ID and player list title
+		STEAM_LOBBY_ID = 0
+
+		# Close session with all users
+		for MEMBERS in LOBBY_MEMBERS:
+			Steam.closeP2PSessionWithUser(MEMBERS['steam_id'])
+		
+		# Clear the local lobby list
+		LOBBY_MEMBERS.clear()
+</code></pre>
+							<p>This will inform Steam you have left the lobby then clear your <strong>STEAM_LOBBY_ID</strong> variable, as well as your <strong>LOBBY_MEMBERS</strong> array after it closes your P2P sessions with all players in the lobby. You'll notice at this point we don't have any functions to handle invites through Steam. This will be added in the second half of the lobby tutorial at a later time.</p>
+							<p>Next we'll check out the P2P networking functionality. Earlier when we did the P2P handshake when someone joins the lobby, it would trigger a <strong>p2p_session_request</strong> callback which would in turn trigger this function:</p>
+<pre><code>
+func _on_P2P_Session_Request(remoteID):
+	
+	# Get the requester's name
+	var REQUESTER = Steam.getFriendPersonaName(remoteID)
+	
+	# Accept the P2P session; can apply logic to deny this request if needed
+	Steam.acceptP2PSessionWithUser(remoteID)
+	
+	# Make the initial handshake
+	_make_P2P_Handshake()
+</code></pre>
+							<p>It pretty simply acknowledges the session request, accepts it, then sends a handshake back. Inside that handshake there was a call to the <strong>_read_P2P_Packet</strong> function which does this:
+<pre><code>
+func _read_P2P_Packet():
+
+	var PACKET_SIZE = Steam.getAvailableP2PPacketSize(0)
+
+	# There is a packet
+	if PACKET_SIZE > 0:
+
+		var PACKET = Steam.readP2PPacket(PACKET_SIZE, 0)
+
+		if PACKET.empty():
+			print("WARNING: read an empty packet with non-zero size!")
+
+		# Get the remote user's ID
+		var PACKET_ID = str(PACKET.steamIDRemote)
+		var PACKET_CODE = str(PACKET.data[0])
+
+		# Make the packet data readable
+		var READABLE = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+
+		# Print the packet to output
+		print("Packet: "+str(READABLE))
+
+		# Append logic here to deal with packet data
+</code></pre>
+							<p>If the packet size is greater than zero then it will get the sender's Steam ID and the data they sent. The line <strong>bytes2var</strong> is very important as it decodes the data back into something you can read and use. After it is decoded you can pass that data to any number of functions for your game.</p>
+							<p>Beyond the handshake, you will probably want to pass a lot of different pieces of data back and forth between players. I usually recommend a dictionary to send data so you can have a key / value pair to reference and make things less confusing. Each packet will go through the following function:</p>
+<pre><code>
+func _send_P2P_Packet(data, send_type, channel):
+	
+	# If there is more than one user, send packets
+	if LOBBY_MEMBERS.size() > 1:
+	
+		# Loop through all members that aren't you
+		for MEMBER in LOBBY_MEMBERS:
+			if MEMBER['steam_id'] != STEAM_ID:
+				Steam.sendP2PPacket(MEMBER['steam_id'], data, send_type, channel)
+</code></pre>
+							<p>The first variable is obviously you data (preferrably dictionary) and the second one is your P2P send type:
+								<ul>
+									<li>0 - Send unreliable</li>
+									<li>1 - Send unreliable with no delay</li>
+									<li>2 - Send reliable</li>
+									<li>3 - Send reliable with buffering</li>
+								</ul>
+							The last variable listed is the channel used which should match for both read and send functions.</p>
+							<p>For the last part of this tutorial we'll handle P2P failures with the following function which is triggered by the <strong>p2p_session_connect_fail</strong> callback:</p>
+<pre><code>
+func _on_P2P_Session_Connect_Fail(lobbyID, session_error):
+
+	# If no error was given
+	if session_error == 0:
+		print("WARNING: Session failure with "+str(lobbyID)+" [no error given].")
+
+	# Else if target user was not running the same game
+	elif session_error == 1:
+		print("WARNING: Session failure with "+str(lobbyID)+" [target user not running the same game].")
+
+	# Else if local user doesn't own app / game
+	elif session_error == 2:
+		print("WARNING: Session failure with "+str(lobbyID)+" [local user doesn't own app / game].")
+
+	# Else if target user isn't connected to Steam
+	elif session_error == 3:
+		print("WARNING: Session failure with "+str(lobbyID)+" [target user isn't connected to Steam].")
+
+	# Else if connection timed out
+	elif session_error == 4:
+		print("WARNING: Session failure with "+str(lobbyID)+" [connection timed out].")
+
+	# Else if unused
+	elif session_error == 5:
+		print("WARNING: Session failure with "+str(lobbyID)+" [unused].")
+
+	# Else no known error
+	else:
+		print("WARNING: Session failure with "+str(lobbyID)+" [unknown error "+str(session_error)+"].")
+</code></pre>
+						<p>This will print a warning message so you know why the session connection failed. From here you can add any additional functionality you want like retrying the connection or something else.</p>
+						<p>That concludes the first part of the lobby / P2P networking tutorial.  In the second part we'll cover invite systems and more!</p>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Tutorials</span>
+								<ul>
+									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+									<li><a href="tutorials-avatars.html">Avatars</a></li>
+									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="contributors.html">Contributors / Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

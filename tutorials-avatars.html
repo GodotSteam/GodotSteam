@@ -7,7 +7,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
 		<link rel="stylesheet" href="css/font-awesome.min.css" />
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -28,43 +27,81 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Contributors</h1>
+							<h1>Tutorials - Avatars</h1>
 						</header>
-						<p>Here is a list of all the great contributors, both those who have provided code for GodotSteam through pull requests or those who have donated to the project. A big thanks to all of you!</p>
-						<div class="contributors">
-							<strong>Code Contributors</strong>
-							<ul>
-								<li>AlexHoratio</li>
-								<li>Antokolos</li>
-								<li>Avencherus</li>
-								<li>ConnorBP</li>
-								<li>Fischer96</li>
-								<li>Frostings</li>
-								<li>guimarca</li>
-								<li>marcelofg55</li>
-								<li>pixelriot</li>
-								<li>xsellier</li>
-								<li>VictorienXP</li>
-							</ul>
-						</div>
-						<div class="contributors">
-							<strong>Donors</strong>
-							<ul>
-								<li>Avencherus</li>
-								<li>eflake</li>
-								<li>Ranoller</li>
-								<li>Shine Right Studio</li>
-							</ul>
-						</div>
-						<header class="main">
-							<h1>Donate</h1>
-						</header>
-						<p>The best way you can donate to this module is by making some pull requests with fixes or additions. There is a <a href="todo.html">healthy list of additions and fixes needed in the To-Do section currently</a>. You can also provide tutorials for different aspects of the module and either update this documentation repo or send them to me for posting.</p>
-						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
-						<ul class="actions">
-							<li><a class="button" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
-							<li><a class="button" href=https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
-						</ul>
+						<p>You may want to get the current player's avatar, or someone else's. This can be achieved by requesting it with the following line:</p>
+<pre><code>
+Steam.getPlayerAvatar(Steam.AVATAR_MEDIUM)
+</code></pre><br/>
+						<p>You may pass it either <strong>Steam.AVATAR_SMALL</strong>, <strong>Steam.AVATAR_MEDIUM</strong>, or <strong>Steam.AVATAR_LARGE</strong>. Additionally you can pass along a Steam ID64 to get a specific user or, if no ID is provided, it will get the current user.</p>
+						<p>To retrieve the avatar data buffer, you'll need to hook the signal for the callback:</p>
+<pre><code>
+Steam.connect("avatar_loaded", self, "loaded_avatar")
+</code></pre><br/>
+						<p>This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  Our <strong>loaded_avatar</strong> function will look something like this:</p>
+<pre><code>
+func loaded_avatar(id, size, buffer):
+	print("Avatar for user: "+str(id))
+	print("Size: "+str(size))
+	# Create a new image and texture to fill out
+	var AVATAR = Image.new()
+	var AVATAR_TEXTURE = ImageTexture.new()
+	AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
+
+	# Lock the image and fill the pixels from the data buffer
+	AVATAR.lock()
+	for y in range(0, size):
+		for x in range(0, size):
+			var pixel = 4 * (x + y * size)
+			var r = float(buffer[pixel]) / 255
+			var g = float(buffer[pixel+1]) / 255
+			var b = float(buffer[pixel+2]) / 255
+			var a = float(buffer[pixel+3]) / 255
+			AVATAR.set_pixel(x, y, Color(r, g, b, a))
+	AVATAR.unlock()
+
+	# Now apply the texture
+	AVATAR_TEXTURE.create_from_image(AVATAR)
+
+	# For our purposes, set a sprite with the avatar texture
+	$Sprite.set_texture(AVATAR_TEXTURE)
+</code></pre><br/>
+					<p>Naturally that texture could be applied elsewhere, depending on where you place this function.</p>
+					<p>A longer, but similar way to get the end result could look like this:</p>
+<pre><code>
+# Request one or all sizes
+var HANDLE1 = Steam.getSmallFriendAvatar(steamID)
+#var HANDLE2 = Steam.getMediumFriendAvatar(steamID)
+#var HANDLE3 = Steam.getLargeFriendAvatar(steamID)
+
+# Using the small avatar handle
+var IMAGE = Steam.getImageSize(HANDLE1)
+var IMAGE_DATA = Steam.getImageRGBA(HANDLE3)
+
+# Now create the avatar like before
+var AVATAR = Image.new()
+var AVATAR_TEXTURE = ImageTexture.new()
+AVATAR.create(IMAGE['width'], IMAGE['height'], false, Image.FORMAT_RGBAF)
+
+# Lock the image and fill the pixels from the data buffer
+AVATAR.lock()
+for y in range(0, size):
+	for x in range(0, size):
+		var pixel = 4 * (x + y * size)
+		var r = float(IMAGE_DATA['buffer'][pixel]) / 255
+		var g = float(IMAGE_DATA['buffer'][pixel+1]) / 255
+		var b = float(IMAGE_DATA['buffer'][pixel+2]) / 255
+		var a = float(IMAGE_DATA['buffer'][pixel+3]) / 255
+		AVATAR.set_pixel(x, y, Color(r, g, b, a))
+AVATAR.unlock()
+
+# Now apply the texture
+AVATAR_TEXTURE.create_from_image(AVATAR)
+
+# For our purposes, set a sprite with the avatar texture
+$Sprite.set_texture(AVATAR_TEXTURE)
+</code></pre><br/>
+						<p>That covers the basics of getting player avatars.</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />

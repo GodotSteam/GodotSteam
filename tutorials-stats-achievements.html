@@ -27,45 +27,8 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Tutorials</h1>
+							<h1>Tutorials - Stats And Achievements</h1>
 						</header>
-						<p>These tutorials should walk you through setting up different facets of the Steamworks API system. They are almost all based on my own personal use and should be modified to fit your own practices.</p>
-						<ul class="actions">
-							<li><a class="button" href="#initialize">Initializing Steam</a></li>
-							<li><a class="button" href="#stats">Stats and Achievements</a></li>
-							<li><a class="button" href="#avatars">Avatars</a></li>
-						</ul>
-						<hr />
-						<h2>Initializing Steamworks</h2>
-						<a id="initialize"></a>
-						<p>I usually create an auto-load GDscript called global.gd which is added as a singleton. I add this code to the _ready() function:</p>
-<pre><code>
-var ERR = Steam.steamInit()
-if ERR != true:
-	print("Failed to initialize Steam. Shutting down...")
-	get_tree().quit()
-</code></pre><br/>
-						<p>This code will obviously shut down the game if Steam does not initialize. You can check for a few additional things at boot like:</p>
-<pre><code>
-var ONLINE = Steam.loggedOn()
-var STEAM_ID = Steam.getSteamID()
-var OWNED = Steam.isSubscribed()
-</code></pre><br/>
-						<p>This will check if Steam is online, get the current user's Steam ID64, and check if the current user owns the game. You can also have the game turn itself off if the current user does not own the game by simply doing this:</p>
-<pre><code>
-if OWNED == false:
-	print("User does not own this game")
-	get_tree().quit()
-</code></pre><br/>
-						<p>There are other things you may want to do during a boot-up process after Steamworks is initialized, like getting current achievements or statistics, and we'll cover that next. Last, but not least, anywhere you want or need to retrieve callbacks from Steam, you'll need to add this:</p>
-<pre><code>
-func _process(delta):
-	Steam.run_callbacks()
-</code></pre><br/>
-						<p>This covers the initialization and basic set-up.</p>
-						<hr />
-						<h2>Statistics and Achievements</h2>
-						<a id="stats"></a>
 						<p>At some point you may want to save statistics to Steam's database and/or use their achievement system.  You will want to <a href="https://partner.steamgames.com/doc/features/achievements" target="_blank">read up about these in Steam's documentation</a> as I won't be covering the basics on how to set it up in the Steamworks interface.</p>
 						<p>When starting up your game, you'll want to pull all related achievements and statistics from Steam's servers.  This is done simply by requesting the user's information like so:</p>
 <pre><code>
@@ -140,82 +103,6 @@ Steam.setStatFloat("stat2", value)
 Steam.storeStats()
 </code></pre><br/>
 						<p>That covers the basics of statistics and achievements.</p>
-						<hr />
-						<h2>Avatars</h2>
-						<a id="avatars"></a>
-						<p>You may want to get the current player's avatar, or someone else's. This can be achieved by requesting it with the following line:</p>
-<pre><code>
-Steam.getPlayerAvatar(Steam.AVATAR_MEDIUM)
-</code></pre><br/>
-						<p>You may pass it either <strong>Steam.AVATAR_SMALL</strong>, <strong>Steam.AVATAR_MEDIUM</strong>, or <strong>Steam.AVATAR_LARGE</strong>. Additionally you can pass along a Steam ID64 to get a specific user or, if no ID is provided, it will get the current user.</p>
-						<p>To retrieve the avatar data buffer, you'll need to hook the signal for the callback:</p>
-<pre><code>
-Steam.connect("avatar_loaded", self, "loaded_avatar")
-</code></pre><br/>
-						<p>This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  Our <strong>loaded_avatar</strong> function will look something like this:</p>
-<pre><code>
-func loaded_avatar(id, size, buffer):
-	print("Avatar for user: "+str(id))
-	print("Size: "+str(size))
-	# Create a new image and texture to fill out
-	var AVATAR = Image.new()
-	var AVATAR_TEXTURE = ImageTexture.new()
-	AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
-
-	# Lock the image and fill the pixels from the data buffer
-	AVATAR.lock()
-	for y in range(0, size):
-		for x in range(0, size):
-			var pixel = 4 * (x + y * size)
-			var r = float(buffer[pixel]) / 255
-			var g = float(buffer[pixel+1]) / 255
-			var b = float(buffer[pixel+2]) / 255
-			var a = float(buffer[pixel+3]) / 255
-			AVATAR.set_pixel(x, y, Color(r, g, b, a))
-	AVATAR.unlock()
-
-	# Now apply the texture
-	AVATAR_TEXTURE.create_from_image(AVATAR)
-
-	# For our purposes, set a sprite with the avatar texture
-	$Sprite.set_texture(AVATAR_TEXTURE)
-</code></pre><br/>
-					<p>Naturally that texture could be applied elsewhere, depending on where you place this function.</p>
-					<p>A longer, but similar way to get the end result could look like this:</p>
-<pre><code>
-# Request one or all sizes
-var HANDLE1 = Steam.getSmallFriendAvatar(steamID)
-#var HANDLE2 = Steam.getMediumFriendAvatar(steamID)
-#var HANDLE3 = Steam.getLargeFriendAvatar(steamID)
-
-# Using the small avatar handle
-var IMAGE = Steam.getImageSize(HANDLE1)
-var IMAGE_DATA = Steam.getImageRGBA(HANDLE3)
-
-# Now create the avatar like before
-var AVATAR = Image.new()
-var AVATAR_TEXTURE = ImageTexture.new()
-AVATAR.create(IMAGE['width'], IMAGE['height'], false, Image.FORMAT_RGBAF)
-
-# Lock the image and fill the pixels from the data buffer
-AVATAR.lock()
-for y in range(0, size):
-	for x in range(0, size):
-		var pixel = 4 * (x + y * size)
-		var r = float(IMAGE_DATA['buffer'][pixel]) / 255
-		var g = float(IMAGE_DATA['buffer'][pixel+1]) / 255
-		var b = float(IMAGE_DATA['buffer'][pixel+2]) / 255
-		var a = float(IMAGE_DATA['buffer'][pixel+3]) / 255
-		AVATAR.set_pixel(x, y, Color(r, g, b, a))
-AVATAR.unlock()
-
-# Now apply the texture
-AVATAR_TEXTURE.create_from_image(AVATAR)
-
-# For our purposes, set a sprite with the avatar texture
-$Sprite.set_texture(AVATAR_TEXTURE)
-</code></pre><br/>
-						<p>That covers the basics of getting player avatars.</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
@@ -257,7 +144,15 @@ $Sprite.set_texture(AVATAR_TEXTURE)
 									<li><a href="signals-server.html">Signals (Server)</a></li>
 								</ul>
 							</li>
-							<li><a href="tutorials.html">Tutorials</a></li>
+							<li>
+								<span class="opener">Tutorials</span>
+								<ul>
+									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+									<li><a href="tutorials-avatars.html">Avatars</a></li>
+									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+								</ul>
+							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
 							<li><a href="changelog.html">Change Log</a></li>

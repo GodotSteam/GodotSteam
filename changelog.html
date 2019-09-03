@@ -40,6 +40,24 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.2 Changes</h3>
+						<ul>
+							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
+							<li>Added: missing initialization constants</li>
+							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
+							<li>Fixed: currentAppID not utilized correctly</li>
+						</ul>
+						<h3>Version 3.1 Changes</h3>
+						<ul>
+							<li>Added: MacOS C++ rule back in for compiling</li>
+							<li>Added: all missing Steam Utils functions (except depreciated or non-relevant functions)</li>
+							<li>Added: additional ENUMS for Steam Utils</li>
+							<li>Added: missing failure conditions for some Steam Utils functions</li>
+							<li>Changed: output for getFriendGamePlayed to show game information even if no valid lobby</li>
+							<li>Changed: order of previous Steam Utils functions to be alphabetical with new ones</li>
+							<li>Changed: gamepad_text_input_dismissed callback</li>
+							<li>Fixed: lobby_message bug, thanks to pull request from Frostings</li>
+						</ul>
 						<h3>Version 3.0 Changes</h3>
 						<ul>
 							<li>Added: missing Matchmaking signals/callbacks</li>
@@ -180,6 +198,15 @@
 						<hr />
 						<h2>Godot 2.x Module</h2>
 						<a id="godot2"></a>
+						<h3>Version 1.10 Changes</h3>
+						<ul>
+							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
+							<li>Added: missing initialization constants</li>
+							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
+							<li>Changed: minor formatting to match Godot 3 version</li>
+							<li>Fixed: currentAppID not utilized correctly</li>
+							<li>Removed: unneeded gameInfo struct</li>
+						</ul>
 						<h3>Version 1.9.3 Changes</h3>
 						<ul>
 							<li>Added: networking functions, big thanks to Antokolos</li>
@@ -286,6 +313,13 @@
 						<hr />
 						<h2>Minimal (Godot 2.x and Godot 3.x)</h2>
 						<a id="min"></a>
+						<h3>Version 1.1</h3>
+						<ul>
+							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
+							<li>Added: missing initialization constants</li>
+							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
+							<li>Fixed: currentAppID not utilized correctly</li>
+						</ul>
 						<h3>Version 1.0.2</h3>
 						<ul>
 							<li>Added: leaderboard functionality</li>
@@ -403,7 +437,15 @@
 									<li><a href="signals-server.html">Signals (Server)</a></li>
 								</ul>
 							</li>
-							<li><a href="tutorials.html">Tutorials</a></li>
+							<li>
+								<span class="opener">Tutorials</span>
+								<ul>
+									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+									<li><a href="tutorials-avatars.html">Avatars</a></li>
+									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+								</ul>
+							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
 							<li><a href="changelog.html">Change Log</a></li>
