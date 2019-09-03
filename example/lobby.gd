@@ -165,21 +165,13 @@ func _leave_Lobby():
 		STEAM_LOBBY_ID = 0
 		$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
 		$Players/Title.set_text("Player List (0)")
+		# Close session with all users
+		for MEMBERS in LOBBY_MEMBERS:
+			Steam.closeP2PSessionWithUser(MEMBERS['steam_id'])
 		# Clear the local lobby list
 		LOBBY_MEMBERS.clear()
-		# Disconnect from other users
-		_disconnect_From_Player()
 		# Disable the leave lobby button and all test buttons
 		_change_Button_Controls(true)
-
-# Disconnecting from another player
-func _disconnect_From_Player():
-	# Close session with all users
-	for MEMBERS in LOBBY_MEMBERS:
-		Steam.closeP2PSessionWithUser(MEMBERS['steam_id'])
-	# Reset the sabotage victim's data
-	LOBBY_MEMBERS['steam_id'] = 0
-	LOBBY_MEMBERS['steam_name'] = ""
 
 #################################################
 # P2P NETWORKING FUNCTIONS
