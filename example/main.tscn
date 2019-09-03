@@ -2,491 +2,203 @@
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 
-[node name="Node" type="Node" index="0"]
-
+[node name="Node" type="Node"]
 script = ExtResource( 1 )
 
-[node name="ID" type="Label" parent="." index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="ID" type="Label" parent="."]
 margin_left = 8.0
 margin_top = 10.0
 margin_right = 193.0
 margin_bottom = 24.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Steam ID"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Owns" type="Label" parent="." index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Owns" type="Label" parent="."]
 margin_left = 8.0
 margin_top = 40.0
 margin_right = 193.0
 margin_bottom = 54.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Owns game?"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Online" type="Label" parent="." index="2"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Online" type="Label" parent="."]
 margin_left = 8.0
 margin_top = 70.0
 margin_right = 193.0
 margin_bottom = 84.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Steam online?"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Achievements" type="Label" parent="." index="3"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Achievements" type="Label" parent="."]
 margin_left = 8.0
 margin_top = 100.0
 margin_right = 193.0
 margin_bottom = 182.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Achievements Earned:
 ???
 ???
 ???
 ???"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Stats" type="Label" parent="." index="4"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Stats" type="Label" parent="."]
 margin_left = 8.0
 margin_top = 200.0
 margin_right = 193.0
 margin_bottom = 282.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Statistics:
 ???
 ???
 ???
 ???
 ???"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatars" type="Label" parent="." index="5"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Avatars" type="Label" parent="."]
 margin_left = 8.0
 margin_top = 320.0
 margin_right = 193.0
 margin_bottom = 402.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Avatars:"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatar Small" type="Sprite" parent="." index="6"]
-
+[node name="Avatar Small" type="Sprite" parent="."]
 position = Vector2( 8, 350 )
 centered = false
-_sections_unfolded = [ "Offset", "Region", "Transform" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatar Medium" type="Sprite" parent="." index="7"]
-
+[node name="Avatar Medium" type="Sprite" parent="."]
 position = Vector2( 60, 350 )
 centered = false
-_sections_unfolded = [ "Offset", "Region", "Transform" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatar Large" type="Sprite" parent="." index="8"]
-
+[node name="Avatar Large" type="Sprite" parent="."]
 position = Vector2( 144, 350 )
 centered = false
-_sections_unfolded = [ "Offset", "Region", "Transform" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Get Stats" type="Button" parent="." index="9"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Get Stats" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 12.0
 margin_right = 1013.0
 margin_bottom = 32.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Request Steam Stats"
-flat = false
-align = 1
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Achievement Triggers" type="Label" parent="." index="10"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Achievement Triggers" type="Label" parent="."]
 margin_left = 836.0
 margin_top = 52.0
 margin_right = 1021.0
 margin_bottom = 66.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Achievement Triggers"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Fire Achievement1" type="Button" parent="." index="11"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Fire Achievement1" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 75.0
 margin_right = 1013.0
 margin_bottom = 95.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Fire Achievment 1"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Fire Achievement2" type="Button" parent="." index="12"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Fire Achievement2" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 105.0
 margin_right = 1013.0
 margin_bottom = 125.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Fire Achievement 2"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Fire Achievement3" type="Button" parent="." index="13"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Fire Achievement3" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 135.0
 margin_right = 1013.0
 margin_bottom = 155.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Fire Achievement 3"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Fire Achievement4" type="Button" parent="." index="14"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Fire Achievement4" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 165.0
 margin_right = 1013.0
 margin_bottom = 185.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Fire Achievement 4"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Load Avatars" type="Label" parent="." index="15"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Load Avatars" type="Label" parent="."]
 margin_left = 836.0
 margin_top = 207.0
 margin_right = 1021.0
 margin_bottom = 221.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
 text = "Load Avatars"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Load Small Avatar" type="Button" parent="." index="16"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Load Small Avatar" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 230.0
 margin_right = 1013.0
 margin_bottom = 250.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Show Small Avatar"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Load Medium Avatar" type="Button" parent="." index="17"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Load Medium Avatar" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 260.0
 margin_right = 1013.0
 margin_bottom = 280.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Show Medium Avatar"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Load Large Avatar" type="Button" parent="." index="18"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Load Large Avatar" type="Button" parent="."]
 margin_left = 836.0
 margin_top = 290.0
 margin_right = 1013.0
 margin_bottom = 310.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
 text = "Show Large Avatar"
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_edit_lock_": true
 }
-
 [connection signal="pressed" from="Get Stats" to="." method="_on_Get_Stats_pressed"]
-
 [connection signal="pressed" from="Fire Achievement1" to="." method="_fire_Steam_Achievement" binds= [ "ACH_WIN_ONE_GAME" ]]
-
 [connection signal="pressed" from="Fire Achievement2" to="." method="_fire_Steam_Achievement" binds= [ "ACH_WIN_100_GAMES" ]]
-
 [connection signal="pressed" from="Fire Achievement3" to="." method="_fire_Steam_Achievement" binds= [ "ACH_TRAVEL_FAR_ACCUM" ]]
-
 [connection signal="pressed" from="Fire Achievement4" to="." method="_fire_Steam_Achievement" binds= [ "ACH_TRAVEL_FAR_SINGLE" ]]
-
 [connection signal="pressed" from="Load Small Avatar" to="." method="_on_Load_Small_Avatar_pressed"]
-
 [connection signal="pressed" from="Load Medium Avatar" to="." method="_on_Load_Medium_Avatar_pressed"]
-
 [connection signal="pressed" from="Load Large Avatar" to="." method="_on_Load_Large_Avatar_pressed"]
-
-
