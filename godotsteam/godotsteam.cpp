@@ -13,6 +13,7 @@ Steam::Steam(){
 	singleton = this;
 	leaderboardDetailsMax = 0;
 	tickets.clear();
+	currentAppID = 0;
 }
 
 Steam* Steam::get_singleton(){
@@ -37,26 +38,40 @@ bool Steam::restartAppIfNecessary(int value){
 	return SteamAPI_RestartAppIfNecessary((AppId_t)value);
 }
 // Initialize Steamworks
-bool Steam::steamInit(){
-	return SteamAPI_Init();
+Dictionary Steam::steamInit(){
+	// Create the response dictionary
+	Dictionary initialize;
+	// Attempt to initialize Steamworks
 	isInitSuccess = SteamAPI_Init();
-	int err = FAILED;
+	// Set the default status response
+	int status = FAILED;
+	String verbal = "Steamworks failed to initialize.";
+	// Steamworks initialized with no problems
 	if(isInitSuccess){
-		err = OK;
+		status = OK;
+		verbal = "Steamworks active.";
 	}
+	// The Steam client is not running
 	if(!SteamAPI_IsSteamRunning()){
-		err = ERR_NO_CLIENT;
+		status = ERR_NO_CLIENT;
+		verbal = "Steam not running.";
 	}
+	// The user is not logged into Steam or there is no active connection to Steam
 	else if(!SteamUser()->BLoggedOn()){
-		err = ERR_NO_CONNECTION;
+		status = ERR_NO_CONNECTION;
+		verbal = "Not logged on / no connection to Steam.";
 	}
-	if(err == OK && SteamUserStats() != NULL){
-		// Load stats and achievements automatically.
+	// Steam is connected and active, so load the stats and achievements
+	if(status == OK && SteamUserStats() != NULL){
 		SteamUserStats()->RequestCurrentStats();
 	}
 	// Get this app ID
-	currentAppID = SteamUtils()->GetAppID();
-	return err;
+	currentAppID = getAppID();
+	// Compile the response
+	initialize["status"] = status;
+	initialize["verbal"] = verbal;
+	// Return the Steamworks status
+	return initialize;
 }
 // Returns true/false if Steam is running.
 bool Steam::isSteamRunning(void){
@@ -3749,8 +3764,10 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RELATION_MAX);					// 8
 
 	// Initialization Errors ////////////////////
-	BIND_CONSTANT(ERR_NO_CLIENT);
-	BIND_CONSTANT(ERR_NO_CONNECTION);
+	BIND_CONSTANT(OK);								// 0
+	BIND_CONSTANT(FAILED);							// 1
+	BIND_CONSTANT(ERR_NO_CLIENT);					// 2
+	BIND_CONSTANT(ERR_NO_CONNECTION);				// 3
 
 	// Authentication Responses /////////////////
 	BIND_CONSTANT(AUTH_SESSION_OK);
@@ -4095,7 +4112,8 @@ Steam::~Steam(){
 		TicketData ticket = tickets.get(i);
 		memdelete_arr(ticket.buffer);
 	}
-	// Clear tickets and singlton variables /////
+	// Clear tickets, app ID, and singlton variables /////
 	tickets.clear();
 	singleton = NULL;
+	currentAppID = NULL;
 }
