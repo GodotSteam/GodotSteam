@@ -1,20 +1,21 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
-
+// Include INT types header
 #include <inttypes.h>
-#include <steam/steam_api.h>
-
-#include "object.h"
-#include "scene/resources/texture.h"	// For avatars
+// Include Steamworks API header
+#include "steam/steam_api.h"
+// Include Godot headers
+#include "core/object.h"
+#include "scene/resources/texture.h"
 #include "reference.h"
-#include "dictionary.h"					// Contains array.h as well
+#include "dictionary.h"
 
 class Steam: public Object {
 	public:
 		enum {
 			OFFLINE=0, ONLINE=1, BUSY=2, AWAY=3, SNOOZE=4, LF_TRADE, LF_PLAY, STATE_MAX, NOT_OFFLINE=8, ALL=9,
 			TOP_LEFT=0, TOP_RIGHT=1, BOT_LEFT=2, BOT_RIGHT=3,
-			ERR_NO_CLIENT=2, ERR_NO_CONNECTION=3,
+			OK=0, FAILED=1, ERR_NO_CLIENT=2, ERR_NO_CONNECTION=3,
 			GLOBAL=0, GLOBAL_AROUND_USER=1, FRIENDS=2, USERS=3,
 			PERSONA_NAME_MAX_UTF16=128, PERSONA_NAME_MAX_UTF8=128,
 			OVERLAY_TO_STORE_FLAG_NONE=0, OVERLAY_TO_STORE_FLAG_ADD_TO_CART=1, OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW=2,
@@ -38,11 +39,13 @@ class Steam: public Object {
 		~Steam();
 
 		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
-		// Steamworks ///////////////////////////////
+
+		// Main /////////////////////////////////
 		bool restartAppIfNecessary(int value);
-		bool steamInit();
+		Dictionary steamInit();
 		bool isSteamRunning();
-		// Apps /////////////////////////////////////
+
+		// Apps /////////////////////////////////
 		bool isSubscribed();
 		String getCurrentGameLanguage();
 		bool isSubscribedApp(int value);
@@ -50,18 +53,21 @@ class Steam: public Object {
 		int getDLCCount();
 		uint64_t getAppOwner();
 		int getAppBuildId();
-		// Friends //////////////////////////////////
+
+		// Friends //////////////////////////////
 		String getPersonaName();
 		void activateGameOverlay(const String& type);
 		void activateGameOverlayToUser(const String& type, uint64_t steamID);
 		void activateGameOverlayToWebPage(const String& url);
 		void activateGameOverlayToStore(int appID=0);
-		// Users ////////////////////////////////////
+
+		// Users ////////////////////////////////
 		uint64_t getSteamID();
 		bool loggedOn();
 		int getPlayerSteamLevel();
 		int getGameBadgeLevel(int series, bool foil);
-		// User Stats ///////////////////////////////
+
+		// User Stats ///////////////////////////
 		bool clearAchievement(const String& name);
 		Dictionary getAchievement(const String& name);
 		Dictionary getAchievementAchievedPercent(const String& name);
@@ -86,7 +92,8 @@ class Steam: public Object {
 		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
-		// Utils ////////////////////////////////////
+
+		// Utils ////////////////////////////////
 		String getIPCountry();
 		bool isOverlayEnabled();
 		String getSteamUILanguage();
@@ -100,18 +107,24 @@ class Steam: public Object {
 		static Steam* singleton;
 
 	private:
+		// Main
 		bool isInitSuccess;
+
 		// Apps
 		uint64 currentAppID;
+
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntries;
 		int leaderboardDetailsMax;
+
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
+
 		/////////////////////////////////////////
 		// STRUCTS //////////////////////////////
+		/////////////////////////////////////////
 		//
 		// Achievement data
 		struct AchievementData {
@@ -123,33 +136,29 @@ class Steam: public Object {
 			int icon;
 		};
 		Vector<AchievementData> achievementData;
+
 		/////////////////////////////////////////
 		// STEAM CALLBACKS //////////////////////
+		/////////////////////////////////////////
 		//
 		// User stat callbacks //////////////////
 		//
-		// Getting all statistics and achievements from Steam
 		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
-		// Getting global achievement percentages
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
-		// Storing user stats
 		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
-		// Storing user achievements
 		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
-		// Uploading scores to the leaderboard
 		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
 		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
-		// Finding a leaderboard
 		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
-		// Downloading scores from a leaderboard
 		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
 		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 		// Utility callbacks ////////////////////
 		//
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
+
 		// Run the Steamworks API callbacks /////
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();

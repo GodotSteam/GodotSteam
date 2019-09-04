@@ -13,12 +13,15 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v1.0.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v1.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 1.0.2 Changes**
-- Added: compiling flag for Linux, need for new Steamworks 1.44
-- Added: leaderboard functionality
-- Changed: linked against Steamworks 1.44
+**Version 1.1 Changes**
+- Added: more verbose response to steamInit, now returns a dictionary
+- Added: missing initialization constants
+- Changed: steamInit to give actual response on Steamworks status (from bool to int)
+- Changed: minor formatting to match Godot 3 version
+- Fixed: currentAppID not utilized correctly
+- Removed: unneeded gameInfo struct
 
 Known Issues
 ----------

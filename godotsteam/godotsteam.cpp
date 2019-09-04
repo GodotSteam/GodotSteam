@@ -1,5 +1,7 @@
+// Include GodotSteam headear
 #include "godotsteam.h"
-#include <steam/steam_api.h>
+// Include Steamworks API header
+#include "steam/steam_api.h"
 
 Steam* Steam::singleton = NULL;
 
@@ -7,6 +9,7 @@ Steam::Steam(){
 	isInitSuccess = false;
 	singleton = this;
 	leaderboardDetailsMax = 0;
+	currentAppID = 0;
 }
 
 Steam* Steam::get_singleton(){
@@ -29,27 +32,40 @@ bool Steam::restartAppIfNecessary(int value){
 	return SteamAPI_RestartAppIfNecessary((AppId_t)value);
 }
 // Initialize Steamworks
-bool Steam::steamInit(){
-	return SteamAPI_Init();
-	//printf("Godot Steam initialing...\n");
+Dictionary Steam::steamInit(){
+	// Create the response dictionary
+	Dictionary initialize;
+	// Attempt to initialize Steamworks
 	isInitSuccess = SteamAPI_Init();
-	int err = FAILED;
+	// Set the default status response
+	int status = FAILED;
+	String verbal = "Steamworks failed to initialize.";
+	// Steamworks initialized with no problems
 	if(isInitSuccess){
-		err = OK;
+		status = OK;
+		verbal = "Steamworks active.";
 	}
+	// The Steam client is not running
 	if(!SteamAPI_IsSteamRunning()){
-		err = ERR_NO_CLIENT;
+		status = ERR_NO_CLIENT;
+		verbal = "Steam not running.";
 	}
+	// The user is not logged into Steam or there is no active connection to Steam
 	else if(!SteamUser()->BLoggedOn()){
-		err = ERR_NO_CONNECTION;
+		status = ERR_NO_CONNECTION;
+		verbal = "Not logged on / no connection to Steam.";
 	}
-	if(err == OK && SteamUserStats() != NULL){
-		// Load stats and achievements automatically.
+	// Steam is connected and active, so load the stats and achievements
+	if(status == OK && SteamUserStats() != NULL){
 		SteamUserStats()->RequestCurrentStats();
 	}
 	// Get this app ID
-	currentAppID = SteamUtils()->GetAppID();
-	return err;
+	currentAppID = getAppID();
+	// Compile the response
+	initialize["status"] = status;
+	initialize["verbal"] = verbal;
+	// Return the Steamworks status
+	return initialize;
 }
 // Returns true/false if Steam is running.
 bool Steam::isSteamRunning(void){
@@ -489,6 +505,7 @@ int Steam::getCurrentBatteryPower(){
 	}
 	return SteamUtils()->GetCurrentBatteryPower();
 }
+
 /////////////////////////////////////////////////
 ///// BIND METHODS //////////////////////////////
 //
@@ -497,6 +514,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("steamInit", &Steam::steamInit);
 	ObjectTypeDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ObjectTypeDB::bind_method("run_callbacks", &Steam::run_callbacks);
+
 	// Apps Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("isSubscribed", &Steam::isSubscribed);
 	ObjectTypeDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
@@ -505,17 +523,20 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getDLCCount", &Steam::getDLCCount);
 	ObjectTypeDB::bind_method("getAppOwner", &Steam::getAppOwner);
 	ObjectTypeDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
+
 	// Friends Bind Methods /////////////////////
 	ObjectTypeDB::bind_method("getPersonaName", &Steam::getPersonaName);
 	ObjectTypeDB::bind_method(_MD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToUser", "type", "steamID"), &Steam::activateGameOverlayToUser, DEFVAL(""), DEFVAL(0));
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
 	ObjectTypeDB::bind_method(_MD("activateGameOverlayToStore", "appID"), &Steam::activateGameOverlayToStore, DEFVAL(0));
+
 	// User Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("getSteamID", &Steam::getSteamID);
 	ObjectTypeDB::bind_method("loggedOn", &Steam::loggedOn);
 	ObjectTypeDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
 	ObjectTypeDB::bind_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
+
 	// User Stats Bind Methods //////////////////
 	ObjectTypeDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ObjectTypeDB::bind_method("getAchievement", &Steam::getAchievement);
@@ -539,6 +560,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntriesForUsers", "usersID"), &Steam::downloadLeaderboardEntriesForUsers);
 	ObjectTypeDB::bind_method(_MD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
 	ObjectTypeDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
+
 	// Utils Bind Methods ///////////////////////
 	ObjectTypeDB::bind_method("getIPCountry", &Steam::getIPCountry);
 	ObjectTypeDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
@@ -546,6 +568,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getAppID", &Steam::getAppID);
 	ObjectTypeDB::bind_method("getSecondsSinceAppActive", &Steam::getSecondsSinceAppActive);
 	ObjectTypeDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
+
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("overlay_toggled", PropertyInfo(Variant::BOOL, "active")));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
@@ -556,6 +579,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("leaderboard_loaded", PropertyInfo(Variant::INT, "leaderboard"), PropertyInfo(Variant::INT, "found")));
 	ADD_SIGNAL(MethodInfo("leaderboard_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
 	ADD_SIGNAL(MethodInfo("leaderboard_entries_loaded"));
+
 	// Status constants /////////////////////////
 	BIND_CONSTANT(OFFLINE);						// 0
 	BIND_CONSTANT(ONLINE);						// 1
@@ -566,26 +590,34 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LF_PLAY);						// 6
 	BIND_CONSTANT(NOT_OFFLINE);					// Custom
 	BIND_CONSTANT(ALL); 						// Custom
+
 	// Initialization errors ////////////////////
-	BIND_CONSTANT(ERR_NO_CLIENT);
-	BIND_CONSTANT(ERR_NO_CONNECTION);
+	BIND_CONSTANT(OK);								// 0
+	BIND_CONSTANT(FAILED);							// 1
+	BIND_CONSTANT(ERR_NO_CLIENT);					// 2
+	BIND_CONSTANT(ERR_NO_CONNECTION);				// 3
+
 	// Overlay notification locations ///////////
 	BIND_CONSTANT(TOP_LEFT);
 	BIND_CONSTANT(TOP_RIGHT);
 	BIND_CONSTANT(BOT_LEFT);
 	BIND_CONSTANT(BOT_RIGHT);
+
 	// Global user //////////////////////////////
 	BIND_CONSTANT(GLOBAL);
 	BIND_CONSTANT(GLOBAL_AROUND_USER);
 	BIND_CONSTANT(FRIENDS);
 	BIND_CONSTANT(USERS);
+
 	// Persona name maximums ////////////////////
 	BIND_CONSTANT(PERSONA_NAME_MAX_UTF16);			// 32
 	BIND_CONSTANT(PERSONA_NAME_MAX_UTF8);			// 128
+
 	// Store overlay parameters /////////////////
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);		// 0
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);			// 1
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW);	// 2
+
 	// Result constants /////////////////////////
 	BIND_CONSTANT(RESULT_OK);						// 1
 	BIND_CONSTANT(RESULT_FAIL);						// 2
@@ -702,4 +734,5 @@ Steam::~Steam(){
 		SteamAPI_Shutdown();
 	}
 	singleton = NULL;
+	currentAppID = NULL;
 }
