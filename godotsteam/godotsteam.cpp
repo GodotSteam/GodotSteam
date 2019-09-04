@@ -1,6 +1,8 @@
+// Include GodotSteam headear
 #include "godotsteam.h"
-#include <steam/steam_api.h>
-
+// Include Steamworks API header
+#include "steam/steam_api.h"
+// Include some Godot headers
 #include "core/io/ip_address.h"
 #include "core/io/ip.h"
 
@@ -9,7 +11,9 @@ Steam* Steam::singleton = NULL;
 Steam::Steam(){
 	isInitSuccess = false;
 	singleton = this;
+	leaderboardDetailsMax = 0;
 	tickets.clear();
+	currentAppID = 0;
 }
 
 Steam* Steam::get_singleton(){
@@ -32,27 +36,40 @@ bool Steam::restartAppIfNecessary(int value){
 	return SteamAPI_RestartAppIfNecessary((AppId_t)value);
 }
 // Initialize Steamworks
-bool Steam::steamInit(){
-	return SteamAPI_Init();
-	//printf("Godot Steam initialing...\n");
+Dictionary Steam::steamInit(){
+	// Create the response dictionary
+	Dictionary initialize;
+	// Attempt to initialize Steamworks
 	isInitSuccess = SteamAPI_Init();
-	int err = FAILED;
+	// Set the default status response
+	int status = FAILED;
+	String verbal = "Steamworks failed to initialize.";
+	// Steamworks initialized with no problems
 	if(isInitSuccess){
-		err = OK;
+		status = OK;
+		verbal = "Steamworks active.";
 	}
+	// The Steam client is not running
 	if(!SteamAPI_IsSteamRunning()){
-		err = ERR_NO_CLIENT;
+		status = ERR_NO_CLIENT;
+		verbal = "Steam not running.";
 	}
+	// The user is not logged into Steam or there is no active connection to Steam
 	else if(!SteamUser()->BLoggedOn()){
-		err = ERR_NO_CONNECTION;
+		status = ERR_NO_CONNECTION;
+		verbal = "Not logged on / no connection to Steam.";
 	}
-	if(err == OK && SteamUserStats() != NULL){
-		// Load stats and achievements automatically.
+	// Steam is connected and active, so load the stats and achievements
+	if(status == OK && SteamUserStats() != NULL){
 		SteamUserStats()->RequestCurrentStats();
 	}
 	// Get this app ID
-	currentAppID = SteamUtils()->GetAppID();
-	return err;
+	currentAppID = getAppID();
+	// Compile the response
+	initialize["status"] = status;
+	initialize["verbal"] = verbal;
+	// Return the Steamworks status
+	return initialize;
 }
 // Returns true/false if Steam is running.
 bool Steam::isSteamRunning(void){
@@ -2954,14 +2971,17 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 	}
 	return info;
 }
+
 /////////////////////////////////////////////////
 ///// BIND METHODS //////////////////////////////
+/////////////////////////////////////////////////
 //
 void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
 	ObjectTypeDB::bind_method("steamInit", &Steam::steamInit);
 	ObjectTypeDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ObjectTypeDB::bind_method("run_callbacks", &Steam::run_callbacks);
+
 	// Apps Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("isSubscribed", &Steam::isSubscribed);
 	ObjectTypeDB::bind_method("isLowViolence", &Steam::isLowViolence);
@@ -2987,6 +3007,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getDLCDownloadProgress", &Steam::getDLCDownloadProgress);
 	ObjectTypeDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
 	ObjectTypeDB::bind_method("getFileDetails", &Steam::getFileDetails);
+
 	// Controllers Bind Methods /////////////////
 	ObjectTypeDB::bind_method("activateActionSet", &Steam::activateActionSet);
 	ObjectTypeDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
@@ -3062,10 +3083,11 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isClanPublic", &Steam::isClanPublic);
 	ObjectTypeDB::bind_method("isClanOfficialGameGroup", &Steam::isClanOfficialGameGroup);
 	ObjectTypeDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
-	ObjectTypeDB::bind_method(_MD("getPlayerAvatar", "size", "steamID"), &Steam::getPlayerAvatar, DEFVAL(int(AVATAR_MEDIUM)), DEFVAL(0));
+	ObjectTypeDB::bind_method(_MD("getPlayerAvatar", "size", "steamID"), &Steam::getPlayerAvatar, DEFVAL(AVATAR_MEDIUM), DEFVAL(0));
 	ObjectTypeDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
 	ObjectTypeDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ObjectTypeDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
+
 	// Matchmaking Bind Methods /////////////////
 	ObjectTypeDB::bind_method("getFavoriteGames", &Steam::getFavoriteGames);
 //	ObjectTypeDB::bind_method("addFavoriteGame", &Steam::addFavoriteGame);
@@ -3099,6 +3121,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("setLobbyJoinable", &Steam::setLobbyJoinable);
 	ObjectTypeDB::bind_method("getLobbyOwner", &Steam::getLobbyOwner);
 	ObjectTypeDB::bind_method("setLobbyOwner", &Steam::setLobbyOwner);
+
 	// Music Bind Methods ///////////////////////
 	ObjectTypeDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
 	ObjectTypeDB::bind_method("musicIsPlaying", &Steam::musicIsPlaying);
@@ -3108,6 +3131,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
 	ObjectTypeDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ObjectTypeDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
+
 	// Networking Bind Methods //////////////////
 	ObjectTypeDB::bind_method("acceptP2PSessionWithUser", &Steam::acceptP2PSessionWithUser);
 	ObjectTypeDB::bind_method("allowP2PPacketRelay", &Steam::allowP2PPacketRelay);
@@ -3117,6 +3141,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getAvailableP2PPacketSize", &Steam::getAvailableP2PPacketSize);
 	ObjectTypeDB::bind_method("readP2PPacket", &Steam::readP2PPacket);
 	ObjectTypeDB::bind_method("sendP2PPacket", &Steam::sendP2PPacket);
+
 	// Remote Storage Bind Methods //////////////
 	ObjectTypeDB::bind_method("fileWrite", &Steam::fileWrite);
 	ObjectTypeDB::bind_method("fileRead", &Steam::fileRead);
@@ -3133,6 +3158,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getFileNameAndSize", &Steam::getFileNameAndSize);
 	ObjectTypeDB::bind_method("getQuota", &Steam::getQuota);
 	ObjectTypeDB::bind_method("getSyncPlatforms", &Steam::getSyncPlatforms);
+
 	// Screenshot Bind Methods /////////////////
 	ObjectTypeDB::bind_method("addScreenshotToLibrary", &Steam::addScreenshotToLibrary);
 	ObjectTypeDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
@@ -3140,6 +3166,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("setLocation", &Steam::setLocation);
 	ObjectTypeDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	ObjectTypeDB::bind_method("writeScreenshot", &Steam::writeScreenshot);
+
 	// User Bind Methods ////////////////////////
 	ObjectTypeDB::bind_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
 	ObjectTypeDB::bind_method("cancelAuthTicket", &Steam::cancelAuthTicket);
@@ -3151,6 +3178,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getUserDataFolder", &Steam::getUserDataFolder);
 	ObjectTypeDB::bind_method(_MD("advertiseGame", "serverIP", "port"), &Steam::advertiseGame);
 	ObjectTypeDB::bind_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
+
 	// User Stats Bind Methods //////////////////
 	ObjectTypeDB::bind_method("clearAchievement", &Steam::clearAchievement);
 	ObjectTypeDB::bind_method("getAchievement", &Steam::getAchievement);
@@ -3172,12 +3200,13 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method(_MD("findLeaderboard", "name"), &Steam::findLeaderboard);
 	ObjectTypeDB::bind_method("getLeaderboardName", &Steam::getLeaderboardName);
 	ObjectTypeDB::bind_method("getLeaderboardEntryCount", &Steam::getLeaderboardEntryCount);
-	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(int(GLOBAL)));
+	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntries", "range_start", "range_end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(GLOBAL));
 	ObjectTypeDB::bind_method(_MD("downloadLeaderboardEntriesForUsers", "usersID"), &Steam::downloadLeaderboardEntriesForUsers);
 	ObjectTypeDB::bind_method(_MD("uploadLeaderboardScore", "score", "keep_best"), &Steam::uploadLeaderboardScore, DEFVAL(true));
 	ObjectTypeDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
 	ObjectTypeDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
 	ObjectTypeDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
+
 	// Utils Bind Methods ///////////////////////
 	ObjectTypeDB::bind_method("getIPCountry", &Steam::getIPCountry);
 	ObjectTypeDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
@@ -3192,6 +3221,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
 	ObjectTypeDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
 	ObjectTypeDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
+
 	// Workshop Bind Methods ////////////////////
 	ObjectTypeDB::bind_method("downloadItem", &Steam::downloadItem);
 	ObjectTypeDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
@@ -3211,6 +3241,7 @@ void Steam::_bind_methods(){
 	ObjectTypeDB::bind_method("getSubscribedItems", &Steam::getSubscribedItems);
 //	ObjectTypeDB::bind_method("getItemInstallInfo", &Steam::getItemInstallInfo);
 	ObjectTypeDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
+
 	// Signals //////////////////////////////////
 	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
@@ -3254,6 +3285,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("workshop_item_installed"));
 	ADD_SIGNAL(MethodInfo("p2p_session_request"));
 	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail"));
+
 	// Status constants /////////////////////////
 	BIND_CONSTANT(OFFLINE);						// 0
 	BIND_CONSTANT(ONLINE);						// 1
@@ -3264,6 +3296,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LF_PLAY);						// 6
 	BIND_CONSTANT(NOT_OFFLINE);					// Custom
 	BIND_CONSTANT(ALL); 						// Custom
+
 	// Friend flags /////////////////////////////
 	BIND_CONSTANT(FLAG_NONE);						// 0x00
 	BIND_CONSTANT(FLAG_BLOCKED);					// 0x01
@@ -3277,6 +3310,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(FLAG_IGNORED_FRIEND);				// 0x400
 	BIND_CONSTANT(FLAG_CHAT_MEMBER);				// 0x1000
 	BIND_CONSTANT(FLAG_ALL);						// 0xFFFF
+
 	// Relationship constants ///////////////////
 	BIND_CONSTANT(RELATION_NONE);					// 0
 	BIND_CONSTANT(RELATION_BLOCKED);				// 1
@@ -3287,9 +3321,13 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RELATION_IGNORED_FRIEND);			// 6
 	BIND_CONSTANT(RELATION_SUGGESTED);				// 7
 	BIND_CONSTANT(RELATION_MAX);					// 8
+
 	// Initialization errors ////////////////////
-	BIND_CONSTANT(ERR_NO_CLIENT);
-	BIND_CONSTANT(ERR_NO_CONNECTION);
+	BIND_CONSTANT(OK);								// 0
+	BIND_CONSTANT(FAILED);							// 1
+	BIND_CONSTANT(ERR_NO_CLIENT);					// 2
+	BIND_CONSTANT(ERR_NO_CONNECTION);				// 3
+
 	// Authentication responses /////////////////
 	BIND_CONSTANT(AUTH_SESSION_OK);
 	BIND_CONSTANT(AUTH_SESSION_STEAM_NOT_CONNECTED);
@@ -3301,23 +3339,28 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(AUTH_SESSION_TICKET_ALREADY_USED);
 	BIND_CONSTANT(AUTH_SESSION_TICKET_INVALID);
 	BIND_CONSTANT(AUTH_SESSION_PUBLISHER_BANNED);
+
 	// Avatar sizes /////////////////////////////
 	BIND_CONSTANT(AVATAR_SMALL);
 	BIND_CONSTANT(AVATAR_MEDIUM);
 	BIND_CONSTANT(AVATAR_LARGE);
+
 	// Overlay notification locations ///////////
 	BIND_CONSTANT(TOP_LEFT);
 	BIND_CONSTANT(TOP_RIGHT);
 	BIND_CONSTANT(BOT_LEFT);
 	BIND_CONSTANT(BOT_RIGHT);
+
 	// Global user //////////////////////////////
 	BIND_CONSTANT(GLOBAL);
 	BIND_CONSTANT(GLOBAL_AROUND_USER);
 	BIND_CONSTANT(FRIENDS);
 	BIND_CONSTANT(USERS);
+
 	// Persona name maximums ////////////////////
 	BIND_CONSTANT(PERSONA_NAME_MAX_UTF16);			// 32
 	BIND_CONSTANT(PERSONA_NAME_MAX_UTF8);			// 128
+
 	// User restriction flags ///////////////////
 	BIND_CONSTANT(RESTRICTION_NONE);				// 0
 	BIND_CONSTANT(RESTRICTION_UNKNOWN);				// 1
@@ -3327,8 +3370,10 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RESTRICTION_RATING);				// 16
 	BIND_CONSTANT(RESTRICTION_GAME_INVITES);		// 32
 	BIND_CONSTANT(RESTRICTION_TRADING);				// 64
+
 	// Chat room metadata limits ////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);				// 8192
+
 	// Chat entry types /////////////////////////
 	BIND_CONSTANT(CHAT_INVALID);					// 0
 	BIND_CONSTANT(CHAT_MESSAGE);					// 1
@@ -3342,14 +3387,17 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_DISCONNECTED);				// 10
 	BIND_CONSTANT(CHAT_HISTORICAL);					// 11
 	BIND_CONSTANT(CHAT_LINK_BLOCKED);				// 14
+
 	// Rich presence data limits ////////////////
 	BIND_CONSTANT(MAX_RICH_PRESENCE_KEYS);			// 20
 	BIND_CONSTANT(MAX_RICH_PRESENCE_KEY_LENGTH);	// 64
 	BIND_CONSTANT(MAX_RICH_PRESENCE_VALUE_LENGTH);	// 256
+
 	// Store overlay parameters /////////////////
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);		// 0
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);			// 1
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW);	// 2
+
 	// Matchmaking types ////////////////////////
 	BIND_CONSTANT(PRIVATE);						// Only way to join the lobby is to invite to someone else.
 	BIND_CONSTANT(FRIENDS_ONLY);				// Shows for friends or invitees, but not in lobby list.
@@ -3366,6 +3414,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LOBBY_DISTANCE_DEFAULT);		// 1 - Only lobbies in the same region or near by regions.
 	BIND_CONSTANT(LOBBY_DISTANCE_FAR);			// 2 - For games that don't have many latency requirements, will return lobbies about half-way around the globe.
 	BIND_CONSTANT(LOBBY_DISTANCE_WORLDWIDE);	// 3 - No filtering, will match lobbies as far as India to NY (not recommended, expect multiple seconds of latency between the clients).
+
 	// Matchmaking lobby responses //////////////
 	BIND_CONSTANT(LOBBY_OK);					// Lobby was successfully created.
 	BIND_CONSTANT(LOBBY_NO_CONNECTION);			// Your Steam client doesn't have a connection to the back-end.
@@ -3373,6 +3422,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LOBBY_FAIL);					// Server responded, but with an unknown internal error.
 	BIND_CONSTANT(LOBBY_ACCESS_DENIED);			// Game isn't set to allow lobbies, or your client does haven't rights to play the game.
 	BIND_CONSTANT(LOBBY_LIMIT_EXCEEDED);		// Game client has created too many lobbies.
+
 	// Remote Storage
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_NONE);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_WINDOWS);
@@ -3381,10 +3431,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_LINUX);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_RESERVED2);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);
+
 	// Workshop item characters /////////////////
 	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);			// 128
 	BIND_CONSTANT(UGC_MAX_DESC_CHARS);			// 8000
 	BIND_CONSTANT(UGC_MAX_METADATA_CHARS);		// 5000
+
 	// Workshop item types //////////////////////
 	BIND_CONSTANT(UGC_ITEM_COMMUNITY);				// Normal items that can be subscribed to.
 	BIND_CONSTANT(UGC_ITEM_MICROTRANSACTION);		// Item that is meant to be voted on for the purpose of selling in-game.
@@ -3403,6 +3455,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_ITEM_STEAMVIDEO);				// Steam video.
 	BIND_CONSTANT(UGC_ITEM_GAMEMANAGEDITEM);		// Managed completely by the game, not the user, and not shown on the web.
 	BIND_CONSTANT(UGC_ITEM_MAX);					// Only used for enumerating.
+
 	// Workshop item states /////////////////////
 	BIND_CONSTANT(UGC_STATE_NONE);				// Not tracked on client.
 	BIND_CONSTANT(UGC_STATE_SUBSCRIBED);		// Current user is subscribed to this item, not just cached.
@@ -3411,10 +3464,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_STATE_UPDATE);			// Needs an update, either because it's not installed yet or creator updated content.
 	BIND_CONSTANT(UGC_STATE_DOWNLOADING);		// Update is currently downloading.
 	BIND_CONSTANT(UGC_STATE_PENDING);			// DownloadItem() was called for this item, content isn't available until DownloadItemResult_t is fired.
+
 	// Workshop item visibility//////////////////
 	BIND_CONSTANT(UGC_FILE_VISIBLE_PUBLIC);
 	BIND_CONSTANT(UGC_FILE_VISIBLE_FRIENDS);
 	BIND_CONSTANT(UGC_FILE_VISIBLE_PRIVATE);
+
 	// Workshop item update status //////////////
 	BIND_CONSTANT(STATUS_INVALID);				// Update handle was invalid, job might be finished, listen to SubmitItemUpdateResult_t.
 	BIND_CONSTANT(STATUS_PREPARING_CONFIG);		// Update is processing configuration data.
@@ -3422,6 +3477,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(STATUS_UPLOADING_CONTENT);	// Update is uploading content changes to Steam.
 	BIND_CONSTANT(STATUS_UPLOADING_PREVIEW);	// Update is uploading new preview file image.
 	BIND_CONSTANT(STATUS_COMMITTING_CHANGES);	// Update is committing all changes.
+
 	// Result constants /////////////////////////
 	BIND_CONSTANT(RESULT_OK);						// 1
 	BIND_CONSTANT(RESULT_FAIL);						// 2
@@ -3530,6 +3586,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RESULT_GSLT_EXPIRED);				// 106
 	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);		// 107
 	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);			// 108
+
 	// Persona changes //////////////////////////
 	BIND_CONSTANT(PERSONA_CHANGE_NAME);				// 0x0001
 	BIND_CONSTANT(PERSONA_CHANGE_STATUS); 			// 0x0002
@@ -3545,6 +3602,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(PERSONA_CHANGE_FACEBOOK_INFO);	// 0x0800
 	BIND_CONSTANT(PERSONA_CHANGE_NICKNAME);			// 0x1000
 	BIND_CONSTANT(PERSONA_CHANGE_STEAM_LEVEL);		// 0x2000
+
 	// Chat room responses //////////////////////
 	BIND_CONSTANT(CHAT_ROOM_SUCCESS);				// 1
 	BIND_CONSTANT(CHAT_ROOM_DOESNT_EXIST);			// 2
@@ -3557,6 +3615,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_ROOM_COMMUNITY_BAN);			// 9
 	BIND_CONSTANT(CHAT_ROOM_MEMBER_BLOCKED_YOU);	// 10
 	BIND_CONSTANT(CHAT_ROOM_YOU_BLOCKED_MEMBER);	// 11
+
 	// Networking constants /////////////////////
 	BIND_CONSTANT(EP2P_SEND_UNRELIABLE);			// 0
 	BIND_CONSTANT(EP2P_SEND_UNRELIABLE_NO_DELAY);	// 1
@@ -3575,4 +3634,5 @@ Steam::~Steam(){
 	}
 	tickets.clear();
 	singleton = NULL;
+	currentAppID = NULL;
 }

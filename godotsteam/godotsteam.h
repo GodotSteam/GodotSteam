@@ -1,13 +1,14 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
-
+// Include INT types header
 #include <inttypes.h>
-#include <steam/steam_api.h>
-
-#include "object.h"
-#include "scene/resources/texture.h"	// For avatars
+// Include Steamworks API header
+#include "steam/steam_api.h"
+// Include Godot headers
+#include "core/object.h"
+#include "scene/resources/texture.h"
 #include "reference.h"
-#include "dictionary.h"					// Contains array.h as well
+#include "dictionary.h"
 
 class Steam: public Object {
 	public:
@@ -16,7 +17,7 @@ class Steam: public Object {
 			TOP_LEFT=0, TOP_RIGHT=1, BOT_LEFT=2, BOT_RIGHT=3,
 			FLAG_NONE=0x00, FLAG_BLOCKED=0x01, FLAG_FRIENDSHIP_REQUESTED=0x02, FLAG_IMMEDIATE=0x04, FLAG_CLAN_MEMBER=0x08, FLAG_ON_GAME_SERVER=0x10, FLAG_REQUESTING_FRIENDSHIP=0x80, FLAG_REQUESTING_INFO=0x100,
 			FLAG_IGNORED=0x200, FLAG_IGNORED_FRIEND=0x400, FLAG_CHAT_MEMBER=0x1000, FLAG_ALL=0xFFFF,	
-			ERR_NO_CLIENT=2, ERR_NO_CONNECTION=3,
+			OK=0, FAILED=1, ERR_NO_CLIENT=2, ERR_NO_CONNECTION=3,
 			RELATION_NONE=0, RELATION_BLOCKED=1, RELATION_REQUEST_RECIPIENT=2, RELATION_FRIEND=3, RELATION_REQUEST_INITIATOR=4, RELATION_IGNORED=5, RELATION_IGNORED_FRIEND=6, RELATION_SUGGESTED=7, RELATION_MAX=8,
 			AUTH_SESSION_OK=0, AUTH_SESSION_STEAM_NOT_CONNECTED=1, AUTH_SESSION_NO_LICENSE=2, AUTH_SESSION_VAC_BANNED=3, AUTH_SESSION_LOGGED_IN_ELSEWHERE=4,
 			AUTH_SESSION_VAC_CHECK_TIMEOUT=5, AUTH_SESSION_TICKET_CANCELED=6, AUTH_SESSION_TICKET_ALREADY_USED=7, AUTH_SESSION_TICKET_INVALID=8, AUTH_SESSION_PUBLISHER_BANNED=9,
@@ -63,11 +64,13 @@ class Steam: public Object {
 
 		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
 		Image drawAvatar(int size, uint8* buffer);
-		// Steamworks ///////////////////////////////
+		
+		// Main //////////////////////////////////
 		bool restartAppIfNecessary(int value);
-		bool steamInit();
+		Dictionary steamInit();
 		bool isSteamRunning();
-		// Apps /////////////////////////////////////
+		
+		// Apps /////////////////////////////////
 		bool isSubscribed();
 		bool isLowViolence();
 		bool isCybercafe();
@@ -92,7 +95,8 @@ class Steam: public Object {
 		Dictionary getDLCDownloadProgress(int appID);
 		int getAppBuildId();
 		void getFileDetails(const String& filename);
-		// Controller ///////////////////////////////
+
+		// Controller ///////////////////////////
 		void activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle);
 		uint64_t getActionSetHandle(const String& actionSetName);
 		Dictionary getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle);
@@ -111,7 +115,8 @@ class Steam: public Object {
 		bool showBindingPanel(uint64_t controllerHandle);
 		bool shutdown();
 		void triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed);
-		// Friends //////////////////////////////////
+
+		// Friends //////////////////////////////
 		String getPersonaName();
 		void setPersonaName(const String& name);
 		int getPersonaState();
@@ -173,7 +178,8 @@ class Steam: public Object {
 		Array getUserFriendsGroups();
 		Array getUserSteamGroups();
 		Array getUserSteamFriends();
-		// Matchmaking //////////////////////////////
+
+		// Matchmaking //////////////////////////
 		Array getFavoriteGames();
 //		int addFavoriteGame(int appID, uint32 ip, uint16 port, uint16 queryPort, uint32 flags, uint32 lastPlayed);
 		bool removeFavoriteGame(AppId_t appID, uint32 ip, uint16 port, uint16 queryPort, uint32 flags);
@@ -207,7 +213,8 @@ class Steam: public Object {
 		uint64_t getLobbyOwner(uint64_t steamIDLobby);
 		bool setLobbyOwner(uint64_t steamIDLobby, uint64_t steamIDNewOwner);
 		bool setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent);
-		// Music ////////////////////////////////////
+
+		// Music ////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
 		float musicGetVolume();
@@ -216,7 +223,8 @@ class Steam: public Object {
 		void musicPlayNext();
 		void musicPlayPrev();
 		void musicSetVolume(float value);
-		// Networking ///////////////////////////////
+
+		// Networking ///////////////////////////
 		bool acceptP2PSessionWithUser(uint64_t steamIDRemote);
 		bool allowP2PPacketRelay(bool allow);
 		bool closeP2PChannelWithUser(uint64_t steamIDRemote, int channel);
@@ -225,7 +233,8 @@ class Steam: public Object {
 		uint32_t getAvailableP2PPacketSize(int channel = 0);
 		Dictionary readP2PPacket(uint32_t data, int channel = 0);
 		bool sendP2PPacket(uint64_t steamIDRemote, DVector<uint8_t> data, int sendType, int channel = 0);
-		// Remote Storage ///////////////////////////
+
+		// Remote Storage ///////////////////////
 		bool fileWrite(const String& file, const DVector<uint8_t>& data, int32_t dataSize);
 		Dictionary fileRead(const String& file, int32_t dataToRead);
 		bool fileForget(const String& file);
@@ -241,14 +250,16 @@ class Steam: public Object {
 		bool isCloudEnabledForAccount();
 		bool isCloudEnabledForApp();
 		void setCloudEnabledForApp(bool enabled);
-		// Screenshots //////////////////////////////
+
+		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height);
 		void hookScreenshots(bool hook);
 		bool isScreenshotsHooked();
 		bool setLocation(uint32_t screenshot, const String& location);
 		void triggerScreenshot();
 		uint32_t writeScreenshot(const DVector<uint8_t>& RGB, int width, int height);
-		// Users ////////////////////////////////////
+
+		// Users ////////////////////////////////
 		uint32_t getAuthSessionTicket();
 		void cancelAuthTicket(uint32_t authTicket);
 		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
@@ -259,7 +270,8 @@ class Steam: public Object {
 		String getUserDataFolder();
 		void advertiseGame(const String& serverIP, int port);
 		int getGameBadgeLevel(int series, bool foil);
-		// User Stats ///////////////////////////////
+
+		// User Stats ///////////////////////////
 		bool clearAchievement(const String& name);
 		uint32_t getNumAchievements();
 		void getNumberOfCurrentPlayers();
@@ -288,7 +300,8 @@ class Steam: public Object {
 		Array getLeaderboardEntries();
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
-		// Utils ////////////////////////////////////
+
+		// Utils ////////////////////////////////
 		String getIPCountry();
 		bool isOverlayEnabled();
 		String getSteamUILanguage();
@@ -302,7 +315,8 @@ class Steam: public Object {
 		int getServerRealTime();
 		bool isSteamInBigPictureMode();
 		void startVRDashboard();
-		// Workshop /////////////////////////////////
+
+		// Workshop /////////////////////////////
 		bool downloadItem(int publishedFileID, bool highPriority);
 		void suspendDownloads(bool suspend);
 		uint64_t startItemUpdate(AppId_t appID, int fileId);
@@ -327,43 +341,44 @@ class Steam: public Object {
 		static Steam* singleton;
 
 	private:
+		// Main
 		bool isInitSuccess;
+
 		// Apps
 		uint64 currentAppID;
+
 		// Matchmaking
 		CSteamID clanActivity;
+
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntries;
+		int leaderboardDetailsMax;
+
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
+
 		/////////////////////////////////////////
 		// STRUCTS //////////////////////////////
+		/////////////////////////////////////////
 		//
-		// Authentication
+		// Authentication ///////////////////////
 		struct TicketData {
 			uint32_t id;
 			uint32_t *buffer;
 			uint32_t size;
 		};
 		Vector<TicketData> tickets;
-		// Friend info
-		struct FriendGameInfo {
-			uint64_t gameID;
-			uint32 gameIP;
-			uint16 gamePort;
-			uint16 queryPort;
-			uint64_t steamIDLobby;
-		};
-		Vector<FriendGameInfo> gameInfo;
-		// Friend session state info
+
+		// Friend session state info ////////////
 		struct FriendSessionStateInfo {
 			uint32 onlineSessionInstance;
 			uint8 publishedToFriendsSessionInstance;
 		};
 		Vector<FriendSessionStateInfo> sessionInfo;
-		// Achievement data
+		
+		// Achievement data /////////////////////
 		struct AchievementData {
 			int achievementID;
 			const char achievement;
@@ -373,12 +388,15 @@ class Steam: public Object {
 			int icon;
 		};
 		Vector<AchievementData> achievementData;
+
 		/////////////////////////////////////////
 		// STEAM CALLBACKS //////////////////////
+		/////////////////////////////////////////
 		//
 		// Apps callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
+
 		// Friends callbacks ////////////////////
 		STEAM_CALLBACK(Steam,_name_changed, SetPersonaNameResponse_t);
 		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
@@ -398,6 +416,7 @@ class Steam: public Object {
 		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
 		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t);
+
 		// Matchmaking callbacks ////////////////
 		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
 		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
@@ -411,14 +430,18 @@ class Steam: public Object {
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
+
 		// Networking callbacks /////////////////
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t);
 		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t);
+
 		// Screenshot callbacks /////////////////
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
+
 		// User callback ////////////////////////
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
+
 		// User stat callbacks //////////////////
 		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
 		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
@@ -434,15 +457,18 @@ class Steam: public Object {
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
 		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
+
 		// Utility callbacks ////////////////////
 		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
+
 		// Workshop callbacks ///////////////////
 		STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
 		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 		void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
 		void _workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
+
 		// Run the Steamworks API callbacks
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();
