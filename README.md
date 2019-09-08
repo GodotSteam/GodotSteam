@@ -1,5 +1,5 @@
 # GodotSteam for Godot 2.x
-Steam API for the Godot game engine (versions 2 to 2.1.5). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (versions 2 to 2.1.6). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include: [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master),[Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
@@ -25,14 +25,13 @@ You can download pre-compiled versions _(currently v1.10)_ of this repo here: ht
 
 Known Issues
 ----------
-- Lobby message will crash game, favoriting lobbies does not work yet
-- getFriendGamePlayed is incomplete; should be a dictionary
+- None... so far.
 
 Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.1.5.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 2.1.6.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/

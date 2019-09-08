@@ -32,9 +32,9 @@ class Steam: public Object {
 			OVERLAY_TO_STORE_FLAG_NONE=0, OVERLAY_TO_STORE_FLAG_ADD_TO_CART=1, OVERLAY_TO_STORE_FLAG_ADD_TO_CART_AND_SHOW=2,
 			LOBBY_OK=0, LOBBY_NO_CONNECTION=1, LOBBY_TIMEOUT=2, LOBBY_FAIL=3, LOBBY_ACCESS_DENIED=4, LOBBY_LIMIT_EXCEEDED=5,
 			PRIVATE=0, FRIENDS_ONLY=1, PUBLIC=2, INVISIBLE=3, LOBBY_KEY_LENGTH=255,
+			EP2P_SEND_UNRELIABLE = 0, EP2P_SEND_UNRELIABLE_NO_DELAY = 1, EP2P_SEND_RELIABLE = 2, EP2P_SEND_RELIABLE_WITH_BUFFERING = 3,
 			LOBBY_EQUAL_LESS_THAN=-2, LOBBY_LESS_THAN=-1, LOBBY_EQUAL=0, LOBBY_GREATER_THAN=1, LOBBY_EQUAL_GREATER_THAN=2, LOBBY_NOT_EQUAL=3,
 			LOBBY_DISTANCE_CLOSE=0, LOBBY_DISTANCE_DEFAULT=1, LOBBY_DISTANCE_FAR=2, LOBBY_DISTANCE_WORLDWIDE=3,
-			EP2P_SEND_UNRELIABLE=0, EP2P_SEND_UNRELIABLE_NO_DELAY=1, EP2P_SEND_RELIABLE=2, EP2P_SEND_RELIABLE_WITH_BUFFERING=3,
 			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
 			UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1, UGC_ITEM_COLLECTION=2, UGC_ITEM_ART=3, UGC_ITEM_VIDEO=4, UGC_ITEM_SCREENSHOT=5, UGC_ITEM_GAME=6, UGC_ITEM_SOFTWARE=7,
 			UGC_ITEM_CONCEPT=8, UGC_ITEM_WEBGUIDE=9, UGC_ITEM_INTEGRATEDGUIDE=10, UGC_ITEM_MERCH=11, UGC_ITEM_CONTROLLERBINDING=12, UGC_ITEM_STEAMWORKSACCESSINVITE=13,
@@ -56,7 +56,14 @@ class Steam: public Object {
 			RESULT_RATE_LIMIT_EXCEEDED=84, RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR=85, RESULT_ITEM_DELETED=86, RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE=87, RESULT_TWO_FACTOR_CODE_MISMATCH=88, RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH=89, RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS=90,
 			RESULT_NOT_MODIFIED=91, RESULT_NO_MOBILE_DEVICE=92, RESULT_TIME_NOT_SYNCED=93, RESULT_SMS_CODE_FAILED=94, RESULT_ACCOUNT_LIMIT_EXCEEDED=95, RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED=96, RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED=97, RESULT_REFUND_TO_WALLET=98,
 			RESULT_EMAIL_SEND_FAILURE=99, RESULT_NOT_SETTLED=100, RESULT_NEED_CAPTCHA=101, RESULT_GSLT_DENIED=102, RESULT_GS_OWNER_DENIED=103,RESULT_INVALID_ITEM_TYPE=104, RESULT_IP_BANNED=105, RESULT_GSLT_EXPIRED=106, RESULT_INSUFFICIENT_FUNDS=107, RESULT_TOO_MANY_PENDING=108,
-			CHAT_ROOM_SUCCESS=1, CHAT_ROOM_DOESNT_EXIST=2, CHAT_ROOM_NOT_ALLOWED=3, CHAT_ROOM_FULL=4, CHAT_ROOM_ERROR=5, CHAT_ROOM_BANNED=6, CHAT_ROOM_LIMITED=7, CHAT_ROOM_CLAN_DISABLED=8, CHAT_ROOM_COMMUNITY_BAN=9, CHAT_ROOM_MEMBER_BLOCKED_YOU=10, CHAT_ROOM_YOU_BLOCKED_MEMBER=11
+			CHAT_ROOM_SUCCESS=1, CHAT_ROOM_DOESNT_EXIST=2, CHAT_ROOM_NOT_ALLOWED=3, CHAT_ROOM_FULL=4, CHAT_ROOM_ERROR=5, CHAT_ROOM_BANNED=6, CHAT_ROOM_LIMITED=7, CHAT_ROOM_CLAN_DISABLED=8, CHAT_ROOM_COMMUNITY_BAN=9, CHAT_ROOM_MEMBER_BLOCKED_YOU=10, CHAT_ROOM_YOU_BLOCKED_MEMBER=11,
+			GAMEID_TYPE_APP=0, GAMEID_TYPE_MOD=1, GAMEID_TYPE_SHORTCUT=2, GAMEID_TYPE_P2P=3,
+			FAVORITE_FLAG_FAVORITE=0x01, FAVORITE_FLAG_HISTORY=0x02, FAVORITE_FLAG_NONE=0x00,
+			CHAT_MEMBER_CHANGE_ENTERED=0x0001, CHAT_MEMBER_CHANGE_LEFT=0x0002, CHAT_MEMBER_CHANGE_DISCONNECTED=0x0004, CHAT_MEMBER_CHANGE_KICKED=0x0008, CHAT_MEMBER_CHANGE_BANNED=0x0010,
+			FAILURE_FLUSHED_CALLBACK_QUEUE=0, FAILURE_PIPE_FAIL=1,
+			GAMEPAD_INPUT_LINE_MODE_SINGLE=0, GAMEPAD_INPUT_LINE_MODE_MULTIPLE=1,
+			GAMEPAD_INPUT_MODE_NORMAL=0, GAMEPAD_INPUT_MODE_PASSWORD=1,
+			STEAM_API_CALL_FAILURE_NONE=-1, STEAM_API_CALL_FAILURE_STEAM_GONE=0, STEAM_API_CALL_FAILURE_NETWORK_FAILURE=1, STEAM_API_CALL_FAILURE_INVALID_HANDLE=2, STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK=3
 		};
 		static Steam* get_singleton();
 		Steam();
@@ -105,6 +112,7 @@ class Steam: public Object {
 		Array getConnectedControllers();
 		uint64_t getControllerForGamepadIndex(int index);
 		uint64_t getCurrentActionSet(uint64_t controllerHandle);
+		uint64_t getInputTypeForHandle(uint64_t controllerHandle);
 		Dictionary getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle);
 		uint64_t getDigitalActionHandle(const String& actionName);
 		Array getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle);
@@ -181,7 +189,7 @@ class Steam: public Object {
 
 		// Matchmaking //////////////////////////
 		Array getFavoriteGames();
-//		int addFavoriteGame(int appID, uint32 ip, uint16 port, uint16 queryPort, uint32 flags, uint32 lastPlayed);
+		int addFavoriteGame(uint32 ip, uint16 port, uint16 queryPort, uint32 flags, uint32 lastPlayed);
 		bool removeFavoriteGame(AppId_t appID, uint32 ip, uint16 port, uint16 queryPort, uint32 flags);
 		void requestLobbyList();
 		void addRequestLobbyListStringFilter(const String& keyToMatch, const String& valueToMatch, int comparisonType);
@@ -259,6 +267,26 @@ class Steam: public Object {
 		void triggerScreenshot();
 		uint32_t writeScreenshot(const DVector<uint8_t>& RGB, int width, int height);
 
+		// UGC //////////////////////////////////
+		bool downloadItem(int publishedFileID, bool highPriority);
+		void suspendDownloads(bool suspend);
+		uint64_t startItemUpdate(AppId_t appID, int fileId);
+		int getItemState(int publishedFileID);
+		Dictionary getItemUpdateProgress(uint64_t handle);
+		void createItem(AppId_t appID, int fileType);
+		bool setItemTitle(uint64_t updateHandle, const String& title);
+		bool setItemDescription(uint64_t updateHandle, const String& description);
+		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
+		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
+		bool setItemVisibility(uint64_t updateHandle, int visibility);
+//		bool setItemTags(uint64_t updateHandle, const PoolByteArray tagArray);
+		bool setItemContent(uint64_t updateHandle, const String& contentFolder);
+		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
+		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
+		Array getSubscribedItems();
+		Dictionary getItemInstallInfo(int fileID);
+		Dictionary getItemDownloadInfo(int fileID);
+
 		// Users ////////////////////////////////
 		uint32_t getAuthSessionTicket();
 		void cancelAuthTicket(uint32_t authTicket);
@@ -298,43 +326,31 @@ class Steam: public Object {
 		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
+		void setLeaderboardDetailsMax(int detailsMax);
 		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
 		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 
 		// Utils ////////////////////////////////
-		String getIPCountry();
-		bool isOverlayEnabled();
-		String getSteamUILanguage();
+		bool overlayNeedsPresent();
 		int getAppID();
+		int getCurrentBatteryPower();
 		Dictionary getImageRGBA(int iImage);
 		Dictionary getImageSize(int iImage);
+		uint32 getIPCCallCount();
+		String getIPCountry();
 		int getSecondsSinceAppActive();
-		void setOverlayNotificationPosition(int pos);
-		int getCurrentBatteryPower();
-		bool isSteamRunningInVR();
+		int getSecondsSinceComputerActive();
 		int getServerRealTime();
+		String getSteamUILanguage();
+		bool isOverlayEnabled();
 		bool isSteamInBigPictureMode();
+		bool isSteamRunningInVR();
+		bool isVRHeadsetStreamingEnabled();
+		void setOverlayNotificationInset(int horizontal, int vertical);
+		void setOverlayNotificationPosition(int pos);
+		void setVRHeadsetStreamingEnabled(bool enabled);
+		bool showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText);
 		void startVRDashboard();
-
-		// Workshop /////////////////////////////
-		bool downloadItem(int publishedFileID, bool highPriority);
-		void suspendDownloads(bool suspend);
-		uint64_t startItemUpdate(AppId_t appID, int fileId);
-		int getItemState(int publishedFileID);
-		Dictionary getItemUpdateProgress(uint64_t handle);
-		void createItem(AppId_t appID, int fileType);
-		bool setItemTitle(uint64_t updateHandle, const String& title);
-		bool setItemDescription(uint64_t updateHandle, const String& description);
-		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
-		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
-		bool setItemVisibility(uint64_t updateHandle, int visibility);
-	//	bool setItemTags(uint64_t updateHandle, const String& tagArray);
-		bool setItemContent(uint64_t updateHandle, const String& contentFolder);
-		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
-		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
-		Array getSubscribedItems();
-	//	Dictionary getItemInstallInfo(int fileID);
-		Dictionary getItemDownloadInfo(int fileID);
 
 	protected:
 		static void _bind_methods();
@@ -396,40 +412,45 @@ class Steam: public Object {
 		// Apps callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
 		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
+		STEAM_CALLBACK(Steam, _new_launch_url_parameters, NewUrlLaunchParameters_t);
 
 		// Friends callbacks ////////////////////
-		STEAM_CALLBACK(Steam,_name_changed, SetPersonaNameResponse_t);
 		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
-		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
 		CCallResult<Steam, ClanOfficerListResponse_t> callResultClanOfficerList;
 		void _request_clan_officer_list(ClanOfficerListResponse_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
 		STEAM_CALLBACK(Steam, _friend_rich_presence_update, FriendRichPresenceUpdate_t);
-		STEAM_CALLBACK(Steam, _join_clan_chat_complete, JoinClanChatRoomCompletionResult_t);
-		STEAM_CALLBACK(Steam, _connected_clan_chat_message, GameConnectedClanChatMsg_t);
-		STEAM_CALLBACK(Steam, _connected_chat_join, GameConnectedChatJoin_t);
-		STEAM_CALLBACK(Steam, _connected_chat_leave, GameConnectedChatLeave_t);
-		STEAM_CALLBACK(Steam, _connected_friend_chat_message, GameConnectedFriendChatMsg_t);
+		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
+		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
 		CCallResult<Steam, FriendsGetFollowerCount_t> callResultFollowerCount;
 		void _get_follower_count(FriendsGetFollowerCount_t *callData, bool bIOFailure);
 		CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 		void _is_following(FriendsIsFollowing_t *callData, bool bIOFailure);
-		CCallResult<Steam, FriendsEnumerateFollowingList_t> callResultEnumerateFollowingList;
-		void _enumerate_following_list(FriendsEnumerateFollowingList_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _connected_chat_join, GameConnectedChatJoin_t);
+		STEAM_CALLBACK(Steam, _connected_chat_leave, GameConnectedChatLeave_t);
+		STEAM_CALLBACK(Steam, _connected_clan_chat_message, GameConnectedClanChatMsg_t);
+		STEAM_CALLBACK(Steam, _connected_friend_chat_message, GameConnectedFriendChatMsg_t);
+		STEAM_CALLBACK(Steam, _join_requested, GameLobbyJoinRequested_t);
+		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
+		STEAM_CALLBACK(Steam, _join_game_requested, GameRichPresenceJoinRequested_t);
+		STEAM_CALLBACK(Steam, _change_server_requested, GameServerChangeRequested_t);
+		STEAM_CALLBACK(Steam, _join_clan_chat_complete, JoinClanChatRoomCompletionResult_t);
 		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t);
+		STEAM_CALLBACK(Steam, _name_changed, SetPersonaNameResponse_t);
 
 		// Matchmaking callbacks ////////////////
+		STEAM_CALLBACK(Steam, _favorites_list_accounts_updated, FavoritesListAccountsUpdated_t);
+		STEAM_CALLBACK(Steam, _favorites_list_changed, FavoritesListChanged_t);
+		STEAM_CALLBACK(Steam, _lobby_message, LobbyChatMsg_t);
+		STEAM_CALLBACK(Steam, _lobby_chat_update, LobbyChatUpdate_t);
 		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;
 		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _lobby_data_update, LobbyDataUpdate_t);
 		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
-		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
 		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t);
-		STEAM_CALLBACK(Steam, _join_requested, GameLobbyJoinRequested_t);
-		STEAM_CALLBACK(Steam, _join_game_requested, GameRichPresenceJoinRequested_t);
-		STEAM_CALLBACK(Steam, _server_connected, SteamServersConnected_t);
-		STEAM_CALLBACK(Steam, _server_disconnected, SteamServersDisconnected_t);
+		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
-		STEAM_CALLBACK(Steam, _lobby_Message, LobbyChatMsg_t);
 
 		// Networking callbacks /////////////////
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t);
@@ -437,37 +458,57 @@ class Steam: public Object {
 
 		// Screenshot callbacks /////////////////
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
+		STEAM_CALLBACK(Steam, _screenshot_requested, ScreenshotRequested_t);
+
+		// UGC callbacks ////////////////////////
+		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
+		void _item_created(CreateItemResult_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _item_installed, ItemInstalled_t);
+		CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
+		void _item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
 
 		// User callback ////////////////////////
+		STEAM_CALLBACK(Steam, _client_game_server_deny, ClientGameServerDeny_t);
+		STEAM_CALLBACK(Steam, _encrypted_app_ticket_response, EncryptedAppTicketResponse_t);
+		STEAM_CALLBACK(Steam, _game_web_callback, GameWebCallback_t);
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
+		STEAM_CALLBACK(Steam, _ipc_failure, IPCFailure_t);
+		STEAM_CALLBACK(Steam, _licenses_updated, LicensesUpdated_t);
+		STEAM_CALLBACK(Steam, _microstransaction_auth_response, MicroTxnAuthorizationResponse_t);
+		CCallResult<Steam, SteamServerConnectFailure_t> callResultSteamServerConnectFailure;
+		void _steam_server_connect_failed(SteamServerConnectFailure_t *callData);
+		STEAM_CALLBACK(Steam, _steam_server_connected, SteamServersConnected_t);
+		STEAM_CALLBACK(Steam, _steam_server_disconnected, SteamServersDisconnected_t);
+		STEAM_CALLBACK(Steam, _store_auth_url_response, StoreAuthURLResponse_t);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
 
 		// User stat callbacks //////////////////
-		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
-		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
-		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
-		STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
-		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
-		void _leaderboard_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
-		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
-		void _leaderboard_loaded(LeaderboardFindResult_t *callData, bool bIOFailure);
-		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
-		void _leaderboard_entries_loaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
-		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
+		STEAM_CALLBACK(Steam, _global_stats_received, GlobalStatsReceived_t);
+		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
+		void _leaderboard_find_result(LeaderboardFindResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
+		void _leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
+		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
+		void _leaderboard_score_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _leaderboard_ugc_set, LeaderboardUGCSet_t);
+		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
+		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
 		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
+		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
+		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
+		STEAM_CALLBACK(Steam, _user_stats_unloaded, UserStatsUnloaded_t);
 
 		// Utility callbacks ////////////////////
-		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
+		CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
+		void _check_file_signature(CheckFileSignature_t *callData);
+		STEAM_CALLBACK(Steam, _gamepad_text_input_dismissed, GamepadTextInputDismissed_t);
+		STEAM_CALLBACK(Steam, _ip_country, IPCountry_t);
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
-
-		// Workshop callbacks ///////////////////
-		STEAM_CALLBACK(Steam, _workshop_item_installed, ItemInstalled_t);
-		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
-		void _workshop_item_created(CreateItemResult_t *callData, bool bIOFailure);
-		CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
-		void _workshop_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _steam_api_call_completed, SteamAPICallCompleted_t);
+		STEAM_CALLBACK(Steam, _steam_shutdown, SteamShutdown_t);
 
 		// Run the Steamworks API callbacks
 		void run_callbacks(){
