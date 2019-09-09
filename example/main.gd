@@ -31,9 +31,9 @@ func _process(delta):
 
 # Initializing Steamworks
 func _initialize_Steam():
-	var ERR = Steam.steamInit()
-	if ERR != true:
-		print("Failed to initialize Steam. Shutting down...")
+	var INIT = Steam.steamInit()
+	if INIT['status'] != 0:
+		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
 		get_tree().quit()
 
 	# Is the user online?
