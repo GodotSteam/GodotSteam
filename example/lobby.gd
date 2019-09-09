@@ -5,6 +5,7 @@ var STEAM_USERNAME = ""
 var STEAM_LOBBY_ID = 0
 var LOBBY_MEMBERS = []
 var DATA
+var LOBBY_INVITE_ARG = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -313,7 +314,12 @@ func _check_Command_Line():
 		# Loop through them and get the userful ones
 		for ARGUMENT in ARGUMENTS:
 			print("Command line: "+str(ARGUMENT))
-			_join_Lobby(int(ARGUMENT))
+			# An invite argument was passed
+			if LOBBY_INVITE_ARG:
+				_join_Lobby(int(ARGUMENT))
+			# A Steam connection argument exists
+			if ARGUMENT == "+connect_lobby":
+				LOBBY_INVITE_ARG = true
 
 #################################################
 # BUTTON FUNCTIONS
