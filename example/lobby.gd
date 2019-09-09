@@ -21,6 +21,8 @@ func _ready():
 	Steam.connect("join_requested", self, "_on_Lobby_Join_Requested")
 	Steam.connect("p2p_session_request", self, "_on_P2P_Session_Request")
 	Steam.connect("p2p_session_connect_fail", self, "_on_P2P_Session_Connect_Fail")
+	# Check for command line arguments
+	_check_Command_Line()
 
 func _process(delta):
 	# Run Steam callbacks
@@ -112,12 +114,11 @@ func _on_Lobby_Joined(lobbyID, permissions, locked, response):
 
 # When accepting an invite
 func _on_Lobby_Join_Requested(lobbyID, friendID):
-	# Set the lobby owner's Steam ID
-	LOBBY_MEMBERS['steam_id'] = friendID
 	# Get the lobby owner's name
-	LOBBY_MEMBERS['steam_name'] = Steam.getFriendPersonaName(friendID)
-	# Make the intial handshake
-	_make_P2P_Handshake()
+	var OWNER_NAME = Steam.getFriendPersonaName(friendID)
+	print("Joining "+str(OWNER_NAME)+"'s lobby...")
+	# Attempt to join the lobby
+	_join_Lobby(lobbyID)
 
 # When a lobby message is received
 func _on_Lobby_Message(result, user, message, type):
@@ -303,6 +304,16 @@ func _change_Button_Controls(toggle):
 		$Chat.set_editable(false)
 	else:
 		$Chat.set_editable(true)
+
+# Check the command line for arguments
+func _check_Command_Line():
+	var ARGUMENTS = OS.get_cmdline_args()
+	# There are arguments to process
+	if ARGUMENTS.size() > 0:
+		# Loop through them and get the userful ones
+		for ARGUMENT in ARGUMENTS:
+			print("Command line: "+str(ARGUMENT))
+			_join_Lobby(int(ARGUMENT))
 
 #################################################
 # BUTTON FUNCTIONS
