@@ -31,4 +31,4 @@ def configure(env):
         env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin/win64"])
   elif env["platform"] == "osx":
     env.Append(LIBS=["steam_api"])
-    env.Append(LIBPATH=['#modules/godotsteam_server/sdk/redistributable_bin/osx32'])
+    env.Append(LIBPATH=['#modules/godotsteam_server/sdk/redistributable_bin/osx'])
