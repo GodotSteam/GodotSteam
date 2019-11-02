@@ -12,6 +12,7 @@
 
 class Steam: public Object {
 	GDCLASS(Steam, Object);
+
 	public:
 		enum {
 			OFFLINE=0, ONLINE=1, BUSY=2, AWAY=3, SNOOZE=4, LF_TRADE, LF_PLAY, STATE_MAX, NOT_OFFLINE=8, ALL=9,
@@ -64,7 +65,11 @@ class Steam: public Object {
 			FAILURE_FLUSHED_CALLBACK_QUEUE=0, FAILURE_PIPE_FAIL=1,
 			GAMEPAD_INPUT_LINE_MODE_SINGLE=0, GAMEPAD_INPUT_LINE_MODE_MULTIPLE=1,
 			GAMEPAD_INPUT_MODE_NORMAL=0, GAMEPAD_INPUT_MODE_PASSWORD=1,
-			STEAM_API_CALL_FAILURE_NONE=-1, STEAM_API_CALL_FAILURE_STEAM_GONE=0, STEAM_API_CALL_FAILURE_NETWORK_FAILURE=1, STEAM_API_CALL_FAILURE_INVALID_HANDLE=2, STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK=3
+			STEAM_API_CALL_FAILURE_NONE=-1, STEAM_API_CALL_FAILURE_STEAM_GONE=0, STEAM_API_CALL_FAILURE_NETWORK_FAILURE=1, STEAM_API_CALL_FAILURE_INVALID_HANDLE=2, STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK=3,
+			LEADERBOARD_SORT_METHOD_NONE=0, LEADERBOARD_SORT_METHOD_ASC=1, LEADERBOARD_SORT_METHOD_DESC=2,
+			LEADERBOARD_UPLOAD_METHOD_NONE=0, LEADERBOARD_UPLOAD_METHOD_KEEP_BEST=1, LEADERBOARD_UPLOAD_METHOD_FORCE_UPDATE=2,
+			LEADERBOARD_DISPLAY_TYPE_NONE=0, LEADERBOARD_DISPLAY_TYPE_NUMERIC=1, LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS=2, LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS=3,
+			LEADERBOARD_DATA_REQUEST_GLOBAL=0, LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER=1, LEADERBOARD_DATA_REQUEST_FRIENDS=2, LEADERBOARD_DATA_REQUEST_USERS=3
 		};
 		static Steam* get_singleton();
 		Steam();
@@ -300,35 +305,51 @@ class Steam: public Object {
 		int getGameBadgeLevel(int series, bool foil);
 
 		// User Stats ///////////////////////////
+		void attachLeaderboardUGC();
 		bool clearAchievement(const String& name);
-		uint32_t getNumAchievements();
-		void getNumberOfCurrentPlayers();
+		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
+		void downloadLeaderboardEntriesForUsers(Array usersID);
+		void findLeaderboard(const String& name);
+		void findOrCreateLeaderboard(const String& name, int sortMethod, int displayType);
 		Dictionary getAchievement(const String& name);
 		Dictionary getAchievementAchievedPercent(const String& name);
+		Dictionary getAchievementAndUnlockTime(const String& name);
 		String getAchievementDisplayAttribute(const String& name, const String& key);
-		int getAchievementIcon(const String& name);
-		String getAchievementName(uint32_t iAchievement);
+		void getAchievementIcon(const String& name);
+		String getAchievementName(uint32_t achievement);
+		void getDownloadedLeaderboardEntry(uint64_t handle, int entryCount);
+		uint64 getGlobalStatInt(const String& name);
+		double getGlobalStatFloat(const String& name);
+		uint64 getGlobalStatIntHistory(const String& name);
+		double getGlobalStatFloatHistory(const String& name);
+		int getLeaderboardDisplayType();
+		int getLeaderboardEntryCount();
+		String getLeaderboardName();
+		int getLeaderboardSortMethod();
+		Array getMostAchievedAchievementInfo();
+		uint32_t getNumAchievements();
+		void getNumberOfCurrentPlayers();
 		float getStatFloat(const String& name);
 		int getStatInt(const String& name);
-		bool resetAllStats(bool achievementsToo=true);
+		Dictionary getUserAchievement(uint64_t steamID, const String& name);
+		Dictionary getUserAchievementAndUnlockTime(uint64_t steamID, const String& name);
+		float getUserStatFloat(uint64_t steamID, const String& name);
+		int getUserStatInt(uint64_t steamID, const String& name);
+		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 		bool requestCurrentStats();
 		void requestGlobalAchievementPercentages();
+		void requestGlobalStats(int historyDays);
+		void requestUserStats(uint64_t steamID);
+		bool resetAllStats(bool achievementsToo=true);
 		bool setAchievement(const String& name);
 		bool setStatFloat(const String& name, float value);
 		bool setStatInt(const String& name, int value);
 		bool storeStats();
-		void findLeaderboard(const String& name);
-		String getLeaderboardName();
-		int getLeaderboardEntryCount();
-		void downloadLeaderboardEntries(int start, int end, int type=GLOBAL);
-		void downloadLeaderboardEntriesForUsers(Array usersID);
+		bool updateAvgRateStat(const String& name, float thisSession, double sessionLength);
 		void uploadLeaderboardScore(int score, bool keepBest=false, PoolIntArray details=PoolIntArray());
-		void getDownloadedLeaderboardEntry(SteamLeaderboardEntries_t handle, int entryCount);
 		uint64_t getLeaderboardHandle();
 		Array getLeaderboardEntries();
 		void setLeaderboardDetailsMax(int detailsMax);
-		bool getAchievementAndUnlockTime(const String& name, bool achieved, uint32_t unlockTime);
-		bool indicateAchievementProgress(const String& name, int currentProgress, int maxProgress);
 
 		// Utils ////////////////////////////////
 		bool overlayNeedsPresent();
@@ -374,6 +395,7 @@ class Steam: public Object {
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
+		uint64 ugcHandle;
 
 		/////////////////////////////////////////
 		// STRUCTS //////////////////////////////
@@ -404,6 +426,16 @@ class Steam: public Object {
 			int icon;
 		};
 		Vector<AchievementData> achievementData;
+
+		// Leaderboard entry ////////////////////
+		struct LeaderboardEntry {
+			uint64_t steamID;
+			int32 globalRank;
+			int32 score;
+			int32 details;
+			uint64 ugcHandle; 
+		};
+		Vector<LeaderboardEntry> leaderboardEntry;
 
 		/////////////////////////////////////////
 		// STEAM CALLBACKS //////////////////////
@@ -485,19 +517,23 @@ class Steam: public Object {
 		// User stat callbacks //////////////////
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 		void _global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *callData, bool bIOFailure);
-		STEAM_CALLBACK(Steam, _global_stats_received, GlobalStatsReceived_t);
+		CCallResult<Steam, GlobalStatsReceived_t> callResultGetGlobalStatsReceived;
+		void _global_stats_received(GlobalStatsReceived_t *callData, bool bIOFailure);
 		CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 		void _leaderboard_find_result(LeaderboardFindResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, LeaderboardScoresDownloaded_t> callResultEntries;
 		void _leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *callData, bool bIOFailure);
 		CCallResult<Steam, LeaderboardScoreUploaded_t> callResultUploadScore;
 		void _leaderboard_score_uploaded(LeaderboardScoreUploaded_t *callData, bool bIOFailure);
-		STEAM_CALLBACK(Steam, _leaderboard_ugc_set, LeaderboardUGCSet_t);
+		CCallResult<Steam, LeaderboardUGCSet_t> callResultLeaderboardUGCSet;
+		void _leaderboard_ugc_set(LeaderboardUGCSet_t *callData, bool bIOFailure);
 		CCallResult<Steam, NumberOfCurrentPlayers_t> callResultNumberOfCurrentPlayers;
 		void _number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure);
-		STEAM_CALLBACK(Steam, _user_achievement_icon_fetched, UserAchievementIconFetched_t);
+		CCallResult<Steam, UserAchievementIconFetched_t> callResultUserAchievementIconFetched;
+		void _user_achievement_icon_fetched(UserAchievementIconFetched_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
-		STEAM_CALLBACK(Steam, _user_stats_received, UserStatsReceived_t);
+		CCallResult<Steam, UserStatsReceived_t> callResultUserStatsReceived;
+		void _user_stats_received(UserStatsReceived_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
 		STEAM_CALLBACK(Steam, _user_stats_unloaded, UserStatsUnloaded_t);
 

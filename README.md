@@ -13,13 +13,17 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.0.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.1.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.0.2 Changes**
-- Added: more verbose response to steamInit, now returns a dictionary
-- Added: missing initialization constants
-- Changed: steamInit to give actual response on Steamworks status (from bool to int)
-- Fixed: currentAppID not utilized correctly
+**Version 3.1.0 Changes**
+- Added: all remaining User Stats functions
+- Added: missing User Stats constants, mostly leaderboard stuff
+- Added: missing default return values in some functions
+- Changed: getAchievementAndUnlockTime to return actual data
+- Changed: user_achievement_icon_fetched callback to return icon data for parsing in-game
+- Changed: value in D_METHOD for setLeaderboardDetailsMax to match function
+- Changed: getDownloadedLeaderboardEntry to use handle correctly
+- Fixed: delete used memory in getInstalledDepots
 
 Known Issues
 ----------
