@@ -1073,110 +1073,215 @@
 						<header class="major">
 							<h3>User Statistics</h3>
 						</header>
-						<h4>getAchievement( <sup>string</sup> name )</h4>
+						<h4>attachLeaderboardUGC()</h4>
 						<ul>
-							<li>Gets if the achievement exist and if it was earned. Must be name given in Steamworks backend.</li>
-							<li>DICTIONARY; returns true or false if the achievement exists and true or false if the achievement was earned.</li>
-						</ul>
-						<h4>getStatInt( <sup>string</sup> name )</h4>
-						<ul>
-							<li>Get the value of an integer statistic. Must be name given in Steamworks backend.</li>
-							<li>INT.</li>
-						</ul>
-						<h4>getStatFloat( <sup>string</sup> name )</h4>
-						<ul>
-							<li>Get the value of a float statistic. Must be name given in Steamworks backend.</li>
-							<li>FLOAT.</li>
-						</ul>
-						<h4>resetAllStats( <sup>bool</sup> achievements too )</h4>
-						<ul>
-							<li>Reset all Steam statistics; optional to reset achievements.</li>
-							<li>BOOL; returns true if reset or false if not.</li>
-						</ul>
-						<h4>requestCurrentStats()</h4>
-						<ul>
-							<li>Request all statistics and achievements from Steam servers.</li>
-							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_received</strong> callback.</li>
-						</ul>
-						<h4>setAchievement( <sup>string</sup> name )</h4>
-						<ul>
-							<li>Set a given achievement. Must be the name given in Steamworks backend.</li>
-							<li>BOOL; returns true or false. Should also trigger <strong>_user_achievement_stored</strong> callback.</li>
-						</ul>
-						<h4>setStatFloat( <sup>string</sup> name, <sup>float</sup> value )</h4>
-						<ul>
-							<li>Set a statistic. Must be the name given in Steamworks backend.</li>
-							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_stored</strong> callback.</li>
-						</ul>
-						<h4>setStatInt( <sup>string</sup> name, <sup>int</sup> value )</h4>
-						<ul>
-							<li>Set a statistic. Must be the name given in Steamworks backend.</li>
-							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_stored</strong> callback.</li>
-						</ul>
-						<h4>storeStats()</h4>
-						<ul>
-							<li>Store all statistics, and achievements, on Steam servers; must be called to "pop" achievements.</li>
-							<li>BOOL; returns true or false. Should also trigger <strong>_user_stats_stored</strong> callback.</li>
+							<li>Attaches a piece of user generated content the current user's entry on a leaderboard.</li>
+							<li>VOID; triggers <strong>_leaderboard_ugc_set</strong> callback.</li>
 						</ul>
 						<h4>clearAchievement( <sup>string</sup> name )</h4>
 						<ul>
-							<li>Clears a given achievement. Must be the name given in Steamworks backend.</li>
-							<li>BOOL; returns true if cleared and false if not.</li>
+							<li>Clears a given achievement.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>downloadLeaderboardEntries( <sup>int</sup> start, <sup>int</sup> end, <sup>int</sup> type )</h4>
+						<ul>
+							<li>Request all rows for friends of user.</li>
+							<li>VOID; triggers <strong>_leaderboard_scores_downloaded</strong></li>
+						</ul>
+						<h4>downloadLeaderboardEntriesForUsers( <sup>array</sup> usersID )</h4>
+						<ul>
+							<li>Request a maximum of 100 users with only one outstanding call at a time.</li>
+							<li>VOID; triggers <strong>_leaderboard_scores_downloaded</strong> callback.</li>
+						</ul>
+						<h4>findLeaderboard( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Find a given leaderboard, by name.</li>
+							<li>VOID; triggers <strong>_leaderboard_find_result</strong></li>
+						</ul>
+						<h4>findOrCreateLeaderboard( <sup>string</sup> name, <sup>int</sup> sortMethod, <sup>int</sup> displayType )</h4>
+						<ul>
+							<li>Gets a leaderboard by name, it will create it if it's not yet created.</li>
+							<li>VOID; triggers <strong>_leaderboard_find_result</strong> callback.</li>
+						</ul>
+						<h4>getAchievement( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return true/false if user has given achievement and the bool status of it being achieved or not.</li>
+							<li>DICTIONARY; returns a dictionary containing a BOOL success or not and BOOL achieved or not.</li>
+						</ul>
+						<h4>getAchievementAchievedPercent( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns the percentage of users who have unlocked the specified achievement.</li>
+							<li>DICTIONARY; returns a dictionary containing a BOOL of success or not and an INT for the percentage.</li>
+						</ul>
+						<h4>getAchievementAndUnlockTime( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).</li>
+							<li>DICTIONARY; returns a dictionary containing a BOOL of success or not, a BOOL of whether it was achieved or not, and an INT of the unlock time in Unix.</li>
 						</ul>
 						<h4>getAchievementDisplayAttribute( <sup>string</sup> name, <sup>string</sup> key )</h4>
 						<ul>
 							<li>Get general attributes for an achievement.</li>
 							<li>STRING.</li>
 						</ul>
+						<h4>getAchievementIcon( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the icon for an achievement.</li>
+							<li>VOID; triggers <strong>_user_achievement_icon_fetched</strong> callback.</li>
+						</ul>
 						<h4>getAchievementName( <sup>int</sup> achievement )</h4>
 						<ul>
 							<li>Gets the 'API name' for an achievement index.</li>
 							<li>STRING.</li>
 						</ul>
-						<h4>getAchievementIcon( <sup>string</sup> name )</h4>
+						<h4>getDownloadedLeaderboardEntry( <sup>int</sup> handle, <sup>int</sup> entryCount )</h4>
 						<ul>
-							<li>Gets the icon for an achievement.</li>
-							<li>INT; should also trigger <strong>_user_achievement_icon_fetched</strong> callback.</li>
+							<li>Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.</li>
+							<li>VOID.</li>
 						</ul>
-						<h4>getNumberOfCurrentPlayers()</h4>
+						<h4>getGlobalStatInt( <sup>string</sup> name )</h4>
 						<ul>
-							<li>Asynchronously retrieves the total number of players currently playing the current game. Both online and in offline mode.</li>
-							<li>VOID; triggers <strong>_number_of_current_players</strong> callback.</li>
+							<li>Gets the lifetime totals for an aggregated stat.</li>
+							<li>INT.</li>
 						</ul>
-						<h4>findLeaderboard( <sup>string</sup> name )</h4>
+						<h4>getGlobalStatFloat( <sup>string</sup> name )</h4>
 						<ul>
-							<li>Find a given leaderboard, by name.</li>
-							<li>VOID; triggers <strong>_leaderboard_loaded</strong> callback.</li>
+							<li>Gets the lifetime totals for an aggregated stat.</li>
+							<li>FLOAT.</li>
 						</ul>
-						<h4>getLeaderboardName()</h4>
+						<h4>getGlobalStatIntHistory( <sup>string</sup> name )</h4>
 						<ul>
-							<li>Get the name of a leaderboard.</li>
-							<li>STRING.</li>
+							<li>Gets the daily history for an aggregated stat.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getGlobalStatFloatHistory( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the daily history for an aggregated stat.</li>
+							<li>FLOAT.</li>
+						</ul>
+						<h4>getLeaderboardDisplayType()</h4>
+						<ul>
+							<li>Returns the display type of a leaderboard handle.</li>
+							<li>INT.</li>
 						</ul>
 						<h4>getLeaderboardEntryCount()</h4>
 						<ul>
 							<li>Get the total number of entries in a leaderboard, as of the last request.</li>
 							<li>INT.</li>
 						</ul>
-						<h4>downloadLeaderboardEntries( <sup>int</sup> start, <sup>int</sup> end, <sup>int</sup> type )</h4>
+						<h4>getLeaderboardName()</h4>
 						<ul>
-							<li>Request all rows for friends of user.</li>
-							<li>VOID; triggers <strong>_leaderboard_entries_loaded</strong> callback.</li>
+							<li>Get the name of a leaderboard.</li>
+							<li>STRING.</li>
 						</ul>
-						<h4>downloadLeaderboardEntriesForUsers( <sup>array</sup> users ID )</h4>
+						<h4>getLeaderboardSortMethod()</h4>
 						<ul>
-							<li>Request a maximum of 100 users with only one outstanding call at a time.</li>
-							<li>VOID; triggers <strong>_leaderboard_entries_loaded</strong> callback.</li>
+							<li>Returns the sort order of a leaderboard handle.</li>
+							<li>INT.</li>
 						</ul>
-						<h4>uploadLeaderboardScore( <sup>int</sup> score, <sup>bool</sup> keep best )</h4>
+						<h4>getMostAchievedAchievementInfo()</h4>
+						<ul>
+							<li>Gets the info on the most achieved achievement for the game.</li>
+							<li>ARRAY; returns an array of dictionaries with an INT for rank, STRING as name, INT as percent, and BOOl as achieved or not.</li>
+						</ul>
+						<h4>getNumAchievements()</h4>
+						<ul>
+							<li>Get the number of achievements.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getNumberOfCurrentPlayers()</h4>
+						<ul>
+							<li> Get the amount of players currently playing the current game (online + offline).</li>
+							<li>VOID; triggers <strong>_number_of_current_players</strong> callback.</li>
+						</ul>
+						<h4>getStatFloat( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Get the value of a float statistic.</li>
+							<li>FLOAT.</li>
+						</ul>
+						<h4>getStatInt( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Get the value of an integer statistic.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getUserAchievement( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the unlock status of the Achievement.</li>
+							<li>DICTIONARY; returns a dictionary with an INT for Steam ID, BOOL for success or not, STRING for name, and BOOL for achieved or not.</li>
+						</ul>
+						<h4>getUserAchievementAndUnlockTime( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the achievement status, and the time it was unlocked if unlocked.</li>
+							<li>DICTIONARY; returns a dictionary with a BOOL for success or not, STRING for name, BOOL for achieved or not, INT for unlocked.</li>
+						</ul>
+						<h4>getUserStatFloat( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the current value of a float stat for the specified user.</li>
+							<li>FLOAT.</li>
+						</ul>
+						<h4>getUserStatInt( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the current value of an integer stat for the specified user.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>indicateAchievementProgress( <sup>string</sup> name, <sup>int</sup> currentProgress, <sup>int</sup> maxProgress )</h4>
+						<ul>
+							<li>Achievement progress, triggers an AchievementProgress callback, that is all. Calling this with X out of X progress will NOT set the achievement, the game must still do that.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>requestCurrentStats()</h4>
+						<ul>
+							<li>Request all statistics and achievements from Steam servers.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>requestGlobalAchievementPercentages()</h4>
+						<ul>
+							<li>Asynchronously fetch the data for the percentages.</li>
+							<li>VOID; triggers <strong>_global_achievement_percentages_ready</strong> callback.</li>
+						</ul>
+						<h4>requestGlobalStats( <sup>int</sup> historyDays )</h4>
+						<ul>
+							<li>Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.  The limit is 60.</li>
+							<li>VOID; triggers <strong>_global_stats_received</strong> callback.</li>
+						</ul>
+						<h4>requestUserStats( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Asynchronously downloads stats and achievements for the specified user from the server.</li>
+							<li>VOID; triggers <strong>_user_stats_received</strong> callback.</li>
+						</ul>
+						<h4>resetAllStats( <sup>bool</sup> achievementsToo )</h4>
+						<ul>
+							<li>Reset all Steam statistics; optional to reset achievements.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setAchievement( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Set a given achievement.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setStatFloat( <sup>string</sup> name, <sup>float</sup> value )</h4>
+						<ul>
+							<li>Set a float statistic.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setStatInt( <sup>string</sup> name, <sup>int</sup> value )</h4>
+						<ul>
+							<li>Set an integer statistic.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>storeStats()</h4>
+						<ul>
+							<li>Store all statistics, and achievements, on Steam servers; must be called to "pop" achievements.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>updateAvgRateStat( <sup>string</sup> name, <sup>float</sup> thisSession, <sup>double</sup> sessionLength )</h4>
+						<ul>
+							<li>Updates an AVGRATE stat with new values.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>uploadLeaderboardScore( <sup>int</sup> score, <sup>bool</sup> keepBest, <sup>array</sup> details )</h4>
 						<ul>
 							<li>Upload a leaderboard score for the user.</li>
-							<li>VOID; triggers <strong>_leaderboard_uploaded</strong> callback.</li>
-						</ul>
-						<h4>getDownloadedLeaderboardEntry( <sup>string</sup> handle, <sup>int</sup> entry count )</h4>
-						<ul>
-							<li>Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.</li>
-							<li>VOID.</li>
+							<li>VOID; triggers <strong>_leaderboard_score_uploaded</strong> callback.</li>
 						</ul>
 						<h4>getLeaderboardHandle()</h4>
 						<ul>
@@ -1188,30 +1293,10 @@
 							<li>Get the currently used leaderboard entries.</li>
 							<li>ARRAY.</li>
 						</ul>
-						<h4>getAchievementAndUnlockTime( <sup>string</sup> name, <sup>bool</sup> achieved, <sup>int</sup> unlock time )</h4>
+						<h4>setLeaderboardDetailsMax( <sup>int</sup> detailsMax )</h4>
 						<ul>
-							<li>Get the achievement status, and the time it was unlocked if unlocked (in seconds since January 1, 19).</li>
-							<li>BOOL; returns true or false. Currently incomplete.</li>
-						</ul>
-						<h4>indicateAchievementProgress( <sup>string</sup> name, <sup>int</sup> current progress, <sup>int</sup> max progress )</h4>
-						<ul>
-							<li>Achievement progress, triggers an AchievementProgress callback, that is all.</li>
-							<li>BOOL; returns true or false. Currently incomplete.</li>
-						</ul>
-						<h4>getNumAchievements()</h4>
-						<ul>
-							<li>Get the number of achievements.</li>
-							<li>INT.</li>
-						</ul>
-						<h4>getAchievementAchievedPercent( <sup>string</sup> name )</h4>
-						<ul>
-							<li>Returns the percentage of users who have unlocked the specified achievement.</li>
-							<li>DICTIONARY; returns if it exists and the percentage.</li>
-						</ul>
-						<h4>requestGlobalAchievementPercentages()</h4>
-						<ul>
-							<li>Asynchronously fetch the data for the percentages.</li>
-							<li>VOID; triggers <strong>_global_achievement_percentages_ready</strong> callback.</li>
+							<li>Set the max leaderboard details.</li>
+							<li>VOID.</li>
 						</ul>
 						<header class="major">
 							<h3>Utilities</h3>
@@ -1474,6 +1559,7 @@
 									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
 									<li><a href="tutorials-avatars.html">Avatars</a></li>
 									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 								</ul>
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>

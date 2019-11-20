@@ -40,14 +40,25 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
-						<h3>Version 3.2 Changes</h3>
+						<h3>Version 3.1 Changes</h3>
+						<ul>
+							<li>Added: all remaining User Stats functions</li>
+							<li>Added: missing User Stats constants, mostly leaderboard stuff</li>
+							<li>Added: missing default return values in some functions</li>
+							<li>Changed: getAchievementAndUnlockTime to return actual data</li>
+							<li>Changed: user_achievement_icon_fetched callback to return icon data for parsing in-game</li>
+							<li>Changed: value in D_METHOD for setLeaderboardDetailsMax to match function</li>
+							<li>Changed: getDownloadedLeaderboardEntry to use handle correctly</li>
+							<li>Fixed: delete used memory in getInstalledDepots</li>
+						</ul>
+						<h3>Version 3.0.2 Changes</h3>
 						<ul>
 							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
 							<li>Added: missing initialization constants</li>
 							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
 							<li>Fixed: currentAppID not utilized correctly</li>
 						</ul>
-						<h3>Version 3.1 Changes</h3>
+						<h3>Version 3.0.1 Changes</h3>
 						<ul>
 							<li>Added: MacOS C++ rule back in for compiling</li>
 							<li>Added: all missing Steam Utils functions (except depreciated or non-relevant functions)</li>
