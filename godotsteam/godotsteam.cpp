@@ -1667,6 +1667,72 @@ bool Steam::sendP2PPacket(uint64_t steamIDRemote, PoolByteArray data, int sendTy
 }
 
 /////////////////////////////////////////////////
+///// REMOTE PLAY ///////////////////////////////
+/////////////////////////////////////////////////
+//
+// Get the number of currently connected Steam Remote Play sessions.
+uint32 Steam::getSessionCount(){
+	if(SteamRemotePlay() == NULL){
+		return 0;
+	}
+	return SteamRemotePlay()->GetSessionCount();
+}
+// Get the currently connected Steam Remote Play session ID at the specified index.
+uint32 Steam::getSessionID(int index){
+	if(SteamRemotePlay() == NULL){
+		return 0;
+	}
+	return SteamRemotePlay()->GetSessionID(index);
+}
+// Get the SteamID of the connected user.
+uint64_t Steam::getSessionSteamID(uint32 sessionID){
+	if(SteamRemotePlay() == NULL){
+		return 0;
+	}
+	CSteamID steamID = SteamRemotePlay()->GetSessionSteamID(sessionID);
+	return steamID.ConvertToUint64();
+}
+// Get the name of the session client device.
+String Steam::getSessionClientName(uint32 sessionID){
+	if(SteamRemotePlay() == NULL){
+		return "";
+	}
+	return SteamRemotePlay()->GetSessionClientName(sessionID);
+}
+// Get the form factor of the session client device.
+int Steam::getSessionClientFormFactor(uint32 sessionID){
+	if(SteamRemotePlay() == NULL){
+		return 0;
+	}
+	return SteamRemotePlay()->GetSessionClientFormFactor(sessionID);	
+}
+// Get the resolution, in pixels, of the session client device. This is set to 0x0 if the resolution is not available.
+Dictionary Steam::getSessionClientResolution(uint32 sessionID){
+	Dictionary resolution;
+	if (SteamNetworking() == NULL) {
+		return resolution;
+	}
+	int resolutionX = 0;
+	int resolutionY = 0;
+	bool success = SteamRemotePlay()->BGetSessionClientResolution(sessionID, &resolutionX, &resolutionY);
+	if(success){
+		resolution['success'] = success;
+		resolution['x'] = resolutionX;
+		resolution['y'] = resolutionY;
+	}	
+	return resolution;
+}
+// IN STEAM DOCS BUT NOT YET IN STEAMWORKS API
+// Invite a friend to join the game using Remote Play Together
+//bool Steam::sendRemotePlayTogetherInvite(uint64_t friendID){
+//	if(SteamRemotePlay() == NULL){
+//		return false;
+//	}
+//	CSteamID steamID = (uint64)friendID;
+//	return SteamRemotePlay()->BSendRemotePlayTogetherInvite(steamID);
+//}
+
+/////////////////////////////////////////////////
 ///// REMOTE STORAGE ////////////////////////////
 /////////////////////////////////////////////////
 //
@@ -2254,6 +2320,19 @@ void Steam::_p2p_session_request(P2PSessionRequest_t* callData){
 	emit_signal("p2p_session_request", steamIDRemote);
 }
 //
+// Remote Play callbacks ////////////////////////
+//
+// he session ID of the session that just connected.
+void Steam::_remote_play_session_connected(SteamRemotePlaySessionConnected_t* callData){
+	uint32 sessionID = callData->m_unSessionID;
+	emit_signal("remote_play_session_connected", sessionID);
+}
+// The session ID of the session that just disconnected.
+void Steam::_remote_play_session_disconnected(SteamRemotePlaySessionDisconnected_t* callData){
+	uint32 sessionID = callData->m_unSessionID;
+	emit_signal("remote_play_session_disconnected", sessionID);
+}
+//
 // Screenshot callbacks /////////////////////////
 //
 // A screenshot successfully written or otherwise added to the library and can now be tagged.
@@ -2580,9 +2659,10 @@ void Steam::suspendDownloads(bool suspend){
 	return SteamUGC()->SuspendDownloads(suspend);
 }
 // Starts the item update process.
-uint64_t Steam::startItemUpdate(AppId_t appID, int publishedFileID){
+uint64_t Steam::startItemUpdate(int appID, int publishedFileID){
+	AppId_t app = (int)appID;
 	PublishedFileId_t fileID = (int)publishedFileID;
-	return SteamUGC()->StartItemUpdate(appID, fileID);
+	return SteamUGC()->StartItemUpdate(app, fileID);
 }
 // Gets the current state of a workshop item on this client.
 int Steam::getItemState(int publishedFileID){
@@ -3738,6 +3818,15 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("readP2PPacket", &Steam::readP2PPacket);
 	ClassDB::bind_method("sendP2PPacket", &Steam::sendP2PPacket);
 	
+	// Remote Play Bind Methods /////////////////
+	ClassDB::bind_method("getSessionCount", &Steam::getSessionCount);
+	ClassDB::bind_method("getSessionID", &Steam::getSessionID);
+	ClassDB::bind_method("getSessionSteamID", &Steam::getSessionSteamID);
+	ClassDB::bind_method("getSessionClientName", &Steam::getSessionClientName);
+	ClassDB::bind_method("getSessionClientFormFactor", &Steam::getSessionClientFormFactor);
+	ClassDB::bind_method("getSessionClientResolution", &Steam::getSessionClientResolution);
+//	ClassDB::bind_method("sendRemotePlayTogetherInvite", &Steam::sendRemotePlayTogetherInvite);
+
 	// Remote Storage Bind Methods //////////////
 	ClassDB::bind_method("fileWrite", &Steam::fileWrite);
 	ClassDB::bind_method("fileRead", &Steam::fileRead);
@@ -3904,6 +3993,10 @@ void Steam::_bind_methods(){
 	// Networking Signals ///////////////////////
 	ADD_SIGNAL(MethodInfo("p2p_session_request"));
 	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail"));
+
+	// Remote Play Signals //////////////////////
+	ADD_SIGNAL(MethodInfo("remote_play_session_connected"));
+	ADD_SIGNAL(MethodInfo("remote_play_session_disconnected"));
 
 	// Screenshot Signals ///////////////////////
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
@@ -4339,11 +4432,18 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);		// 2
 	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);	//3,
 
-	// Leaderobard Data Requests ////////////////
+	// Leaderboard Data Requests ////////////////
 	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);				// 0
 	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);	// 1
 	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);			// 2
 	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);				// 3
+
+	// Device Form Factors //////////////////////
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN);					// 0
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_PHONE);					// 1
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_TABLET);					// 2
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_COMPUTER);					// 3
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_TV);						// 4
 }
 
 Steam::~Steam(){

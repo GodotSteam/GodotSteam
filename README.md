@@ -13,17 +13,11 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.1.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.2.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.1.0 Changes**
-- Added: all remaining User Stats functions
-- Added: missing User Stats constants, mostly leaderboard stuff
-- Added: missing default return values in some functions
-- Changed: getAchievementAndUnlockTime to return actual data
-- Changed: user_achievement_icon_fetched callback to return icon data for parsing in-game
-- Changed: value in D_METHOD for setLeaderboardDetailsMax to match function
-- Changed: getDownloadedLeaderboardEntry to use handle correctly
-- Fixed: delete used memory in getInstalledDepots
+**Version 3.2.0 Changes**
+- Added: all remaining UGC functions and callbacks
+- Added: all new Remote Play functions and callbacks
 
 Known Issues
 ----------
@@ -33,7 +27,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.1.1.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.1.2.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -57,25 +51,33 @@ Quick How-To
     - If using Ubuntu 16.10 or higher and having issues with PIE security in GCC, use LINKFLAGS='-no-pie' to get an executable instead of a shared library.
   - OSX ( http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html )
     - When creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( http://steamcommunity.com/app/404790/discussions/0/364042703865087202/ ).
-- When recompiling the engine is finished, copy the shared library (steam_api) from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder). It should look like this:
+- When recompiling the engine is finished do the following before running it the first time:
+  - Copy the shared library (steam_api), for your OS, from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder).
+  - Create a steam_appid.txt file with your game's app ID or 480 in this folder.  Necessary if the editor or game is run _outtside_ of Steam.
+
+- The finished hierarchy should look like this:
   - Linux 32/64-bit
   ```
   libsteam_api.so
+  steam_appid.txt
   ./godot.linux.tools.32 or ./godot.linux.tools.64
   ```
   - OSX
   ```
   libsteam_api.dylib
+  steam_appid.txt
   ./godot.osx.tools.32 or ./godot.osx.tools.64
   ```
   - Windows 32-bit
   ```
   steam_api.dll
+  steam_appid.txt
   ./godot.windows.tools.32.exe
   ```
   - Windows 64-bit
   ```
   steam_api64.dll
+  steam_appid.txt
   ./godot.windows.tools.64.exe
   ```
 - Your game must ship with the executable, Steam API DLL/SO/DyLIB, and steam_appid.txt to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.

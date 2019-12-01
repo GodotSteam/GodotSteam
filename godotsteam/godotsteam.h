@@ -69,7 +69,8 @@ class Steam: public Object {
 			LEADERBOARD_SORT_METHOD_NONE=0, LEADERBOARD_SORT_METHOD_ASC=1, LEADERBOARD_SORT_METHOD_DESC=2,
 			LEADERBOARD_UPLOAD_METHOD_NONE=0, LEADERBOARD_UPLOAD_METHOD_KEEP_BEST=1, LEADERBOARD_UPLOAD_METHOD_FORCE_UPDATE=2,
 			LEADERBOARD_DISPLAY_TYPE_NONE=0, LEADERBOARD_DISPLAY_TYPE_NUMERIC=1, LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS=2, LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS=3,
-			LEADERBOARD_DATA_REQUEST_GLOBAL=0, LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER=1, LEADERBOARD_DATA_REQUEST_FRIENDS=2, LEADERBOARD_DATA_REQUEST_USERS=3
+			LEADERBOARD_DATA_REQUEST_GLOBAL=0, LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER=1, LEADERBOARD_DATA_REQUEST_FRIENDS=2, LEADERBOARD_DATA_REQUEST_USERS=3,
+			DEVICE_FORM_FACTOR_UNKNOWN=0, DEVICE_FORM_FACTOR_PHONE=1, DEVICE_FORM_FACTOR_TABLET=2, DEVICE_FORM_FACTOR_COMPUTER=3, DEVICE_FORM_FACTOR_TV=4
 		};
 		static Steam* get_singleton();
 		Steam();
@@ -247,6 +248,15 @@ class Steam: public Object {
 		Dictionary readP2PPacket(uint32_t packet, int channel = 0);
 		bool sendP2PPacket(uint64_t steamIDRemote, const PoolByteArray data, int eP2PSendType, int channel = 0);
 
+		// Remote Play //////////////////////////
+		uint32 getSessionCount();
+		uint32 getSessionID(int index);
+		uint64_t getSessionSteamID(uint32 sessionID);
+		String getSessionClientName(uint32 sessionID);
+		int getSessionClientFormFactor(uint32 sessionID);
+		Dictionary getSessionClientResolution(uint32 sessionID);
+	//	bool sendRemotePlayTogetherInvite(uint64_t friendID);
+
 		// Remote Storage ///////////////////////
 		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
 		Dictionary fileRead(const String& file, int32_t dataToRead);
@@ -273,24 +283,80 @@ class Steam: public Object {
 		uint32_t writeScreenshot(const PoolByteArray& RGB, int width, int height);
 
 		// UGC //////////////////////////////////
-		bool downloadItem(int publishedFileID, bool highPriority);
-		void suspendDownloads(bool suspend);
-		uint64_t startItemUpdate(AppId_t appID, int fileId);
-		int getItemState(int publishedFileID);
-		Dictionary getItemUpdateProgress(uint64_t handle);
+		void addAppDependency(int publishedFileID, int appID);
+		void addDependency(int publishedFileID, int childPublishedFileID);
+		bool addExcludedTag(uint64_t updateHandle, const String& tagName);
+		bool addItemKeyValueTag(uint64_t updateHandle, const String& key, const String& value);
+		bool addItemPreviewFile(uint64_t updateHandle, const String& previewFile, int type);
+		bool addItemPreviewVideo(uint64_t updateHandle, const String& videoID);
+		void addItemToFavorite(int appID, int publishedFileID);
+		bool addRequiredKeyValueTag(uint64_t updateHandle, const String& key, const String& value);
+		bool addRequiredTag(uint64_t updateHandle, const String& tagName);
+		bool initWorkshopForGameServer(int workshopDepotID, const String& folder);
 		void createItem(AppId_t appID, int fileType);
-		bool setItemTitle(uint64_t updateHandle, const String& title);
-		bool setItemDescription(uint64_t updateHandle, const String& description);
-		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
-		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
-		bool setItemVisibility(uint64_t updateHandle, int visibility);
-//		bool setItemTags(uint64_t updateHandle, const PoolByteArray tagArray);
-		bool setItemContent(uint64_t updateHandle, const String& contentFolder);
-		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
-		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
-		Array getSubscribedItems();
-		Dictionary getItemInstallInfo(int fileID);
+		uint64_t createQueryAllUGCRequest(int queryType, int matchingType,int creatorID, int consumerID,uint32 page);
+		uint64_t createQueryUGCDetailsRequest(int publishedFileID, uint32 numberOfFileID);
+		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
+		void deleteItem(int publishedFileID);
+		bool downloadItem(int publishedFileID, bool highPriority);
+		bool getAppDependencies(int publishedFileID);
 		Dictionary getItemDownloadInfo(int fileID);
+		Dictionary getItemInstallInfo(int fileID);
+		int getItemState(int publishedFileID);
+		Dictionary getItemUpdateProgress(uint64_t updateHandle);
+		uint32 getNumSubscribedItems();
+		bool getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex, String& urlOrVideoID,uint32 urlSize, String& originalFilename, uint32 originalFilenameSize, int *previewType);
+		bool getQueryUGCChildren(uint64_t queryHandle, uint32 index, int publishedFileID, uint32 maxEntries);
+		bool getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex, String& key, uint32 keySize, String& value, uint32 valueSize);
+		bool getQueryUGCMetadata(uint64_t queryHandle, uint32 index, String& metadata, uint32 metadataSize);
+		uint32 getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index);
+		uint32 getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index);
+		bool getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index, String& url, uint32 urlSize);
+		bool getQueryUGCResult(uint64_t queryHandle, uint32 index, int details);
+		bool getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType, uint64 statValue);
+		Array getSubscribedItems();
+		void getUserItemVote(int publishedFileID);
+		bool releaseQueryUGCRequest(uint64_t queryHandle);
+		void removeAppDependency(int publishedFileID, int appID);
+		void removeDependency(int publishedFileID, int childPublishedFileID);
+		void removeItemFromFavorites(int appID, int publishedFileID);
+		bool removeItemKeyValueTags(uint64_t updateHandle, const String& key);
+		bool removeItemPreview(uint64_t updateHandle, uint32 index);
+		void sendQueryUGCRequest(uint64_t updateHandle);
+		bool setAllowCachedResponse(uint64_t updateHandle, uint32 maxAgeSeconds);
+		bool setCloudFileNameFilter(uint64_t updateHandle, const String& matchCloudFilename);
+		bool setItemContent(uint64_t updateHandle, const String& contentFolder);
+		bool setItemDescription(uint64_t updateHandle, const String& description);
+		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
+		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
+		bool setItemTags(uint64_t updateHandle, const PoolByteArray tagArray);
+		bool setItemTitle(uint64_t updateHandle, const String& title);
+		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
+		bool setItemVisibility(uint64_t updateHandle, int visibility);
+		bool setLanguage(uint64_t updateHandle, const String& language);
+		bool setMatchAnyTag(uint64_t queryHandle, bool matchAnyTag);
+		bool setRankedByTrendDays(uint64_t queryHandle, uint32 days);
+		bool setReturnAdditionalPreviews(uint64_t queryHandle, bool returnAdditionalPreviews);
+		bool setReturnChildren(uint64_t queryHandle, bool returnChildren);
+		bool setReturnKeyValueTags(uint64_t queryHandle, bool returnKeyValueTags);
+		bool setReturnLongDescription(uint64_t queryHandle, bool returnLongDescription);
+		bool setReturnMetadata(uint64_t queryHandle, bool returnMetadata);
+		bool setReturnOnlyIDs(uint64_t queryHandle, bool returnOnlyIDs);
+		bool setReturnPlaytimeStats(uint64_t queryHandle, uint32 days);
+		bool SetReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly);
+		bool SetSearchText(uint64_t queryHandle, const String& searchText);
+		void SetUserItemVote(int publishedFileID, bool voteUp);
+		uint64_t startItemUpdate(int appID, int fileId);
+		void StartPlaytimeTracking(int publishedFileID, uint32 numPublishedFileIDs);
+		void StopPlaytimeTracking(int publishedFileID, uint32 numPublishedFileIDs);
+		void StopPlaytimeTrackingForAllItems();
+		void GetAppDependencies(int publishedFileID);
+		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
+		void SubscribeItem(int publishedFileID);
+		void suspendDownloads(bool suspend);
+		void UnsubscribeItem(int publishedFileID);
+		bool UpdateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile);
+		bool UpdateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
 
 		// Users ////////////////////////////////
 		uint32_t getAuthSessionTicket();
@@ -392,6 +458,9 @@ class Steam: public Object {
 		Array leaderboardEntries;
 		int leaderboardDetailsMax;
 
+		// Remote Play
+		uint32 sessionID;
+
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
@@ -487,6 +556,10 @@ class Steam: public Object {
 		// Networking callbacks /////////////////
 		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t);
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t);
+
+		// Remote Play callbacks ////////////////
+		STEAM_CALLBACK(Steam, _remote_play_session_connected, SteamRemotePlaySessionConnected_t);
+		STEAM_CALLBACK(Steam, _remote_play_session_disconnected, SteamRemotePlaySessionDisconnected_t);
 
 		// Screenshot callbacks /////////////////
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
