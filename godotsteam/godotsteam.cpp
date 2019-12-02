@@ -1716,9 +1716,9 @@ Dictionary Steam::getSessionClientResolution(uint32 sessionID){
 	int resolutionY = 0;
 	bool success = SteamRemotePlay()->BGetSessionClientResolution(sessionID, &resolutionX, &resolutionY);
 	if(success){
-		resolution['success'] = success;
-		resolution['x'] = resolutionX;
-		resolution['y'] = resolutionY;
+		resolution["success"] = success;
+		resolution["x"] = resolutionX;
+		resolution["y"] = resolutionY;
 	}	
 	return resolution;
 }
@@ -2322,7 +2322,7 @@ void Steam::_p2p_session_request(P2PSessionRequest_t* callData){
 //
 // Remote Play callbacks ////////////////////////
 //
-// he session ID of the session that just connected.
+// The session ID of the session that just connected.
 void Steam::_remote_play_session_connected(SteamRemotePlaySessionConnected_t* callData){
 	uint32 sessionID = callData->m_unSessionID;
 	emit_signal("remote_play_session_connected", sessionID);
@@ -2331,6 +2331,21 @@ void Steam::_remote_play_session_connected(SteamRemotePlaySessionConnected_t* ca
 void Steam::_remote_play_session_disconnected(SteamRemotePlaySessionDisconnected_t* callData){
 	uint32 sessionID = callData->m_unSessionID;
 	emit_signal("remote_play_session_disconnected", sessionID);
+}
+//
+// Remote Storage callbacks /////////////////////
+//
+// Called when the user has unsubscribed from a piece of UGC. Result from ISteamUGC::UnsubscribeItem.
+void Steam::_unsubscribe_item(RemoteStorageUnsubscribePublishedFileResult_t* callData, bool bIOFailure){
+	int result = callData->m_eResult;
+	int fileID = callData->m_nPublishedFileId;
+	emit_signal("unsubscribe_item", result, fileID);
+}
+// Called when the user has subscribed to a piece of UGC. Result from ISteamUGC::SubscribeItem.
+void Steam::_subscribe_item(RemoteStorageSubscribePublishedFileResult_t* callData, bool bIOFailure){
+	int result = callData->m_eResult;
+	int fileID = callData->m_nPublishedFileId;
+	emit_signal("subscribe_item", result, fileID);
 }
 //
 // Screenshot callbacks /////////////////////////
@@ -2348,6 +2363,20 @@ void Steam::_screenshot_requested(ScreenshotRequested_t* callData){
 //
 // UGC callbacks ////////////////////////////////
 //
+// The result of a call to AddAppDependency.
+void Steam::_add_app_dependency_result(AddAppDependencyResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	AppId_t appID = callData->m_nAppID;
+	emit_signal("add_app_dependency_result", result, (uint64_t)fileID, (int)appID);
+}
+// The result of a call to AddDependency.
+void Steam::_add_ugc_dependency_result(AddUGCDependencyResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	PublishedFileId_t childID = callData->m_nChildPublishedFileId;
+	emit_signal("add_ugc_dependency_result", result, (uint64_t)fileID, (uint64_t)childID);
+}
 // Result of a workshop item being created.
 void Steam::_item_created(CreateItemResult_t *callData, bool bIOFailure){
 	EResult result = callData->m_eResult;
@@ -2355,17 +2384,96 @@ void Steam::_item_created(CreateItemResult_t *callData, bool bIOFailure){
 	bool acceptTOS = callData->m_bUserNeedsToAcceptWorkshopLegalAgreement;
 	emit_signal("item_created", result, (uint64_t)fileID, acceptTOS);
 }
+// Called when a workshop item has been downloaded.
+void Steam::_item_downloaded(DownloadItemResult_t* callData){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	AppId_t appID = callData->m_unAppID;
+	emit_signal("item_downloaded", result, (uint64_t)fileID, (int)appID);
+}
+// Called when getting the app dependencies for an item.
+void Steam::_get_app_dependencies_result(GetAppDependenciesResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+//	AppId_t appID = callData->m_rgAppIDs;
+	uint32 appDependencies = callData->m_nNumAppDependencies;
+	uint32 totalAppDependencies = callData->m_nTotalNumAppDependencies;
+//	emit_signal("get_app_dependencies_result", result, (uint64_t)fileID, appID, appDependencies, totalAppDependencies);
+	emit_signal("get_app_dependencies_result", result, (uint64_t)fileID, appDependencies, totalAppDependencies);
+}
+// Called when an attempt at deleting an item completes.
+void Steam::_item_deleted(DeleteItemResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	emit_signal("item_deleted", result, (uint64_t)fileID);
+}
+// Called when getting the users vote status on an item.
+void Steam::_get_item_vote_result(GetUserItemVoteResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	bool voteUp = callData->m_bVotedUp;
+	bool voteDown = callData->m_bVotedDown;
+	bool voteSkipped = callData->m_bVoteSkipped;
+	emit_signal("get_item_vote_result", result, (uint64_t)fileID, voteUp, voteDown, voteSkipped);
+}
 // Called when a workshop item has been installed or updated.
 void Steam::_item_installed(ItemInstalled_t* callData){
 	AppId_t appID = callData->m_unAppID;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	emit_signal("item_installed", appID, (uint64_t)fileID);
 }
+// Purpose: The result of a call to RemoveAppDependency.
+void Steam::_remove_app_dependency_result(RemoveAppDependencyResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	AppId_t appID = callData->m_nAppID;
+	emit_signal("remove_app_dependency_result", result, (uint64_t)fileID, (int)appID);
+}
+// Purpose: The result of a call to RemoveDependency.
+void Steam::_remove_ugc_dependency_result(RemoveUGCDependencyResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	PublishedFileId_t childID = callData->m_nChildPublishedFileId;
+	emit_signal("remove_ugc_dependency_result", result, (uint64_t)fileID, (uint64_t)childID);
+}
+// Called when the user has voted on an item.
+void Steam::_set_user_item_vote(SetUserItemVoteResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	bool voteUp = callData->m_bVoteUp;
+	emit_signal("set_user_item_vote", result, (uint64_t)fileID, voteUp);
+}
+// Called when workshop item playtime tracking has started.
+void Steam::_start_playtime_tracking(StartPlaytimeTrackingResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	emit_signal("start_playtime_tracking", result);
+}
+// Called when a UGC query request completes.
+void Steam::_ugc_query_completed(SteamUGCQueryCompleted_t* callData, bool bIOFailure){
+	UGCQueryHandle_t handle = callData->m_handle;
+	EResult result = callData->m_eResult;
+	uint32 resultsReturned = callData->m_unNumResultsReturned;
+	uint32 totalMatching = callData->m_unTotalMatchingResults;
+	bool cached = callData->m_bCachedData;
+	emit_signal("ugc_query_completed", (uint64_t)handle, result, resultsReturned, totalMatching, cached);
+}
+// Called when workshop item playtime tracking has stopped.
+void Steam::_stop_playtime_tracking(StopPlaytimeTrackingResult_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	emit_signal("stop_playtime_tracking", result);
+}
 // Result of a workshop item being updated.
 void Steam::_item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure){
 	EResult result = callData->m_eResult;
 	bool acceptTOS = callData->m_bUserNeedsToAcceptWorkshopLegalAgreement;
 	emit_signal("item_updated", result, acceptTOS);
+}
+// Called when the user has added or removed an item to/from their favorites.
+void Steam::_user_favorite_items_list_changed(UserFavoriteItemsListChanged_t* callData, bool bIOFailure){
+	EResult result = callData->m_eResult;
+	PublishedFileId_t fileID = callData->m_nPublishedFileId;
+	bool wasAddRequest = callData->m_bWasAddRequest;
+	emit_signal("user_favorite_items_list_changed", result, (uint64_t)fileID, wasAddRequest);
 }
 //
 // User callbacks ///////////////////////////////
@@ -2645,46 +2753,115 @@ void Steam::_steam_shutdown(SteamShutdown_t* callData){
 ///// UGC ///////////////////////////////////////
 /////////////////////////////////////////////////
 //
-// Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.
-// If item is not subscribed to, it will be cached for some time. If bHighPriority is set, any other item download will be suspended and this item downloaded ASAP.
-bool Steam::downloadItem(int publishedFileID, bool highPriority){
+// Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
+// This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.
+void Steam::addAppDependency(int publishedFileID, int appID){
 	if(SteamUGC() == NULL){
-		return 0;
+		return;
 	}
 	PublishedFileId_t fileID = (int)publishedFileID;
-	return SteamUGC()->DownloadItem(fileID, highPriority);
+	AppId_t app = (int)appID;
+	SteamAPICall_t apiCall = SteamUGC()->AddAppDependency(fileID, app);
+	callResultAddAppDependency.Set(apiCall, this, &Steam::_add_app_dependency_result);
 }
-// SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.
-void Steam::suspendDownloads(bool suspend){
-	return SteamUGC()->SuspendDownloads(suspend);
+// Adds a workshop item as a dependency to the specified item. If the nParentPublishedFileID item is of type k_EWorkshopFileTypeCollection, than the nChildPublishedFileID is simply added to that collection.
+// Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the m_unNumChildren member variable of the SteamUGCDetails_t struct and GetQueryUGCChildren.
+void Steam::addDependency(int publishedFileID, int childPublishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t parent = (int)publishedFileID;
+	PublishedFileId_t child = (int)childPublishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->AddDependency(parent, child);
+	callResultAddUGCDependency.Set(apiCall, this, &Steam::_add_ugc_dependency_result);
 }
-// Starts the item update process.
-uint64_t Steam::startItemUpdate(int appID, int publishedFileID){
+// Adds a excluded tag to a pending UGC Query. This will only return UGC without the specified tag.
+bool Steam::addExcludedTag(uint64_t queryHandle, const String& tagName){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->AddExcludedTag(handle, tagName.utf8().get_data());
+}
+// Adds a key-value tag pair to an item. Keys can map to multiple different values (1-to-many relationship).
+bool Steam::addItemKeyValueTag(uint64_t updateHandle, const String& key, const String& value){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
+	return SteamUGC()->AddItemKeyValueTag(handle, key.utf8().get_data(), value.utf8().get_data());
+}
+// Adds an additional preview file for the item.
+bool Steam::addItemPreviewFile(uint64_t queryHandle, const String& previewFile, int type){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	EItemPreviewType previewType;
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	if(type == 0){
+		previewType = k_EItemPreviewType_Image;
+	}
+	else if(type == 1){
+		previewType = k_EItemPreviewType_YouTubeVideo;
+	}
+	else if(type == 2){
+		previewType = k_EItemPreviewType_Sketchfab;
+	}
+	else if(type == 3){
+		previewType = k_EItemPreviewType_EnvironmentMap_HorizontalCross;
+	}
+	else if(type == 4){
+		previewType = k_EItemPreviewType_EnvironmentMap_LatLong;
+	}
+	else{
+		previewType = k_EItemPreviewType_ReservedMax;
+	}
+	return SteamUGC()->AddItemPreviewFile(handle, previewFile.utf8().get_data(), previewType);
+}
+// Adds an additional video preview from YouTube for the item.
+bool Steam::addItemPreviewVideo(uint64_t queryHandle, const String& videoID){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->AddItemPreviewVideo(handle, videoID.utf8().get_data());
+}
+// Adds a workshop item to the users favorites list.
+void Steam::addItemToFavorite(int appID, int publishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
 	AppId_t app = (int)appID;
 	PublishedFileId_t fileID = (int)publishedFileID;
-	return SteamUGC()->StartItemUpdate(app, fileID);
+	SteamAPICall_t apiCall = SteamUGC()->AddItemToFavorites(app, fileID);
+	callResultFavoriteItemListChanged.Set(apiCall, this, &Steam::_user_favorite_items_list_changed);
 }
-// Gets the current state of a workshop item on this client.
-int Steam::getItemState(int publishedFileID){
+// Adds a required key-value tag to a pending UGC Query. This will only return workshop items that have a key = pKey and a value = pValue.
+bool Steam::addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value){
 	if(SteamUGC() == NULL){
-		return 0;
+		return false;
 	}
-	PublishedFileId_t fileID = (int)publishedFileID;
-	return SteamUGC()->GetItemState(fileID);
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->AddRequiredKeyValueTag(handle, key.utf8().get_data(), value.utf8().get_data());
 }
-// Gets the progress of an item update.
-Dictionary Steam::getItemUpdateProgress(uint64_t updateHandle){
-	Dictionary updateProgress;
-	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
-	uint64 processed = 0;
-	uint64 total = 0;
-	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress(handle, &processed, &total);
-	updateProgress["status"] = status;
-	updateProgress["processed"] = uint64_t(processed);
-	updateProgress["total"] = uint64_t(total);
-	return updateProgress;
+// Adds a required tag to a pending UGC Query. This will only return UGC with the specified tag.
+bool Steam::addRequiredTag(uint64_t queryHandle, const String& tagName){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->AddRequiredTag(handle, tagName.utf8().get_data());
 }
-//
+// Lets game servers set a specific workshop folder before issuing any UGC commands.
+bool Steam::initWorkshopForGameServer(int workshopDepotID){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	DepotId_t workshop = (int)workshopDepotID;
+	const char *folder = new char[256];
+	return SteamUGC()->BInitWorkshopForGameServer(workshop, (char*)folder);
+}
+// Creates a new workshop item with no content attached yet.
 void Steam::createItem(AppId_t appID, int fileType){
 	if(SteamUGC() == NULL){
 		return;
@@ -2745,116 +2922,255 @@ void Steam::createItem(AppId_t appID, int fileType){
 	SteamAPICall_t apiCall = SteamUGC()->CreateItem(appID, workshopType);
 	callResultItemCreate.Set(apiCall, this, &Steam::_item_created);
 }
-// Sets a new title for an item.
-bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
+// Query for all matching UGC. You can use this to list all of the available UGC for your app.
+uint64_t Steam::createQueryAllUGCRequest(int queryType, int matchingType, int creatorID, int consumerID, uint32 page){
 	if(SteamUGC() == NULL){
-		return false;
+		return 0;
 	}
-	if (title.length() > UGC_MAX_TITLE_CHARS){
-		printf("Title cannot have more than %ld ASCII characters. Title not set.", UGC_MAX_TITLE_CHARS);
-		return false;
+	EUGCQuery query;
+	if(queryType == 0){
+		query = k_EUGCQuery_RankedByVote;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemTitle(handle, title.utf8().get_data());
-}
-// Sets a new description for an item.
-bool Steam::setItemDescription(uint64_t updateHandle, const String& description){
-	if(SteamUGC() == NULL){
-		return false;
+	else if(queryType == 1){
+		query = k_EUGCQuery_RankedByPublicationDate;
 	}
-	if (description.length() > UGC_MAX_DESC_CHARS){
-		printf("Description cannot have more than %ld ASCII characters. Description not set.", UGC_MAX_DESC_CHARS);
-		return false;
+	else if(queryType == 2){
+		query = k_EUGCQuery_AcceptedForGameRankedByAcceptanceDate;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemDescription(handle, description.utf8().get_data());
-}
-// Sets the language of the title and description that will be set in this item update.
-bool Steam::setItemUpdateLanguage(uint64_t updateHandle, const String& language){
-	if(SteamUGC() == NULL){
-		return false;
+	else if(queryType == 3){
+		query = k_EUGCQuery_RankedByTrend;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemUpdateLanguage(handle, language.utf8().get_data());
-}
-// Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.
-bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
-	if(SteamUGC() == NULL){
-		return false;
+	else if(queryType == 4){
+		query = k_EUGCQuery_FavoritedByFriendsRankedByPublicationDate;
 	}
-	if (metadata.length() > UGC_MAX_METADATA_CHARS){
-		printf("Metadata cannot have more than %ld ASCII characters. Metadata not set.", UGC_MAX_METADATA_CHARS);
+	else if(queryType == 5){
+		query = k_EUGCQuery_CreatedByFriendsRankedByPublicationDate;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
-}
-// Sets the visibility of an item.
-bool Steam::setItemVisibility(uint64_t updateHandle, int visibility){
-	if(SteamUGC() == NULL){
-		return false;
+	else if(queryType == 6){
+		query = k_EUGCQuery_RankedByNumTimesReported;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	ERemoteStoragePublishedFileVisibility itemVisibility;
-	// Convert the visibility type back over.
-	if(visibility == UGC_FILE_VISIBLE_PUBLIC){
-		itemVisibility = k_ERemoteStoragePublishedFileVisibilityPublic;
+	else if(queryType == 7){
+		query = k_EUGCQuery_CreatedByFollowedUsersRankedByPublicationDate;
 	}
-	else if(visibility == UGC_FILE_VISIBLE_FRIENDS){
-		itemVisibility = k_ERemoteStoragePublishedFileVisibilityFriendsOnly;
+	else if(queryType == 8){
+		query = k_EUGCQuery_NotYetRated;
+	}
+	else if(queryType == 9){
+		query = k_EUGCQuery_RankedByTotalVotesAsc;
+	}
+	else if(queryType == 10){
+		query = k_EUGCQuery_RankedByVotesUp;
+	}
+	else if(queryType == 11){
+		query = k_EUGCQuery_RankedByTextSearch;
+	}
+	else if(queryType == 12){
+		query = k_EUGCQuery_RankedByTotalUniqueSubscriptions;
+	}
+	else if(queryType == 13){
+		query = k_EUGCQuery_RankedByPlaytimeTrend;
+	}
+	else if(queryType == 14){
+		query = k_EUGCQuery_RankedByTotalPlaytime;
+	}
+	else if(queryType == 15){
+		query = k_EUGCQuery_RankedByAveragePlaytimeTrend;
+	}
+	else if(queryType == 16){
+		query = k_EUGCQuery_RankedByLifetimeAveragePlaytime;
+	}
+	else if(queryType == 17){
+		query = k_EUGCQuery_RankedByPlaytimeSessionsTrend;
 	}
 	else{
-		itemVisibility = k_ERemoteStoragePublishedFileVisibilityPrivate;
+		query = k_EUGCQuery_RankedByLifetimePlaytimeSessions;
 	}
-	return SteamUGC()->SetItemVisibility(handle, itemVisibility);
+	EUGCMatchingUGCType match;
+	if(matchingType == 0){
+		match = k_EUGCMatchingUGCType_All;
+	}
+	else if(matchingType == 1){
+		match = k_EUGCMatchingUGCType_Items_Mtx;
+	}
+	else if(matchingType == 2){
+		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
+	}
+	else if(matchingType == 3){
+		match = k_EUGCMatchingUGCType_Collections;
+	}
+	else if(matchingType == 4){
+		match = k_EUGCMatchingUGCType_Artwork;
+	}
+	else if(matchingType == 5){
+		match = k_EUGCMatchingUGCType_Videos;
+	}
+	else if(matchingType == 6){
+		match = k_EUGCMatchingUGCType_Screenshots;
+	}
+	else if(matchingType == 7){
+		match = k_EUGCMatchingUGCType_AllGuides;
+	}
+	else if(matchingType == 8){
+		match = k_EUGCMatchingUGCType_WebGuides;
+	}
+	else if(matchingType == 9){
+		match = k_EUGCMatchingUGCType_IntegratedGuides;
+	}
+	else if(matchingType == 10){
+		match = k_EUGCMatchingUGCType_UsableInGame;
+	}
+	else if(matchingType == 11){
+		match = k_EUGCMatchingUGCType_ControllerBindings;
+	}
+	else{
+		match = k_EUGCMatchingUGCType_GameManagedItems;
+	}
+	AppId_t creator = (int)creatorID;
+	AppId_t consumer = (int)consumerID;
+	UGCQueryHandle_t handle = SteamUGC()->CreateQueryAllUGCRequest(query, match, creator, consumer, page);
+	return (uint64_t)handle;
 }
-// Sets arbitrary developer specified tags on an item.
-//bool Steam::setItemTags(uint64_t updateHandle, const String ** tagArray){
+// Query for the details of specific workshop items.
+//uint64_t Steam::createQueryUGCDetailsRequest(int publishedFileID, uint32 numberOfFileID){
 //	if(SteamUGC() == NULL){
-//		return false;
+//		return 0;
 //	}
-//	UGCUpdateHandle_t handle = uint64(updateHandle);
-//	SteamParamStringArray_t *tags = {tagArray};
-//	return SteamUGC()->SetItemTags(updateHandle, tags);
+//
 //}
-// Sets the folder that will be stored as the content for an item.
-bool Steam::setItemContent(uint64_t updateHandle, const String& contentFolder){
-	if(SteamUGC() == NULL){
-		return false;
-	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemContent(handle, contentFolder.utf8().get_data());
-}
-// Sets the primary preview image for the item.
-bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
-	if(SteamUGC() == NULL){
-		return false;
-	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemPreview(handle, previewFile.utf8().get_data());
-}
-// Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.
-void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
+// WEIRD ERROR WHERE GODOT WON'T ALLOW MORE THAN 5 ARGUMENTS
+// Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.
+//uint64_t Steam::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
+//	if(SteamUGC() == NULL){
+//		return 0;
+//	}
+//	AccountID_t account = (int)accountID;
+//	EUserUGCList list;
+//	if(listType == 0){
+//		list = k_EUserUGCList_Published;
+//	}
+//	else if(listType == 1){
+//		list = k_EUserUGCList_VotedOn;
+//	}
+//	else if(listType == 2){
+//		list = k_EUserUGCList_VotedUp;
+//	}
+//	else if(listType == 3){
+//		list = k_EUserUGCList_VotedDown;
+//	}
+//	else if(listType == 4){
+//		list = k_EUserUGCList_WillVoteLater;
+//	}
+//	else if(listType == 5){
+//		list = k_EUserUGCList_Favorited;
+//	}
+//	else if(listType == 6){
+//		list = k_EUserUGCList_Subscribed;
+//	}
+//	else if(listType == 7){
+//		list = k_EUserUGCList_UsedOrPlayed;
+//	}
+//	else{
+//		list = k_EUserUGCList_Followed;
+//	}
+//	EUGCMatchingUGCType match;
+//	if(matchingUGCType == 0){
+//		match = k_EUGCMatchingUGCType_All;
+//	}
+//	else if(matchingUGCType == 1){
+//		match = k_EUGCMatchingUGCType_Items_Mtx;
+//	}
+//	else if(matchingUGCType == 2){
+//		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
+//	}
+//	else if(matchingUGCType == 3){
+//		match = k_EUGCMatchingUGCType_Collections;
+//	}
+//	else if(matchingUGCType == 4){
+//		match = k_EUGCMatchingUGCType_Artwork;
+//	}
+//	else if(matchingUGCType == 5){
+//		match = k_EUGCMatchingUGCType_Videos;
+//	}
+//	else if(matchingUGCType == 6){
+//		match = k_EUGCMatchingUGCType_Screenshots;
+//	}
+//	else if(matchingUGCType == 7){
+//		match = k_EUGCMatchingUGCType_AllGuides;
+//	}
+//	else if(matchingUGCType == 8){
+//		match = k_EUGCMatchingUGCType_WebGuides;
+//	}
+//	else if(matchingUGCType == 9){
+//		match = k_EUGCMatchingUGCType_IntegratedGuides;
+//	}
+//	else if(matchingUGCType == 10){
+//		match = k_EUGCMatchingUGCType_UsableInGame;
+//	}
+//	else if(matchingUGCType == 11){
+//		match = k_EUGCMatchingUGCType_ControllerBindings;
+//	}
+//	else{
+//		match = k_EUGCMatchingUGCType_GameManagedItems;
+//	}
+//	EUserUGCListSortOrder sort;
+//	if(sortOrder == 0){
+//		sort = k_EUserUGCListSortOrder_CreationOrderDesc;
+//	}
+//	else if(sortOrder == 1){
+//		sort = k_EUserUGCListSortOrder_CreationOrderAsc;
+//	}
+//	else if(sortOrder == 2){
+//		sort = k_EUserUGCListSortOrder_TitleAsc;
+//	}
+//	else if(sortOrder == 3){
+//		sort = k_EUserUGCListSortOrder_LastUpdatedDesc;
+//	}
+//	else if(sortOrder == 4){
+//		sort = k_EUserUGCListSortOrder_SubscriptionDateDesc;
+//	}
+//	else if(sortOrder == 5){
+//		sort = k_EUserUGCListSortOrder_VoteScoreDesc;
+//	}
+//	else{
+//		sort = k_EUserUGCListSortOrder_ForModeration;
+//	}
+//	AppId_t creator = (int)creatorID;
+//	AppId_t consumer = (int)consumerID;
+//	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUserUGCRequest(account, list, match, sort, creator, consumer, page);
+//	return (uint64_t)handle;
+//}
+// Deletes the item without prompting the user.
+void Steam::deleteItem(int publishedFileID){
 	if(SteamUGC() == NULL){
 		return;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	SteamAPICall_t apiCall = SteamUGC()->SubmitItemUpdate(handle, changeNote.utf8().get_data());
-	callResultItemUpdate.Set(apiCall, this, &Steam::_item_updated);
+	PublishedFileId_t fileID = (int)publishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->DeleteItem(fileID);
+	callResultDeleteItem.Set(apiCall, this, &Steam::_item_deleted);
 }
-// Gets a list of all of the items the current user is subscribed to for the current game.
-Array Steam::getSubscribedItems(){
+// Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.
+// If item is not subscribed to, it will be cached for some time. If bHighPriority is set, any other item download will be suspended and this item downloaded ASAP.
+bool Steam::downloadItem(int publishedFileID, bool highPriority){
 	if(SteamUGC() == NULL){
-		return Array();
+		return false;
 	}
-	Array subscribed;
-	int numItems = SteamUGC()->GetNumSubscribedItems();
-	PublishedFileId_t *items = new PublishedFileId_t[numItems];
-	int itemList = SteamUGC()->GetSubscribedItems(items, numItems);
-	for(int i = 0; i < itemList; i++){
-		subscribed.append((uint64_t)items[i]);
+	PublishedFileId_t fileID = (int)publishedFileID;
+	return SteamUGC()->DownloadItem(fileID, highPriority);
+}
+// Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
+Dictionary Steam::getItemDownloadInfo(int fileID){
+	Dictionary info;
+	if(SteamUGC() == NULL){
+		return info;
 	}
-	delete items;
-	return subscribed;
+	uint64 downloaded = 0;
+	uint64 total = 0;
+	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)fileID, &downloaded, &total);
+	if(info["ret"]){
+		info["downloaded"] = uint64_t(downloaded);
+		info["total"] = uint64_t(total);
+	}
+	return info;
 }
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
 Dictionary Steam::getItemInstallInfo(int fileID){
@@ -2877,20 +3193,604 @@ Dictionary Steam::getItemInstallInfo(int fileID){
 	}
 	return info;
 }
-// Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
-Dictionary Steam::getItemDownloadInfo(int fileID){
-	Dictionary info;
+// Gets the current state of a workshop item on this client.
+int Steam::getItemState(int publishedFileID){
 	if(SteamUGC() == NULL){
-		info["ret"] = false;
+		return 0;
 	}
-	uint64 downloaded = 0;
+	PublishedFileId_t fileID = (int)publishedFileID;
+	return SteamUGC()->GetItemState(fileID);
+}
+// Gets the progress of an item update.
+Dictionary Steam::getItemUpdateProgress(uint64_t updateHandle){
+	Dictionary updateProgress;
+	if(SteamUGC() == NULL){
+		return updateProgress;
+	}
+	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
+	uint64 processed = 0;
 	uint64 total = 0;
-	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)fileID, &downloaded, &total);
-	if(info["ret"]){
-		info["downloaded"] = uint64_t(downloaded);
-		info["total"] = uint64_t(total);
+	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress(handle, &processed, &total);
+	updateProgress["status"] = status;
+	updateProgress["processed"] = uint64_t(processed);
+	updateProgress["total"] = uint64_t(total);
+	return updateProgress;
+}
+// Gets the total number of items the current user is subscribed to for the game or application.
+uint32 Steam::getNumSubscribedItems(){
+	if(SteamUser() == NULL){
+		return 0;
 	}
-	return info;
+	return SteamUGC()->GetNumSubscribedItems();
+}
+// Retrieve the details of an additional preview associated with an individual workshop item after receiving a querying UGC call result.
+Dictionary Steam::getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex){
+	Dictionary preview;
+	if(SteamUGC() == NULL){
+		return preview;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	char *urlOrVideoID = new char[256];
+	char *originalFilename = new char[256];
+	EItemPreviewType previewType;
+	bool success = SteamUGC()->GetQueryUGCAdditionalPreview(handle, index, previewIndex, (char*)urlOrVideoID, 256, (char*)originalFilename, 256, &previewType);
+	if(success){
+		preview["success"] = success;
+		preview["handle"] = handle;
+		preview["index"] = index;
+		preview["preview"] = previewIndex;
+		preview["urlOrVideo"] = urlOrVideoID;
+		preview["filename"] = originalFilename;
+		preview["type"] = previewType;
+	}
+	return preview;
+}
+// Retrieve the ids of any child items of an individual workshop item after receiving a querying UGC call result. These items can either be a part of a collection or some other dependency (see AddDependency).
+Dictionary Steam::getQueryUGCChildren(uint64_t queryHandle, uint32 index){
+	Dictionary children;
+	if(SteamUGC() == NULL){
+		return children;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	PublishedFileId_t *child = new PublishedFileId_t[100];
+	bool success = SteamUGC()->GetQueryUGCChildren(handle, index, (PublishedFileId_t*)child, 100);
+	if(success){
+		children["success"] = success;
+		children["handle"] = handle;
+		children["index"] = index;
+		children["children"] = child;
+	}
+	return children;
+}
+// Retrieve the details of a key-value tag associated with an individual workshop item after receiving a querying UGC call result.
+Dictionary Steam::getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex){
+	Dictionary tag;
+	if(SteamUGC() == NULL){
+		return tag;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	char *key = new char[256];
+	char *value = new char[256];
+	bool success = SteamUGC()->GetQueryUGCKeyValueTag(handle, index, keyValueTagIndex, (char*)key, 256, (char*)value, 256);
+	if(success){
+		tag["success"] = success;
+		tag["handle"] = handle;
+		tag["index"] = index;
+		tag["tag"] = keyValueTagIndex;
+		tag["key"] = key;
+		tag["value"] = value;
+	}
+	return tag;
+}
+// Retrieve the developer set metadata of an individual workshop item after receiving a querying UGC call result.
+String Steam::getQueryUGCMetadata(uint64_t queryHandle, uint32 index){
+	if(SteamUGC() == NULL){
+		return "";
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	char *metadata = new char[256];
+	bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)metadata, 256);
+	if(success){
+		String ugcMetadata = metadata;
+		return ugcMetadata;
+	}
+	return "";
+}
+// Retrieve the number of additional previews of an individual workshop item after receiving a querying UGC call result.
+uint32 Steam::getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index){
+	if(SteamUser() == NULL){
+		return 0;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->GetQueryUGCNumAdditionalPreviews(handle, index);
+}
+// Retrieve the number of key-value tags of an individual workshop item after receiving a querying UGC call result.
+uint32 Steam::getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index){
+	if(SteamUser() == NULL){
+		return 0;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->GetQueryUGCNumKeyValueTags(handle, index);
+}
+// Retrieve the URL to the preview image of an individual workshop item after receiving a querying UGC call result.
+String Steam::getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index){
+	if(SteamUGC() == NULL){
+		return "";
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	char *url = new char[256];
+	bool success = SteamUGC()->GetQueryUGCPreviewURL(handle, index, (char*)url, 256);
+	if(success){
+		String previewURL = url;
+		return previewURL;
+	}
+	return "";
+}
+// Retrieve the details of an individual workshop item after receiving a querying UGC call result.
+//bool getQueryUGCResult(uint64_t queryHandle, uint32 index){
+//}
+// Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
+Dictionary Steam::getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType, uint64 statValue){
+	Dictionary ugcStat;
+	if(SteamUGC() == NULL){
+		return ugcStat;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	EItemStatistic type;
+		if(statType == 0){
+		type = k_EItemStatistic_NumSubscriptions;
+	}
+	else if(statType == 1){
+		type = k_EItemStatistic_NumFavorites;
+	}
+	else if(statType == 2){
+		type = k_EItemStatistic_NumFollowers;
+	}
+	else if(statType == 3){
+		type = k_EItemStatistic_NumUniqueSubscriptions;
+	}
+	else if(statType == 4){
+		type = k_EItemStatistic_NumUniqueFavorites;
+	}
+	else if(statType == 5){
+		type = k_EItemStatistic_NumUniqueFollowers;
+	}
+	else if(statType == 6){
+		type = k_EItemStatistic_NumUniqueWebsiteViews;
+	}
+	else if(statType == 7){
+		type = k_EItemStatistic_ReportScore;
+	}
+	else if(statType == 8){
+		type = k_EItemStatistic_NumSecondsPlayed;
+	}
+	else if(statType == 9){
+		type = k_EItemStatistic_NumPlaytimeSessions;
+	}
+	else if(statType == 10){
+		type = k_EItemStatistic_NumComments;
+	}
+	else if(statType == 11){
+		type = k_EItemStatistic_NumSecondsPlayedDuringTimePeriod;
+	}
+	else{
+		type = k_EItemStatistic_NumPlaytimeSessionsDuringTimePeriod;
+	}
+	uint64 value;
+	bool success = SteamUGC()->GetQueryUGCStatistic(handle, index, type, &value);
+	if(success){
+		ugcStat["success"] = success;
+		ugcStat["handle"] = handle;
+		ugcStat["index"] = index;
+		ugcStat["type"] = type;
+		ugcStat["value"] = value;
+	}	
+	return ugcStat;
+}
+// Gets a list of all of the items the current user is subscribed to for the current game.
+Array Steam::getSubscribedItems(){
+	if(SteamUGC() == NULL){
+		return Array();
+	}
+	Array subscribed;
+	int numItems = SteamUGC()->GetNumSubscribedItems();
+	PublishedFileId_t *items = new PublishedFileId_t[numItems];
+	int itemList = SteamUGC()->GetSubscribedItems(items, numItems);
+	for(int i = 0; i < itemList; i++){
+		subscribed.append((uint64_t)items[i]);
+	}
+	delete items;
+	return subscribed;
+}
+// Gets the users vote status on a workshop item.
+void Steam::getUserItemVote(int publishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->GetUserItemVote(fileID);
+	callResultGetUserItemVote.Set(apiCall, this, &Steam::_get_item_vote_result);
+}
+// Releases a UGC query handle when you are done with it to free up memory.
+bool Steam::releaseQueryUGCRequest(uint64_t queryHandle){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->ReleaseQueryUGCRequest(handle);
+}
+// Removes the dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
+void Steam::removeAppDependency(int publishedFileID, int appID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	AppId_t app = (int)appID;
+	SteamAPICall_t apiCall = SteamUGC()->RemoveAppDependency(fileID, app);
+	callResultRemoveAppDependency.Set(apiCall, this, &Steam::_remove_app_dependency_result);
+}
+// Removes a workshop item as a dependency from the specified item.
+void Steam::removeDependency(int publishedFileID, int childPublishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	PublishedFileId_t childID = (int)childPublishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->RemoveDependency(fileID, childID);
+	callResultRemoveUGCDependency.Set(apiCall, this, &Steam::_remove_ugc_dependency_result);
+}
+// Removes a workshop item from the users favorites list.
+void Steam::removeItemFromFavorites(int appID, int publishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	AppId_t app = (int)appID;
+	SteamAPICall_t apiCall = SteamUGC()->RemoveItemFromFavorites(app, fileID);
+	callResultFavoriteItemListChanged.Set(apiCall, this, &Steam::_user_favorite_items_list_changed);
+
+}
+// Removes an existing key value tag from an item.
+bool Steam::removeItemKeyValueTags(uint64_t updateHandle, const String& key){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->RemoveItemKeyValueTags(handle, key.utf8().get_data());
+}
+// Removes an existing preview from an item.
+bool Steam::removeItemPreview(uint64_t updateHandle, uint32 index){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->RemoveItemPreview(handle, index);
+}
+// Send a UGC query to Steam.
+void Steam::sendQueryUGCRequest(uint64_t updateHandle){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	SteamAPICall_t apiCall = SteamUGC()->SendQueryUGCRequest(handle);
+	callResultUGCQueryCompleted.Set(apiCall, this, &Steam::_ugc_query_completed);
+}
+// Sets whether results will be returned from the cache for the specific period of time on a pending UGC Query.
+bool Steam::setAllowCachedResponse(uint64_t updateHandle, uint32 maxAgeSeconds){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetAllowCachedResponse(handle, maxAgeSeconds);
+}
+// Sets to only return items that have a specific filename on a pending UGC Query.
+bool Steam::setCloudFileNameFilter(uint64_t updateHandle, const String& matchCloudFilename){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetCloudFileNameFilter(handle, matchCloudFilename.utf8().get_data());
+}
+// Sets the folder that will be stored as the content for an item.
+bool Steam::setItemContent(uint64_t updateHandle, const String& contentFolder){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemContent(handle, contentFolder.utf8().get_data());
+}
+// Sets a new description for an item.
+bool Steam::setItemDescription(uint64_t updateHandle, const String& description){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	if (description.length() > 255){
+		printf("Description cannot have more than %ld ASCII characters. Description not set.", 255);
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemDescription(handle, description.utf8().get_data());
+}
+// Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.
+bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	if (metadata.length() > 255){
+		printf("Metadata cannot have more than %ld ASCII characters. Metadata not set.", 255);
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
+}
+// Sets the primary preview image for the item.
+bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemPreview(handle, previewFile.utf8().get_data());
+}
+// Sets arbitrary developer specified tags on an item.
+//bool Steam::setItemTags(uint64_t updateHandle, Array tagArray){
+//	if(SteamUGC() == NULL){
+//		return false;
+//	}
+//	UGCUpdateHandle_t handle = uint64(updateHandle);
+//	SteamParamStringArray_t *tags = {tagArray};
+//	return SteamUGC()->SetItemTags(handle, tags);
+//}
+// Sets a new title for an item.
+bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	if (title.length() > 255){
+		printf("Title cannot have more than %ld ASCII characters. Title not set.", 255);
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemTitle(handle, title.utf8().get_data());
+}
+// Sets the language of the title and description that will be set in this item update.
+bool Steam::setItemUpdateLanguage(uint64_t updateHandle, const String& language){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->SetItemUpdateLanguage(handle, language.utf8().get_data());
+}
+// Sets the visibility of an item.
+bool Steam::setItemVisibility(uint64_t updateHandle, int visibility){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	ERemoteStoragePublishedFileVisibility itemVisibility;
+	// Convert the visibility type back over.
+	if(visibility == UGC_FILE_VISIBLE_PUBLIC){
+		itemVisibility = k_ERemoteStoragePublishedFileVisibilityPublic;
+	}
+	else if(visibility == UGC_FILE_VISIBLE_FRIENDS){
+		itemVisibility = k_ERemoteStoragePublishedFileVisibilityFriendsOnly;
+	}
+	else{
+		itemVisibility = k_ERemoteStoragePublishedFileVisibilityPrivate;
+	}
+	return SteamUGC()->SetItemVisibility(handle, itemVisibility);
+}
+// Sets the language to return the title and description in for the items on a pending UGC Query.
+bool Steam::setLanguage(uint64_t queryHandle, const String& language){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetLanguage(handle, language.utf8().get_data());
+}
+// Sets whether workshop items will be returned if they have one or more matching tag, or if all tags need to match on a pending UGC Query.
+bool Steam::setMatchAnyTag(uint64_t queryHandle, bool matchAnyTag){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetMatchAnyTag(handle, matchAnyTag);
+}
+// Sets whether the order of the results will be updated based on the rank of items over a number of days on a pending UGC Query.
+bool Steam::setRankedByTrendDays(uint64_t queryHandle, uint32 days){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetRankedByTrendDays(handle, days);
+}
+// Sets whether to return any additional images/videos attached to the items on a pending UGC Query.
+bool Steam::setReturnAdditionalPreviews(uint64_t queryHandle, bool returnAdditionalPreviews){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnAdditionalPreviews(handle, returnAdditionalPreviews);
+}
+// Sets whether to return the IDs of the child items of the items on a pending UGC Query.
+bool Steam::setReturnChildren(uint64_t queryHandle, bool returnChildren){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnChildren(handle, returnChildren);
+}
+// Sets whether to return any key-value tags for the items on a pending UGC Query.
+bool Steam::setReturnKeyValueTags(uint64_t queryHandle, bool returnKeyValueTags){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnKeyValueTags(handle, returnKeyValueTags);
+}
+// Sets whether to return the full description for the items on a pending UGC Query.
+bool Steam::setReturnLongDescription(uint64_t queryHandle, bool returnLongDescription){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnLongDescription(handle, returnLongDescription);
+}
+// Sets whether to return the developer specified metadata for the items on a pending UGC Query.
+bool Steam::setReturnMetadata(uint64_t queryHandle, bool returnMetadata){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnMetadata(handle, returnMetadata);
+}
+// Sets whether to only return IDs instead of all the details on a pending UGC Query.
+bool Steam::setReturnOnlyIDs(uint64_t queryHandle, bool returnOnlyIDs){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnOnlyIDs(handle, returnOnlyIDs);
+}
+// Sets whether to return the the playtime stats on a pending UGC Query.
+bool Steam::setReturnPlaytimeStats(uint64_t queryHandle, uint32 days){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnPlaytimeStats(handle, days);
+}
+// Sets whether to only return the the total number of matching items on a pending UGC Query.
+bool Steam::setReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetReturnTotalOnly(handle, returnTotalOnly);
+}
+// Sets a string to that items need to match in either the title or the description on a pending UGC Query.
+bool Steam::setSearchText(uint64_t queryHandle, const String& searchText){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	return SteamUGC()->SetSearchText(handle, searchText.utf8().get_data());
+}
+// Allows the user to rate a workshop item up or down.
+void Steam::setUserItemVote(int publishedFileID, bool voteUp){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->SetUserItemVote(fileID, voteUp);
+	callResultSetUserItemVote.Set(apiCall, this, &Steam::_set_user_item_vote);
+}
+// Starts the item update process.
+uint64_t Steam::startItemUpdate(int appID, int publishedFileID){
+	if(SteamUGC() == NULL){
+		return 0;
+	}
+	AppId_t app = (int)appID;
+	PublishedFileId_t fileID = (int)publishedFileID;
+	return SteamUGC()->StartItemUpdate(app, fileID);
+}
+// Start tracking playtime on a set of workshop items.
+void Steam::startPlaytimeTracking(Array publishedFileIDs){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	uint32 fileCount = publishedFileIDs.size();
+	if(fileCount == 0){
+		return;
+	}
+	PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
+	for(int i = 0; i < fileCount; i++){
+		fileIDs[i] = (uint64_t)publishedFileIDs[i];
+	}
+	SteamAPICall_t apiCall = SteamUGC()->StartPlaytimeTracking(fileIDs, fileCount);
+	callResultStartPlaytimeTracking.Set(apiCall, this, &Steam::_start_playtime_tracking);
+}
+// Stop tracking playtime on a set of workshop items.
+void Steam::stopPlaytimeTracking(Array publishedFileIDs){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	uint32 fileCount = publishedFileIDs.size();
+	if(fileCount == 0){
+		return;
+	}
+	PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
+	Array files;
+	for(int i = 0; i < fileCount; i++){
+		fileIDs[i] = (uint64_t)publishedFileIDs[i];
+	}
+	SteamAPICall_t apiCall = SteamUGC()->StopPlaytimeTracking(fileIDs, fileCount);
+	callResultStopPlaytimeTracking.Set(apiCall, this, &Steam::_stop_playtime_tracking);
+}
+// Stop tracking playtime of all workshop items.
+void Steam::stopPlaytimeTrackingForAllItems(){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	SteamAPICall_t apiCall = SteamUGC()->StopPlaytimeTrackingForAllItems();
+	callResultStopPlaytimeTracking.Set(apiCall, this, &Steam::_stop_playtime_tracking);
+}
+// Returns any app dependencies that are associated with the given item.
+void Steam::getAppDependencies(int publishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->GetAppDependencies(fileID);
+	callResultGetAppDependencies.Set(apiCall, this, &Steam::_get_app_dependencies_result);
+}
+// Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.
+void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	SteamAPICall_t apiCall = SteamUGC()->SubmitItemUpdate(handle, changeNote.utf8().get_data());
+	callResultItemUpdate.Set(apiCall, this, &Steam::_item_updated);
+}
+// Subscribe to a workshop item. It will be downloaded and installed as soon as possible.
+void Steam::subscribeItem(int publishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->SubscribeItem(fileID);
+	callResultSubscribeItem.Set(apiCall, this, &Steam::_subscribe_item);
+}
+// SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.
+void Steam::suspendDownloads(bool suspend){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	SteamUGC()->SuspendDownloads(suspend);
+}
+// Unsubscribe from a workshop item. This will result in the item being removed after the game quits.
+void Steam::unsubscribeItem(int publishedFileID){
+	if(SteamUGC() == NULL){
+		return;
+	}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	SteamAPICall_t apiCall = SteamUGC()->UnsubscribeItem(fileID);
+	callResultUnsubscribeItem.Set(apiCall, this, &Steam::_unsubscribe_item);
+}
+// Updates an existing additional preview file for the item.
+bool Steam::updateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->UpdateItemPreviewFile(handle, index, previewFile.utf8().get_data());
+}
+// Updates an additional video preview from YouTube for the item.
+bool Steam::updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	return SteamUGC()->UpdateItemPreviewVideo(handle, index, videoID.utf8().get_data());
 }
 
 /////////////////////////////////////////////////
@@ -3853,24 +4753,78 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("writeScreenshot", &Steam::writeScreenshot);
 	
 	// UGC Bind Methods ////////////////////
+	ClassDB::bind_method("addAppDependency", &Steam::addAppDependency);
+	ClassDB::bind_method("addDependency", &Steam::addDependency);
+	ClassDB::bind_method("addExcludedTag", &Steam::addExcludedTag);
+	ClassDB::bind_method("addItemKeyValueTag", &Steam::addItemKeyValueTag);
+	ClassDB::bind_method("addItemPreviewFile", &Steam::addItemPreviewFile);
+	ClassDB::bind_method("addItemPreviewVideo", &Steam::addItemPreviewVideo);
+	ClassDB::bind_method("addItemToFavorite", &Steam::addItemToFavorite);
+	ClassDB::bind_method("addRequiredKeyValueTag", &Steam::addRequiredKeyValueTag);
+	ClassDB::bind_method("addRequiredTag", &Steam::addRequiredTag);
+	ClassDB::bind_method("initWorkshopForGameServer", &Steam::initWorkshopForGameServer);
+	ClassDB::bind_method("createItem", &Steam::createItem);
+	ClassDB::bind_method("createQueryAllUGCRequest", &Steam::createQueryAllUGCRequest);
+//	ClassDB::bind_method("createQueryUGCDetailsRequest", &Steam::createQueryUGCDetailsRequest);
+//	ClassDB::bind_method("createQueryUserUGCRequest", &Steam::createQueryUserUGCRequest);
+	ClassDB::bind_method("deleteItem", &Steam::deleteItem);
 	ClassDB::bind_method("downloadItem", &Steam::downloadItem);
-	ClassDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
-	ClassDB::bind_method("startItemUpdate", &Steam::startItemUpdate);
+	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
+	ClassDB::bind_method("getItemInstallInfo", &Steam::getItemInstallInfo);
 	ClassDB::bind_method("getItemState", &Steam::getItemState);
 	ClassDB::bind_method("getItemUpdateProgress", &Steam::getItemUpdateProgress);
-	ClassDB::bind_method("createItem", &Steam::createItem);
-	ClassDB::bind_method("setItemTitle", &Steam::setItemTitle);
-	ClassDB::bind_method("setItemDescription", &Steam::setItemDescription);
-	ClassDB::bind_method("setItemUpdateLanguage", &Steam::setItemUpdateLanguage);
-	ClassDB::bind_method("setItemMetadata", &Steam::setItemMetadata);
-	ClassDB::bind_method("setItemVisibility", &Steam::setItemVisibility);
-//	ClassDB::bind_method("setItemTags", &Steam::setItemTags);
-	ClassDB::bind_method("setItemContent", &Steam::setItemContent);
-	ClassDB::bind_method("setItemPreview", &Steam::setItemPreview);
-	ClassDB::bind_method("submitItemUpdate", &Steam::submitItemUpdate);
 	ClassDB::bind_method("getSubscribedItems", &Steam::getSubscribedItems);
-	ClassDB::bind_method("getItemInstallInfo", &Steam::getItemInstallInfo);
-	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
+	ClassDB::bind_method("getQueryUGCAdditionalPreview", &Steam::getQueryUGCAdditionalPreview);
+	ClassDB::bind_method("getQueryUGCChildren", &Steam::getQueryUGCChildren);
+	ClassDB::bind_method("getQueryUGCKeyValueTag", &Steam::getQueryUGCKeyValueTag);
+	ClassDB::bind_method("getQueryUGCMetadata", &Steam::getQueryUGCMetadata);
+	ClassDB::bind_method("getQueryUGCNumAdditionalPreviews", &Steam::getQueryUGCNumAdditionalPreviews);
+	ClassDB::bind_method("getQueryUGCNumKeyValueTags", &Steam::getQueryUGCNumKeyValueTags);
+	ClassDB::bind_method("getQueryUGCPreviewURL", &Steam::getQueryUGCPreviewURL);
+//	ClassDB::bind_method("getQueryUGCResult", &Steam::getQueryUGCResult);
+	ClassDB::bind_method("getQueryUGCStatistic", &Steam::getQueryUGCStatistic);
+	ClassDB::bind_method("getUserItemVote", &Steam::getUserItemVote);
+	ClassDB::bind_method("releaseQueryUGCRequest", &Steam::releaseQueryUGCRequest);
+	ClassDB::bind_method("removeAppDependency", &Steam::removeAppDependency);
+	ClassDB::bind_method("removeDependency", &Steam::removeDependency);
+	ClassDB::bind_method("removeItemFromFavorites", &Steam::removeItemFromFavorites);
+	ClassDB::bind_method("removeItemKeyValueTags", &Steam::removeItemKeyValueTags);
+	ClassDB::bind_method("removeItemPreview", &Steam::removeItemPreview);
+	ClassDB::bind_method("sendQueryUGCRequest", &Steam::sendQueryUGCRequest);
+	ClassDB::bind_method("setAllowCachedResponse", &Steam::setAllowCachedResponse);
+	ClassDB::bind_method("setCloudFileNameFilter", &Steam::setCloudFileNameFilter);
+	ClassDB::bind_method("setItemContent", &Steam::setItemContent);
+	ClassDB::bind_method("setItemDescription", &Steam::setItemDescription);
+	ClassDB::bind_method("setItemMetadata", &Steam::setItemMetadata);
+	ClassDB::bind_method("setItemPreview", &Steam::setItemPreview);
+//	ClassDB::bind_method("setItemTags", &Steam::setItemTags);
+	ClassDB::bind_method("setItemTitle", &Steam::setItemTitle);
+	ClassDB::bind_method("setItemUpdateLanguage", &Steam::setItemUpdateLanguage);
+	ClassDB::bind_method("setItemVisibility", &Steam::setItemVisibility);
+	ClassDB::bind_method("setLanguage", &Steam::setLanguage);
+	ClassDB::bind_method("setMatchAnyTag", &Steam::setMatchAnyTag);
+	ClassDB::bind_method("setRankedByTrendDays", &Steam::setRankedByTrendDays);
+	ClassDB::bind_method("setReturnAdditionalPreviews", &Steam::setReturnAdditionalPreviews);
+	ClassDB::bind_method("setReturnChildren", &Steam::setReturnChildren);
+	ClassDB::bind_method("setReturnKeyValueTags", &Steam::setReturnKeyValueTags);
+	ClassDB::bind_method("setReturnLongDescription", &Steam::setReturnLongDescription);
+	ClassDB::bind_method("setReturnMetadata", &Steam::setReturnMetadata);
+	ClassDB::bind_method("setReturnOnlyIDs", &Steam::setReturnOnlyIDs);
+	ClassDB::bind_method("setReturnPlaytimeStats", &Steam::setReturnPlaytimeStats);
+	ClassDB::bind_method("setReturnTotalOnly", &Steam::setReturnTotalOnly);
+	ClassDB::bind_method("setSearchText", &Steam::setSearchText);
+	ClassDB::bind_method("setUserItemVote", &Steam::setUserItemVote);
+	ClassDB::bind_method("startItemUpdate", &Steam::startItemUpdate);
+	ClassDB::bind_method("startPlaytimeTracking", &Steam::startPlaytimeTracking);
+	ClassDB::bind_method("stopPlaytimeTracking", &Steam::stopPlaytimeTracking);
+	ClassDB::bind_method("stopPlaytimeTrackingForAllItems", &Steam::stopPlaytimeTrackingForAllItems);
+	ClassDB::bind_method("getAppDependencies", &Steam::getAppDependencies);
+	ClassDB::bind_method("submitItemUpdate", &Steam::submitItemUpdate);
+	ClassDB::bind_method("subscribeItem", &Steam::subscribeItem);
+	ClassDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
+	ClassDB::bind_method("unsubscribeItem", &Steam::unsubscribeItem);
+	ClassDB::bind_method("updateItemPreviewFile", &Steam::updateItemPreviewFile);
+	ClassDB::bind_method("updateItemPreviewVideo", &Steam::updateItemPreviewVideo);
 
 	// User Bind Methods ////////////////////////
 	ClassDB::bind_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
@@ -3998,14 +4952,31 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("remote_play_session_connected"));
 	ADD_SIGNAL(MethodInfo("remote_play_session_disconnected"));
 
+	// Remote Storage Signals ///////////////////
+	ADD_SIGNAL(MethodInfo("_unsubscribe_item"));
+	ADD_SIGNAL(MethodInfo("_subscribe_item"));
+
 	// Screenshot Signals ///////////////////////
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("screenshot_requested"));
 
 	// UGC Signals //////////////////////////////
+	ADD_SIGNAL(MethodInfo("add_app_dependency_result"));
+	ADD_SIGNAL(MethodInfo("add_ugc_dependency_result"));
 	ADD_SIGNAL(MethodInfo("item_created"));
+	ADD_SIGNAL(MethodInfo("item_downloaded"));
+	ADD_SIGNAL(MethodInfo("get_app_dependencies_result"));
+	ADD_SIGNAL(MethodInfo("item_deleted"));
+	ADD_SIGNAL(MethodInfo("get_item_vote_result"));
 	ADD_SIGNAL(MethodInfo("item_installed"));
+	ADD_SIGNAL(MethodInfo("remove_app_dependency_result"));
+	ADD_SIGNAL(MethodInfo("remove_ugc_dependency_result"));
+	ADD_SIGNAL(MethodInfo("set_user_item_vote"));
+	ADD_SIGNAL(MethodInfo("start_playtime_tracking"));
+	ADD_SIGNAL(MethodInfo("ugc_query_completed"));
+	ADD_SIGNAL(MethodInfo("stop_playtime_tracking"));
 	ADD_SIGNAL(MethodInfo("item_updated"));
+	ADD_SIGNAL(MethodInfo("user_favorite_items_list_changed"));
 
 	// User Signals /////////////////////////////
 	ADD_SIGNAL(MethodInfo("client_game_server_deny"));
@@ -4189,10 +5160,113 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_RESERVED2);
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);
 
-	// UGC Item Characters //////////////////////
-	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);			// 128
-	BIND_CONSTANT(UGC_MAX_DESC_CHARS);			// 8000
-	BIND_CONSTANT(UGC_MAX_METADATA_CHARS);		// 5000
+	// UGC Preview Types ////////////////////////
+	BIND_CONSTANT(UGC_PREVIEW_TYPE_IMAGE);								//0
+	BIND_CONSTANT(UGC_PREVIEW_TYPE_YOUTUBE);							//1
+	BIND_CONSTANT(UGC_PREVIEW_TYPE_SKETCHFAB);							//2
+	BIND_CONSTANT(UGC_PREVIEW_TYPE_ENVIRONMENT_MAP_HORIZONTALCROSS);	//3
+	BIND_CONSTANT(UGC_PREVIEW_TYPE_ENVIRONMENT_MAP_LATLONG);			//4
+	BIND_CONSTANT(UGC_PREVIEW_TYPE_RESERVED_MAX);						//255
+
+	// UGC Item States //////////////////////////
+	BIND_CONSTANT(UGC_STATE_NONE);				// Not tracked on client.
+	BIND_CONSTANT(UGC_STATE_SUBSCRIBED);		// Current user is subscribed to this item, not just cached.
+	BIND_CONSTANT(UGC_STATE_LEGACY);			// Was created with ISteamRemoteStorage.
+	BIND_CONSTANT(UGC_STATE_INSTALLED);			// Is installed and usable (but maybe out of date).
+	BIND_CONSTANT(UGC_STATE_UPDATE);			// Needs an update, either because it's not installed yet or creator updated content.
+	BIND_CONSTANT(UGC_STATE_DOWNLOADING);		// Update is currently downloading.
+	BIND_CONSTANT(UGC_STATE_PENDING);			// DownloadItem() was called for this item, content isn't available until DownloadItemResult_t is fired.
+
+	// UGC Statistics ///////////////////////////
+	BIND_CONSTANT(UGC_STATS_SUBSCRIPTIONS);						//0
+	BIND_CONSTANT(UGC_STATS_FAVORITES);							//1
+	BIND_CONSTANT(UGC_STATS_FOLLOWERS);							//2
+	BIND_CONSTANT(UGC_STATS_UNIQUE_SUBSCRIPTIONS);				//3
+	BIND_CONSTANT(UGC_STATS_UNIQUE_FAVORITES);					//4
+	BIND_CONSTANT(UGC_STATS_UNIQUED_FOLLOWERS);					//5
+	BIND_CONSTANT(UGC_STATS_UNIQUE_VIEWS);						//6
+	BIND_CONSTANT(UGC_STATS_SCORE);								//7
+	BIND_CONSTANT(UGC_STATS_SECONDS_PLAYED);					//8
+	BIND_CONSTANT(UGC_STATS_PLAYTIME_SESSIONS);					//9
+	BIND_CONSTANT(UGC_STATS_COMMENTS);							//10
+	BIND_CONSTANT(UGC_STATS_SECONDS_PLAYED_DURING_PERIOD);		//11
+	BIND_CONSTANT(UGC_STATS_PLAYTIME_SESSIONS_DURING_PERIOD);	//12
+
+	// UGC Item Update Status ///////////////////
+	BIND_CONSTANT(UGC_STATUS_INVALID);				// Update handle was invalid, job might be finished, listen to SubmitItemUpdateResult_t.
+	BIND_CONSTANT(UGC_STATUS_PREPARING_CONFIG);		// Update is processing configuration data.
+	BIND_CONSTANT(UGC_STATUS_PREPARING_CONTENT);	// Update is reading and processing content files.
+	BIND_CONSTANT(UGC_STATUS_UPLOADING_CONTENT);	// Update is uploading content changes to Steam.
+	BIND_CONSTANT(UGC_STATUS_UPLOADING_PREVIEW);	// Update is uploading new preview file image.
+	BIND_CONSTANT(UGC_STATUS_COMMITTING_CHANGES);	// Update is committing all changes.
+
+	// UGC Matching Type ////////////////////////
+	BIND_CONSTANT(UGC_MATCH_ITEMS);					//0
+	BIND_CONSTANT(UGC_MATCH_ITEMS_MTX);				//1
+	BIND_CONSTANT(UGC_MATCH_ITEMS_READYTOUSE);		//2
+	BIND_CONSTANT(UGC_MATCH_COLLECTIONS);			//3
+	BIND_CONSTANT(UGC_MATCH_ARTWORK);				//4
+	BIND_CONSTANT(UGC_MATCH_VIDEOS);				//5
+	BIND_CONSTANT(UGC_MATCH_SCREENSHOTS);			//6
+	BIND_CONSTANT(UGC_MATCH_ALLGUIDES);				//7
+	BIND_CONSTANT(UGC_MATCH_WEBGUIDES);				//8
+	BIND_CONSTANT(UGC_MATCH_INTEGRATEDGUIDES);		//9
+	BIND_CONSTANT(UGC_MATCH_USABLE_INGAME);			//10
+	BIND_CONSTANT(UGC_MATCH_CONTROLLER_BINDINGS);	//11
+	BIND_CONSTANT(UGC_MATCH_GAMEMANAGED_ITEM);		//12
+	BIND_CONSTANT(UGC_MATCH_ALL);					//0
+
+	// UGC Query ////////////////////////////////
+	BIND_CONSTANT(UGC_QUERY_RANKED_VOTE);						//0
+	BIND_CONSTANT(UGC_QUERY_RANKED_PUBLICATION_DATE);			//1
+	BIND_CONSTANT(UGC_QUERY_RANKED_ACCEPTANCE_DATE);			//2
+	BIND_CONSTANT(UGC_QUERY_RANKED_TREND);						//3
+	BIND_CONSTANT(UGC_QUERY_RANKED_FRIEND_FAVORITE);			//4
+	BIND_CONSTANT(UGC_QUERY_RANKED_FRIEND_CREATED);				//5
+	BIND_CONSTANT(UGC_QUERY_RANKED_TIMES_REPORTED);				//6
+	BIND_CONSTANT(UGC_QUERY_RANKED_FOLLOWED_USERS);				//7
+	BIND_CONSTANT(UGC_QUERY_RANKED_NOT_RATED);					//8
+	BIND_CONSTANT(UGC_QUERY_RANKED_TOTAL_VOTES_ASC);			//9
+	BIND_CONSTANT(UGC_QUERY_RANKED_VOTES_UP);					//10
+	BIND_CONSTANT(UGC_QUERY_RANKED_TEXT_SEARCH);				//11
+	BIND_CONSTANT(UGC_QUERY_RANKED_UNIQUE_SUBSCRIPTIONS);		//12
+	BIND_CONSTANT(UGC_QUERY_RANKED_PLAYTIME_TREND);				//13
+	BIND_CONSTANT(UGC_QUERY_RANKED_TOTAL_PLAYTIME);				//14
+	BIND_CONSTANT(UGC_QUERY_RANKED_AVERAGE_PLAYTIME);			//15
+	BIND_CONSTANT(UGC_QUERY_RANKED_LIFETIME_AVERAGE_PLAYTIME);	//16
+	BIND_CONSTANT(UGC_QUERY_RANKED_PLAYTIME_SESSION);			//17
+	BIND_CONSTANT(UGC_QUERY_RANKED_LIFETIME_PLAYTIME);			//18
+
+	// UGC Lists ////////////////////////////////
+	BIND_CONSTANT(UGC_LIST_PUBLISHED);			//0
+	BIND_CONSTANT(UGC_LIST_VOTED_ON);			//1
+	BIND_CONSTANT(UGC_LIST_VOTED_UP);			//2
+	BIND_CONSTANT(UGC_LIST_VOTED_DOWN);			//3
+	BIND_CONSTANT(UGC_LIST_WILL_VOTE_LATER);	//4
+	BIND_CONSTANT(UGC_LIST_FAVORITED);			//5
+	BIND_CONSTANT(UGC_LIST_SUBSCRIBED);			//6
+	BIND_CONSTANT(UGC_LIST_USED_OR_PLAYED);		//7
+	BIND_CONSTANT(UGC_LIST_FOLLOWED);			//8
+
+	// UGC List Sort Order //////////////////////
+	BIND_CONSTANT(UGC_SORT_ORDER_CREATION_DESC);		//0
+	BIND_CONSTANT(UGC_SORT_ORDER_CREATION_ASC);			//1
+	BIND_CONSTANT(UGC_SORT_ORDER_TITLE_ASC);			//2
+	BIND_CONSTANT(UGC_SORT_ORDER_LAST_UPDATE_DESC);		//3
+	BIND_CONSTANT(UGC_SORT_ORDER_SUBSCRIPTION_DESC);	//4
+	BIND_CONSTANT(UGC_SORT_ORDER_VOTE_SCORE_DESC);		//5
+	BIND_CONSTANT(UGC_SORT_ORDER_FOR_MODERATION);		//6
+
+	// UGC General Constants ////////////////////
+	BIND_CONSTANT(UGC_NUM_RESULTS_PER_PAGE);			//50
+	BIND_CONSTANT(UGC_DEVELOPER_METADATA_MAX);			//5000
+	BIND_CONSTANT(UGC_QUERY_HANDLE_INVALID);			//0xffffffffffffffffull
+	BIND_CONSTANT(UGC_UPDATE_HANDLE_INVALID);			//0xffffffffffffffffull
+
+	// UGC Item Visibility///////////////////////
+	BIND_CONSTANT(UGC_FILE_VISIBLE_PUBLIC);
+	BIND_CONSTANT(UGC_FILE_VISIBLE_FRIENDS);
+	BIND_CONSTANT(UGC_FILE_VISIBLE_PRIVATE);
 
 	// UGC Item Types ///////////////////////////
 	BIND_CONSTANT(UGC_ITEM_COMMUNITY);				// Normal items that can be subscribed to.
@@ -4212,28 +5286,6 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_ITEM_STEAMVIDEO);				// Steam video.
 	BIND_CONSTANT(UGC_ITEM_GAMEMANAGEDITEM);		// Managed completely by the game, not the user, and not shown on the web.
 	BIND_CONSTANT(UGC_ITEM_MAX);					// Only used for enumerating.
-
-	// UGC Item States //////////////////////////
-	BIND_CONSTANT(UGC_STATE_NONE);				// Not tracked on client.
-	BIND_CONSTANT(UGC_STATE_SUBSCRIBED);		// Current user is subscribed to this item, not just cached.
-	BIND_CONSTANT(UGC_STATE_LEGACY);			// Was created with ISteamRemoteStorage.
-	BIND_CONSTANT(UGC_STATE_INSTALLED);			// Is installed and usable (but maybe out of date).
-	BIND_CONSTANT(UGC_STATE_UPDATE);			// Needs an update, either because it's not installed yet or creator updated content.
-	BIND_CONSTANT(UGC_STATE_DOWNLOADING);		// Update is currently downloading.
-	BIND_CONSTANT(UGC_STATE_PENDING);			// DownloadItem() was called for this item, content isn't available until DownloadItemResult_t is fired.
-
-	// UGC Item Visibility///////////////////////
-	BIND_CONSTANT(UGC_FILE_VISIBLE_PUBLIC);
-	BIND_CONSTANT(UGC_FILE_VISIBLE_FRIENDS);
-	BIND_CONSTANT(UGC_FILE_VISIBLE_PRIVATE);
-
-	// UGC Item Update Status ///////////////////
-	BIND_CONSTANT(STATUS_INVALID);				// Update handle was invalid, job might be finished, listen to SubmitItemUpdateResult_t.
-	BIND_CONSTANT(STATUS_PREPARING_CONFIG);		// Update is processing configuration data.
-	BIND_CONSTANT(STATUS_PREPARING_CONTENT);	// Update is reading and processing content files.
-	BIND_CONSTANT(STATUS_UPLOADING_CONTENT);	// Update is uploading content changes to Steam.
-	BIND_CONSTANT(STATUS_UPLOADING_PREVIEW);	// Update is uploading new preview file image.
-	BIND_CONSTANT(STATUS_COMMITTING_CHANGES);	// Update is committing all changes.
 
 	// Result Constants /////////////////////////
 	BIND_CONSTANT(RESULT_OK);											// 1

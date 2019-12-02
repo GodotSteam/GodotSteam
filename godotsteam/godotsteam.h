@@ -37,13 +37,23 @@ class Steam: public Object {
 			EP2P_SEND_UNRELIABLE = 0, EP2P_SEND_UNRELIABLE_NO_DELAY = 1, EP2P_SEND_RELIABLE = 2, EP2P_SEND_RELIABLE_WITH_BUFFERING = 3,
 			LOBBY_EQUAL_LESS_THAN=-2, LOBBY_LESS_THAN=-1, LOBBY_EQUAL=0, LOBBY_GREATER_THAN=1, LOBBY_EQUAL_GREATER_THAN=2, LOBBY_NOT_EQUAL=3,
 			LOBBY_DISTANCE_CLOSE=0, LOBBY_DISTANCE_DEFAULT=1, LOBBY_DISTANCE_FAR=2, LOBBY_DISTANCE_WORLDWIDE=3,
-			UGC_MAX_TITLE_CHARS=128, UGC_MAX_DESC_CHARS=8000, UGC_MAX_METADATA_CHARS=5000,
+			UGC_PREVIEW_TYPE_IMAGE=0, UGC_PREVIEW_TYPE_YOUTUBE=1, UGC_PREVIEW_TYPE_SKETCHFAB=2, UGC_PREVIEW_TYPE_ENVIRONMENT_MAP_HORIZONTALCROSS=3, UGC_PREVIEW_TYPE_ENVIRONMENT_MAP_LATLONG=4, UGC_PREVIEW_TYPE_RESERVED_MAX=255,
+			UGC_NUM_RESULTS_PER_PAGE=50, UGC_DEVELOPER_METADATA_MAX=5000, UGC_QUERY_HANDLE_INVALID=0xffffffffffffffffull, UGC_UPDATE_HANDLE_INVALID=0xffffffffffffffffull,
+			UGC_STATE_NONE=0, UGC_STATE_SUBSCRIBED=1, UGC_STATE_LEGACY=2, UGC_STATE_INSTALLED=4, UGC_STATE_UPDATE=8, UGC_STATE_DOWNLOADING=16, UGC_STATE_PENDING=32,
+			UGC_STATS_SUBSCRIPTIONS=0, UGC_STATS_FAVORITES=1, UGC_STATS_FOLLOWERS=2, UGC_STATS_UNIQUE_SUBSCRIPTIONS=3, UGC_STATS_UNIQUE_FAVORITES=4, UGC_STATS_UNIQUED_FOLLOWERS=5, UGC_STATS_UNIQUE_VIEWS=6, UGC_STATS_SCORE=7, UGC_STATS_SECONDS_PLAYED=8, UGC_STATS_PLAYTIME_SESSIONS=9,
+			UGC_STATS_COMMENTS=10, UGC_STATS_SECONDS_PLAYED_DURING_PERIOD=11, UGC_STATS_PLAYTIME_SESSIONS_DURING_PERIOD=12,
+			UGC_STATUS_INVALID=0, UGC_STATUS_PREPARING_CONFIG=1, UGC_STATUS_PREPARING_CONTENT=2, UGC_STATUS_UPLOADING_CONTENT=3, UGC_STATUS_UPLOADING_PREVIEW=4, UGC_STATUS_COMMITTING_CHANGES=5,
+			UGC_MATCH_ITEMS=0, UGC_MATCH_ITEMS_MTX=1, UGC_MATCH_ITEMS_READYTOUSE=2, UGC_MATCH_COLLECTIONS=3, UGC_MATCH_ARTWORK=4, UGC_MATCH_VIDEOS=5, UGC_MATCH_SCREENSHOTS=6, UGC_MATCH_ALLGUIDES=7, UGC_MATCH_WEBGUIDES=8, UGC_MATCH_INTEGRATEDGUIDES=9, UGC_MATCH_USABLE_INGAME=10,
+			UGC_MATCH_CONTROLLER_BINDINGS=11, UGC_MATCH_GAMEMANAGED_ITEM=12, UGC_MATCH_ALL=0,
+			UGC_QUERY_RANKED_VOTE=0, UGC_QUERY_RANKED_PUBLICATION_DATE=1, UGC_QUERY_RANKED_ACCEPTANCE_DATE=2, UGC_QUERY_RANKED_TREND=3, UGC_QUERY_RANKED_FRIEND_FAVORITE=4, UGC_QUERY_RANKED_FRIEND_CREATED=5, UGC_QUERY_RANKED_TIMES_REPORTED=6, UGC_QUERY_RANKED_FOLLOWED_USERS=7,
+			UGC_QUERY_RANKED_NOT_RATED=8, UGC_QUERY_RANKED_TOTAL_VOTES_ASC=9, UGC_QUERY_RANKED_VOTES_UP=10, UGC_QUERY_RANKED_TEXT_SEARCH=11, UGC_QUERY_RANKED_UNIQUE_SUBSCRIPTIONS=12, UGC_QUERY_RANKED_PLAYTIME_TREND=13, UGC_QUERY_RANKED_TOTAL_PLAYTIME=14, UGC_QUERY_RANKED_AVERAGE_PLAYTIME=15,
+			UGC_QUERY_RANKED_LIFETIME_AVERAGE_PLAYTIME=16, UGC_QUERY_RANKED_PLAYTIME_SESSION=17, UGC_QUERY_RANKED_LIFETIME_PLAYTIME=18,
+			UGC_LIST_PUBLISHED=0, UGC_LIST_VOTED_ON=1, UGC_LIST_VOTED_UP=2, UGC_LIST_VOTED_DOWN=3, UGC_LIST_WILL_VOTE_LATER=4, UGC_LIST_FAVORITED=5, UGC_LIST_SUBSCRIBED=6, UGC_LIST_USED_OR_PLAYED=7, UGC_LIST_FOLLOWED=8,
+			UGC_SORT_ORDER_CREATION_DESC=0, UGC_SORT_ORDER_CREATION_ASC=1, UGC_SORT_ORDER_TITLE_ASC=2, UGC_SORT_ORDER_LAST_UPDATE_DESC=3, UGC_SORT_ORDER_SUBSCRIPTION_DESC=4, UGC_SORT_ORDER_VOTE_SCORE_DESC=5, UGC_SORT_ORDER_FOR_MODERATION=6,
+			UGC_FILE_VISIBLE_PUBLIC=0, UGC_FILE_VISIBLE_FRIENDS=1, UGC_FILE_VISIBLE_PRIVATE=2,
 			UGC_ITEM_COMMUNITY=0, UGC_ITEM_MICROTRANSACTION=1, UGC_ITEM_COLLECTION=2, UGC_ITEM_ART=3, UGC_ITEM_VIDEO=4, UGC_ITEM_SCREENSHOT=5, UGC_ITEM_GAME=6, UGC_ITEM_SOFTWARE=7,
 			UGC_ITEM_CONCEPT=8, UGC_ITEM_WEBGUIDE=9, UGC_ITEM_INTEGRATEDGUIDE=10, UGC_ITEM_MERCH=11, UGC_ITEM_CONTROLLERBINDING=12, UGC_ITEM_STEAMWORKSACCESSINVITE=13,
 			UGC_ITEM_STEAMVIDEO=14, UGC_ITEM_GAMEMANAGEDITEM=15, UGC_ITEM_MAX=16,
-			UGC_STATE_NONE=0, UGC_STATE_SUBSCRIBED=1, UGC_STATE_LEGACY=2, UGC_STATE_INSTALLED=4, UGC_STATE_UPDATE=8, UGC_STATE_DOWNLOADING=16, UGC_STATE_PENDING=32,
-			UGC_FILE_VISIBLE_PUBLIC=0, UGC_FILE_VISIBLE_FRIENDS=1, UGC_FILE_VISIBLE_PRIVATE=2,
-			STATUS_INVALID=0, STATUS_PREPARING_CONFIG=1, STATUS_PREPARING_CONTENT=2, STATUS_UPLOADING_CONTENT=3, STATUS_UPLOADING_PREVIEW=4, STATUS_COMMITTING_CHANGES=5,
 			REMOTE_STORAGE_PLATFORM_NONE=0, REMOTE_STORAGE_PLATFORM_WINDOWS=(1<<0), REMOTE_STORAGE_PLATFORM_OSX=(1<<1), REMOTE_STORAGE_PLATFORM_PS3=(1<<2), 
 			REMOTE_STORAGE_PLATFORM_LINUX=(1<<3), REMOTE_STORAGE_PLATFORM_RESERVED2=(1<<4), REMOTE_STORAGE_PLATFORM_ALL=0xffffffff,
 			RESULT_OK=1, RESULT_FAIL=2, RESULT_NO_CONNECT=3, RESULT_INVALID_PASSWORD=5, RESULT_LOGGED_IN_ESLEWHERE=6, RESULT_INVALID_PROTOCAL=7, RESULT_INALID_PARAM=8, RESULT_FILE_NOT_FOUND=9, RESULT_BUSY=10, RESULT_INVALID_STATE=11, RESULT_INVALID_NAME=12,
@@ -285,35 +295,34 @@ class Steam: public Object {
 		// UGC //////////////////////////////////
 		void addAppDependency(int publishedFileID, int appID);
 		void addDependency(int publishedFileID, int childPublishedFileID);
-		bool addExcludedTag(uint64_t updateHandle, const String& tagName);
-		bool addItemKeyValueTag(uint64_t updateHandle, const String& key, const String& value);
-		bool addItemPreviewFile(uint64_t updateHandle, const String& previewFile, int type);
-		bool addItemPreviewVideo(uint64_t updateHandle, const String& videoID);
+		bool addExcludedTag(uint64_t queryHandle, const String& tagName);
+		bool addItemKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
+		bool addItemPreviewFile(uint64_t queryHandle, const String& previewFile, int type);
+		bool addItemPreviewVideo(uint64_t queryHandle, const String& videoID);
 		void addItemToFavorite(int appID, int publishedFileID);
-		bool addRequiredKeyValueTag(uint64_t updateHandle, const String& key, const String& value);
-		bool addRequiredTag(uint64_t updateHandle, const String& tagName);
-		bool initWorkshopForGameServer(int workshopDepotID, const String& folder);
+		bool addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
+		bool addRequiredTag(uint64_t queryHandle, const String& tagName);
+		bool initWorkshopForGameServer(int workshopDepotID);
 		void createItem(AppId_t appID, int fileType);
-		uint64_t createQueryAllUGCRequest(int queryType, int matchingType,int creatorID, int consumerID,uint32 page);
-		uint64_t createQueryUGCDetailsRequest(int publishedFileID, uint32 numberOfFileID);
-		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
+		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, int creatorID, int consumerID, uint32 page);
+//		uint64_t createQueryUGCDetailsRequest(int publishedFileID, uint32 numberOfFileID);
+//		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
 		void deleteItem(int publishedFileID);
 		bool downloadItem(int publishedFileID, bool highPriority);
-		bool getAppDependencies(int publishedFileID);
 		Dictionary getItemDownloadInfo(int fileID);
 		Dictionary getItemInstallInfo(int fileID);
 		int getItemState(int publishedFileID);
 		Dictionary getItemUpdateProgress(uint64_t updateHandle);
 		uint32 getNumSubscribedItems();
-		bool getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex, String& urlOrVideoID,uint32 urlSize, String& originalFilename, uint32 originalFilenameSize, int *previewType);
-		bool getQueryUGCChildren(uint64_t queryHandle, uint32 index, int publishedFileID, uint32 maxEntries);
-		bool getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex, String& key, uint32 keySize, String& value, uint32 valueSize);
-		bool getQueryUGCMetadata(uint64_t queryHandle, uint32 index, String& metadata, uint32 metadataSize);
+		Dictionary getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex);
+		Dictionary getQueryUGCChildren(uint64_t queryHandle, uint32 index);
+		Dictionary getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex);
+		String getQueryUGCMetadata(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index);
-		bool getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index, String& url, uint32 urlSize);
-		bool getQueryUGCResult(uint64_t queryHandle, uint32 index, int details);
-		bool getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType, uint64 statValue);
+		String getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index);
+//		bool getQueryUGCResult(uint64_t queryHandle, uint32 index);
+		Dictionary getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType, uint64 statValue);
 		Array getSubscribedItems();
 		void getUserItemVote(int publishedFileID);
 		bool releaseQueryUGCRequest(uint64_t queryHandle);
@@ -329,11 +338,11 @@ class Steam: public Object {
 		bool setItemDescription(uint64_t updateHandle, const String& description);
 		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
 		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
-		bool setItemTags(uint64_t updateHandle, const PoolByteArray tagArray);
+//		bool setItemTags(uint64_t updateHandle, Array tagArray);
 		bool setItemTitle(uint64_t updateHandle, const String& title);
 		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
 		bool setItemVisibility(uint64_t updateHandle, int visibility);
-		bool setLanguage(uint64_t updateHandle, const String& language);
+		bool setLanguage(uint64_t queryHandle, const String& language);
 		bool setMatchAnyTag(uint64_t queryHandle, bool matchAnyTag);
 		bool setRankedByTrendDays(uint64_t queryHandle, uint32 days);
 		bool setReturnAdditionalPreviews(uint64_t queryHandle, bool returnAdditionalPreviews);
@@ -343,20 +352,20 @@ class Steam: public Object {
 		bool setReturnMetadata(uint64_t queryHandle, bool returnMetadata);
 		bool setReturnOnlyIDs(uint64_t queryHandle, bool returnOnlyIDs);
 		bool setReturnPlaytimeStats(uint64_t queryHandle, uint32 days);
-		bool SetReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly);
-		bool SetSearchText(uint64_t queryHandle, const String& searchText);
-		void SetUserItemVote(int publishedFileID, bool voteUp);
+		bool setReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly);
+		bool setSearchText(uint64_t queryHandle, const String& searchText);
+		void setUserItemVote(int publishedFileID, bool voteUp);
 		uint64_t startItemUpdate(int appID, int fileId);
-		void StartPlaytimeTracking(int publishedFileID, uint32 numPublishedFileIDs);
-		void StopPlaytimeTracking(int publishedFileID, uint32 numPublishedFileIDs);
-		void StopPlaytimeTrackingForAllItems();
-		void GetAppDependencies(int publishedFileID);
+		void startPlaytimeTracking(Array publishedFileIDs);
+		void stopPlaytimeTracking(Array publishedFileIDs);
+		void stopPlaytimeTrackingForAllItems();
+		void getAppDependencies(int publishedFileID);
 		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
-		void SubscribeItem(int publishedFileID);
+		void subscribeItem(int publishedFileID);
 		void suspendDownloads(bool suspend);
-		void UnsubscribeItem(int publishedFileID);
-		bool UpdateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile);
-		bool UpdateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
+		void unsubscribeItem(int publishedFileID);
+		bool updateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile);
+		bool updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
 
 		// Users ////////////////////////////////
 		uint32_t getAuthSessionTicket();
@@ -506,6 +515,36 @@ class Steam: public Object {
 		};
 		Vector<LeaderboardEntry> leaderboardEntry;
 
+		// UGC item details /////////////////////
+		struct UGCDetails {
+			int publishedFileID;
+			int result;
+			int fileType;
+			int creatorAppID;
+			int consumerAppID;
+			char title[128];
+			char description[256];
+			uint64_t steamIDOwner;
+			uint32 timeCreated;
+			uint32 timeUpdated;
+			uint32 timeAddedToList;
+			int visibility;
+			bool banned;
+			bool acceptedForUse;
+			bool tagsTruncated;
+			char tags[256];
+			int file;
+			int previewFile;
+			char filename[128];
+			int32 fileSize;
+			int32 previewFileSize;
+			char url[256];
+			uint32 votesUp;
+			uint32 votesDown;
+			float score;
+			uint32 numChildren;
+		};
+		Vector<UGCDetails> ugcDetails;
 		/////////////////////////////////////////
 		// STEAM CALLBACKS //////////////////////
 		/////////////////////////////////////////
@@ -561,16 +600,47 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _remote_play_session_connected, SteamRemotePlaySessionConnected_t);
 		STEAM_CALLBACK(Steam, _remote_play_session_disconnected, SteamRemotePlaySessionDisconnected_t);
 
+		// Remote Storage callbacks /////////////
+		CCallResult<Steam, RemoteStorageUnsubscribePublishedFileResult_t> callResultUnsubscribeItem;
+		void _unsubscribe_item(RemoteStorageUnsubscribePublishedFileResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, RemoteStorageSubscribePublishedFileResult_t> callResultSubscribeItem;
+		void _subscribe_item(RemoteStorageSubscribePublishedFileResult_t *callData, bool bIOFailure);
+
 		// Screenshot callbacks /////////////////
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
 		STEAM_CALLBACK(Steam, _screenshot_requested, ScreenshotRequested_t);
 
 		// UGC callbacks ////////////////////////
+		CCallResult<Steam, AddAppDependencyResult_t> callResultAddAppDependency;
+		void _add_app_dependency_result(AddAppDependencyResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, AddUGCDependencyResult_t> callResultAddUGCDependency;
+		void _add_ugc_dependency_result(AddUGCDependencyResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, CreateItemResult_t> callResultItemCreate;
 		void _item_created(CreateItemResult_t *callData, bool bIOFailure);
+		STEAM_CALLBACK(Steam, _item_downloaded, DownloadItemResult_t);
+		CCallResult<Steam, GetAppDependenciesResult_t> callResultGetAppDependencies;
+		void _get_app_dependencies_result(GetAppDependenciesResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, DeleteItemResult_t> callResultDeleteItem;
+		void _item_deleted(DeleteItemResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, GetUserItemVoteResult_t> callResultGetUserItemVote;
+		void _get_item_vote_result(GetUserItemVoteResult_t *callData, bool bIOFailure);
 		STEAM_CALLBACK(Steam, _item_installed, ItemInstalled_t);
+		CCallResult<Steam, RemoveAppDependencyResult_t> callResultRemoveAppDependency;
+		void _remove_app_dependency_result(RemoveAppDependencyResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, RemoveUGCDependencyResult_t> callResultRemoveUGCDependency;
+		void _remove_ugc_dependency_result(RemoveUGCDependencyResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, SetUserItemVoteResult_t> callResultSetUserItemVote;
+		void _set_user_item_vote(SetUserItemVoteResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, StartPlaytimeTrackingResult_t> callResultStartPlaytimeTracking;
+		void _start_playtime_tracking(StartPlaytimeTrackingResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, SteamUGCQueryCompleted_t> callResultUGCQueryCompleted;
+		void _ugc_query_completed(SteamUGCQueryCompleted_t *callData, bool bIOFailure);
+		CCallResult<Steam, StopPlaytimeTrackingResult_t> callResultStopPlaytimeTracking;
+		void _stop_playtime_tracking(StopPlaytimeTrackingResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, SubmitItemUpdateResult_t> callResultItemUpdate;
 		void _item_updated(SubmitItemUpdateResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, UserFavoriteItemsListChanged_t> callResultFavoriteItemListChanged;
+		void _user_favorite_items_list_changed(UserFavoriteItemsListChanged_t *callData, bool bIOFailure);
 
 		// User callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _client_game_server_deny, ClientGameServerDeny_t);

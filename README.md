@@ -18,6 +18,13 @@ You can download pre-compiled versions _(currently v3.2.0)_ of this repo here: h
 **Version 3.2.0 Changes**
 - Added: all remaining UGC functions and callbacks
 - Added: all new Remote Play functions and callbacks
+- Added: remaining UGC constants and enums
+- Added: relevant Remote Storage callbacks for UGC
+- Changed: renamed some UGC enums for consistency
+- Changed: getItemDownloadInfo to give proper default return
+- Fixed: a few missing default returns
+- Removed: non-listed UGC enums
+
 
 Known Issues
 ----------
