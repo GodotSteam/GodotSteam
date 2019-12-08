@@ -242,6 +242,38 @@
 							<li>Sends along the user's Steam ID.</li>
 						</ul>
 						<header class="major">
+							<h3>Remote Play Signals</h3>
+						</header>
+						<h4>_remote_play_session_connected</h4>
+						<ul>
+							<li>Called when a player connects to a remote play session.</li>
+							<li>Emits signal <strong><em>remote_play_session_connected</em></strong>.</li>
+							<li>Sends along the connecting player's session ID.</li>
+						</ul>
+						<h4>_remote_play_session_disconnected</h4>
+						<ul>
+							<li>Called when a player disconnects from a remote play session.</li>
+							<li>Emits signal <strong><em>remote_play_session_disconnected</em></strong>.</li>
+							<li>Sends along the disconnecting player's session ID.</li>
+						</ul>
+						<header class="major">
+							<h3>Remote Storage</h3>
+						</header>
+						<h4>_unsubscribe_item</h4>
+						<ul>
+							<li>Called when a player attempts to unsubscribe from a Workshop item.</li>
+							<li>Emits signal <strong><em>unsubscribe_item</em></strong>.</li>
+							<li>Sends along the file ID as an INT and result as an INT.</li>
+							<li>Deprecated - Only used with the deprecated RemoteStorage based Workshop API.</li>
+						</ul>
+						<h4>_subscribe_item</h4>
+						<ul>
+							<li>Called when a player attempts to subscribe to a Workshop item.</li>
+							<li>Emits signal <strong><em>subscribe_item</em></strong>.</li>
+							<li>Sends along the file ID as an INT and result as an INT.</li>
+							<li>Deprecated - Only used with the deprecated RemoteStorage based Workshop API.</li>
+						</ul>
+						<header class="major">
 							<h3>Screenshot Signals</h3>
 						</header>
 						<h4>_screenshot_ready</h4>
@@ -259,11 +291,47 @@
 						<header class="major">
 							<h3>UGC Signals</h3>
 						</header>
+						<h4>_add_app_dependency_result</h4>
+						<ul>
+							<li>The result of a call to AddAppDependency.</li>
+							<li>Emits signal <strong><em>add_app_dependency_result</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and the app ID as an INT.</li>
+						</ul>
+						<h4>_add_ugc_dependency_result</h4>
+						<ul>
+							<li>The result of a call to AddDependency.</li>
+							<li>Emits signal <strong><em>add_ugc_dependency_result</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and the child ID as an INT.</li>
+						</ul>
 						<h4>_item_created</h4>
 						<ul>
 							<li>Called when a new workshop item has been created.</li>
 							<li>Emits signal <strong><em>item_created</em></strong> in response to function <strong><em>createItem</em></strong>.</li>
 							<li>Sends along the result as an INT, the file ID, and if the TOS is accepted.</li>
+						</ul>
+						<h4>_item_downloaded</h4>
+						<ul>
+							<li>Called when a workshop item has been downloaded.</li>
+							<li>Emits signal <strong><em>item_downloaded</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and the app ID as an INT.</li>
+						</ul>
+						<h4>_get_app_dependencies_result</h4>
+						<ul>
+							<li>Called when getting the app dependencies for an item.</li>
+							<li>Emits signal <strong><em>get_app_dependencies_result</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, the number of app dependencies as an INT, and the total number of app depedencies as an INT. Unclear how the last two are different.</li>
+						</ul>
+						<h4>_item_deleted</h4>
+						<ul>
+							<li>Called when an attempt at deleting an item completes.</li>
+							<li>Emits signal <strong><em>item_deleted</em></strong>.</li>
+							<li>Sends along the result as an INT and the file ID as an INT</li>
+						</ul>
+						<h4>_get_item_vote_result</h4>
+						<ul>
+							<li>Called when getting the users vote status on an item.</li>
+							<li>Emits signal <strong><em>get_item_vote_result</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, voted up as a BOOL, voted down as a BOOL, and vote skipped as a BOOL.</li>
 						</ul>
 						<h4>_item_installed</h4>
 						<ul>
@@ -271,11 +339,53 @@
 							<li>Emits signal <strong><em>item_installed</em></strong>.</li>
 							<li>Sends along the app ID and file ID.</li>
 						</ul>
+						<h4>_remove_app_dependency_result</h4>
+						<ul>
+							<li>Purpose: The result of a call to RemoveAppDependency.</li>
+							<li>Emits signal <strong><em>remove_app_dependency_result</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and the app ID as an INT.</li>
+						</ul>
+						<h4>_remove_ugc_dependency_result</h4>
+						<ul>
+							<li>Purpose: The result of a call to RemoveDependency.</li>
+							<li>Emits signal <strong><em>remove_ugc_dependency_result</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and the child ID as an INT.</li>
+						</ul>
+						<h4>_set_user_item_vote</h4>
+						<ul>
+							<li>Called when the user has voted on an item.</li>
+							<li>Emits signal <strong><em>set_user_item_vote</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and voted up as a BOOL.</li>
+						</ul>
+						<h4>_start_playtime_tracking</h4>
+						<ul>
+							<li>Called when workshop item playtime tracking has started.</li>
+							<li>Emits signal <strong><em>start_playtime_tracking</em></strong>.</li>
+							<li>Sends along the result as an INT.</li>
+						</ul>
+						<h4>_ugc_query_completed</h4>
+						<ul>
+							<li>Called when a UGC query request completes.</li>
+							<li>Emits signal <strong><em>ugc_query_completed</em></strong>.</li>
+							<li>Sends along the result as an INT, the item handle as an INT, the number of results returned as an INT, the number of total matching results as an INT, and if the query results are cached as a BOOL.</li>
+						</ul>
+						<h4>_stop_playtime_tracking</h4>
+						<ul>
+							<li>Called when workshop item playtime tracking has stopped.</li>
+							<li>Emits signal <strong><em>stop_playtime_tracking</em></strong>.</li>
+							<li>Sends along the result as an INT.</li>
+						</ul>
 						<h4>_item_updated</h4>
 						<ul>
 							<li>Called when an item update has completed.</li>
 							<li>Emits signal <strong><em>item_updated</em></strong> in response to function <strong><em>submitItemUpdate</em></strong>.</li>
 							<li>Sends along the result as an INT and if the TOS is accepted.</li>
+						</ul>
+						<h4>_user_favorite_items_list_changed</h4>
+						<ul>
+							<li>Called when the user has added or removed an item to/from their favorites.</li>
+							<li>Emits signal <strong><em>user_favorite_items_list_changed</em></strong>.</li>
+							<li>Sends along the result as an INT, the file ID as an INT, and was this an add request as a BOOL.</li>
 						</ul>
 						<header class="major">
 							<h3>User Signals</h3>

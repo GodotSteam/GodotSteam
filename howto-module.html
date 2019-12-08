@@ -69,25 +69,31 @@ godotsteam/register_types.h
 						On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
 						<p><em>Note: when creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em></p>
 						<h2>5. Copy Steamworks Redistributables</h2>
-						<p>When recompiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong> from <strong><em>sdk/redistributable_bin/</em></strong> folders to the Godot binary location (by default in the Godot source /bin/ file but you can move them to a new folder). It should look like this:</p>
+						<p>When recompiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong>, for your OS, from <strong><em>sdk/redistributable_bin/</em></strong> folders to the Godot binary location (by default in the Godot source /bin/ file but you can move them to a new folder).</p>
+						<p>Also note you must include a <strong><em>steam_appid.txt</em></strong> file with either your game's Steam ID, or the generic 480, as the only text inside. Running the game from the editor or otherwise <em>outside</em> of the Steam client will cause a crash.</p>
+						<p> With everything now in place, your working directory should look like this:</p>
 						<strong>Linux 32/64-bit</strong>
 <pre><code>
 libsteam_api.so
+steam_appid.txt
 ./godot.linux.tools.32 or ./godot.linux.tools.64
 </code></pre>
 						<strong>OSX</strong>
 <pre><code>
 libsteam_api.dylib
+steam_appid.txt
 ./godot.osx.tools.32 or ./godot.osx.tools.64
 </code></pre>
 						<strong>Windows 32-bit</strong>
 <pre><code>
 steam_api.dll
+steam_appid.txt
 ./godot.windows.tools.32.exe
 </code></pre>
 						<strong>Windows 64-bit</strong>
 <pre><code>
 steam_api64.dll
+steam_appid.txt
 ./godot.windows.tools.64.exe
 </code></pre><br/>
 						<h2>6. Done / Shipping</h2>

@@ -36,7 +36,7 @@ Steam.requestCurrentStats()
 </code></pre><br/>
 						<p>This will query Steam's server and provide a callback when that data is available. Speaking of, you need to connect that callback to a function. I usually use something like this:</p>
 <pre><code>
-Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
+Steam.connect("user_stats_received", self, "_steam_Stats_Ready", [], CONNECT_ONESHOT)
 </code></pre><br/>
 						<p>
 						For our example, here is the <strong><em>_steam_Stats_Ready</em></strong> function we listed in the connected signal:</p>
@@ -52,20 +52,16 @@ func _steam_Stats_Ready(game, result, user):
 	print("This game's ID: "+str(game))
 	print("Call result: "+str(result))
 	print("This user's Steam ID: "+str(user))
-
-	# Prevent it from loading again
-	if INIT_LOAD == false:
-		INIT_LOAD = true
 	
-		# Get achievements and pass them to variables
-		_get_Achievement("acheive1")
-		_get_Achievement("acheive2")
-		_get_Achievement("acheive3")
+	# Get achievements and pass them to variables
+	_get_Achievement("acheive1")
+	_get_Achievement("acheive2")
+	_get_Achievement("acheive3")
 
-		# Get statistics (int) and pass them to variables
-		var HIGHSCORE = Steam.getStatInt("HighScore")
-		var HEALTH = Steam.getStatInt("Health")
-		var MONEY = Steam.getStatInt("Money")
+	# Get statistics (int) and pass them to variables
+	var HIGHSCORE = Steam.getStatInt("HighScore")
+	var HEALTH = Steam.getStatInt("Health")
+	var MONEY = Steam.getStatInt("Money")
 
 # Process achievements
 func _get_Achievement(value):

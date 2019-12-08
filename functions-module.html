@@ -985,6 +985,47 @@
 							</li>
 						</ul>
 						<header class="major">
+							<h3>Remote Play</h3>
+						</header>
+						<h4>getSessionCount()</h4>
+						<ul>
+							<li>Get the number of currently connected Steam Remote Play sessions.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getSessionID( <sup>int</sup> index )</h4>
+						<ul>
+							<li>Get the currently connected Steam Remote Play session ID at the specified index.</li>
+							<li>INT.</li>
+						</ul>
+						<h4>getSessionSteamID( <sup>int</sup> sessionID )</h4>
+						<ul>
+							<li>Get the SteamID of the connected user.</li>
+							<il>INT.</il>
+						</ul>
+						<h4>getSessionClientName( <sup>int</sup> sessionID )</h4>
+						<ul>
+							<li>Get the name of the session client device.</li>
+							<li>STRING.</li>
+						</ul>
+						<h4>getSessionClientFormFactor( <sup>int</sup> sessionID )</h4>
+						<ul>
+							<li>Get the form factor of the session client device.</li>
+							<li>INT; should return one of the following:
+								<ul>
+									<li>0 - Unknown</li>
+									<li>1 - Phone</li>
+									<li>2 - Tablet</li>
+									<li>3 - Computer</li>
+									<li>4 - TV</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getSessionClientResolution( <sup>int</sup> sessionID )</h4>
+						<ul>
+							<li>Get the resolution, in pixels, of the session client device. This is set to 0x0 if the resolution is not available.</li>
+							<li>DICTIONARY; contains a BOOL for success or not, INT for resolution width, and INT for resolution height.</li>
+						</ul>
+						<header class="major">
 							<h3>Screenshots</h3>
 						</header>
 						<h4>hookScreenshots( <sup>bool</sup> hook )</h4>
@@ -1015,6 +1056,363 @@
 						<h4>setLocation( <sup>int</sup> screenshot, <sup>string</sup> location )</h4>
 						<ul>
 							<li>Sets optional metadata about a screenshot's location.</li>
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<header class="major">
+							<h3>UGC / Workshop</h3>
+						</header>
+						<h4>addAppDependency( <sup>int</sup> publishedFileID, <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies. This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.
+							<li>VOID; triggers <strong>_add_app_dependency_result</strong> callback.</li>
+						</ul>
+						<h4>addDependency( <sup>int</sup> publishedFileID, <sup>int</sup> childPublishedFileID )</h4>
+						<ul>
+							<li>Adds a workshop item as a dependency to the specified item. If the nParentPublishedFileID item is of type k_EWorkshopFileTypeCollection, than the nChildPublishedFileID is simply added to that collection. Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the m_unNumChildren member variable of the SteamUGCDetails_t struct and GetQueryUGCChildren.
+							<li>VOID; triggers <strong>_add_ugc_dependency_result</strong> callback.</li>
+						</ul>
+						<h4>addExcludedTag( <sup>int</sup> queryHandle, <sup>string</sup> tagName )</h4>
+						<ul>
+							<li>Adds a excluded tag to a pending UGC Query. This will only return UGC without the specified tag.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>addItemKeyValueTag( <sup>int</sup> updateHandle, <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Adds a key-value tag pair to an item. Keys can map to multiple different values (1-to-many relationship).
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>addItemPreviewFile( <sup>int</sup> queryHandle, <sup>string</sup> previewFile, <sup>int</sup> type )</h4>
+						<ul>
+							<li>Adds an additional preview file for the item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>addItemPreviewVideo( <sup>int</sup> queryHandle, <sup>string</sup> videoID )</h4>
+						<ul>
+							<li>Adds an additional video preview from YouTube for the item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>addItemToFavorite( <sup>int</sup> appID, <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Adds a workshop item to the users favorites list.
+							<li>VOID; triggers <strong>_user_favorite_items_list_changed</strong> callback.</li>
+						</ul>
+						<h4>addRequiredKeyValueTag( <sup>int</sup> queryHandle, <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Adds a required key-value tag to a pending UGC Query. This will only return workshop items that have a key = pKey and a value = pValue.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>addRequiredTag( <sup>int</sup> queryHandle, <sup>string</sup> tagName )</h4>
+						<ul>
+							<li>Adds a required tag to a pending UGC Query. This will only return UGC with the specified tag.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>initWorkshopForGameServer( <sup>int</sup> workshopDepotID )</h4>
+						<ul>
+							<li>Lets game servers set a specific workshop folder before issuing any UGC commands.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>createItem(AppId_t appID, <sup>int</sup> fileType )</h4>
+						<ul>
+							<li>Creates a new workshop item with no content attached yet.
+							<li>VOID; triggers <strong>_item_created</strong> callback.</li>
+						</ul>
+						<h4>createQueryAllUGCRequest( <sup>int</sup> queryType, <sup>int</sup> matchingType, <sup>int</sup> creatorID, <sup>int</sup> consumerID, <sup>int</sup> page )</h4>
+						<ul>
+							<li>Query for all matching UGC. You can use this to list all of the available UGC for your app.
+							<li>INT.</li>
+						</ul>
+						<h4>deleteItem( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Deletes the item without prompting the user.
+							<li>VOID; triggers <strong>_item_deleted</strong> callback.</li>
+						</ul>
+						<h4>downloadItem( <sup>int</sup> publishedFileID, <sup>bool</sup> highPriority )</h4>
+						<ul>
+							<li>Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received. If item is not subscribed to, it will be cached for some time. If bHighPriority is set, any other item download will be suspended and this item downloaded ASAP.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getItemDownloadInfo( <sup>int</sup> fileID )</h4>
+						<ul>
+							<li>Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
+							<li>DICTIONARY; contains the bytes downloaded and total bytes.</li>
+						</ul>
+						<h4>getItemInstallInfo( <sup>int</sup> fileID )</h4>
+						<ul>
+							<li>Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
+							<li>DICTIONARY; contains the size, folder name, folder size, and timestamp in UNIX time.</li>
+						</ul>
+						<h4>getItemState( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Gets the current state of a workshop item on this client.
+							<li>INT; should return one of the following:
+								<ul>
+									<li>0 - None</li>
+									<li>1 - Subscribed</li>
+									<li>2 - Legacy</li>
+									<li>4 - Installed</li>
+									<li>8 - Update</li>
+									<li>16 - Downloading</li>
+									<li>32 - Pending</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getItemUpdateProgress( <sup>int</sup> updateHandle )</h4>
+						<ul>
+							<li>Gets the progress of an item update.
+							<li>DICTIONARY; contains the status, bytes processed, bytes total.</li>
+						</ul>
+						<h4>getNumSubscribedItems()</h4>
+						<ul>
+							<li>Gets the total number of items the current user is subscribed to for the game or application.
+							<li>INT.</li>
+						</ul>
+						<h4>getQueryUGCAdditionalPreview( <sup>int</sup> queryHandle, <sup>int</sup> index, <sup>int</sup> previewIndex )</h4>
+						<ul>
+							<li>Retrieve the details of an additional preview associated with an individual workshop item after receiving a querying UGC call result.
+							<li>DICTIONARY; contains the success or failure, item handle, index, the preview index, the URL or video ID, the original filename, and preview type.</li>
+						</ul>
+						<h4>getQueryUGCChildren( <sup>int</sup> queryHandle, <sup>int</sup> index )</h4>
+						<ul>
+							<li>Retrieve the ids of any child items of an individual workshop item after receiving a querying UGC call result. These items can either be a part of a collection or some other dependency (see AddDependency).
+							<li>DICTIONARY; contains the success or failure, the item handle, index, and children.</li>
+						</ul>
+						<h4>getQueryUGCKeyValueTag( <sup>int</sup> queryHandle, <sup>int</sup> index, <sup>int</sup> keyValueTagIndex )</h4>
+						<ul>
+							<li>Retrieve the details of a key-value tag associated with an individual workshop item after receiving a querying UGC call result.
+							<li>DICTIONARY; contains the success or failure, the item handle, index, the key/value tag index, the key, and the value.</li>
+						</ul>
+						<h4>getQueryUGCMetadata( <sup>int</sup> queryHandle, <sup>int</sup> index )</h4>
+						<ul>
+							<li>Retrieve the developer set metadata of an individual workshop item after receiving a querying UGC call result.
+							<li>STRING.</li>
+						<h4>getQueryUGCNumAdditionalPreviews( <sup>int</sup> queryHandle, <sup>int</sup> index )</h4>
+						<ul>
+							<li>Retrieve the number of additional previews of an individual workshop item after receiving a querying UGC call result.
+							<li>INT.</li>
+						</ul>
+						<h4>getQueryUGCNumKeyValueTags( <sup>int</sup> queryHandle, <sup>int</sup> index )</h4>
+						<ul>
+							<li>Retrieve the number of key-value tags of an individual workshop item after receiving a querying UGC call result.
+							<li>INT.</li>
+						</ul>
+						<h4>getQueryUGCPreviewURL( <sup>int</sup> queryHandle, <sup>int</sup> index )</h4>
+						<ul>
+							<li>Retrieve the URL to the preview image of an individual workshop item after receiving a querying UGC call result.
+							<li>STRING.</li>
+						</ul>
+						<h4>getQueryUGCStatistic( <sup>int</sup> queryHandle, <sup>int</sup> index, <sup>int</sup> statType )</h4>
+						<ul>
+							<li>Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
+							<li>DICTIONARY; contains the success or failure, the item handle, index, type, and value.</li>
+						</ul>
+						<h4>getSubscribedItems()</h4>
+						<ul>
+							<li>Gets a list of all of the items the current user is subscribed to for the current game.
+							<li>ARRAY.</li>
+						</ul>
+						<h4>getUserItemVote( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Gets the users vote status on a workshop item.
+							<li>VOID; triggers <strong>_get_item_vote_result</strong> callback.</li>
+						</ul>
+						<h4>releaseQueryUGCRequest( <sup>int</sup> queryHandle )</h4>
+						<ul>
+							<li>Releases a UGC query handle when you are done with it to free up memory.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>removeAppDependency( <sup>int</sup> publishedFileID, <sup>int</sup> appID )</h4>
+						<ul>
+							<li>Removes the dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
+							<li>VOID; triggers <strong>_remove_app_dependency_result</strong> callback.</li>
+						</ul>
+						<h4>removeDependency( <sup>int</sup> publishedFileID, <sup>int</sup> childPublishedFileID )</h4>
+						<ul>
+							<li>Removes a workshop item as a dependency from the specified item.
+							<li>VOID; triggers <strong>_remove_ugc_dependency_result</strong> callback.</li>
+						</ul>
+						<h4>removeItemFromFavorites( <sup>int</sup> appID, <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Removes a workshop item from the users favorites list.
+							<li>VOID; triggers <strong>_user_favorite_items_list_changed</strong> callback.</li>
+						</ul>
+						<h4>removeItemKeyValueTags( <sup>int</sup> updateHandle, <sup>string</sup> key )</h4>
+						<ul>
+							<li>Removes an existing key value tag from an item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>removeItemPreview( <sup>int</sup> updateHandle, <sup>int</sup> index )</h4>
+						<ul>
+							<li>Removes an existing preview from an item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>sendQueryUGCRequest( <sup>int</sup> updateHandle )</h4>
+						<ul>
+							<li>Send a UGC query to Steam.
+							<li>VOID; triggers <strong>_ugc_query_completed</strong> callback.</li>
+						</ul>
+						<h4>setAllowCachedResponse( <sup>int</sup> updateHandle, <sup>int</sup> maxAgeSeconds )</h4>
+						<ul>
+							<li>Sets whether results will be returned from the cache for the specific period of time on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setCloudFileNameFilter( <sup>int</sup> updateHandle, <sup>string</sup> matchCloudFilename )</h4>
+						<ul>
+							<li>Sets to only return items that have a specific filename on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemContent( <sup>int</sup> updateHandle, <sup>string</sup> contentFolder )</h4>
+						<ul>
+							<li>Sets the folder that will be stored as the content for an item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemDescription( <sup>int</sup> updateHandle, <sup>string</sup> description )</h4>
+						<ul>
+							<li>Sets a new description for an item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemMetadata( <sup>int</sup> updateHandle, <sup>string</sup> metadata )</h4>
+						<ul>
+							<li>Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemPreview( <sup>int</sup> updateHandle, <sup>string</sup> previewFile )</h4>
+						<ul>
+							<li>Sets the primary preview image for the item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemTitle( <sup>int</sup> updateHandle, <sup>string</sup> title )</h4>
+						<ul>
+							<li>Sets a new title for an item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemUpdateLanguage( <sup>int</sup> updateHandle, <sup>string</sup> language )</h4>
+						<ul>
+							<li>Sets the language of the title and description that will be set in this item update.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setItemVisibility( <sup>int</sup> updateHandle, <sup>int</sup> visibility )</h4>
+						<ul>
+							<li>Sets the visibility of an item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setLanguage( <sup>int</sup> queryHandle, <sup>string</sup> language )</h4>
+						<ul>
+							<li>Sets the language to return the title and description in for the items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setMatchAnyTag( <sup>int</sup> queryHandle, <sup>bool</sup> matchAnyTag )</h4>
+						<ul>
+							<li>Sets whether workshop items will be returned if they have one or more matching tag, or if all tags need to match on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setRankedByTrendDays( <sup>int</sup> queryHandle, <sup>int</sup> days )</h4>
+						<ul>
+							<li>Sets whether the order of the results will be updated based on the rank of items over a number of days on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnAdditionalPreviews( <sup>int</sup> queryHandle, <sup>bool</sup> returnAdditionalPreviews )</h4>
+						<ul>
+							<li>Sets whether to return any additional images/videos attached to the items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnChildren( <sup>int</sup> queryHandle, <sup>bool</sup> returnChildren )</h4>
+						<ul>
+							<li>Sets whether to return the IDs of the child items of the items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnKeyValueTags( <sup>int</sup> queryHandle, <sup>bool</sup> returnKeyValueTags )</h4>
+						<ul>
+							<li>Sets whether to return any key-value tags for the items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnLongDescription( <sup>int</sup> queryHandle, <sup>bool</sup> returnLongDescription )</h4>
+						<ul>
+							<li>Sets whether to return the full description for the items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnMetadata( <sup>int</sup> queryHandle, <sup>bool</sup> returnMetadata )</h4>
+						<ul>
+							<li>Sets whether to return the developer specified metadata for the items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnOnlyIDs( <sup>int</sup> queryHandle, <sup>bool</sup> returnOnlyIDs )</h4>
+						<ul>
+							<li>Sets whether to only return IDs instead of all the details on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnPlaytimeStats( <sup>int</sup> queryHandle, <sup>int</sup> days )</h4>
+						<ul>
+							<li>Sets whether to return the the playtime stats on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setReturnTotalOnly( <sup>int</sup> queryHandle, <sup>bool</sup> returnTotalOnly )</h4>
+						<ul>
+							<li>Sets whether to only return the the total number of matching items on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setSearchText( <sup>int</sup> queryHandle, <sup>string</sup> searchText )</h4>
+						<ul>
+							<li>Sets a string to that items need to match in either the title or the description on a pending UGC Query.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setUserItemVote( <sup>int</sup> publishedFileID, <sup>bool</sup> voteUp )</h4>
+						<ul>
+							<li>Allows the user to rate a workshop item up or down.
+							<li>VOID; triggers <strong>_set_user_item_vote</strong> callback.</li>
+						</ul>
+						<h4>startItemUpdate( <sup>int</sup> appID, <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Starts the item update process.
+							<li>INT.</li>
+						</ul>
+						<h4>startPlaytimeTracking( <sup>array</sup> publishedFileIDs )</h4>
+						<ul>
+							<li>Start tracking playtime on a set of workshop items.
+							<li>VOID; triggers <strong>_start_playtime_tracking</strong> callback.</li>
+						</ul>
+						<h4>stopPlaytimeTracking( <sup>array</sup> publishedFileIDs )</h4>
+						<ul>
+							<li>Stop tracking playtime on a set of workshop items.
+							<li>VOID; triggers <strong>_stop_playtime_tracking</strong> callback.</li>
+						</ul>
+						<h4>stopPlaytimeTrackingForAllItems()</h4>
+						<ul>
+							<li>Stop tracking playtime of all workshop items.
+							<li>VOID; triggers <strong>_stop_playtime_tracking</strong> callback.</li>
+						</ul>
+						<h4>getAppDependencies( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Returns any app dependencies that are associated with the given item.
+							<li>VOID; triggers <strong>_get_app_dependencies_result</strong> callback.</li>
+						</ul>
+						<h4>submitItemUpdate( <sup>int</sup> updateHandle, <sup>string</sup> changeNote )</h4>
+						<ul>
+							<li>Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.
+							<li>VOID; triggers <strong>_item_updated</strong> callback.</li>
+						</ul>
+						<h4>subscribeItem( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Subscribe to a workshop item. It will be downloaded and installed as soon as possible.
+							<li>VOID; triggers <strong>_subscribe_item</strong> callback.</li>
+						</ul>
+						<h4>suspendDownloads( <sup>bool</sup> suspend )</h4>
+						<ul>
+							<li>SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.
+							<li>VOID.</li>
+						</ul>
+						<h4>unsubscribeItem( <sup>int</sup> publishedFileID )</h4>
+						<ul>
+							<li>Unsubscribe from a workshop item. This will result in the item being removed after the game quits.
+							<li>VOID; triggers <strong>_unsubscribe_item</strong> callback.</li>
+						</ul>
+						<h4>updateItemPreviewFile( <sup>int</sup> updateHandle, <sup>int</sup> index, <sup>string</sup> previewFile )</h4>
+						<ul>
+							<li>Updates an existing additional preview file for the item.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>updateItemPreviewVideo( <sup>int</sup> updateHandle, <sup>int</sup> index, <sup>string</sup> videoID )</h4>
+						<ul>
+							<li>Updates an additional video preview from YouTube for the item.</
 							<li>BOOL; returns true or false.</li>
 						</ul>
 						<header class="major">
@@ -1407,109 +1805,6 @@
 						<ul>
 							<li>Ask SteamUI to create and render its OpenVR dashboard.</li>
 							<li>VOID.</li>
-						</ul>
-						<header class="major">
-							<h3>UGC / Workshop</h3>
-						</header>
-						<h4>downloadItem( <sup>int</sup> publishedFileID, <sup>bool</sup> highPriority )</h4>
-						<ul>
-							<li>Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received. If item is not subscribed to, it will be cached for some time. If highPriority is set, any other item download will be suspended and this item downloaded ASAP.</li>
-							<li>BOOL.</li>
-						</ul>
-						<h4>suspendDownloads( <sup>bool</sup> suspend )</h4>
-						<ul>
-							<li>SuspendDownloads( true ) will suspend all workshop downloads until SuspendDownloads( false ) is called or the game ends.</li>
-							<li>VOID.</li>
-						</ul>
-						<h4>startItemUpdate( <sup>int</sup> appID, <sup>int</sup> publishedFileID )</h4>
-						<ul>
-							<li>Starts the item update process.</li>
-							<li>INT; returns an update handle.</li>
-						</ul>
-						<h4>getItemState( <sup>int</sup> publishedFileID )</h4>
-						<ul>
-							<li>Gets the current state of a workshop item on this client.</li>
-							<li>INT; should return one of the following:
-								<ul>
-									<li>0 - None</li>
-									<li>1 - Subscribed</li>
-									<li>2 - Legacy</li>
-									<li>4 - Installed</li>
-									<li>8 - Update</li>
-									<li>16 - Downloading</li>
-									<li>32 - Pending</li>
-								</ul>
-							</li>
-						</ul>
-						<h4>getItemUpdateProgress( <sup>int</sup> handle )</h4>
-						<ul>
-							<li>Gets the progress of an item update.</li>
-							<li>DICTIONARY; contains the status, bytes processed, and bytes total.</li>
-						</ul>
-						<h4>createItem( <sup>int</sup> appID, <sup>int</sup> fileType )</h4>
-						<ul>
-							<li>Create new item for this app with no content attached yet.</li>
-							<li>VOID; triggers <strong>_workshop_item_created</strong> callback.</li>
-						</ul>
-						<h4>setItemTitle( <sup>int</sup> updateHandle, <sup>string</sup> title )</h4>
-						<ul>
-							<li>Sets a new title for an item.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>setItemDescription( <sup>int</sup> updateHandle, <sup>string</sup> description )</h4>
-						<ul>
-							<li>Sets a new description for an item.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>setItemUpdateLanguage( <sup>int</sup> updateHandle, <sup>string</sup> language )</h4>
-						<ul>
-							<li>Sets the language of the title and description that will be set in this item update.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>setItemMetadata( <sup>int</sup> updateHandle, <sup>string</sup> metadata )</h4>
-						<ul>
-							<li>Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>setItemVisibility( <sup>int</sup> updateHandle, <sup>int</sup> visibility )</h4>
-						<ul>
-							<li>Sets the visibility of an item.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>setItemTags( <sup>int</sup> updateHandle, <sup>string</sup> stringArray, <sup>int</sup> stringCount )</h4>
-						<ul>
-							<li>Sets arbitrary developer specified tags on an item.</li>
-							<li>BOOL; returns true if succesful or false if not. Currently not functional.</li>
-						</ul>
-						<h4>setItemContent( <sup>int</sup> updateHandle, <sup>string</sup> contentFolder )</h4>
-						<ul>
-							<li>Sets the folder that will be stored as the content for an item.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>setItemPreview( <sup>int</sup> updateHandle, <sup>string</sup> previewFile )</h4>
-						<ul>
-							<li>Sets the primary preview image for the item.</li>
-							<li>BOOL; returns true if succesful or false if not.</li>
-						</ul>
-						<h4>submitItemUpdate( <sup>int</sup> updateHandle, <sup>string</sup> changeNote )</h4>
-						<ul>
-							<li>Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.</li>
-							<li>VOID; triggers <strong>_workshop_item_updated</strong> callback.</li>
-						</ul>
-						<h4>getSubscribedItems()</h4>
-						<ul>
-							<li>Gets a list of all of the items the current user is subscribed to for the current game.</li>
-							<li>ARRAY; returns a list of item ID's.</li>
-						</ul>
-						<h4>getItemInstallInfo( <sup>int</sup> fileID )</h4>
-						<ul>
-							<li>Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.</li>
-							<li>DICTIONARY; contains size, folder, folder size, and timestamp. Doest not currently work.</li>
-						</ul>
-						<h4>getItemDOwnloadInfo( <sup>int</sup> fileID)</h4>
-						<ul>
-							<li>Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.</li>
-							<li>DICTIONARY; contains bytes downloaded and bytes total.</li>
 						</ul>
 					</section>
 					<footer id="footer">
