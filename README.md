@@ -13,16 +13,19 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.2.0)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.2.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.2.0 Changes**
+**Version 3.2.1 Changes**
 - Added: all remaining UGC functions and callbacks
 - Added: all new Remote Play functions and callbacks
 - Added: remaining UGC constants and enums
 - Added: relevant Remote Storage callbacks for UGC
+- Added: back some needed UGC constants
+- Changed: int to uint32 in some for loops
 - Changed: renamed some UGC enums for consistency
 - Changed: getItemDownloadInfo to give proper default return
 - Fixed: a few missing default returns
+- Fixed: compiling issues on Linux
 - Removed: non-listed UGC enums
 
 

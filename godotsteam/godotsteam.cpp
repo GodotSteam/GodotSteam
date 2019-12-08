@@ -3236,7 +3236,7 @@ Dictionary Steam::getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 inde
 	bool success = SteamUGC()->GetQueryUGCAdditionalPreview(handle, index, previewIndex, (char*)urlOrVideoID, 256, (char*)originalFilename, 256, &previewType);
 	if(success){
 		preview["success"] = success;
-		preview["handle"] = handle;
+		preview["handle"] = (uint64_t)handle;
 		preview["index"] = index;
 		preview["preview"] = previewIndex;
 		preview["urlOrVideo"] = urlOrVideoID;
@@ -3256,7 +3256,7 @@ Dictionary Steam::getQueryUGCChildren(uint64_t queryHandle, uint32 index){
 	bool success = SteamUGC()->GetQueryUGCChildren(handle, index, (PublishedFileId_t*)child, 100);
 	if(success){
 		children["success"] = success;
-		children["handle"] = handle;
+		children["handle"] = (uint64_t)handle;
 		children["index"] = index;
 		children["children"] = child;
 	}
@@ -3274,7 +3274,7 @@ Dictionary Steam::getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uin
 	bool success = SteamUGC()->GetQueryUGCKeyValueTag(handle, index, keyValueTagIndex, (char*)key, 256, (char*)value, 256);
 	if(success){
 		tag["success"] = success;
-		tag["handle"] = handle;
+		tag["handle"] = (uint64_t)handle;
 		tag["index"] = index;
 		tag["tag"] = keyValueTagIndex;
 		tag["key"] = key;
@@ -3330,7 +3330,7 @@ String Steam::getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index){
 //bool getQueryUGCResult(uint64_t queryHandle, uint32 index){
 //}
 // Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
-Dictionary Steam::getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType, uint64 statValue){
+Dictionary Steam::getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType){
 	Dictionary ugcStat;
 	if(SteamUGC() == NULL){
 		return ugcStat;
@@ -3376,14 +3376,14 @@ Dictionary Steam::getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int s
 	else{
 		type = k_EItemStatistic_NumPlaytimeSessionsDuringTimePeriod;
 	}
-	uint64 value;
+	uint64 value = 0;
 	bool success = SteamUGC()->GetQueryUGCStatistic(handle, index, type, &value);
 	if(success){
 		ugcStat["success"] = success;
-		ugcStat["handle"] = handle;
+		ugcStat["handle"] = (uint64_t)handle;
 		ugcStat["index"] = index;
 		ugcStat["type"] = type;
-		ugcStat["value"] = value;
+		ugcStat["value"] = (uint64_t)value;
 	}	
 	return ugcStat;
 }
@@ -3505,7 +3505,7 @@ bool Steam::setItemDescription(uint64_t updateHandle, const String& description)
 		return false;
 	}
 	if (description.length() > 255){
-		printf("Description cannot have more than %ld ASCII characters. Description not set.", 255);
+		printf("Description cannot have more than %ld ASCII characters. Description not set.", UGC_MAX_DESC_CHARS);
 		return false;
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
@@ -3517,7 +3517,7 @@ bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
 		return false;
 	}
 	if (metadata.length() > 255){
-		printf("Metadata cannot have more than %ld ASCII characters. Metadata not set.", 255);
+		printf("Metadata cannot have more than %ld ASCII characters. Metadata not set.", UGC_MAX_METADATA_CHARS);
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
 	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
@@ -3545,7 +3545,7 @@ bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
 		return false;
 	}
 	if (title.length() > 255){
-		printf("Title cannot have more than %ld ASCII characters. Title not set.", 255);
+		printf("Title cannot have more than %ld ASCII characters. Title not set.", UGC_MAX_TITLE_CHARS);
 		return false;
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
@@ -3702,7 +3702,7 @@ void Steam::startPlaytimeTracking(Array publishedFileIDs){
 		return;
 	}
 	PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
-	for(int i = 0; i < fileCount; i++){
+	for(uint32 i = 0; i < fileCount; i++){
 		fileIDs[i] = (uint64_t)publishedFileIDs[i];
 	}
 	SteamAPICall_t apiCall = SteamUGC()->StartPlaytimeTracking(fileIDs, fileCount);
@@ -3719,7 +3719,7 @@ void Steam::stopPlaytimeTracking(Array publishedFileIDs){
 	}
 	PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
 	Array files;
-	for(int i = 0; i < fileCount; i++){
+	for(uint32 i = 0; i < fileCount; i++){
 		fileIDs[i] = (uint64_t)publishedFileIDs[i];
 	}
 	SteamAPICall_t apiCall = SteamUGC()->StopPlaytimeTracking(fileIDs, fileCount);
@@ -5262,6 +5262,9 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_DEVELOPER_METADATA_MAX);			//5000
 	BIND_CONSTANT(UGC_QUERY_HANDLE_INVALID);			//0xffffffffffffffffull
 	BIND_CONSTANT(UGC_UPDATE_HANDLE_INVALID);			//0xffffffffffffffffull
+	BIND_CONSTANT(UGC_MAX_TITLE_CHARS);					//128
+	BIND_CONSTANT(UGC_MAX_DESC_CHARS);					//5000
+	BIND_CONSTANT(UGC_MAX_METADATA_CHARS);				//5000
 
 	// UGC Item Visibility///////////////////////
 	BIND_CONSTANT(UGC_FILE_VISIBLE_PUBLIC);
