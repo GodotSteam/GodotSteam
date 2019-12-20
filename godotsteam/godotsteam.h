@@ -305,7 +305,7 @@ class Steam: public Object {
 		bool initWorkshopForGameServer(int workshopDepotID);
 		void createItem(AppId_t appID, int fileType);
 		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, int creatorID, int consumerID, uint32 page);
-//		uint64_t createQueryUGCDetailsRequest(int publishedFileID, uint32 numberOfFileID);
+		uint64_t createQueryUGCDetailsRequest(Array publishedFileID);
 //		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
 		void deleteItem(int publishedFileID);
 		bool downloadItem(int publishedFileID, bool highPriority);
@@ -321,7 +321,7 @@ class Steam: public Object {
 		uint32 getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index);
 		String getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index);
-//		bool getQueryUGCResult(uint64_t queryHandle, uint32 index);
+		Dictionary getQueryUGCResult(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType);
 		Array getSubscribedItems();
 		void getUserItemVote(int publishedFileID);

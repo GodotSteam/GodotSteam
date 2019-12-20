@@ -3031,12 +3031,21 @@ uint64_t Steam::createQueryAllUGCRequest(int queryType, int matchingType, int cr
 	return (uint64_t)handle;
 }
 // Query for the details of specific workshop items.
-//uint64_t Steam::createQueryUGCDetailsRequest(int publishedFileID, uint32 numberOfFileID){
-//	if(SteamUGC() == NULL){
-//		return 0;
-//	}
-//
-//}
+uint64_t Steam::createQueryUGCDetailsRequest(Array publishedFileIDs){
+	if(SteamUGC() == NULL){
+		return 0;
+	}
+	uint32 fileCount = publishedFileIDs.size();
+	if(fileCount == 0){
+		return 0;
+	}
+	PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
+	for(uint32 i = 0; i < fileCount; i++){
+		fileIDs[i] = (uint64_t)publishedFileIDs[i];
+	}
+	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUGCDetailsRequest(fileIDs, fileCount);
+	return (uint64_t)handle;
+}
 // WEIRD ERROR WHERE GODOT WON'T ALLOW MORE THAN 5 ARGUMENTS
 // Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.
 //uint64_t Steam::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
@@ -3327,8 +3336,43 @@ String Steam::getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index){
 	return "";
 }
 // Retrieve the details of an individual workshop item after receiving a querying UGC call result.
-//bool getQueryUGCResult(uint64_t queryHandle, uint32 index){
-//}
+Dictionary Steam::getQueryUGCResult(uint64_t queryHandle, uint32 index){
+	Dictionary ugcResult;
+	if(SteamUGC() == NULL){
+		return ugcResult;
+	}
+	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	SteamUGCDetails_t pDetails;
+	bool success = SteamUGC()->GetQueryUGCResult(handle, index, &pDetails);
+	if(success){
+		ugcResult["result"] = (uint64_t)pDetails.m_eResult;
+		ugcResult["fileType"] = (uint64_t)pDetails.m_eFileType;
+		ugcResult["creatorAppID"] = (uint64_t)pDetails.m_nCreatorAppID;
+		ugcResult["consumerAppID"] = (uint64_t)pDetails.m_nConsumerAppID;
+		ugcResult["title"] = pDetails.m_rgchTitle;
+		ugcResult["description"] = pDetails.m_rgchDescription;
+		ugcResult["steamIDOwner"] = pDetails.m_ulSteamIDOwner;
+		ugcResult["timeCreated"] = pDetails.m_rtimeCreated;
+		ugcResult["timeUpdated"] = pDetails.m_rtimeUpdated;
+		ugcResult["timeAddedToUserList"] = pDetails.m_rtimeAddedToUserList;
+		ugcResult["visibility"] = (uint64_t)pDetails.m_eVisibility;
+		ugcResult["banned"] = pDetails.m_bBanned;
+		ugcResult["acceptedForUse"] = pDetails.m_bAcceptedForUse;
+		ugcResult["tagsTruncated"] = pDetails.m_bTagsTruncated;
+		ugcResult["tags"] = pDetails.m_rgchTags;
+		ugcResult["handleFile"] = (uint64_t)pDetails.m_hFile;
+		ugcResult["handlePreviewFile"] = (uint64_t)pDetails.m_hPreviewFile;
+		ugcResult["fileName"] = pDetails.m_pchFileName;
+		ugcResult["fileSize"] = pDetails.m_nFileSize;
+		ugcResult["previewFileSize"] = pDetails.m_nPreviewFileSize;
+		ugcResult["url"] = pDetails.m_rgchURL;
+		ugcResult["votesUp"] = pDetails.m_unVotesUp;
+		ugcResult["votesDown"] = pDetails.m_unVotesDown;
+		ugcResult["score"] = pDetails.m_flScore;
+		ugcResult["numChildren"] = pDetails.m_unNumChildren;
+	}
+	return ugcResult;
+}
 // Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
 Dictionary Steam::getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType){
 	Dictionary ugcStat;
@@ -4765,7 +4809,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("initWorkshopForGameServer", &Steam::initWorkshopForGameServer);
 	ClassDB::bind_method("createItem", &Steam::createItem);
 	ClassDB::bind_method("createQueryAllUGCRequest", &Steam::createQueryAllUGCRequest);
-//	ClassDB::bind_method("createQueryUGCDetailsRequest", &Steam::createQueryUGCDetailsRequest);
+	ClassDB::bind_method("createQueryUGCDetailsRequest", &Steam::createQueryUGCDetailsRequest);
 //	ClassDB::bind_method("createQueryUserUGCRequest", &Steam::createQueryUserUGCRequest);
 	ClassDB::bind_method("deleteItem", &Steam::deleteItem);
 	ClassDB::bind_method("downloadItem", &Steam::downloadItem);
@@ -4781,7 +4825,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getQueryUGCNumAdditionalPreviews", &Steam::getQueryUGCNumAdditionalPreviews);
 	ClassDB::bind_method("getQueryUGCNumKeyValueTags", &Steam::getQueryUGCNumKeyValueTags);
 	ClassDB::bind_method("getQueryUGCPreviewURL", &Steam::getQueryUGCPreviewURL);
-//	ClassDB::bind_method("getQueryUGCResult", &Steam::getQueryUGCResult);
+	ClassDB::bind_method("getQueryUGCResult", &Steam::getQueryUGCResult);
 	ClassDB::bind_method("getQueryUGCStatistic", &Steam::getQueryUGCStatistic);
 	ClassDB::bind_method("getUserItemVote", &Steam::getUserItemVote);
 	ClassDB::bind_method("releaseQueryUGCRequest", &Steam::releaseQueryUGCRequest);
