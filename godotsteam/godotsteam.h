@@ -310,7 +310,7 @@ class Steam: public Object {
 		void deleteItem(int publishedFileID);
 		bool downloadItem(int publishedFileID, bool highPriority);
 		Dictionary getItemDownloadInfo(int fileID);
-		Dictionary getItemInstallInfo(int fileID);
+		Dictionary getItemInstallInfo(int publishedFileID);
 		int getItemState(int publishedFileID);
 		Dictionary getItemUpdateProgress(uint64_t updateHandle);
 		uint32 getNumSubscribedItems();

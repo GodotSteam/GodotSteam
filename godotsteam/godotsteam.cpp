@@ -3182,23 +3182,21 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 	return info;
 }
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
-Dictionary Steam::getItemInstallInfo(int fileID){
+Dictionary Steam::getItemInstallInfo(int publishedFileID){
 	Dictionary info;
 	if(SteamUGC() == NULL){
 		info["ret"] = false;
 	}
-	else{
-		uint64 sizeOnDisk;
-		char folder;
-		uint32 folderSize = 0;
-		uint32 timeStamp;
-		info["ret"] = SteamUGC()->GetItemInstallInfo((PublishedFileId_t)fileID, &sizeOnDisk, &folder, folderSize, &timeStamp);
-		if(info["ret"]){
-			info["size"] = (int)sizeOnDisk;
-			info["folder"] = folder;
-			info["foldersize"] = folderSize;
-			info["timestamp"] = timeStamp;
-		}
+	PublishedFileId_t fileID = (int)publishedFileID;
+	uint64 sizeOnDisk;
+	char folder[1024] = { 0 };
+	uint32 timeStamp;
+	info["ret"] = SteamUGC()->GetItemInstallInfo((PublishedFileId_t)fileID, &sizeOnDisk, folder, sizeof(folder), &timeStamp);
+	if(info["ret"]){
+		info["size"] = (int)sizeOnDisk;
+		info["folder"] = folder;
+		info["foldersize"] = sizeof(folder);
+		info["timestamp"] = timeStamp;
 	}
 	return info;
 }
@@ -3351,7 +3349,7 @@ Dictionary Steam::getQueryUGCResult(uint64_t queryHandle, uint32 index){
 		ugcResult["consumerAppID"] = (uint64_t)pDetails.m_nConsumerAppID;
 		ugcResult["title"] = pDetails.m_rgchTitle;
 		ugcResult["description"] = pDetails.m_rgchDescription;
-		ugcResult["steamIDOwner"] = pDetails.m_ulSteamIDOwner;
+		ugcResult["steamIDOwner"] = (uint64_t)pDetails.m_ulSteamIDOwner;
 		ugcResult["timeCreated"] = pDetails.m_rtimeCreated;
 		ugcResult["timeUpdated"] = pDetails.m_rtimeUpdated;
 		ugcResult["timeAddedToUserList"] = pDetails.m_rtimeAddedToUserList;
