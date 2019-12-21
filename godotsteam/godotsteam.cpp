@@ -3186,6 +3186,7 @@ Dictionary Steam::getItemInstallInfo(int publishedFileID){
 	Dictionary info;
 	if(SteamUGC() == NULL){
 		info["ret"] = false;
+		return info;
 	}
 	PublishedFileId_t fileID = (int)publishedFileID;
 	uint64 sizeOnDisk;
