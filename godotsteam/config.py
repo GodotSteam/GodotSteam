@@ -38,3 +38,11 @@ def configure(env):
 		env.Append(CXXFLAGS="-std=c++0x")
 		env.Append(LIBS=["steam_api"])
 		env.Append(LIBPATH=['#modules/godotsteam/sdk/redistributable_bin/osx'])
+
+def get_doc_classes():
+	return [
+		"Steam",
+	]
+
+def get_doc_path():
+	return "doc_classes"
