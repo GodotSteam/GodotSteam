@@ -3196,7 +3196,7 @@ Dictionary Steam::getItemInstallInfo(int publishedFileID){
 	if(info["ret"]){
 		info["size"] = (int)sizeOnDisk;
 		info["folder"] = folder;
-		info["foldersize"] = sizeof(folder);
+		info["foldersize"] = (uint32)sizeof(folder);
 		info["timestamp"] = timeStamp;
 	}
 	return info;
