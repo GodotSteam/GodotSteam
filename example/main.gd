@@ -22,7 +22,8 @@ func _ready():
 	# Initialize Steam
 	_initialize_Steam()
 	# Connect some signals
-	Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
+	Steam.connect("current_stats_received", self, "_steam_Stats_Ready", ["current"])
+	Steam.connect("user_stats_received", self, "_steam_Stats_Ready", ["user"])
 	Steam.connect("avatar_loaded", self, "loaded_avatar")
 
 # Process all Steamworks callbacks
@@ -46,24 +47,47 @@ func _initialize_Steam():
 		print("User does not own this game")
 		# Uncomment this line to close the game if the user does not own the game
 #		get_tree().quit()
-	$Online.set_text("Steam online?: "+str(ONLINE))
-	$Owns.set_text("Owns the game?: "+str(OWNED))
-	$ID.set_text("Steam ID: "+str(STEAM_ID))
+	$Readout/Online.set_text("Steam online?: "+str(ONLINE))
+	$Readout/Owns.set_text("Owns the game?: "+str(OWNED))
+	$Readout/ID.set_text("Steam ID: "+str(STEAM_ID))
 
-# Fire a Steam achievement
-func _fire_Steam_Achievement(value):
-	# Set the achievement to an in-game variable
-	ACHIEVEMENTS[value] = true
+#################################################
+# EXTRA FUNCTIONS FOR THE EXAMPLE
+#################################################
+# Show our achievement list
+func _update_Achievement_List():
+	var LIST = "Achievements Earned:\n"
+	for A in ACHIEVEMENTS.keys():
+		if ACHIEVEMENTS[A]:
+			LIST += "Achievement "+str(A)+": true\n"
+		else:
+			LIST += "Achievement "+str(A)+": false\n"
+	# Print it to the label
+	$Readout/Achievements.set_text(LIST)
 
-	# Pass the value to Steam then fire it
-	Steam.setAchievement(value)
-	Steam.storeStats()
-	
-	# Update our list to see
-	_update_Achievement_List()
+# Show our statistics list
+func _update_Stat_List():
+	var LIST = "Statistics:\n"
+	for S in STATS.keys():
+		LIST += str(S)+": "+str(STATS[S])+"\n"
+	# Print it to the label
+	$Readout/Stats.set_text(LIST)
+
+#################################################
+# STEAM STATISTIC RETRIEVAL
+#################################################
+# Request the current, local user's achievements and stats
+# This will fire by default once Steamworks is initialized
+func _on_requestCurrentStats_pressed():
+	Steam.requestCurrentStats()
+
+# Request the given user's achievements and stats
+func _on_requestUserStats_pressed():
+	Steam.requestUserStats(STEAM_ID)
 
 # Handle callback from requesting user data
-func _steam_Stats_Ready(game, result, user):
+func _steam_Stats_Ready(game, result, user, source):
+	print("Stats pulled from: "+str(source))
 	print("This game's ID: "+str(game))
 	print("Call result: "+str(result))
 	print("This user's Steam ID: "+str(user))
@@ -91,55 +115,92 @@ func _steam_Stats_Ready(game, result, user):
 		# Update our stat list to see
 		_update_Stat_List()
 
+##################################################
+# ACHIEVEMENT FUNCTIONS
+##################################################
+# Fire a Steam achievement
+# Must contain the same name as what is listed in your Steamworks back-end
+func _on_setAchievement_pressed(achievement_name):
+	# Set the achievement to an in-game variable
+	ACHIEVEMENTS[achievement_name] = true
+
+	# Pass the value to Steam
+	Steam.setAchievement(achievement_name)
+	
+	# Now fire it so it appears to the player
+	Steam.storeStats()
+	
+	# Update our list to see
+	_update_Achievement_List()
+
 # Process achievements
-func _get_Achievement(value):
-	var ACHIEVE = Steam.getAchievement(value)
+func _get_Achievement(achievement_name):
+	var ACHIEVE = Steam.getAchievement(achievement_name)
 	# Achievement exists
 	if ACHIEVE['ret']:
 		# Achievement is unlocked
 		if ACHIEVE['achieved']:
-			ACHIEVEMENTS[value] = true
+			ACHIEVEMENTS[achievement_name] = true
 		# Achievement is locked
 		else:
-			ACHIEVEMENTS[value] = false
+			ACHIEVEMENTS[achievement_name] = false
 	# Achievement does not exist
 	else:
-		ACHIEVEMENTS[value] = false
+		ACHIEVEMENTS[achievement_name] = false
+
+func _on_getAchievementIcon_pressed():
+	# Set up some icon variables
+	var SIZE = 32
+	
+	# Get the image's handle
+	var HANDLE = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
+	
+	# Get the image data
+	var BUFFER = Steam.getImageRGBA(HANDLE)
+	
+	#Create the image and texture for loading
+	var ICON = Image.new()
+	var ICON_TEXTURE = ImageTexture.new()
+	ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
+	
+	# Lock and draw the image
+	ICON.lock()
+	for y in range(0, SIZE):
+		for x in range(0, SIZE):
+			var pixel = 4 * (x + y * SIZE)
+			var r = float(BUFFER['buffer'][pixel]) / 255
+			var g = float(BUFFER['buffer'][pixel+1]) / 255
+			var b = float(BUFFER['buffer'][pixel+2]) / 255
+			var a = float(BUFFER['buffer'][pixel+3]) / 255
+			ICON.set_pixel(x, y, Color(r, g, b, a))
+	ICON.unlock()
+	
+	# Apply it to the texture
+	ICON_TEXTURE.create_from_image(ICON)
+	
+	# Display it
+	get_node("Readout/Achievement Icon/Icon").set_texture(ICON_TEXTURE)
 
 #################################################
-# EXTRA FUNCTIONS FOR THE EXAMPLE
+# STATISTICS RESETTING
 #################################################
-# Show our achievement list
-func _update_Achievement_List():
-	var LIST = "Achievements Earned:\n"
-	for A in ACHIEVEMENTS.keys():
-		if ACHIEVEMENTS[A]:
-			LIST += "Achievement "+str(A)+": true\n"
-		else:
-			LIST += "Achievement "+str(A)+": false\n"
-	# Print it to the label
-	$Achievements.set_text(LIST)
+# This will reset all statistics the user has on Steam
+# Setting the variable to true will also reset their achievements
+func _on_resetAllStats_pressed():
+	var ACHIEVEMENTS_TOO = true
+	Steam.resetAllStats(ACHIEVEMENTS_TOO)
 
-# Show our statistics list
-func _update_Stat_List():
-	var LIST = "Statistics:\n"
-	for S in STATS.keys():
-		LIST += str(S)+": "+str(STATS[S])+"\n"
-	# Print it to the label
-	$Stats.set_text(LIST)
-
-func _on_Get_Stats_pressed():
-	# Request user's data
-	Steam.requestCurrentStats()
-
+#################################################
+# AVATAR FUNCTIONS
+#################################################
 # Load avatars buttons
-func _on_Load_Small_Avatar_pressed():
+func _on_getPlayerAvatar_Small_pressed():
 	Steam.getPlayerAvatar(Steam.AVATAR_SMALL)
 
-func _on_Load_Medium_Avatar_pressed():
+func _on_getPlayerAvatar_Medium_pressed():
 	Steam.getPlayerAvatar(Steam.AVATAR_MEDIUM)
 
-func _on_Load_Large_Avatar_pressed():
+func _on_getPlayerAvatar_Large_pressed():
 	Steam.getPlayerAvatar(Steam.AVATAR_LARGE)
 
 # Avatar is ready for display
@@ -169,8 +230,8 @@ func loaded_avatar(id, size, buffer):
 	
 	# Display it
 	if size == 32:
-		get_node("Avatar Small").set_texture(AVATAR_TEXTURE)
+		get_node("Readout/Avatars/Avatar Small").set_texture(AVATAR_TEXTURE)
 	elif size == 64:
-		get_node("Avatar Medium").set_texture(AVATAR_TEXTURE)
+		get_node("Readout/Avatars/Avatar Medium").set_texture(AVATAR_TEXTURE)
 	else:
-		get_node("Avatar Large").set_texture(AVATAR_TEXTURE)
+		get_node("Readout/Avatars/Avatar Large").set_texture(AVATAR_TEXTURE)

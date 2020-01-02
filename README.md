@@ -7,6 +7,7 @@ This version covers:
 - main.tscn
 	- Initializing Steamworks
 	- Loading achievements and statistics
+		- Now utilizes both current and user statistics
 	- Firing achievements
 	- Loading avatars
 - lobby.tscn
@@ -15,6 +16,10 @@ This version covers:
 	- Getting lobby lists from Steam
 	- P2P packet sending / reading
 	- Joining a lobby
+
+Updates:
+- Many buttons are now renamed to the Steam functions they call.
+- More comments have been added to the code.
 
 Quick How-To
 ----------

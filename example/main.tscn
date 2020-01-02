@@ -5,18 +5,197 @@
 [node name="Node" type="Node"]
 script = ExtResource( 1 )
 
-[node name="ID" type="Label" parent="."]
-margin_left = 8.0
+[node name="Requesting Stats" type="Panel" parent="."]
+margin_left = 815.0
 margin_top = 10.0
-margin_right = 193.0
+margin_right = 1015.0
+margin_bottom = 145.0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Requesting Stats" type="Label" parent="Requesting Stats"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 195.0
+margin_bottom = 30.0
+text = "Requesting Stats"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="requestCurrentStats" type="Button" parent="Requesting Stats"]
+margin_left = 10.0
+margin_top = 40.0
+margin_right = 187.0
+margin_bottom = 60.0
+text = "Request Current Stats"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="requestUserStats" type="Button" parent="Requesting Stats"]
+margin_left = 10.0
+margin_top = 70.0
+margin_right = 187.0
+margin_bottom = 90.0
+text = "Request User Stats"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="resetAllStats" type="Button" parent="Requesting Stats"]
+margin_left = 10.0
+margin_top = 100.0
+margin_right = 187.0
+margin_bottom = 120.0
+text = "Reset All Stats"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Achievements" type="Panel" parent="."]
+margin_left = 815.0
+margin_top = 160.0
+margin_right = 1015.0
+margin_bottom = 355.0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Achievement Triggers" type="Label" parent="Achievements"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 195.0
+margin_bottom = 30.0
+text = "Achievement Triggers"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="setAchievement1" type="Button" parent="Achievements"]
+margin_left = 10.0
+margin_top = 40.0
+margin_right = 187.0
+margin_bottom = 60.0
+text = "Fire Achievment 1"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="setAchievement2" type="Button" parent="Achievements"]
+margin_left = 10.0
+margin_top = 70.0
+margin_right = 187.0
+margin_bottom = 90.0
+text = "Fire Achievement 2"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="setAchievement3" type="Button" parent="Achievements"]
+margin_left = 10.0
+margin_top = 100.0
+margin_right = 187.0
+margin_bottom = 120.0
+text = "Fire Achievement 3"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="setAchievement4" type="Button" parent="Achievements"]
+margin_left = 10.0
+margin_top = 130.0
+margin_right = 187.0
+margin_bottom = 150.0
+text = "Fire Achievement 4"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="getAchievementIcon" type="Button" parent="Achievements"]
+margin_left = 10.0
+margin_top = 160.0
+margin_right = 187.0
+margin_bottom = 180.0
+text = "Get Achievement Icon"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Avatars" type="Panel" parent="."]
+margin_left = 815.0
+margin_top = 370.0
+margin_right = 1015.0
+margin_bottom = 500.0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Load Avatars" type="Label" parent="Avatars"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 195.0
+margin_bottom = 30.0
+text = "Load Avatars"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="getPlayerAvatar Small" type="Button" parent="Avatars"]
+margin_left = 10.0
+margin_top = 40.0
+margin_right = 187.0
+margin_bottom = 60.0
+text = "Show Small Avatar"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="getPlayerAvatar Medium" type="Button" parent="Avatars"]
+margin_left = 10.0
+margin_top = 70.0
+margin_right = 187.0
+margin_bottom = 90.0
+text = "Show Medium Avatar"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="getPlayerAvatar Large" type="Button" parent="Avatars"]
+margin_left = 10.0
+margin_top = 100.0
+margin_right = 187.0
+margin_bottom = 120.0
+text = "Show Large Avatar"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Readout" type="Panel" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 800.0
+margin_bottom = 590.0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="ID" type="Label" parent="Readout"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 195.0
 margin_bottom = 24.0
 text = "Steam ID"
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Owns" type="Label" parent="."]
-margin_left = 8.0
+[node name="Owns" type="Label" parent="Readout"]
+margin_left = 10.0
 margin_top = 40.0
 margin_right = 193.0
 margin_bottom = 54.0
@@ -25,20 +204,20 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Online" type="Label" parent="."]
-margin_left = 8.0
+[node name="Online" type="Label" parent="Readout"]
+margin_left = 10.0
 margin_top = 70.0
-margin_right = 193.0
+margin_right = 195.0
 margin_bottom = 84.0
 text = "Steam online?"
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Achievements" type="Label" parent="."]
-margin_left = 8.0
+[node name="Achievements" type="Label" parent="Readout"]
+margin_left = 10.0
 margin_top = 100.0
-margin_right = 193.0
+margin_right = 195.0
 margin_bottom = 182.0
 text = "Achievements Earned:
 ???
@@ -49,11 +228,11 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Stats" type="Label" parent="."]
-margin_left = 8.0
+[node name="Stats" type="Label" parent="Readout"]
+margin_left = 10.0
 margin_top = 200.0
-margin_right = 193.0
-margin_bottom = 282.0
+margin_right = 195.0
+margin_bottom = 299.0
 text = "Statistics:
 ???
 ???
@@ -64,141 +243,58 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatars" type="Label" parent="."]
-margin_left = 8.0
+[node name="Avatars" type="Label" parent="Readout"]
+margin_left = 10.0
 margin_top = 320.0
-margin_right = 193.0
+margin_right = 195.0
 margin_bottom = 402.0
 text = "Avatars:"
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatar Small" type="Sprite" parent="."]
-position = Vector2( 8, 350 )
+[node name="Avatar Small" type="Sprite" parent="Readout/Avatars"]
+position = Vector2( 0, 30 )
 centered = false
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatar Medium" type="Sprite" parent="."]
-position = Vector2( 60, 350 )
+[node name="Avatar Medium" type="Sprite" parent="Readout/Avatars"]
+position = Vector2( 52, 30 )
 centered = false
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Avatar Large" type="Sprite" parent="."]
-position = Vector2( 144, 350 )
+[node name="Avatar Large" type="Sprite" parent="Readout/Avatars"]
+position = Vector2( 136, 30 )
 centered = false
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Get Stats" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 12.0
-margin_right = 1013.0
-margin_bottom = 32.0
-text = "Request Steam Stats"
+[node name="Achievement Icon" type="Label" parent="Readout"]
+margin_left = 10.0
+margin_top = 500.0
+margin_right = 127.0
+margin_bottom = 514.0
+text = "Achievement Icon"
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Achievement Triggers" type="Label" parent="."]
-margin_left = 836.0
-margin_top = 52.0
-margin_right = 1021.0
-margin_bottom = 66.0
-text = "Achievement Triggers"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Fire Achievement1" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 75.0
-margin_right = 1013.0
-margin_bottom = 95.0
-text = "Fire Achievment 1"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Fire Achievement2" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 105.0
-margin_right = 1013.0
-margin_bottom = 125.0
-text = "Fire Achievement 2"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Fire Achievement3" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 135.0
-margin_right = 1013.0
-margin_bottom = 155.0
-text = "Fire Achievement 3"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Fire Achievement4" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 165.0
-margin_right = 1013.0
-margin_bottom = 185.0
-text = "Fire Achievement 4"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Load Avatars" type="Label" parent="."]
-margin_left = 836.0
-margin_top = 207.0
-margin_right = 1021.0
-margin_bottom = 221.0
-text = "Load Avatars"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Load Small Avatar" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 230.0
-margin_right = 1013.0
-margin_bottom = 250.0
-text = "Show Small Avatar"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Load Medium Avatar" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 260.0
-margin_right = 1013.0
-margin_bottom = 280.0
-text = "Show Medium Avatar"
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Load Large Avatar" type="Button" parent="."]
-margin_left = 836.0
-margin_top = 290.0
-margin_right = 1013.0
-margin_bottom = 310.0
-text = "Show Large Avatar"
-__meta__ = {
-"_edit_lock_": true
-}
-[connection signal="pressed" from="Get Stats" to="." method="_on_Get_Stats_pressed"]
-[connection signal="pressed" from="Fire Achievement1" to="." method="_fire_Steam_Achievement" binds= [ "ACH_WIN_ONE_GAME" ]]
-[connection signal="pressed" from="Fire Achievement2" to="." method="_fire_Steam_Achievement" binds= [ "ACH_WIN_100_GAMES" ]]
-[connection signal="pressed" from="Fire Achievement3" to="." method="_fire_Steam_Achievement" binds= [ "ACH_TRAVEL_FAR_ACCUM" ]]
-[connection signal="pressed" from="Fire Achievement4" to="." method="_fire_Steam_Achievement" binds= [ "ACH_TRAVEL_FAR_SINGLE" ]]
-[connection signal="pressed" from="Load Small Avatar" to="." method="_on_Load_Small_Avatar_pressed"]
-[connection signal="pressed" from="Load Medium Avatar" to="." method="_on_Load_Medium_Avatar_pressed"]
-[connection signal="pressed" from="Load Large Avatar" to="." method="_on_Load_Large_Avatar_pressed"]
+[node name="Icon" type="Sprite" parent="Readout/Achievement Icon"]
+position = Vector2( 249.788, -87.6516 )
+offset = Vector2( -234.788, 129.652 )
+[connection signal="pressed" from="Requesting Stats/requestCurrentStats" to="." method="_on_requestCurrentStats_pressed"]
+[connection signal="pressed" from="Requesting Stats/requestUserStats" to="." method="_on_requestUserStats_pressed"]
+[connection signal="pressed" from="Requesting Stats/resetAllStats" to="." method="_on_resetAllStats_pressed"]
+[connection signal="pressed" from="Achievements/setAchievement1" to="." method="_on_setAchievement_pressed" binds= [ "ACH_WIN_ONE_GAME" ]]
+[connection signal="pressed" from="Achievements/setAchievement2" to="." method="_on_setAchievement_pressed" binds= [ "ACH_WIN_100_GAMES" ]]
+[connection signal="pressed" from="Achievements/setAchievement3" to="." method="_on_setAchievement_pressed" binds= [ "ACH_TRAVEL_FAR_ACCUM" ]]
+[connection signal="pressed" from="Achievements/setAchievement4" to="." method="_on_setAchievement_pressed" binds= [ "ACH_TRAVEL_FAR_SINGLE" ]]
+[connection signal="pressed" from="Achievements/getAchievementIcon" to="." method="_on_getAchievementIcon_pressed"]
+[connection signal="pressed" from="Avatars/getPlayerAvatar Small" to="." method="_on_getPlayerAvatar_Small_pressed"]
+[connection signal="pressed" from="Avatars/getPlayerAvatar Medium" to="." method="_on_getPlayerAvatar_Medium_pressed"]
+[connection signal="pressed" from="Avatars/getPlayerAvatar Large" to="." method="_on_getPlayerAvatar_Large_pressed"]
