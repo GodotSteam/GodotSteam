@@ -7,27 +7,29 @@ Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
 
-Alternately, there is the project's Wiki page here: https://github.com/Gramps/GodotSteam/wiki
-
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.2.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.3)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.2.1 Changes**
-- Added: all remaining UGC functions and callbacks
-- Added: all new Remote Play functions and callbacks
-- Added: remaining UGC constants and enums
-- Added: relevant Remote Storage callbacks for UGC
-- Added: back some needed UGC constants
-- Changed: int to uint32 in some for loops
-- Changed: renamed some UGC enums for consistency
-- Changed: getItemDownloadInfo to give proper default return
-- Fixed: a few missing default returns
-- Fixed: compiling issues on Linux
-- Removed: non-listed UGC enums
+**Version 3.3 Changes**
 
+- Added: all Steam Input functions; used to be Steam Controller
+- Added: all Steam Input constants
+- Added: new Apps functions
+- Added: missing Friends functions
+- Added: missing Screenshots functions
+- Added: all missing Screenshot constants
+- Changed: removed Steam Controller as it is now depreciated
+- Changed: split up call results and callbacks in godotsteam.h for editing ease
+- Changed: user_stats_received to current_stats_received for requestCurrentStats callback / signal
+- Changed: sorted Apps and Friends functions alphabetically like Steamworks Docs to find new functions easier
+- Changed: getAchievementIcon; now returns the handle
+- Changed: getInputTypeForHandle to output verbose controller type
+- Changed: SteamInput function init to inputInit
+- Changed: SteamInput function shutdown to inputShutdown
+- Removed: user_achievement_icon_fetched signal / callback as it is never called
 
 Known Issues
 ----------

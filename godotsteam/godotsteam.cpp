@@ -5,6 +5,8 @@
 // Include some Godot headers
 #include "core/io/ip_address.h"
 #include "core/io/ip.h"
+// Include some system headers
+#include "fstream"
 
 Steam* Steam::singleton = NULL;
 
@@ -82,85 +84,6 @@ bool Steam::isSteamRunning(void){
 ///// APPS //////////////////////////////////////
 /////////////////////////////////////////////////
 //
-// Checks if the active user is subscribed to the current App ID.
-bool Steam::isSubscribed(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsSubscribed();
-}
-// Checks if the license owned by the user provides low violence depots.
-bool Steam::isLowViolence(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsLowViolence();
-}
-// Checks whether the current App ID is for Cyber Cafes.
-bool Steam::isCybercafe(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsCybercafe();
-}
-// Checks if the user has a VAC ban on their account.
-bool Steam::isVACBanned(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsVACBanned();
-}
-// Gets the current language that the user has set.
-String Steam::getCurrentGameLanguage(){
-	if(SteamApps() == NULL){
-		return "None";
-	}
-	return SteamApps()->GetCurrentGameLanguage();
-}
-// Gets a comma separated list of the languages the current app supports.
-String Steam::getAvailableGameLanguages(){
-	if(SteamApps() == NULL){
-		return "None";
-	}
-	return SteamApps()->GetAvailableGameLanguages();
-}
-// Checks if the active user is subscribed to a specified AppId.
-bool Steam::isSubscribedApp(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsSubscribedApp((AppId_t)value);
-}
-// Checks if the user owns a specific DLC and if the DLC is installed
-bool Steam::isDLCInstalled(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsDlcInstalled(value);
-}
-// Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).
-int Steam::getEarliestPurchaseUnixTime(int value){
-	if(SteamApps() == NULL){
-		return 0;
-	}
-	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)value);
-}
-// Checks if the user is subscribed to the current app through a free weekend.
-// This function will return false for users who have a retail or other type of license.
-// Suggested you contact Valve on how to package and secure your free weekend properly.
-bool Steam::isSubscribedFromFreeWeekend(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsSubscribedFromFreeWeekend();
-}
-// Get the number of DLC the user owns for a parent application/game.
-int Steam::getDLCCount(){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->GetDLCCount();
-}
 // Returns metadata for a DLC by index.
 Array Steam::getDLCDataByIndex(){
 	if(SteamApps() == NULL){
@@ -183,51 +106,78 @@ Array Steam::getDLCDataByIndex(){
 	}
 	return dlcData;
 }
-// Allows you to install an optional DLC.
-void Steam::installDLC(int value){
-	if(SteamApps() == NULL){
-		return;
-	}
-	SteamApps()->InstallDLC((AppId_t)value);
-}
-// Allows you to uninstall an optional DLC.
-void Steam::uninstallDLC(int value){
-	if(SteamApps() == NULL){
-		return;
-	}
-	SteamApps()->UninstallDLC((AppId_t)value);
-}
-// Checks if the user is running from a beta branch, and gets the name of the branch if they are.
-String Steam::getCurrentBetaName(){
-	String ret = "";
-	if(SteamApps() != NULL){
-		char str[1024];
-		if (SteamApps()->GetCurrentBetaName(str, 1024)) {
-			ret = String(str);
-		}
-	}
-	return ret;
-}
-// Allows you to force verify game content on next launch.
-bool Steam::markContentCorrupt(bool missingFilesOnly){
+// Check if given application/game is installed, not necessarily owned.
+bool Steam::isAppInstalled(int value){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->MarkContentCorrupt(missingFilesOnly);
+	return SteamApps()->BIsAppInstalled((AppId_t)value);
 }
-// Gets a list of all installed depots for a given App ID in mount order.
-Array Steam::getInstalledDepots(int appID){
+// Checks whether the current App ID is for Cyber Cafes.
+bool Steam::isCybercafe(){
 	if(SteamApps() == NULL){
-		return Array();
+		return false;
 	}
-	Array installedDepots;
-	DepotId_t *depots = new DepotId_t[32];
-	int installed = SteamApps()->GetInstalledDepots((AppId_t)appID, depots, 32);
-	for(int i = 0; i < installed; i++){
-		installedDepots.append(depots[i]);
+	return SteamApps()->BIsCybercafe();
+}
+// Checks if the user owns a specific DLC and if the DLC is installed
+bool Steam::isDLCInstalled(int value){
+	if(SteamApps() == NULL){
+		return false;
 	}
-	delete depots;
-	return installedDepots;
+	return SteamApps()->BIsDlcInstalled(value);
+}
+// Checks if the license owned by the user provides low violence depots.
+bool Steam::isLowViolence(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsLowViolence();
+}
+// Checks if the active user is subscribed to the current App ID.
+bool Steam::isSubscribed(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribed();
+}
+// Checks if the active user is subscribed to a specified AppId.
+bool Steam::isSubscribedApp(int value){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+}
+//Checks if the active user is accessing the current appID via a temporary Family Shared license owned by another user.
+//If you need to determine the steamID of the permanent owner of the license, use getAppOwner.
+bool Steam::isSubscribedFromFamilySharing(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedFromFamilySharing();
+}
+// Checks if the user is subscribed to the current app through a free weekend.
+// This function will return false for users who have a retail or other type of license.
+// Suggested you contact Valve on how to package and secure your free weekend properly.
+bool Steam::isSubscribedFromFreeWeekend(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsSubscribedFromFreeWeekend();
+}
+// Checks if the user has a VAC ban on their account.
+bool Steam::isVACBanned(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->BIsVACBanned();
+}
+// Return the build ID for this app; will change based on backend updates.
+int Steam::getAppBuildId(){
+	if(SteamApps() == NULL){
+		return 0;
+	}
+	return SteamApps()->GetAppBuildId();
 }
 // Gets the install folder for a specific AppID.
 String Steam::getAppInstallDir(AppId_t appID){
@@ -241,13 +191,6 @@ String Steam::getAppInstallDir(AppId_t appID){
 	delete buffer;
 	return appDir;
 }
-// Check if given application/game is installed, not necessarily owned.
-bool Steam::isAppInstalled(int value){
-	if(SteamApps() == NULL){
-		return false;
-	}
-	return SteamApps()->BIsAppInstalled((AppId_t)value);
-}
 // Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.
 uint64_t Steam::getAppOwner(){
 	if(SteamApps() == NULL){
@@ -256,12 +199,37 @@ uint64_t Steam::getAppOwner(){
 	CSteamID cSteamID = SteamApps()->GetAppOwner();
 	return cSteamID.ConvertToUint64();
 }
-// Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
-String Steam::getLaunchQueryParam(const String& key){
+// Gets a comma separated list of the languages the current app supports.
+String Steam::getAvailableGameLanguages(){
 	if(SteamApps() == NULL){
-		return "";
+		return "None";
 	}
-	return SteamApps()->GetLaunchQueryParam(key.utf8().get_data());
+	return SteamApps()->GetAvailableGameLanguages();
+}
+// Checks if the user is running from a beta branch, and gets the name of the branch if they are.
+String Steam::getCurrentBetaName(){
+	String ret = "";
+	if(SteamApps() != NULL){
+		char str[1024];
+		if (SteamApps()->GetCurrentBetaName(str, 1024)) {
+			ret = String(str);
+		}
+	}
+	return ret;
+}
+// Gets the current language that the user has set.
+String Steam::getCurrentGameLanguage(){
+	if(SteamApps() == NULL){
+		return "None";
+	}
+	return SteamApps()->GetCurrentGameLanguage();
+}
+// Get the number of DLC the user owns for a parent application/game.
+int Steam::getDLCCount(){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->GetDLCCount();
 }
 // Gets the download progress for optional DLC.
 Dictionary Steam::getDLCDownloadProgress(int appID){
@@ -281,12 +249,12 @@ Dictionary Steam::getDLCDownloadProgress(int appID){
 	}
 	return progress;
 }
-// Return the build ID for this app; will change based on backend updates.
-int Steam::getAppBuildId(){
+// Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).
+int Steam::getEarliestPurchaseUnixTime(int value){
 	if(SteamApps() == NULL){
 		return 0;
 	}
-	return SteamApps()->GetAppBuildId();
+	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)value);
 }
 // Asynchronously retrieves metadata details about a specific file in the depot manifest.
 void Steam::getFileDetails(const String& filename){
@@ -295,213 +263,260 @@ void Steam::getFileDetails(const String& filename){
 	}
 	SteamApps()->GetFileDetails(filename.utf8().get_data());
 }
-
-/////////////////////////////////////////////////
-///// CONTROLLERS////////////////////////////////
-/////////////////////////////////////////////////
-//
-// Reconfigure the controller to use the specified action set.
-void Steam::activateActionSet(uint64_t controllerHandle, uint64_t actionSetHandle){
-	if(SteamController() != NULL){
-		SteamController()->ActivateActionSet((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle);
+// Gets a list of all installed depots for a given App ID in mount order.
+Array Steam::getInstalledDepots(int appID){
+	if(SteamApps() == NULL){
+		return Array();
 	}
+	Array installedDepots;
+	DepotId_t *depots = new DepotId_t[32];
+	int installed = SteamApps()->GetInstalledDepots((AppId_t)appID, depots, 32);
+	for(int i = 0; i < installed; i++){
+		installedDepots.append(depots[i]);
+	}
+	delete depots;
+	return installedDepots;
 }
-// Lookup the handle for an Action Set.
-uint64_t Steam::getActionSetHandle(const String& actionSetName){
-	if(SteamController() != NULL){
-		return (uint64_t)SteamController()->GetActionSetHandle(actionSetName.utf8().get_data());
+// Gets the command line if the game was launched via Steam URL, e.g. steam://run/<appid>//<command line>/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation > General page on your app.
+String Steam::getLaunchCommandLine(){
+	if(SteamApps() == NULL){
+		return "";
 	}
-	return 0;
+	char *commands;
+	int ret = SteamApps()->GetLaunchCommandLine(commands, 256);
+	return commands;
 }
-// Returns the current state of the supplied analog game action.
-Dictionary Steam::getAnalogActionData(uint64_t controllerHandle, uint64_t analogActionHandle){
-	ControllerAnalogActionData_t data;
-	Dictionary d;
-	memset(&data, 0, sizeof(data));
-	if(SteamController() != NULL){
-		data = SteamController()->GetAnalogActionData((ControllerHandle_t)controllerHandle, (ControllerAnalogActionHandle_t)analogActionHandle);
+// Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
+String Steam::getLaunchQueryParam(const String& key){
+	if(SteamApps() == NULL){
+		return "";
 	}
-	d["eMode"] = data.eMode;
-	d["x"] = data.x;
-	d["y"] = data.y;
-	d["bActive"] = data.bActive;
-	return d;
+	return SteamApps()->GetLaunchQueryParam(key.utf8().get_data());
 }
-// Get the handle of the specified Analog action.
-uint64_t Steam::getAnalogActionHandle(const String& actionName){
-	if(SteamController() != NULL){
-		return (uint64_t)SteamController()->GetAnalogActionHandle(actionName.utf8().get_data());
+// Allows you to install an optional DLC.
+void Steam::installDLC(int value){
+	if(SteamApps() == NULL){
+		return;
 	}
-	return 0;
+	SteamApps()->InstallDLC((AppId_t)value);
 }
-// Get the origin(s) for an analog action within an action.
-Array Steam::getAnalogActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t analogActionHandle){
-	Array list;
-	if(SteamController() != NULL){
-		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
-		int ret = SteamController()->GetAnalogActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
-		for (int i = 0; i < ret; i++){
-			list.push_back((int)out[i]);
-		}
+// Allows you to force verify game content on next launch.
+bool Steam::markContentCorrupt(bool missingFilesOnly){
+	if(SteamApps() == NULL){
+		return false;
 	}
-	return list;
+	return SteamApps()->MarkContentCorrupt(missingFilesOnly);
 }
-// Get current controllers handles.
-Array Steam::getConnectedControllers(){
-	Array list;
-	if(SteamController() != NULL){
-		ControllerHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
-		int ret = SteamController()->GetConnectedControllers(handles);
-		for (int i = 0; i < ret; i++){
-			list.push_back((uint64_t)handles[i]);
-		}
+// Allows you to uninstall an optional DLC.
+void Steam::uninstallDLC(int value){
+	if(SteamApps() == NULL){
+		return;
 	}
-	return list;
-}
-// Returns the associated controller handle for the specified emulated gamepad.
-uint64_t Steam::getControllerForGamepadIndex(int index){
-	if(SteamController() != NULL){
-		return (uint64_t)SteamController()->GetControllerForGamepadIndex(index);
-	}
-	return 0;
-}
-// Get the currently active action set for the specified controller.
-uint64_t Steam::getCurrentActionSet(uint64_t controllerHandle){
-	if(SteamController() != NULL){
-		return (uint64_t)SteamController()->GetCurrentActionSet((ControllerHandle_t)controllerHandle);
-	}
-	return 0;
-}
-// Get the input type (device model) for the specified controller. 
-uint64_t Steam::getInputTypeForHandle(uint64_t controllerHandle){
-    if(SteamController() != NULL){
-		return (uint64_t)SteamController()->GetInputTypeForHandle((ControllerHandle_t)controllerHandle);
-	}
-	return 0;
-}
-// Returns the current state of the supplied digital game action.
-Dictionary Steam::getDigitalActionData(uint64_t controllerHandle, uint64_t digitalActionHandle){
-	ControllerDigitalActionData_t data;
-	Dictionary d;
-	memset(&data, 0, sizeof(data));
-	if(SteamController() != NULL){
-		data = SteamController()->GetDigitalActionData((ControllerHandle_t)controllerHandle, (ControllerDigitalActionHandle_t)digitalActionHandle);
-	}
-	d["bState"] = data.bState;
-	d["bActive"] = data.bActive;
-	return d;
-}
-// Get the handle of the specified digital action.
-uint64_t Steam::getDigitalActionHandle(const String& actionName){
-	if(SteamController() != NULL){
-		return (uint64_t)SteamController()->GetDigitalActionHandle(actionName.utf8().get_data());
-	}
-	return 0;
-}
-// Get the origin(s) for an analog action within an action.
-Array Steam::getDigitalActionOrigins(uint64_t controllerHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle){
-	Array list;
-	if(SteamController() != NULL){
-		EControllerActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
-		int ret = SteamController()->GetDigitalActionOrigins((ControllerHandle_t)controllerHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerDigitalActionHandle_t)digitalActionHandle, out);
-		for (int i=0; i<ret; i++){
-			list.push_back((int)out[i]);
-		}
-	}
-	return list;
-}
-// Returns the associated gamepad index for the specified controller.
-int Steam::getGamepadIndexForController(uint64_t controllerHandle){
-	if(SteamController() != NULL){
-		return SteamController()->GetGamepadIndexForController((ControllerHandle_t)controllerHandle);
-	}
-	return -1;
-}
-// Returns raw motion data for the specified controller.
-Dictionary Steam::getMotionData(uint64_t controllerHandle){
-	ControllerMotionData_t data;
-	Dictionary d;
-	memset(&data, 0, sizeof(data));
-	if(SteamController() != NULL){
-		data = SteamController()->GetMotionData((ControllerHandle_t)controllerHandle);
-	}
-	d["rotQuatX"] = data.rotQuatX;
-	d["rotQuatY"] = data.rotQuatY;
-	d["rotQuatZ"] = data.rotQuatZ;
-	d["rotQuatW"] = data.rotQuatW;
-	d["posAccelX"] = data.posAccelX;
-	d["posAccelY"] = data.posAccelY;
-	d["posAccelZ"] = data.posAccelZ;
-	d["rotVelX"] = data.rotVelX;
-	d["rotVelY"] = data.rotVelY;
-	d["rotVelZ"] = data.rotVelZ;
-	return d;
-}
-// Start SteamControllers interface.
-bool Steam::init(){
-	if(SteamController() != NULL){
-		return SteamController()->Init();
-	}
-	return false;
-}
-// Syncronize controllers.
-void Steam::runFrame(){
-	if(SteamController() != NULL){
-		SteamController()->RunFrame();
-	}
-}
-// Invokes the Steam overlay and brings up the binding screen.
-bool Steam::showBindingPanel(uint64_t controllerHandle){
-	if(SteamController() != NULL){
-		return SteamController()->ShowBindingPanel((ControllerHandle_t)controllerHandle);
-	}
-	return false;
-}
-// Stop SteamControllers interface.
-bool Steam::shutdown(){
-	if(SteamController() != NULL){
-		return SteamController()->Shutdown();
-	}
-	return false;
-}
-// Trigger a vibration event on supported controllers.
-void Steam::triggerVibration(uint64_t controllerHandle, uint16_t leftSpeed, uint16_t rightSpeed){
-	if(SteamController() != NULL){
-		SteamController()->TriggerVibration((ControllerHandle_t)controllerHandle, (unsigned short)leftSpeed, (unsigned short)rightSpeed);
-	}
+	SteamApps()->UninstallDLC((AppId_t)value);
 }
 
 /////////////////////////////////////////////////
 ///// FRIENDS ///////////////////////////////////
 /////////////////////////////////////////////////
 //
-// Get the user's Steam username.
-String Steam::getPersonaName(){
-	if(SteamFriends() == NULL){
-		return "";
-	}
-	return SteamFriends()->GetPersonaName();
-}
-// Sets the player name, stores it on the server and publishes the changes to all friends who are online.
-void Steam::setPersonaName(const String& name){
+// Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".
+void Steam::activateGameOverlay(const String& url){
 	if(SteamFriends() == NULL){
 		return;
 	}
-	SteamFriends()->SetPersonaName(name.utf8().get_data());
+	SteamFriends()->ActivateGameOverlay(url.utf8().get_data());
 }
-// Gets the status of the current user.
-int Steam::getPersonaState(){
+// Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.
+void Steam::activateGameOverlayInviteDialog(uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->ActivateGameOverlayInviteDialog(userID);
+}
+// Activates the overlay with the application/game Steam store page.
+void Steam::activateGameOverlayToStore(int appID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	SteamFriends()->ActivateGameOverlayToStore(AppId_t(appID), EOverlayToStoreFlag(0));
+}
+// Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".
+void Steam::activateGameOverlayToUser(const String& url, uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), userID);
+}
+// Activates the overlay with specified web address.
+void Steam::activateGameOverlayToWebPage(const String& url){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	SteamFriends()->ActivateGameOverlayToWebPage(url.utf8().get_data());
+}
+// Clear the game information in Steam; used in 'View Game Info'.
+void Steam::clearRichPresence(){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	SteamFriends()->ClearRichPresence();
+}
+// Closes the specified Steam group chat room in the Steam UI.
+bool Steam::closeClanChatWindowInSteam(uint64_t chatID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID chat = (uint64)chatID;
+	return SteamFriends()->CloseClanChatWindowInSteam(chat);
+}
+// For clans a user is a member of, they will have reasonably up-to-date information, but for others you'll have to download the info to have the latest.
+void Steam::downloadClanActivityCounts(uint64_t clanID, int clansToRequest){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID clan = (uint64)clanID;
+	SteamFriends()->DownloadClanActivityCounts(&clan, clansToRequest);
+}
+// Gets the list of users that the current user is following.
+void Steam::enumerateFollowingList(uint32 startIndex){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	SteamAPICall_t apiCall = SteamFriends()->EnumerateFollowingList(startIndex);
+	callResultEnumerateFollowingList.Set(apiCall, this, &Steam::_enumerate_following_list);
+}
+// Gets the Steam ID at the given index in a Steam group chat.
+uint64_t Steam::getChatMemberByIndex(uint64_t clanID, int user){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	return SteamFriends()->GetPersonaState();
+	CSteamID clan = (uint64)clanID;
+	CSteamID chatID = SteamFriends()->GetChatMemberByIndex(clan, user);
+	return chatID.ConvertToUint64();
 }
-// Get number of friends user has.
-int Steam::getFriendCount(){
+// Gets the most recent information we have about what the users in a Steam Group are doing.
+Dictionary Steam::getClanActivityCounts(uint64_t clanID){
+	Dictionary activity;
+	if(SteamFriends() == NULL){
+		return activity;
+	}
+	CSteamID clan = (uint64)clanID;
+	int online = 0;
+	int ingame = 0;
+	int chatting = 0;
+	bool success = SteamFriends()->GetClanActivityCounts(clan, &online, &ingame, &chatting);
+	// Add these to the dictionary if successful
+	if(success){
+		activity["clan"] = clan.ConvertToUint64();
+		activity["online"] = online;
+		activity["ingame"] = ingame;
+		activity["chatting"] = chatting;
+	}
+	return activity;
+}
+uint64_t Steam::getClanByIndex(int clan){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	return SteamFriends()->GetFriendCount(0x04);
+	return SteamFriends()->GetClanByIndex(clan).ConvertToUint64();
+}
+// Get the number of users in a Steam group chat.
+int Steam::getClanChatMemberCount(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->GetClanChatMemberCount(clan);
+}
+//  Gets the data from a Steam group chat room message.  This should only ever be called in response to a GameConnectedClanChatMsg_t callback.
+Dictionary getClanChatMessage(uint64_t chatID, int message){
+	Dictionary chat;
+	if(SteamFriends() == NULL){
+		return chat;
+	}
+	char text[2048];
+	EChatEntryType type = k_EChatEntryTypeInvalid;
+	CSteamID userID;
+	chat["ret"] = SteamFriends()->GetClanChatMessage(chatID, message, text, 2048, &type, &userID);
+	chat["text"] = String(text);
+	chat["type"] = type;
+	chat["chatter"] = uint64_t(userID.ConvertToUint64());
+	return chat;
+}
+// Gets the number of Steam groups that the current user is a member of.  This is used for iteration, after calling this then GetClanByIndex can be used to get the Steam ID of each Steam group.
+int Steam::getClanCount(){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	return SteamFriends()->GetClanCount();
+}
+// Gets the display name for the specified Steam group; if the local client knows about it.
+String Steam::getClanName(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return "";
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->GetClanName(clan);
+}
+// Returns the steamID of a clan officer, by index, of range [0,GetClanOfficerCount).
+uint64_t Steam::getClanOfficerByIndex(uint64_t clanID, int officer){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID clan = (uint64)clanID;
+	CSteamID officerID = SteamFriends()->GetClanOfficerByIndex(clan, officer);
+	return officerID.ConvertToUint64();
+}
+// Returns the number of officers in a clan (including the owner).
+int Steam::getClanOfficerCount(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->GetClanOfficerCount(clan);
+}
+// Returns the steamID of the clan owner.
+uint64_t Steam::getClanOwner(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID clan = (uint64)clanID;
+	CSteamID ownerID = SteamFriends()->GetClanOwner(clan);
+	return ownerID.ConvertToUint64();
+}
+// Gets the unique tag (abbreviation) for the specified Steam group; If the local client knows about it.  The Steam group abbreviation is a unique way for people to identify the group and is limited to 12 characters. In some games this will appear next to the name of group members.
+String Steam::getClanTag(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return "";
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->GetClanTag(clan);	
+}
+// Gets the Steam ID of the recently played with user at the given index.
+uint64_t Steam::getCoplayFriend(int friendNum){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID friendID = SteamFriends()->GetCoplayFriend(friendNum);
+	return friendID.ConvertToUint64();
+}
+// Gets the number of players that the current users has recently played with, across all games.  This is used for iteration, after calling this then GetCoplayFriend can be used to get the Steam ID of each player.  These players are have been set with previous calls to SetPlayedWith.
+int Steam::getCoplayFriendCount(){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	return SteamFriends()->GetCoplayFriendCount();
+}
+// Gets the number of users following the specified user.
+void Steam::getFollowerCount(uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steamID;
+	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(userID);
+	callResultFollowerCount.Set(apiCall, this, &Steam::_get_follower_count);
 }
 // Returns the Steam ID of a user.
 uint64_t Steam::getFriendByIndex(int friendNum, int friendFlags){
@@ -511,32 +526,45 @@ uint64_t Steam::getFriendByIndex(int friendNum, int friendFlags){
 	CSteamID friendID = SteamFriends()->GetFriendByIndex(friendNum, friendFlags);
 	return friendID.ConvertToUint64();
 }
-// Returns a relationship to a user.
-int Steam::getFriendRelationship(uint64_t steamID){
+// Gets the app ID of the game that user played with someone on their recently-played-with list.
+int Steam::getFriendCoplayGame(uint64_t friendID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetFriendRelationship(userID);
+	CSteamID steamID = (uint64)friendID;
+	return SteamFriends()->GetFriendCoplayGame(steamID);
 }
-// Returns the current status of the specified user.
-int Steam::getFriendPersonaState(uint64_t steamID){
+// Gets the timestamp of when the user played with someone on their recently-played-with list.  The time is provided in Unix epoch format (seconds since Jan 1st 1970).
+int Steam::getFriendCoplayTime(uint64_t friendID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetFriendPersonaState(userID);
+	CSteamID steamID = (uint64)friendID;
+	return SteamFriends()->GetFriendCoplayTime(steamID);
 }
-// Get given friend's Steam username.
-String Steam::getFriendPersonaName(uint64_t steamID){
-	if(SteamFriends() != NULL && steamID > 0){
-		CSteamID userID = (uint64)steamID;
-		bool isDataLoading = SteamFriends()->RequestUserInformation(userID, true);
-		if(!isDataLoading){
-			return SteamFriends()->GetFriendPersonaName(userID);
-		}
+// Get number of friends user has.
+int Steam::getFriendCount(){
+	if(SteamFriends() == NULL){
+		return 0;
 	}
-	return "";
+	return SteamFriends()->GetFriendCount(0x04);
+}
+// Iterators for getting users in a chat room, lobby, game server or clan.
+int Steam::getFriendCountFromSource(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->GetFriendCountFromSource(clan);
+}
+// Returns true if the local user can see that steamIDUser is a member or in steamIDSource.
+uint64_t Steam::getFriendFromSourceByIndex(uint64_t sourceID, int friendNum){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID source = (uint64)sourceID;
+	CSteamID friendID = SteamFriends()->GetFriendFromSourceByIndex(source, friendNum);
+	return friendID.ConvertToUint64();
 }
 // Returns dictionary of friend game played if valid
 Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
@@ -559,7 +587,7 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = gameInfo.m_unGameIP >> (j * 8);
 			}
-			sprintf(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf_s(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			friendGame["ip"] = gameIP;
 			friendGame["gamePort"] = gameInfo.m_usGamePort;
 			friendGame["queryPort"] = (char)gameInfo.m_usQueryPort;
@@ -575,6 +603,29 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
 	}
 	return friendGame;
 }
+// Gets the data from a Steam friends message. This should only ever be called in response to a GameConnectedFriendChatMsg_t callback.
+Dictionary Steam::getFriendMessage(uint64_t friendID, int message){
+	Dictionary chat;
+	if(SteamFriends() == NULL){
+		return chat;
+	}
+	char text[2048];
+	EChatEntryType type = k_EChatEntryTypeInvalid;
+	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(friendID), message, text, 2048, &type);
+	chat["text"] = String(text);
+	return chat;
+}
+// Get given friend's Steam username.
+String Steam::getFriendPersonaName(uint64_t steamID){
+	if(SteamFriends() != NULL && steamID > 0){
+		CSteamID userID = (uint64)steamID;
+		bool isDataLoading = SteamFriends()->RequestUserInformation(userID, true);
+		if(!isDataLoading){
+			return SteamFriends()->GetFriendPersonaName(userID);
+		}
+	}
+	return "";
+}
 // Accesses old friends names; returns an empty string when there are no more items in the history.
 String Steam::getFriendPersonaNameHistory(uint64_t steamID, int nameHistory){
 	if(SteamFriends() == NULL){
@@ -583,208 +634,21 @@ String Steam::getFriendPersonaNameHistory(uint64_t steamID, int nameHistory){
 	CSteamID userID = (uint64)steamID;
 	return SteamFriends()->GetFriendPersonaNameHistory(userID, nameHistory);
 }
-// Get friend's steam level, obviously.
-int Steam::getFriendSteamLevel(uint64_t steamID){
+// Returns the current status of the specified user.
+int Steam::getFriendPersonaState(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
 	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetFriendSteamLevel(userID);
+	return SteamFriends()->GetFriendPersonaState(userID);
 }
-// Returns nickname the current user has set for the specified player. Returns NULL if the no nickname has been set for that player.
-String Steam::getPlayerNickname(uint64_t steamID){
-	if(SteamFriends() == NULL){
-		return "";
-	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetPlayerNickname(userID);
-}
-// Returns true if the specified user meets any of the criteria specified in iFriendFlags.
-bool Steam::hasFriend(uint64_t steamID, int friendFlags){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->HasFriend(userID, friendFlags);
-}
-// For clans a user is a member of, they will have reasonably up-to-date information, but for others you'll have to download the info to have the latest.
-void Steam::downloadClanActivityCounts(uint64_t clanID, int clansToRequest){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID clan = (uint64)clanID;
-	SteamFriends()->DownloadClanActivityCounts(&clan, clansToRequest);
-}
-// Iterators for getting users in a chat room, lobby, game server or clan.
-int Steam::getFriendCountFromSource(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID clan = (uint64)clanID;
-	return SteamFriends()->GetFriendCountFromSource(clan);
-}
-// Returns true if the local user can see that steamIDUser is a member or in steamIDSource.
-uint64_t Steam::getFriendFromSourceByIndex(uint64_t sourceID, int friendNum){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID source = (uint64)sourceID;
-	CSteamID friendID = SteamFriends()->GetFriendFromSourceByIndex(source, friendNum);
-	return friendID.ConvertToUint64();
-}
-// Returns true if the local user can see that steamIDUser is a member or in steamIDSource.
-bool Steam::isUserInSource(uint64_t steamID, uint64_t sourceID){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steamID;
-	CSteamID source = (uint64)sourceID;
-	return SteamFriends()->IsUserInSource(userID, source);
-}
-// User is in a game pressing the talk button (will suppress the microphone for all voice comms from the Steam friends UI).
-void Steam::setInGameVoiceSpeaking(uint64_t steamID, bool speaking){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID userID = (uint64)steamID;
-	SteamFriends()->SetInGameVoiceSpeaking(userID, speaking);
-}
-// Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".
-void Steam::activateGameOverlay(const String& url){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	SteamFriends()->ActivateGameOverlay(url.utf8().get_data());
-}
-// Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".
-void Steam::activateGameOverlayToUser(const String& url, uint64_t steamID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID userID = (uint64)steamID;
-	SteamFriends()->ActivateGameOverlayToUser(url.utf8().get_data(), userID);
-}
-// Activates the overlay with specified web address.
-void Steam::activateGameOverlayToWebPage(const String& url){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	SteamFriends()->ActivateGameOverlayToWebPage(url.utf8().get_data());
-}
-// Activates the overlay with the application/game Steam store page.
-void Steam::activateGameOverlayToStore(int appID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	SteamFriends()->ActivateGameOverlayToStore(AppId_t(appID), EOverlayToStoreFlag(0));
-}
-// Set player as 'Played With' for game.
-void Steam::setPlayedWith(uint64_t steamID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID userID = (uint64)steamID;
-	SteamFriends()->SetPlayedWith(userID);
-}
-// Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.
-void Steam::activateGameOverlayInviteDialog(uint64_t steamID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID userID = (uint64)steamID;
-	SteamFriends()->ActivateGameOverlayInviteDialog(userID);
-}
-// Gets the small (32x32) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
-int Steam::getSmallFriendAvatar(uint64_t steamID){
+// Returns a relationship to a user.
+int Steam::getFriendRelationship(uint64_t steamID){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
 	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetSmallFriendAvatar(userID);
-}
-// Gets the medium (64x64) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
-int Steam::getMediumFriendAvatar(uint64_t steamID){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetMediumFriendAvatar(userID);
-}
-// Gets the large (184x184) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
-int Steam::getLargeFriendAvatar(uint64_t steamID){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->GetLargeFriendAvatar(userID);
-}
-// Requests information about a user - persona name & avatar; if bRequireNameOnly is set, then the avatar of a user isn't downloaded.
-bool Steam::requestUserInformation(uint64_t steamID, bool requireNameOnly){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->RequestUserInformation(userID, requireNameOnly);
-}
-// Requests information about a clan officer list; when complete, data is returned in ClanOfficerListResponse_t call result.
-void Steam::requestClanOfficerList(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID clan = (uint64)clanID;
-	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(clan);
-	callResultClanOfficerList.Set(apiCall, this, &Steam::_request_clan_officer_list);
-}
-// Returns the steamID of the clan owner.
-uint64_t Steam::getClanOwner(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID clan = (uint64)clanID;
-	CSteamID ownerID = SteamFriends()->GetClanOwner(clan);
-	return ownerID.ConvertToUint64();
-}
-// Returns the number of officers in a clan (including the owner).
-int Steam::getClanOfficerCount(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID clan = (uint64)clanID;
-	return SteamFriends()->GetClanOfficerCount(clan);
-}
-// Returns the steamID of a clan officer, by index, of range [0,GetClanOfficerCount).
-uint64_t Steam::getClanOfficerByIndex(uint64_t clanID, int officer){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	CSteamID clan = (uint64)clanID;
-	CSteamID officerID = SteamFriends()->GetClanOfficerByIndex(clan, officer);
-	return officerID.ConvertToUint64();
-}
-// If current user is chat restricted, he can't send or receive any text/voice chat messages. The user can't see custom avatars. But the user can be online and send/recv game invites.
-uint32 Steam::getUserRestrictions(){
-	if(SteamFriends() == NULL){
-		return 0;
-	}
-	return SteamFriends()->GetUserRestrictions();
-}
-// Set the game information in Steam; used in 'View Game Info'
-bool Steam::setRichPresence(const String& key, const String& value){
-	// Rich presence data is automatically shared between friends in the same game.
-	// Each user has a set of key/value pairs, up to 20 can be set.
-	// Two magic keys (status, connect).
-	// setGameInfo() to an empty string deletes the key.
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	return SteamFriends()->SetRichPresence(key.utf8().get_data(), value.utf8().get_data());
-}
-// Clear the game information in Steam; used in 'View Game Info'.
-void Steam::clearRichPresence(){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	SteamFriends()->ClearRichPresence();
+	return SteamFriends()->GetFriendRelationship(userID);
 }
 // Get a Rich Presence value from a specified friend (typically only used for debugging).
 String Steam::getFriendRichPresence(uint64_t friendID, const String& key){
@@ -810,175 +674,82 @@ String Steam::getFriendRichPresenceKeyByIndex(uint64_t friendID, int key){
 	CSteamID user = (uint64)friendID;
 	return SteamFriends()->GetFriendRichPresenceKeyByIndex(user, key);
 }
-// Requests rich presence for a specific user.
-void Steam::requestFriendRichPresence(uint64_t friendID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID user = (uint64)friendID;
-	return SteamFriends()->RequestFriendRichPresence(user);
-}
-// Invite friend to current game/lobby.
-bool Steam::inviteUserToGame(uint64_t steamID, const String& connectString){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->InviteUserToGame(userID, connectString.utf8().get_data());
-}
-// Allows the user to join Steam group (clan) chats right within the game.
-void Steam::joinClanChatRoom(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return;
-	}
-	CSteamID clan = (uint64)clanID;
-	SteamFriends()->JoinClanChatRoom(clan);
-}
-// Leaves a Steam group chat that the user has previously entered with JoinClanChatRoom.
-bool Steam::leaveClanChatRoom(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID clan = (uint64)clanID;
-	return SteamFriends()->LeaveClanChatRoom(clan);
-}
-// Get the number of users in a Steam group chat.
-int Steam::getClanChatMemberCount(uint64_t clanID){
+// Gets the number of friends groups (tags) the user has created.  This is used for iteration, after calling this then GetFriendsGroupIDByIndex can be used to get the ID of each friend group.  This is not to be confused with Steam groups. Those can be obtained with GetClanCount.
+int Steam::getFriendsGroupCount(){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID clan = (uint64)clanID;
-	return SteamFriends()->GetClanChatMemberCount(clan);
+	return SteamFriends()->GetFriendsGroupCount();
 }
-// Gets the Steam ID at the given index in a Steam group chat.
-uint64_t Steam::getChatMemberByIndex(uint64_t clanID, int user){
+// Gets the friends group ID for the given index.
+int Steam::getFriendsGroupIDByIndex(int friendGroup){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	CSteamID clan = (uint64)clanID;
-	CSteamID chatID = SteamFriends()->GetChatMemberByIndex(clan, user);
-	return chatID.ConvertToUint64();
+	return SteamFriends()->GetFriendsGroupIDByIndex(friendGroup);
 }
-// Sends a message to a Steam group chat room.
-bool Steam::sendClanChatMessage(uint64_t chatID, const String& text){
+// Gets the number of friends in a given friends group.  This should be called before getting the list of friends with GetFriendsGroupMembersList.
+int Steam::getFriendsGroupMembersCount(int friendGroup){
 	if(SteamFriends() == NULL){
-		return false;
+		return 0;
 	}
-	CSteamID chat = (uint64)chatID;
-	return SteamFriends()->SendClanChatMessage(chat, text.utf8().get_data());
+	return SteamFriends()->GetFriendsGroupMembersCount(friendGroup);
 }
-// Checks if a user in the Steam group chat room is an admin.
-bool Steam::isClanChatAdmin(uint64_t chatID, uint64_t steamID){
+// Gets the number of friends in the given friends group.  If fewer friends exist than requested those positions' Steam IDs will be invalid.  You must call GetFriendsGroupMembersCount before calling this to set up the pOutSteamIDMembers array with an appropriate size!
+Array Steam::getFriendsGroupMembersList(int friendGroup, int memberCount){
+	Array memberList;
 	if(SteamFriends() == NULL){
-		return false;
+		return memberList;
 	}
-	CSteamID chat = (uint64)chatID;
-	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->IsClanChatAdmin(chat, userID);
+	CSteamID friendIDs;
+	SteamFriends()->GetFriendsGroupMembersList((FriendsGroupID_t)friendGroup, &friendIDs, memberCount);
+	memberList.append(friendIDs.ConvertToUint64());
+	return memberList;
 }
-// Checks if the Steam Group chat room is open in the Steam UI.
-bool Steam::isClanChatWindowOpenInSteam(uint64_t chatID){
+// Gets the name for the given friends group.
+String Steam::getFriendsGroupName(int friendGroup){
 	if(SteamFriends() == NULL){
-		return false;
+		return "";
 	}
-	CSteamID chat = (uint64)chatID;
-	return SteamFriends()->IsClanChatWindowOpenInSteam(chat);
+	return SteamFriends()->GetFriendsGroupName(friendGroup);
 }
-// Opens the specified Steam group chat room in the Steam UI.
-bool Steam::openClanChatWindowInSteam(uint64_t chatID){
+// Get friend's steam level, obviously.
+int Steam::getFriendSteamLevel(uint64_t steamID){
 	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID chat = (uint64)chatID;
-	return SteamFriends()->OpenClanChatWindowInSteam(chat);
-}
-// Closes the specified Steam group chat room in the Steam UI.
-bool Steam::closeClanChatWindowInSteam(uint64_t chatID){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID chat = (uint64)chatID;
-	return SteamFriends()->CloseClanChatWindowInSteam(chat);
-}
-// Listens for Steam friends chat messages.
-bool Steam::setListenForFriendsMessages(bool intercept){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	return SteamFriends()->SetListenForFriendsMessages(intercept);
-}
-// Sends a message to a Steam friend.
-bool Steam::replyToFriendMessage(uint64_t steamID, const String& message){
-	if(SteamFriends() == NULL){
-		return false;
+		return 0;
 	}
 	CSteamID userID = (uint64)steamID;
-	return SteamFriends()->ReplyToFriendMessage(userID, message.utf8().get_data());
+	return SteamFriends()->GetFriendSteamLevel(userID);
 }
-// Gets the number of users following the specified user.
-void Steam::getFollowerCount(uint64_t steamID){
+// Gets the large (184x184) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
+int Steam::getLargeFriendAvatar(uint64_t steamID){
 	if(SteamFriends() == NULL){
-		return;
+		return 0;
 	}
 	CSteamID userID = (uint64)steamID;
-	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(userID);
-	callResultFollowerCount.Set(apiCall, this, &Steam::_get_follower_count);
+	return SteamFriends()->GetLargeFriendAvatar(userID);
 }
-// Checks if the current user is following the specified user.
-void Steam::isFollowing(uint64_t steamID){
+// Gets the medium (64x64) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
+int Steam::getMediumFriendAvatar(uint64_t steamID){
 	if(SteamFriends() == NULL){
-		return;
+		return 0;
 	}
 	CSteamID userID = (uint64)steamID;
-	SteamAPICall_t apiCall = SteamFriends()->IsFollowing(userID);
-	callResultIsFollowing.Set(apiCall, this, &Steam::_is_following);
+	return SteamFriends()->GetMediumFriendAvatar(userID);
 }
-// Gets the list of users that the current user is following.
-void Steam::enumerateFollowingList(uint32 startIndex){
+// Get the user's Steam username.
+String Steam::getPersonaName(){
 	if(SteamFriends() == NULL){
-		return;
+		return "";
 	}
-	SteamAPICall_t apiCall = SteamFriends()->EnumerateFollowingList(startIndex);
-	callResultEnumerateFollowingList.Set(apiCall, this, &Steam::_enumerate_following_list);
+	return SteamFriends()->GetPersonaName();
 }
-// Checks if the Steam group is public.
-bool Steam::isClanPublic(uint64_t clanID){
+// Gets the status of the current user.
+int Steam::getPersonaState(){
 	if(SteamFriends() == NULL){
-		return false;
+		return 0;
 	}
-	CSteamID clan = (uint64)clanID;
-	return SteamFriends()->IsClanPublic(clan);
-}
-// Checks if the Steam group is an official game group/community hub.
-bool Steam::isClanOfficialGameGroup(uint64_t clanID){
-	if(SteamFriends() == NULL){
-		return false;
-	}
-	CSteamID clan = (uint64)clanID;
-	return SteamFriends()->IsClanOfficialGameGroup(clan);
-}
-// Get list of players user has recently played game with.
-Array Steam::getRecentPlayers(){
-	if(SteamFriends() == NULL){
-		return Array();
-	}
-	int count = SteamFriends()->GetCoplayFriendCount();
-	Array recents;
-	for(int i = 0; i < count; i++){
-		CSteamID playerID = SteamFriends()->GetCoplayFriend(i);
-		if(SteamFriends()->GetFriendCoplayGame(playerID) == SteamUtils()->GetAppID()){
-			Dictionary player;
-			String name = SteamFriends()->GetFriendPersonaName(playerID);
-			int time = SteamFriends()->GetFriendCoplayTime(playerID);
-			int status = SteamFriends()->GetFriendPersonaState(playerID);
-			player["id"] = playerID.GetAccountID();
-			player["name"] = name;
-			player["time"] = time;
-			player["status"] = status;
-			recents.append(player);
-		}
-	}
-	return recents;
+	return SteamFriends()->GetPersonaState();
 }
 // Get player's avatar.
 void Steam::getPlayerAvatar(int size, uint64_t steamID){
@@ -1022,6 +793,45 @@ void Steam::getPlayerAvatar(int size, uint64_t steamID){
 	_avatar_loaded(avatarData);
 	return;
 }
+// Returns nickname the current user has set for the specified player. Returns NULL if the no nickname has been set for that player.
+String Steam::getPlayerNickname(uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return "";
+	}
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetPlayerNickname(userID);
+}
+// Get list of players user has recently played game with.
+Array Steam::getRecentPlayers(){
+	if(SteamFriends() == NULL){
+		return Array();
+	}
+	int count = SteamFriends()->GetCoplayFriendCount();
+	Array recents;
+	for(int i = 0; i < count; i++){
+		CSteamID playerID = SteamFriends()->GetCoplayFriend(i);
+		if(SteamFriends()->GetFriendCoplayGame(playerID) == SteamUtils()->GetAppID()){
+			Dictionary player;
+			String name = SteamFriends()->GetFriendPersonaName(playerID);
+			int time = SteamFriends()->GetFriendCoplayTime(playerID);
+			int status = SteamFriends()->GetFriendPersonaState(playerID);
+			player["id"] = playerID.GetAccountID();
+			player["name"] = name;
+			player["time"] = time;
+			player["status"] = status;
+			recents.append(player);
+		}
+	}
+	return recents;
+}
+// Gets the small (32x32) avatar of the current user, which is a handle to be used in GetImageRGBA(), or 0 if none set.
+int Steam::getSmallFriendAvatar(uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->GetSmallFriendAvatar(userID);
+}
 // Get list of friends groups (tags) the user has created. This is not to be confused with Steam groups.
 Array Steam::getUserFriendsGroups(){
 	if(SteamFriends() == NULL){
@@ -1040,6 +850,32 @@ Array Steam::getUserFriendsGroups(){
 		friendsGroups.append(tags);
 	}
 	return friendsGroups;
+}
+// If current user is chat restricted, he can't send or receive any text/voice chat messages. The user can't see custom avatars. But the user can be online and send/recv game invites.
+uint32 Steam::getUserRestrictions(){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	return SteamFriends()->GetUserRestrictions();
+}
+// Get a list of user's Steam friends; a mix of different Steamworks API friend functions.
+Array Steam::getUserSteamFriends(){
+	if(SteamFriends() == NULL){
+		return Array();
+	}
+	int count = SteamFriends()->GetFriendCount(0x04);
+	Array steamFriends;
+	for(int i = 0; i < count; i++){
+		Dictionary friends;
+		CSteamID friendID = SteamFriends()->GetFriendByIndex(i, 0x04);
+		String name = SteamFriends()->GetFriendPersonaName(friendID);
+		int status = SteamFriends()->GetFriendPersonaState(friendID);
+		friends["id"] = friendID.GetAccountID();
+		friends["name"] = name;
+		friends["status"] = status;
+		steamFriends.append(friends);
+	}
+	return steamFriends;
 }
 // Get list of user's Steam groups; a mix of different Steamworks API group functions.
 Array Steam::getUserSteamGroups(){
@@ -1060,24 +896,475 @@ Array Steam::getUserSteamGroups(){
 	}
 	return steamGroups;
 }
-// Get a list of user's Steam friends; a mix of different Steamworks API friend functions.
-Array Steam::getUserSteamFriends(){
+// Returns true if the specified user meets any of the criteria specified in iFriendFlags.
+bool Steam::hasFriend(uint64_t steamID, int friendFlags){
 	if(SteamFriends() == NULL){
-		return Array();
+		return false;
 	}
-	int count = SteamFriends()->GetFriendCount(0x04);
-	Array steamFriends;
-	for(int i = 0; i < count; i++){
-		Dictionary friends;
-		CSteamID friendID = SteamFriends()->GetFriendByIndex(i, 0x04);
-		String name = SteamFriends()->GetFriendPersonaName(friendID);
-		int status = SteamFriends()->GetFriendPersonaState(friendID);
-		friends["id"] = friendID.GetAccountID();
-		friends["name"] = name;
-		friends["status"] = status;
-		steamFriends.append(friends);
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->HasFriend(userID, friendFlags);
+}
+// Invite friend to current game/lobby.
+bool Steam::inviteUserToGame(uint64_t steamID, const String& connectString){
+	if(SteamFriends() == NULL){
+		return false;
 	}
-	return steamFriends;
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->InviteUserToGame(userID, connectString.utf8().get_data());
+}
+// Checks if a user in the Steam group chat room is an admin.
+bool Steam::isClanChatAdmin(uint64_t chatID, uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID chat = (uint64)chatID;
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->IsClanChatAdmin(chat, userID);
+}
+// Checks if the Steam group is public.
+bool Steam::isClanPublic(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->IsClanPublic(clan);
+}
+// Checks if the Steam group is an official game group/community hub.
+bool Steam::isClanOfficialGameGroup(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->IsClanOfficialGameGroup(clan);
+}
+// Checks if the Steam Group chat room is open in the Steam UI.
+bool Steam::isClanChatWindowOpenInSteam(uint64_t chatID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID chat = (uint64)chatID;
+	return SteamFriends()->IsClanChatWindowOpenInSteam(chat);
+}
+// Checks if the current user is following the specified user.
+void Steam::isFollowing(uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steamID;
+	SteamAPICall_t apiCall = SteamFriends()->IsFollowing(userID);
+	callResultIsFollowing.Set(apiCall, this, &Steam::_is_following);
+}
+// Returns true if the local user can see that steamIDUser is a member or in steamIDSource.
+bool Steam::isUserInSource(uint64_t steamID, uint64_t sourceID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steamID;
+	CSteamID source = (uint64)sourceID;
+	return SteamFriends()->IsUserInSource(userID, source);
+}
+// Allows the user to join Steam group (clan) chats right within the game.
+void Steam::joinClanChatRoom(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID clan = (uint64)clanID;
+	SteamFriends()->JoinClanChatRoom(clan);
+}
+// Leaves a Steam group chat that the user has previously entered with JoinClanChatRoom.
+bool Steam::leaveClanChatRoom(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID clan = (uint64)clanID;
+	return SteamFriends()->LeaveClanChatRoom(clan);
+}
+// Opens the specified Steam group chat room in the Steam UI.
+bool Steam::openClanChatWindowInSteam(uint64_t chatID){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID chat = (uint64)chatID;
+	return SteamFriends()->OpenClanChatWindowInSteam(chat);
+}
+// Sends a message to a Steam friend.
+bool Steam::replyToFriendMessage(uint64_t steamID, const String& message){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->ReplyToFriendMessage(userID, message.utf8().get_data());
+}
+// Requests information about a clan officer list; when complete, data is returned in ClanOfficerListResponse_t call result.
+void Steam::requestClanOfficerList(uint64_t clanID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID clan = (uint64)clanID;
+	SteamAPICall_t apiCall = SteamFriends()->GetFollowerCount(clan);
+	callResultClanOfficerList.Set(apiCall, this, &Steam::_request_clan_officer_list);
+}
+// Requests rich presence for a specific user.
+void Steam::requestFriendRichPresence(uint64_t friendID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID user = (uint64)friendID;
+	return SteamFriends()->RequestFriendRichPresence(user);
+}
+// Requests information about a user - persona name & avatar; if bRequireNameOnly is set, then the avatar of a user isn't downloaded.
+bool Steam::requestUserInformation(uint64_t steamID, bool requireNameOnly){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steamID;
+	return SteamFriends()->RequestUserInformation(userID, requireNameOnly);
+}
+// Sends a message to a Steam group chat room.
+bool Steam::sendClanChatMessage(uint64_t chatID, const String& text){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID chat = (uint64)chatID;
+	return SteamFriends()->SendClanChatMessage(chat, text.utf8().get_data());
+}
+// User is in a game pressing the talk button (will suppress the microphone for all voice comms from the Steam friends UI).
+void Steam::setInGameVoiceSpeaking(uint64_t steamID, bool speaking){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->SetInGameVoiceSpeaking(userID, speaking);
+}
+// Listens for Steam friends chat messages.
+bool Steam::setListenForFriendsMessages(bool intercept){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	return SteamFriends()->SetListenForFriendsMessages(intercept);
+}
+// Sets the player name, stores it on the server and publishes the changes to all friends who are online.
+void Steam::setPersonaName(const String& name){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	SteamFriends()->SetPersonaName(name.utf8().get_data());
+}
+// Set player as 'Played With' for game.
+void Steam::setPlayedWith(uint64_t steamID){
+	if(SteamFriends() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steamID;
+	SteamFriends()->SetPlayedWith(userID);
+}
+// Set the game information in Steam; used in 'View Game Info'
+bool Steam::setRichPresence(const String& key, const String& value){
+	// Rich presence data is automatically shared between friends in the same game.
+	// Each user has a set of key/value pairs, up to 20 can be set.
+	// Two magic keys (status, connect).
+	// setGameInfo() to an empty string deletes the key.
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	return SteamFriends()->SetRichPresence(key.utf8().get_data(), value.utf8().get_data());
+}
+
+/////////////////////////////////////////////////
+///// INPUT /////////////////////////////////////
+/////////////////////////////////////////////////
+//
+// Reconfigure the controller to use the specified action set.
+void Steam::activateActionSet(uint64_t inputHandle, uint64_t actionSetHandle){
+	if(SteamInput() != NULL){
+		SteamInput()->ActivateActionSet((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle);
+	}
+}
+// Reconfigure the controller to use the specified action set layer.
+void Steam::activateActionSetLayer(uint64_t inputHandle, uint64_t actionSetLayerHandle){
+	if(SteamInput() != NULL){
+		SteamInput()->ActivateActionSetLayer((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetLayerHandle);
+	}
+}
+// Reconfigure the controller to stop using the specified action set.
+void Steam::deactivateActionSetLayer(uint64_t inputHandle, uint64_t actionSetHandle){
+	if(SteamInput() != NULL){
+		SteamInput()->DeactivateActionSetLayer((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle);
+	}
+}
+// Reconfigure the controller to stop using all action set layers.
+void Steam::deactivateAllActionSetLayers(uint64_t inputHandle){
+	if(SteamInput() != NULL){
+		SteamInput()->DeactivateAllActionSetLayers((ControllerHandle_t)inputHandle);
+	}
+}
+// Lookup the handle for an Action Set. Best to do this once on startup, and store the handles for all future API calls.
+uint64_t Steam::getActionSetHandle(const String& actionSetName){
+	if(SteamInput() != NULL){
+		return (uint64_t)SteamInput()->GetActionSetHandle(actionSetName.utf8().get_data());
+	}
+	return 0;
+}
+// Get an action origin that you can use in your glyph look up table or passed into GetGlyphForActionOrigin or GetStringForActionOrigin.
+int Steam::getActionOriginFromXboxOrigin(uint64_t inputHandle, int origin){
+	if(SteamInput() == NULL){
+		return 0;
+	}
+	return SteamInput()->GetActionOriginFromXboxOrigin((InputHandle_t)inputHandle, (EXboxOrigin)origin);
+}
+// Fill an array with all of the currently active action set layers for a specified controller handle.
+Array Steam::getActiveActionSetLayers(uint64_t inputHandle){
+	Array handles;
+	if(SteamInput() != NULL){
+		InputActionSetHandle_t *out = new InputActionSetHandle_t[INPUT_MAX_COUNT];
+		int ret = SteamInput()->GetActiveActionSetLayers(inputHandle, out);
+		for(int i = 0; i < ret; i++){
+			handles.push_back((int)out[i]);
+		}
+	}
+	return handles;
+}
+// Returns the current state of the supplied analog game action.
+Dictionary Steam::getAnalogActionData(uint64_t inputHandle, uint64_t analogActionHandle){
+	ControllerAnalogActionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamInput() != NULL){
+		data = SteamInput()->GetAnalogActionData((ControllerHandle_t)inputHandle, (ControllerAnalogActionHandle_t)analogActionHandle);
+	}
+	d["eMode"] = data.eMode;
+	d["x"] = data.x;
+	d["y"] = data.y;
+	d["bActive"] = data.bActive;
+	return d;
+}
+// Get the handle of the specified Analog action.
+uint64_t Steam::getAnalogActionHandle(const String& actionName){
+	if(SteamInput() != NULL){
+		return (uint64_t)SteamInput()->GetAnalogActionHandle(actionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action.
+Array Steam::getAnalogActionOrigins(uint64_t inputHandle, uint64_t actionSetHandle, uint64_t analogActionHandle){
+	Array list;
+	if(SteamInput() != NULL){
+		EInputActionOrigin *out = new EInputActionOrigin[STEAM_CONTROLLER_MAX_ORIGINS];
+		int ret = SteamInput()->GetAnalogActionOrigins((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
+		for (int i = 0; i < ret; i++){
+			list.push_back((int)out[i]);
+		}
+	}
+	return list;
+}
+// Get current controllers handles.
+Array Steam::getConnectedControllers(){
+	Array list;
+	if(SteamInput() != NULL){
+		ControllerHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
+		int ret = SteamInput()->GetConnectedControllers(handles);
+		for (int i = 0; i < ret; i++){
+			list.push_back((uint64_t)handles[i]);
+		}
+	}
+	return list;
+}
+// Returns the associated controller handle for the specified emulated gamepad.
+uint64_t Steam::getControllerForGamepadIndex(int index){
+	if(SteamInput() != NULL){
+		return (uint64_t)SteamInput()->GetControllerForGamepadIndex(index);
+	}
+	return 0;
+}
+// Get the currently active action set for the specified controller.
+uint64_t Steam::getCurrentActionSet(uint64_t inputHandle){
+	if(SteamInput() != NULL){
+		return (uint64_t)SteamInput()->GetCurrentActionSet((ControllerHandle_t)inputHandle);
+	}
+	return 0;
+}
+// Get's the major and minor device binding revisions for Steam Input API configurations. Minor revisions are for small changes such as adding a new option action or updating localization in the configuration. When updating a Minor revision only one new configuration needs to be update with the "Use Action Block" flag set. Major revisions are to be used when changing the number of action sets or otherwise reworking configurations to the degree that older configurations are no longer usable. When a user's binding disagree's with the major revision of the current official configuration Steam will forcibly update the user to the new configuration. New configurations will need to be made for every controller when updating the Major revision.
+Array Steam::getDeviceBindingRevision(uint64_t inputHandle){
+	Array revision;
+	if(SteamInput() != NULL){
+		int major = 0;
+		int minor = 0;
+		bool success = SteamInput()->GetDeviceBindingRevision((InputHandle_t)inputHandle, &major, &minor);
+		if(success){
+			revision.append(major);
+			revision.append(minor);
+		}
+	}
+	return revision;
+}
+// Returns the current state of the supplied digital game action.
+Dictionary Steam::getDigitalActionData(uint64_t inputHandle, uint64_t digitalActionHandle){
+	ControllerDigitalActionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamInput() != NULL){
+		data = SteamInput()->GetDigitalActionData((ControllerHandle_t)inputHandle, (ControllerDigitalActionHandle_t)digitalActionHandle);
+	}
+	d["bState"] = data.bState;
+	d["bActive"] = data.bActive;
+	return d;
+}
+// Get the handle of the specified digital action.
+uint64_t Steam::getDigitalActionHandle(const String& actionName){
+	if(SteamInput() != NULL){
+		return (uint64_t)SteamInput()->GetDigitalActionHandle(actionName.utf8().get_data());
+	}
+	return 0;
+}
+// Get the origin(s) for an analog action within an action.
+Array Steam::getDigitalActionOrigins(uint64_t inputHandle, uint64_t actionSetHandle, uint64_t digitalActionHandle){
+	Array list;
+	if(SteamInput() != NULL){
+		EInputActionOrigin *out = new EInputActionOrigin[STEAM_CONTROLLER_MAX_ORIGINS];
+		int ret = SteamInput()->GetDigitalActionOrigins((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerDigitalActionHandle_t)digitalActionHandle, out);
+		for (int i=0; i<ret; i++){
+			list.push_back((int)out[i]);
+		}
+	}
+	return list;
+}
+// Returns the associated gamepad index for the specified controller.
+int Steam::getGamepadIndexForController(uint64_t inputHandle){
+	if(SteamInput() != NULL){
+		return SteamInput()->GetGamepadIndexForController((ControllerHandle_t)inputHandle);
+	}
+	return -1;
+}
+// Get a local path to art for on-screen glyph for a particular origin.
+String Steam::getGlyphForActionOrigin(int origin){
+	if(SteamInput() != NULL){
+		return "";
+	}
+	return SteamInput()->GetGlyphForActionOrigin((EInputActionOrigin)origin);
+}
+// Get the input type (device model) for the specified controller. 
+String Steam::getInputTypeForHandle(uint64_t inputHandle){
+	if(SteamInput() == NULL){
+		return "";
+	}
+	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((ControllerHandle_t)inputHandle);
+	if(inputType == k_ESteamInputType_SteamController){
+		return "Steam controller";
+	}
+	else if(inputType == k_ESteamInputType_XBox360Controller){
+		return "XBox 360 controller";
+	}
+	else if(inputType == k_ESteamInputType_XBoxOneController){
+		return "XBox One controller";
+	}
+	else if(inputType == k_ESteamInputType_GenericGamepad){
+		return "Generic XInput";
+	}
+	else if(inputType == k_ESteamInputType_PS4Controller){
+		return "PS4 controller";
+	}
+	else{
+		return "Unknown";
+	}
+}
+// Returns raw motion data for the specified controller.
+Dictionary Steam::getMotionData(uint64_t inputHandle){
+	ControllerMotionData_t data;
+	Dictionary d;
+	memset(&data, 0, sizeof(data));
+	if(SteamInput() != NULL){
+		data = SteamInput()->GetMotionData((ControllerHandle_t)inputHandle);
+	}
+	d["rotQuatX"] = data.rotQuatX;
+	d["rotQuatY"] = data.rotQuatY;
+	d["rotQuatZ"] = data.rotQuatZ;
+	d["rotQuatW"] = data.rotQuatW;
+	d["posAccelX"] = data.posAccelX;
+	d["posAccelY"] = data.posAccelY;
+	d["posAccelZ"] = data.posAccelZ;
+	d["rotVelX"] = data.rotVelX;
+	d["rotVelY"] = data.rotVelY;
+	d["rotVelZ"] = data.rotVelZ;
+	return d;
+}
+// Get the Steam Remote Play session ID associated with a device, or 0 if there is no session associated with it. See isteamremoteplay.h for more information on Steam Remote Play sessions.
+int Steam::getRemotePlaySessionID(uint64_t inputHandle){
+	if(SteamInput() == NULL){
+		return 0;
+	}
+	return SteamInput()->GetRemotePlaySessionID((InputHandle_t)inputHandle);
+}
+// Returns a localized string (from Steam's language setting) for the specified origin.
+String Steam::getStringForActionOrigin(int origin){
+	if(SteamInput() == NULL){
+		return "";
+	}
+	return SteamInput()->GetStringForActionOrigin((EInputActionOrigin)origin);
+}
+// Start SteamInputs interface.
+bool Steam::inputInit(){
+	if(SteamInput() != NULL){
+		return SteamInput()->Init();
+	}
+	return false;
+}
+// Stop SteamInputs interface.
+bool Steam::inputShutdown(){
+	if(SteamInput() != NULL){
+		return SteamInput()->Shutdown();
+	}
+	return false;
+}
+// Set the controller LED color on supported controllers.
+void Steam::setLEDColor(uint64_t inputHandle, int colorR, int colorG, int colorB, int flags){
+	if(SteamInput() != NULL){
+		SteamInput()->SetLEDColor((InputHandle_t)inputHandle, colorR, colorG, colorB, flags);
+	}
+}
+// Syncronize controllers.
+void Steam::runFrame(){
+	if(SteamInput() != NULL){
+		SteamInput()->RunFrame();
+	}
+}
+// Invokes the Steam overlay and brings up the binding screen.
+bool Steam::showBindingPanel(uint64_t inputHandle){
+	if(SteamInput() != NULL){
+		return SteamInput()->ShowBindingPanel((ControllerHandle_t)inputHandle);
+	}
+	return false;
+}
+// Stops the momentum of an analog action (where applicable, ie a touchpad w/ virtual trackball settings).
+void Steam::stopAnalogActionMomentum(uint64_t inputHandle, uint64_t action){
+	if(SteamInput() != NULL){
+		SteamInput()->StopAnalogActionMomentum((InputHandle_t)inputHandle, (InputAnalogActionHandle_t)action);
+	}
+}
+// Get the equivalent origin for a given controller type or the closest controller type that existed in the SDK you built into your game if eDestinationInputType is k_ESteamInputType_Unknown. This action origin can be used in your glyph look up table or passed into GetGlyphForActionOrigin or GetStringForActionOrigin.
+int Steam::translateActionOrigin(int destinationInput, int sourceOrigin){
+	if(SteamInput() == NULL){
+		return 0;
+	}
+	return SteamInput()->TranslateActionOrigin((ESteamInputType)destinationInput, (EInputActionOrigin)sourceOrigin);
+}
+
+// Triggers a (low-level) haptic pulse on supported controllers.
+void Steam::triggerHapticPulse(uint64_t inputHandle, int targetPad, int duration){
+	if(SteamInput() != NULL){
+		SteamInput()->TriggerHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration);
+	}
+}
+// Triggers a repeated haptic pulse on supported controllers.
+//void Steam::triggerRepeatedHapticPulse(uint64_t inputHandle, int targetPad, int duration, int offset, int repeat, int flags){
+//	if(SteamInput() != NULL){
+//		SteamInput()->TriggerRepeatedHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration, offset, repeat, flags);
+//	}
+//}
+// Trigger a vibration event on supported controllers.
+void Steam::triggerVibration(uint64_t inputHandle, uint16_t leftSpeed, uint16_t rightSpeed){
+	if(SteamInput() != NULL){
+		SteamInput()->TriggerVibration((ControllerHandle_t)inputHandle, (unsigned short)leftSpeed, (unsigned short)rightSpeed);
+	}
 }
 
 /////////////////////////////////////////////////
@@ -1108,7 +1395,7 @@ Array Steam::getFavoriteGames(){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = ip >> (j * 8);
 			}
-			sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf_s(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			favorite["ip"] = favoriteIP;
 			favorite["port"] = port;
 			favorite["query"] = queryPort;
@@ -1427,7 +1714,7 @@ Dictionary Steam::getLobbyGameServer(uint64_t steamIDLobby){
 		for(int i = 0; i < NBYTES; i++){
 			octet[i] = serverIP >> (i * 8);
 		}
-		sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+		sprintf_s(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 		gameServer["ip"] = ip;
 		gameServer["port"] = serverPort;
 		// Convert the server ID
@@ -1869,6 +2156,13 @@ uint32_t Steam::addScreenshotToLibrary(const String& filename, const String& thu
 	}
 	return SteamScreenshots()->AddScreenshotToLibrary(filename.utf8().get_data(), thumbnailFilename.utf8().get_data(), width, height);
 }
+// Adds a VR screenshot to the user's Steam screenshot library from disk in the supported type.
+uint32_t Steam::addVRScreenshotToLibrary(int type, const String& filename, const String& vrFilename){
+	if(SteamScreenshots() == NULL){
+		return 0;
+	}
+	return SteamScreenshots()->AddVRScreenshotToLibrary((EVRScreenshotType)type, filename.utf8().get_data(), vrFilename.utf8().get_data());
+}
 // Toggles whether the overlay handles screenshots.
 void Steam::hookScreenshots(bool hook){
 	if(SteamScreenshots() == NULL){
@@ -1890,6 +2184,22 @@ bool Steam::setLocation(uint32_t screenshot, const String& location){
 	}
 	ScreenshotHandle handle = (ScreenshotHandle)screenshot;
 	return SteamScreenshots()->SetLocation(handle, location.utf8().get_data());
+}
+//
+bool Steam::tagPublishedFile(uint32 screenshot, uint64_t fileID){
+	if(SteamScreenshots() == NULL){
+		false;
+	}
+	PublishedFileId_t file = (uint64)fileID;
+	return SteamScreenshots()->TagPublishedFile((ScreenshotHandle)screenshot, file);
+}
+// Tags a Steam user as being visible in the screenshot.  You can tag up to the value declared by k_nScreenshotMaxTaggedUsers in a single screenshot. Tagging more users than that will just be discarded.  This function has a built in delay before saving the tag which allows you to call it repeatedly for each item.  You can get the handle to tag the screenshot once it has been successfully saved from the ScreenshotReady_t callback or via the WriteScreenshot, AddScreenshotToLibrary, AddVRScreenshotToLibrary calls.
+bool Steam::tagUser(uint32 screenshot, uint64_t steamID){
+	if(SteamScreenshots() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steamID;
+	return SteamScreenshots()->TagUser((ScreenshotHandle)screenshot, userID);
 }
 // Causes Steam overlay to take a screenshot.
 void Steam::triggerScreenshot(){
@@ -1935,7 +2245,8 @@ void Steam::_new_launch_url_parameters(NewUrlLaunchParameters_t* callData){
 	emit_signal("new_launch_url_parameters");
 }
 // Posted after the user executes a steam url with query parameters such as steam://run/<appid>//?param1=value1;param2=value2;param3=value3; while the game is already running. The new params can be queried with getLaunchQueryParam.
-//void Steam::_new_launch_query_parameters(NewLaunchQueryParameters_t *callData){
+// ISSUE: when compiling says it is an undeclared identifier
+//void Steam::_new_launch_query_parameters(NewLaunchQueryParameters_t* callData){
 //	emit_signal("new_launch_query_parameters");
 //}
 //
@@ -2151,7 +2462,7 @@ void Steam::_favorites_list_changed(FavoritesListChanged_t* callData){
 	for(int j = 0; j < NBYTES; j++){
 		octet[j] = callData->m_nIP >> (j * 8);
 	}
-	sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf_s(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	favorite["ip"] = favoriteIP; 
 	favorite["queryPort"] = callData->m_nQueryPort;
 	favorite["connPort"] = callData->m_nConnPort;
@@ -2281,7 +2592,7 @@ void Steam::_lobby_game_created(LobbyGameCreated_t* callData){
 	for(int i = 0; i < NBYTES; i++){
 		octet[i] = ip >> (i * 8);
 	}
-	sprintf(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf_s(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	emit_signal("lobby_game_created", lobbyID, serverID, serverIP, port);
 }
 // Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a '<user> has invited you to the lobby, join?' notification and message. If the user outside a game chooses to join, your game will be launched with the parameter +connect_lobby <64-bit lobby id>, or with the callback GameLobbyJoinRequested_t if they're already in-game.
@@ -2492,7 +2803,7 @@ void Steam::_client_game_server_deny(ClientGameServerDeny_t* callData){
 	for(int j = 0; j < NBYTES; j++){
 		octet[j] = serverIP >> (j * 8);
 	}
-	sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf_s(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	emit_signal("client_game_server_deny", appID, ip, serverPort, secure, reason);
 }
 // Called when an encrypted application ticket has been received.
@@ -2636,30 +2947,6 @@ void Steam::_leaderboard_ugc_set(LeaderboardUGCSet_t* callData, bool bIOFailure)
 void Steam::_number_of_current_players(NumberOfCurrentPlayers_t *callData, bool bIOFailure){
 	emit_signal("number_of_current_players", callData->m_bSuccess && bIOFailure, callData->m_cPlayers);
 }
-// Result of an achievement icon that has been fetched.
-void Steam::_user_achievement_icon_fetched(UserAchievementIconFetched_t* callData, bool bIOFailure){
-	uint64_t gameID = callData->m_nGameID.ToUint64();
-	String achievementName = callData->m_rgchAchievementName;
-	bool achieved = callData->m_bAchieved;
-	int iconHandle = callData->m_nIconHandle;
-	// Set some icon variables to send back if there is no icon
-	uint32 width = 0;
-	uint32 height = 0;
-	PoolByteArray data;
-	// Get the icon data if iconHandle not 0
-	if(iconHandle > 0){
-		bool success = SteamUtils()->GetImageSize(iconHandle, &width, &height);
-		if(!success){
-			printf("[Steam] Failed to get image size.\n");
-		}
-		data.resize(width * height * 4);
-		success = SteamUtils()->GetImageRGBA(iconHandle, data.write().ptr(), data.size());
-		if(!success){
-			printf("[Steam] Failed to load image buffer from callback\n");
-		}
-	}
-	emit_signal("user_achievement_icon_fetched", gameID, achievementName, achieved, width, data);
-}
 // Result of a request to store the achievements on the server, or an "indicate progress" call. If both m_nCurProgress and m_nMaxProgress are zero, that means the achievement has been fully unlocked.
 void Steam::_user_achievement_stored(UserAchievementStored_t* callData){
 	CSteamID gameID = callData->m_nGameID;
@@ -2669,6 +2956,15 @@ void Steam::_user_achievement_stored(UserAchievementStored_t* callData){
 	uint32_t currentProgress = callData->m_nCurProgress;
 	uint32_t maxProgress = callData->m_nMaxProgress;
 	emit_signal("user_achievement_stored", game, groupAchieve, name, currentProgress, maxProgress);
+}
+// Called when the latest stats and achievements for the local user have been received from the server.
+void Steam::_current_stats_received(UserStatsReceived_t* callData){
+	CSteamID gameID = callData->m_nGameID;
+	uint64_t game = gameID.ConvertToUint64();
+	uint32_t result = callData->m_eResult;
+	CSteamID userID = callData->m_steamIDUser;
+	uint64_t user = userID.ConvertToUint64();
+	emit_signal("current_stats_received", game, result, user);
 }
 // Called when the latest stats and achievements for a specific user (including the local user) have been received from the server.
 void Steam::_user_stats_received(UserStatsReceived_t* callData, bool bIOFailure){
@@ -4070,12 +4366,11 @@ String Steam::getAchievementDisplayAttribute(const String& name, const String& k
 	return SteamUserStats()->GetAchievementDisplayAttribute(name.utf8().get_data(), key.utf8().get_data());
 }
 //Gets the icon for an achievement
-void Steam::getAchievementIcon(const String& name){
+int Steam::getAchievementIcon(const String& name){
 	if(SteamUserStats() == NULL){
-		return;
+		return 0;
 	}
-	SteamAPICall_t apiCall = SteamUserStats()->GetAchievementIcon(name.utf8().get_data());
-	callResultUserAchievementIconFetched.Set(apiCall, this, &Steam::_user_achievement_icon_fetched);
+	return SteamUserStats()->GetAchievementIcon(name.utf8().get_data());
 }
 // Gets the 'API name' for an achievement index
 String Steam::getAchievementName(uint32_t achievement){
@@ -4625,22 +4920,37 @@ void Steam::_bind_methods(){
 	
 	// Controllers Bind Methods /////////////////
 	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
+	ClassDB::bind_method("activateActionSetLayer", &Steam::activateActionSetLayer);
+	ClassDB::bind_method("deactivateActionSetLayer", &Steam::deactivateActionSetLayer);
+	ClassDB::bind_method("deactivateAllActionSetLayers", &Steam::deactivateAllActionSetLayers);
 	ClassDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
+	ClassDB::bind_method("getActionOriginFromXboxOrigin", &Steam::getActionOriginFromXboxOrigin);
+	ClassDB::bind_method("getActiveActionSetLayers", &Steam::getActiveActionSetLayers);
 	ClassDB::bind_method("getAnalogActionData", &Steam::getAnalogActionData);
 	ClassDB::bind_method("getAnalogActionHandle", &Steam::getAnalogActionHandle);
 	ClassDB::bind_method("getAnalogActionOrigins", &Steam::getAnalogActionOrigins);
 	ClassDB::bind_method("getConnectedControllers", &Steam::getConnectedControllers);
 	ClassDB::bind_method("getControllerForGamepadIndex", &Steam::getControllerForGamepadIndex);
 	ClassDB::bind_method("getCurrentActionSet", &Steam::getCurrentActionSet);
-	ClassDB::bind_method("getInputTypeForHandle", &Steam::getInputTypeForHandle);
+	ClassDB::bind_method("getDeviceBindingRevision", &Steam::getDeviceBindingRevision);
 	ClassDB::bind_method("getDigitalActionData", &Steam::getDigitalActionData);
 	ClassDB::bind_method("getDigitalActionHandle", &Steam::getDigitalActionHandle);
 	ClassDB::bind_method("getDigitalActionOrigins", &Steam::getDigitalActionOrigins);
+	ClassDB::bind_method("getGamepadIndexForController", &Steam::getGamepadIndexForController);
+	ClassDB::bind_method("getGlyphForActionOrigin", &Steam::getGlyphForActionOrigin);
+	ClassDB::bind_method("getInputTypeForHandle", &Steam::getInputTypeForHandle);
 	ClassDB::bind_method("getMotionData", &Steam::getMotionData);
-	ClassDB::bind_method("init", &Steam::init);
+	ClassDB::bind_method("getRemotePlaySessionID", &Steam::getRemotePlaySessionID);
+	ClassDB::bind_method("getStringForActionOrigin", &Steam::getStringForActionOrigin);
+	ClassDB::bind_method("inputInit", &Steam::inputInit);
+	ClassDB::bind_method("inputShutdown", &Steam::inputShutdown);
 	ClassDB::bind_method("runFrame", &Steam::runFrame);
+	ClassDB::bind_method("setLEDColor", &Steam::setLEDColor);
 	ClassDB::bind_method("showBindingPanel", &Steam::showBindingPanel);
-	ClassDB::bind_method("shutdown", &Steam::shutdown);
+	ClassDB::bind_method("stopAnalogActionMomentum", &Steam::stopAnalogActionMomentum);
+	ClassDB::bind_method("translateActionOrigin", &Steam::translateActionOrigin);
+	ClassDB::bind_method("triggerHapticPulse", &Steam::triggerHapticPulse);
+//	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
 	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
 	
 	// Friends Bind Methods /////////////////////
@@ -4789,9 +5099,12 @@ void Steam::_bind_methods(){
 	
 	// Screenshoot Bind Methods /////////////////
 	ClassDB::bind_method("addScreenshotToLibrary", &Steam::addScreenshotToLibrary);
+	ClassDB::bind_method("addVRScreenshotToLibrary", &Steam::addVRScreenshotToLibrary);
 	ClassDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
 	ClassDB::bind_method("isScreenshotsHooked", &Steam::isScreenshotsHooked);
 	ClassDB::bind_method("setLocation", &Steam::setLocation);
+	ClassDB::bind_method("tagPublishedFile", &Steam::tagPublishedFile);
+	ClassDB::bind_method("taguser", &Steam::tagUser);
 	ClassDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	ClassDB::bind_method("writeScreenshot", &Steam::writeScreenshot);
 	
@@ -4954,6 +5267,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("new_launch_url_parameters"));
+//	ADD_SIGNAL(MethodInfo("new_launch_query_parameters"));
 	
 	// Friends Signals //////////////////////////
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "size")));
@@ -5043,8 +5357,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("leaderboard_score_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
 	ADD_SIGNAL(MethodInfo("leaderboard_ugc_set"));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
-	ADD_SIGNAL(MethodInfo("user_achievement_icon_fetched", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::STRING, "achievementName"), PropertyInfo(Variant::BOOL, "achieved"), PropertyInfo(Variant::INT, "iconHandle")));
 	ADD_SIGNAL(MethodInfo("user_achievement_stored"));
+	ADD_SIGNAL(MethodInfo("current_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
 	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
 	ADD_SIGNAL(MethodInfo("user_stats_stored"));
 	ADD_SIGNAL(MethodInfo("user_stats_unloaded"));
@@ -5542,6 +5856,20 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_TABLET);					// 2
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_COMPUTER);					// 3
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_TV);						// 4
+
+	// Input Constants //////////////////////////
+	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTIONS);					// 16
+	BIND_CONSTANT(INPUT_MAX_COUNT);								// 16
+	BIND_CONSTANT(INPUT_MAX_DIGITAL_ACTIONS);					// 128
+	BIND_CONSTANT(INPUT_MAX_ORIGINS);							// 8
+
+	// Screenshot Constants /////////////////////
+	BIND_CONSTANT(SCREENSHOT_INVALID);							// 0
+	BIND_CONSTANT(SCREENSHOT_TAG_TYPE_MAX);						// 255
+	BIND_CONSTANT(SCREENSHOT_TAG_VALUE_MAX);					// 255
+	BIND_CONSTANT(SCREENSHOT_MAX_TAGGED_FILES);					// 32
+	BIND_CONSTANT(SCREENSHOT_MAX_TAGGED_USERS);					// 32
+	BIND_CONSTANT(SCREENSHOT_THUMB_WIDTH);						// 200
 }
 
 Steam::~Steam(){
