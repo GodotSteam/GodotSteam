@@ -30,23 +30,30 @@
 							<h1>Tutorials - Stats And Achievements</h1>
 						</header>
 						<p>At some point you may want to save statistics to Steam's database and/or use their achievement system.  You will want to <a href="https://partner.steamgames.com/doc/features/achievements" target="_blank">read up about these in Steam's documentation</a> as I won't be covering the basics on how to set it up in the Steamworks interface.</p>
-						<p>When starting up your game, you'll want to pull all related achievements and statistics from Steam's servers.  This is done simply by requesting the user's information like so:</p>
+						<header class="major">
+							<h3>Getting Steam Statistics And Achievements</h3>
+						</header>
+						<p>When starting up your game, you'll want to pull all related achievements and statistics from Steam's servers.  This is done by default when Steam is initialized.  To get work with the data you need to connect the <strong><em>current_stats_received</em></strong> callback to a function like so:</p>
 <pre><code>
-Steam.requestCurrentStats()
+Steam.connect("current_stats_received", self, "_steam_Stats_Ready", [], CONNECT_ONESHOT)
 </code></pre><br/>
-						<p>This will query Steam's server and provide a callback when that data is available. Speaking of, you need to connect that callback to a function. I usually use something like this:</p>
+						<p>You'll notice that <strong>CONNECT_ONESHOT</strong> is passed along to prevent this from firing again.  This is because that signal is sent any time stats are updated or received.  If you don't mind these stats being updated from Steam's servers each time, you can omit it.
+						<p>If you do keep the <strong>CONNECT_ONESHOT</strong>, I suggest calling for Steam stat updates with <strong>requestUserStats</strong> and pass with it the user's Steam ID.  This will work with any user, local or remote.  You'll also want to connect it's signal:</p>
 <pre><code>
-Steam.connect("user_stats_received", self, "_steam_Stats_Ready", [], CONNECT_ONESHOT)
-</code></pre><br/>
-						<p>
-						For our example, here is the <strong><em>_steam_Stats_Ready</em></strong> function we listed in the connected signal:</p>
+Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
+</code></pre><br/>		
+						<p>It can be connected to the same function as <strong>requestCurrentStats</strong> as they send the same data back.  For our example, here is the <strong><em>_steam_Stats_Ready</em></strong> function we listed in the connected signals:</p>
 <pre><code>
 func _steam_Stats_Ready(game, result, user):
 	print("This game's ID: "+str(game))
 	print("Call result: "+str(result))
 	print("This user's Steam ID: "+str(user))
 </code></pre><br/>
-						<p>In this function you can check if the result is what you expect (ideally it is 1), see if the given stats are for the current player, and check that the game's ID matches.  Also you can now pass the achievements and stats to local variables or functions. I will often pass the achievement to a function to parse them correctly as they send back a BOOL for retrieval and a BOOL for earned or not. <strong>Note:</strong> that this will get triggered again by storing stats, so I usually add an intial load variable to prevent that:</p>
+						<hr />
+						<header class="major">
+							<h3>Working With The Data</h3>
+						</header>
+						<p>In this function you can check if the result is what you expect (ideally it is 1), see if the given stats are for the current player, and check that the game's ID matches.  Also you can now pass the achievements and stats to local variables or functions. I will often pass the achievement to a function to parse them correctly as they send back a BOOL for retrieval and a BOOL for earned or not.</p>
 <pre><code>
 func _steam_Stats_Ready(game, result, user):
 	print("This game's ID: "+str(game))
@@ -77,7 +84,11 @@ func _get_Achievement(value):
 	# Achievement does not exist
 	else:
 		ACHIEVEMENTS[value] = false
-</code></pre><br/>
+</code></pre><br/>		
+						<hr />
+						<header class="major">
+							<h3>Setting Achievements</h3>
+						</header>
 						<p>Setting the achievements and statistics is pretty simple too. We'll start with achievements. You need to tell Steam the achievement is unlocked and then store it so 'pops':</p>
 <pre><code>
 Steam.setAchievement("achieve1")
@@ -92,12 +103,18 @@ func _fire_Steam_Achievement(value):
 	Steam.setAchievement(value)
 	Steam.storeStats()
 </code></pre><br/>
+						When that last <strong>Steam.storeStats()</strong> is called the achievement will "pop" visually for the user and update their Steam client.</p>
+						<hr />
+						<header class="major">
+							<h3>Setting Statistics</h3>
+						</header>
 						<p>Statistics follow a pretty similar process; both int and float based ones.  Set them like so:</p>
 <pre><code>
 Steam.setStatInt("stat1", value)
 Steam.setStatFloat("stat2", value)
 Steam.storeStats()
 </code></pre><br/>
+						<p>When that last <strong>Steam.storeStats()</strong> is called the stats will update on Steam's servers.</p>
 						<p>That covers the basics of statistics and achievements.</p>
 					</section>
 					<footer id="footer">
@@ -148,6 +165,7 @@ Steam.storeStats()
 									<li><a href="tutorials-avatars.html">Avatars</a></li>
 									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+									<li><a href="tutorials-achievement-icons.html">Achievment Icons</a></li>
 								</ul>
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>

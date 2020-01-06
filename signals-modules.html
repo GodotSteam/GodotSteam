@@ -507,23 +507,22 @@
 							<li>Emits signal <strong><em>number_of_current_players</em></strong> in response to function <strong><em>getNumberOfCurrentPlayers</em></strong>.</li>
 							<li>Sends along the success and player numbers.</li>
 						</ul>
-						<h4>_user_achievement_icon_fetched</h4>
-						<ul>
-							<li>Result of an achievement icon that has been fetched.</li>
-							<li>Emits signal <strong><em>user_achievement_icon_fetched</em></strong> in response to function <strong><em>getAchievementIcon</em></strong>.</li>
-							<li>Sends along </li>
-							emit_signal("user_achievement_icon_fetched", gameID, achievementName, achieved, iconHandle);
-						</ul>
 						<h4>_user_achievement_stored</h4>
 						<ul>
 							<li>Result of a request to store the achievements on the server, or an "indicate progress" call. If both current progress and max progress are zero, that means the achievement has been fully unlocked.</li>
 							<li>Emits signal <strong><em>user_achievement_stored</em></strong> in response to function <strong><em>setAchievement</em></strong>.</li>
 							<li>Sends along the game ID, the achievement group, the name, the current progress and the maximum progress.</li>
 						</ul>
+						<h4>_current_stats_received</h4>
+						<ul>
+							<li>Called when the latest stats and achievements for the local user have been received from the server.</li>
+							<li>Emits signal <strong><em>current_stats_received</em></strong> in response to function <strong><em>requestCurrentStats</em></strong>.</li>
+							<li>Sends along the game ID, the result as an INT, and the user's Steam ID.</li>
+						</ul>
 						<h4>_user_stats_received</h4>
 						<ul>
 							<li>Called when the latest stats and achievements for a specific user (including the local user) have been received from the server.</li>
-							<li>Emits signal <strong><em>user_stats_received</em></strong> in response to function <strong><em>requestCurrentStats</em></strong> or <strong><em>requestUserStats</em></strong>.</li>
+							<li>Emits signal <strong><em>user_stats_received</em></strong> in response to function <strong><em>requestUserStats</em></strong>.</li>
 							<li>Sends along the game ID, the result as an INT, and the user's Steam ID.</li>
 						</ul>
 						<h4>_user_stats_stored</h4>
@@ -626,6 +625,7 @@
 									<li><a href="tutorials-avatars.html">Avatars</a></li>
 									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+									<li><a href="tutorials-achievement-icons.html">Achievment Icons</a></li>
 								</ul>
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>

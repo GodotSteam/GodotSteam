@@ -40,6 +40,24 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.3 Changes</h3>
+						<ul>
+							<li>Added: all Steam Input functions; used to be Steam Controller</li>
+							<li>Added: all Steam Input constants</li>
+							<li>Added: new Apps functions</li>
+							<li>Added: missing Friends functions</li>
+							<li>Added: missing Screenshots functions</li>
+							<li>Added: all missing Screenshot constants</li>
+							<li>Changed: removed Steam Controller as it is now depreciated</li>
+							<li>Changed: split up call results and callbacks in godotsteam.h for editing ease</li>
+							<li>Changed: user_stats_received to current_stats_received for requestCurrentStats callback / signal</li>
+							<li>Changed: sorted Apps and Friends functions alphabetically like Steamworks Docs to find new functions easier</li>
+							<li>Changed: getAchievementIcon; now returns the handle</li>
+							<li>Changed: getInputTypeForHandle to output verbose controller type</li>
+							<li>Changed: SteamInput function init to inputInit</li>
+							<li>Changed: SteamInput function shutdown to inputShutdown</li>
+							<li>Removed: user_achievement_icon_fetched signal / callback as it is never called</li>
+						</ul>
 						<h3>Version 3.2.1 Changes</h3>
 						<ul>
 							<li>Added: back some needed UGC constants</li>
@@ -473,6 +491,7 @@
 									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
 									<li><a href="tutorials-avatars.html">Avatars</a></li>
 									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+									<li><a href="tutorials-achievement-icons.html">Achievment Icons</a></li>
 								</ul>
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>

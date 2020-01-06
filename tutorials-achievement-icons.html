@@ -27,77 +27,81 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Tutorials - Initializing Steam</h1>
+							<h1>Tutorials - Achievement Icons</h1>
 						</header>
-						<p>I usually create an auto-load GDscript called global.gd which is added as a singleton. I add this code to the _ready() function:</p>
+						<p>This quick tutorial will cover to how get achievement icons from Steam's servers.  It was made because there are some extra steps folks need to use to render the images and it may not be very clear otherwise.</p>
+						<p>First you will need to request the icon handle by using the achievement's Steamworks name you set in the back-end:</p>
 <pre><code>
-var INIT = Steam.steamInit()
-print("Did Steam initialize?: "+str(INIT))
-	
-if INIT['status'] != 0:
-	print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
-	get_tree().quit()
+var HANDLE = Steam.getAchievementIcon("achievement name")
 </code></pre><br/>
-						<p>This code will obviously shut down the game if Steam does not initialize, as well as print the verbal reason for shutting down. The function <strong>Steam.steamInit()</strong> will send back a dictionary with two keys / values:
-							<ul>
-								<li>verbal - this is essential the verbose version of status</li>
-								<li>status
-									<ul>
-										<li>0 - if things are working</li>
-										<li>1 - if it fails to initialize (default error)</li>
-										<li>2 - if Steam is not running</li>
-										<li>3 - if user is not logged in or has no connection to Steam</li>
-									</ul>
-								</li>
-							</ul>
-						</p>
-						<p>You can check for a few additional things at boot like:</p>
+						<p>This handle is used to get the image information.  This would be passed to a buffer variable like so:</p>
 <pre><code>
-var ONLINE = Steam.loggedOn()
-var STEAM_ID = Steam.getSteamID()
-var OWNED = Steam.isSubscribed()
+var BUFFER = Steam.getImageRGBA(HANDLE)
 </code></pre><br/>
-						<p>This will check if Steam is online, get the current user's Steam ID64, and check if the current user owns the game. You can also have the game turn itself off if the current user does not own the game by simply doing this:</p>
+						<p>This buffer is a contains the actual image data for our icon but is tricky to use.  Before that, we will need to create a new image and texture to attach to a sprite later on:
 <pre><code>
-if OWNED == false:
-	print("User does not own this game")
-	get_tree().quit()
+var SIZE = 32
+var ICON = Image.new()
+var ICON_TEXTURE = ImageTexture.new()
+ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
 </code></pre><br/>
-						<p>There are other things you may want to do during a boot-up process after Steamworks is initialized, like getting current achievements or statistics, and we'll cover that next. Last, but not least, anywhere you want or need to retrieve callbacks from Steam, you'll need to add this:</p>
+						<p>The size variable can be whatever you want; for our example, we will use 32 (32 pixels by 32 pixels).</p>
+						<p>Now let's go back and parts that buffer data:</p>
 <pre><code>
-func _process(delta):
-	Steam.run_callbacks()
+ICON.lock()
+for y in range(0, SIZE):
+	for x in range(0, SIZE):
+		var pixel = 4 * (x + y * SIZE)
+		var r = float(BUFFER['buffer'][pixel]) / 255
+		var g = float(BUFFER['buffer'][pixel+1]) / 255
+		var b = float(BUFFER['buffer'][pixel+2]) / 255
+		var a = float(BUFFER['buffer'][pixel+3]) / 255
+		ICON.set_pixel(x, y, Color(r, g, b, a))
+ICON.unlock()
 </code></pre><br/>
-						<p>Putting it all together should give us something like this:</p>
+						<p>Now that all the pixels are set in the right places, we can create the texture:</p>
+<pre><code>	
+ICON_TEXTURE.create_from_image(ICON)
+</code></pre><br/>
+						<p>And finally we can display the icon.  Using the previous ICON_TEXTURE, we can place this icon on our waiting sprite:
 <pre><code>
-extends Node
+get_node("Sprite").set_texture(ICON_TEXTURE)
+</code></pre><br/>	
+						<p>Our complete example should look something like this:</p>
+<pre><code>
+# Set up some icon variables
+var SIZE = 32
 
-# Steam variables
-var OWNED = false
-var ONLINE = false
-var STEAM_ID = 0
+# Get the image's handle
+var HANDLE = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
 
-func _ready():
-	var INIT = Steam.steamInit()
-	print("Did Steam initialize?: "+str(INIT))
-	
-	if INIT['status'] != 0:
-		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
-		get_tree().quit()
-	
-	ONLINE = Steam.loggedOn()
-	STEAM_ID = Steam.getSteamID()
-	OWNED = Steam.isSubscribed()
-	
-	# Check if account owns the game
-	if OWNED == false:
-		logging.error("User does not own this game")
-		get_tree().quit()
+# Get the image data
+var BUFFER = Steam.getImageRGBA(HANDLE)
 
-func _process(delta):
-	Steam.run_callbacks()
-</code></pre>
-						<p>This covers the initialization and basic set-up.</p>
+#Create the image and texture for loading
+var ICON = Image.new()
+var ICON_TEXTURE = ImageTexture.new()
+ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
+
+# Lock and draw the image
+ICON.lock()
+for y in range(0, SIZE):
+	for x in range(0, SIZE):
+		var pixel = 4 * (x + y * SIZE)
+		var r = float(BUFFER['buffer'][pixel]) / 255
+		var g = float(BUFFER['buffer'][pixel+1]) / 255
+		var b = float(BUFFER['buffer'][pixel+2]) / 255
+		var a = float(BUFFER['buffer'][pixel+3]) / 255
+		ICON.set_pixel(x, y, Color(r, g, b, a))
+ICON.unlock()
+
+# Apply it to the texture
+ICON_TEXTURE.create_from_image(ICON)
+
+# Display it on a sprite node
+get_node("Sprite").set_texture(ICON_TEXTURE)
+</code></pre><br/>
+						<p>And that's how you display an achievement icon.  You can find this tutorial in the <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">Example branch of the repo</a> too.</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
