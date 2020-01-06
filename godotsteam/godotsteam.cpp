@@ -283,7 +283,7 @@ String Steam::getLaunchCommandLine(){
 		return "";
 	}
 	char *commands;
-	int ret = SteamApps()->GetLaunchCommandLine(commands, 256);
+	SteamApps()->GetLaunchCommandLine(commands, 256);
 	return commands;
 }
 // Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
@@ -409,7 +409,7 @@ Dictionary Steam::getClanActivityCounts(uint64_t clanID){
 	bool success = SteamFriends()->GetClanActivityCounts(clan, &online, &ingame, &chatting);
 	// Add these to the dictionary if successful
 	if(success){
-		activity["clan"] = clan.ConvertToUint64();
+		activity["clan"] = clanID;
 		activity["online"] = online;
 		activity["ingame"] = ingame;
 		activity["chatting"] = chatting;
@@ -432,18 +432,20 @@ int Steam::getClanChatMemberCount(uint64_t clanID){
 }
 //  Gets the data from a Steam group chat room message.  This should only ever be called in response to a GameConnectedClanChatMsg_t callback.
 Dictionary getClanChatMessage(uint64_t chatID, int message){
-	Dictionary chat;
+	Dictionary chatMessage;
 	if(SteamFriends() == NULL){
-		return chat;
+		return chatMessage;
 	}
+	CSteamID chat = (uint64)chatID;
 	char text[2048];
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	CSteamID userID;
-	chat["ret"] = SteamFriends()->GetClanChatMessage(chatID, message, text, 2048, &type, &userID);
-	chat["text"] = String(text);
-	chat["type"] = type;
-	chat["chatter"] = uint64_t(userID.ConvertToUint64());
-	return chat;
+	chatMessage["ret"] = SteamFriends()->GetClanChatMessage(chat, message, text, 2048, &type, &userID);
+	chatMessage["text"] = String(text);
+	chatMessage["type"] = type;
+	uint64_t user = userID.ConvertToUint64();
+	chatMessage["chatter"] = user;
+	return chatMessage;
 }
 // Gets the number of Steam groups that the current user is a member of.  This is used for iteration, after calling this then GetClanByIndex can be used to get the Steam ID of each Steam group.
 int Steam::getClanCount(){
@@ -587,7 +589,7 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steamID){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = gameInfo.m_unGameIP >> (j * 8);
 			}
-			sprintf_s(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			friendGame["ip"] = gameIP;
 			friendGame["gamePort"] = gameInfo.m_usGamePort;
 			friendGame["queryPort"] = (char)gameInfo.m_usQueryPort;
@@ -703,7 +705,8 @@ Array Steam::getFriendsGroupMembersList(int friendGroup, int memberCount){
 	}
 	CSteamID friendIDs;
 	SteamFriends()->GetFriendsGroupMembersList((FriendsGroupID_t)friendGroup, &friendIDs, memberCount);
-	memberList.append(friendIDs.ConvertToUint64());
+	uint64_t friends = friendIDs.ConvertToUint64();
+	memberList.append(friends);
 	return memberList;
 }
 // Gets the name for the given friends group.
@@ -1395,7 +1398,7 @@ Array Steam::getFavoriteGames(){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = ip >> (j * 8);
 			}
-			sprintf_s(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 			favorite["ip"] = favoriteIP;
 			favorite["port"] = port;
 			favorite["query"] = queryPort;
@@ -1714,7 +1717,7 @@ Dictionary Steam::getLobbyGameServer(uint64_t steamIDLobby){
 		for(int i = 0; i < NBYTES; i++){
 			octet[i] = serverIP >> (i * 8);
 		}
-		sprintf_s(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+		sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 		gameServer["ip"] = ip;
 		gameServer["port"] = serverPort;
 		// Convert the server ID
@@ -2188,7 +2191,7 @@ bool Steam::setLocation(uint32_t screenshot, const String& location){
 //
 bool Steam::tagPublishedFile(uint32 screenshot, uint64_t fileID){
 	if(SteamScreenshots() == NULL){
-		false;
+		return false;
 	}
 	PublishedFileId_t file = (uint64)fileID;
 	return SteamScreenshots()->TagPublishedFile((ScreenshotHandle)screenshot, file);
@@ -2462,7 +2465,7 @@ void Steam::_favorites_list_changed(FavoritesListChanged_t* callData){
 	for(int j = 0; j < NBYTES; j++){
 		octet[j] = callData->m_nIP >> (j * 8);
 	}
-	sprintf_s(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	favorite["ip"] = favoriteIP; 
 	favorite["queryPort"] = callData->m_nQueryPort;
 	favorite["connPort"] = callData->m_nConnPort;
@@ -2592,7 +2595,7 @@ void Steam::_lobby_game_created(LobbyGameCreated_t* callData){
 	for(int i = 0; i < NBYTES; i++){
 		octet[i] = ip >> (i * 8);
 	}
-	sprintf_s(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(serverIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	emit_signal("lobby_game_created", lobbyID, serverID, serverIP, port);
 }
 // Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a '<user> has invited you to the lobby, join?' notification and message. If the user outside a game chooses to join, your game will be launched with the parameter +connect_lobby <64-bit lobby id>, or with the callback GameLobbyJoinRequested_t if they're already in-game.
@@ -2803,7 +2806,7 @@ void Steam::_client_game_server_deny(ClientGameServerDeny_t* callData){
 	for(int j = 0; j < NBYTES; j++){
 		octet[j] = serverIP >> (j * 8);
 	}
-	sprintf_s(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	emit_signal("client_game_server_deny", appID, ip, serverPort, secure, reason);
 }
 // Called when an encrypted application ticket has been received.

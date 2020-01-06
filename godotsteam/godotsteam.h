@@ -320,7 +320,7 @@ class Steam: public Object {
 
 		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height);
-		uint32_t Steam::addVRScreenshotToLibrary(int type, const String& filename, const String& vrFilename);
+		uint32_t addVRScreenshotToLibrary(int type, const String& filename, const String& vrFilename);
 		void hookScreenshots(bool hook);
 		bool isScreenshotsHooked();
 		bool setLocation(uint32_t screenshot, const String& location);
