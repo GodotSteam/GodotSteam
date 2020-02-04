@@ -1,5 +1,5 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.1). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.2). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
@@ -11,25 +11,14 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.3)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.3.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.3 Changes**
+**Version 3.3.1 Changes**
 
-- Added: all Steam Input functions; used to be Steam Controller
-- Added: all Steam Input constants
-- Added: new Apps functions
-- Added: missing Friends functions
-- Added: missing Screenshots functions
-- Added: all missing Screenshot constants
-- Changed: removed Steam Controller as it is now depreciated
-- Changed: split up call results and callbacks in godotsteam.h for editing ease
-- Changed: user_stats_received to current_stats_received for requestCurrentStats callback / signal
-- Changed: sorted Apps and Friends functions alphabetically like Steamworks Docs to find new functions easier
-- Changed: getAchievementIcon; now returns the handle
-- Changed: getInputTypeForHandle to output verbose controller type
-- Changed: SteamInput function init to inputInit
-- Changed: SteamInput function shutdown to inputShutdown
-- Removed: user_achievement_icon_fetched signal / callback as it is never called
+- Added: all HTML Surface functions, callbacks, and enums
+- Added: all HTTP functions, callbacks, and enums 
+- Changed: sendRemotePlayTogetherInvite now works since it was added back to the SDK
+- Fixed: (probably) output for getLaunchCommandLine
 
 Known Issues
 ----------
@@ -39,7 +28,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.1.2.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.2.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/
@@ -65,7 +54,7 @@ Quick How-To
     - When creating templates for this, please refer to this post for assistance as the documentation is a bit lacking ( http://steamcommunity.com/app/404790/discussions/0/364042703865087202/ ).
 - When recompiling the engine is finished do the following before running it the first time:
   - Copy the shared library (steam_api), for your OS, from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder).
-  - Create a steam_appid.txt file with your game's app ID or 480 in this folder.  Necessary if the editor or game is run _outtside_ of Steam.
+  - Create a steam_appid.txt file with your game's app ID or 480 in this folder.  Necessary if the editor or game is run _outside_ of Steam.
 
 - The finished hierarchy should look like this:
   - Linux 32/64-bit

@@ -82,7 +82,11 @@ class Steam: public Object {
 			LEADERBOARD_DATA_REQUEST_GLOBAL=0, LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER=1, LEADERBOARD_DATA_REQUEST_FRIENDS=2, LEADERBOARD_DATA_REQUEST_USERS=3,
 			DEVICE_FORM_FACTOR_UNKNOWN=0, DEVICE_FORM_FACTOR_PHONE=1, DEVICE_FORM_FACTOR_TABLET=2, DEVICE_FORM_FACTOR_COMPUTER=3, DEVICE_FORM_FACTOR_TV=4,
 			INPUT_MAX_ANALOG_ACTIONS=16, INPUT_MAX_COUNT=16, INPUT_MAX_DIGITAL_ACTIONS=128, INPUT_MAX_ORIGINS=8,
-			SCREENSHOT_INVALID=0, SCREENSHOT_TAG_TYPE_MAX=255, SCREENSHOT_TAG_VALUE_MAX=255, SCREENSHOT_MAX_TAGGED_FILES=32, SCREENSHOT_MAX_TAGGED_USERS=32, SCREENSHOT_THUMB_WIDTH=200
+			SCREENSHOT_INVALID=0, SCREENSHOT_TAG_TYPE_MAX=255, SCREENSHOT_TAG_VALUE_MAX=255, SCREENSHOT_MAX_TAGGED_FILES=32, SCREENSHOT_MAX_TAGGED_USERS=32, SCREENSHOT_THUMB_WIDTH=200,
+			HTML_KEY_MODIFIER_NONE=0, HTML_KEY_MODIFIER_ALT_DOWN=(1<<0), HTML_KEY_MODIFIER_CTRL_DOWN=(1<<1), HTML_KEY_MODIFIER_SHIFT_DOWN=(1<<2),
+			HTML_MOUSE_BUTTON_LEFT=0, HTML_MOUSE_BUTTON_RIGHT=1, HTML_MOUSE_BUTTON_MIDDLE=2,
+			HTTP_METHOD_INVALID=0, HTTP_METHOD_GET=1, HTTP_METHOD_HEAD=2, HTTP_METHOD_POST=3, HTTP_METHOD_PUT=4, HTTP_METHOD_DELETE=5, HTTP_METHOD_OPTIONS=6, HTTP_METHOD_PATCH=7
+
 		};
 		static Steam* get_singleton();
 		Steam();
@@ -202,6 +206,70 @@ class Steam: public Object {
 		void setPlayedWith(uint64_t steamID);
 		bool setRichPresence(const String& key, const String& value);
 
+		// HTML Surface /////////////////////////
+		void addHeader(uint32 browserHandle, const String& key, const String& value);
+		void allowStartRequest(uint32 browserHandle, bool allowed);
+		void copyToClipboard(uint32 browserHandle);
+		void createBrowser(const String& userAgent, const String& userCSS);
+		void executeJavascript(uint32 browserHandle, const String& script);
+//		void fileLoadDialogResponse(uint32 browserHandle, const String& selectedFiles);
+		void find(uint32 browserHandle, const String& search, bool currentlyInFind, bool reverse);
+		void getLinkAtPosition(uint32 browserHandle, int x, int y);
+		void goBack(uint32 browserHandle);
+		void goForward(uint32 browserHandle);
+		void htmlInit();
+		void jsDialogResponse(uint32 browserHandle, bool result);
+		void keyChar(uint32 browserHandle, uint32 unicodeChar, int keyModifiers);
+		void keyDown(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers);
+		void keyUp(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers);
+		void loadURL(uint32 browserHandle, const String& url, const String& postData);
+		void mouseDoubleClick(uint32 browserHandle, int mouseButton);
+		void mouseDown(uint32 browserHandle, int mouseButton);
+		void mouseMove(uint32 browserHandle, int x, int y);
+		void mouseUp(uint32 browserHandle, int mouseButton);
+		void mouseWheel(uint32 browserHandle, int32 delta);
+		void pasteFromClipboard(uint32 browserHandle);
+		void reload(uint32 browserHandle);
+		void removeBrowser(uint32 browserHandle);
+		void setBackgroundMode(uint32 browserHandle, bool backgroundMode);
+//		void setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool httpOnly);
+		void setHorizontalScroll(uint32 browserHandle, uint32 absolutePixelScroll);
+		void setKeyFocus(uint32 browserHandle, bool hasKeyFocus);
+		void setPageScaleFactor(uint32 browserHandle, float zoom, int pointX, int pointY);
+		void setSize(uint32 browserHandle, uint32 width, uint32 height);
+		void setVerticalScroll(uint32 browserHandle, uint32 absolutePixelScroll);
+		bool htmlShutdown();
+		void stopFind(uint32 browserHandle);
+		void stopLoad(uint32 browserHandle);
+		void viewSource(uint32 browserHandle);
+
+		// HTTP /////////////////////////////////
+		void createCookieContainer( bool allowResponsesToModify);
+		void createHTTPRequest(int requestMethod, const String& absoluteURL);
+		bool deferHTTPRequest(uint32 request);
+		float getHTTPDownloadProgressPct(uint32 request);
+		bool getHTTPRequestWasTimedOut(uint32 request);
+		uint8 getHTTPResponseBodyData(uint32 request, uint32 bufferSize);
+		uint32 getHTTPResponseBodySize(uint32 request);
+		uint32 getHTTPResponseHeaderSize(uint32 request, const String& headerName);
+		uint8 getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize);
+		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize);		
+		bool prioritizeHTTPRequest(uint32 request);
+		bool releaseCookieContainer(uint32 cookieHandle);
+		bool releaseHTTPRequest(uint32 request);
+		bool sendHTTPRequest(uint32 request);
+		bool sendHTTPRequestAndStreamResponse(uint32 request);
+		bool setCookie(uint32 cookieHandle, const String& host, const String& url, const String& cookie);
+		bool setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds);
+		bool setHTTPRequestContextValue(uint32 request, uint64 contextValue);
+		bool setHTTPRequestCookieContainer(uint32 request, uint32 cookieHandle);
+		bool setHTTPRequestGetOrPostParameter(uint32 request, const String& name, const String& value);
+		bool setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue);
+		bool setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds);
+		uint8 setHTTPRequestRawPostBody(uint32 request, const String& contentType, uint32 bodyLen);
+		bool setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool requireVerifiedCertificate);
+		bool setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentInfo);
+		
 		// Input ////////////////////////////////
 		void activateActionSet(uint64_t inputHandle, uint64_t actionSetHandle);
 		void activateActionSetLayer(uint64_t inputHandle, uint64_t actionSetLayerHandle);
@@ -299,7 +367,7 @@ class Steam: public Object {
 		String getSessionClientName(uint32 sessionID);
 		int getSessionClientFormFactor(uint32 sessionID);
 		Dictionary getSessionClientResolution(uint32 sessionID);
-	//	bool sendRemotePlayTogetherInvite(uint64_t friendID);
+		bool sendRemotePlayTogetherInvite(uint64_t friendID);
 
 		// Remote Storage ///////////////////////
 		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
@@ -496,6 +564,13 @@ class Steam: public Object {
 		// Apps
 		uint64 currentAppID;
 		
+		// HTML Surface
+		uint32 browserHandle;
+
+		// HTTP
+		uint32 cookieHandle;
+		uint32 requestHandle;
+
 		// Matchmaking
 		CSteamID clanActivity;
 
@@ -614,6 +689,35 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _join_clan_chat_complete, JoinClanChatRoomCompletionResult_t);
 		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t);
 		STEAM_CALLBACK(Steam, _name_changed, SetPersonaNameResponse_t);
+
+		// HTML Surface callbacks ///////////////
+		STEAM_CALLBACK(Steam, _html_browser_ready, HTML_BrowserReady_t);
+		STEAM_CALLBACK(Steam, _html_can_go_backandforward, HTML_CanGoBackAndForward_t);
+		STEAM_CALLBACK(Steam, _html_changed_title, HTML_ChangedTitle_t);
+		STEAM_CALLBACK(Steam, _html_close_browser, HTML_CloseBrowser_t);
+		STEAM_CALLBACK(Steam, _html_file_open_dialog, HTML_FileOpenDialog_t);
+		STEAM_CALLBACK(Steam, _html_finished_request, HTML_FinishedRequest_t);
+		STEAM_CALLBACK(Steam, _html_hide_tooltip, HTML_HideToolTip_t);
+		STEAM_CALLBACK(Steam, _html_horizontal_scroll, HTML_HorizontalScroll_t);
+		STEAM_CALLBACK(Steam, _html_js_alert, HTML_JSAlert_t);
+		STEAM_CALLBACK(Steam, _html_js_confirm, HTML_JSConfirm_t);
+		STEAM_CALLBACK(Steam, _html_link_at_position, HTML_LinkAtPosition_t);
+		STEAM_CALLBACK(Steam, _html_needs_paint, HTML_NeedsPaint_t);
+		STEAM_CALLBACK(Steam, _html_new_window, HTML_NewWindow_t);
+		STEAM_CALLBACK(Steam, _html_open_link_in_new_tab, HTML_OpenLinkInNewTab_t);
+		STEAM_CALLBACK(Steam, _html_search_results, HTML_SearchResults_t);
+		STEAM_CALLBACK(Steam, _html_set_cursor, HTML_SetCursor_t);
+		STEAM_CALLBACK(Steam, _html_show_tooltip, HTML_ShowToolTip_t);
+		STEAM_CALLBACK(Steam, _html_start_request, HTML_StartRequest_t);
+		STEAM_CALLBACK(Steam, _html_status_text, HTML_StatusText_t);
+		STEAM_CALLBACK(Steam, _html_update_tooltip, HTML_UpdateToolTip_t);
+		STEAM_CALLBACK(Steam, _html_url_changed, HTML_URLChanged_t);
+		STEAM_CALLBACK(Steam, _html_vertical_scroll, HTML_VerticalScroll_t);
+
+		// HTTP callbacks ///////////////////////
+		STEAM_CALLBACK(Steam, _http_request_completed, HTTPRequestCompleted_t);
+		STEAM_CALLBACK(Steam, _http_request_data_received, HTTPRequestDataReceived_t);
+		STEAM_CALLBACK(Steam, _http_request_headers_received, HTTPRequestHeadersReceived_t);
 
 		// Matchmaking callbacks ////////////////
 		STEAM_CALLBACK(Steam, _favorites_list_accounts_updated, FavoritesListAccountsUpdated_t);

@@ -282,9 +282,11 @@ String Steam::getLaunchCommandLine(){
 	if(SteamApps() == NULL){
 		return "";
 	}
-	char *commands;
-	SteamApps()->GetLaunchCommandLine(commands, 256);
-	return commands;
+	char commands;
+	SteamApps()->GetLaunchCommandLine(&commands, 256);
+	String commandLine;
+	commandLine += commands;
+	return commandLine;
 }
 // Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
 String Steam::getLaunchQueryParam(const String& key){
@@ -1071,6 +1073,410 @@ bool Steam::setRichPresence(const String& key, const String& value){
 		return false;
 	}
 	return SteamFriends()->SetRichPresence(key.utf8().get_data(), value.utf8().get_data());
+}
+
+/////////////////////////////////////////////////
+///// HTML SURFACE //////////////////////////////
+/////////////////////////////////////////////////
+//
+// Add a header to any HTTP requests from this browser.
+void Steam::addHeader(uint32 browserHandle, const String& key, const String& value){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->AddHeader(browserHandle, key.utf8().get_data(), value.utf8().get_data());
+	}
+}
+// Sets whether a pending load is allowed or if it should be canceled.  NOTE:You MUST call this in response to a HTML_StartRequest_t callback.
+void Steam::allowStartRequest(uint32 browserHandle, bool allowed){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->AllowStartRequest(browserHandle, allowed);
+	}
+}
+// Copy the currently selected text from the current page in an HTML surface into the local clipboard.
+void Steam::copyToClipboard(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->CopyToClipboard(browserHandle);
+	}
+}
+// Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.
+void Steam::createBrowser(const String& userAgent, const String& userCSS){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->CreateBrowser(userAgent.utf8().get_data(), userCSS.utf8().get_data());
+	}
+}
+// Run a javascript script in the currently loaded page.
+void Steam::executeJavascript(uint32 browserHandle, const String& script){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->ExecuteJavascript(browserHandle, script.utf8().get_data());
+	}
+}
+// Allows you to react to a page wanting to open a file load dialog. NOTE:You MUST call this in response to a HTML_FileOpenDialog_t callback.
+//void Steam::fileLoadDialogResponse(uint32 browserHandle, const String& selectedFiles){
+//	if(!SteamHTMLSurface() == NULL){
+//		SteamHTMLSurface()->FileLoadDialogResponse(browserHandle, selectedFiles.utf8().get_data());
+//	}
+//}
+// Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call StopFind when the input string has changed or you want to stop searching.
+void Steam::find(uint32 browserHandle, const String& search, bool currentlyInFind, bool reverse){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->Find(browserHandle, search.utf8().get_data(), currentlyInFind, reverse);
+	}
+}
+// Retrieves details about a link at a specific position on the current page in an HTML surface.
+void Steam::getLinkAtPosition(uint32 browserHandle, int x, int y){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->GetLinkAtPosition(browserHandle, x, y);
+	}
+}
+// Navigate back in the page history.
+void Steam::goBack(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->GoBack(browserHandle);
+	}
+}
+// Navigate forward in the page history
+void Steam::goForward(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->GoForward(browserHandle);
+	}
+}
+// Initializes the HTML Surface API. This must be called prior to using any other functions in this interface. You MUST call Shutdown when you are done using the interface to free up the resources associated with it. Failing to do so will result in a memory leak!
+void Steam::htmlInit(){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->Init();
+	}
+}
+// Allows you to react to a page wanting to open a javascript modal dialog notification.
+void Steam::jsDialogResponse(uint32 browserHandle, bool result){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->JSDialogResponse(browserHandle, result);
+	}
+}
+// cUnicodeChar is the unicode character point for this keypress (and potentially multiple chars per press).
+void Steam::keyChar(uint32 browserHandle, uint32 unicodeChar, int keyModifiers){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->KeyChar(browserHandle, unicodeChar, (ISteamHTMLSurface::EHTMLKeyModifiers)keyModifiers);
+	}
+}
+// Keyboard interactions, native keycode is the virtual key code value from your OS.
+void Steam::keyDown(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->KeyDown(browserHandle, nativeKeyCode, (ISteamHTMLSurface::EHTMLKeyModifiers)keyModifiers);
+	}
+}
+// Keyboard interactions, native keycode is the virtual key code value from your OS.
+void Steam::keyUp(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->KeyUp(browserHandle, nativeKeyCode, (ISteamHTMLSurface::EHTMLKeyModifiers)keyModifiers);
+	}
+}
+// Navigate to a specified URL. If you send POST data with pchPostData then the data should be formatted as: name1=value1&name2=value2. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: http://, https://, ftp://, and file:///. If no scheme is specified then http:// is used.
+void Steam::loadURL(uint32 browserHandle, const String& url, const String& postData){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->LoadURL(browserHandle, url.utf8().get_data(), postData.utf8().get_data());
+	}
+}
+// Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
+void Steam::mouseDoubleClick(uint32 browserHandle, int mouseButton){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->MouseDoubleClick(browserHandle, (ISteamHTMLSurface::EHTMLMouseButton)mouseButton);
+	}
+}
+// Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
+void Steam::mouseDown(uint32 browserHandle, int mouseButton){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->MouseDown(browserHandle, (ISteamHTMLSurface::EHTMLMouseButton)mouseButton);
+	}
+}
+// Tells an HTML surface where the mouse is.
+void Steam::mouseMove(uint32 browserHandle, int x, int y){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->MouseMove(browserHandle, x, y);
+	}
+}
+// Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
+void Steam::mouseUp(uint32 browserHandle, int mouseButton){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->MouseUp(browserHandle, (ISteamHTMLSurface::EHTMLMouseButton)mouseButton);
+	}
+}
+// Tells an HTML surface that the mouse wheel has moved.
+void Steam::mouseWheel(uint32 browserHandle, int32 delta){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->MouseWheel(browserHandle, delta);
+	}
+}
+// Paste from the local clipboard to the current page in an HTML surface.
+void Steam::pasteFromClipboard(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->PasteFromClipboard(browserHandle);
+	}
+}
+// Refreshes the current page. The reload will most likely hit the local cache instead of going over the network. This is equivalent to F5 or Ctrl+R in your browser of choice.
+void Steam::reload(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->Reload(browserHandle);
+	}
+}
+// You MUST call this when you are done with an HTML surface, freeing the resources associated with it. Failing to call this will result in a memory leak!
+void Steam::removeBrowser(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->RemoveBrowser(browserHandle);
+	}
+}
+// Enable/disable low-resource background mode, where javascript and repaint timers are throttled, resources are more aggressively purged from memory, and audio/video elements are paused. When background mode is enabled, all HTML5 video and audio objects will execute ".pause()" and gain the property "._steam_background_paused = 1". When background mode is disabled, any video or audio objects with that property will resume with ".play()".
+void Steam::setBackgroundMode(uint32 browserHandle, bool backgroundMode){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->SetBackgroundMode(browserHandle, backgroundMode);
+	}
+}
+// Set a webcookie for a specific hostname. You can read more about the specifics of setting cookies here on wikipedia.
+//void Steam::setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool httpOnly){
+//	if(SteamHTMLSurface()){
+//		SteamHTMLSurface()->SetCookie(hostname.utf8().get_data(), key.utf8().get_data(), value.utf8().get_data(), path.utf8().get_data(), expires, secure, httpOnly);
+//	}
+//}
+// Scroll the current page horizontally.
+void Steam::setHorizontalScroll(uint32 browserHandle, uint32 absolutePixelScroll){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->SetHorizontalScroll(browserHandle, absolutePixelScroll);
+	}
+}
+// Tell a HTML surface if it has key focus currently, controls showing the I-beam cursor in text controls amongst other things.
+void Steam::setKeyFocus(uint32 browserHandle, bool hasKeyFocus){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->SetKeyFocus(browserHandle, hasKeyFocus);	
+	}
+}
+// Zoom the current page in an HTML surface. The current scale factor is available from HTML_NeedsPaint_t.flPageScale, HTML_HorizontalScroll_t.flPageScale, and HTML_VerticalScroll_t.flPageScale.
+void Steam::setPageScaleFactor(uint32 browserHandle, float zoom, int pointX, int pointY){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->SetPageScaleFactor(browserHandle, zoom, pointX, pointY);
+	}
+}
+// Sets the display size of a surface in pixels.
+void Steam::setSize(uint32 browserHandle, uint32 width, uint32 height){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->SetSize(browserHandle, width, height);
+	}
+}
+// Scroll the current page vertically.
+void Steam::setVerticalScroll(uint32 browserHandle, uint32 absolutePixelScroll){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->SetVerticalScroll(browserHandle, absolutePixelScroll);
+	}
+}
+// Shutdown the ISteamHTMLSurface interface, releasing the memory and handles. You MUST call this when you are done using this interface to prevent memory and handle leaks. After calling this then all of the functions provided in this interface will fail until you call Init to reinitialize again.
+bool Steam::htmlShutdown(){
+	if(SteamHTMLSurface() == NULL){
+		return false;
+	}
+	return SteamHTMLSurface()->Shutdown();
+}
+// Cancel a currently running find.
+void Steam::stopFind(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->StopFind(browserHandle);
+	}
+}
+// Stop the load of the current HTML page.
+void Steam::stopLoad(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->StopLoad(browserHandle);
+	}
+}
+// Open the current pages HTML source code in default local text editor, used for debugging.
+void Steam::viewSource(uint32 browserHandle){
+	if(SteamHTMLSurface()){
+		SteamHTMLSurface()->ViewSource(browserHandle);
+	}
+}
+
+/////////////////////////////////////////////////
+///// HTTP //////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//Creates a cookie container to store cookies during the lifetime of the process. This API is just for during process lifetime, after steam restarts no cookies are persisted and you have no way to access the cookie container across repeat executions of your process.
+void Steam::createCookieContainer(bool allowResponsesToModify){
+	if(SteamHTTP()){
+		SteamHTTP()->CreateCookieContainer(allowResponsesToModify);
+	}
+}
+// Initializes a new HTTP request.
+void Steam::createHTTPRequest(int requestMethod, const String& absoluteURL){
+	if(SteamHTTP()){
+		SteamHTTP()->CreateHTTPRequest((EHTTPMethod)requestMethod, absoluteURL.utf8().get_data());
+	}
+}
+// Defers a request which has already been sent by moving it at the back of the queue.
+bool Steam::deferHTTPRequest(uint32 request){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->DeferHTTPRequest(request);
+}
+// Gets progress on downloading the body for the request.
+float Steam::getHTTPDownloadProgressPct(uint32 request){
+	float percentOut = 0.0;
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPDownloadProgressPct(request, &percentOut);
+	}
+	return percentOut;
+}
+// Check if the reason the request failed was because we timed it out (rather than some harder failure).
+bool Steam::getHTTPRequestWasTimedOut(uint32 request){
+	bool wasTimedOut = false;
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPRequestWasTimedOut(request, &wasTimedOut);
+	}
+	return wasTimedOut;
+}
+// Gets the body data from an HTTP response.
+uint8 Steam::getHTTPResponseBodyData(uint32 request, uint32 bufferSize){
+	uint8 bodyData = 0; 
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPResponseBodyData(request, &bodyData, bufferSize);
+	}
+	return bodyData;
+}
+// Gets the size of the body data from an HTTP response.
+uint32 Steam::getHTTPResponseBodySize(uint32 request){
+	uint32 bodySize = 0;
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPResponseBodySize(request, &bodySize);
+	}
+	return bodySize;
+}
+// Checks if a header is present in an HTTP response and returns its size.
+uint32 Steam::getHTTPResponseHeaderSize(uint32 request, const String& headerName){
+	uint32 responseHeaderSize = 0;
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPResponseHeaderSize(request, headerName.utf8().get_data(), &responseHeaderSize);
+	}
+	return responseHeaderSize;
+}
+// Gets a header value from an HTTP response.
+uint8 Steam::getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize){
+	uint8 valueBuffer = 0;
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPResponseHeaderValue(request, headerName.utf8().get_data(), &valueBuffer, bufferSize);
+	}
+	return valueBuffer;
+}
+// Gets the body data from a streaming HTTP response.
+uint8 Steam::getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize){
+	uint8 bodyDataBuffer = 0;
+	if(SteamHTTP()){
+		SteamHTTP()->GetHTTPStreamingResponseBodyData(request, offset, &bodyDataBuffer, bufferSize);
+	}
+	return bodyDataBuffer;
+}
+// Prioritizes a request which has already been sent by moving it at the front of the queue.
+bool Steam::prioritizeHTTPRequest(uint32 request){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->PrioritizeHTTPRequest(request);
+}
+// Releases a cookie container, freeing the memory allocated within Steam.
+bool Steam::releaseCookieContainer(uint32 cookieHandle){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->ReleaseCookieContainer(cookieHandle);
+}
+// Releases an HTTP request handle, freeing the memory allocated within Steam.
+bool Steam::releaseHTTPRequest(uint32 request){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->ReleaseHTTPRequest(request);
+}
+// Sends an HTTP request.
+bool Steam::sendHTTPRequest(uint32 request){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	SteamAPICall_t callHandle;
+	return SteamHTTP()->SendHTTPRequest(request, &callHandle);
+}
+// Sends an HTTP request and streams the response back in chunks.
+bool Steam::sendHTTPRequestAndStreamResponse(uint32 request){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	SteamAPICall_t callHandle;
+	return SteamHTTP()->SendHTTPRequestAndStreamResponse(request, &callHandle);
+}
+// Adds a cookie to the specified cookie container that will be used with future requests.
+bool Steam::setCookie(uint32 cookieHandle, const String& host, const String& url, const String& cookie){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetCookie(cookieHandle, host.utf8().get_data(), url.utf8().get_data(), cookie.utf8().get_data());
+}
+// Set an absolute timeout in milliseconds for the HTTP request. This is the total time timeout which is different than the network activity timeout which is set with SetHTTPRequestNetworkActivityTimeout which can bump everytime we get more data.
+bool Steam::setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestAbsoluteTimeoutMS(request, milliseconds);
+}
+// Set a context value for the request, which will be returned in the HTTPRequestCompleted_t callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.
+bool Steam::setHTTPRequestContextValue(uint32 request, uint64 contextValue){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestContextValue(request, contextValue);
+}
+// Associates a cookie container to use for an HTTP request.
+bool Steam::setHTTPRequestCookieContainer(uint32 request, uint32 cookieHandle){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestCookieContainer(request, cookieHandle);
+}
+// Set a GET or POST parameter value on the HTTP request. Must be called prior to sending the request.
+bool Steam::setHTTPRequestGetOrPostParameter(uint32 request, const String& name, const String& value){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestGetOrPostParameter(request, name.utf8().get_data(), value.utf8().get_data());
+}
+// Set a request header value for the HTTP request. Must be called before sending the request.
+bool Steam::setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestHeaderValue(request, headerName.utf8().get_data(), headerValue.utf8().get_data());
+}
+// Set the timeout in seconds for the HTTP request.
+bool Steam::setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestNetworkActivityTimeout(request, timeoutSeconds);
+}
+// Sets the body for an HTTP Post request.
+uint8 Steam::setHTTPRequestRawPostBody(uint32 request, const String& contentType, uint32 bodyLen){
+	uint8 body = 0;
+	if(SteamHTTP()){
+		SteamHTTP()->SetHTTPRequestRawPostBody(request, contentType.utf8().get_data(), &body, bodyLen);
+	}
+	return body;
+}
+// Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only works Windows and macOS.
+bool Steam::setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool requireVerifiedCertificate){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestRequiresVerifiedCertificate(request, requireVerifiedCertificate);
+}
+// Set additional user agent info for a request.
+bool Steam::setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentInfo){
+	if(SteamHTTP() == NULL){
+		return false;
+	}
+	return SteamHTTP()->SetHTTPRequestUserAgentInfo(request, userAgentInfo.utf8().get_data());
 }
 
 /////////////////////////////////////////////////
@@ -2012,15 +2418,14 @@ Dictionary Steam::getSessionClientResolution(uint32 sessionID){
 	}	
 	return resolution;
 }
-// IN STEAM DOCS BUT NOT YET IN STEAMWORKS API
 // Invite a friend to join the game using Remote Play Together
-//bool Steam::sendRemotePlayTogetherInvite(uint64_t friendID){
-//	if(SteamRemotePlay() == NULL){
-//		return false;
-//	}
-//	CSteamID steamID = (uint64)friendID;
-//	return SteamRemotePlay()->BSendRemotePlayTogetherInvite(steamID);
-//}
+bool Steam::sendRemotePlayTogetherInvite(uint64_t friendID){
+	if(SteamRemotePlay() == NULL){
+		return false;
+	}
+	CSteamID steamID = (uint64)friendID;
+	return SteamRemotePlay()->BSendRemotePlayTogetherInvite(steamID);
+}
 
 /////////////////////////////////////////////////
 ///// REMOTE STORAGE ////////////////////////////
@@ -2447,6 +2852,214 @@ void Steam::_name_changed(SetPersonaNameResponse_t* callData){
 	bool localSuccess = callData->m_bLocalSuccess;
 	EResult result = callData->m_result;
 	emit_signal("name_changed", success, localSuccess, result);
+}
+//
+// HTML Surface callbacks ///////////////////////
+// 
+//A new browser was created and is ready for use.
+void Steam::_html_browser_ready(HTML_BrowserReady_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	emit_signal("html_browser_ready", browserHandle);
+}
+// Called when page history status has changed the ability to go backwards and forward.
+void Steam::_html_can_go_backandforward(HTML_CanGoBackAndForward_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	bool goBack = callData->bCanGoBack;
+	bool goForward = callData->bCanGoForward;
+	emit_signal("html_can_go_backandforward", browserHandle, goBack, goForward);
+}
+// Called when the current page in a browser gets a new title.
+void Steam::_html_changed_title(HTML_ChangedTitle_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& title = callData->pchTitle;
+	emit_signal("html_changed_title", browserHandle, title);
+}
+// Called when the browser has been requested to close due to user interaction; usually because of a javascript window.close() call.
+void Steam::_html_close_browser(HTML_CloseBrowser_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	emit_signal("html_close_browser", browserHandle);
+}
+// Called when a browser surface has received a file open dialog from a <input type="file"> click or similar, you must call FileLoadDialogResponse with the file(s) the user selected.
+void Steam::_html_file_open_dialog(HTML_FileOpenDialog_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& title = callData->pchTitle;
+	const String& initialFile = callData->pchInitialFile;
+	emit_signal("html_file_open_dialog", title, initialFile);
+}
+// Called when a browser has finished loading a page.
+void Steam::_html_finished_request(HTML_FinishedRequest_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& url = callData->pchURL;
+	const String& title = callData->pchPageTitle;
+	emit_signal("html_finished_request", browserHandle, url, title);
+}
+// Called when a a browser wants to hide a tooltip.
+void Steam::_html_hide_tooltip(HTML_HideToolTip_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	emit_signal("html_hide_tooltip", browserHandle);
+}
+// Provides details on the visibility and size of the horizontal scrollbar.
+void Steam::_html_horizontal_scroll(HTML_HorizontalScroll_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	// Create dictionary to bypass argument limit in Godot
+	Dictionary scrollData;
+	scrollData["scrollMax"] = callData->unScrollMax;
+	scrollData["scrollCurrent"] = callData->unScrollCurrent;
+	scrollData["pageScale"] = callData->flPageScale;
+	scrollData["visible"] = callData->bVisible;
+	scrollData["pageSize"] = callData->unPageSize;
+	emit_signal("html_horizontal_scroll", browserHandle, scrollData);
+}
+// Called when the browser wants to display a Javascript alert dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
+void Steam::_html_js_alert(HTML_JSAlert_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& message = callData->pchMessage;
+	emit_signal("html_js_alert", browserHandle, message);
+}
+// Called when the browser wants to display a Javascript confirmation dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
+void Steam::_html_js_confirm(HTML_JSConfirm_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& message = callData->pchMessage;
+	emit_signal("html_js_confirm", browserHandle, message);
+}
+// Result of a call to GetLinkAtPosition.
+void Steam::_html_link_at_position(HTML_LinkAtPosition_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	// Create dictionary to bypass Godot argument limit
+	Dictionary linkData;
+	linkData["x"] = callData->x;
+	linkData["y"] = callData->y;
+	linkData["url"] = callData->pchURL;
+	linkData["input"] = callData->bInput;
+	linkData["liveLink"] = callData->bLiveLink;
+	emit_signal("html_link_at_position", browserHandle, linkData);
+}
+// Called when a browser surface has a pending paint. This is where you get the actual image data to render to the screen.
+void Steam::_html_needs_paint(HTML_NeedsPaint_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	// Create dictionary to bypass Godot argument limit
+	Dictionary pageData;
+	pageData["bgra"] = callData->pBGRA;
+	pageData["wide"] = callData->unWide;
+	pageData["tall"] = callData->unTall;
+	pageData["updateX"] = callData->unUpdateX;
+	pageData["updateY"] = callData->unUpdateY;
+	pageData["updateWide"] = callData->unUpdateWide;
+	pageData["updateTall"] = callData->unUpdateTall;
+	pageData["scrollX"] = callData->unScrollX;
+	pageData["scrollY"] = callData->unScrollY;
+	pageData["pageScale"] = callData->flPageScale;
+	pageData["pageSerial"] = callData->unPageSerial;
+	emit_signal("html_needs_paint", browserHandle, pageData);
+}
+// A browser has created a new HTML window.
+void Steam::_html_new_window(HTML_NewWindow_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	// Create a dictionary to bypass Godot argument limit
+	Dictionary windowData;
+	windowData["url"] = callData->pchURL;
+	windowData["x"] = callData->unX;
+	windowData["y"] = callData->unY;
+	windowData["wide"] = callData->unWide;
+	windowData["tall"] = callData->unTall;
+	windowData["newHandle"] = callData->unNewWindow_BrowserHandle_IGNORE;
+	emit_signal("html_new_window", browserHandle, windowData);
+}
+// The browser has requested to load a url in a new tab.
+void Steam::_html_open_link_in_new_tab(HTML_OpenLinkInNewTab_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& url = callData->pchURL;
+	emit_signal("html_open_link_in_new_tab", browserHandle, url);
+}
+// Results from a search.
+void Steam::_html_search_results(HTML_SearchResults_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	uint32 results = callData->unResults;
+	uint32 currentMatch = callData->unCurrentMatch;
+	emit_signal("html_search_results", browserHandle, results, currentMatch);
+}
+// Called when a browser wants to change the mouse cursor.
+void Steam::_html_set_cursor(HTML_SetCursor_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	uint32 mouseCursor = callData->eMouseCursor;
+	emit_signal("html_set_cursor", browserHandle, mouseCursor);
+}
+// Called when a browser wants to display a tooltip.
+void Steam::_html_show_tooltip(HTML_ShowToolTip_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& message = callData->pchMsg;
+	emit_signal("html_show_tooltip", browserHandle, message);
+}
+// Called when a browser wants to navigate to a new page.
+void Steam::_html_start_request(HTML_StartRequest_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& url = callData->pchURL;
+	const String& target = callData->pchTarget;
+	const String& postData = callData->pchPostData;
+	bool redirect = callData->bIsRedirect;
+	emit_signal("html_start_request", browserHandle, url, target, postData, redirect);
+}
+// Called when a browser wants you to display an informational message. This is most commonly used when you hover over links.
+void Steam::_html_status_text(HTML_StatusText_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& message = callData->pchMsg;
+	emit_signal("html_status_text", browserHandle, message);
+}
+// Called when the text of an existing tooltip has been updated.
+void Steam::_html_update_tooltip(HTML_UpdateToolTip_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	const String& message = callData->pchMsg;
+	emit_signal("html_update_tooltip", browserHandle, message);
+}
+// Called when the browser is navigating to a new url.
+void Steam::_html_url_changed(HTML_URLChanged_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	// Create a dictionary to bypass Godot argument limit
+	Dictionary urlData;
+	urlData["url"] = callData->pchURL;
+	urlData["postData"] = callData->pchPostData;
+	urlData["redirect"] = callData->bIsRedirect;
+	urlData["title"] = callData->pchPageTitle;
+	urlData["newNavigation"] = callData->bNewNavigation;
+	emit_signal("html_url_changed", browserHandle, urlData);
+}
+// Provides details on the visibility and size of the vertical scrollbar.
+void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* callData){
+	uint32 browserHandle = callData->unBrowserHandle;
+	// Create dictionary to bypass argument limit in Godot
+	Dictionary scrollData;
+	scrollData["scrollMax"] = callData->unScrollMax;
+	scrollData["scrollCurrent"] = callData->unScrollCurrent;
+	scrollData["pageScale"] = callData->flPageScale;
+	scrollData["visible"] = callData->bVisible;
+	scrollData["pageSize"] = callData->unPageSize;
+	emit_signal("html_vertical_scroll", browserHandle, scrollData);
+}
+//
+// HTTP callbacks ///////////////////////////////
+//
+// Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.
+void Steam::_http_request_completed(HTTPRequestCompleted_t* callData){
+	uint32 cookieHandle = callData->m_hRequest;
+	uint64_t contextValue = callData->m_ulContextValue;
+	bool requestSuccess = callData->m_bRequestSuccessful;
+	int statusCode = callData->m_eStatusCode;
+	uint32 bodySize = callData->m_unBodySize;
+	emit_signal("http_request_completed", cookieHandle, contextValue, requestSuccess, statusCode, bodySize);
+}
+// Triggered when a chunk of data is received from a streaming HTTP request.
+void Steam::_http_request_data_received(HTTPRequestDataReceived_t* callData){
+	uint32 cookieHandle = callData->m_hRequest;
+	uint64_t contextValue = callData->m_ulContextValue;
+	uint32 offset = callData->m_cOffset;
+	uint32 bytesReceived = callData->m_cBytesReceived;
+	emit_signal("http_request_data_received", cookieHandle, contextValue, offset, bytesReceived);
+}
+// Triggered when HTTP headers are received from a streaming HTTP request.
+void Steam::_http_request_headers_received(HTTPRequestHeadersReceived_t* callData){
+	uint32 cookieHandle = callData->m_hRequest;
+	uint64_t contextValue = callData->m_ulContextValue;
+	emit_signal("http_request_headers_received", cookieHandle, contextValue);
 }
 //
 // Matchmaking callbacks ////////////////////////
@@ -4921,41 +5534,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
 	ClassDB::bind_method("getFileDetails", &Steam::getFileDetails);
 	
-	// Controllers Bind Methods /////////////////
-	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
-	ClassDB::bind_method("activateActionSetLayer", &Steam::activateActionSetLayer);
-	ClassDB::bind_method("deactivateActionSetLayer", &Steam::deactivateActionSetLayer);
-	ClassDB::bind_method("deactivateAllActionSetLayers", &Steam::deactivateAllActionSetLayers);
-	ClassDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
-	ClassDB::bind_method("getActionOriginFromXboxOrigin", &Steam::getActionOriginFromXboxOrigin);
-	ClassDB::bind_method("getActiveActionSetLayers", &Steam::getActiveActionSetLayers);
-	ClassDB::bind_method("getAnalogActionData", &Steam::getAnalogActionData);
-	ClassDB::bind_method("getAnalogActionHandle", &Steam::getAnalogActionHandle);
-	ClassDB::bind_method("getAnalogActionOrigins", &Steam::getAnalogActionOrigins);
-	ClassDB::bind_method("getConnectedControllers", &Steam::getConnectedControllers);
-	ClassDB::bind_method("getControllerForGamepadIndex", &Steam::getControllerForGamepadIndex);
-	ClassDB::bind_method("getCurrentActionSet", &Steam::getCurrentActionSet);
-	ClassDB::bind_method("getDeviceBindingRevision", &Steam::getDeviceBindingRevision);
-	ClassDB::bind_method("getDigitalActionData", &Steam::getDigitalActionData);
-	ClassDB::bind_method("getDigitalActionHandle", &Steam::getDigitalActionHandle);
-	ClassDB::bind_method("getDigitalActionOrigins", &Steam::getDigitalActionOrigins);
-	ClassDB::bind_method("getGamepadIndexForController", &Steam::getGamepadIndexForController);
-	ClassDB::bind_method("getGlyphForActionOrigin", &Steam::getGlyphForActionOrigin);
-	ClassDB::bind_method("getInputTypeForHandle", &Steam::getInputTypeForHandle);
-	ClassDB::bind_method("getMotionData", &Steam::getMotionData);
-	ClassDB::bind_method("getRemotePlaySessionID", &Steam::getRemotePlaySessionID);
-	ClassDB::bind_method("getStringForActionOrigin", &Steam::getStringForActionOrigin);
-	ClassDB::bind_method("inputInit", &Steam::inputInit);
-	ClassDB::bind_method("inputShutdown", &Steam::inputShutdown);
-	ClassDB::bind_method("runFrame", &Steam::runFrame);
-	ClassDB::bind_method("setLEDColor", &Steam::setLEDColor);
-	ClassDB::bind_method("showBindingPanel", &Steam::showBindingPanel);
-	ClassDB::bind_method("stopAnalogActionMomentum", &Steam::stopAnalogActionMomentum);
-	ClassDB::bind_method("translateActionOrigin", &Steam::translateActionOrigin);
-	ClassDB::bind_method("triggerHapticPulse", &Steam::triggerHapticPulse);
-//	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
-	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
-	
 	// Friends Bind Methods /////////////////////
 	ClassDB::bind_method("getPersonaName", &Steam::getPersonaName);
 	ClassDB::bind_method("setPersonaName", &Steam::setPersonaName);
@@ -5019,6 +5597,78 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
 	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
 	
+	// HTML Surface Bind Methods ////////////////
+	ClassDB::bind_method("addHeader", &Steam::addHeader);
+	ClassDB::bind_method("allowStartRequest", &Steam::allowStartRequest);
+	ClassDB::bind_method("copyToClipboard", &Steam::copyToClipboard);
+	ClassDB::bind_method("createBrowser", &Steam::createBrowser);
+	ClassDB::bind_method("executeJavascript", &Steam::executeJavascript);
+//	ClassDB::bind_method("fileLoadDialogResponse", &Steam::fileLoadDialogResponse);
+	ClassDB::bind_method("find", &Steam::find);
+	ClassDB::bind_method("getLinkAtPosition", &Steam::getLinkAtPosition);
+	ClassDB::bind_method("goBack", &Steam::goBack);
+	ClassDB::bind_method("goForward", &Steam::goForward);
+	ClassDB::bind_method("htmlInit", &Steam::htmlInit);
+	ClassDB::bind_method("jsDialogResponse", &Steam::jsDialogResponse);
+	ClassDB::bind_method("keyChar", &Steam::keyChar);
+	ClassDB::bind_method("keyDown", &Steam::keyDown);
+	ClassDB::bind_method("keyUp", &Steam::keyUp);
+	ClassDB::bind_method("loadURL", &Steam::loadURL);
+	ClassDB::bind_method("mouseDoubleClick", &Steam::mouseDoubleClick);
+	ClassDB::bind_method("mouseDown", &Steam::mouseDown);
+	ClassDB::bind_method("mouseMove", &Steam::mouseMove);
+	ClassDB::bind_method("mouseUp", &Steam::mouseUp);
+	ClassDB::bind_method("mouseWheel", &Steam::mouseWheel);
+	ClassDB::bind_method("pasteFromClipboard", &Steam::pasteFromClipboard);
+	ClassDB::bind_method("reload", &Steam::reload);
+	ClassDB::bind_method("removeBrowser", &Steam::removeBrowser);
+	ClassDB::bind_method("setBackgroundMode", &Steam::setBackgroundMode);
+//	ClassDB::bind_method("setCookie", &Steam::setCookie);
+	ClassDB::bind_method("setHorizontalScroll", &Steam::setHorizontalScroll);
+	ClassDB::bind_method("setKeyFocus", &Steam::setKeyFocus);
+	ClassDB::bind_method("setPageScaleFactor", &Steam::setPageScaleFactor);
+	ClassDB::bind_method("setSize", &Steam::setSize);
+	ClassDB::bind_method("setVerticalScroll", &Steam::setVerticalScroll);
+	ClassDB::bind_method("htmlShutdown", &Steam::htmlShutdown);
+	ClassDB::bind_method("stopFind", &Steam::stopFind);
+	ClassDB::bind_method("stopLoad", &Steam::stopLoad);
+	ClassDB::bind_method("viewSource", &Steam::viewSource);
+
+	// Input Bind Methods /////////////////
+	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
+	ClassDB::bind_method("activateActionSetLayer", &Steam::activateActionSetLayer);
+	ClassDB::bind_method("deactivateActionSetLayer", &Steam::deactivateActionSetLayer);
+	ClassDB::bind_method("deactivateAllActionSetLayers", &Steam::deactivateAllActionSetLayers);
+	ClassDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
+	ClassDB::bind_method("getActionOriginFromXboxOrigin", &Steam::getActionOriginFromXboxOrigin);
+	ClassDB::bind_method("getActiveActionSetLayers", &Steam::getActiveActionSetLayers);
+	ClassDB::bind_method("getAnalogActionData", &Steam::getAnalogActionData);
+	ClassDB::bind_method("getAnalogActionHandle", &Steam::getAnalogActionHandle);
+	ClassDB::bind_method("getAnalogActionOrigins", &Steam::getAnalogActionOrigins);
+	ClassDB::bind_method("getConnectedControllers", &Steam::getConnectedControllers);
+	ClassDB::bind_method("getControllerForGamepadIndex", &Steam::getControllerForGamepadIndex);
+	ClassDB::bind_method("getCurrentActionSet", &Steam::getCurrentActionSet);
+	ClassDB::bind_method("getDeviceBindingRevision", &Steam::getDeviceBindingRevision);
+	ClassDB::bind_method("getDigitalActionData", &Steam::getDigitalActionData);
+	ClassDB::bind_method("getDigitalActionHandle", &Steam::getDigitalActionHandle);
+	ClassDB::bind_method("getDigitalActionOrigins", &Steam::getDigitalActionOrigins);
+	ClassDB::bind_method("getGamepadIndexForController", &Steam::getGamepadIndexForController);
+	ClassDB::bind_method("getGlyphForActionOrigin", &Steam::getGlyphForActionOrigin);
+	ClassDB::bind_method("getInputTypeForHandle", &Steam::getInputTypeForHandle);
+	ClassDB::bind_method("getMotionData", &Steam::getMotionData);
+	ClassDB::bind_method("getRemotePlaySessionID", &Steam::getRemotePlaySessionID);
+	ClassDB::bind_method("getStringForActionOrigin", &Steam::getStringForActionOrigin);
+	ClassDB::bind_method("inputInit", &Steam::inputInit);
+	ClassDB::bind_method("inputShutdown", &Steam::inputShutdown);
+	ClassDB::bind_method("runFrame", &Steam::runFrame);
+	ClassDB::bind_method("setLEDColor", &Steam::setLEDColor);
+	ClassDB::bind_method("showBindingPanel", &Steam::showBindingPanel);
+	ClassDB::bind_method("stopAnalogActionMomentum", &Steam::stopAnalogActionMomentum);
+	ClassDB::bind_method("translateActionOrigin", &Steam::translateActionOrigin);
+	ClassDB::bind_method("triggerHapticPulse", &Steam::triggerHapticPulse);
+//	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
+	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
+
 	// Matchmaking Bind Methods /////////////////
 	ClassDB::bind_method("getFavoriteGames", &Steam::getFavoriteGames);
 	ClassDB::bind_method("addFavoriteGame", &Steam::addFavoriteGame);
@@ -5081,7 +5731,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getSessionClientName", &Steam::getSessionClientName);
 	ClassDB::bind_method("getSessionClientFormFactor", &Steam::getSessionClientFormFactor);
 	ClassDB::bind_method("getSessionClientResolution", &Steam::getSessionClientResolution);
-//	ClassDB::bind_method("sendRemotePlayTogetherInvite", &Steam::sendRemotePlayTogetherInvite);
+	ClassDB::bind_method("sendRemotePlayTogetherInvite", &Steam::sendRemotePlayTogetherInvite);
 
 	// Remote Storage Bind Methods //////////////
 	ClassDB::bind_method("fileWrite", &Steam::fileWrite);
@@ -5291,6 +5941,35 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("join_clan_chat_complete"));
 	ADD_SIGNAL(MethodInfo("persona_state_change"));
 	ADD_SIGNAL(MethodInfo("name_changed"));
+
+	// HTML Surface Signals /////////////////////
+	ADD_SIGNAL(MethodInfo("html_browser_ready"));
+	ADD_SIGNAL(MethodInfo("html_can_go_backandforward"));
+	ADD_SIGNAL(MethodInfo("html_changed_title"));
+	ADD_SIGNAL(MethodInfo("html_close_browser"));
+	ADD_SIGNAL(MethodInfo("html_file_open_dialog"));
+	ADD_SIGNAL(MethodInfo("html_finished_request"));
+	ADD_SIGNAL(MethodInfo("html_hide_tooltip"));
+	ADD_SIGNAL(MethodInfo("html_horizontal_scroll"));
+	ADD_SIGNAL(MethodInfo("html_js_alert"));
+	ADD_SIGNAL(MethodInfo("html_js_confirm"));
+	ADD_SIGNAL(MethodInfo("html_link_at_position"));
+	ADD_SIGNAL(MethodInfo("html_needs_paint"));
+	ADD_SIGNAL(MethodInfo("html_new_window"));
+	ADD_SIGNAL(MethodInfo("html_open_link_in_new_tab"));
+	ADD_SIGNAL(MethodInfo("html_search_results"));
+	ADD_SIGNAL(MethodInfo("html_set_cursor"));
+	ADD_SIGNAL(MethodInfo("html_show_tooltip"));
+	ADD_SIGNAL(MethodInfo("html_start_request"));
+	ADD_SIGNAL(MethodInfo("html_status_text"));
+	ADD_SIGNAL(MethodInfo("html_update_tooltip"));
+	ADD_SIGNAL(MethodInfo("html_url_changed"));
+	ADD_SIGNAL(MethodInfo("html_vertical_scroll"));
+
+	// HTTP Signals /////////////////////////////
+	ADD_SIGNAL(MethodInfo("http_request_completed"));
+	ADD_SIGNAL(MethodInfo("http_request_data_received"));
+	ADD_SIGNAL(MethodInfo("http_request_headers_received"));
 
 	// Matchmaking Signals //////////////////////
 	ADD_SIGNAL(MethodInfo("favorites_list_accounts_updated"));
@@ -5873,6 +6552,27 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(SCREENSHOT_MAX_TAGGED_FILES);					// 32
 	BIND_CONSTANT(SCREENSHOT_MAX_TAGGED_USERS);					// 32
 	BIND_CONSTANT(SCREENSHOT_THUMB_WIDTH);						// 200
+
+	// HTML Key Modifiers
+	BIND_CONSTANT(HTML_KEY_MODIFIER_NONE);						// 0
+	BIND_CONSTANT(HTML_KEY_MODIFIER_ALT_DOWN);					// (1<<0)
+	BIND_CONSTANT(HTML_KEY_MODIFIER_CTRL_DOWN);					// (1<<1)
+	BIND_CONSTANT(HTML_KEY_MODIFIER_SHIFT_DOWN);				// (1<<2)
+
+	// HTML Mouse Buttons
+	BIND_CONSTANT(HTML_MOUSE_BUTTON_LEFT);						// 0
+	BIND_CONSTANT(HTML_MOUSE_BUTTON_RIGHT);						// 1
+	BIND_CONSTANT(HTML_MOUSE_BUTTON_MIDDLE);					// 2
+
+	// HTTP Methods
+	BIND_CONSTANT(HTTP_METHOD_INVALID);							// 0
+	BIND_CONSTANT(HTTP_METHOD_GET);								// 1
+	BIND_CONSTANT(HTTP_METHOD_HEAD);							// 2
+	BIND_CONSTANT(HTTP_METHOD_POST);							// 3
+	BIND_CONSTANT(HTTP_METHOD_PUT);								// 4
+	BIND_CONSTANT(HTTP_METHOD_DELETE);							// 5
+	BIND_CONSTANT(HTTP_METHOD_OPTIONS);							// 6
+	BIND_CONSTANT(HTTP_METHOD_PATCH);							// 7
 }
 
 Steam::~Steam(){
