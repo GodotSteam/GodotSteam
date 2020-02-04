@@ -164,6 +164,162 @@
 							<li>Sends along the remote success as a BOOL, local success as a BOOL, and result as an INT.</li>
 						</ul>
 						<header class="major">
+							<h3>HTML Surface Signals</h3>
+						</header>
+						<h4>_html_browser_ready</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_browser_ready</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_can_go_backandforward</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_can_go_backandforward</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_changed_title</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_changed_title</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_close_browser</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_close_browser</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_file_open_dialog</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_file_open_dialog</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_finished_request</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_finished_request</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_hide_tooltip</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_hide_tooltip</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_horizontal_scroll</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_horizontal_scroll</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_js_alert</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_js_alert</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_js_confirm</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_js_confirm</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_link_at_position</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_link_at_position</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_needs_paint</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_needs_paint</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_new_window</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_new_window</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_open_link_in_new_tab</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_open_link_in_new_tab</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_search_results</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_search_results</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_set_cursor</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_set_cursor</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_show_tooltip</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_show_tooltip</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_start_request</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_start_request</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_status_text</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_status_text</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_update_tooltip</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_update_tooltip</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_url_changed</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_url_changed</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<h4>_html_vertical_scroll</h4>
+						<ul>
+							<li></li>
+							<li>Emits signal <strong><em>html_vertical_scroll</em></strong>.</li>
+							<li>Sends along .</li>
+						</ul>
+						<header class="major">
+							<h3>HTTP Signals</h3>
+						</header>
+						<h4>_http_request_completed</h4>
+						<ul>
+							<li>Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.</li>
+							<li>Emits signal <strong><em>http_request_completed</em></strong>.</li>
+							<li>Sends along the cookie handle ID, context value, if the request was successful, the status code, and body size.</li>
+						</ul>
+						<h4>_http_request_data_received</h4>
+						<ul>
+							<li>Triggered when a chunk of data is received from a streaming HTTP request.</li>
+							<li>Emits signal <strong><em>http_request_data_received</em></strong>.</li>
+							<li>Sends along the cookie handle ID, context value, the offset, and bytes received.</li>
+						</ul>
+						<h4>_http_request_headers_received</h4>
+						<ul>
+							<li>Triggered when HTTP headers are received from a streaming HTTP request.</li>
+							<li>Emits signal <strong><em>http_request_headers_received</em></strong>.</li>
+							<li>Sends along the cookie handle ID and context value.</li>
+						</ul>
+						<header class="major">
 							<h3>Matchmaking Signals</h3>
 						</header>
 						<h4>_favorites_list_accounts_updated</h4>

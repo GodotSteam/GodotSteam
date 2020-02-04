@@ -36,8 +36,8 @@
 							<li>Apps <em>(complete)</em></li>
 							<li>Controller <em>(depreciated)</em></li>
 							<li>Friends <em>(complete)</em></li>
-							<li>HTML Surface <em>(not started)</em></li>
-							<li>HTTP <em>(not started)</em></li>
+							<li>HTML Surface <em>(complete)</em></li>
+							<li>HTTP <em>(complete)</em></li>
 							<li>Input <em>(complete)</em></li>
 							<li>Inventory <em>(not started)</em></li>
 							<li>Matchmaking <em>(complete)</em></li>
@@ -48,7 +48,7 @@
 							<li>Networking Sockets <em>(not started)</em></li>
 							<li>Networking Utils <em>(not started)</em></li>
 							<li>Parties <em>(not started)</em></li>
-							<li>RemotePlay <em>(complete, one function incomplete due to SDK)</em></li>
+							<li>RemotePlay <em>(complete)</em></li>
 							<li>Remote Storage <em>(started)</em></li>
 							<li>Screenshots <em>(complete)</em></li>
 							<li>UGC <em>(complete, contains some broken functions)</em></li>
@@ -76,6 +76,11 @@
 							<li>Organized Steam functions and callbacks alphabetically like in Steamworks SDK documentations.</li>
 							<li><strike>Fix k_ESteamInputType_GenericXInput not being a declared identifier in getInputTypeForHandle.</strike> Steamworks SDK Docs are incorrect for this type.</li>
 							<li>triggerRepeatedHapticPulse has "too many arguments" and errors out compiling.</li>
+							<li>SetCookie has too many arguments for Godot.</li>
+							<li>fileLoadDialogResponse needs list of strings pointer fixed.</li>
+							<li>sendHTTPRequest and sendHTTPRequestAndStreamResponse might need fixed up.</li>]
+							<li>Figure out Steam callback warning during compiling (offsetof within non-standard-layout type).</li>
+							<li>Fix Steam overlay in Linux.</li>
 						</ul>
 						<hr />
 						<h2>Server</h2>

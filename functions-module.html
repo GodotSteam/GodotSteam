@@ -643,6 +643,314 @@
 						</ul>
 						<hr/>
 						<header class="major">
+							<h3>HTML Surface</h3>
+						</header>
+						<h4>addHeader( <sup>int</sup> browserHandle, <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Add a header to any HTTP requests from this browser.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>allowStartRequest( <sup>int</sup> browserHandle, <sup>bool</sup> allowed )</h4>
+						<ul>
+							<li>Sets whether a pending load is allowed or if it should be canceled.  NOTE:You MUST call this in response to a HTML_StartRequest_t callback.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>copyToClipboard( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Copy the currently selected text from the current page in an HTML surface into the local clipboard.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>createBrowser( <sup>string</sup> userAgent, <sup>string</sup> userCSS )</h4>
+						<ul>
+							<li>Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>executeJavascript( <sup>int</sup> browserHandle, <sup>string</sup> script )</h4>
+						<ul>
+							<li>Run a javascript script in the currently loaded page.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>fileLoadDialogResponse( <sup>int</sup> browserHandle, <sup>string</sup> selectedFiles )</h4>
+						<ul>
+							<li>Allows you to react to a page wanting to open a file load dialog. NOTE:You MUST call this in response to a HTML_FileOpenDialog_t callback.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>find( <sup>int</sup> browserHandle, <sup>string</sup> search, <sup>bool</sup> currentlyInFind, <sup>bool</sup> reverse )</h4>
+						<ul>
+							<li>Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call StopFind when the input string has changed or you want to stop searching.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>getLinkAtPosition( <sup>int</sup> browserHandle, <sup>int</sup> x, <sup>int</sup> y )</h4>
+						<ul>
+							<li>Retrieves details about a link at a specific position on the current page in an HTML surface.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>goBack( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Navigate back in the page history.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>goForward( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Navigate forward in the page history.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>htmlInit()</h4>
+						<ul>
+							<li>Initializes the HTML Surface API. This must be called prior to using any other functions in this interface. You MUST call Shutdown when you are done using the interface to free up the resources associated with it. Failing to do so will result in a memory leak!</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>jsDialogResponse( <sup>int</sup> browserHandle, <sup>bool</sup> result )</h4>
+						<ul>
+							<li>Allows you to react to a page wanting to open a javascript modal dialog notification.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>keyChar( <sup>int</sup> browserHandle, <sup>int</sup> unicodeChar, <sup>int</sup> keyModifiers )</h4>
+						<ul>
+							<li>cUnicodeChar is the unicode character point for this keypress (and potentially multiple chars per press).</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>keyDown( <sup>int</sup> browserHandle, <sup>int</sup> nativeKeyCode, <sup>int</sup> keyModifiers )</h4>
+						<ul>
+							<li>Keyboard interactions, native keycode is the virtual key code value from your OS.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>keyUp( <sup>int</sup> browserHandle, <sup>int</sup> nativeKeyCode, <sup>int</sup> keyModifiers )</h4>
+						<ul>
+							<li>Keyboard interactions, native keycode is the virtual key code value from your OS.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>loadURL( <sup>int</sup> browserHandle, <sup>string</sup> url, <sup>string</sup> postData )</h4>
+						<ul>
+							<li>Navigate to a specified URL. If you send POST data with pchPostData then the data should be formatted as: name1=value1&name2=value2. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: http://, https://, ftp://, and file:///. If no scheme is specified then http:// is used.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>mouseDoubleClick( <sup>int</sup> browserHandle, <sup>int</sup> mouseButton )</h4>
+						<ul>
+							<li>Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>mouseDown( <sup>int</sup> browserHandle, <sup>int</sup> mouseButton )</h4>
+						<ul>
+							<li>Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.</li>
+							<li>VOID.</li>
+						</ul>
+						<h4>mouseMove( <sup>int</sup> browserHandle, <sup>int</sup> x, <sup>int</sup> y )</h4>
+						<ul>
+							<li>Tells an HTML surface where the mouse is.
+							<li>VOID.</li>
+						</ul>
+						<h4>mouseUp( <sup>int</sup> browserHandle, <sup>int</sup> mouseButton )</h4>
+						<ul>
+							<li>Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
+							<li>VOID.</li>
+						</ul>
+						<h4>mouseWheel( <sup>int</sup> browserHandle, <sup>int</sup> delta )</h4>
+						<ul>
+							<li>Tells an HTML surface that the mouse wheel has moved.
+							<li>VOID.</li>
+						</ul>
+						<h4>pasteFromClipboard( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Paste from the local clipboard to the current page in an HTML surface.
+							<li>VOID.</li>
+						</ul>
+						<h4>reload( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Refreshes the current page. The reload will most likely hit the local cache instead of going over the network. This is equivalent to F5 or Ctrl+R in your browser of choice.
+							<li>VOID.</li>
+						</ul>
+						<h4>removeBrowser( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>You MUST call this when you are done with an HTML surface, freeing the resources associated with it. Failing to call this will result in a memory leak!
+							<li>VOID.</li>
+						</ul>
+						<h4>setBackgroundMode( <sup>int</sup> browserHandle, <sup>bool</sup> backgroundMode )</h4>
+						<ul>
+							<li>Enable/disable low-resource background mode, where javascript and repaint timers are throttled, resources are more aggressively purged from memory, and audio/video elements are paused. When background mode is enabled, all HTML5 video and audio objects will execute ".pause()" and gain the property "._steam_background_paused = 1". When background mode is disabled, any video or audio objects with that property will resume with ".play()".
+							<li>VOID.</li>
+						</ul>
+						<h4>setCookie( <sup>string</sup> hostname, <sup>string</sup> key, <sup>string</sup> value, <sup>string</sup> path, <sup>int</sup> expires, <sup>bool</sup> secure, <sup>bool</sup> httpOnly )</h4>
+						<ul>
+							<li>Set a webcookie for a specific hostname. You can read more about the specifics of setting cookies here on wikipedia.
+							<li>VOID.</li>
+						</ul>
+						<h4>setHorizontalScroll( <sup>int</sup> browserHandle, <sup>int</sup> absolutePixelScroll )</h4>
+						<ul>
+							<li>Scroll the current page horizontally.
+							<li>VOID.</li>
+						</ul>
+						<h4>setKeyFocus( <sup>int</sup> browserHandle, <sup>bool</sup> hasKeyFocus )</h4>
+						<ul>
+							<li>Tell a HTML surface if it has key focus currently, controls showing the I-beam cursor in text controls amongst other things.
+							<li>VOID.</li>
+						</ul>
+						<h4>setPageScaleFactor( <sup>int</sup> browserHandle, <sup>float</sup> zoom, <sup>int</sup> pointX, <sup>int</sup> pointY )</h4>
+						<ul>
+							<li>Zoom the current page in an HTML surface. The current scale factor is available from HTML_NeedsPaint_t.flPageScale, HTML_HorizontalScroll_t.flPageScale, and HTML_VerticalScroll_t.flPageScale.
+							<li>VOID.</li>
+						</ul>
+						<h4>setSize( <sup>int</sup> browserHandle, <sup>int</sup> width, <sup>int</sup> height )</h4>
+						<ul>
+							<li>Sets the display size of a surface in pixels.
+							<li>VOID.</li>
+						</ul>
+						<h4>setVerticalScroll( <sup>int</sup> browserHandle, <sup>int</sup> absolutePixelScroll )</h4>
+						<ul>
+							<li>Scroll the current page vertically.
+							<li>VOID.</li>
+						</ul>
+						<h4>htmlShutdown()</h4>
+						<ul>
+							<li>Shutdown the ISteamHTMLSurface interface, releasing the memory and handles. You MUST call this when you are done using this interface to prevent memory and handle leaks. After calling this then all of the functions provided in this interface will fail until you call Init to reinitialize again.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>stopFind( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Cancel a currently running find.
+							<li>VOID.</li>
+						</ul>
+						<h4>stopLoad( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Stop the load of the current HTML page.
+							<li>VOID.</li>
+						</ul>
+						<h4>viewSource( <sup>int</sup> browserHandle )</h4>
+						<ul>
+							<li>Open the current pages HTML source code in default local text editor, used for debugging.
+							<li>VOID.</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>HTTP</h3>
+						</header>
+						<h4>createCookieContainer( <sup>bool</sup> allowResponsesToModify )</h4>
+						<ul>
+							<li>Creates a cookie container to store cookies during the lifetime of the process. This API is just for during process lifetime, after steam restarts no cookies are persisted and you have no way to access the cookie container across repeat executions of your process.
+							<li>VOID.</li>
+						</ul>
+						<h4>createHTTPRequest( <sup>int</sup> requestMethod, <sup>string</sup> absoluteURL )</h4>
+						<ul>
+							<li>Initializes a new HTTP request.
+							<li>VOID.</li>
+						</ul>
+						<h4>deferHTTPRequest( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Defers a request which has already been sent by moving it at the back of the queue.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getHTTPDownloadProgressPct( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Gets progress on downloading the body for the request.
+							<li>FLOAT.</li>
+						</ul>
+						<h4>getHTTPRequestWasTimedOut( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Check if the reason the request failed was because we timed it out (rather than some harder failure).
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>getHTTPResponseBodyData( <sup>int</sup> request, <sup>int</sup> bufferSize )</h4>
+						<ul>
+							<li>Gets the body data from an HTTP response.
+							<li>INT.</li>
+						</ul>
+						<h4>getHTTPResponseBodySize( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Gets the size of the body data from an HTTP response.
+							<li>INT.</li>
+						</ul>
+						<h4>getHTTPResponseHeaderSize( <sup>int</sup> request, <sup>string</sup> headerName )</h4>
+						<ul>
+							<li>Checks if a header is present in an HTTP response and returns its size.
+							<li>INT.</li>
+						</ul>
+						<h4>getHTTPResponseHeaderValue( <sup>int</sup> request, <sup>string</sup> headerName, <sup>int</sup> bufferSize )</h4>
+						<ul>
+							<li>Gets a header value from an HTTP response.
+							<li>INT.</li>
+						</ul>
+						<h4>getHTTPStreamingResponseBodyData( <sup>int</sup> request, <sup>int</sup> offset, <sup>int</sup> bufferSize )</h4>
+						<ul>
+							<li>Gets the body data from a streaming HTTP response.
+							<li>INT.</li>
+						</ul>
+						<h4>prioritizeHTTPRequest( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Prioritizes a request which has already been sent by moving it at the front of the queue.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>releaseCookieContainer( <sup>int</sup> cookieHandle )</h4>
+						<ul>
+							<li>Releases a cookie container, freeing the memory allocated within Steam.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>releaseHTTPRequest( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Releases an HTTP request handle, freeing the memory allocated within Steam.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>sendHTTPRequest( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Sends an HTTP request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>sendHTTPRequestAndStreamResponse( <sup>int</sup> request )</h4>
+						<ul>
+							<li>Sends an HTTP request and streams the response back in chunks.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setCookie( <sup>int</sup> cookieHandle, <sup>string</sup> host, <sup>string</sup> url, <sup>string</sup> cookie )</h4>
+						<ul>
+							<li>Adds a cookie to the specified cookie container that will be used with future requests.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestAbsoluteTimeoutMS( <sup>int</sup> request, <sup>int</sup> milliseconds )</h4>
+						<ul>
+							<li>Set an absolute timeout in milliseconds for the HTTP request. This is the total time timeout which is different than the network activity timeout which is set with SetHTTPRequestNetworkActivityTimeout which can bump everytime we get more data.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestContextValue( <sup>int</sup> request, <sup>int</sup> contextValue )</h4>
+						<ul>
+							<li>Set a context value for the request, which will be returned in the HTTPRequestCompleted_t callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestCookieContainer( <sup>int</sup> request, <sup>int</sup> cookieHandle )</h4>
+						<ul>
+							<li>Associates a cookie container to use for an HTTP request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestGetOrPostParameter( <sup>int</sup> request, <sup>string</sup> name, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Set a GET or POST parameter value on the HTTP request. Must be called prior to sending the request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestHeaderValue( <sup>int</sup> request, <sup>string</sup> headerName, <sup>string</sup> headerValue )</h4>
+						<ul>
+							<li>Set a request header value for the HTTP request. Must be called before sending the request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestNetworkActivityTimeout( <sup>int</sup> request, <sup>int</sup> timeoutSeconds )</h4>
+						<ul>
+							<li>Set the timeout in seconds for the HTTP request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestRawPostBody( <sup>int</sup> request, <sup>string</sup> contentType, <sup>int</sup> bodyLen )</h4>
+						<ul>
+							<li>Sets the body for an HTTP Post request.
+							<li>INT.</li>
+						</ul>
+						<h4>setHTTPRequestRequiresVerifiedCertificate( <sup>int</sup> request, <sup>bool</sup> requireVerifiedCertificate )</h4>
+						<ul>
+							<li>Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only works Windows and macOS.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<h4>setHTTPRequestUserAgentInfo( <sup>int</sup> request, <sup>string</sup> userAgentInfo )</h4>
+						<ul>
+							<li>Set additional user agent info for a request.
+							<li>BOOL; returns true or false.</li>
+						</ul>
+						<hr/>
+						<header class="major">
 							<h3>Input</h3>
 						</header>
 						<h4>activateActionSet( <sup>int</sup> inputHandle, <sup>int</sup> actionSetHandle )</h4>
