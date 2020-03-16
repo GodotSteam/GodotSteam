@@ -320,6 +320,45 @@
 							<li>Sends along the cookie handle ID and context value.</li>
 						</ul>
 						<header class="major">
+							<h3>Inventory Signals</h3>
+						</header>
+						<h4>_inventory_definition_update</h4>
+						<ul>
+							<li>This callback is triggered whenever item definitions have been updated, which could be in response to LoadItemDefinitions or any time new item definitions are available (eg, from the dynamic addition of new item types while players are still in-game).</li>	
+							<li>Emits signal <strong><em>inventory_definition_update</em></strong>.</li>
+							<li>Returns an array with the item IDs as INTs.</li>
+						</ul>
+						<h4>_inventory_eligible_promo_item</h4>
+						<ul>
+							<li>Returned when you have requested the list of "eligible" promo items that can be manually granted to the given user. These are promo items of type "manual" that won't be granted automatically.</li>	
+							<li>Emits signal <strong><em>inventory_eligible_promo_item</em></strong>.</li>
+							<li>Returns a BOOl of whether the results are cached or not and an array of promo item IDs as INTs.</li>
+						</ul>
+						<h4>_inventory_full_update</h4>
+						<ul>
+							<li>Triggered when GetAllItems successfully returns a result which is newer / fresher than the last known result. (It will not trigger if the inventory hasn't changed, or if results from two overlapping calls are reversed in flight and the earlier result is already known to be stale/out-of-date.) The regular SteamInventoryResultReady_t callback will still be triggered immediately afterwards; this is an additional notification for your convenience.</li>
+							<li>Emits signal <strong><em>inventory_request_prices_result</em></strong>.</li>
+							<li>Returns the inventory handle as an INT.</li>
+						</ul>
+						<h4>_inventory_result_ready</h4>
+						<ul>
+							<li>This is fired whenever an inventory result transitions from k_EResultPending to any other completed state, see GetResultStatus for the complete list of states. There will always be exactly one callback per handle.</li>
+							<li>Emits signal <strong><em>inventory_result_ready</em></strong>.</li>
+							<li>Returns the inventory handle as an INT and the result as an INT.</li>
+						</ul>
+						<h4>_inventory_start_purchase_result</h4>
+						<ul>
+							<li>Returned after StartPurchase is called.</li>
+							<li>Emits signal <strong><em>inventory_start_purchase_result</em></strong>.</li>
+							<li>Returns whether it was a success or failure, the order ID, and the transaction ID.</li>
+						</ul>
+						<h4>_inventory_request_prices_result</h4>
+						<ul>
+							<li>Returned after RequestPrices is called.</li>
+							<li>Emits signal <strong><em>inventory_request_prices_result</em></strong>.</li>
+							<li>Sends along the result and the user's local currenty code.</li>
+						</ul>
+						<header class="major">
 							<h3>Matchmaking Signals</h3>
 						</header>
 						<h4>_favorites_list_accounts_updated</h4>

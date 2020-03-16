@@ -1116,6 +1116,175 @@
 						</ul>
 						<hr/>
 						<header class="major">
+							<h3>Inventory</h3>
+						</header>
+						<h4>addPromoItem( <sup>int</sup> item )</h4>
+						<ul>
+							<li>Grant a specific one-time promotional item to the current user.</li>
+							<li>BOOL; returns true if it was added or false if not.</li>
+						</ul>
+						<h4>addPromoItems( <sup>poolintarray</sup> items )</h4>
+						<ul>
+							<li>Grant a specific one-time promotional items to the current user.
+							<li>BOOL; reutrns true if promo item was added or false if not.</li>
+						</ul>	
+						<h4>checkResultSteamID( <sup>int</sup> steamIDExpected )</h4>
+						<ul>
+							<li>Checks whether an inventory result handle belongs to the specified Steam ID.
+							<li>BOOL; returns true if handle belongs to the user or false if not.</li>
+						</ul>
+						<h4>consumeItem( <sup>int</sup> itemConsume, <sup>int</sup> quantity )</h4>
+						<ul>	
+							<li>Consumes items from a user's inventory. If the quantity of the given item goes to zero, it is permanently removed.</li>
+							<li>BOOL; returns true if the item was consumed or false if not.</li>
+						</ul>
+						<h4>deserializeResult()</h4>
+						<ul>
+							<li>Deserializes a result set and verifies the signature bytes.
+							<li>BOOL; returns true if successful or false if not.</li>
+						</ul>
+						<h4>destroyResult()</h4>
+						<ul>
+							<li>Destroys a result handle and frees all associated memory.
+							<li>VOID.</li>
+						</ul>
+						<h4>exchangeItems( <sup>poolintarray</sup> outputItems, <sup>int</sup> outputQuantity, <sup>int</sup> inputItems, <sup>int</sup> inputQuantity )</h4>
+						<ul>
+							<li>Grant one item in exchange for a set of other items.
+							<li>BOOL; returns true if successful or false if not.</li>
+						</ul>
+						<h4>generateItems( <sup>poolintarray</sup> items, <sup>int</sup> quantity )</h4>
+						<ul>
+							<li>Grants specific items to the current user, for developers only.
+							<li>BOOL; returns true if successful or false if not.</li>
+						</ul>
+						<h4>getAllItems()</h4>
+						<ul>
+							<li>Start retrieving all items in the current users inventory.
+							<li>BOOL; returns true if successful or false if not.</li>
+						</ul>
+						<h4>getItemDefinitionProperty( <sup>int</sup> definition, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets a string property from the specified item definition.  Gets a property value for a specific item definition.
+							<li>STRING.
+						</ul>
+						<h4>getItemsByID( <sup>int</sup> idArray, <sup>int</sup> count )</h4>
+						<ul>
+							<li>Gets the state of a subset of the current user's inventory.
+							<li>BOOL; returns true if successful or false if not.</li>
+						</ul>
+						<h4>getItemPrice( <sup>int</sup> definition )</h4>
+						<ul>
+							<li>After a successful call to RequestPrices, you can call this method to get the pricing for a specific item definition.
+							<li>INT.</li>
+						</ul>
+						<h4>getItemsWithPrices( <sup>int</sup> length )</h4>
+						<ul>
+							<li>After a successful call to RequestPrices, you can call this method to get all the pricing for applicable item definitions. Use the result of GetNumItemsWithPrices as the the size of the arrays that you pass in.
+							<li>ARRAY; contains dictionaries with item, price and base price.</li>
+						</ul>
+						<h4>getNumItemsWithPrices()</h4>
+						<ul>
+							<li>After a successful call to RequestPrices, this will return the number of item definitions with valid pricing.
+							<li>INT.</li>
+						</ul>
+						<h4>getResultItemProperty( <sup>int</sup> index, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the dynamic properties from an item in an inventory result set.
+							<li>STRING.
+						</ul>
+						<h4>getResultItems()</h4>
+						<ul>
+							<li>Get the items associated with an inventory result handle.
+							<li>ARRAY.</li>
+						</ul>
+						<h4>getResultStatus()</h4>
+						<ul>
+							<li>Find out the status of an asynchronous inventory result handle.
+							<li>STRING.
+						</ul>
+						<h4>getResultTimestamp()</h4>
+						<ul>
+							<li>Gets the server time at which the result was generated.
+							<li>INT; returns the timestamp in UNIX time.</li>
+						</ul>
+						<h4>grantPromoItems()</h4>
+						<ul>
+							<li>Grant all potential one-time promotional items to the current user.
+							<li>BOOL; returns true if promo item was granted or false if not.</li>
+						</ul>
+						<h4>loadItemDefinitions()</h4>
+						<ul>
+							<li>Triggers an asynchronous load and refresh of item definitions.
+							<li>BOOL; always returns true, but also triggers <strong><em>_inventory_definition_update</em></strong> callback.</li>
+						</ul>
+						<h4>requestEligiblePromoItemDefinitionsIDs( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Request the list of "eligible" promo items that can be manually granted to the given user.
+							<li>VOID; triggers <strong>_inventory_eligible_promo_item</strong> callback.</li>
+						</ul>
+						<h4>requestPrices()</h4>
+						<ul>
+							<li>Request prices for all item definitions that can be purchased in the user's local currency. A SteamInventoryRequestPricesResult_t call result will be returned with the user's local currency code. After that, you can call GetNumItemsWithPrices and GetItemsWithPrices to get prices for all the known item definitions, or GetItemPrice for a specific item definition.
+							<li>VOID; triggers <strong>_inventory_request_prices_result</strong> callback.</li>
+						</ul>
+						<h4>serializeResult()</h4>
+						<ul>
+							<li>Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.</li>
+							<li>BOOL; returns true if item set was serialized or false if not.</li>
+						</ul>
+						<h4>startPurchase( <sup>poolintarray</sup> items, <sup>int</sup> quantity )</h4>
+						<ul>
+							<li>Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
+							<li>VOID; triggers <strong>_inventory_start_purchase_result</strong> callback.</li>
+						</ul>
+						<h4>transferItemQuantity( <sup>int</sup> itemID, <sup>int</sup> quantity, <sup>int</sup> itemDestination, <sup>bool</sup> split )</h4>
+						<ul>
+							<li>Transfer items between stacks within a user's inventory.
+							<li>BOOL; returns true if item was moved or false if not.</li>
+						</ul>
+						<h4>triggerItemDrop( <sup>int</sup> definition )</h4>
+						<ul>
+							<li>Trigger an item drop if the user has played a long enough period of time.
+							<li>BOOL; returns true if item was dropped or false if not.</li>
+						</ul>
+						<h4>startUpdateProperties()</h4>
+						<ul>
+							<li>Starts a transaction request to update dynamic properties on items for the current user. This call is rate-limited by user, so property modifications should be batched as much as possible (e.g. at the end of a map or game session). After calling SetProperty or RemoveProperty for all the items that you want to modify, you will need to call SubmitUpdateProperties to send the request to the Steam servers. A SteamInventoryResultReady_t callback will be fired with the results of the operation.
+							<li>VOID; it does however set a new inventory update handle.</li>
+						</ul>
+						<h4>submitUpdateProperties()</h4>
+						<ul>
+							<li>Submits the transaction request to modify dynamic properties on items for the current user. See StartUpdateProperties.</li>
+							<li>BOOL; returns true if the update was successful or false if not.</li>
+						</ul>
+						<h4>removeProperty( <sup>int</sup> itemID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Removes a dynamic property for the given item.
+							<li>BOOL; returns true if the property was removed or false if not.</li>
+						</ul>
+						<h4>setPropertyString( <sup>int</sup> itemID, <sup>string</sup> name, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are strings.
+							<li>BOOL; returns true if the property was set or false if not.</li>
+						</ul>
+						<h4>setPropertyBool( <sup>int</sup> itemID, <sup>string</sup> name, <sup>bool</sup> value )</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are boolean.
+							<li>BOOL; returns true if the property was set or false if not.</li>
+						</ul>
+						<h4>setPropertyInt( <sup>int</sup> itemID, <sup>string</sup> name, <sup>int64</sup> value )</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are 64 bit integers.
+							<li>BOOL; returns true if the property was set or false if not.</li>
+						</ul>
+						<h4>setPropertyFloat( <sup>int</sup> itemID, <sup>string</sup> name, <sup>float</sup> value )</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are 32 bit floats.
+							<li>BOOL; returns true if the property was set or false if not.</li>
+						</ul>
+						<hr/>
+						<header class="major">
 							<h3>Matchmaking</h3>
 						</header>
 						<h4>getFavoriteGames()</h4>
