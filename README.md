@@ -6,6 +6,14 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+The newest things that have beena added as of 3/16/20:
+- Added: new game to game list
+- Added: new Steam Inventory to functions
+- Added: new Steam Inventory to signals
+- Added: return data and descriptions for HTML signals
+- Changed: removed unnecessary return data for HTTP signals
+- Changed: removed unnecessary arguments for HTML and HTTP functions
+
 The newest things that have been added as of 1/5/20:
 - Added: various new functions and signals
 - Added: new Steam Input to functions

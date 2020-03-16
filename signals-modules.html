@@ -168,135 +168,135 @@
 						</header>
 						<h4>_html_browser_ready</h4>
 						<ul>
-							<li></li>
+							<li>A new browser was created and is ready for use.</li>
 							<li>Emits signal <strong><em>html_browser_ready</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along nothing.</li>
 						</ul>
 						<h4>_html_can_go_backandforward</h4>
 						<ul>
-							<li></li>
+							<li>Called when page history status has changed the ability to go backwards and forward.</li>
 							<li>Emits signal <strong><em>html_can_go_backandforward</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along BOOL for going back and BOOL for going forward.</li>
 						</ul>
 						<h4>_html_changed_title</h4>
 						<ul>
-							<li></li>
+							<li>Called when the current page in a browser gets a new title.</li>
 							<li>Emits signal <strong><em>html_changed_title</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along STRING of the title.</li>
 						</ul>
 						<h4>_html_close_browser</h4>
 						<ul>
-							<li></li>
+							<li>Called when the browser has been requested to close due to user interaction; usually because of a javascript window.close() call.</li>
 							<li>Emits signal <strong><em>html_close_browser</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along nothing.</li>
 						</ul>
 						<h4>_html_file_open_dialog</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser surface has received a file open dialog from a <input type="file"> click or similar, you must call FileLoadDialogResponse with the file(s) the user selected.</li>
 							<li>Emits signal <strong><em>html_file_open_dialog</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along STRING of the title and STRING of initial file.</li>
 						</ul>
 						<h4>_html_finished_request</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser has finished loading a page.</li>
 							<li>Emits signal <strong><em>html_finished_request</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along STRING of the URL and STRING of the title.</li>
 						</ul>
 						<h4>_html_hide_tooltip</h4>
 						<ul>
-							<li></li>
+							<li>Called when a a browser wants to hide a tooltip.</li>
 							<li>Emits signal <strong><em>html_hide_tooltip</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along nothing.</li>
 						</ul>
 						<h4>_html_horizontal_scroll</h4>
 						<ul>
-							<li></li>
+							<li>Provides details on the visibility and size of the horizontal scrollbar.</li>
 							<li>Emits signal <strong><em>html_horizontal_scroll</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along a dictionary of scroll data containing scroll max, scroll current, page scale, visible, and page size.</li>
 						</ul>
 						<h4>_html_js_alert</h4>
 						<ul>
-							<li></li>
+							<li>Called when the browser wants to display a Javascript alert dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.</li>
 							<li>Emits signal <strong><em>html_js_alert</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the message as a STRING.</li>
 						</ul>
 						<h4>_html_js_confirm</h4>
 						<ul>
-							<li></li>
+							<li>Called when the browser wants to display a Javascript confirmation dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.</li>
 							<li>Emits signal <strong><em>html_js_confirm</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the message as a STRING.</li>
 						</ul>
 						<h4>_html_link_at_position</h4>
 						<ul>
-							<li></li>
+							<li>Result of a call to GetLinkAtPosition.</li>
 							<li>Emits signal <strong><em>html_link_at_position</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along a dictionary containing the X position, Y position, URL, input, and live link.</li>
 						</ul>
 						<h4>_html_needs_paint</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser surface has a pending paint. This is where you get the actual image data to render to the screen.</li>
 							<li>Emits signal <strong><em>html_needs_paint</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along a dictionary containing the BGRA, how wide, how tall, update X, update Y, update wide, update tall, scroll X, scroll Y, page scale, and page serial.</li>
 						</ul>
 						<h4>_html_new_window</h4>
 						<ul>
-							<li></li>
+							<li>A browser has created a new HTML window.</li>
 							<li>Emits signal <strong><em>html_new_window</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along a dictionary containing the URL, X, Y, how wide, how tall, and new handle.</li>
 						</ul>
 						<h4>_html_open_link_in_new_tab</h4>
 						<ul>
-							<li></li>
+							<li>The browser has requested to load a url in a new tab.</li>
 							<li>Emits signal <strong><em>html_open_link_in_new_tab</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the URL as a STRING.</li>
 						</ul>
 						<h4>_html_search_results</h4>
 						<ul>
-							<li></li>
+							<li>Results from a search.</li>
 							<li>Emits signal <strong><em>html_search_results</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the results as an INT and the current match as an INT.</li>
 						</ul>
 						<h4>_html_set_cursor</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser wants to change the mouse cursor.</li>
 							<li>Emits signal <strong><em>html_set_cursor</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along mouse cursor as an INT.</li>
 						</ul>
 						<h4>_html_show_tooltip</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser wants to display a tooltip.</li>
 							<li>Emits signal <strong><em>html_show_tooltip</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the tooltip message as a STRING.</li>
 						</ul>
 						<h4>_html_start_request</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser wants to navigate to a new page.</li>
 							<li>Emits signal <strong><em>html_start_request</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the URL as a STRING, the taraget as a STRING, the post data as a STRING, and if it was redirected as a BOOL.</li>
 						</ul>
 						<h4>_html_status_text</h4>
 						<ul>
-							<li></li>
+							<li>Called when a browser wants you to display an informational message. This is most commonly used when you hover over links.</li>
 							<li>Emits signal <strong><em>html_status_text</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the message as a STRING.</li>
 						</ul>
 						<h4>_html_update_tooltip</h4>
 						<ul>
-							<li></li>
+							<li>Called when the text of an existing tooltip has been updated.</li>
 							<li>Emits signal <strong><em>html_update_tooltip</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along the message as a STRING.</li>
 						</ul>
 						<h4>_html_url_changed</h4>
 						<ul>
-							<li></li>
+							<li>Called when the browser is navigating to a new url.</li>
 							<li>Emits signal <strong><em>html_url_changed</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along a dictionary containing the URL, post data, if it was redirected, the title, and new navigation.</li>
 						</ul>
 						<h4>_html_vertical_scroll</h4>
 						<ul>
-							<li></li>
+							<li>Provides details on the visibility and size of the vertical scrollbar.</li>
 							<li>Emits signal <strong><em>html_vertical_scroll</em></strong>.</li>
-							<li>Sends along .</li>
+							<li>Sends along a dictionary containing the scroll max, scroll current, page scale, if visible, and page size.</li>
 						</ul>
 						<header class="major">
 							<h3>HTTP Signals</h3>
@@ -305,19 +305,19 @@
 						<ul>
 							<li>Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.</li>
 							<li>Emits signal <strong><em>http_request_completed</em></strong>.</li>
-							<li>Sends along the cookie handle ID, context value, if the request was successful, the status code, and body size.</li>
+							<li>Sends along the context value, if the request was successful, the status code, and body size.</li>
 						</ul>
 						<h4>_http_request_data_received</h4>
 						<ul>
 							<li>Triggered when a chunk of data is received from a streaming HTTP request.</li>
 							<li>Emits signal <strong><em>http_request_data_received</em></strong>.</li>
-							<li>Sends along the cookie handle ID, context value, the offset, and bytes received.</li>
+							<li>Sends along the context value, the offset, and bytes received.</li>
 						</ul>
 						<h4>_http_request_headers_received</h4>
 						<ul>
 							<li>Triggered when HTTP headers are received from a streaming HTTP request.</li>
 							<li>Emits signal <strong><em>http_request_headers_received</em></strong>.</li>
-							<li>Sends along the cookie handle ID and context value.</li>
+							<li>Sends along the context value.</li>
 						</ul>
 						<header class="major">
 							<h3>Inventory Signals</h3>

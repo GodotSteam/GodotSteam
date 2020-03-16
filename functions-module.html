@@ -645,12 +645,12 @@
 						<header class="major">
 							<h3>HTML Surface</h3>
 						</header>
-						<h4>addHeader( <sup>int</sup> browserHandle, <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<h4>addHeader( <sup>string</sup> key, <sup>string</sup> value )</h4>
 						<ul>
 							<li>Add a header to any HTTP requests from this browser.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>allowStartRequest( <sup>int</sup> browserHandle, <sup>bool</sup> allowed )</h4>
+						<h4>allowStartRequest( <sup>bool</sup> allowed )</h4>
 						<ul>
 							<li>Sets whether a pending load is allowed or if it should be canceled.  NOTE:You MUST call this in response to a HTML_StartRequest_t callback.</li>
 							<li>VOID.</li>
@@ -665,22 +665,22 @@
 							<li>Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>executeJavascript( <sup>int</sup> browserHandle, <sup>string</sup> script )</h4>
+						<h4>executeJavascript( <sup>string</sup> script )</h4>
 						<ul>
 							<li>Run a javascript script in the currently loaded page.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>fileLoadDialogResponse( <sup>int</sup> browserHandle, <sup>string</sup> selectedFiles )</h4>
+						<h4>fileLoadDialogResponse( <sup>string</sup> selectedFiles )</h4>
 						<ul>
 							<li>Allows you to react to a page wanting to open a file load dialog. NOTE:You MUST call this in response to a HTML_FileOpenDialog_t callback.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>find( <sup>int</sup> browserHandle, <sup>string</sup> search, <sup>bool</sup> currentlyInFind, <sup>bool</sup> reverse )</h4>
+						<h4>find( <sup>string</sup> search, <sup>bool</sup> currentlyInFind, <sup>bool</sup> reverse )</h4>
 						<ul>
 							<li>Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call StopFind when the input string has changed or you want to stop searching.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>getLinkAtPosition( <sup>int</sup> browserHandle, <sup>int</sup> x, <sup>int</sup> y )</h4>
+						<h4>getLinkAtPosition( <sup>int</sup> x, <sup>int</sup> y )</h4>
 						<ul>
 							<li>Retrieves details about a link at a specific position on the current page in an HTML surface.</li>
 							<li>VOID.</li>
@@ -700,52 +700,52 @@
 							<li>Initializes the HTML Surface API. This must be called prior to using any other functions in this interface. You MUST call Shutdown when you are done using the interface to free up the resources associated with it. Failing to do so will result in a memory leak!</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>jsDialogResponse( <sup>int</sup> browserHandle, <sup>bool</sup> result )</h4>
+						<h4>jsDialogResponse( <sup>bool</sup> result )</h4>
 						<ul>
 							<li>Allows you to react to a page wanting to open a javascript modal dialog notification.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>keyChar( <sup>int</sup> browserHandle, <sup>int</sup> unicodeChar, <sup>int</sup> keyModifiers )</h4>
+						<h4>keyChar( <sup>int</sup> unicodeChar, <sup>int</sup> keyModifiers )</h4>
 						<ul>
 							<li>cUnicodeChar is the unicode character point for this keypress (and potentially multiple chars per press).</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>keyDown( <sup>int</sup> browserHandle, <sup>int</sup> nativeKeyCode, <sup>int</sup> keyModifiers )</h4>
+						<h4>keyDown( <sup>int</sup> nativeKeyCode, <sup>int</sup> keyModifiers )</h4>
 						<ul>
 							<li>Keyboard interactions, native keycode is the virtual key code value from your OS.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>keyUp( <sup>int</sup> browserHandle, <sup>int</sup> nativeKeyCode, <sup>int</sup> keyModifiers )</h4>
+						<h4>keyUp( <sup>int</sup> nativeKeyCode, <sup>int</sup> keyModifiers )</h4>
 						<ul>
 							<li>Keyboard interactions, native keycode is the virtual key code value from your OS.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>loadURL( <sup>int</sup> browserHandle, <sup>string</sup> url, <sup>string</sup> postData )</h4>
+						<h4>loadURL( <sup>string</sup> url, <sup>string</sup> postData )</h4>
 						<ul>
 							<li>Navigate to a specified URL. If you send POST data with pchPostData then the data should be formatted as: name1=value1&name2=value2. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: http://, https://, ftp://, and file:///. If no scheme is specified then http:// is used.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>mouseDoubleClick( <sup>int</sup> browserHandle, <sup>int</sup> mouseButton )</h4>
+						<h4>mouseDoubleClick( <sup>int</sup> mouseButton )</h4>
 						<ul>
 							<li>Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>mouseDown( <sup>int</sup> browserHandle, <sup>int</sup> mouseButton )</h4>
+						<h4>mouseDown( <sup>int</sup> mouseButton )</h4>
 						<ul>
 							<li>Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.</li>
 							<li>VOID.</li>
 						</ul>
-						<h4>mouseMove( <sup>int</sup> browserHandle, <sup>int</sup> x, <sup>int</sup> y )</h4>
+						<h4>mouseMove( <sup>int</sup> x, <sup>int</sup> y )</h4>
 						<ul>
 							<li>Tells an HTML surface where the mouse is.
 							<li>VOID.</li>
 						</ul>
-						<h4>mouseUp( <sup>int</sup> browserHandle, <sup>int</sup> mouseButton )</h4>
+						<h4>mouseUp( <sup>int</sup> mouseButton )</h4>
 						<ul>
 							<li>Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
 							<li>VOID.</li>
 						</ul>
-						<h4>mouseWheel( <sup>int</sup> browserHandle, <sup>int</sup> delta )</h4>
+						<h4>mouseWheel( <sup>int</sup> delta )</h4>
 						<ul>
 							<li>Tells an HTML surface that the mouse wheel has moved.
 							<li>VOID.</li>
@@ -765,7 +765,7 @@
 							<li>You MUST call this when you are done with an HTML surface, freeing the resources associated with it. Failing to call this will result in a memory leak!
 							<li>VOID.</li>
 						</ul>
-						<h4>setBackgroundMode( <sup>int</sup> browserHandle, <sup>bool</sup> backgroundMode )</h4>
+						<h4>setBackgroundMode( <sup>bool</sup> backgroundMode )</h4>
 						<ul>
 							<li>Enable/disable low-resource background mode, where javascript and repaint timers are throttled, resources are more aggressively purged from memory, and audio/video elements are paused. When background mode is enabled, all HTML5 video and audio objects will execute ".pause()" and gain the property "._steam_background_paused = 1". When background mode is disabled, any video or audio objects with that property will resume with ".play()".
 							<li>VOID.</li>
@@ -775,27 +775,27 @@
 							<li>Set a webcookie for a specific hostname. You can read more about the specifics of setting cookies here on wikipedia.
 							<li>VOID.</li>
 						</ul>
-						<h4>setHorizontalScroll( <sup>int</sup> browserHandle, <sup>int</sup> absolutePixelScroll )</h4>
+						<h4>setHorizontalScroll( <sup>int</sup> absolutePixelScroll )</h4>
 						<ul>
 							<li>Scroll the current page horizontally.
 							<li>VOID.</li>
 						</ul>
-						<h4>setKeyFocus( <sup>int</sup> browserHandle, <sup>bool</sup> hasKeyFocus )</h4>
+						<h4>setKeyFocus( <sup>bool</sup> hasKeyFocus )</h4>
 						<ul>
 							<li>Tell a HTML surface if it has key focus currently, controls showing the I-beam cursor in text controls amongst other things.
 							<li>VOID.</li>
 						</ul>
-						<h4>setPageScaleFactor( <sup>int</sup> browserHandle, <sup>float</sup> zoom, <sup>int</sup> pointX, <sup>int</sup> pointY )</h4>
+						<h4>setPageScaleFactor( <sup>float</sup> zoom, <sup>int</sup> pointX, <sup>int</sup> pointY )</h4>
 						<ul>
 							<li>Zoom the current page in an HTML surface. The current scale factor is available from HTML_NeedsPaint_t.flPageScale, HTML_HorizontalScroll_t.flPageScale, and HTML_VerticalScroll_t.flPageScale.
 							<li>VOID.</li>
 						</ul>
-						<h4>setSize( <sup>int</sup> browserHandle, <sup>int</sup> width, <sup>int</sup> height )</h4>
+						<h4>setSize( <sup>int</sup> width, <sup>int</sup> height )</h4>
 						<ul>
 							<li>Sets the display size of a surface in pixels.
 							<li>VOID.</li>
 						</ul>
-						<h4>setVerticalScroll( <sup>int</sup> browserHandle, <sup>int</sup> absolutePixelScroll )</h4>
+						<h4>setVerticalScroll( <sup>int</sup> absolutePixelScroll )</h4>
 						<ul>
 							<li>Scroll the current page vertically.
 							<li>VOID.</li>
@@ -879,7 +879,7 @@
 							<li>Prioritizes a request which has already been sent by moving it at the front of the queue.
 							<li>BOOL; returns true or false.</li>
 						</ul>
-						<h4>releaseCookieContainer( <sup>int</sup> cookieHandle )</h4>
+						<h4>releaseCookieContainer()</h4>
 						<ul>
 							<li>Releases a cookie container, freeing the memory allocated within Steam.
 							<li>BOOL; returns true or false.</li>
@@ -899,7 +899,7 @@
 							<li>Sends an HTTP request and streams the response back in chunks.
 							<li>BOOL; returns true or false.</li>
 						</ul>
-						<h4>setCookie( <sup>int</sup> cookieHandle, <sup>string</sup> host, <sup>string</sup> url, <sup>string</sup> cookie )</h4>
+						<h4>setCookie( <sup>string</sup> host, <sup>string</sup> url, <sup>string</sup> cookie )</h4>
 						<ul>
 							<li>Adds a cookie to the specified cookie container that will be used with future requests.
 							<li>BOOL; returns true or false.</li>
