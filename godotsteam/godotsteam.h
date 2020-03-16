@@ -1,5 +1,9 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
+// Turn off MSVC-only warning about strcpy
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 // Include INT types header
 #include <inttypes.h>
 // Include Steamworks API header
@@ -85,7 +89,8 @@ class Steam: public Object {
 			SCREENSHOT_INVALID=0, SCREENSHOT_TAG_TYPE_MAX=255, SCREENSHOT_TAG_VALUE_MAX=255, SCREENSHOT_MAX_TAGGED_FILES=32, SCREENSHOT_MAX_TAGGED_USERS=32, SCREENSHOT_THUMB_WIDTH=200,
 			HTML_KEY_MODIFIER_NONE=0, HTML_KEY_MODIFIER_ALT_DOWN=(1<<0), HTML_KEY_MODIFIER_CTRL_DOWN=(1<<1), HTML_KEY_MODIFIER_SHIFT_DOWN=(1<<2),
 			HTML_MOUSE_BUTTON_LEFT=0, HTML_MOUSE_BUTTON_RIGHT=1, HTML_MOUSE_BUTTON_MIDDLE=2,
-			HTTP_METHOD_INVALID=0, HTTP_METHOD_GET=1, HTTP_METHOD_HEAD=2, HTTP_METHOD_POST=3, HTTP_METHOD_PUT=4, HTTP_METHOD_DELETE=5, HTTP_METHOD_OPTIONS=6, HTTP_METHOD_PATCH=7
+			HTTP_METHOD_INVALID=0, HTTP_METHOD_GET=1, HTTP_METHOD_HEAD=2, HTTP_METHOD_POST=3, HTTP_METHOD_PUT=4, HTTP_METHOD_DELETE=5, HTTP_METHOD_OPTIONS=6, HTTP_METHOD_PATCH=7,
+			ITEM_NO_TRADE=(1<<0), ITEM_REMOVED=(1<<8), ITEM_CONSUMED=(1<<9)
 
 		};
 		static Steam* get_singleton();
@@ -207,41 +212,41 @@ class Steam: public Object {
 		bool setRichPresence(const String& key, const String& value);
 
 		// HTML Surface /////////////////////////
-		void addHeader(uint32 browserHandle, const String& key, const String& value);
-		void allowStartRequest(uint32 browserHandle, bool allowed);
-		void copyToClipboard(uint32 browserHandle);
+		void addHeader(const String& key, const String& value);
+		void allowStartRequest(bool allowed);
+		void copyToClipboard();
 		void createBrowser(const String& userAgent, const String& userCSS);
-		void executeJavascript(uint32 browserHandle, const String& script);
-//		void fileLoadDialogResponse(uint32 browserHandle, const String& selectedFiles);
-		void find(uint32 browserHandle, const String& search, bool currentlyInFind, bool reverse);
-		void getLinkAtPosition(uint32 browserHandle, int x, int y);
-		void goBack(uint32 browserHandle);
-		void goForward(uint32 browserHandle);
+		void executeJavascript(const String& script);
+//		void fileLoadDialogResponse(const String& selectedFiles);
+		void find(const String& search, bool currentlyInFind, bool reverse);
+		void getLinkAtPosition(int x, int y);
+		void goBack();
+		void goForward();
 		void htmlInit();
-		void jsDialogResponse(uint32 browserHandle, bool result);
-		void keyChar(uint32 browserHandle, uint32 unicodeChar, int keyModifiers);
-		void keyDown(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers);
-		void keyUp(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers);
-		void loadURL(uint32 browserHandle, const String& url, const String& postData);
-		void mouseDoubleClick(uint32 browserHandle, int mouseButton);
-		void mouseDown(uint32 browserHandle, int mouseButton);
-		void mouseMove(uint32 browserHandle, int x, int y);
-		void mouseUp(uint32 browserHandle, int mouseButton);
-		void mouseWheel(uint32 browserHandle, int32 delta);
-		void pasteFromClipboard(uint32 browserHandle);
-		void reload(uint32 browserHandle);
-		void removeBrowser(uint32 browserHandle);
-		void setBackgroundMode(uint32 browserHandle, bool backgroundMode);
+		void jsDialogResponse(bool result);
+		void keyChar(uint32 unicodeChar, int keyModifiers);
+		void keyDown(uint32 nativeKeyCode, int keyModifiers);
+		void keyUp(uint32 nativeKeyCode, int keyModifiers);
+		void loadURL(const String& url, const String& postData);
+		void mouseDoubleClick(int mouseButton);
+		void mouseDown(int mouseButton);
+		void mouseMove(int x, int y);
+		void mouseUp(int mouseButton);
+		void mouseWheel(int32 delta);
+		void pasteFromClipboard();
+		void reload();
+		void removeBrowser();
+		void setBackgroundMode(bool backgroundMode);
 //		void setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool httpOnly);
-		void setHorizontalScroll(uint32 browserHandle, uint32 absolutePixelScroll);
-		void setKeyFocus(uint32 browserHandle, bool hasKeyFocus);
-		void setPageScaleFactor(uint32 browserHandle, float zoom, int pointX, int pointY);
-		void setSize(uint32 browserHandle, uint32 width, uint32 height);
-		void setVerticalScroll(uint32 browserHandle, uint32 absolutePixelScroll);
+		void setHorizontalScroll(uint32 absolutePixelScroll);
+		void setKeyFocus(bool hasKeyFocus);
+		void setPageScaleFactor(float zoom, int pointX, int pointY);
+		void setSize(uint32 width, uint32 height);
+		void setVerticalScroll(uint32 absolutePixelScroll);
 		bool htmlShutdown();
-		void stopFind(uint32 browserHandle);
-		void stopLoad(uint32 browserHandle);
-		void viewSource(uint32 browserHandle);
+		void stopFind();
+		void stopLoad();
+		void viewSource();
 
 		// HTTP /////////////////////////////////
 		void createCookieContainer( bool allowResponsesToModify);
@@ -255,14 +260,14 @@ class Steam: public Object {
 		uint8 getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize);
 		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize);		
 		bool prioritizeHTTPRequest(uint32 request);
-		bool releaseCookieContainer(uint32 cookieHandle);
+		bool releaseCookieContainer();
 		bool releaseHTTPRequest(uint32 request);
 		bool sendHTTPRequest(uint32 request);
 		bool sendHTTPRequestAndStreamResponse(uint32 request);
-		bool setCookie(uint32 cookieHandle, const String& host, const String& url, const String& cookie);
+		bool setCookie(const String& host, const String& url, const String& cookie);
 		bool setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds);
 		bool setHTTPRequestContextValue(uint32 request, uint64 contextValue);
-		bool setHTTPRequestCookieContainer(uint32 request, uint32 cookieHandle);
+		bool setHTTPRequestCookieContainer(uint32 request);
 		bool setHTTPRequestGetOrPostParameter(uint32 request, const String& name, const String& value);
 		bool setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue);
 		bool setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds);
@@ -304,6 +309,41 @@ class Steam: public Object {
 		void triggerHapticPulse(uint64_t inputHandle, int targetPad, int duration);
 //		void triggerRepeatedHapticPulse(uint64_t inputHandle, int targetPad, int duration, int offset, int repeat, int flags);
 		void triggerVibration(uint64_t inputHandle, uint16_t leftSpeed, uint16_t rightSpeed);
+
+		// Inventory ////////////////////////////
+		bool addPromoItem(uint32 item);
+		bool addPromoItems(const PoolIntArray items);
+		bool checkResultSteamID(uint64_t steamIDExpected);
+		bool consumeItem(uint64_t itemConsume, uint32 quantity);
+		bool deserializeResult();
+		void destroyResult();
+		bool exchangeItems(const PoolIntArray outputItems, const uint32 outputQuantity, const uint64_t inputItems, const uint32 inputQuantity);
+		bool generateItems(const PoolIntArray items, const uint32 quantity);
+		bool getAllItems();
+		String getItemDefinitionProperty(uint32 definition, const String& name);
+		bool getItemsByID(const uint64_t idArray, uint32 count);
+		uint64_t getItemPrice(uint32 definition);
+		Array getItemsWithPrices(uint32 length);
+		uint32 getNumItemsWithPrices();
+		String getResultItemProperty(uint32 index, const String& name);
+		Array getResultItems();
+		String getResultStatus();
+		uint32 getResultTimestamp();
+		bool grantPromoItems();
+		bool loadItemDefinitions();
+		void requestEligiblePromoItemDefinitionsIDs(uint64_t steamID);
+		void requestPrices();
+		bool serializeResult();
+		void startPurchase(const PoolIntArray items, const uint32 quantity);
+		bool transferItemQuantity(uint64_t itemID, uint32 quantity, uint64_t itemDestination, bool split);
+		bool triggerItemDrop(uint32 definition);
+		void startUpdateProperties();
+		bool submitUpdateProperties();
+		bool removeProperty(uint64_t itemID, const String& name);
+		bool setPropertyString(uint64_t itemID, const String& name, const String& value);
+		bool setPropertyBool(uint64_t itemID, const String& name, bool value);
+		bool setPropertyInt(uint64_t itemID, const String& name, uint64_t value);
+		bool setPropertyFloat(uint64_t itemID, const String& name, float value);
 
 		// Matchmaking //////////////////////////
 		Array getFavoriteGames();
@@ -571,6 +611,11 @@ class Steam: public Object {
 		uint32 cookieHandle;
 		uint32 requestHandle;
 
+		// Inventory
+		SteamInventoryUpdateHandle_t inventoryUpdateHandle;
+		SteamInventoryResult_t inventoryHandle;
+		SteamItemDetails_t inventoryDetails;
+
 		// Matchmaking
 		CSteamID clanActivity;
 
@@ -658,6 +703,15 @@ class Steam: public Object {
 		};
 		Vector<UGCDetails> ugcDetails;
 
+		// Item Details /////////////////////////
+		struct SteamItemDetails {
+			SteamItemInstanceID_t itemID;
+			SteamItemDef_t definition;
+			uint16 quantity;
+			uint16 flags;
+		};
+		Vector<SteamItemDetails> itemDetails;
+
 
 		// Run the Steamworks API callbacks /////
 		void run_callbacks(){
@@ -669,107 +723,112 @@ class Steam: public Object {
 		/////////////////////////////////////////
 		//
 		// Apps callbacks ///////////////////////
-		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t);
-		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t);
-		STEAM_CALLBACK(Steam, _new_launch_url_parameters, NewUrlLaunchParameters_t);
-//		STEAM_CALLBACK(Steam, _new_launch_query_parameters, NewLaunchQueryParameters_t);  Seems not to be found?
+		STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t, callbackDLCInstalled);
+		STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t, callbackFileDetailsResult);
+		STEAM_CALLBACK(Steam, _new_launch_url_parameters, NewUrlLaunchParameters_t, callbackNewLaunchURLParameters);
+//		STEAM_CALLBACK(Steam, _new_launch_query_parameters, NewLaunchQueryParameters_t, callbackNewLaunchQueryParameters);  Seems not to be found?
 
 		// Friends callbacks ////////////////////
-		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t);
-		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t);
-		STEAM_CALLBACK(Steam, _friend_rich_presence_update, FriendRichPresenceUpdate_t);
-		STEAM_CALLBACK(Steam, _connected_chat_join, GameConnectedChatJoin_t);
-		STEAM_CALLBACK(Steam, _connected_chat_leave, GameConnectedChatLeave_t);
-		STEAM_CALLBACK(Steam, _connected_clan_chat_message, GameConnectedClanChatMsg_t);
-		STEAM_CALLBACK(Steam, _connected_friend_chat_message, GameConnectedFriendChatMsg_t);
-		STEAM_CALLBACK(Steam, _join_requested, GameLobbyJoinRequested_t);
-		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t);
-		STEAM_CALLBACK(Steam, _join_game_requested, GameRichPresenceJoinRequested_t);
-		STEAM_CALLBACK(Steam, _change_server_requested, GameServerChangeRequested_t);
-		STEAM_CALLBACK(Steam, _join_clan_chat_complete, JoinClanChatRoomCompletionResult_t);
-		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t);
-		STEAM_CALLBACK(Steam, _name_changed, SetPersonaNameResponse_t);
+		STEAM_CALLBACK(Steam, _avatar_loaded, AvatarImageLoaded_t, callbackAvatarLoaded);
+		STEAM_CALLBACK(Steam, _clan_activity_downloaded, DownloadClanActivityCountsResult_t, callbackClanActivityDownloaded);
+		STEAM_CALLBACK(Steam, _friend_rich_presence_update, FriendRichPresenceUpdate_t, callbackFriendRichPresenceUpdate);
+		STEAM_CALLBACK(Steam, _connected_chat_join, GameConnectedChatJoin_t, callbackConnectedChatJoin);
+		STEAM_CALLBACK(Steam, _connected_chat_leave, GameConnectedChatLeave_t, callbackConnectedChatLeave);
+		STEAM_CALLBACK(Steam, _connected_clan_chat_message, GameConnectedClanChatMsg_t, callbackConnectedClanChatMessage);
+		STEAM_CALLBACK(Steam, _connected_friend_chat_message, GameConnectedFriendChatMsg_t, callbackConnectedFriendChatMessage);
+		STEAM_CALLBACK(Steam, _join_requested, GameLobbyJoinRequested_t, callbackJoinRequested);
+		STEAM_CALLBACK(Steam, _overlay_toggled, GameOverlayActivated_t, callbackOverlayToggled);
+		STEAM_CALLBACK(Steam, _join_game_requested, GameRichPresenceJoinRequested_t, callbackJoinGameRequested);
+		STEAM_CALLBACK(Steam, _change_server_requested, GameServerChangeRequested_t, callbackChangeServerRequested);
+		STEAM_CALLBACK(Steam, _join_clan_chat_complete, JoinClanChatRoomCompletionResult_t, callbackJoinClanChatComplete);
+		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t, callbackPersonaStateChange);
+		STEAM_CALLBACK(Steam, _name_changed, SetPersonaNameResponse_t, callbackNameChanged);
 
 		// HTML Surface callbacks ///////////////
-		STEAM_CALLBACK(Steam, _html_browser_ready, HTML_BrowserReady_t);
-		STEAM_CALLBACK(Steam, _html_can_go_backandforward, HTML_CanGoBackAndForward_t);
-		STEAM_CALLBACK(Steam, _html_changed_title, HTML_ChangedTitle_t);
-		STEAM_CALLBACK(Steam, _html_close_browser, HTML_CloseBrowser_t);
-		STEAM_CALLBACK(Steam, _html_file_open_dialog, HTML_FileOpenDialog_t);
-		STEAM_CALLBACK(Steam, _html_finished_request, HTML_FinishedRequest_t);
-		STEAM_CALLBACK(Steam, _html_hide_tooltip, HTML_HideToolTip_t);
-		STEAM_CALLBACK(Steam, _html_horizontal_scroll, HTML_HorizontalScroll_t);
-		STEAM_CALLBACK(Steam, _html_js_alert, HTML_JSAlert_t);
-		STEAM_CALLBACK(Steam, _html_js_confirm, HTML_JSConfirm_t);
-		STEAM_CALLBACK(Steam, _html_link_at_position, HTML_LinkAtPosition_t);
-		STEAM_CALLBACK(Steam, _html_needs_paint, HTML_NeedsPaint_t);
-		STEAM_CALLBACK(Steam, _html_new_window, HTML_NewWindow_t);
-		STEAM_CALLBACK(Steam, _html_open_link_in_new_tab, HTML_OpenLinkInNewTab_t);
-		STEAM_CALLBACK(Steam, _html_search_results, HTML_SearchResults_t);
-		STEAM_CALLBACK(Steam, _html_set_cursor, HTML_SetCursor_t);
-		STEAM_CALLBACK(Steam, _html_show_tooltip, HTML_ShowToolTip_t);
-		STEAM_CALLBACK(Steam, _html_start_request, HTML_StartRequest_t);
-		STEAM_CALLBACK(Steam, _html_status_text, HTML_StatusText_t);
-		STEAM_CALLBACK(Steam, _html_update_tooltip, HTML_UpdateToolTip_t);
-		STEAM_CALLBACK(Steam, _html_url_changed, HTML_URLChanged_t);
-		STEAM_CALLBACK(Steam, _html_vertical_scroll, HTML_VerticalScroll_t);
+		STEAM_CALLBACK(Steam, _html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
+		STEAM_CALLBACK(Steam, _html_can_go_backandforward, HTML_CanGoBackAndForward_t, callbackHTMLCanGoBackandforward);
+		STEAM_CALLBACK(Steam, _html_changed_title, HTML_ChangedTitle_t, callbackHTMLChangedTitle);
+		STEAM_CALLBACK(Steam, _html_close_browser, HTML_CloseBrowser_t, callbackHTMLCloseBrowser);
+		STEAM_CALLBACK(Steam, _html_file_open_dialog, HTML_FileOpenDialog_t, callbackHTMLFileOpenDialog);
+		STEAM_CALLBACK(Steam, _html_finished_request, HTML_FinishedRequest_t, callbackHTMLFinishedRequest);
+		STEAM_CALLBACK(Steam, _html_hide_tooltip, HTML_HideToolTip_t, callbackHTMLHideTooltip);
+		STEAM_CALLBACK(Steam, _html_horizontal_scroll, HTML_HorizontalScroll_t, callbackHTMLHorizontalScroll);
+		STEAM_CALLBACK(Steam, _html_js_alert, HTML_JSAlert_t, callbackHTMLJSAlert);
+		STEAM_CALLBACK(Steam, _html_js_confirm, HTML_JSConfirm_t, callbackHTMLJSConfirm);
+		STEAM_CALLBACK(Steam, _html_link_at_position, HTML_LinkAtPosition_t, callbackHTMLLinkAtPosition);
+		STEAM_CALLBACK(Steam, _html_needs_paint, HTML_NeedsPaint_t, callbackHTMLNeedsPaint);
+		STEAM_CALLBACK(Steam, _html_new_window, HTML_NewWindow_t, callbackHTMLNewWindow);
+		STEAM_CALLBACK(Steam, _html_open_link_in_new_tab, HTML_OpenLinkInNewTab_t, callbackHTMLOpenLinkInNewTab);
+		STEAM_CALLBACK(Steam, _html_search_results, HTML_SearchResults_t, callbackHTMLSearchResults);
+		STEAM_CALLBACK(Steam, _html_set_cursor, HTML_SetCursor_t, callbackHTMLSetCursor);
+		STEAM_CALLBACK(Steam, _html_show_tooltip, HTML_ShowToolTip_t, callbackHTMLShowTooltip);
+		STEAM_CALLBACK(Steam, _html_start_request, HTML_StartRequest_t, callbackHTMLStartRequest);
+		STEAM_CALLBACK(Steam, _html_status_text, HTML_StatusText_t, callbackHTMLStatusText);
+		STEAM_CALLBACK(Steam, _html_update_tooltip, HTML_UpdateToolTip_t, callbackHTMLUpdateTooltip);
+		STEAM_CALLBACK(Steam, _html_url_changed, HTML_URLChanged_t, callbackHTMLURLChanged);
+		STEAM_CALLBACK(Steam, _html_vertical_scroll, HTML_VerticalScroll_t, callbackHTMLVerticalScroll);
 
 		// HTTP callbacks ///////////////////////
-		STEAM_CALLBACK(Steam, _http_request_completed, HTTPRequestCompleted_t);
-		STEAM_CALLBACK(Steam, _http_request_data_received, HTTPRequestDataReceived_t);
-		STEAM_CALLBACK(Steam, _http_request_headers_received, HTTPRequestHeadersReceived_t);
+		STEAM_CALLBACK(Steam, _http_request_completed, HTTPRequestCompleted_t, callbackHTTPRequestCompleted);
+		STEAM_CALLBACK(Steam, _http_request_data_received, HTTPRequestDataReceived_t, callbackHTTPRequestDataReceived);
+		STEAM_CALLBACK(Steam, _http_request_headers_received, HTTPRequestHeadersReceived_t, callbackHTTPRequestHeadersReceived);
+
+		// Inventory callbacks //////////////////
+		STEAM_CALLBACK(Steam, _inventory_definition_update, SteamInventoryDefinitionUpdate_t, callbackInventoryDefinitionUpdate);
+		STEAM_CALLBACK(Steam, _inventory_full_update, SteamInventoryFullUpdate_t, callbackInventoryFullUpdate);
+		STEAM_CALLBACK(Steam, _inventory_result_ready, SteamInventoryResultReady_t, callbackInventoryResultReady);
 
 		// Matchmaking callbacks ////////////////
-		STEAM_CALLBACK(Steam, _favorites_list_accounts_updated, FavoritesListAccountsUpdated_t);
-		STEAM_CALLBACK(Steam, _favorites_list_changed, FavoritesListChanged_t);
-		STEAM_CALLBACK(Steam, _lobby_message, LobbyChatMsg_t);
-		STEAM_CALLBACK(Steam, _lobby_chat_update, LobbyChatUpdate_t);
-		STEAM_CALLBACK(Steam, _lobby_data_update, LobbyDataUpdate_t);
-		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t);
-		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t);
-		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t);
+		STEAM_CALLBACK(Steam, _favorites_list_accounts_updated, FavoritesListAccountsUpdated_t, callbackFavoritesListAccountsUpdated);
+		STEAM_CALLBACK(Steam, _favorites_list_changed, FavoritesListChanged_t, callbackFavoritesListChanged);
+		STEAM_CALLBACK(Steam, _lobby_message, LobbyChatMsg_t, callbackLobbyMessage);
+		STEAM_CALLBACK(Steam, _lobby_chat_update, LobbyChatUpdate_t, callbackLobbyChatUpdate);
+		STEAM_CALLBACK(Steam, _lobby_data_update, LobbyDataUpdate_t, callbackLobbyDataUpdate);
+		STEAM_CALLBACK(Steam, _lobby_joined, LobbyEnter_t, callbackLobbyJoined);
+		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t, callbackLobbyGameCreated);
+		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t, callbackLobbyInvite);
 
 		// Networking callbacks /////////////////
-		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t);
-		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t);
+		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t, callbackP2PSessionConnectFail);
+		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t, callbackP2PSessionRequest);
 
 		// Remote Play callbacks ////////////////
-		STEAM_CALLBACK(Steam, _remote_play_session_connected, SteamRemotePlaySessionConnected_t);
-		STEAM_CALLBACK(Steam, _remote_play_session_disconnected, SteamRemotePlaySessionDisconnected_t);
+		STEAM_CALLBACK(Steam, _remote_play_session_connected, SteamRemotePlaySessionConnected_t, callbackRemotePlaySessionConnected);
+		STEAM_CALLBACK(Steam, _remote_play_session_disconnected, SteamRemotePlaySessionDisconnected_t, callbackRemotePlaySessionDisconnected);
 
 		// Screenshot callbacks /////////////////
-		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t);
-		STEAM_CALLBACK(Steam, _screenshot_requested, ScreenshotRequested_t);
+		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t, callbackScreenshotReady);
+		STEAM_CALLBACK(Steam, _screenshot_requested, ScreenshotRequested_t, callbackScreenshotRequested);
 
 		// UGC callbacks ////////////////////////
-		STEAM_CALLBACK(Steam, _item_downloaded, DownloadItemResult_t);
-		STEAM_CALLBACK(Steam, _item_installed, ItemInstalled_t);
+		STEAM_CALLBACK(Steam, _item_downloaded, DownloadItemResult_t, callbackItemDownloaded);
+		STEAM_CALLBACK(Steam, _item_installed, ItemInstalled_t, callbackItemInstalled);
 
 		// User callbacks ///////////////////////
-		STEAM_CALLBACK(Steam, _client_game_server_deny, ClientGameServerDeny_t);
-		STEAM_CALLBACK(Steam, _encrypted_app_ticket_response, EncryptedAppTicketResponse_t);
-		STEAM_CALLBACK(Steam, _game_web_callback, GameWebCallback_t);
-		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t);
-		STEAM_CALLBACK(Steam, _ipc_failure, IPCFailure_t);
-		STEAM_CALLBACK(Steam, _licenses_updated, LicensesUpdated_t);
-		STEAM_CALLBACK(Steam, _microstransaction_auth_response, MicroTxnAuthorizationResponse_t);
-		STEAM_CALLBACK(Steam, _steam_server_connected, SteamServersConnected_t);
-		STEAM_CALLBACK(Steam, _steam_server_disconnected, SteamServersDisconnected_t);
-		STEAM_CALLBACK(Steam, _store_auth_url_response, StoreAuthURLResponse_t);
-		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t);
+		STEAM_CALLBACK(Steam, _client_game_server_deny, ClientGameServerDeny_t, callbackClientGameServerDeny);
+		STEAM_CALLBACK(Steam, _encrypted_app_ticket_response, EncryptedAppTicketResponse_t, callbackEncryptedAppTicketResponse);
+		STEAM_CALLBACK(Steam, _game_web_callback, GameWebCallback_t, callbackGameWebCallback);
+		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t, callbackGetAuthSessionTicketResponse);
+		STEAM_CALLBACK(Steam, _ipc_failure, IPCFailure_t, callbackIPCFailure);
+		STEAM_CALLBACK(Steam, _licenses_updated, LicensesUpdated_t, callbackLicensesUpdated);
+		STEAM_CALLBACK(Steam, _microstransaction_auth_response, MicroTxnAuthorizationResponse_t, callbackMicrotransactionAuthResponse);
+		STEAM_CALLBACK(Steam, _steam_server_connected, SteamServersConnected_t, callbackSteamServerConnected);
+		STEAM_CALLBACK(Steam, _steam_server_disconnected, SteamServersDisconnected_t, callbackSteamServerDisconnected);
+		STEAM_CALLBACK(Steam, _store_auth_url_response, StoreAuthURLResponse_t, callbackStoreAuthURLResponse);
+		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t, callbackValidateAuthTicketResponse);
 
 		// User stat callbacks //////////////////
-		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t);
-		STEAM_CALLBACK(Steam, _current_stats_received, UserStatsReceived_t);
-		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t);
-		STEAM_CALLBACK(Steam, _user_stats_unloaded, UserStatsUnloaded_t);
+		STEAM_CALLBACK(Steam, _user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
+		STEAM_CALLBACK(Steam, _current_stats_received, UserStatsReceived_t, callbackCurrentStatsReceived);
+		STEAM_CALLBACK(Steam, _user_stats_stored, UserStatsStored_t, callbackUserStatsStored);
+		STEAM_CALLBACK(Steam, _user_stats_unloaded, UserStatsUnloaded_t, callbackUserStatsUnloaded);
 
 		// Utility callbacks ////////////////////
-		STEAM_CALLBACK(Steam, _gamepad_text_input_dismissed, GamepadTextInputDismissed_t);
-		STEAM_CALLBACK(Steam, _ip_country, IPCountry_t);
-		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t);
-		STEAM_CALLBACK(Steam, _steam_api_call_completed, SteamAPICallCompleted_t);
-		STEAM_CALLBACK(Steam, _steam_shutdown, SteamShutdown_t);
+		STEAM_CALLBACK(Steam, _gamepad_text_input_dismissed, GamepadTextInputDismissed_t, callbackGamepadTextInputDismissed);
+		STEAM_CALLBACK(Steam, _ip_country, IPCountry_t, callbackIPCountry);
+		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t, callbackLowPower);
+		STEAM_CALLBACK(Steam, _steam_api_call_completed, SteamAPICallCompleted_t, callbackSteamAPICallCompleted);
+		STEAM_CALLBACK(Steam, _steam_shutdown, SteamShutdown_t, callbackSteamShutdown);
 
 		/////////////////////////////////////////
 		// STEAM CALL RESULTS ///////////////////
@@ -784,6 +843,14 @@ class Steam: public Object {
 		void _get_follower_count(FriendsGetFollowerCount_t *callData, bool bIOFailure);
 		CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 		void _is_following(FriendsIsFollowing_t *callData, bool bIOFailure);
+
+		// Inventory call results ///////////////
+		CCallResult<Steam, SteamInventoryEligiblePromoItemDefIDs_t> callResultEligiblePromoItemDefIDs;
+		void _inventory_eligible_promo_item(SteamInventoryEligiblePromoItemDefIDs_t *callData, bool bIOFailure);
+		CCallResult<Steam, SteamInventoryRequestPricesResult_t> callResultRequestPrices;
+		void _inventory_request_prices_result(SteamInventoryRequestPricesResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, SteamInventoryStartPurchaseResult_t> callResultStartPurchase;
+		void _inventory_start_purchase_result(SteamInventoryStartPurchaseResult_t *callData, bool bIOFailure);
 
 		// Matchmaking call results /////////////
 		CCallResult<Steam, LobbyCreated_t> callResultCreateLobby;

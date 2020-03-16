@@ -1,3 +1,7 @@
+// Turn off MSVC-only warning about strcpy
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 // Include GodotSteam headear
 #include "godotsteam.h"
 // Include Steamworks API header
@@ -7,10 +11,120 @@
 #include "core/io/ip.h"
 // Include some system headers
 #include "fstream"
+#include "vector"
 
 Steam* Steam::singleton = NULL;
 
-Steam::Steam(){
+Steam::Steam()
+	:
+	// App callbacks ////////////////////////////
+	callbackDLCInstalled(this, &Steam::_dlc_installed),
+	callbackFileDetailsResult(this, &Steam::_file_details_result),
+	callbackNewLaunchURLParameters(this, &Steam::_new_launch_url_parameters),
+//	callbackNewLaunchQueryParameters(this, &Steam::_new_launch_query_parameters),  Seems not to be found?
+
+	// Friends callbacks ////////////////////////
+	callbackAvatarLoaded(this, &Steam::_avatar_loaded),
+	callbackClanActivityDownloaded(this, &Steam::_clan_activity_downloaded),
+	callbackFriendRichPresenceUpdate(this, &Steam::_friend_rich_presence_update),
+	callbackConnectedChatJoin(this, &Steam::_connected_chat_join),
+	callbackConnectedChatLeave(this, &Steam::_connected_chat_leave),
+	callbackConnectedClanChatMessage(this, &Steam::_connected_clan_chat_message),
+	callbackConnectedFriendChatMessage(this, &Steam::_connected_friend_chat_message),
+	callbackJoinRequested(this, &Steam::_join_requested),
+	callbackOverlayToggled(this, &Steam::_overlay_toggled),
+	callbackJoinGameRequested(this, &Steam::_join_game_requested),
+	callbackChangeServerRequested(this, &Steam::_change_server_requested),
+	callbackJoinClanChatComplete(this, &Steam::_join_clan_chat_complete),
+	callbackPersonaStateChange(this, &Steam::_persona_state_change),
+	callbackNameChanged(this, &Steam::_name_changed),
+
+	// HTML Surface callbacks ///////////////////
+	callbackHTMLBrowserReady(this, &Steam::_html_browser_ready),
+	callbackHTMLCanGoBackandforward(this, &Steam::_html_can_go_backandforward),
+	callbackHTMLChangedTitle(this, &Steam::_html_changed_title),
+	callbackHTMLCloseBrowser(this, &Steam::_html_close_browser),
+	callbackHTMLFileOpenDialog(this, &Steam::_html_file_open_dialog),
+	callbackHTMLFinishedRequest(this, &Steam::_html_finished_request),
+	callbackHTMLHideTooltip(this, &Steam::_html_hide_tooltip),
+	callbackHTMLHorizontalScroll(this, &Steam::_html_horizontal_scroll),
+	callbackHTMLJSAlert(this, &Steam::_html_js_alert),
+	callbackHTMLJSConfirm(this, &Steam::_html_js_confirm),
+	callbackHTMLLinkAtPosition(this, &Steam::_html_link_at_position),
+	callbackHTMLNeedsPaint(this, &Steam::_html_needs_paint),
+	callbackHTMLNewWindow(this, &Steam::_html_new_window),
+	callbackHTMLOpenLinkInNewTab(this, &Steam::_html_open_link_in_new_tab),
+	callbackHTMLSearchResults(this, &Steam::_html_search_results),
+	callbackHTMLSetCursor(this, &Steam::_html_set_cursor),
+	callbackHTMLShowTooltip(this, &Steam::_html_show_tooltip),
+	callbackHTMLStartRequest(this, &Steam::_html_start_request),
+	callbackHTMLStatusText(this, &Steam::_html_status_text),
+	callbackHTMLUpdateTooltip(this, &Steam::_html_update_tooltip),
+	callbackHTMLURLChanged(this, &Steam::_html_url_changed),
+	callbackHTMLVerticalScroll(this, &Steam::_html_vertical_scroll),
+
+	// HTTP callbacks ///////////////////////////
+	callbackHTTPRequestCompleted(this, &Steam::_http_request_completed),
+	callbackHTTPRequestDataReceived(this, &Steam::_http_request_data_received),
+	callbackHTTPRequestHeadersReceived(this, &Steam::_http_request_headers_received),
+
+	// Inventory callbacks //////////////////////
+	callbackInventoryDefinitionUpdate(this, &Steam::_inventory_definition_update),
+	callbackInventoryFullUpdate(this, &Steam::_inventory_full_update),
+	callbackInventoryResultReady(this, &Steam::_inventory_result_ready),
+
+	// Matchmaking callbacks ////////////////////
+	callbackFavoritesListAccountsUpdated(this, &Steam::_favorites_list_accounts_updated),
+	callbackFavoritesListChanged(this, &Steam::_favorites_list_changed),
+	callbackLobbyMessage(this, &Steam::_lobby_message),
+	callbackLobbyChatUpdate(this, &Steam::_lobby_chat_update),
+	callbackLobbyDataUpdate(this, &Steam::_lobby_data_update),
+	callbackLobbyJoined(this, &Steam::_lobby_joined),
+	callbackLobbyGameCreated(this, &Steam::_lobby_game_created),
+	callbackLobbyInvite(this, &Steam::_lobby_invite),
+
+	// Networking callbacks /////////////////////
+	callbackP2PSessionConnectFail(this, &Steam::_p2p_session_connect_fail),
+	callbackP2PSessionRequest(this, &Steam::_p2p_session_request),
+
+	// Remote Play callbacks ////////////////////
+	callbackRemotePlaySessionConnected(this, &Steam::_remote_play_session_connected),
+	callbackRemotePlaySessionDisconnected(this, &Steam::_remote_play_session_disconnected),
+
+	// Screenshot callbacks /////////////////////
+	callbackScreenshotReady(this, &Steam::_screenshot_ready),
+	callbackScreenshotRequested(this, &Steam::_screenshot_requested),
+
+	// UGC callbacks ////////////////////////////
+	callbackItemDownloaded(this, &Steam::_item_downloaded),
+	callbackItemInstalled(this, &Steam::_item_installed),
+
+	// User callbacks ///////////////////////////
+	callbackClientGameServerDeny(this, &Steam::_client_game_server_deny),
+	callbackEncryptedAppTicketResponse(this, &Steam::_encrypted_app_ticket_response),
+	callbackGameWebCallback(this, &Steam::_game_web_callback),
+	callbackGetAuthSessionTicketResponse(this, &Steam::_get_auth_session_ticket_response),
+	callbackIPCFailure(this, &Steam::_ipc_failure),
+	callbackLicensesUpdated(this, &Steam::_licenses_updated),
+	callbackMicrotransactionAuthResponse(this, &Steam::_microstransaction_auth_response),
+	callbackSteamServerConnected(this, &Steam::_steam_server_connected),
+	callbackSteamServerDisconnected(this, &Steam::_steam_server_disconnected),
+	callbackStoreAuthURLResponse(this, &Steam::_store_auth_url_response),
+	callbackValidateAuthTicketResponse(this, &Steam::_validate_auth_ticket_response),
+
+	// User stat callbacks //////////////////////
+	callbackUserAchievementStored(this, &Steam::_user_achievement_stored),
+	callbackCurrentStatsReceived(this, &Steam::_current_stats_received),
+	callbackUserStatsStored(this, &Steam::_user_stats_stored),
+	callbackUserStatsUnloaded(this, &Steam::_user_stats_unloaded),
+
+	// Utility callbacks ////////////////////////
+	callbackGamepadTextInputDismissed(this, &Steam::_gamepad_text_input_dismissed),
+	callbackIPCountry(this, &Steam::_ip_country),
+	callbackLowPower(this, &Steam::_low_power),
+	callbackSteamAPICallCompleted(this, &Steam::_steam_api_call_completed),
+	callbackSteamShutdown(this, &Steam::_steam_shutdown)
+{
 	isInitSuccess = false;
 	singleton = this;
 	leaderboardDetailsMax = 0;
@@ -1080,19 +1194,19 @@ bool Steam::setRichPresence(const String& key, const String& value){
 /////////////////////////////////////////////////
 //
 // Add a header to any HTTP requests from this browser.
-void Steam::addHeader(uint32 browserHandle, const String& key, const String& value){
+void Steam::addHeader(const String& key, const String& value){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->AddHeader(browserHandle, key.utf8().get_data(), value.utf8().get_data());
 	}
 }
 // Sets whether a pending load is allowed or if it should be canceled.  NOTE:You MUST call this in response to a HTML_StartRequest_t callback.
-void Steam::allowStartRequest(uint32 browserHandle, bool allowed){
+void Steam::allowStartRequest(bool allowed){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->AllowStartRequest(browserHandle, allowed);
 	}
 }
 // Copy the currently selected text from the current page in an HTML surface into the local clipboard.
-void Steam::copyToClipboard(uint32 browserHandle){
+void Steam::copyToClipboard(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->CopyToClipboard(browserHandle);
 	}
@@ -1104,37 +1218,37 @@ void Steam::createBrowser(const String& userAgent, const String& userCSS){
 	}
 }
 // Run a javascript script in the currently loaded page.
-void Steam::executeJavascript(uint32 browserHandle, const String& script){
+void Steam::executeJavascript(const String& script){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->ExecuteJavascript(browserHandle, script.utf8().get_data());
 	}
 }
 // Allows you to react to a page wanting to open a file load dialog. NOTE:You MUST call this in response to a HTML_FileOpenDialog_t callback.
-//void Steam::fileLoadDialogResponse(uint32 browserHandle, const String& selectedFiles){
+//void Steam::fileLoadDialogResponse(const String& selectedFiles){
 //	if(!SteamHTMLSurface() == NULL){
 //		SteamHTMLSurface()->FileLoadDialogResponse(browserHandle, selectedFiles.utf8().get_data());
 //	}
 //}
 // Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call StopFind when the input string has changed or you want to stop searching.
-void Steam::find(uint32 browserHandle, const String& search, bool currentlyInFind, bool reverse){
+void Steam::find(const String& search, bool currentlyInFind, bool reverse){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->Find(browserHandle, search.utf8().get_data(), currentlyInFind, reverse);
 	}
 }
 // Retrieves details about a link at a specific position on the current page in an HTML surface.
-void Steam::getLinkAtPosition(uint32 browserHandle, int x, int y){
+void Steam::getLinkAtPosition(int x, int y){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->GetLinkAtPosition(browserHandle, x, y);
 	}
 }
 // Navigate back in the page history.
-void Steam::goBack(uint32 browserHandle){
+void Steam::goBack(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->GoBack(browserHandle);
 	}
 }
 // Navigate forward in the page history
-void Steam::goForward(uint32 browserHandle){
+void Steam::goForward(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->GoForward(browserHandle);
 	}
@@ -1146,85 +1260,85 @@ void Steam::htmlInit(){
 	}
 }
 // Allows you to react to a page wanting to open a javascript modal dialog notification.
-void Steam::jsDialogResponse(uint32 browserHandle, bool result){
+void Steam::jsDialogResponse(bool result){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->JSDialogResponse(browserHandle, result);
 	}
 }
 // cUnicodeChar is the unicode character point for this keypress (and potentially multiple chars per press).
-void Steam::keyChar(uint32 browserHandle, uint32 unicodeChar, int keyModifiers){
+void Steam::keyChar(uint32 unicodeChar, int keyModifiers){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->KeyChar(browserHandle, unicodeChar, (ISteamHTMLSurface::EHTMLKeyModifiers)keyModifiers);
 	}
 }
 // Keyboard interactions, native keycode is the virtual key code value from your OS.
-void Steam::keyDown(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers){
+void Steam::keyDown(uint32 nativeKeyCode, int keyModifiers){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->KeyDown(browserHandle, nativeKeyCode, (ISteamHTMLSurface::EHTMLKeyModifiers)keyModifiers);
 	}
 }
 // Keyboard interactions, native keycode is the virtual key code value from your OS.
-void Steam::keyUp(uint32 browserHandle, uint32 nativeKeyCode, int keyModifiers){
+void Steam::keyUp(uint32 nativeKeyCode, int keyModifiers){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->KeyUp(browserHandle, nativeKeyCode, (ISteamHTMLSurface::EHTMLKeyModifiers)keyModifiers);
 	}
 }
 // Navigate to a specified URL. If you send POST data with pchPostData then the data should be formatted as: name1=value1&name2=value2. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: http://, https://, ftp://, and file:///. If no scheme is specified then http:// is used.
-void Steam::loadURL(uint32 browserHandle, const String& url, const String& postData){
+void Steam::loadURL(const String& url, const String& postData){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->LoadURL(browserHandle, url.utf8().get_data(), postData.utf8().get_data());
 	}
 }
 // Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseDoubleClick(uint32 browserHandle, int mouseButton){
+void Steam::mouseDoubleClick(int mouseButton){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->MouseDoubleClick(browserHandle, (ISteamHTMLSurface::EHTMLMouseButton)mouseButton);
 	}
 }
 // Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseDown(uint32 browserHandle, int mouseButton){
+void Steam::mouseDown(int mouseButton){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->MouseDown(browserHandle, (ISteamHTMLSurface::EHTMLMouseButton)mouseButton);
 	}
 }
 // Tells an HTML surface where the mouse is.
-void Steam::mouseMove(uint32 browserHandle, int x, int y){
+void Steam::mouseMove(int x, int y){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->MouseMove(browserHandle, x, y);
 	}
 }
 // Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseUp(uint32 browserHandle, int mouseButton){
+void Steam::mouseUp(int mouseButton){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->MouseUp(browserHandle, (ISteamHTMLSurface::EHTMLMouseButton)mouseButton);
 	}
 }
 // Tells an HTML surface that the mouse wheel has moved.
-void Steam::mouseWheel(uint32 browserHandle, int32 delta){
+void Steam::mouseWheel(int32 delta){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->MouseWheel(browserHandle, delta);
 	}
 }
 // Paste from the local clipboard to the current page in an HTML surface.
-void Steam::pasteFromClipboard(uint32 browserHandle){
+void Steam::pasteFromClipboard(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->PasteFromClipboard(browserHandle);
 	}
 }
 // Refreshes the current page. The reload will most likely hit the local cache instead of going over the network. This is equivalent to F5 or Ctrl+R in your browser of choice.
-void Steam::reload(uint32 browserHandle){
+void Steam::reload(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->Reload(browserHandle);
 	}
 }
 // You MUST call this when you are done with an HTML surface, freeing the resources associated with it. Failing to call this will result in a memory leak!
-void Steam::removeBrowser(uint32 browserHandle){
+void Steam::removeBrowser(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->RemoveBrowser(browserHandle);
 	}
 }
 // Enable/disable low-resource background mode, where javascript and repaint timers are throttled, resources are more aggressively purged from memory, and audio/video elements are paused. When background mode is enabled, all HTML5 video and audio objects will execute ".pause()" and gain the property "._steam_background_paused = 1". When background mode is disabled, any video or audio objects with that property will resume with ".play()".
-void Steam::setBackgroundMode(uint32 browserHandle, bool backgroundMode){
+void Steam::setBackgroundMode(bool backgroundMode){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->SetBackgroundMode(browserHandle, backgroundMode);
 	}
@@ -1236,31 +1350,31 @@ void Steam::setBackgroundMode(uint32 browserHandle, bool backgroundMode){
 //	}
 //}
 // Scroll the current page horizontally.
-void Steam::setHorizontalScroll(uint32 browserHandle, uint32 absolutePixelScroll){
+void Steam::setHorizontalScroll(uint32 absolutePixelScroll){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->SetHorizontalScroll(browserHandle, absolutePixelScroll);
 	}
 }
 // Tell a HTML surface if it has key focus currently, controls showing the I-beam cursor in text controls amongst other things.
-void Steam::setKeyFocus(uint32 browserHandle, bool hasKeyFocus){
+void Steam::setKeyFocus(bool hasKeyFocus){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->SetKeyFocus(browserHandle, hasKeyFocus);	
 	}
 }
 // Zoom the current page in an HTML surface. The current scale factor is available from HTML_NeedsPaint_t.flPageScale, HTML_HorizontalScroll_t.flPageScale, and HTML_VerticalScroll_t.flPageScale.
-void Steam::setPageScaleFactor(uint32 browserHandle, float zoom, int pointX, int pointY){
+void Steam::setPageScaleFactor(float zoom, int pointX, int pointY){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->SetPageScaleFactor(browserHandle, zoom, pointX, pointY);
 	}
 }
 // Sets the display size of a surface in pixels.
-void Steam::setSize(uint32 browserHandle, uint32 width, uint32 height){
+void Steam::setSize(uint32 width, uint32 height){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->SetSize(browserHandle, width, height);
 	}
 }
 // Scroll the current page vertically.
-void Steam::setVerticalScroll(uint32 browserHandle, uint32 absolutePixelScroll){
+void Steam::setVerticalScroll(uint32 absolutePixelScroll){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->SetVerticalScroll(browserHandle, absolutePixelScroll);
 	}
@@ -1273,19 +1387,19 @@ bool Steam::htmlShutdown(){
 	return SteamHTMLSurface()->Shutdown();
 }
 // Cancel a currently running find.
-void Steam::stopFind(uint32 browserHandle){
+void Steam::stopFind(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->StopFind(browserHandle);
 	}
 }
 // Stop the load of the current HTML page.
-void Steam::stopLoad(uint32 browserHandle){
+void Steam::stopLoad(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->StopLoad(browserHandle);
 	}
 }
 // Open the current pages HTML source code in default local text editor, used for debugging.
-void Steam::viewSource(uint32 browserHandle){
+void Steam::viewSource(){
 	if(SteamHTMLSurface()){
 		SteamHTMLSurface()->ViewSource(browserHandle);
 	}
@@ -1378,7 +1492,7 @@ bool Steam::prioritizeHTTPRequest(uint32 request){
 	return SteamHTTP()->PrioritizeHTTPRequest(request);
 }
 // Releases a cookie container, freeing the memory allocated within Steam.
-bool Steam::releaseCookieContainer(uint32 cookieHandle){
+bool Steam::releaseCookieContainer(){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -1408,7 +1522,7 @@ bool Steam::sendHTTPRequestAndStreamResponse(uint32 request){
 	return SteamHTTP()->SendHTTPRequestAndStreamResponse(request, &callHandle);
 }
 // Adds a cookie to the specified cookie container that will be used with future requests.
-bool Steam::setCookie(uint32 cookieHandle, const String& host, const String& url, const String& cookie){
+bool Steam::setCookie(const String& host, const String& url, const String& cookie){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -1429,7 +1543,7 @@ bool Steam::setHTTPRequestContextValue(uint32 request, uint64 contextValue){
 	return SteamHTTP()->SetHTTPRequestContextValue(request, contextValue);
 }
 // Associates a cookie container to use for an HTTP request.
-bool Steam::setHTTPRequestCookieContainer(uint32 request, uint32 cookieHandle){
+bool Steam::setHTTPRequestCookieContainer(uint32 request){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -1486,25 +1600,25 @@ bool Steam::setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentI
 // Reconfigure the controller to use the specified action set.
 void Steam::activateActionSet(uint64_t inputHandle, uint64_t actionSetHandle){
 	if(SteamInput() != NULL){
-		SteamInput()->ActivateActionSet((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle);
+		SteamInput()->ActivateActionSet((InputHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle);
 	}
 }
 // Reconfigure the controller to use the specified action set layer.
 void Steam::activateActionSetLayer(uint64_t inputHandle, uint64_t actionSetLayerHandle){
 	if(SteamInput() != NULL){
-		SteamInput()->ActivateActionSetLayer((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetLayerHandle);
+		SteamInput()->ActivateActionSetLayer((InputHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetLayerHandle);
 	}
 }
 // Reconfigure the controller to stop using the specified action set.
 void Steam::deactivateActionSetLayer(uint64_t inputHandle, uint64_t actionSetHandle){
 	if(SteamInput() != NULL){
-		SteamInput()->DeactivateActionSetLayer((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle);
+		SteamInput()->DeactivateActionSetLayer((InputHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle);
 	}
 }
 // Reconfigure the controller to stop using all action set layers.
 void Steam::deactivateAllActionSetLayers(uint64_t inputHandle){
 	if(SteamInput() != NULL){
-		SteamInput()->DeactivateAllActionSetLayers((ControllerHandle_t)inputHandle);
+		SteamInput()->DeactivateAllActionSetLayers((InputHandle_t)inputHandle);
 	}
 }
 // Lookup the handle for an Action Set. Best to do this once on startup, and store the handles for all future API calls.
@@ -1539,7 +1653,7 @@ Dictionary Steam::getAnalogActionData(uint64_t inputHandle, uint64_t analogActio
 	Dictionary d;
 	memset(&data, 0, sizeof(data));
 	if(SteamInput() != NULL){
-		data = SteamInput()->GetAnalogActionData((ControllerHandle_t)inputHandle, (ControllerAnalogActionHandle_t)analogActionHandle);
+		data = SteamInput()->GetAnalogActionData((InputHandle_t)inputHandle, (ControllerAnalogActionHandle_t)analogActionHandle);
 	}
 	d["eMode"] = data.eMode;
 	d["x"] = data.x;
@@ -1559,7 +1673,7 @@ Array Steam::getAnalogActionOrigins(uint64_t inputHandle, uint64_t actionSetHand
 	Array list;
 	if(SteamInput() != NULL){
 		EInputActionOrigin *out = new EInputActionOrigin[STEAM_CONTROLLER_MAX_ORIGINS];
-		int ret = SteamInput()->GetAnalogActionOrigins((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
+		int ret = SteamInput()->GetAnalogActionOrigins((InputHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerAnalogActionHandle_t)analogActionHandle, out);
 		for (int i = 0; i < ret; i++){
 			list.push_back((int)out[i]);
 		}
@@ -1570,8 +1684,9 @@ Array Steam::getAnalogActionOrigins(uint64_t inputHandle, uint64_t actionSetHand
 Array Steam::getConnectedControllers(){
 	Array list;
 	if(SteamInput() != NULL){
-		ControllerHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
+		InputHandle_t *handles = new InputHandle_t[INPUT_MAX_COUNT];
 		int ret = SteamInput()->GetConnectedControllers(handles);
+		printf("[Steam] Inputs found %d controllers.", ret);
 		for (int i = 0; i < ret; i++){
 			list.push_back((uint64_t)handles[i]);
 		}
@@ -1588,7 +1703,7 @@ uint64_t Steam::getControllerForGamepadIndex(int index){
 // Get the currently active action set for the specified controller.
 uint64_t Steam::getCurrentActionSet(uint64_t inputHandle){
 	if(SteamInput() != NULL){
-		return (uint64_t)SteamInput()->GetCurrentActionSet((ControllerHandle_t)inputHandle);
+		return (uint64_t)SteamInput()->GetCurrentActionSet((InputHandle_t)inputHandle);
 	}
 	return 0;
 }
@@ -1612,7 +1727,7 @@ Dictionary Steam::getDigitalActionData(uint64_t inputHandle, uint64_t digitalAct
 	Dictionary d;
 	memset(&data, 0, sizeof(data));
 	if(SteamInput() != NULL){
-		data = SteamInput()->GetDigitalActionData((ControllerHandle_t)inputHandle, (ControllerDigitalActionHandle_t)digitalActionHandle);
+		data = SteamInput()->GetDigitalActionData((InputHandle_t)inputHandle, (ControllerDigitalActionHandle_t)digitalActionHandle);
 	}
 	d["bState"] = data.bState;
 	d["bActive"] = data.bActive;
@@ -1630,7 +1745,7 @@ Array Steam::getDigitalActionOrigins(uint64_t inputHandle, uint64_t actionSetHan
 	Array list;
 	if(SteamInput() != NULL){
 		EInputActionOrigin *out = new EInputActionOrigin[STEAM_CONTROLLER_MAX_ORIGINS];
-		int ret = SteamInput()->GetDigitalActionOrigins((ControllerHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerDigitalActionHandle_t)digitalActionHandle, out);
+		int ret = SteamInput()->GetDigitalActionOrigins((InputHandle_t)inputHandle, (ControllerActionSetHandle_t)actionSetHandle, (ControllerDigitalActionHandle_t)digitalActionHandle, out);
 		for (int i=0; i<ret; i++){
 			list.push_back((int)out[i]);
 		}
@@ -1640,7 +1755,7 @@ Array Steam::getDigitalActionOrigins(uint64_t inputHandle, uint64_t actionSetHan
 // Returns the associated gamepad index for the specified controller.
 int Steam::getGamepadIndexForController(uint64_t inputHandle){
 	if(SteamInput() != NULL){
-		return SteamInput()->GetGamepadIndexForController((ControllerHandle_t)inputHandle);
+		return SteamInput()->GetGamepadIndexForController((InputHandle_t)inputHandle);
 	}
 	return -1;
 }
@@ -1656,7 +1771,7 @@ String Steam::getInputTypeForHandle(uint64_t inputHandle){
 	if(SteamInput() == NULL){
 		return "";
 	}
-	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((ControllerHandle_t)inputHandle);
+	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((InputHandle_t)inputHandle);
 	if(inputType == k_ESteamInputType_SteamController){
 		return "Steam controller";
 	}
@@ -1682,7 +1797,7 @@ Dictionary Steam::getMotionData(uint64_t inputHandle){
 	Dictionary d;
 	memset(&data, 0, sizeof(data));
 	if(SteamInput() != NULL){
-		data = SteamInput()->GetMotionData((ControllerHandle_t)inputHandle);
+		data = SteamInput()->GetMotionData((InputHandle_t)inputHandle);
 	}
 	d["rotQuatX"] = data.rotQuatX;
 	d["rotQuatY"] = data.rotQuatY;
@@ -1739,7 +1854,7 @@ void Steam::runFrame(){
 // Invokes the Steam overlay and brings up the binding screen.
 bool Steam::showBindingPanel(uint64_t inputHandle){
 	if(SteamInput() != NULL){
-		return SteamInput()->ShowBindingPanel((ControllerHandle_t)inputHandle);
+		return SteamInput()->ShowBindingPanel((InputHandle_t)inputHandle);
 	}
 	return false;
 }
@@ -1772,8 +1887,327 @@ void Steam::triggerHapticPulse(uint64_t inputHandle, int targetPad, int duration
 // Trigger a vibration event on supported controllers.
 void Steam::triggerVibration(uint64_t inputHandle, uint16_t leftSpeed, uint16_t rightSpeed){
 	if(SteamInput() != NULL){
-		SteamInput()->TriggerVibration((ControllerHandle_t)inputHandle, (unsigned short)leftSpeed, (unsigned short)rightSpeed);
+		SteamInput()->TriggerVibration((InputHandle_t)inputHandle, (unsigned short)leftSpeed, (unsigned short)rightSpeed);
 	}
+}
+
+/////////////////////////////////////////////////
+///// INVENTORY /////////////////////////////////
+/////////////////////////////////////////////////
+//
+// When dealing with any inventory handles, you should call CheckResultSteamID on the result handle when it completes to verify that a remote player is not pretending to have a different user's inventory.
+// Also, you must call DestroyResult on the provided inventory result when you are done with it.
+//
+// Grant a specific one-time promotional item to the current user.
+bool Steam::addPromoItem(uint32 item){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->AddPromoItem(&inventoryHandle, item);
+}
+// Grant a specific one-time promotional items to the current user.
+bool Steam::addPromoItems(const PoolIntArray items){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	int count = items.size();
+	SteamItemDef_t *newItems = new SteamItemDef_t[items.size()];
+	for(int i = 0; i < count; i++){
+		newItems[i] = items[i];
+	}
+	return SteamInventory()->AddPromoItems(&inventoryHandle, newItems, count);
+}
+// Checks whether an inventory result handle belongs to the specified Steam ID.
+bool Steam::checkResultSteamID(uint64_t steamIDExpected){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	CSteamID steamID = (uint64)steamIDExpected;
+	return SteamInventory()->CheckResultSteamID((SteamInventoryResult_t)inventoryHandle, steamID);
+}
+// Consumes items from a user's inventory. If the quantity of the given item goes to zero, it is permanently removed.
+bool Steam::consumeItem(uint64_t itemConsume, uint32 quantity){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->ConsumeItem(&inventoryHandle, (SteamItemInstanceID_t)itemConsume, quantity);
+}
+// Deserializes a result set and verifies the signature bytes.
+bool Steam::deserializeResult(){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	const int buffer = 1024;
+	return SteamInventory()->DeserializeResult(&inventoryHandle, &buffer, 1024, false);
+}
+// Destroys a result handle and frees all associated memory.
+void Steam::destroyResult(){
+	if(SteamInventory() != NULL){
+		SteamInventory()->DestroyResult(inventoryHandle);
+	}
+}
+// Grant one item in exchange for a set of other items.
+bool Steam::exchangeItems(const PoolIntArray outputItems, const uint32 outputQuantity, const uint64_t inputItems, const uint32 inputQuantity){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->ExchangeItems(&inventoryHandle, outputItems.read().ptr(), &outputQuantity, 1, (const uint64 *)inputItems, &inputQuantity, 1);
+}
+// Grants specific items to the current user, for developers only.
+bool Steam::generateItems(const PoolIntArray items, const uint32 quantity){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->GenerateItems(&inventoryHandle, items.read().ptr(), &quantity, items.size());
+}
+// Start retrieving all items in the current users inventory.
+bool Steam::getAllItems(){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->GetAllItems(&inventoryHandle);
+}
+// Gets a string property from the specified item definition.  Gets a property value for a specific item definition.
+String Steam::getItemDefinitionProperty(uint32 definition, const String& name){
+	if(SteamInventory() == NULL){
+		return "";
+	}
+	uint32 bufferSize = 256;
+	char *value = new char[bufferSize];
+	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), value, &bufferSize);
+	String property = value;
+	delete value;
+	return property;
+}
+// Gets the state of a subset of the current user's inventory.
+bool Steam::getItemsByID(const uint64_t idArray, uint32 count){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->GetItemsByID(&inventoryHandle, (const uint64 *)idArray, count);
+}
+// After a successful call to RequestPrices, you can call this method to get the pricing for a specific item definition.
+uint64_t Steam::getItemPrice(uint32 definition){
+	if(SteamInventory() == NULL){
+		return 0;
+	}
+	uint64 price = 0;
+	uint64 basePrice = 0;
+	SteamInventory()->GetItemPrice(definition, &price, &basePrice);
+	return price;
+}
+// After a successful call to RequestPrices, you can call this method to get all the pricing for applicable item definitions. Use the result of GetNumItemsWithPrices as the the size of the arrays that you pass in.
+Array Steam::getItemsWithPrices(uint32 length){
+	if(SteamInventory() == NULL){
+		return Array();
+	}
+	// Create the return array
+	Array priceArray;
+	// Create a temporary array
+	SteamItemDef_t *ids = new SteamItemDef_t[length];
+	uint64 *prices = new uint64[length];
+	uint64 *basePrices = new uint64[length];
+	if(SteamInventory()->GetItemsWithPrices(ids, prices, basePrices, length)){
+		for(uint32 i = 0; i < length; i++){
+			Dictionary priceGroup;
+			priceGroup["item"] = ids[i];
+			priceGroup["price"] = (uint64_t)prices[i];
+			priceGroup["base_prices"] = (uint64_t)basePrices[i];
+			priceArray.append(priceGroup);
+		}
+	}
+	return priceArray;
+}
+// After a successful call to RequestPrices, this will return the number of item definitions with valid pricing.
+uint32 Steam::getNumItemsWithPrices(){
+	if(SteamInventory() == NULL){
+		return 0;
+	}
+	return SteamInventory()->GetNumItemsWithPrices();
+}
+// Gets the dynamic properties from an item in an inventory result set.
+String Steam::getResultItemProperty(uint32 index, const String& name){
+	if(SteamInventory() != NULL){
+		// Set up variables to fill
+		uint32 bufferSize = 256;
+		char *value = new char[bufferSize];
+		SteamInventory()->GetResultItemProperty(inventoryHandle, index, name.utf8().get_data(), (char*)value, &bufferSize);
+		String property = value;
+		delete value;
+		return property;
+	}
+	return "";
+}
+// Get the items associated with an inventory result handle.
+Array Steam::getResultItems(){
+	if(SteamInventory() == NULL){
+		return Array();
+	}
+	// Set up return array
+	Array items;
+	uint32 size = 0;
+	if(SteamInventory()->GetResultItems(inventoryHandle, NULL, &size)){
+		itemDetails.resize(size);
+		std::vector<SteamItemDetails_t> itemArray;
+		if(SteamInventory()->GetResultItems(inventoryHandle, itemArray.data(), &size)){
+			for(uint32 i = 0; i < size; i++){
+				items.push_back((uint64_t)itemArray[i].m_itemId);
+			}
+		}
+	}
+	return items;
+}
+// Find out the status of an asynchronous inventory result handle.
+String Steam::getResultStatus(){
+	if(SteamInventory() == NULL){
+		return "";
+	}
+	int result = SteamInventory()->GetResultStatus(inventoryHandle);
+	// Parse result
+	if(result == k_EResultPending){
+		return "Still in progress.";
+	}
+	else if(result == k_EResultOK){
+		return "Finished successfully.";
+	}
+	else if(result == k_EResultExpired){
+		return "Finished but may be out-of-date.";
+	}
+	else if(result == k_EResultInvalidParam){
+		return "ERROR: invalid API call parameters.";
+	}
+	else if(result == k_EResultServiceUnavailable){
+		return "ERROR: server temporarily down; retry later.";
+	}
+	else if(result == k_EResultLimitExceeded){
+		return "ERROR: operation would exceed per-user inventory limits.";
+	}
+	else{
+		return "ERROR: generic / unknown.";
+	}
+}
+// Gets the server time at which the result was generated.
+uint32 Steam::getResultTimestamp(){
+	if(SteamInventory() == NULL){
+		return 0;
+	}
+	return SteamInventory()->GetResultTimestamp(inventoryHandle);
+}
+// Grant all potential one-time promotional items to the current user.
+bool Steam::grantPromoItems(){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->GrantPromoItems(&inventoryHandle);
+}
+// Triggers an asynchronous load and refresh of item definitions.
+bool Steam::loadItemDefinitions(){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->LoadItemDefinitions();
+}
+// Request the list of "eligible" promo items that can be manually granted to the given user.
+void Steam::requestEligiblePromoItemDefinitionsIDs(uint64_t steamID){
+	if(SteamInventory() != NULL){
+		CSteamID userID = (uint64)steamID;
+		SteamAPICall_t apiCall = SteamInventory()->RequestEligiblePromoItemDefinitionsIDs(userID);
+		callResultEligiblePromoItemDefIDs.Set(apiCall, this, &Steam::_inventory_eligible_promo_item);
+	}
+}
+// Request prices for all item definitions that can be purchased in the user's local currency. A SteamInventoryRequestPricesResult_t call result will be returned with the user's local currency code. After that, you can call GetNumItemsWithPrices and GetItemsWithPrices to get prices for all the known item definitions, or GetItemPrice for a specific item definition.
+void Steam::requestPrices(){
+	if(SteamInventory() != NULL){
+		SteamAPICall_t apiCall = SteamInventory()->RequestPrices();
+		callResultRequestPrices.Set(apiCall, this, &Steam::_inventory_request_prices_result);
+	}
+}
+// 
+bool Steam::serializeResult(){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	// Set up return array
+	static uint32 bufferSize = 0;
+	if(SteamInventory()->SerializeResult(inventoryHandle, NULL, &bufferSize)){
+		char *buffer = new char[bufferSize];
+		return SteamInventory()->SerializeResult(inventoryHandle, &buffer, &bufferSize);
+	}
+	return false;
+}
+// Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
+void Steam::startPurchase(const PoolIntArray items, const uint32 quantity){
+	if(SteamInventory() != NULL){
+		SteamAPICall_t apiCall = SteamInventory()->StartPurchase(items.read().ptr(), &quantity, items.size());
+		callResultStartPurchase.Set(apiCall, this, &Steam::_inventory_start_purchase_result);
+	}
+}
+// Transfer items between stacks within a user's inventory.
+bool Steam::transferItemQuantity(uint64_t itemID, uint32 quantity, uint64_t itemDestination, bool split){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	if(split){
+		return SteamInventory()->TransferItemQuantity(&inventoryHandle, (SteamItemInstanceID_t)itemID, quantity, k_SteamItemInstanceIDInvalid); 
+	}
+	else{
+		return SteamInventory()->TransferItemQuantity(&inventoryHandle, (SteamItemInstanceID_t)itemID, quantity, (SteamItemInstanceID_t)itemDestination);
+	}
+}
+// Trigger an item drop if the user has played a long enough period of time.
+bool Steam::triggerItemDrop(uint32 definition){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->TriggerItemDrop(&inventoryHandle, (SteamItemDef_t)definition);
+}
+// Starts a transaction request to update dynamic properties on items for the current user. This call is rate-limited by user, so property modifications should be batched as much as possible (e.g. at the end of a map or game session). After calling SetProperty or RemoveProperty for all the items that you want to modify, you will need to call SubmitUpdateProperties to send the request to the Steam servers. A SteamInventoryResultReady_t callback will be fired with the results of the operation.
+void Steam::startUpdateProperties(){
+	if(SteamInventory() != NULL){
+		inventoryUpdateHandle = SteamInventory()->StartUpdateProperties();
+	}
+}
+//Submits the transaction request to modify dynamic properties on items for the current user. See StartUpdateProperties.
+bool Steam::submitUpdateProperties(){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->SubmitUpdateProperties(inventoryUpdateHandle, &inventoryHandle);
+}
+// Removes a dynamic property for the given item.
+bool Steam::removeProperty(uint64_t itemID, const String& name){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->RemoveProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data());
+}
+// Sets a dynamic property for the given item. Supported value types are strings.
+bool Steam::setPropertyString(uint64_t itemID, const String& name, const String& value){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), value.utf8().get_data());
+}
+// Sets a dynamic property for the given item. Supported value types are boolean.
+bool Steam::setPropertyBool(uint64_t itemID, const String& name, bool value){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), value);
+}
+// Sets a dynamic property for the given item. Supported value types are 64 bit integers.
+bool Steam::setPropertyInt(uint64_t itemID, const String& name, uint64_t value){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), (int64)value);
+}
+// Sets a dynamic property for the given item. Supported value types are 32 bit floats.
+bool Steam::setPropertyFloat(uint64_t itemID, const String& name, float value){
+	if(SteamInventory() == NULL){
+		return false;
+	}
+	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), value);
 }
 
 /////////////////////////////////////////////////
@@ -1831,11 +2265,10 @@ bool Steam::removeFavoriteGame(AppId_t appID, uint32 ip, uint16 port, uint16 que
 }
 // Get a list of relevant lobbies.
 void Steam::requestLobbyList(){
-	if(SteamMatchmaking() == NULL){
-		return;
+	if(SteamMatchmaking() != NULL){
+		SteamAPICall_t apiCall = SteamMatchmaking()->RequestLobbyList();
+		callResultLobbyList.Set(apiCall, this, &Steam::_lobby_match_list);
 	}
-	SteamAPICall_t apiCall = SteamMatchmaking()->RequestLobbyList();
-	callResultLobbyList.Set(apiCall, this, &Steam::_lobby_match_list);
 }
 // Adds a string comparison filter to the next RequestLobbyList call.
 void Steam::addRequestLobbyListStringFilter(const String& keyToMatch, const String& valueToMatch, int comparisonType){
@@ -2856,51 +3289,51 @@ void Steam::_name_changed(SetPersonaNameResponse_t* callData){
 //
 // HTML Surface callbacks ///////////////////////
 // 
-//A new browser was created and is ready for use.
+// A new browser was created and is ready for use.
 void Steam::_html_browser_ready(HTML_BrowserReady_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
-	emit_signal("html_browser_ready", browserHandle);
+	browserHandle = callData->unBrowserHandle;
+	emit_signal("html_browser_ready");
 }
 // Called when page history status has changed the ability to go backwards and forward.
 void Steam::_html_can_go_backandforward(HTML_CanGoBackAndForward_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	bool goBack = callData->bCanGoBack;
 	bool goForward = callData->bCanGoForward;
-	emit_signal("html_can_go_backandforward", browserHandle, goBack, goForward);
+	emit_signal("html_can_go_backandforward", goBack, goForward);
 }
 // Called when the current page in a browser gets a new title.
 void Steam::_html_changed_title(HTML_ChangedTitle_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& title = callData->pchTitle;
-	emit_signal("html_changed_title", browserHandle, title);
+	emit_signal("html_changed_title", title);
 }
 // Called when the browser has been requested to close due to user interaction; usually because of a javascript window.close() call.
 void Steam::_html_close_browser(HTML_CloseBrowser_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
-	emit_signal("html_close_browser", browserHandle);
+	browserHandle = callData->unBrowserHandle;
+	emit_signal("html_close_browser");
 }
 // Called when a browser surface has received a file open dialog from a <input type="file"> click or similar, you must call FileLoadDialogResponse with the file(s) the user selected.
 void Steam::_html_file_open_dialog(HTML_FileOpenDialog_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& title = callData->pchTitle;
 	const String& initialFile = callData->pchInitialFile;
 	emit_signal("html_file_open_dialog", title, initialFile);
 }
 // Called when a browser has finished loading a page.
 void Steam::_html_finished_request(HTML_FinishedRequest_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& url = callData->pchURL;
 	const String& title = callData->pchPageTitle;
-	emit_signal("html_finished_request", browserHandle, url, title);
+	emit_signal("html_finished_request", url, title);
 }
 // Called when a a browser wants to hide a tooltip.
 void Steam::_html_hide_tooltip(HTML_HideToolTip_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
-	emit_signal("html_hide_tooltip", browserHandle);
+	browserHandle = callData->unBrowserHandle;
+	emit_signal("html_hide_tooltip");
 }
 // Provides details on the visibility and size of the horizontal scrollbar.
 void Steam::_html_horizontal_scroll(HTML_HorizontalScroll_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	// Create dictionary to bypass argument limit in Godot
 	Dictionary scrollData;
 	scrollData["scrollMax"] = callData->unScrollMax;
@@ -2908,23 +3341,23 @@ void Steam::_html_horizontal_scroll(HTML_HorizontalScroll_t* callData){
 	scrollData["pageScale"] = callData->flPageScale;
 	scrollData["visible"] = callData->bVisible;
 	scrollData["pageSize"] = callData->unPageSize;
-	emit_signal("html_horizontal_scroll", browserHandle, scrollData);
+	emit_signal("html_horizontal_scroll", scrollData);
 }
 // Called when the browser wants to display a Javascript alert dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
 void Steam::_html_js_alert(HTML_JSAlert_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& message = callData->pchMessage;
-	emit_signal("html_js_alert", browserHandle, message);
+	emit_signal("html_js_alert", message);
 }
 // Called when the browser wants to display a Javascript confirmation dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
 void Steam::_html_js_confirm(HTML_JSConfirm_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& message = callData->pchMessage;
-	emit_signal("html_js_confirm", browserHandle, message);
+	emit_signal("html_js_confirm", message);
 }
 // Result of a call to GetLinkAtPosition.
 void Steam::_html_link_at_position(HTML_LinkAtPosition_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	// Create dictionary to bypass Godot argument limit
 	Dictionary linkData;
 	linkData["x"] = callData->x;
@@ -2932,11 +3365,11 @@ void Steam::_html_link_at_position(HTML_LinkAtPosition_t* callData){
 	linkData["url"] = callData->pchURL;
 	linkData["input"] = callData->bInput;
 	linkData["liveLink"] = callData->bLiveLink;
-	emit_signal("html_link_at_position", browserHandle, linkData);
+	emit_signal("html_link_at_position", linkData);
 }
 // Called when a browser surface has a pending paint. This is where you get the actual image data to render to the screen.
 void Steam::_html_needs_paint(HTML_NeedsPaint_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	// Create dictionary to bypass Godot argument limit
 	Dictionary pageData;
 	pageData["bgra"] = callData->pBGRA;
@@ -2950,11 +3383,11 @@ void Steam::_html_needs_paint(HTML_NeedsPaint_t* callData){
 	pageData["scrollY"] = callData->unScrollY;
 	pageData["pageScale"] = callData->flPageScale;
 	pageData["pageSerial"] = callData->unPageSerial;
-	emit_signal("html_needs_paint", browserHandle, pageData);
+	emit_signal("html_needs_paint", pageData);
 }
 // A browser has created a new HTML window.
 void Steam::_html_new_window(HTML_NewWindow_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	// Create a dictionary to bypass Godot argument limit
 	Dictionary windowData;
 	windowData["url"] = callData->pchURL;
@@ -2963,57 +3396,57 @@ void Steam::_html_new_window(HTML_NewWindow_t* callData){
 	windowData["wide"] = callData->unWide;
 	windowData["tall"] = callData->unTall;
 	windowData["newHandle"] = callData->unNewWindow_BrowserHandle_IGNORE;
-	emit_signal("html_new_window", browserHandle, windowData);
+	emit_signal("html_new_window", windowData);
 }
 // The browser has requested to load a url in a new tab.
 void Steam::_html_open_link_in_new_tab(HTML_OpenLinkInNewTab_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& url = callData->pchURL;
-	emit_signal("html_open_link_in_new_tab", browserHandle, url);
+	emit_signal("html_open_link_in_new_tab", url);
 }
 // Results from a search.
 void Steam::_html_search_results(HTML_SearchResults_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	uint32 results = callData->unResults;
 	uint32 currentMatch = callData->unCurrentMatch;
-	emit_signal("html_search_results", browserHandle, results, currentMatch);
+	emit_signal("html_search_results", results, currentMatch);
 }
 // Called when a browser wants to change the mouse cursor.
 void Steam::_html_set_cursor(HTML_SetCursor_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	uint32 mouseCursor = callData->eMouseCursor;
-	emit_signal("html_set_cursor", browserHandle, mouseCursor);
+	emit_signal("html_set_cursor", mouseCursor);
 }
 // Called when a browser wants to display a tooltip.
 void Steam::_html_show_tooltip(HTML_ShowToolTip_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& message = callData->pchMsg;
-	emit_signal("html_show_tooltip", browserHandle, message);
+	emit_signal("html_show_tooltip", message);
 }
 // Called when a browser wants to navigate to a new page.
 void Steam::_html_start_request(HTML_StartRequest_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& url = callData->pchURL;
 	const String& target = callData->pchTarget;
 	const String& postData = callData->pchPostData;
 	bool redirect = callData->bIsRedirect;
-	emit_signal("html_start_request", browserHandle, url, target, postData, redirect);
+	emit_signal("html_start_request", url, target, postData, redirect);
 }
 // Called when a browser wants you to display an informational message. This is most commonly used when you hover over links.
 void Steam::_html_status_text(HTML_StatusText_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& message = callData->pchMsg;
-	emit_signal("html_status_text", browserHandle, message);
+	emit_signal("html_status_text", message);
 }
 // Called when the text of an existing tooltip has been updated.
 void Steam::_html_update_tooltip(HTML_UpdateToolTip_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	const String& message = callData->pchMsg;
-	emit_signal("html_update_tooltip", browserHandle, message);
+	emit_signal("html_update_tooltip", message);
 }
 // Called when the browser is navigating to a new url.
 void Steam::_html_url_changed(HTML_URLChanged_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	// Create a dictionary to bypass Godot argument limit
 	Dictionary urlData;
 	urlData["url"] = callData->pchURL;
@@ -3021,11 +3454,11 @@ void Steam::_html_url_changed(HTML_URLChanged_t* callData){
 	urlData["redirect"] = callData->bIsRedirect;
 	urlData["title"] = callData->pchPageTitle;
 	urlData["newNavigation"] = callData->bNewNavigation;
-	emit_signal("html_url_changed", browserHandle, urlData);
+	emit_signal("html_url_changed", urlData);
 }
 // Provides details on the visibility and size of the vertical scrollbar.
 void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* callData){
-	uint32 browserHandle = callData->unBrowserHandle;
+	browserHandle = callData->unBrowserHandle;
 	// Create dictionary to bypass argument limit in Godot
 	Dictionary scrollData;
 	scrollData["scrollMax"] = callData->unScrollMax;
@@ -3033,33 +3466,111 @@ void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* callData){
 	scrollData["pageScale"] = callData->flPageScale;
 	scrollData["visible"] = callData->bVisible;
 	scrollData["pageSize"] = callData->unPageSize;
-	emit_signal("html_vertical_scroll", browserHandle, scrollData);
+	emit_signal("html_vertical_scroll", scrollData);
 }
 //
 // HTTP callbacks ///////////////////////////////
 //
 // Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.
 void Steam::_http_request_completed(HTTPRequestCompleted_t* callData){
-	uint32 cookieHandle = callData->m_hRequest;
+	cookieHandle = callData->m_hRequest;
 	uint64_t contextValue = callData->m_ulContextValue;
 	bool requestSuccess = callData->m_bRequestSuccessful;
 	int statusCode = callData->m_eStatusCode;
 	uint32 bodySize = callData->m_unBodySize;
-	emit_signal("http_request_completed", cookieHandle, contextValue, requestSuccess, statusCode, bodySize);
+	emit_signal("http_request_completed", contextValue, requestSuccess, statusCode, bodySize);
 }
 // Triggered when a chunk of data is received from a streaming HTTP request.
 void Steam::_http_request_data_received(HTTPRequestDataReceived_t* callData){
-	uint32 cookieHandle = callData->m_hRequest;
+	cookieHandle = callData->m_hRequest;
 	uint64_t contextValue = callData->m_ulContextValue;
 	uint32 offset = callData->m_cOffset;
 	uint32 bytesReceived = callData->m_cBytesReceived;
-	emit_signal("http_request_data_received", cookieHandle, contextValue, offset, bytesReceived);
+	emit_signal("http_request_data_received", contextValue, offset, bytesReceived);
 }
 // Triggered when HTTP headers are received from a streaming HTTP request.
 void Steam::_http_request_headers_received(HTTPRequestHeadersReceived_t* callData){
-	uint32 cookieHandle = callData->m_hRequest;
+	cookieHandle = callData->m_hRequest;
 	uint64_t contextValue = callData->m_ulContextValue;
-	emit_signal("http_request_headers_received", cookieHandle, contextValue);
+	emit_signal("http_request_headers_received", contextValue);
+}
+//
+// Inventory callbacks //////////////////////////
+//
+// This callback is triggered whenever item definitions have been updated, which could be in response to LoadItemDefinitions or any time new item definitions are available (eg, from the dynamic addition of new item types while players are still in-game).
+void Steam::_inventory_definition_update(SteamInventoryDefinitionUpdate_t *callData){
+	// Create the return array
+	Array definitions;
+	// Set the array size variable
+	uint32 size = 0;
+	// Get the item defition IDs
+	if(SteamInventory()->GetItemDefinitionIDs(NULL, &size)){
+		SteamItemDef_t *idArray = new SteamItemDef_t[size];
+		if(SteamInventory()->GetItemDefinitionIDs(idArray, &size)){
+			// Loop through the temporary array and populate the return array
+			for(uint32 i = 0; i < size; i++){
+				definitions.append(idArray[i]);
+			}
+		}
+		// Delete the temporary array
+		delete idArray;
+	}
+	// Return the item array as a signal
+	emit_signal("inventory_defintion_update", definitions);
+}
+// Returned when you have requested the list of "eligible" promo items that can be manually granted to the given user. These are promo items of type "manual" that won't be granted automatically.
+void Steam::_inventory_eligible_promo_item(SteamInventoryEligiblePromoItemDefIDs_t *callData, bool bIOFailure){
+	// Clean up call data
+	CSteamID steamID = callData->m_steamID;
+	int result = callData->m_result;
+	int eligible = callData->m_numEligiblePromoItemDefs;
+	bool cached = callData->m_bCachedData;
+	// Create the return array
+	Array definitions;
+	// Create the temporary ID array
+	SteamItemDef_t *idArray = new SteamItemDef_t[eligible];
+	// Convert eligible size
+	uint32 arraySize = (int)eligible;
+	// Get the list
+	if(SteamInventory()->GetEligiblePromoItemDefinitionIDs(steamID, idArray, &arraySize)){
+		// Loop through the temporary array and populate the return array
+		for(int i = 0; i < eligible; i++){
+			definitions.append(idArray[i]);
+		}
+	}
+	// Delete the temporary array
+	delete idArray;
+	// Return the item array as a signal
+	emit_signal("inventory_eligible_promo_Item", result, cached, definitions);
+}
+// Triggered when GetAllItems successfully returns a result which is newer / fresher than the last known result. (It will not trigger if the inventory hasn't changed, or if results from two overlapping calls are reversed in flight and the earlier result is already known to be stale/out-of-date.)
+// The regular SteamInventoryResultReady_t callback will still be triggered immediately afterwards; this is an additional notification for your convenience.
+void Steam::_inventory_full_update(SteamInventoryFullUpdate_t *callData){
+	// Set the handle
+	inventoryHandle = callData->m_handle;
+	// Send the handle back to the user
+	emit_signal("inventory_full_update", callData->m_handle);
+}
+// This is fired whenever an inventory result transitions from k_EResultPending to any other completed state, see GetResultStatus for the complete list of states. There will always be exactly one callback per handle.
+void Steam::_inventory_result_ready(SteamInventoryResultReady_t *callData){
+	emit_signal("inventory_result_ready", callData->m_handle, callData->m_result);
+}
+// Returned after StartPurchase is called.
+void Steam::_inventory_start_purchase_result(SteamInventoryStartPurchaseResult_t *callData, bool bIOFailure){
+	if(!bIOFailure){
+		if(callData->m_result == k_EResultOK){
+			emit_signal("inventory_start_purchase_result", "success", (uint64_t)callData->m_ulOrderID, (uint64_t)callData->m_ulTransID);
+		}
+		else{
+			emit_signal("inventory_start_purchase_result", "failure", 0, 0);
+		}
+	}
+}
+// Returned after RequestPrices is called.
+void Steam::_inventory_request_prices_result(SteamInventoryRequestPricesResult_t *callData, bool bIOFailure){
+	if(!bIOFailure){
+		emit_signal("inventory_request_prices_result", callData->m_result, callData->m_rgchCurrency);
+	}
 }
 //
 // Matchmaking callbacks ////////////////////////
@@ -5669,6 +6180,41 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
 	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
 
+	// Inventory Bind Methods ///////////////////
+	ClassDB::bind_method("addPromoItem", &Steam::addPromoItem);
+	ClassDB::bind_method("addPromoItems", &Steam::addPromoItems);
+	ClassDB::bind_method("checkResultSteamID", &Steam::checkResultSteamID);
+	ClassDB::bind_method("consumeItem", &Steam::consumeItem);
+	ClassDB::bind_method("deserializeResult", &Steam::deserializeResult);
+	ClassDB::bind_method("destroyResult", &Steam::exchangeItems);
+	ClassDB::bind_method("exchangeItems", &Steam::exchangeItems);
+	ClassDB::bind_method("generateItems", &Steam::generateItems);
+	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
+	ClassDB::bind_method("getItemDefinitionProperty", &Steam::getItemDefinitionProperty);
+	ClassDB::bind_method("getItemsByID", &Steam::getItemsByID);
+	ClassDB::bind_method("getItemPrice", &Steam::getItemPrice);
+	ClassDB::bind_method("getItemsWithPrices", &Steam::getItemsWithPrices);
+	ClassDB::bind_method("getNumItemsWithPrices", &Steam::getNumItemsWithPrices);
+	ClassDB::bind_method("getResultItemProperty", &Steam::getResultItems);
+	ClassDB::bind_method("getResultItems", &Steam::getResultItems);
+	ClassDB::bind_method("getResultStatus", &Steam::getResultStatus);
+	ClassDB::bind_method("getResultTimestamp", &Steam::getResultTimestamp);
+	ClassDB::bind_method("grantPromoItems", &Steam::grantPromoItems);
+	ClassDB::bind_method("loadItemDefinitions", &Steam::loadItemDefinitions);
+	ClassDB::bind_method("requestEligiblePromoItemDefinitionsIDs", &Steam::requestEligiblePromoItemDefinitionsIDs);
+	ClassDB::bind_method("requestPrices", &Steam::requestPrices);
+	ClassDB::bind_method("serializeResult", &Steam::serializeResult);
+	ClassDB::bind_method("startPurchase", &Steam::startPurchase);
+	ClassDB::bind_method("transferItemQuantity", &Steam::transferItemQuantity);
+	ClassDB::bind_method("triggerItemDrop", &Steam::triggerItemDrop);
+	ClassDB::bind_method("startUpdateProperties", &Steam::startUpdateProperties);
+	ClassDB::bind_method("submitUpdateProperties", &Steam::submitUpdateProperties);
+	ClassDB::bind_method("removeProperty", &Steam::removeProperty);
+	ClassDB::bind_method("setPropertyString", &Steam::setPropertyString);
+	ClassDB::bind_method("setPropertyBool", &Steam::setPropertyBool);
+	ClassDB::bind_method("setPropertyInt", &Steam::setPropertyInt);
+	ClassDB::bind_method("setPropertyFloat", &Steam::setPropertyFloat);
+
 	// Matchmaking Bind Methods /////////////////
 	ClassDB::bind_method("getFavoriteGames", &Steam::getFavoriteGames);
 	ClassDB::bind_method("addFavoriteGame", &Steam::addFavoriteGame);
@@ -5970,6 +6516,14 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("http_request_completed"));
 	ADD_SIGNAL(MethodInfo("http_request_data_received"));
 	ADD_SIGNAL(MethodInfo("http_request_headers_received"));
+
+	// Inventory signals ////////////////////////
+	ADD_SIGNAL(MethodInfo("inventory_definition_update"));
+	ADD_SIGNAL(MethodInfo("inventory_eligible_promo_item"));
+	ADD_SIGNAL(MethodInfo("inventory_full_update"));
+	ADD_SIGNAL(MethodInfo("inventory_result_ready"));
+	ADD_SIGNAL(MethodInfo("inventory_start_purchase_result"));
+	ADD_SIGNAL(MethodInfo("inventory_request_prices_result"));
 
 	// Matchmaking Signals //////////////////////
 	ADD_SIGNAL(MethodInfo("favorites_list_accounts_updated"));
@@ -6573,6 +7127,11 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(HTTP_METHOD_DELETE);							// 5
 	BIND_CONSTANT(HTTP_METHOD_OPTIONS);							// 6
 	BIND_CONSTANT(HTTP_METHOD_PATCH);							// 7
+
+	// Inventory status
+	BIND_CONSTANT(ITEM_NO_TRADE);								// (1<<0)
+	BIND_CONSTANT(ITEM_REMOVED);								// (1<<8)
+	BIND_CONSTANT(ITEM_CONSUMED);								// (1<<9)
 }
 
 Steam::~Steam(){

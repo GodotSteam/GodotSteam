@@ -11,14 +11,19 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.3.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.3.2)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.3.1 Changes**
+**Version 3.3.2 Changes**
 
-- Added: all HTML Surface functions, callbacks, and enums
-- Added: all HTTP functions, callbacks, and enums 
-- Changed: sendRemotePlayTogetherInvite now works since it was added back to the SDK
-- Fixed: (probably) output for getLaunchCommandLine
+- Added: all Inventory functions, callbacks, and enums
+- Added: rule to suppress MSVC-only warning about strcpy
+- Fixed: minor corrections to Inputs, especially those copied over from Controllers (depreciated)
+- Fixed: tons of warnings for callbacks in Unix compiling
+- Fixed: printf warnings for int
+- Removed: unnecessary browserHandle argument from HTML functions
+- Removed: unnecessary browserHandle returns from HTML callbacks
+- Removed: unnecessary cookieHandle argument from HTTP functions
+- Removed: unnecessary cookieHandle returns from HTTP callbacks
 
 Known Issues
 ----------
