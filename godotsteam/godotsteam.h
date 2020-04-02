@@ -483,7 +483,7 @@ class Steam: public Object {
 		bool setItemDescription(uint64_t updateHandle, const String& description);
 		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
 		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
-//		bool setItemTags(uint64_t updateHandle, Array tagArray);
+		bool setItemTags(uint64_t updateHandle, Array tagArray);
 		bool setItemTitle(uint64_t updateHandle, const String& title);
 		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
 		bool setItemVisibility(uint64_t updateHandle, int visibility);

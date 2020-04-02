@@ -4997,15 +4997,25 @@ bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
 	return SteamUGC()->SetItemPreview(handle, previewFile.utf8().get_data());
 }
 // Sets arbitrary developer specified tags on an item.
-//bool Steam::setItemTags(uint64_t updateHandle, Array tagArray){
-//	if(SteamUGC() == NULL){
-//		return false;
-//	}
-//	UGCUpdateHandle_t handle = uint64(updateHandle);
-//	SteamParamStringArray_t *tags = {tagArray};
-//	return SteamUGC()->SetItemTags(handle, tags);
-//}
-// Sets a new title for an item.
+bool Steam::setItemTags(uint64_t updateHandle, Array tagArray){
+        if(SteamUGC() == NULL){
+                return false;
+        }
+        UGCUpdateHandle_t handle = uint64(updateHandle);
+
+        SteamParamStringArray_t *pTags = new SteamParamStringArray_t();
+        pTags->m_ppStrings = new const char*[tagArray.size()];
+
+        uint32 strCount = tagArray.size();
+
+        for (uint32 i=0; i < strCount; i++) {
+                String str = (String)tagArray[i];
+                pTags->m_ppStrings[i] = str.utf8().get_data();
+        }
+        pTags->m_nNumStrings = tagArray.size();
+        return SteamUGC()->SetItemTags(handle, pTags);
+}
+
 bool Steam::setItemTitle(uint64_t updateHandle, const String& title){
 	if(SteamUGC() == NULL){
 		return false;
@@ -6352,7 +6362,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("setItemDescription", &Steam::setItemDescription);
 	ClassDB::bind_method("setItemMetadata", &Steam::setItemMetadata);
 	ClassDB::bind_method("setItemPreview", &Steam::setItemPreview);
-//	ClassDB::bind_method("setItemTags", &Steam::setItemTags);
+	ClassDB::bind_method("setItemTags", &Steam::setItemTags);
 	ClassDB::bind_method("setItemTitle", &Steam::setItemTitle);
 	ClassDB::bind_method("setItemUpdateLanguage", &Steam::setItemUpdateLanguage);
 	ClassDB::bind_method("setItemVisibility", &Steam::setItemVisibility);
