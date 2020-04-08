@@ -4768,6 +4768,7 @@ Dictionary Steam::getQueryUGCResult(uint64_t queryHandle, uint32 index){
 	bool success = SteamUGC()->GetQueryUGCResult(handle, index, &pDetails);
 	if(success){
 		ugcResult["result"] = (uint64_t)pDetails.m_eResult;
+		ugcResult["fileID"] = (uint64_t)pDetails.m_nPublishedFileId;
 		ugcResult["fileType"] = (uint64_t)pDetails.m_eFileType;
 		ugcResult["creatorAppID"] = (uint64_t)pDetails.m_nCreatorAppID;
 		ugcResult["consumerAppID"] = (uint64_t)pDetails.m_nConsumerAppID;
@@ -4998,22 +4999,19 @@ bool Steam::setItemPreview(uint64_t updateHandle, const String& previewFile){
 }
 // Sets arbitrary developer specified tags on an item.
 bool Steam::setItemTags(uint64_t updateHandle, Array tagArray){
-        if(SteamUGC() == NULL){
-                return false;
-        }
-        UGCUpdateHandle_t handle = uint64(updateHandle);
-
-        SteamParamStringArray_t *pTags = new SteamParamStringArray_t();
-        pTags->m_ppStrings = new const char*[tagArray.size()];
-
-        uint32 strCount = tagArray.size();
-
-        for (uint32 i=0; i < strCount; i++) {
-                String str = (String)tagArray[i];
-                pTags->m_ppStrings[i] = str.utf8().get_data();
-        }
-        pTags->m_nNumStrings = tagArray.size();
-        return SteamUGC()->SetItemTags(handle, pTags);
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(updateHandle);
+	SteamParamStringArray_t *pTags = new SteamParamStringArray_t();
+	pTags->m_ppStrings = new const char*[tagArray.size()];
+	uint32 strCount = tagArray.size();
+	for (uint32 i=0; i < strCount; i++) {
+		String str = (String)tagArray[i];
+		pTags->m_ppStrings[i] = str.utf8().get_data();
+	}
+	pTags->m_nNumStrings = tagArray.size();
+	return SteamUGC()->SetItemTags(handle, pTags);
 }
 
 bool Steam::setItemTitle(uint64_t updateHandle, const String& title){

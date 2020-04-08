@@ -1,5 +1,5 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.2). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.2.1). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
@@ -25,6 +25,10 @@ You can download pre-compiled versions _(currently v3.3.2)_ of this repo here: h
 - Removed: unnecessary cookieHandle argument from HTTP functions
 - Removed: unnecessary cookieHandle returns from HTTP callbacks
 
+**Version 3.3.3 Changes**
+- Fixed: setItemTags thanks to _EIREXE_
+- Fixed: missing publishedFileID in return from GetQueryUGCResult
+
 Known Issues
 ----------
 - None... so far
@@ -33,7 +37,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.2.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.2.1.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/

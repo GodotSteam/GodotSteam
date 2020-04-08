@@ -630,6 +630,8 @@ class Steam: public Object {
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
+
+		// UGC / Workshop
 		uint64 ugcHandle;
 
 		/////////////////////////////////////////
