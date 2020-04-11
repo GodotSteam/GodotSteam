@@ -40,6 +40,25 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.4 Changes</h3>
+						<ul>
+							<li>Added: getAuthSessionTicketID to aquire additional ticket data</li>
+							<li>Added: additional pragma to silence offset warnings in Steamworks SDK itself</li>
+							<li>Changed: steamInit status results to use internal enums</li>
+							<li>Changed: getLeaderboardSortMethod now returns a dictionary with result and verbal response</li>
+							<li>Changed: getLeaderboardDisplayType now returns a dictionary with result and verbal response</li>
+							<li>Changed: getLeaderboardEntries to have a default failure response</li>
+							<li>Changed: leaderboard_scores_downloaded callback now incorporates getDownloadLeaderboardEntry to streamline process, callback returns the result array now</li>
+							<li>Changed: complete overhaul of enums and constants</li>
+							<li>Changed: leaderboardDetailsMax default from 0 to 10</li>
+							<li>Fixed: various void functions</li>
+							<li>Fixed: casting for addRequestLobbyListNumericalFilter, addRequestLobbyListStringFilter, addRequestLobbyListDistanceFilter</li>
+							<li>Fixed: setItemTags thanks to <em>EIREXE</em></li>
+							<li>Fixed: missing publishedFileID in return from GetQueryUGCResult</li>
+							<li>Fixed: getGlobalStatInt and getGlobalStatIntHistory</li>
+							<li>Removed: getLeaderboardHandle as redundant</li>
+							<li>Removed: getDownloadedLeaderboardEntry as it should not be called manually, has been added to leaderboard_scores_download callback</li>
+						</ul>
 						<h3>Version 3.3.2 Changes</h3>
 						<ul>
 							<li>Added: all Inventory functions, callbacks, and enums</li>

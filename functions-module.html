@@ -2110,6 +2110,11 @@
 							<li>Get an authentication ticket.</li>
 							<li>INT.</li>
 						</ul>
+						<h4>getAuthSessionTicketID()</h4>
+						<ul>
+							<li>Used to debug and test authentication tickets.</li>
+							<li>DICTIONARY; contains the ticket ID, the buffer, and the buffer's size.</li>
+						</ul>
 						<h4>cancelAuthTicket( <sup>int</sup> ticket )</h4>
 						<ul>
 							<li>Cancels an authentication ticket.</li>
@@ -2188,11 +2193,6 @@
 							<li>Gets the 'API name' for an achievement index.</li>
 							<li>STRING.</li>
 						</ul>
-						<h4>getDownloadedLeaderboardEntry( <sup>int</sup> handle, <sup>int</sup> entryCount )</h4>
-						<ul>
-							<li>Once all entries are accessed, the data will be freed up and the handle will become invalid, use this to store it.</li>
-							<li>VOID.</li>
-						</ul>
 						<h4>getGlobalStatInt( <sup>string</sup> name )</h4>
 						<ul>
 							<li>Gets the lifetime totals for an aggregated stat.</li>
@@ -2215,8 +2215,8 @@
 						</ul>
 						<h4>getLeaderboardDisplayType()</h4>
 						<ul>
-							<li>Returns the display type of a leaderboard handle.</li>
-							<li>INT.</li>
+							<li>Get the display type of a leaderboard handle.</li>
+							<li>DICTIONARY; contains the INT value of the result and a verbal response.</li>
 						</ul>
 						<h4>getLeaderboardEntryCount()</h4>
 						<ul>
@@ -2230,8 +2230,8 @@
 						</ul>
 						<h4>getLeaderboardSortMethod()</h4>
 						<ul>
-							<li>Returns the sort order of a leaderboard handle.</li>
-							<li>INT.</li>
+							<li>Get the sort order of a leaderboard handle.</li>
+							<li>DICTIONARY; contains the INT value of the result and the verbal response.</li>
 						</ul>
 						<h4>getMostAchievedAchievementInfo()</h4>
 						<ul>
@@ -2337,11 +2337,6 @@
 						<ul>
 							<li>Upload a leaderboard score for the user.</li>
 							<li>VOID; triggers <strong>_leaderboard_score_uploaded</strong> callback.</li>
-						</ul>
-						<h4>getLeaderboardHandle()</h4>
-						<ul>
-							<li>Get the currently used leaderboard handle.</li>
-							<li>INT.</li>
 						</ul>
 						<h4>getLeaderboardEntries()</h4>
 						<ul>
