@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+The newest things that have been added as of 4/15/20:
+- Fixed: initialization and lobby tutorials
+
 The newest things that have been added as of 4/10/20:
 - Changed: change log to reflect GodotSteam 3.4
 - Changed: various information on functions for that update
