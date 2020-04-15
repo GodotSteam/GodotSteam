@@ -119,7 +119,7 @@ func _create_Lobby():
 						<p>Next we'll cover the callback from Steam saying the lobby has been created:</p>
 <pre><code>
 func _on_Lobby_Created(connect, lobbyID):
-	if connect == 0:
+	if connect == 1:
 		# Set the lobby ID
 		STEAM_LOBBY_ID = lobbyID
 		print("Created a lobby: "+str(STEAM_LOBBY_ID))
