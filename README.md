@@ -11,31 +11,15 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.4)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
-
-**Version 3.4 Changes**
-- Added: getAuthSessionTicketID to aquire additional ticket data
-- Added: additional pragma to silence offset warnings in Steamworks SDK itself
-- Changed: steamInit status results to use internal enums
-- Changed: getLeaderboardSortMethod now returns a dictionary with result and verbal response
-- Changed: getLeaderboardDisplayType now returns a dictionary with result and verbal response
-- Changed: getLeaderboardEntries to have a default failure response
-- Changed: leaderboard_scores_downloaded callback now incorporates getDownloadLeaderboardEntry to streamline process, callback returns the result array now
-- Changed: complete overhaul of enums and constants
-- Changed: leaderboardDetailsMax default from 0 to 10
-- Fixed: various void functions
-- Fixed: casting for addRequestLobbyListNumericalFilter, addRequestLobbyListStringFilter, addRequestLobbyListDistanceFilter
-- Fixed: setItemTags thanks to _EIREXE_
-- Fixed: missing publishedFileID in return from GetQueryUGCResult
-- Fixed: getGlobalStatInt and getGlobalStatIntHistory
-- Removed: getLeaderboardHandle as redundant
-- Removed: getDownloadedLeaderboardEntry as it should not be called manually, has been added to leaderboard_scores_download callback
+You can download pre-compiled versions _(currently v3.4.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 3.4.1 Changes**
 - Added: organization separators for all binds
 - Changed: enums are now callable as constants in Godot
 - Changed: case on enums
 - Fixed: some mis-spelling in enums
+
+
 
 Known Issues
 ----------
