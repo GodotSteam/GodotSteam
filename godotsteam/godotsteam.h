@@ -22,312 +22,307 @@ class Steam: public Object {
 	public:
 		// Steam API enums
 		enum AccountType {
-			AccountTypeInvalid = 0, AccountTypeIndividual = 1, AccountTypeMultiseat = 2, AccountTypeGameServer = 3, AccountTypeAnonGameServer = 4, AccountTypePending = 5, AccountTypeContentServer = 6, AccountTypeClan = 7, AccountTypeChat = 8, AccountTypeConsoleUser = 9, AccountTypeAnonUser = 10, AccountTypeMax = 11
+			ACCOUNT_TYPE_INVALID = 0, ACCOUNT_TYPE_INDIVIDUAL = 1, ACCOUNT_TYPE_MULTISEAT = 2, ACCOUNT_TYPE_GAME_SERVER = 3, ACCOUNT_TYPE_ANON_GAME_SERVER = 4, ACCOUNT_TYPE_PENDING = 5, ACCOUNT_TYPE_CONTENT_SERVER = 6, ACCOUNT_TYPE_CLAN = 7, ACCOUNT_TYPE_CHAT = 8, ACCOUNT_TYPE_CONSOLE_USER = 9, ACCOUNT_TYPE_ANON_USER = 10, ACCOUNT_TYPE_MAX = 11
 		};
 		enum AppOwnershipFlags {
-			AppOwnershipFlags_None = 0x0000, AppOwnershipFlags_OwnsLicense = 0x0001, AppOwnershipFlags_FreeLicense = 0x0002, AppOwnershipFlags_RegionRestricted = 0x0004, AppOwnershipFlags_LowViolence = 0x0008, AppOwnershipFlags_InvalidPlatform = 0x0010, AppOwnershipFlags_SharedLicense = 0x0020,
-			AppOwnershipFlags_FreeWeekend = 0x0040, AppOwnershipFlags_RetailLicense = 0x0080, AppOwnershipFlags_LicenseLocked = 0x0100, AppOwnershipFlags_LicensePending = 0x0200, AppOwnershipFlags_LicenseExpired = 0x0400, AppOwnershipFlags_LicensePermanent = 0x0800, AppOwnershipFlags_LicenseRecurring = 0x1000,
-			AppOwnershipFlags_LicenseCanceled = 0x2000, AppOwnershipFlags_AutoGrant = 0x4000, AppOwnershipFlags_PendingGift = 0x8000, AppOwnershipFlags_RentalNotActivated = 0x10000, AppOwnershipFlags_Rental = 0x20000, AppOwnershipFlags_SiteLicense = 0x40000
+			APP_OWNERSHIP_FLAGS_NONE = 0x0000, APP_OWNERSHIP_FLAGS_OWNS_LICENSE = 0x0001, APP_OWNERSHIP_FLAGS_FREE_LICENSE = 0x0002, APP_OWNERSHIP_FLAGS_REGION_RESTRICTED = 0x0004, APP_OWNERSHIP_FLAGS_LOW_VIOLENCE = 0x0008, APP_OWNERSHIP_FLAGS_INVALID_PLATFORM = 0x0010, APP_OWNERSHIP_FLAGS_SHARED_LICENSE = 0x0020,
+			APP_OWNERSHIP_FLAGS_FREE_WEEKEND = 0x0040, APP_OWNERSHIP_FLAGS_RETAIL_LICENSE = 0x0080, APP_OWNERSHIP_FLAGS_LICENSE_LOCKED = 0x0100, APP_OWNERSHIP_FLAGS_LICENSE_PENDING = 0x0200, APP_OWNERSHIP_FLAGS_LICENSE_EXPIRED = 0x0400, APP_OWNERSHIP_FLAGS_LICENSE_PERMANENT = 0x0800, APP_OWNERSHIP_FLAGS_LICENSE_RECURRING = 0x1000,
+			APP_OWNERSHIP_FLAGS_LICENSE_CANCELED = 0x2000, APP_OWNERSHIP_FLAGS_AUTO_GRANT = 0x4000, APP_OWNERSHIP_FLAGS_PENDING_GIFT = 0x8000, APP_OWNERSHIP_FLAGS_RENTAL_NOT_ACTIVATED = 0x10000, APP_OWNERSHIP_FLAGS_RENTAL = 0x20000, APP_OWNERSHIP_FLAGS_SITE_LICENSE = 0x40000
 		};
 		enum AppReleaseState {
-			AppReleaseState_Unknown = 0, AppReleaseState_Unavailable = 1, AppReleaseState_Prerelease = 2, AppReleaseState_PreloadOnly = 3, AppReleaseState_Released = 4
+			APP_RELEASE_STATE_UNKNOWN = 0, APP_RELEASE_STATE_UNAVAILABLE = 1, APP_RELEASE_STATE_PRERELEASE = 2, APP_RELEASE_STATE_PRELOAD_ONLY = 3, APP_RELEASE_STATE_RELEASED = 4
 		};
 		enum AppType {
-			AppType_Invalid = 0x000, AppType_Game = 0x001, AppType_Application = 0x002, AppType_Tool = 0x004, AppType_Demo = 0x008, AppType_Media_DEPRECATED = 0x010, AppType_DLC = 0x020, AppType_Guide = 0x040, AppType_Driver = 0x080, AppType_Config = 0x100, AppType_Hardware = 0x200, AppType_Franchise = 0x400,
-			AppType_Video = 0x800, AppType_Plugin = 0x1000, AppType_Music = 0x2000, AppType_Series = 0x4000, AppType_Shortcut = 0x40000000, AppType_DepotOnly = 0x80000000
+			APP_TYPE_INVALID = 0x000, APP_TYPE_GAME = 0x001, APP_TYPE_APPLICATION = 0x002, APP_TYPE_TOOL = 0x004, APP_TYPE_DEMO = 0x008, APP_TYPE_MEDIA_DEPRECATED = 0x010, APP_TYPE_DLC = 0x020, APP_TYPE_GUIDE = 0x040, APP_TYPE_DRIVER = 0x080, APP_TYPE_CONFIG = 0x100, APP_TYPE_HARDWARE = 0x200, APP_TYPE_FRANCHISE = 0x400, APP_TYPE_VIDEO = 0x800,
+			APP_TYPE_PLUGIN = 0x1000, APP_TYPE_MUSIC = 0x2000, APP_TYPE_SERIES = 0x4000, APP_TYPE_SHORTCUT = 0x40000000, APP_TYPE_DEPOT_ONLY = 0X80000000
 		};
 		enum AuthSessionResponse {
-			AuthSessionResponseOK = 0, AuthSessionResponseUserNotConnectedToSteam = 1, AuthSessionResponseNoLicenseOrExpired = 2, AuthSessionResponseVACBanned = 3, AuthSessionResponseLoggedInElseWhere = 4, AuthSessionResponseVACCheckTimedOut = 5, AuthSessionResponseAuthTicketCanceled = 6,
-			AuthSessionResponseAuthTicketInvalidAlreadyUsed = 7, AuthSessionResponseAuthTicketInvalid = 8, AuthSessionResponsePublisherIssuedBan = 9
+			AUTH_SESSION_RESPONSE_OK = 0, AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM = 1, AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED = 2, AUTH_SESSION_RESPONSE_VAC_BANNED = 3, AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE = 4, AUTH_SESSION_RESPONSE_VAC_CHECK_TIMEDOUT = 5, AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED = 6,
+			AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED = 7, AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID = 8, AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN = 9
 		};
 		enum BeginAuthSessionResult {
-			BeginAuthSessionResultOK = 0, BeginAuthSessionResultInvalidTicket = 1, BeginAuthSessionResultDuplicateRequest = 2, BeginAuthSessionResultInvalidVersion = 3, BeginAuthSessionResultGameMismatch = 4, BeginAuthSessionResultExpiredTicket = 5
+			BEGIN_AUTH_SESSION_RESULT_OK = 0, BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET = 1, BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST = 2, BEGIN_AUTH_SESSION_RESULT_INVALID_VERSION = 3, BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH = 4, BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET = 5
 		};
 		enum BroadcastUploadResult {
-			BroadcastUploadResultNone = 0, BroadcastUploadResultOK = 1, BroadcastUploadResultInitFailed = 2, BroadcastUploadResultFrameFailed = 3, BroadcastUploadResultTimeout = 4, BroadcastUploadResultBandwidthExceeded = 5, BroadcastUploadResultLowFPS = 6, BroadcastUploadResultMissingKeyFrames = 7,
-			BroadcastUploadResultNoConnection = 8, BroadcastUploadResultRelayFailed = 9, BroadcastUploadResultSettingsChanged = 10, BroadcastUploadResultMissingAudio = 11, BroadcastUploadResultTooFarBehind = 12, BroadcastUploadResultTranscodeBehind = 13
+			BROADCAST_UPLOAD_RESULT_NONE = 0, BROADCAST_UPLOAD_RESULT_OK = 1, BROADCAST_UPLOAD_RESULT_INIT_FAILED = 2, BROADCAST_UPLOAD_RESULT_FRAME_FAILED = 3, BROADCAST_UPLOAD_RESULT_TIME_OUT = 4, BROADCAST_UPLOAD_RESULT_BANDWIDTH_EXCEEDED = 5, BROADCAST_UPLOAD_RESULT_LOW_FPS = 6, BROADCAST_UPLOAD_RESULT_MISSING_KEYFRAMES = 7,
+			BROADCAST_UPLOAD_RESULT_NO_CONNECTION = 8, BROADCAST_UPLOAD_RESULT_RELAY_FAILED = 9, BROADCAST_UPLOAD_RESULT_SETTINGS_CHANGED = 10, BROADCAST_UPLOAD_RESULT_MISSING_AUDIO = 11, BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND = 12, BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND = 13
 		};
 		enum ChatEntryType {
-			ChatEntryTypeInvalid = 0, ChatEntryTypeChatMsg = 1, ChatEntryTypeTyping = 2, ChatEntryTypeInviteGame = 3, ChatEntryTypeEmote = 4, ChatEntryTypeLeftConversation = 6, ChatEntryTypeEntered = 7, ChatEntryTypeWasKicked = 8, ChatEntryTypeWasBanned = 9, ChatEntryTypeDisconnected = 10,
-			ChatEntryTypeHistoricalChat = 11, ChatEntryTypeLinkBlocked = 14
+			CHAT_ENTRY_TYPE_INVALID = 0, CHAT_ENTRY_TYPE_CHAT_MSG = 1, CHAT_ENTRY_TYPE_TYPING = 2, CHAT_ENTRY_TYPE_INVITE_GAME = 3, CHAT_ENTRY_TYPE_EMOTE = 4, CHAT_ENTRY_TYPE_LEFT_CONVERSATION = 6, CHAT_ENTRY_TYPE_ENTERED = 7, CHAT_ENTRY_TYPE_WAS_KICKED = 8, CHAT_ENTRY_TYPE_WAS_BANNED = 9, CHAT_ENTRY_TYPE_DISCONNECTED = 10, CHAT_ENTRY_TYPE_HISTORICAL_CHAT = 11,
+			CHAT_ENTRY_TYPE_LINK_BLOCKED = 14
 		};
 		enum ChatRoomEnterResponse {
-			ChatRoomEnterResponseSuccess = 1, ChatRoomEnterResponseDoesntExist = 2, ChatRoomEnterResponseNotAllowed = 3, ChatRoomEnterResponseFull = 4, ChatRoomEnterResponseError = 5, ChatRoomEnterResponseBanned = 6, ChatRoomEnterResponseLimited = 7, ChatRoomEnterResponseClanDisabled = 8,
-			ChatRoomEnterResponseCommunityBan = 9, ChatRoomEnterResponseMemberBlockedYou = 10, ChatRoomEnterResponseYouBlockedMember = 11
+			CHAT_ROOM_ENTER_RESPONSE_SUCCESS = 1, CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST = 2, CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED = 3, CHAT_ROOM_ENTER_RESPONSE_FULL = 4, CHAT_ROOM_ENTER_RESPONSE_ERROR = 5, CHAT_ROOM_ENTER_RESPONSE_BANNED = 6, CHAT_ROOM_ENTER_RESPONSE_LIMITED = 7, CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED = 8, CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN = 9,
+			CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU = 10, CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER = 11
 		};
 		enum ChatSteamIDInstanceFlags {
-			ChatAccountInstanceMask = 0x00000FFF, ChatInstanceFlagClan = ((k_unSteamAccountInstanceMask + 1) >> 1), ChatInstanceFlagLobby = ((k_unSteamAccountInstanceMask + 1) >> 2), ChatInstanceFlagMMSLobby = ((k_unSteamAccountInstanceMask + 1) >> 3)
+			CHAT_ACCOUNT_INSTANCE_MASK = 0X00000FFF, CHAT_INSTANCE_FLAG_CLAN = ((k_unSteamAccountInstanceMask + 1) >> 1), CHAT_INSTANCE_FLAG_LOBBY = ((k_unSteamAccountInstanceMask + 1) >> 2), CHAT_INSTANCE_FLAG_MMS_LOBBY = ((k_unSteamAccountInstanceMask + 1) >> 3)
 		};
 		enum DenyReason {
-			DenyInvalid = 0, DenyInvalidVersion = 1, DenyGeneric = 2, DenyNotLoggedOn = 3, DenyNoLicense = 4, DenyCheater = 5, DenyLoggedInElseWhere = 6, DenyUnknownText = 7, DenyIncompatibleAnticheat = 8, DenyMemoryCorruption = 9, DenyIncompatibleSoftware = 10, DenySteamConnectionLost = 11,
-			DenySteamConnectionError = 12, DenySteamResponseTimedOut = 13, DenySteamValidationStalled = 14, DenySteamOwnerLeftGuestUser = 15
+			DENY_INVALID = 0, DENY_INVALID_VERSION = 1, DENY_GENERIC = 2, DENY_NOT_LOGGED_ON = 3, DENY_NO_LICENSE = 4, DENY_CHEATER = 5, DENY_LOGGED_IN_ELSEWHERE = 6, DENY_UNKNOWN_TEXT = 7, DENY_INCOMPATIBLE_ANTI_CHEAT = 8, DENY_MEMORY_CORRUPTION = 9, DENY_INCOMPATIBLE_SOFTWARE = 10, DENY_STEAM_CONNECTION_LOST = 11, DENY_STEAM_CONNECTION_ERROR = 12,
+			DENY_STEAM_RESPONSE_TIMED_OUT = 13, DENY_STEAM_VALIDATION_STALLED = 14, DENY_STEAM_OWNER_LEFT_GUEST_USER = 15
 		};
 		enum GameIDType {
-			GameTypeApp = 0, GameTypeGameMod = 1, GameTypeShortcut = 2, GameTypeP2P = 3
+			GAME_TYPE_APP = 0, GAME_TYPE_GAME_MOD = 1, GAME_TYPE_SHORTCUT = 2, GAME_TYPE_P2P = 3
 		};
-		enum LaunchOptionType {
-			LaunchOptionType_None = 0, LaunchOptionType_Default = 1, LaunchOptionType_SafeMode = 2, LaunchOptionType_Multiplayer = 3, LaunchOptionType_Config = 4, LaunchOptionType_OpenVR = 5, LaunchOptionType_Server = 6, LaunchOptionType_Editor = 7, LaunchOptionType_Manual = 8,
-			LaunchOptionType_Benchmark = 9, LaunchOptionType_Option1 = 10, LaunchOptionType_Option2 = 11, LaunchOptionType_Option3 = 12, LaunchOptionType_OculusVR = 13, LaunchOptionType_OpenVROverlay = 14, LaunchOptionType_OSVR = 15, LaunchOptionType_Dialog = 1000
+		enum LAUNCH_OPTION_Type {
+			LAUNCH_OPTION_TYPE_NONE = 0, LAUNCH_OPTION_TYPE_DEFAULT = 1, LAUNCH_OPTION_TYPE_SAFE_MODE = 2, LAUNCH_OPTION_TYPE_MULTIPLAYER = 3, LAUNCH_OPTION_TYPE_CONFIG = 4, LAUNCH_OPTION_TYPE_OPEN_VR = 5, LAUNCH_OPTION_TYPE_SERVER = 6, LAUNCH_OPTION_TYPE_EDITOR = 7, LAUNCH_OPTION_TYPE_MANUAL = 8, LAUNCH_OPTION_TYPE_BENCHMARK = 9, LAUNCH_OPTION_TYPE_OPTION1 = 10,
+			LAUNCH_OPTION_TYPE_OPTION2 = 11, LAUNCH_OPTION_TYPE_OPTION3 = 12, LAUNCH_OPTION_TYPE_OCULUS_VR = 13, LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY = 14, LAUNCH_OPTION_TYPE_OS_VR = 15, LAUNCH_OPTION_TYPE_DIALOG = 1000
 		};
 		enum MarketingMessageFlags {
-			MarketingMessageFlagsNone = 0, MarketingMessageFlagsHighPriority = (1<<0), MarketingMessageFlagsPlatformWindows = (1<<1), MarketingMessageFlagsPlatformMac = (1<<2), MarketingMessageFlagsPlatformLinux = (1<<3), MarketingMessageFlagsPlatformRestrictions
+			MARKETING_MESSAGE_FLAGS_NONE = 0, MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY = (1<<0), MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS = (1<<1), MARKETING_MESSAGE_FLAGS_PLATFORM_MAC = (1<<2), MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX = (1<<3), MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS
 		};
 		enum NotificationPosition {
-			PositionTopLeft = 0, PositionTopRight = 1, PositionBottomLeft = 2, PositionBottomRight = 3
+			POSITION_TOP_LEFT = 0, POSITION_TOP_RIGHT = 1, POSITION_BOTTOM_LEFT = 2, POSITION_BOTTOM_RIGHT = 3
 		};
 		enum Result {
-			ResultOK = 1, ResultFail = 2, ResultNoConnection = 3, ResultInvalidPassword = 5, ResultLoggedInElsewhere = 6, ResultInvalidProtocolVer = 7, ResultInvalidParam = 8, ResultFileNotFound = 9, ResultBusy = 10, ResultInvalidState = 11, ResultInvalidName = 12, ResultInvalidEmail = 13,
-			ResultDuplicateName = 14, ResultAccessDenied = 15, ResultTimeout = 16, ResultBanned = 17, ResultAccountNotFound = 18, ResultInvalidSteamID = 19, ResultServiceUnavailable = 20, ResultNotLoggedOn = 21, ResultPending = 22, ResultEncryptionFailure = 23, ResultInsufficientPrivilege = 24,
-			ResultLimitExceeded = 25, ResultRevoked = 26, ResultExpired = 27, ResultAlreadyRedeemed = 28, ResultDuplicateRequest = 29, ResultAlreadyOwned = 30, ResultIPNotFound = 31, ResultPersistFailed = 32, ResultLockingFailed = 33, ResultLogonSessionReplaced = 34, ResultConnectFailed = 35,
-			ResultHandshakeFailed = 36, ResultIOFailure = 37, ResultRemoteDisconnect = 38, ResultShoppingCartNotFound = 39, ResultBlocked = 40, ResultIgnored = 41, ResultNoMatch = 42, ResultAccountDisabled = 43, ResultServiceReadOnly = 44, ResultAccountNotFeatured = 45, ResultAdministratorOK = 46,
-			ResultContentVersion = 47, ResultTryAnotherCM = 48, ResultPasswordRequiredToKickSession = 49, ResultAlreadyLoggedInElsewhere = 50, ResultSuspended = 51, ResultCancelled = 52, ResultDataCorruption = 53, ResultDiskFull = 54, ResultRemoteCallFailed = 55, ResultPasswordUnset = 56,
-			ResultExternalAccountUnlinked = 57, ResultPSNTicketInvalid = 58, ResultExternalAccountAlreadyLinked = 59, ResultRemoteFileConflict = 60, ResultIllegalPassword = 61, ResultSameAsPreviousValue = 62, ResultAccountLogonDenied = 63, ResultCannotUseOldPassword = 64, ResultInvalidLoginAuthCode = 65,
-			ResultAccountLogonDeniedNoMail = 66, ResultHardwareNotCapableOfIPT = 67, ResultIPTInitError = 68, ResultParentalControlRestricted = 69, ResultFacebookQueryError = 70, ResultExpiredLoginAuthCode = 71, ResultIPLoginRestrictionFailed = 72, ResultAccountLockedDown = 73,
-			ResultAccountLogonDeniedVerifiedEmailRequired = 74, ResultNoMatchingURL = 75, ResultBadResponse = 76, ResultRequirePasswordReEntry = 77, ResultValueOutOfRange = 78, ResultUnexpectedError = 79, ResultDisabled = 80, ResultInvalidCEGSubmission = 81, ResultRestrictedDevice = 82,
-			ResultRegionLocked = 83, ResultRateLimitExceeded = 84, ResultAccountLoginDeniedNeedTwoFactor = 85, ResultItemDeleted = 86, ResultAccountLoginDeniedThrottle = 87, ResultTwoFactorCodeMismatch = 88, ResultTwoFactorActivationCodeMismatch = 89, ResultAccountAssociatedToMultiplePartners = 90,
-			ResultNotModified = 91, ResultNoMobileDevice = 92, ResultTimeNotSynced = 93, ResultSmsCodeFailed = 94, ResultAccountLimitExceeded = 95, ResultAccountActivityLimitExceeded = 96, ResultPhoneActivityLimitExceeded = 97, ResultRefundToWallet = 98, ResultEmailSendFailure = 99,
-			ResultNotSettled = 100, ResultNeedCaptcha = 101, ResultGSLTDenied = 102, ResultGSOwnerDenied = 103, ResultInvalidItemType = 104, ResultIPBanned = 105, ResultGSLTExpired = 106, ResultInsufficientFunds = 107, ResultTooManyPending = 108
+			RESULT_OK = 1, RESULT_FAIL = 2, RESULT_NO_CONNECTION = 3, RESULT_INVALID_PASSWORD = 5, RESULT_LOGGED_IN_ELSEWHERE = 6, RESULT_INVALID_PROTOCOL_VER = 7, RESULT_INVALID_PARAM = 8, RESULT_FILE_NOT_FOUND = 9, RESULT_BUSY = 10, RESULT_INVALID_STATE = 11, RESULT_INVALID_NAME = 12, RESULT_INVALID_EMAIL = 13, RESULT_DUPLICATE_NAME = 14, RESULT_ACCESS_DENIED = 15,
+			RESULT_TIMEOUT = 16, RESULT_BANNED = 17, RESULT_ACCOUNT_NOT_FOUND = 18, RESULT_INVALID_STEAM_ID = 19, RESULT_SERVICE_UNAVAILABLE = 20, RESULT_NOT_LOGGED_ON = 21, RESULT_PENDING = 22, RESULT_ENCRYPTION_FAILURE = 23, RESULT_INSUFFICIENT_PRIVILEGE = 24, RESULT_LIMIT_EXCEEDED = 25, RESULT_REVOKED = 26, RESULT_EXPIRED = 27, RESULT_ALREADY_REDEEMED = 28,
+			RESULT_DUPLICATE_REQUEST = 29, RESULT_ALREADY_OWNED = 30, RESULT_IP_NOT_FOUND = 31, RESULT_PERSIST_FAILED = 32, RESULT_LOCKING_FAILED = 33, RESULT_LOG_ON_SESSION_REPLACED = 34, RESULT_CONNECT_FAILED = 35, RESULT_HANDSHAKE_FAILED = 36, RESULT_IO_FAILURE = 37, RESULT_REMOTE_DISCONNECT = 38, RESULT_SHOPPING_CART_NOT_FOUND = 39, RESULT_BLOCKED = 40,
+			RESULT_IGNORED = 41, RESULT_NO_MATCH = 42, RESULT_ACCOUNT_DISABLED = 43, RESULT_SERVICE_READ_ONLY = 44, RESULT_ACCOUNT_NOT_FEATURED = 45, RESULT_ADMINISTRATOR_OK = 46, RESULT_CONTENT_VERSION = 47, RESULT_TRY_ANOTHER_CM = 48, RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION = 49, RESULT_ALREADY_LOGGED_IN_ELSEWHERE = 50, RESULT_SUSPENDED = 51, RESULT_CANCELLED = 52,
+			RESULT_DATA_CORRUPTION = 53, RESULT_DISK_FULL = 54, RESULT_REMOTE_CALL_FAILED = 55, RESULT_PASSWORD_UNSET = 56, RESULT_EXTERNAL_ACCOUNT_UNLINKED = 57, RESULT_PSN_TICKET_INVALID = 58, RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED = 59, RESULT_REMOTE_FILE_CONFLICT = 60, RESULT_ILLEGAL_PASSWORD = 61, RESULT_SAME_AS_PREVIOUS_VALUE = 62,
+			RESULT_ACCOUNT_LOG_ON_DENIED = 63, RESULT_CANNOT_USE_OLD_PASSWORD = 64, RESULT_INVALID_LOGIN_AUTH_CODE = 65, RESULT_ACCOUNT_LOG_ON_DENIED_NO_MAIL = 66, RESULT_HARDWARE_NOT_CAPABLE_OF_IPT = 67, RESULT_IPT_INIT_ERROR = 68, RESULT_PARENTAL_CONTROL_RESTRICTED = 69, RESULT_FACEBOOK_QUERY_ERROR = 70, RESULT_EXPIRED_LOGIN_AUTH_CODE = 71,
+			RESULT_IP_LOGIN_RESTRICTION_FAILED = 72, RESULT_ACCOUNT_LOCKED_DOWN = 73, RESULT_ACCOUNT_LOG_ON_DENIED_VERIFIED_EMAIL_REQUIRED = 74, RESULT_NO_MATCHING_URL = 75, RESULT_BAD_RESPONSE = 76, RESULT_REQUIRE_PASSWORD_REENTRY = 77, RESULT_VALUE_OUT_OF_RANGE = 78, RESULT_UNEXPECTED_ERROR = 79, RESULT_DISABLED = 80, RESULT_INVALID_CEG_SUBMISSION = 81,
+			RESULT_RESTRICTED_DEVICE = 82, RESULT_REGION_LOCKED = 83, RESULT_RATE_LIMIT_EXCEEDED = 84, RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR = 85, RESULT_ITEM_DELETED = 86, RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE = 87, RESULT_TWO_FACTOR_CODE_MISMATCH = 88, RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH = 89, RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS = 90,
+			RESULT_NOT_MODIFIED = 91, RESULT_NO_MOBILE_DEVICE = 92, RESULT_TIME_NOT_SYNCED = 93, RESULT_SMS_CODE_FAILED = 94, RESULT_ACCOUNT_LIMIT_EXCEEDED = 95, RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED = 96, RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED = 97, RESULT_REFUND_TO_WALLET = 98, RESULT_EMAIL_SEND_FAILURE = 99, RESULT_NOT_SETTLED = 100, RESULT_NEED_CAPTCHA = 101,
+			RESULT_GSLT_DENIED = 102, RESULT_GS_OWNER_DENIED = 103, RESULT_INVALID_ITEM_TYPE = 104, RESULT_IP_BANNED = 105, RESULT_GSLT_EXPIRED = 106, RESULT_INSUFFICIENT_FUNDS = 107, RESULT_TOO_MANY_PENDING = 108
 		};
 		enum SteamUserStatType {
-			SteamUserStatTypeINVALID = 0, SteamUserStatTypeINT = 1, SteamUserStatTypeFLOAT = 2, SteamUserStatTypeAVGRATE = 3, SteamUserStatTypeACHIEVEMENTS = 4, SteamUserStatTypeGROUPACHIEVEMENTS = 5, SteamUserStatTypeMAX = 6
+			STEAM_USER_STAT_TYPE_INVALID = 0, STEAM_USER_STAT_TYPE_INT = 1, STEAM_USER_STAT_TYPE_FLOAT = 2, STEAM_USER_STAT_TYPE_AVGRATE = 3, STEAM_USER_STAT_TYPE_ACHIEVEMENTS = 4, STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS = 5, STEAM_USER_STAT_TYPE_MAX = 6
 		};
 		enum Universe {
-			UniverseInvalid = 0, UniversePublic = 1, UniverseBeta = 2, UniverseInternal = 3, UniverseDev = 4, UniverseMax = 5
+			UNIVERSE_INVALID = 0, UNIVERSE_PUBLIC = 1, UNIVERSE_BETA = 2, UNIVERSE_INTERNAL = 3, UNIVERSE_DEV = 4, UNIVERSE_MAX = 5
 		};
 		enum UserHasLicenseForAppResult {
-			UserHasLicenseResultHasLicense = 0, UserHasLicenseResultDoesNotHaveLicense = 1, UserHasLicenseResultNoAuth = 2
+			USER_HAS_LICENSE_RESULT_HAS_LICENSE = 0, USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE = 1, USER_HAS_LICENSE_RESULT_NO_AUTH = 2
 		};
 		enum VoiceResult {
-			VoiceResultOK = 0, VoiceResultNotInitialized = 1, VoiceResultNotRecording = 2, VoiceResultNoDate = 3, VoiceResultBufferTooSmall = 4, VoiceResultDataCorrupted = 5, VoiceResultRestricted = 6
+			VOICE_RESULT_OK = 0, VOICE_RESULT_NOT_INITIALIZED = 1, VOICE_RESULT_NOT_RECORDING = 2, VOICE_RESULT_NO_DATE = 3, VOICE_RESULT_BUFFER_TOO_SMALL = 4, VOICE_RESULT_DATA_CORRUPTED = 5, VOICE_RESULT_RESTRICTED = 6
 		};
 		enum VRHMDType {
-			VRHMDType_None = -1, VRHMDType_Unknown = 0, VRHMDType_HTC_Dev = 1, VRHMDType_HTC_VivePre = 2, VRHMDType_HTC_Vive = 3, VRHMDType_HTC_Unknown = 20, VRHMDType_Oculus_DK1 = 21, VRHMDType_Oculus_DK2 = 22, VRHMDType_Oculus_Rift = 23, VRHMDType_Oculus_Unknown = 40
+			VR_HMD_TYPE_NONE = -1, VR_HMD_TYPE_UNKNOWN = 0, VR_HMD_TYPE_HTC_DEV = 1, VR_HMD_TYPE_HTC_VIVEPRE = 2, VR_HMD_TYPE_HTC_VIVE = 3, VR_HMD_TYPE_HTC_UNKNOWN = 20, VR_HMD_TYPE_OCULUS_DK1 = 21, VR_HMD_TYPE_OCULUS_DK2 = 22, VR_HMD_TYPE_OCULUS_RIFT = 23, VR_HMD_TYPE_OCULUS_UNKNOWN = 40
 		};
 		// Friends enums
 		enum FriendFlags {
-			FriendFlagNone = 0x00, FriendFlagBlocked = 0x01, FriendFlagFriendshipRequested = 0x02, FriendFlagImmediate = 0x04, FriendFlagClanMember = 0x08, FriendFlagOnGameServer = 0x10, FriendFlagRequestingFriendship = 0x80, FriendFlagRequestingInfo = 0x100,
-			FriendFlagIgnored = 0x200, FriendFlagIgnoredFriend = 0x400, FriendFlagChatMember = 0x1000, FriendFlagAll = 0xFFFF
+			FRIEND_FLAG_NONE = 0X00, FRIEND_FLAG_BLOCKED = 0X01, FRIEND_FLAG_FRIENDSHIP_REQUESTED = 0X02, FRIEND_FLAG_IMMEDIATE = 0X04, FRIEND_FLAG_CLAN_MEMBER = 0X08, FRIEND_FLAG_ON_GAME_SERVER = 0X10, FRIEND_FLAG_REQUESTING_FRIENDSHIP = 0X80, FRIEND_FLAG_REQUESTING_INFO = 0X100, FRIEND_FLAG_IGNORED = 0X200, FRIEND_FLAG_IGNORED_FRIEND = 0X400,
+			FRIEND_FLAG_CHAT_MEMBER = 0X1000, FRIEND_FLAG_ALL = 0XFFFF
 		};
 		enum FriendRelationship {
-			FriendRelationNone = 0, FriendRelationBlocked = 1, FriendRelationRequestRecipient = 2, FriendRelationFriend = 3, FriendRelationRequestInitiator = 4,FriendRelationIgnored = 5, FriendRelationIgnoredFriend = 6, FriendRelationSuggested = 7, FriendRelationMax = 8			
+			FRIEND_RELATION_NONE = 0, FRIEND_RELATION_BLOCKED = 1, FRIEND_RELATION_REQUEST_RECIPIENT = 2, FRIEND_RELATION_FRIEND = 3, FRIEND_RELATION_REQUEST_INITIATOR = 4,FRIEND_RELATION_IGNORED = 5, FRIEND_RELATION_IGNORED_FRIEND = 6, FRIEND_RELATION_SUGGESTED = 7, FRIEND_RELATION_MAX = 8			
 		};
 		enum OverlayToStoreFlag {
-			OverlayToStoreFlag_None = 0, OverlayToStoreFlag_AddToCart = 1, OverlayToStoreFlag_AndToCartAndShow = 2
+			OVERLAY_TO_STORE_FLAG_NONE = 0, OVERLAY_TO_STORE_FLAG_ADD_TO_CART = 1, OVERLAY_TO_STORE_FLAG_AND_TO_CART_AND_SHOW = 2
 		};
 		enum PersonaChange {
-			PersonaChangeName = 0x0001, PersonaChangeStatus = 0x0002, PersonaChangeComeOnline = 0x0004, PersonaChangeGoneOffline = 0x0008, PersonaChangeGamePlayed = 0x0010, PersonaChangeGameServer = 0x0020, PersonaChangeAvatar = 0x0040, PersonaChangeJoinedSource = 0x0080,
-			PersonaChangeLeftSource = 0x0100, PersonaChangeRelationshipChanged = 0x0200, PersonaChangeNameFirstSet = 0x0400, PersonaChangeFacebookInfo = 0x0800, PersonaChangeNickname = 0x1000, PersonaChangeSteamLevel = 0x2000
+			PERSONA_CHANGE_NAME = 0X0001, PERSONA_CHANGE_STATUS = 0X0002, PERSONA_CHANGE_COME_ONLINE = 0X0004, PERSONA_CHANGE_GONE_OFFLINE = 0X0008, PERSONA_CHANGE_GAME_PLAYED = 0X0010, PERSONA_CHANGE_GAME_SERVER = 0X0020, PERSONA_CHANGE_AVATAR = 0X0040, PERSONA_CHANGE_JOINED_SOURCE = 0X0080, PERSONA_CHANGE_LEFT_SOURCE = 0X0100,
+			PERSONA_CHANGE_RELATIONSHIP_CHANGED = 0X0200, PERSONA_CHANGE_NAME_FIRST_SET = 0X0400, PERSONA_CHANGE_FACEBOOK_INFO = 0X0800, PERSONA_CHANGE_NICKNAME = 0X1000, PERSONA_CHANGE_STEAM_LEVEL = 0X2000
 		};
 		enum PersonaState {
-			PersonaStateOffline = 0, PersonaStateOnline = 1, PersonaStateBusy = 2, PersonaStateAway = 3, PersonaStateSnooze = 4, PersonaStateLookingToTrade = 5, PersonaStateLookingToPlay = 6, PersonaStateMax = 7
+			PERSONA_STATE_OFFLINE = 0, PERSONA_STATE_ONLINE = 1, PERSONA_STATE_BUSY = 2, PERSONA_STATE_AWAY = 3, PERSONA_STATE_SNOOZE = 4, PERSONA_STATE_LOOKING_TO_TRADE = 5, PERSONA_STATE_LOOKING_TO_PLAY = 6, PERSONA_STATE_MAX = 7
 		};
 		enum UserRestriction {
-			UserRestrictionNone = 0, UserRestrictionUnknown = 1, UserRestrictionAnyChat = 2, UserRestrictionVoiceChat = 4, UserRestrictionGroupChat = 8, UserRestrictionRating = 16, UserRestrictionGameInvites = 32, UserRestrictionTrading = 64
+			USER_RESTRICTION_NONE = 0, USER_RESTRICTION_UNKNOWN = 1, USER_RESTRICTION_ANY_CHAT = 2, USER_RESTRICTION_VOICE_CHAT = 4, USER_RESTRICTION_GROUP_CHAT = 8, USER_RESTRICTION_RATING = 16, USER_RESTRICTION_GAME_INVITES = 32, USER_RESTRICTION_TRADING = 64
 		};
 		// HTMLSurface enums
 		enum HTMLKeyModifiers {
-			HTMLKeyModifier_None = 0, HTMLKeyModifier_AltDown = (1<<0), HTMLKeyModifier_CtrlDown = (1<<1), HTMLKeyModifier_ShiftDown = (1<<2)
+			HTML_KEY_MODIFIER_NONE = 0, HTML_KEY_MODIFIER_ALT_DOWN = (1<<0), HTML_KEY_MODIFIER_CTRL_DOWN = (1<<1), HTML_KEY_MODIFIER_SHIFT_DOWN = (1<<2)
 		};
 		enum HTMLMouseButton {
-			HTMLMouseButton_Left = 0, HTMLMouseButton_Right = 1, HTMLMouseButton_Middle = 2
+			HTML_MOUSE_BUTTON_LEFT = 0, HTML_MOUSE_BUTTON_RIGHT = 1, HTML_MOUSE_BUTTON_MIDDLE = 2
 		};
 		enum MouseCursor {
-			dc_user = 0, dc_none = 1, dc_arrow = 2, dc_ibeam = 3, dc_hourglass = 4, dc_waitarrow = 5, dc_crosshair = 6, dc_up = 7, dc_sizenw = 8, dc_sizese = 9, dc_sizene = 10, dc_sizesw = 11, dc_size2 = 12, dc_sizee = 13, dc_sizen = 14, dc_sizes = 15, dc_sizewe = 16, dc_sizens = 17,
-			dc_sizeall = 18, dc_no = 19, dc_hand = 20, dc_blank = 21, dc_middle_pan = 22, dc_north_pan = 23, dc_north_east_pan = 24, dc_east_pan = 25, dc_south_east_pan = 26, dc_south_pan = 27, dc_south_west_pan = 28, dc_west_pan = 29, dc_north_west_pan = 30, dc_alias = 31, dc_cell = 32, dc_colresize = 33,
-			dc_copycur = 34, dc_verticaltext = 35, dc_rowresize = 36, dc_zoomin = 37, dc_zoomout = 38, dc_help = 39, dc_custom = 40, dc_last = 41
+			DC_USER = 0, DC_NONE = 1, DC_ARROW = 2, DC_IBEAM = 3, DC_HOUR_GLASS = 4, DC_WAIT_ARROW = 5, DC_CROSSHAIR = 6, DC_UP = 7, DC_SIZE_NW = 8, DC_SIZE_SE = 9, DC_SIZE_NE = 10, DC_SIZE_SW = 11, DC_SIZE_W = 12, DC_SIZE_E = 13, DC_SIZE_N = 14, DC_SIZE_S = 15, DC_SIZE_WE = 16, DC_SIZE_NS = 17, DC_SIZE_ALL = 18, DC_NO = 19, DC_HAND = 20, DC_BLANK = 21,
+			DC_MIDDLE_PAN = 22, DC_NORTH_PAN = 23, DC_NORTH_EAST_PAN = 24, DC_EAST_PAN = 25, DC_SOUTH_EAST_PAN = 26, DC_SOUTH_PAN = 27, DC_SOUTH_WEST_PAN = 28, DC_WEST_PAN = 29, DC_NORTH_WEST_PAN = 30, DC_ALIAS = 31, DC_CELL = 32, DC_COL_RESIZE = 33, DC_COPY_CUR = 34, DC_VERTICAL_TEXT = 35, DC_ROW_RESIZE = 36, DC_ZOOM_IN = 37, DC_ZOOM_OUT = 38, DC_HELP = 39,
+			DC_CUSTOM = 40, DC_LAST = 41
 		};
 		// HTTP enums
 		enum HTTPMethod {
-			HTTPMethodInvalid = 0, HTTPMethodGET = 1, HTTPMethodHEAD = 2, HTTPMethodPOST = 3, HTTPMethodPUT = 4, HTTPMethodDELETE = 5, HTTPMethodOPTIONS = 6, HTTPMethodPATCH = 7
+			HTTP_METHOD_INVALID = 0, HTTP_METHOD_GET = 1, HTTP_METHOD_HEAD = 2, HTTP_METHOD_POST = 3, HTTP_METHOD_PUT = 4, HTTP_METHOD_DELETE = 5, HTTP_METHOD_OPTIONS = 6, HTTP_METHOD_PATCH = 7
 		};
 		enum HTTPStatusCode {
-			HTTPStatusCodeInvalid = 0, HTTPStatusCode100Continue = 100, HTTPStatusCode101SwitchingProtocols = 101, HTTPStatusCode200OK = 200, HTTPStatusCode201Created = 201, HTTPStatusCode202Accepted = 202, HTTPStatusCode203NonAuthoritative = 203, HTTPStatusCode204NoContent = 204,
-			HTTPStatusCode205ResetContent = 205, HTTPStatusCode206PartialContent = 206, HTTPStatusCode300MultipleChoices = 300, HTTPStatusCode301MovedPermanently = 301, HTTPStatusCode302Found = 302, HTTPStatusCode303SeeOther = 303, HTTPStatusCode304NotModified = 304,
-			HTTPStatusCode305UseProxy = 305, HTTPStatusCode307TemporaryRedirect = 307, HTTPStatusCode400BadRequest = 400, HTTPStatusCode401Unauthorized = 401, HTTPStatusCode402PaymentRequired = 402, HTTPStatusCode403Forbidden = 403, HTTPStatusCode404NotFound = 404,
-			HTTPStatusCode405MethodNotAllowed = 405, HTTPStatusCode406NotAcceptable = 406, HTTPStatusCode407ProxyAuthRequired = 407, HTTPStatusCode408RequestTimeout = 408, HTTPStatusCode409Conflict = 409, HTTPStatusCode410Gone = 410, HTTPStatusCode411LengthRequired = 411,
-			HTTPStatusCode412PreconditionFailed = 412, HTTPStatusCode413RequestEntityTooLarge = 413, HTTPStatusCode414RequestURITooLong = 414, HTTPStatusCode415UnsupportedMediaType = 415, HTTPStatusCode416RequestedRangeNotSatisfiable = 416, HTTPStatusCode417ExpectationFailed = 417,
-			HTTPStatusCode4xxUnknown = 418, HTTPStatusCode429TooManyRequests = 429, HTTPStatusCode500InternalServerError = 500, HTTPStatusCode501NotImplemented = 501, HTTPStatusCode502BadGateway = 502, HTTPStatusCode503ServiceUnavailable = 503, HTTPStatusCode504GatewayTimeout = 504,
-			HTTPStatusCode505HTTPVersionNotSupported = 505, HTTPStatusCode5xxUnknown = 599
+			HTTP_STATUS_CODE_INVALID = 0, HTTP_STATUS_CODE_100_CONTINUE = 100, HTTP_STATUS_CODE_101_SWITCHING_PROTOCOLS = 101, HTTP_STATUS_CODE_200_OK = 200, HTTP_STATUS_CODE_201_CREATED = 201, HTTP_STATUS_CODE_202_ACCEPTED = 202, HTTP_STATUS_CODE_203_NON_AUTHORITATIVE = 203, HTTP_STATUS_CODE_204_NO_CONTENT = 204, HTTP_STATUS_CODE_205_RESET_CONTENT = 205,
+			HTTP_STATUS_CODE_206_PARTIAL_CONTENT = 206, HTTP_STATUS_CODE_300_MULTIPLE_CHOICES = 300, HTTP_STATUS_CODE_301_MOVED_PERMANENTLY = 301, HTTP_STATUS_CODE_302_FOUND = 302, HTTP_STATUS_CODE_303_SEE_OTHER = 303, HTTP_STATUS_CODE_304_NOT_MODIFIED = 304, HTTP_STATUS_CODE_305_USE_PROXY = 305, HTTP_STATUS_CODE_307_TEMPORARY_REDIRECT = 307,
+			HTTP_STATUS_CODE_400_BAD_REQUEST = 400, HTTP_STATUS_CODE_401_UNAUTHORIZED = 401, HTTP_STATUS_CODE_402_PAYMENT_REQUIRED = 402, HTTP_STATUS_CODE_403_FORBIDDEN = 403, HTTP_STATUS_CODE_404_NOT_FOUND = 404, HTTP_STATUS_CODE_405_METHOD_NOT_ALLOWED = 405, HTTP_STATUS_CODE_406_NOT_ACCEPTABLE = 406, HTTP_STATUS_CODE_407_PROXY_AUTH_REQUIRED = 407,
+			HTTP_STATUS_CODE_408_REQUEST_TIMEOUT = 408, HTTP_STATUS_CODE_409_CONFLICT = 409, HTTP_STATUS_CODE_410_GONE = 410, HTTP_STATUS_CODE_411_LENGTH_REQUIRED = 411, HTTP_STATUS_CODE_412_PRECONDITION_FAILED = 412, HTTP_STATUS_CODE_413_REQUEST_ENTITY_TOO_LARGE = 413, HTTP_STATUS_CODE_414_REQUEST_URI_TOO_LONG = 414, HTTP_STATUS_CODE_415_UNSUPPORTED_MEDIA_TYPE = 415,
+			HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE = 416, HTTP_STATUS_CODE_417_EXPECTATION_FAILED = 417, HTTP_STATUS_CODE_4XX_UNKNOWN = 418, HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS = 429, HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR = 500, HTTP_STATUS_CODE_501_NOT_IMPLEMENTED = 501, HTTP_STATUS_CODE_502_BAD_GATEWAY = 502,
+			HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE = 503, HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT = 504, HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED = 505, HTTP_STATUS_CODE_5XX_UNKNOWN = 599
 		};
 		// Input enums
 		enum InputActionOrigin {
-			InputActionOrigin_None = 0, InputActionOrigin_A = 1, InputActionOrigin_B = 2, InputActionOrigin_X = 3, InputActionOrigin_Y = 4, InputActionOrigin_LeftBumper = 5, InputActionOrigin_RightBumper = 6, InputActionOrigin_LeftGrip = 7, InputActionOrigin_RightGrip = 8,
-			InputActionOrigin_Start = 9, InputActionOrigin_Back = 10, InputActionOrigin_LeftPad_Touch = 11, InputActionOrigin_LeftPad_Swipe = 12, InputActionOrigin_LeftPad_Click = 13, InputActionOrigin_LeftPad_DPadNorth = 14, InputActionOrigin_LeftPad_DPadSouth = 15,
-			InputActionOrigin_LeftPad_DPadWest = 16, InputActionOrigin_LeftPad_DPadEast = 17, InputActionOrigin_RightPad_Touch = 18, InputActionOrigin_RightPad_Swipe = 19, InputActionOrigin_RightPad_Click = 20, InputActionOrigin_RightPad_DPadNorth = 21, InputActionOrigin_RightPad_DPadSouth = 22,
-			InputActionOrigin_RightPad_DPadWest = 23, InputActionOrigin_RightPad_DPadEast = 24, InputActionOrigin_LeftTrigger_Pull = 25, InputActionOrigin_LeftTrigger_Click = 26, InputActionOrigin_RightTrigger_Pull = 27, InputActionOrigin_RightTrigger_Click = 28,
-			InputActionOrigin_LeftStick_Move = 29, InputActionOrigin_LeftStick_Click = 30, InputActionOrigin_LeftStick_DPadNorth = 31, InputActionOrigin_LeftStick_DPadSouth = 32, InputActionOrigin_LeftStick_DPadWest = 33, InputActionOrigin_LeftStick_DPadEast = 34, InputActionOrigin_Gyro_Move = 35,
-			InputActionOrigin_Gyro_Pitch = 36, InputActionOrigin_Gyro_Yaw = 37, InputActionOrigin_Gyro_Roll = 38, InputActionOrigin_SteamController_Reserved0 = 39, InputActionOrigin_SteamController_Reserved1 = 40, InputActionOrigin_SteamController_Reserved2 = 41,InputActionOrigin_SteamController_Reserved3 = 42,
-			InputActionOrigin_SteamController_Reserved4 = 43, InputActionOrigin_SteamController_Reserved5 = 44, InputActionOrigin_SteamController_Reserved6 = 45, InputActionOrigin_SteamController_Reserved7 = 46, InputActionOrigin_SteamController_Reserved8 = 47, InputActionOrigin_SteamController_Reserved9 = 48,
-			InputActionOrigin_SteamController_Reserved10 = 49, InputActionOrigin_PS4_X = 50, InputActionOrigin_PS4_Circle = 51, InputActionOrigin_PS4_Triangle = 52, InputActionOrigin_PS4_Square = 53, InputActionOrigin_PS4_LeftBumper = 54, InputActionOrigin_PS4_RightBumper = 55,
-			InputActionOrigin_PS4_Options = 56, InputActionOrigin_PS4_Share = 57, InputActionOrigin_PS4_LeftPad_Touch = 58, InputActionOrigin_PS4_LeftPad_Swipe = 59, InputActionOrigin_PS4_LeftPad_Click = 60, InputActionOrigin_PS4_LeftPad_DPadNorth = 61, InputActionOrigin_PS4_LeftPad_DPadSouth = 62,
-			InputActionOrigin_PS4_LeftPad_DPadWest = 63, InputActionOrigin_PS4_LeftPad_DPadEast = 64, InputActionOrigin_PS4_RightPad_Touch = 65, InputActionOrigin_PS4_RightPad_Swipe = 66, InputActionOrigin_PS4_RightPad_Click = 67, InputActionOrigin_PS4_RightPad_DPadNorth = 68,
-			InputActionOrigin_PS4_RightPad_DPadSouth = 69, InputActionOrigin_PS4_RightPad_DPadWest = 70, InputActionOrigin_PS4_RightPad_DPadEast = 71, InputActionOrigin_PS4_CenterPad_Touch = 72, InputActionOrigin_PS4_CenterPad_Swipe = 73, InputActionOrigin_PS4_CenterPad_Click = 74,
-			InputActionOrigin_PS4_CenterPad_DPadNorth = 75, InputActionOrigin_PS4_CenterPad_DPadSouth = 76, InputActionOrigin_PS4_CenterPad_DPadWest = 77, InputActionOrigin_PS4_CenterPad_DPadEast = 78, InputActionOrigin_PS4_LeftTrigger_Pull = 79, InputActionOrigin_PS4_LeftTrigger_Click = 80,
-			InputActionOrigin_PS4_RightTrigger_Pull = 81, InputActionOrigin_PS4_RightTrigger_Click = 82, InputActionOrigin_PS4_LeftStick_Move = 83, InputActionOrigin_PS4_LeftStick_Click = 84, InputActionOrigin_PS4_LeftStick_DPadNorth = 85, InputActionOrigin_PS4_LeftStick_DPadSouth = 86,
-			InputActionOrigin_PS4_LeftStick_DPadWest = 87, InputActionOrigin_PS4_LeftStick_DPadEast = 88, InputActionOrigin_PS4_RightStick_Move = 89, InputActionOrigin_PS4_RightStick_Click = 90, InputActionOrigin_PS4_RightStick_DPadNorth = 91, InputActionOrigin_PS4_RightStick_DPadSouth = 92,
-			InputActionOrigin_PS4_RightStick_DPadWest = 93, InputActionOrigin_PS4_RightStick_DPadEast = 94, InputActionOrigin_PS4_DPad_North = 95, InputActionOrigin_PS4_DPad_South = 96, InputActionOrigin_PS4_DPad_West = 97, InputActionOrigin_PS4_DPad_East = 98, InputActionOrigin_PS4_Gyro_Move = 99,
-			InputActionOrigin_PS4_Gyro_Pitch = 100, InputActionOrigin_PS4_Gyro_Yaw = 101, InputActionOrigin_PS4_Gyro_Roll = 102, InputActionOrigin_PS4_Reserved0 = 103, InputActionOrigin_PS4_Reserved1 = 104, InputActionOrigin_PS4_Reserved2 = 105, InputActionOrigin_PS4_Reserved3 = 106,
-			InputActionOrigin_PS4_Reserved4 = 107, InputActionOrigin_PS4_Reserved5 = 108, InputActionOrigin_PS4_Reserved6 = 109, InputActionOrigin_PS4_Reserved7 = 110, InputActionOrigin_PS4_Reserved8 = 111, InputActionOrigin_PS4_Reserved9 = 112, InputActionOrigin_PS4_Reserved10 = 113,
-			InputActionOrigin_XBoxOne_A = 114, InputActionOrigin_XBoxOne_B = 115, InputActionOrigin_XBoxOne_X = 116, InputActionOrigin_XBoxOne_Y = 117, InputActionOrigin_XBoxOne_LeftBumper = 118, InputActionOrigin_XBoxOne_RightBumper = 119, InputActionOrigin_XBoxOne_Menu = 120,
-			InputActionOrigin_XBoxOne_View = 121, InputActionOrigin_XBoxOne_LeftTrigger_Pull = 122, InputActionOrigin_XBoxOne_LeftTrigger_Click = 123, InputActionOrigin_XBoxOne_RightTrigger_Pull = 124, InputActionOrigin_XBoxOne_RightTrigger_Click = 125, InputActionOrigin_XBoxOne_LeftStick_Move = 126, 
-			InputActionOrigin_XBoxOne_LeftStick_Click = 127, InputActionOrigin_XBoxOne_LeftStick_DPadNorth = 128, InputActionOrigin_XBoxOne_LeftStick_DPadSouth = 129, InputActionOrigin_XBoxOne_LeftStick_DPadWest = 130, InputActionOrigin_XBoxOne_LeftStick_DPadEast = 131, InputActionOrigin_XBoxOne_RightStick_Move = 132,
-			InputActionOrigin_XBoxOne_RightStick_Click = 133, InputActionOrigin_XBoxOne_RightStick_DPadNorth = 134, InputActionOrigin_XBoxOne_RightStick_DPadSouth = 135, InputActionOrigin_XBoxOne_RightStick_DPadWest = 136, InputActionOrigin_XBoxOne_RightStick_DPadEast = 137, InputActionOrigin_XBoxOne_DPad_North = 138,
-			InputActionOrigin_XBoxOne_DPad_South = 139, InputActionOrigin_XBoxOne_DPad_West = 140, InputActionOrigin_XBoxOne_DPad_East = 141, InputActionOrigin_XBoxOne_Reserved0 = 142, InputActionOrigin_XBoxOne_Reserved1 = 143, InputActionOrigin_XBoxOne_Reserved2 = 144, InputActionOrigin_XBoxOne_Reserved3 = 145,
-			InputActionOrigin_XBoxOne_Reserved4 = 146, InputActionOrigin_XBoxOne_Reserved5 = 147, InputActionOrigin_XBoxOne_Reserved6 = 148, InputActionOrigin_XBoxOne_Reserved7 = 149, InputActionOrigin_XBoxOne_Reserved8 = 150, InputActionOrigin_XBoxOne_Reserved9 = 151, InputActionOrigin_XBoxOne_Reserved10 = 152,
-			InputActionOrigin_XBox360_A = 153, InputActionOrigin_XBox360_B = 154, InputActionOrigin_XBox360_X = 155, InputActionOrigin_XBox360_Y = 156, InputActionOrigin_XBox360_LeftBumper = 157, InputActionOrigin_XBox360_RightBumper = 158, InputActionOrigin_XBox360_Start = 159, InputActionOrigin_XBox360_Back = 160,
-			InputActionOrigin_XBox360_LeftTrigger_Pull = 161, InputActionOrigin_XBox360_LeftTrigger_Click = 162, InputActionOrigin_XBox360_RightTrigger_Pull = 163, InputActionOrigin_XBox360_RightTrigger_Click = 164, InputActionOrigin_XBox360_LeftStick_Move = 165, InputActionOrigin_XBox360_LeftStick_Click = 166,
-			InputActionOrigin_XBox360_LeftStick_DPadNorth = 167, InputActionOrigin_XBox360_LeftStick_DPadSouth = 168, InputActionOrigin_XBox360_LeftStick_DPadWest = 169, InputActionOrigin_XBox360_LeftStick_DPadEast = 170, InputActionOrigin_XBox360_RightStick_Move = 171, InputActionOrigin_XBox360_RightStick_Click = 172,
-			InputActionOrigin_XBox360_RightStick_DPadNorth = 173, InputActionOrigin_XBox360_RightStick_DPadSouth = 174, InputActionOrigin_XBox360_RightStick_DPadWest = 175, InputActionOrigin_XBox360_RightStick_DPadEast = 176, InputActionOrigin_XBox360_DPad_North = 177, InputActionOrigin_XBox360_DPad_South = 178,
-			InputActionOrigin_XBox360_DPad_West = 179, InputActionOrigin_XBox360_DPad_East = 180, InputActionOrigin_XBox360_Reserved0 = 181, InputActionOrigin_XBox360_Reserved1 = 182, InputActionOrigin_XBox360_Reserved2 = 183, InputActionOrigin_XBox360_Reserved3 = 184, InputActionOrigin_XBox360_Reserved4 = 185,
-			InputActionOrigin_XBox360_Reserved5 = 186, InputActionOrigin_XBox360_Reserved6 = 187, InputActionOrigin_XBox360_Reserved7 = 188, InputActionOrigin_XBox360_Reserved8 = 189, InputActionOrigin_XBox360_Reserved9 = 190, InputActionOrigin_XBox360_Reserved10 = 191, InputActionOrigin_Switch_A = 192,
-			InputActionOrigin_Switch_B = 193, InputActionOrigin_Switch_X = 194, InputActionOrigin_Switch_Y = 195, InputActionOrigin_Switch_LeftBumper = 196, InputActionOrigin_Switch_RightBumper = 197, InputActionOrigin_Switch_Plus = 198, InputActionOrigin_Switch_Minus = 199, InputActionOrigin_Switch_Capture = 200,
-			InputActionOrigin_Switch_LeftTrigger_Pull = 201, InputActionOrigin_Switch_LeftTrigger_Click = 202, InputActionOrigin_Switch_RightTrigger_Pull = 203, InputActionOrigin_Switch_RightTrigger_Click = 204, InputActionOrigin_Switch_LeftStick_Move = 205, InputActionOrigin_Switch_LeftStick_Click = 206,
-			InputActionOrigin_Switch_LeftStick_DPadNorth = 207, InputActionOrigin_Switch_LeftStick_DPadSouth = 208, InputActionOrigin_Switch_LeftStick_DPadWest = 209, InputActionOrigin_Switch_LeftStick_DPadEast = 210, InputActionOrigin_Switch_RightStick_Move = 211, InputActionOrigin_Switch_RightStick_Click = 212,
-			InputActionOrigin_Switch_RightStick_DPadNorth = 213, InputActionOrigin_Switch_RightStick_DPadSouth = 214, InputActionOrigin_Switch_RightStick_DPadWest = 215, InputActionOrigin_Switch_RightStick_DPadEast = 216, InputActionOrigin_Switch_DPad_North = 217, InputActionOrigin_Switch_DPad_South = 218,
-			InputActionOrigin_Switch_DPad_West = 219, InputActionOrigin_Switch_DPad_East = 220, InputActionOrigin_SwitchProGyro_Move = 221, InputActionOrigin_SwitchProGyro_Pitch = 222, InputActionOrigin_SwitchProGyro_Yaw = 223, InputActionOrigin_SwitchProGyro_Roll = 224, InputActionOrigin_Switch_Reserved0 = 225,
-			InputActionOrigin_Switch_Reserved1 = 226, InputActionOrigin_Switch_Reserved2 = 227, InputActionOrigin_Switch_Reserved3 = 228, InputActionOrigin_Switch_Reserved4 = 229, InputActionOrigin_Switch_Reserved5 = 230, InputActionOrigin_Switch_Reserved6 = 231, InputActionOrigin_Switch_Reserved7 = 232,
-			InputActionOrigin_Switch_Reserved8 = 233, InputActionOrigin_Switch_Reserved9 = 234, InputActionOrigin_Switch_Reserved10 = 235, InputActionOrigin_Count = 258, InputActionOrigin_MaximumPossibleValue = 32767
+			INPUT_ACTION_ORIGIN_NONE = 0, INPUT_ACTION_ORIGIN_A = 1, INPUT_ACTION_ORIGIN_B = 2, INPUT_ACTION_ORIGIN_X = 3, INPUT_ACTION_ORIGIN_Y = 4, INPUT_ACTION_ORIGIN_LEFT_BUMPER = 5, INPUT_ACTION_ORIGIN_RIGHT_BUMPER = 6, INPUT_ACTION_ORIGIN_LEFTGRIP = 7, INPUT_ACTION_ORIGIN_RIGHTGRIP = 8, INPUT_ACTION_ORIGIN_START = 9, INPUT_ACTION_ORIGIN_BACK = 10,
+			INPUT_ACTION_ORIGIN_LEFT_PAD_TOUCH = 11, INPUT_ACTION_ORIGIN_LEFT_PAD_SWIPE = 12, INPUT_ACTION_ORIGIN_LEFT_PAD_CLICK = 13, INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_NORTH = 14, INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_SOUTH = 15, INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_WEST = 16, INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_EAST = 17, INPUT_ACTION_ORIGIN_RIGHT_PAD_TOUCH = 18,
+			INPUT_ACTION_ORIGIN_RIGHT_PAD_SWIPE = 19, INPUT_ACTION_ORIGIN_RIGHT_PAD_CLICK = 20, INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_NORTH = 21, INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_SOUTH = 22, INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_WEST = 23, INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_EAST = 24, INPUT_ACTION_ORIGIN_LEFT_TRIGGER_PULL = 25, INPUT_ACTION_ORIGIN_LEFT_TRIGGER_CLICK = 26,
+			INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_PULL = 27, INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_CLICK = 28, INPUT_ACTION_ORIGIN_LEFT_STICK_MOVE = 29, INPUT_ACTION_ORIGIN_LEFT_STICK_CLICK = 30, INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_NORTH = 31, INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_SOUTH = 32, INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_WEST = 33,
+			INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_EAST = 34, INPUT_ACTION_ORIGIN_GYRO_MOVE = 35, INPUT_ACTION_ORIGIN_GYRO_PITCH = 36, INPUT_ACTION_ORIGIN_GYRO_YAW = 37, INPUT_ACTION_ORIGIN_GYRO_ROLL = 38, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED0 = 39, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED1 = 40, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED2 = 41,
+			INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED3 = 42, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED4 = 43, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED5 = 44, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED6 = 45, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED7 = 46, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED8 = 47,
+			INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED9 = 48, INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED10 = 49, INPUT_ACTION_ORIGIN_PS4_X = 50, INPUT_ACTION_ORIGIN_PS4_CIRCLE = 51, INPUT_ACTION_ORIGIN_PS4_TRIANGLE = 52, INPUT_ACTION_ORIGIN_PS4_SQUARE = 53, INPUT_ACTION_ORIGIN_PS4_LEFT_BUMPER = 54, INPUT_ACTION_ORIGIN_PS4_RIGHT_BUMPER = 55,
+			INPUT_ACTION_ORIGIN_PS4_OPTIONS = 56, INPUT_ACTION_ORIGIN_PS4_SHARE = 57, INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_TOUCH = 58, INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_SWIPE = 59, INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_CLICK = 60, INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_NORTH = 61, INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_SOUTH = 62, INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_WEST = 63,
+			INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_EAST = 64, INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_TOUCH = 65, INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_SWIPE = 66, INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_CLICK = 67, INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_NORTH = 68, INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_SOUTH = 69, INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_WEST = 70,
+			INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_EAST = 71, INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_TOUCH = 72, INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_SWIPE = 73, INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_CLICK = 74, INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_NORTH = 75, INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_SOUTH = 76, INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_WEST = 77,
+			INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_EAST = 78, INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_PULL = 79, INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_CLICK = 80, INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_PULL = 81, INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_CLICK = 82, INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_MOVE = 83, INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_CLICK = 84,
+			INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_NORTH = 85, INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_SOUTH = 86, INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_WEST = 87, INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_EAST = 88, INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_MOVE = 89, INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_CLICK = 90, INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_NORTH = 91,
+			INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_SOUTH = 92, INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_WEST = 93, INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_EAST = 94, INPUT_ACTION_ORIGIN_PS4_DPAD_NORTH = 95, INPUT_ACTION_ORIGIN_PS4_DPAD_SOUTH = 96, INPUT_ACTION_ORIGIN_PS4_DPAD_WEST = 97, INPUT_ACTION_ORIGIN_PS4_DPAD_EAST = 98, INPUT_ACTION_ORIGIN_PS4_GYRO_MOVE = 99,
+			INPUT_ACTION_ORIGIN_PS4_GYRO_PITCH = 100, INPUT_ACTION_ORIGIN_PS4_GYRO_YAW = 101, INPUT_ACTION_ORIGIN_PS4_GYRO_ROLL = 102, INPUT_ACTION_ORIGIN_PS4_RESERVED0 = 103, INPUT_ACTION_ORIGIN_PS4_RESERVED1 = 104, INPUT_ACTION_ORIGIN_PS4_RESERVED2 = 105, INPUT_ACTION_ORIGIN_PS4_RESERVED3 = 106, INPUT_ACTION_ORIGIN_PS4_RESERVED4 = 107,
+			INPUT_ACTION_ORIGIN_PS4_RESERVED5 = 108, INPUT_ACTION_ORIGIN_PS4_RESERVED6 = 109, INPUT_ACTION_ORIGIN_PS4_RESERVED7 = 110, INPUT_ACTION_ORIGIN_PS4_RESERVED8 = 111, INPUT_ACTION_ORIGIN_PS4_RESERVED9 = 112, INPUT_ACTION_ORIGIN_PS4_RESERVED10 = 113, INPUT_ACTION_ORIGIN_XBOX_ONE_A = 114, INPUT_ACTION_ORIGIN_XBOX_ONE_B = 115, INPUT_ACTION_ORIGIN_XBOX_ONE_X = 116,
+			INPUT_ACTION_ORIGIN_XBOX_ONE_Y = 117, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_BUMPER = 118, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_BUMPER = 119, INPUT_ACTION_ORIGIN_XBOX_ONE_MENU = 120, INPUT_ACTION_ORIGIN_XBOX_ONE_VIEW = 121, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_PULL = 122, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_CLICK = 123,
+			INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_PULL = 124, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_CLICK = 125, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_MOVE = 126, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_CLICK = 127, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_NORTH = 128, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_SOUTH = 129,
+			INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_WEST = 130, INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_EAST = 131, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_MOVE = 132, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_CLICK = 133, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_NORTH = 134, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_SOUTH = 135,
+			INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_WEST = 136, INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_EAST = 137, INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_NORTH = 138, INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_SOUTH = 139, INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_WEST = 140, INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_EAST = 141, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED0 = 142,
+			INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED1 = 143, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED2 = 144, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED3 = 145, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED4 = 146, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED5 = 147, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED6 = 148, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED7 = 149,
+			INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED8 = 150, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED9 = 151, INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED10 = 152, INPUT_ACTION_ORIGIN_XBOX_360_A = 153, INPUT_ACTION_ORIGIN_XBOX_360_B = 154, INPUT_ACTION_ORIGIN_XBOX_360_X = 155, INPUT_ACTION_ORIGIN_XBOX_360_Y = 156, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_BUMPER = 157,
+			INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_BUMPER = 158, INPUT_ACTION_ORIGIN_XBOX_360_START = 159, INPUT_ACTION_ORIGIN_XBOX_360_BACK = 160, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_PULL = 161, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_CLICK = 162, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_PULL = 163, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_CLICK = 164,
+			INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_MOVE = 165, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_CLICK = 166, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_NORTH = 167, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_SOUTH = 168, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_WEST = 169, INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_EAST = 170,
+			INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_MOVE = 171, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_CLICK = 172, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_NORTH = 173, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_SOUTH = 174, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_WEST = 175, INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_EAST = 176,
+			INPUT_ACTION_ORIGIN_XBOX_360_DPAD_NORTH = 177, INPUT_ACTION_ORIGIN_XBOX_360_DPAD_SOUTH = 178, INPUT_ACTION_ORIGIN_XBOX_360_DPAD_WEST = 179, INPUT_ACTION_ORIGIN_XBOX_360_DPAD_EAST = 180, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED0 = 181, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED1 = 182, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED2 = 183,
+			INPUT_ACTION_ORIGIN_XBOX_360_RESERVED3 = 184, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED4 = 185, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED5 = 186, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED6 = 187, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED7 = 188, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED8 = 189, INPUT_ACTION_ORIGIN_XBOX_360_RESERVED9 = 190,
+			INPUT_ACTION_ORIGIN_XBOX_360_RESERVED10 = 191, INPUT_ACTION_ORIGIN_SWITCH_A = 192, INPUT_ACTION_ORIGIN_SWITCH_B = 193, INPUT_ACTION_ORIGIN_SWITCH_X = 194, INPUT_ACTION_ORIGIN_SWITCH_Y = 195, INPUT_ACTION_ORIGIN_SWITCH_LEFT_BUMPER = 196, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_BUMPER = 197, INPUT_ACTION_ORIGIN_SWITCH_PLUS = 198,
+			INPUT_ACTION_ORIGIN_SWITCH_MINUS = 199, INPUT_ACTION_ORIGIN_SWITCH_CAPTURE = 200, INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_PULL = 201, INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_CLICK = 202, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_PULL = 203, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_CLICK = 204, INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_MOVE = 205,
+			INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_CLICK = 206, INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_NORTH = 207, INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_SOUTH = 208, INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_WEST = 209, INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_EAST = 210, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_MOVE = 211,
+			INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_CLICK = 212, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_NORTH = 213, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_SOUTH = 214, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_WEST = 215, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_EAST = 216, INPUT_ACTION_ORIGIN_SWITCH_DPAD_NORTH = 217,
+			INPUT_ACTION_ORIGIN_SWITCH_DPAD_SOUTH = 218, INPUT_ACTION_ORIGIN_SWITCH_DPAD_WEST = 219, INPUT_ACTION_ORIGIN_SWITCH_DPAD_EAST = 220, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_MOVE = 221, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_PITCH = 222, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_YAW = 223, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_ROLL = 224,
+			INPUT_ACTION_ORIGIN_SWITCH_RESERVED0 = 225, INPUT_ACTION_ORIGIN_SWITCH_RESERVED1 = 226, INPUT_ACTION_ORIGIN_SWITCH_RESERVED2 = 227, INPUT_ACTION_ORIGIN_SWITCH_RESERVED3 = 228, INPUT_ACTION_ORIGIN_SWITCH_RESERVED4 = 229, INPUT_ACTION_ORIGIN_SWITCH_RESERVED5 = 230, INPUT_ACTION_ORIGIN_SWITCH_RESERVED6 = 231, INPUT_ACTION_ORIGIN_SWITCH_RESERVED7 = 232,
+			INPUT_ACTION_ORIGIN_SWITCH_RESERVED8 = 233, INPUT_ACTION_ORIGIN_SWITCH_RESERVED9 = 234, INPUT_ACTION_ORIGIN_SWITCH_RESERVED10 = 235, INPUT_ACTION_ORIGIN_COUNT = 258, INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE = 32767
 		};
 		// Inventory enums
 		enum SteamItemFlags {
-			SteamItemNoTrade = (1<<0), SteamItemRemoved = (1<<8), SteamItemConsumed = (1<<9)
+			STEAM_ITEM_NO_TRADE = (1<<0), STEAM_ITEM_REMOVED = (1<<8), STEAM_ITEM_CONSUMED = (1<<9)
 		};
 		// Matchmaking enums
 		enum ChatMemberStateChange {
-			ChatMemberStateChangeEntered = 0x0001, ChatMemberStateChangeLeft = 0x0002, ChatMemberStateChangeDisconnected = 0x0004, ChatMemberStateChangeKicked = 0x0008, ChatMemberStateChangeBanned = 0x0010
+			CHAT_MEMBER_STATE_CHANGE_ENTERED = 0X0001, CHAT_MEMBER_STATE_CHANGE_LEFT = 0X0002, CHAT_MEMBER_STATE_CHANGE_DISCONNECTED = 0X0004, CHAT_MEMBER_STATE_CHANGE_KICKED = 0X0008, CHAT_MEMBER_STATE_CHANGE_BANNED = 0X0010
 		};
 		enum LobbyComparison {
-			LobbyComparisonEqualToOrLessThan = -2, LobbyComparisonLessThan = -1, LobbyComparisonEqual = 0, LobbyComparisonGreaterThan = 1, LobbyComparisonEqualToGreaterThan = 2, LobbyComparisonNotEqual = 3
+			LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN = -2, LOBBY_COMPARISON_LESS_THAN = -1, LOBBY_COMPARISON_EQUAL = 0, LOBBY_COMPARISON_GREATER_THAN = 1, LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN = 2, LOBBY_COMPARISON_NOT_EQUAL = 3
 		};
 		enum LobbyDistanceFilter {
-			LobbyDistanceFilterClose = 0, LobbyDistanceFilterDefault = 1, LobbyDistanceFilterFar = 2, LobbyDistanceFilterWorldwide = 3
+			LOBBY_DISTANCE_FILTER_CLOSE = 0, LOBBY_DISTANCE_FILTER_DEFAULT = 1, LOBBY_DISTANCE_FILTER_FAR = 2, LOBBY_DISTANCE_FILTER_WORLDWIDE = 3
 		};
 		enum LobbyType {
-			LobbyTypePrivate = 0, LobbyTypeFriendsOnly = 1, LobbyTypePublic = 2, LobbyTypeInvisible = 3
+			LOBBY_TYPE_PRIVATE = 0, LOBBY_TYPE_FRIENDS_ONLY = 1, LOBBY_TYPE_PUBLIC = 2, LOBBY_TYPE_INVISIBLE = 3
 		};
 		// Matchmaking Servers enums
 		enum MatchMakingServerResponse {
-			ServerResponded = 0, ServerFaileToRespond = 1, NoServersListedOnMasterServer = 2
+			SERVER_RESPONDED = 0, SERVER_FAILED_TO_RESPOND = 1, NO_SERVERS_LISTED_ON_MASTER_SERVER = 2
 		};
 		// Music enums
 		enum AudioPlayback_Status {
-			AudioPlayback_Undefined = 0, AudioPlayback_Playing = 1, AudioPlayback_Paused = 2, AudioPlayback_Idle = 3
+			AUDIO_PLAYBACK_UNDEFINED = 0, AUDIO_PLAYBACK_PLAYING = 1, AUDIO_PLAYBACK_PAUSED = 2, AUDIO_PLAYBACK_IDLE = 3
 		};
 		// Networking enums
 		enum P2PSend {
-			P2PSendUnreliable = 0, P2PSendUnreliableNoDelay = 1, P2PSendReliable = 2, P2PSendReliableWithBuffering = 3
+			P2P_SEND_UNRELIABLE = 0, P2P_SEND_UNRELIABLE_NO_DELAY = 1, P2P_SEND_RELIABLE = 2, P2P_SEND_RELIABLE_WITH_BUFFERING = 3
 		};
 		enum P2PSessionError {
-			P2PSessionErrorNone = 0, P2PSessionErrorNotRunningApp = 1, P2PSessionErrorNoRightsToApp = 2, P2PSessionErrorDestinationNotLoggedOn = 3, P2PSessionErrorTimeout = 4, P2PSessionErrorMax = 5
+			P2P_SESSION_ERROR_NONE = 0, P2P_SESSION_ERROR_NOT_RUNNING_APP = 1, P2P_SESSION_ERROR_NO_RIGHTS_TO_APP = 2, P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON = 3, P2P_SESSION_ERROR_TIMEOUT = 4, P2P_SESSION_ERROR_MAX = 5
 		};
 		enum SNetSocketConnectionType {
-			NetSocketConnectionTypeNotConnected = 0, NetSocketConnectionTypeUDP = 1, NetSocketConnectionTypeUDPRelay = 2
+			NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED = 0, NET_SOCKET_CONNECTION_TYPE_UDP = 1, NET_SOCKET_CONNECTION_TYPE_UDP_RELAY = 2
 		};
 		enum SNetSocketState {
-			NetSocketStateInvalid = 0, NetSocketStateConnected = 1, NetSocketStateInitiated = 10, NetSocketStateLocalCandidateFound = 11, NetSocketStateReceivedRemoteCandidates = 12, NetSocketStateChallengeHandshake = 15, NetSocketStateDisconnecting = 21, NetSocketStateLocalDisconnect = 22,
-			NetSocketStateTimeoutDuringConnect = 23, NetSocketStateRemoteEndDisconnected = 24, NetSocketStateBroken = 25
+			NET_SOCKET_STATE_INVALID = 0, NET_SOCKET_STATE_CONNECTED = 1, NET_SOCKET_STATE_INITIATED = 10, NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND = 11, NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES = 12, NET_SOCKET_STATE_CHALLENGE_HANDSHAKE = 15, NET_SOCKET_STATE_DISCONNECTING = 21, NET_SOCKET_STATE_LOCAL_DISCONNECT = 22, NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT = 23,
+			NET_SOCKET_STATE_REMOTE_END_DISCONNECTED = 24, NET_SOCKET_STATE_BROKEN = 25
 		};
 		// Steam Parties enums
 		enum SteamPartyBeaconLocationType {
-			SteamPartyBeaconLocationType_Invalid = 0, SteamPartyBeaconLocationType_ChatGroup = 1, SteamPartyBeaconLocationType_Max
+			STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID = 0, STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP = 1, STEAM_PARTY_BEACON_LOCATION_TYPE_MAX
 		};
 		enum SteamPartyBeaconLocationData {
-			SteamPartyBeaconLocationData = 0, SteamPartyBeaconLocationDataName = 1, SteamPartyBeaconLocationDataURLSmall, SteamPartyBeaconLocationDataURLMedium, SteamPartyBeaconLocationDataURLLarge
+			STEAM_PARTY_BEACON_LOCATION_DATA = 0, STEAM_PARTY_BEACON_LOCATION_DATA_NAME = 1, STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL, STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM, STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE
 		};
 		// Remote Storage enums
 		enum RemoteStoragePlatform {
-			RemoteStoragePlatformNone = 0, RemoteStoragePlatformWindows = (1<<0), RemoteStoragePlatformOSX = (1<<1), RemoteStoragePlatformPS3 = (1<<2), RemoteStoragePlatformLinux = (1<<3), RemoteStoragePlatformReserved2 = (1<<4), RemoteStoragePlatformAll = 0xffffffff
+			REMOTE_STORAGE_PLATFORM_NONE = 0, REMOTE_STORAGE_PLATFORM_WINDOWS = (1<<0), REMOTE_STORAGE_PLATFORM_OSX = (1<<1), REMOTE_STORAGE_PLATFORM_PS3 = (1<<2), REMOTE_STORAGE_PLATFORM_LINUX = (1<<3), REMOTE_STORAGE_PLATFORM_RESERVED2 = (1<<4), REMOTE_STORAGE_PLATFORM_ALL = 0XFFFFFFFF
 		};
 		enum RemoteStoragePublishedFileVisibility {
-			RemoteStoragePublishedVisiblityPublic = 0, RemoteStoragePublishedVisiblityFriendsOnly = 1, RemoteStoragePublishedVisiblityPrivate = 2
+			REMOTE_STORAGE_PUBLISHED_VISIBLITY_PUBLIC = 0, REMOTE_STORAGE_PUBLISHED_VISIBLITY_FRIENDS_ONLY = 1, REMOTE_STORAGE_PUBLISHED_VISIBLITY_PRIVATE = 2
 		};
 		enum UGCReadAction {
-			UGCRead_ContinueReadingUntilFinished = 0, UGCRead_ContinueReading = 1, UGCRead_Close = 2
+			UGC_READ_CONTINUE_READING_UNTIL_FINISHED = 0, UGC_READ_CONTINUE_READING = 1, UGC_READ_CLOSE = 2
 		};
 		enum WorkshopEnumerationType {
-			WorkshopEnumerationTypeRankedByVote = 0, WorkshopEnumerationTypeRecent = 1, WorkshopEnumerationTypeTrending = 2, WorkshopEnumerationTypeFavoritesOfFriends = 3, WorkshopEnumerationTypeVotedByFriends = 4, WorkshopEnumerationTypeContentByFriends = 5, WorkshopEnumerationTypeRecentFromFollowedUsers = 6
+			WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE = 0, WORKSHOP_ENUMERATION_TYPE_RECENT = 1, WORKSHOP_ENUMERATION_TYPE_TRENDING = 2, WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS = 3, WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS = 4, WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS = 5, WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS = 6
 		};
 		enum WorkshopFileAction {
-			WorkshopFileActionPlayed = 0, WorkshopFileActionCompleted = 1
+			WORKSHOP_FILE_ACTION_PLAYED = 0, WORKSHOP_FILE_ACTION_COMPLETED = 1
 		};
 		enum WorkshopFileType {
-			WorkshopFileTypeFirst = 0, WorkshopFileTypeCommunity = 0, WorkshopFileTypeMicrotransaction = 1, WorkshopFileTypeCollection = 2, WorkshopFileTypeArt = 3, WorkshopFileTypeVideo = 4, WorkshopFileTypeScreenshot = 5, WorkshopFileTypeGame = 6, WorkshopFileTypeSoftware = 7, WorkshopFileTypeConcept = 8,
-			WorkshopFileTypeWebGuide = 9, WorkshopFileTypeIntegratedGuide = 10, WorkshopFileTypeMerch = 11, WorkshopFileTypeControllerBinding = 12, WorkshopFileTypeSteamworksAccessInvite = 13, WorkshopFileTypeSteamVideo = 14, WorkshopFileTypeGameManagedItem = 15, WorkshopFileTypeMax = 16
+			WORKSHOP_FILE_TYPE_FIRST = 0, WORKSHOP_FILE_TYPE_COMMUNITY = 0, WORKSHOP_FILE_TYPE_MICROTRANSACTION = 1, WORKSHOP_FILE_TYPE_COLLECTION = 2, WORKSHOP_FILE_TYPE_ART = 3, WORKSHOP_FILE_TYPE_VIDEO = 4, WORKSHOP_FILE_TYPE_SCREENSHOT = 5, WORKSHOP_FILE_TYPE_GAME = 6, WORKSHOP_FILE_TYPE_SOFTWARE = 7, WORKSHOP_FILE_TYPE_CONCEPT = 8, WORKSHOP_FILE_TYPE_WEB_GUIDE = 9,
+			WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE = 10, WORKSHOP_FILE_TYPE_MERCH = 11, WORKSHOP_FILE_TYPE_CONTROLLER_BINDING = 12, WORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE = 13, WORKSHOP_FILE_TYPE_STEAM_VIDEO = 14, WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM = 15, WORKSHOP_FILE_TYPE_MAX = 16
 		};
 		enum WorkshopVideoProvider {
-			WorkshopVideoProviderNone = 0, WorkshopVideoProviderYoutube = 1
+			WORKSHOP_VIDEO_PROVIDER_NONE = 0, WORKSHOP_VIDEO_PROVIDER_YOUTUBE = 1
 		};
 		enum WorkshopVote {
-			WorkshopVoteUnvoted = 0, WorkshopVoteFor = 1, WorkshopVoteAgainst = 2, WorkshopVoteLater = 3
+			WORKSHOP_VOTE_UNVOTED = 0, WORKSHOP_VOTE_FOR = 1, WORKSHOP_VOTE_AGAINST = 2, WORKSHOP_VOTE_LATER = 3
 		};
 		// Screenshot enums
 		enum VRScreenshotType {
-			VRScreenshotType_None = 0, VRScreenshotType_Mono = 1, VRScreenshotType_Stereo = 2, VRScreenshotType_MonoCubemap = 3, VRScreenshotType_MonoPanorama = 4, VRScreenshotType_StereoPanorama = 5
+			VR_SCREENSHOT_TYPE_NONE = 0, VR_SCREENSHOT_TYPE_MONO = 1, VR_SCREENSHOT_TYPE_STEREO = 2, VR_SCREENSHOT_TYPE_MONO_CUBE_MAP = 3, VR_SCREENSHOT_TYPE_MONO_PANORAMA = 4, VR_SCREENSHOT_TYPE_STEREO_PANORAMA = 5
 		};
 		// UGC enums
 		enum ItemPreviewType {
-			ItemPreviewType_Image = 0, ItemPreviewType_YouTubeVideo = 1, ItemPreviewType_Sketchfab = 2, ItemPreviewType_EnvironmentMap_HorizontalCross = 3, ItemPreviewType_EnvironmentMap_LatLong = 4, ItemPreviewType_ReservedMax = 255
+			ITEM_PREVIEW_TYPE_IMAGE = 0, ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO = 1, ITEM_PREVIEW_TYPE_SKETCHFAB = 2, ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS = 3, ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG = 4, ITEM_PREVIEW_TYPE_RESERVED_MAX = 255
 		};
 		enum ItemState {
-			ItemStateNone = 0, ItemStateSubscribed = 1, ItemStateLegacyItem = 2, ItemStateInstalled = 4, ItemStateNeedsUpdate = 8, ItemStateDownloading = 16, ItemStateDownloadPending = 32
+			ITEM_STATE_NONE = 0, ITEM_STATE_SUBSCRIBED = 1, ITEM_STATE_LEGACY_ITEM = 2, ITEM_STATE_INSTALLED = 4, ITEM_STATE_NEEDS_UPDATE = 8, ITEM_STATE_DOWNLOADING = 16, ITEM_STATE_DOWNLOAD_PENDING = 32
 		};
 		enum ItemStatistic {
-			ItemStatistic_NumSubscriptions = 0, ItemStatistic_NumFavorites = 1, ItemStatistic_NumFollowers = 2, ItemStatistic_NumUniqueSubscriptions = 3, ItemStatistic_NumUniqueFavorites = 4, ItemStatistic_NumUniqueFollowers = 5, ItemStatistic_NumUniqueWebsiteViews = 6, ItemStatistic_ReportScore = 7,
-			ItemStatistic_NumSecondsPlayed = 8, ItemStatistic_NumPlaytimeSessions = 9, ItemStatistic_NumComments = 10, ItemStatistic_NumSecondsPlayedDuringTimePeriod = 11, ItemStatistic_NumPlaytimeSessionsDuringTimePeriod = 12
+			ITEM_STATISTIC_NUM_SUBSCRIPTIONS = 0, ITEM_STATISTIC_NUM_FAVORITES = 1, ITEM_STATISTIC_NUM_FOLLOWERS = 2, ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS = 3, ITEM_STATISTIC_NUM_UNIQUE_FAVORITES = 4, ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS = 5, ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS = 6, ITEM_STATISTIC_REPORT_SCORE = 7, ITEM_STATISTIC_NUM_SECONDS_PLAYED = 8,
+			ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS = 9, ITEM_STATISTIC_NUM_COMMENTS = 10, ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD = 11, ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD = 12
 		};
 		enum ItemUpdateStatus {
-			ItemUpdateStatusInvalid = 0, ItemUpdateStatusPreparingConfig = 1, ItemUpdateStatusPreparingContent = 2, ItemUpdateStatusUploadingContent = 3, ItemUpdateStatusUploadingPreviewFile = 4, ItemUpdateStatusCommittingChanges = 5
+			ITEM_UPDATE_STATUS_INVALID = 0, ITEM_UPDATE_STATUS_PREPARING_CONFIG = 1, ITEM_UPDATE_STATUS_PREPARING_CONTENT = 2, ITEM_UPDATE_STATUS_UPLOADING_CONTENT = 3, ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE = 4, ITEM_UPDATE_STATUS_COMMITTING_CHANGES = 5
 		};
 		enum UGCMatchingUGCType {
-			UGCMatchingUGCType_Items = 0, UGCMatchingUGCType_Items_Mtx = 1, UGCMatchingUGCType_Items_ReadyToUse = 2, UGCMatchingUGCType_Collections = 3, UGCMatchingUGCType_Artwork = 4, UGCMatchingUGCType_Videos = 5, UGCMatchingUGCType_Screenshots = 6, UGCMatchingUGCType_AllGuides = 7,
-			UGCMatchingUGCType_WebGuides = 8, UGCMatchingUGCType_IntegratedGuides = 9, UGCMatchingUGCType_UsableInGame = 10, UGCMatchingUGCType_ControllerBindings = 11, UGCMatchingUGCType_GameManagedItems = 12, UGCMatchingUGCType_All = ~0
+			UGCMATCHINGUGCTYPE_ITEMS = 0, UGC_MATCHING_UGC_TYPE_ITEMS_MTX = 1, UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE = 2, UGC_MATCHING_UGC_TYPE_COLLECTIONS = 3, UGC_MATCHING_UGC_TYPE_ARTWORK = 4, UGC_MATCHING_UGC_TYPE_VIDEOS = 5, UGC_MATCHING_UGC_TYPE_SCREENSHOTS = 6, UGC_MATCHING_UGC_TYPE_ALL_GUIDES = 7, UGC_MATCHING_UGC_TYPE_WEB_GUIDES = 8,
+			UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES = 9, UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME = 10, UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS = 11, UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS = 12, UGC_MATCHING_UGC_TYPE_ALL = ~0
 		};
 		enum UGCQuery {
-			UGCQuery_RankedByVote = 0, UGCQuery_RankedByPublicationDate = 1, UGCQuery_AcceptedForGameRankedByAcceptanceDate = 2, UGCQuery_RankedByTrend = 3, UGCQuery_FavoritedByFriendsRankedByPublicationDate = 4, UGCQuery_CreatedByFriendsRankedByPublicationDate = 5, UGCQuery_RankedByNumTimesReported = 6,
-			UGCQuery_CreatedByFollowedUsersRankedByPublicationDate = 7, UGCQuery_NotYetRated = 8, UGCQuery_RankedByTotalVotesAsc = 9, UGCQuery_RankedByVotesUp = 10, UGCQuery_RankedByTextSearch = 11, UGCQuery_RankedByTotalUniqueSubscriptions = 12, UGCQuery_RankedByPlaytimeTrend = 13,
-			UGCQuery_RankedByTotalPlaytime = 14, UGCQuery_RankedByAveragePlaytimeTrend = 15, UGCQuery_RankedByLifetimeAveragePlaytime = 16, UGCQuery_RankedByPlaytimeSessionsTrend = 17, UGCQuery_RankedByLifetimePlaytimeSessions = 18
+			UGCQUERY_RANKED_BY_VOTE = 0, UGC_QUERY_RANKED_BY_PUBLICATION_DATE = 1, UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE = 2, UGC_QUERY_RANKED_BY_TREND = 3, UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE = 4, UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE = 5, UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED = 6,
+			UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE = 7, UGC_QUERY_NOT_YET_RATED = 8, UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC = 9, UGC_QUERY_RANKED_BY_VOTES_UP = 10, UGC_QUERY_RANKED_BY_TEXT_SEARCH = 11, UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS = 12, UGC_QUERY_RANKED_BY_PLAYTIME_TREND = 13, UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME = 14,
+			UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND = 15, UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME = 16, UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND = 17, UGCQUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS = 18
 		};
 		enum UserUGCList {
-			UserUGCList_Published = 0, UserUGCList_VotedOn = 1, UserUGCList_VotedUp = 2, UserUGCList_VotedDown = 3, UserUGCList_Favorited = 5, UserUGCList_Subscribed = 6, UserUGCList_UsedOrPlayed = 7, UserUGCList_Followed = 8
+			USER_UGC_LIST_PUBLISHED = 0, USER_UGC_LIST_VOTED_ON = 1, USER_UGC_LIST_VOTED_UP = 2, USER_UGC_LIST_VOTED_DOWN = 3, USER_UGC_LIST_FAVORITED = 5, USER_UGC_LIST_SUBSCRIBED = 6, USER_UGC_LIST_USED_OR_PLAYED = 7, USER_UGC_LIST_FOLLOWED = 8
 		};
 		enum UserUGCListSortOrder {
-			UserUGCListSortOrder_CreationOrderDesc = 0, UserUGCListSortOrder_CreationOrderAsc = 1, UserUGCListSortOrder_TitleAsc = 2, UserUGCListSortOrder_LastUpdatedDesc = 3, UserUGCListSortOrder_SubscriptionDateDesc = 4, UserUGCListSortOrder_VoteScoreDesc = 5, UserUGCListSortOrder_ForModeration = 6
+			USERUGCLISTSORTORDER_CREATIONORDERDESC = 0, USERUGCLISTSORTORDER_CREATIONORDERASC = 1, USERUGCLISTSORTORDER_TITLEASC = 2, USERUGCLISTSORTORDER_LASTUPDATEDDESC = 3, USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC = 4, USERUGCLISTSORTORDER_VOTESCOREDESC = 5, USERUGCLISTSORTORDER_FORMODERATION = 6
 		};
 		// User enums
 		enum FailureType {
-			FailureFlushedCallbackQueue = 0, FailurePipeFail = 1
+			FAILURE_FLUSHED_CALLBACK_QUEUE = 0, FAILURE_PIPE_FAIL = 1
 		};
 		enum DurationControlProgress {
-			DurationControlProgress_Full = 0, DurationControlProgress_Half = 1, DurationControlProgress_None = 2
+			DURATION_CONTROL_PROGRESS_FULL = 0, DURATION_CONTROL_PROGRESS_HALF = 1, DURATION_CONTROL_PROGRESS_NONE = 2
 		};
 		enum DurationControlNotification {
-			DurationControlNotification_None = 0, DurationControlNotification_1Hour = 1, DurationControlNotification_3Hours = 3, DurationControlNotification_HalfProgress = 3, DurationControlNotification_NoProgress = 4
+			DURATION_CONTROL_NOTIFICATION_NONE = 0, DURATION_CONTROL_NOTIFICATION_1_HOUR = 1, DURATION_CONTROL_NOTIFICATION_3_HOURS = 3, DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS = 3, DURATION_CONTROL_NOTIFICATION_NO_PROGRESS = 4
 		};
 		// User Stats enums
 		enum LeaderboardDataRequest {
-			LeaderboardDataRequestGlobal = 0, LeaderboardDataRequestGlobalAroundUser = 1, LeaderboardDataRequestFriends = 2, LeaderboardDataRequestUsers = 3
+			LEADERBOARD_DATA_REQUEST_GLOBAL = 0, LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER = 1, LEADERBOARD_DATA_REQUEST_FRIENDS = 2, LEADERBOARD_DATA_REQUEST_USERS = 3
 		};
 		enum LeaderboardDisplayType {
-			LeaderboardDisplayTypeNone = 0, LeaderboardDisplayTypeNumeric = 1, LeaderboardDisplayTypeTimeSeconds = 2, LeaderboardDisplayTypeTiemMilliSeconds = 3
+			LEADERBOARD_DISPLAY_TYPE_NONE = 0, LEADERBOARD_DISPLAY_TYPE_NUMERIC = 1, LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS = 2, LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS = 3
 		};
 		enum LeaderboardSortMethod {
-			LeaderboardSortMethodNone = 0, LeaderboardSortMethodAscending = 1, LeaderboardSortMethodDescending = 2
+			LEADERBOARD_SORT_METHOD_NONE = 0, LEADERBOARD_SORT_METHOD_ASCENDING = 1, LEADERBOARD_SORT_METHOD_DESCENDING = 2
 		};
 		enum LeaderboardUploadScoreMethod {
-			LeaderboardUploadScoreMethod = 0, LeaderboardUploadScoreMethodKeepBest = 1, LeaderboardUploadScoreMethodForceUpdate = 2
+			LEADERBOARD_UPLOAD_SCORE_METHOD = 0, LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST = 1, LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE = 2
 		};
 		// Utils enums
 		enum CheckFileSignature {
-			CheckFileSignatureInvalidSignature = 0, CheckFileSignatureValidSignature = 1, CheckFileSignatureFileNotFound = 2, CheckFileSignatureNoSignaturesFoundForThisApp = 3, CheckFileSignatureNoSignaturesFoundForThisFile = 4
+			CHECK_FILE_SIGNATURE_INVALID_SIGNATURE = 0, CHECK_FILE_SIGNATURE_VALID_SIGNATURE = 1, CHECK_FILE_SIGNATURE_FILE_NOT_FOUND = 2, CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP = 3, CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE = 4
 		};
 		enum GamepadTextInputLineMode {
-			GamepadTextInputLineModeSingleLine = 0, GamepadTextInputLineModeMultipleLines = 1
+			GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE = 0, GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES = 1
 		};
 		enum GamepadTextInputMode {
-			GamepadTextInputModeNormal = 0, GamepadTextInputModePassword = 1
+			GAMEPAD_TEXT_INPUT_MODE_NORMAL = 0, GAMEPAD_TEXT_INPUT_MODE_PASSWORD = 1
 		};
 		enum SteamAPICallFailure {
-			SteamAPICallFailureNone = -1, SteamAPICallFailureSteamGone = 0, SteamAPICallFailureNetworkFailure = 1, SteamAPICallFailureInvalidHandle = 2, SteamAPICallFailureMismatchedCallback = 3
+			STEAM_API_CALL_FAILURE_NONE = -1, STEAM_API_CALL_FAILURE_STEAM_GONE = 0, STEAM_API_CALL_FAILURE_NETWORK_FAILURE = 1, STEAM_API_CALL_FAILURE_INVALID_HANDLE = 2, STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK = 3
 		};
 		
 		static Steam* get_singleton();

@@ -31,6 +31,12 @@ You can download pre-compiled versions _(currently v3.4)_ of this repo here: htt
 - Removed: getLeaderboardHandle as redundant
 - Removed: getDownloadedLeaderboardEntry as it should not be called manually, has been added to leaderboard_scores_download callback
 
+**Version 3.4.1 Changes**
+- Added: organization separators for all binds
+- Changed: enums are now callable as constants in Godot
+- Changed: case on enums
+- Fixed: some mis-spelling in enums
+
 Known Issues
 ----------
 - None... so far
