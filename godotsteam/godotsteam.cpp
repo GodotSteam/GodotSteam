@@ -5151,9 +5151,10 @@ uint32_t Steam::getAuthSessionTicket(){
 		return 0;
 	}
 	uint32_t ticketSize = 1024;
-	uint32_t *buffer = memnew_arr(uint32_t, ticketSize);
-	uint32_t id = SteamUser()->GetAuthSessionTicket(buffer, ticketSize, &ticketSize);
-	TicketData ticket = {id, buffer, ticketSize};
+	PoolByteArray buffer;
+	buffer.resize(ticketSize);
+	uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticketSize, &ticketSize);
+	TicketData ticket = {id, (uint32_t *)buffer.read().ptr(), ticketSize};
 	tickets.push_back(ticket);
 	return id;
 }
@@ -5163,10 +5164,13 @@ Dictionary Steam::getAuthSessionTicketID(){
 	Dictionary authTicket;
 	if(SteamUser() != NULL){
 		uint32_t ticketSize = 1024;
-		uint32_t *buffer = memnew_arr(uint32_t, ticketSize);
-		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer, ticketSize, &ticketSize);
-		TicketData ticket = {id, buffer, ticketSize};
+
+		PoolByteArray buffer;
+		buffer.resize(ticketSize);
+		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticketSize, &ticketSize);
+		TicketData ticket = {id, (uint32_t *)buffer.read().ptr(), ticketSize};
 		tickets.push_back(ticket);
+
 		// Add this data to the dictionary
 		authTicket["id"] = id;
 		authTicket["buffer"] = buffer;
