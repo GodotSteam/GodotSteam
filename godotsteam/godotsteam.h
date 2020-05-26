@@ -3,9 +3,9 @@
 // Turn off MSVC-only warning about strcpy
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
-#endif
 #pragma warning(disable:4996)
 #pragma warning(disable:4828)
+#endif
 // Include INT types header
 #include <inttypes.h>
 // Include Steamworks API header
@@ -205,7 +205,7 @@ class Steam: public Object {
 			SERVER_RESPONDED = 0, SERVER_FAILED_TO_RESPOND = 1, NO_SERVERS_LISTED_ON_MASTER_SERVER = 2
 		};
 		// Music enums
-		enum AudioPlayback_Status {
+		enum AudioPlaybackStatus {
 			AUDIO_PLAYBACK_UNDEFINED = 0, AUDIO_PLAYBACK_PLAYING = 1, AUDIO_PLAYBACK_PAUSED = 2, AUDIO_PLAYBACK_IDLE = 3
 		};
 		// Networking enums
@@ -490,7 +490,7 @@ class Steam: public Object {
 		uint32 getHTTPResponseBodySize(uint32 request);
 		uint32 getHTTPResponseHeaderSize(uint32 request, const String& headerName);
 		uint8 getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize);
-		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize);		
+		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize);
 		bool prioritizeHTTPRequest(uint32 request);
 		bool releaseCookieContainer();
 		bool releaseHTTPRequest(uint32 request);
@@ -612,6 +612,10 @@ class Steam: public Object {
 		bool setLobbyOwner(uint64_t steamIDLobby, uint64_t steamIDNewOwner);
 		bool setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent);
 
+		// Matchmaking Servers //////////////////
+		////////////// NOT IMPLEMENTED YET //////
+		/////////////////////////////////////////
+
 		// Music ////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
@@ -622,6 +626,40 @@ class Steam: public Object {
 		void musicPlayPrev();
 		void musicSetVolume(float value);
 
+		// Music Remote /////////////////////////
+		bool activationSuccess(bool value);
+		bool isCurrentMusicRemote();
+		bool currentEntryDidChange();
+		bool currentEntryIsAvailable(bool available);
+		bool currentEntryWillChange();
+		bool deregisterSteamMusicRemote();
+		bool enableLooped(bool value);
+		bool enablePlaylists(bool value);
+		bool enablePlayNext(bool value);
+		bool enablePlayPrevious(bool value);
+		bool enableQueue(bool value);
+		bool enableShuffled(bool value);
+		bool playlistDidChange();
+		bool playlistWillChange();
+		bool queueDidChange();
+		bool queueWillChange();
+		bool registerSteamMusicRemote(const String& name);
+		bool resetPlaylistEntries();
+		bool resetQueueEntries();
+		bool setCurrentPlaylistEntry(int id);
+		bool setCurrentQueueEntry(int id);
+		bool setDisplayName(const String& name);
+		bool setPlaylistEntry(int id, int position, const String& entryText);
+//		bool setPNGIcon64x64(const PoolByteArray& icon);
+		bool setQueueEntry(int id, int position, const String& entryText);
+//		bool updateCurrentEntryCoverArt(const PoolByteArray& art);
+		bool updateCurrentEntryElapsedSeconds(int value);
+		bool updateCurrentEntryText(const String& text);
+		bool updateLooped(bool value);
+		bool updatePlaybackStatus(int status);
+		bool updateShuffled(bool value);
+		bool updateVolume(float value);
+
 		// Networking ///////////////////////////
 		bool acceptP2PSessionWithUser(uint64_t steamIDRemote);
 		bool allowP2PPacketRelay(bool allow);
@@ -631,6 +669,26 @@ class Steam: public Object {
 		uint32_t getAvailableP2PPacketSize(int channel = 0);
 		Dictionary readP2PPacket(uint32_t packet, int channel = 0);
 		bool sendP2PPacket(uint64_t steamIDRemote, const PoolByteArray data, int eP2PSendType, int channel = 0);
+
+		// Networking Sockets ///////////////////
+		////////////// NOT IMPLEMENTED YET //////
+		/////////////////////////////////////////
+
+		// Networking Utils /////////////////////
+		////////////// NOT IMPLEMENTED YET //////
+		/////////////////////////////////////////
+
+		// Parties //////////////////////////////
+		Array getAvailableBeaconLocations(uint32 max);
+		void createBeacon(uint32 openSlots, uint64_t location, int type, const String& connectString, const String& metadata);
+		void onReservationCompleted(uint64_t beacon, uint64_t steamID);
+		void changeNumOpenSlots(uint64_t beacon, uint32 openSlots);
+		bool destroyBeacon(uint64_t beacon);
+		uint32 getNumActiveBeacons();
+		uint64_t getBeaconByIndex(uint32 index);
+		Dictionary getBeaconDetails(uint64_t beacon);
+		void joinParty(uint64_t beacon);
+		String getBeaconLocationData(uint64_t locationID, int locationType, int locationData);
 
 		// Remote Play //////////////////////////
 		uint32 getSessionCount();
@@ -745,8 +803,8 @@ class Steam: public Object {
 		bool updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
 
 		// Users ////////////////////////////////
-		uint32_t getAuthSessionTicket();
-		Dictionary getAuthSessionTicketID();
+		uint32_t getAuthSessionTicketID();
+		Dictionary getAuthSessionTicket();
 		void cancelAuthTicket(uint32_t authTicket);
 		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
 		void endAuthSession(uint64_t steamID);
@@ -824,6 +882,10 @@ class Steam: public Object {
 		bool showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText);
 		void startVRDashboard();
 
+		// Video ////////////////////////////////
+		////////////// NOT IMPLEMENTED YET //////
+		/////////////////////////////////////////
+
 	protected:
 		static void _bind_methods();
 		static Steam* singleton;
@@ -847,13 +909,19 @@ class Steam: public Object {
 		SteamInventoryResult_t inventoryHandle;
 		SteamItemDetails_t inventoryDetails;
 
-		// Matchmaking
-		CSteamID clanActivity;
-
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntriesArray;
 		int leaderboardDetailsMax;
+
+		// Matchmaking
+		CSteamID clanActivity;
+
+		// Matchmaking Server
+		int serverQuery;
+
+		// Parties
+		uint64 partyBeaconID;
 
 		// Remote Play
 		uint32 sessionID;
@@ -943,6 +1011,19 @@ class Steam: public Object {
 		};
 		Vector<SteamItemDetails> itemDetails;
 
+		// Matchmaking Game Server Keky/Values
+		struct MatchMakingKeyValuePair {
+			char key[256];
+			char value[256];
+		};
+		Vector<MatchMakingKeyValuePair> matchmakingPair;
+
+		// Party Beacon Location
+		struct SteamPartyBeaconLocation {
+			ESteamPartyBeaconLocationType type;
+			uint64 locationID;
+		};
+		Vector<SteamPartyBeaconLocation> beaconLocation;
 
 		// Run the Steamworks API callbacks /////
 		void run_callbacks(){
@@ -1019,9 +1100,33 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _lobby_game_created, LobbyGameCreated_t, callbackLobbyGameCreated);
 		STEAM_CALLBACK(Steam, _lobby_invite, LobbyInvite_t, callbackLobbyInvite);
 
+		// Music Remote callbacks ///////////////
+		STEAM_CALLBACK(Steam, _music_player_remote_to_front, MusicPlayerRemoteToFront_t, callbackMusicPlayerRemoteToFront);
+		STEAM_CALLBACK(Steam, _music_player_remote_will_activate, MusicPlayerRemoteWillActivate_t, callbackMusicPlayerRemoteWillActivate);
+		STEAM_CALLBACK(Steam, _music_player_remote_will_deactivate, MusicPlayerRemoteWillDeactivate_t, callbackMusicPlayerRemoteWillDeactivate);
+		STEAM_CALLBACK(Steam, _music_player_selects_playlist_entry, MusicPlayerSelectsPlaylistEntry_t, callbackMusicPlayerSelectsPlaylistEntry);
+		STEAM_CALLBACK(Steam, _music_player_selects_queue_entry, MusicPlayerSelectsQueueEntry_t, callbackMusicPlayerSelectsQueueEntry);
+		STEAM_CALLBACK(Steam, _music_player_wants_looped, MusicPlayerWantsLooped_t, callbackMusicPlayerWantsLooped);
+		STEAM_CALLBACK(Steam, _music_player_wants_pause, MusicPlayerWantsPause_t, callbackMusicPlayerWantsPause);
+		STEAM_CALLBACK(Steam, _music_player_wants_playing_repeat_status, MusicPlayerWantsPlayingRepeatStatus_t, callbackMusicPlayerWantsPlayingRepeatStatus);
+		STEAM_CALLBACK(Steam, _music_player_wants_play_next, MusicPlayerWantsPlayNext_t, callbackMusicPlayerWantsPlayNext);
+		STEAM_CALLBACK(Steam, _music_player_wants_play_previous, MusicPlayerWantsPlayPrevious_t, callbackMusicPlayerWantsPlayPrevious);
+		STEAM_CALLBACK(Steam, _music_player_wants_play, MusicPlayerWantsPlay_t, callbackMusicPlayerWantsPlay);
+		STEAM_CALLBACK(Steam, _music_player_wants_shuffled, MusicPlayerWantsShuffled_t, callbackMusicPlayerWantsShuffled);
+		STEAM_CALLBACK(Steam, _music_player_wants_volume, MusicPlayerWantsVolume_t, callbackMusicPlayerWantsVolume);
+		STEAM_CALLBACK(Steam, _music_player_will_quit, MusicPlayerWillQuit_t, callbackMusicPlayerWillQuit);
+
 		// Networking callbacks /////////////////
 		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t, callbackP2PSessionConnectFail);
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t, callbackP2PSessionRequest);
+
+		// Parties //////////////////////////////
+		STEAM_CALLBACK(Steam, _join_party, JoinPartyCallback_t, callbackJoinParty);
+		STEAM_CALLBACK(Steam, _create_beacon, CreateBeaconCallback_t, callbackCreateBeacon);
+		STEAM_CALLBACK(Steam, _reservation_notification, ReservationNotificationCallback_t, callbackReserveNotification);
+		STEAM_CALLBACK(Steam, _change_num_open_slots, ChangeNumOpenSlotsCallback_t, callbackChangeNumOpenSlots);
+		STEAM_CALLBACK(Steam, _available_beacon_locations_updated, AvailableBeaconLocationsUpdated_t, callbackAvailableBeaconLocationsUpdated);
+		STEAM_CALLBACK(Steam, _active_beacons_updated, ActiveBeaconsUpdated_t, callbackActiveBeaconsUpdated);
 
 		// Remote Play callbacks ////////////////
 		STEAM_CALLBACK(Steam, _remote_play_session_connected, SteamRemotePlaySessionConnected_t, callbackRemotePlaySessionConnected);

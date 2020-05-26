@@ -1,9 +1,9 @@
 // Turn off MSVC-only warning about strcpy
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
-#endif
 #pragma warning(disable:4996)
 #pragma warning(disable:4828)
+#endif
 // Include GodotSteam headear
 #include "godotsteam.h"
 // Include Steamworks API header
@@ -177,9 +177,33 @@ Steam::Steam()
 	callbackLobbyGameCreated(this, &Steam::_lobby_game_created),
 	callbackLobbyInvite(this, &Steam::_lobby_invite),
 
+	// Music Remote callbacks ///////////////////
+	callbackMusicPlayerRemoteToFront(this, &Steam::_music_player_remote_to_front),
+	callbackMusicPlayerRemoteWillActivate(this, &Steam::_music_player_remote_will_activate),
+	callbackMusicPlayerRemoteWillDeactivate(this, &Steam::_music_player_remote_will_deactivate),
+	callbackMusicPlayerSelectsPlaylistEntry(this, &Steam::_music_player_selects_playlist_entry),
+	callbackMusicPlayerSelectsQueueEntry(this, &Steam::_music_player_selects_queue_entry),
+	callbackMusicPlayerWantsLooped(this, &Steam::_music_player_wants_looped),
+	callbackMusicPlayerWantsPause(this, &Steam::_music_player_wants_pause),
+	callbackMusicPlayerWantsPlayingRepeatStatus(this, &Steam::_music_player_wants_playing_repeat_status),
+	callbackMusicPlayerWantsPlayNext(this, &Steam::_music_player_wants_play_next),
+	callbackMusicPlayerWantsPlayPrevious(this, &Steam::_music_player_wants_play_previous),
+	callbackMusicPlayerWantsPlay(this, &Steam::_music_player_wants_play),
+	callbackMusicPlayerWantsShuffled(this, &Steam::_music_player_wants_shuffled),
+	callbackMusicPlayerWantsVolume(this, &Steam::_music_player_wants_volume),
+	callbackMusicPlayerWillQuit(this, &Steam::_music_player_will_quit),
+
 	// Networking callbacks /////////////////////
 	callbackP2PSessionConnectFail(this, &Steam::_p2p_session_connect_fail),
 	callbackP2PSessionRequest(this, &Steam::_p2p_session_request),
+
+	// Parties //////////////////////////////////
+	callbackJoinParty(this, &Steam::_join_party),
+	callbackCreateBeacon(this, &Steam::_create_beacon),
+	callbackReserveNotification(this, &Steam::_reservation_notification),
+	callbackChangeNumOpenSlots(this, &Steam::_change_num_open_slots),
+	callbackAvailableBeaconLocationsUpdated(this, &Steam::_available_beacon_locations_updated),
+	callbackActiveBeaconsUpdated(this, &Steam::_active_beacons_updated),
 
 	// Remote Play callbacks ////////////////////
 	callbackRemotePlaySessionConnected(this, &Steam::_remote_play_session_connected),
@@ -2675,6 +2699,237 @@ void Steam::musicSetVolume(float value){
 }
 
 /////////////////////////////////////////////////
+///// MUSIC REMOTE //////////////////////////////
+/////////////////////////////////////////////////
+//
+// These functions do not have any offical notes or comments.  All descriptions are assumed.
+//
+// If remote access was successfully activated.
+bool Steam::activationSuccess(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->BActivationSuccess(value);
+}
+// Is a remote music client / host connected?
+bool Steam::isCurrentMusicRemote(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->BIsCurrentMusicRemote();
+}
+// Did the currenty music entry just change?
+bool Steam::currentEntryDidChange(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->CurrentEntryDidChange();
+}
+// Is the current music entry available?
+bool Steam::currentEntryIsAvailable(bool available){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->CurrentEntryIsAvailable(available);
+}
+// Will the current music entry change?
+bool Steam::currentEntryWillChange(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->CurrentEntryWillChange();
+}
+// Disconnect from remote music client / host.
+bool Steam::deregisterSteamMusicRemote(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->DeregisterSteamMusicRemote();
+}
+// Enable track loop on client.
+bool Steam::enableLooped(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->EnableLooped(value);
+}
+// Enable playlists on client.
+bool Steam::enablePlaylists(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->EnablePlaylists(value);
+}
+// Play the next track on client.
+bool Steam::enablePlayNext(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->EnablePlayNext(value);
+}
+// Play previous track on client.
+bool Steam::enablePlayPrevious(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->EnablePlayPrevious(value);
+}
+// Enable the music queue on the client.
+bool Steam::enableQueue(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->EnableQueue(value);
+}
+// Enable shuffle on the client.
+bool Steam::enableShuffled(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->EnableShuffled(value);
+}
+// Has the playlist changed?
+bool Steam::playlistDidChange(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->PlaylistDidChange();
+}
+// Will the playlist change?
+bool Steam::playlistWillChange(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->PlaylistWillChange();
+}
+// Did the song queue change?
+bool Steam::queueDidChange(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->QueueDidChange();
+}
+// Will the song queue change?
+bool Steam::queueWillChange(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->QueueWillChange();
+}
+// Connect to a music remote client / host?
+bool Steam::registerSteamMusicRemote(const String& name){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->RegisterSteamMusicRemote(name.utf8().get_data());
+}
+// Reset the playlist entries.
+bool Steam::resetPlaylistEntries(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->ResetPlaylistEntries();
+}
+// Reset the song queue entries.
+bool Steam::resetQueueEntries(){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->ResetQueueEntries();
+}
+// Set a new current playlist.
+bool Steam::setCurrentPlaylistEntry(int id){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->SetCurrentPlaylistEntry(id);
+}
+// Set a new current song queue.
+bool Steam::setCurrentQueueEntry(int id){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->SetCurrentQueueEntry(id);
+}
+// Set a new display name.
+bool Steam::setDisplayName(const String& name){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->SetDisplayName(name.utf8().get_data());
+}
+// Set a new playlist entry.
+bool Steam::setPlaylistEntry(int id, int position, const String& entryText){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->SetPlaylistEntry(id, position, entryText.utf8().get_data());
+}
+// Set a PNG icon for a song? A playlist?
+//bool Steam::setPNGIcon64x64(const PoolByteArray& icon){
+//	if(SteamMusicRemote() == NULL){
+//		return false;
+//	}
+//	return SteamMusicRemote()->SetPNGIcon_64x64(icon.read().ptr(), icon.size());
+//}
+// Set a new queue entry.
+bool Steam::setQueueEntry(int id, int position, const String& entryText){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->SetQueueEntry(id, position, entryText.utf8().get_data());
+}
+// Update the current song entry's cover art.
+//bool Steam::updateCurrentEntryCoverArt(const PoolByteArray& art){
+//	if(SteamMusicRemote() == NULL){
+//		return false;
+//	}
+//	return SteamMusicRemote()->UpdateCurrentEntryCoverArt(art.read().ptr(), art.size());
+//}
+// Update the current seconds that have elapsed for an entry.
+bool Steam::updateCurrentEntryElapsedSeconds(int value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdateCurrentEntryElapsedSeconds(value);
+}
+// Update the current song entry's text?
+bool Steam::updateCurrentEntryText(const String& text){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdateCurrentEntryText(text.utf8().get_data());
+}
+// Update looped or not.
+bool Steam::updateLooped(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdateLooped(value);
+}
+// Update the current playback status; 0 - undefined, 1 - playing, 2 - paused, 3 - idle.
+bool Steam::updatePlaybackStatus(int status){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdatePlaybackStatus((AudioPlayback_Status)status);
+}
+// Update whether to shuffle or not.
+bool Steam::updateShuffled(bool value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdateShuffled(value);
+}
+// Volume is between 0.0 and 1.0.
+bool Steam::updateVolume(float value){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdateVolume(value);
+}
+
+/////////////////////////////////////////////////
 ///// NETWORKING ////////////////////////////////
 /////////////////////////////////////////////////
 //
@@ -2767,6 +3022,121 @@ bool Steam::sendP2PPacket(uint64_t steamIDRemote, PoolByteArray data, int sendTy
 	}
 	CSteamID steamID = createSteamID(steamIDRemote);
 	return SteamNetworking()->SendP2PPacket(steamID, data.read().ptr(), data.size(), EP2PSend(sendType), channel);
+}
+
+/////////////////////////////////////////////////
+///// PARTIES ///////////////////////////////////
+/////////////////////////////////////////////////
+//
+// Get the list of locations in which you can post a party beacon.
+Array Steam::getAvailableBeaconLocations(uint32 max){
+	if(SteamParties() == NULL){
+		return Array();
+	}
+	Array beaconLocations;
+	uint32 locations = 0;
+	SteamPartyBeaconLocation_t *beacons = new SteamPartyBeaconLocation_t[256];
+	if(SteamParties()->GetNumAvailableBeaconLocations(&locations)){
+		// If max is lower than locations, set it to locations
+		if(max < locations){
+			max = locations;
+		}
+		// Now get the beacon location list
+		if(SteamParties()->GetAvailableBeaconLocations(beacons, max)){
+			for(uint32 i = 0; i < max; i++){
+				Dictionary beaconData;
+				beaconData["type"] = beacons[i].m_eType;
+				beaconData["locationID"] = (uint64_t)beacons[i].m_ulLocationID;
+				beaconLocations.append(beaconData);
+			}
+		}
+	}
+	return beaconLocations;
+}
+// Create a beacon. You can only create one beacon at a time. Steam will display the beacon in the specified location, and let up to unOpenSlots users "follow" the beacon to your party.
+void Steam::createBeacon(uint32 openSlots, uint64_t location, int type, const String& connectString, const String& metadata){
+	if(SteamParties() != NULL){
+		// Add data to the beacon location struct
+		SteamPartyBeaconLocation_t *beaconData = new SteamPartyBeaconLocation_t;
+		beaconData->m_eType = (ESteamPartyBeaconLocationType)type;
+		beaconData->m_ulLocationID = location;
+		SteamParties()->CreateBeacon(openSlots, beaconData, connectString.utf8().get_data(), metadata.utf8().get_data());
+	}
+}
+// When a user follows your beacon, Steam will reserve one of the open party slots for them, and send your game a ReservationNotificationCallback_t callback. When that user joins your party, call OnReservationCompleted to notify Steam that the user has joined successfully.
+void Steam::onReservationCompleted(uint64_t beacon, uint64_t steamID){
+	if(SteamParties() != NULL){
+		CSteamID userID = (uint64)steamID;
+		SteamParties()->OnReservationCompleted(beacon, userID);
+	}
+}
+// If a user joins your party through other matchmaking (perhaps a direct Steam friend, or your own matchmaking system), your game should reduce the number of open slots that Steam is managing through the party beacon. For example, if you created a beacon with five slots, and Steam sent you two ReservationNotificationCallback_t callbacks, and then a third user joined directly, you would want to call ChangeNumOpenSlots with a value of 2 for unOpenSlots. That value represents the total number of new users that you would like Steam to send to your party.
+void Steam::changeNumOpenSlots(uint64_t beacon, uint32 openSlots){
+	if(SteamParties() != NULL){
+		SteamParties()->ChangeNumOpenSlots(beacon, openSlots);
+	}
+}
+// Call this method to destroy the Steam party beacon. This will immediately cause Steam to stop showing the beacon in the target location. Note that any users currently in-flight may still arrive at your party expecting to join.
+bool Steam::destroyBeacon(uint64_t beacon){
+	if(SteamParties() == NULL){
+		return false;
+	}
+	return SteamParties()->DestroyBeacon(beacon);
+}
+// Get the number of active party beacons created by other users for your game, that are visible to the current user.
+uint32 Steam::getNumActiveBeacons(){
+	if(SteamParties() == NULL){
+		return 0;
+	}
+	return SteamParties()->GetNumActiveBeacons();
+}
+// Use with ISteamParties::GetNumActiveBeacons to iterate the active beacons visible to the current user. unIndex is a zero-based index, so iterate over the range [0, GetNumActiveBeacons() - 1]. The return is a PartyBeaconID_t that can be used with ISteamParties::GetBeaconDetails to get information about the beacons suitable for display to the user.
+uint64_t Steam::getBeaconByIndex(uint32 index){
+	if(SteamParties() == NULL){
+		return 0;
+	}
+	return SteamParties()->GetBeaconByIndex(index);
+}
+// Get details about the specified beacon. You can use the ISteamFriends API to get further details about pSteamIDBeaconOwner, and ISteamParties::GetBeaconLocationData to get further details about pLocation. The pchMetadata contents are specific to your game, and will be whatever was set (if anything) by the game process that created the beacon.
+Dictionary Steam::getBeaconDetails(uint64_t beacon){
+	Dictionary details;
+	if(SteamParties() != NULL){
+		CSteamID owner;
+		SteamPartyBeaconLocation_t location;
+		char metadata;
+		if(SteamParties()->GetBeaconDetails(beacon, &owner, &location, &metadata, 2048)){
+			details["id"] = beacon;
+			details["owner"] = (uint64_t)owner.ConvertToUint64();
+			details["type"] = location.m_eType;
+			details["location"] = (uint64_t)location.m_ulLocationID;
+			details["metadata"] = metadata;
+		}
+	}
+	return details;
+}
+// When the user indicates they wish to join the party advertised by a given beacon, call this method. On success, Steam will reserve a slot for this user in the party and return the necessary "join game" string to use to complete the connection.
+void Steam::joinParty(uint64_t beacon){
+	if(SteamParties() != NULL){
+		SteamParties()->JoinParty(beacon);
+	}
+}
+// Query general metadata for the given beacon location. For instance the Name, or the URL for an icon if the location type supports icons (for example, the icon for a Steam Chat Room Group).
+String Steam::getBeaconLocationData(uint64_t locationID, int locationType, int locationData){
+	if(SteamParties() == NULL){
+		return "";
+	}
+	char *beaconData = new char[2048];
+	// Add data to SteamPartyBeaconLocation struct
+	SteamPartyBeaconLocation_t *beacon = new SteamPartyBeaconLocation_t;
+	beacon->m_eType = (ESteamPartyBeaconLocationType)locationType;
+	beacon->m_ulLocationID = locationID;
+	if(SteamParties()->GetBeaconLocationData(*beacon, (ESteamPartyBeaconLocationData)locationData, (char*)beaconData, 2048)){
+		String location = beaconData;
+		return location;
+	}
+	else{
+		return "";
+	}
 }
 
 /////////////////////////////////////////////////
@@ -3660,6 +4030,58 @@ void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure){
 	emit_signal("lobby_match_list", lobbies);
 }
 //
+// Music Remote callbacks ///////////////////////
+//
+// The majority of callback for Music Remote have no fields and no descriptions. They seem to be primarily fired as responses to functions.
+void Steam::_music_player_remote_to_front(MusicPlayerRemoteToFront_t* callData){
+	emit_signal("music_player_remote_to_front");
+}
+void Steam::_music_player_remote_will_activate(MusicPlayerRemoteWillActivate_t* callData){
+	emit_signal("music_player_remote_will_activate");
+}
+void Steam::_music_player_remote_will_deactivate(MusicPlayerRemoteWillDeactivate_t* callData){
+	emit_signal("music_player_remote_will_deactivate");
+}
+void Steam::_music_player_selects_playlist_entry(MusicPlayerSelectsPlaylistEntry_t* callData){
+	int entry = callData->nID;
+	emit_signal("music_player_selects_playlist_entry", entry);
+}
+void Steam::_music_player_selects_queue_entry(MusicPlayerSelectsQueueEntry_t* callData){
+	int entry = callData->nID;
+	emit_signal("music_player_selects_queue_entry", entry);
+}
+void Steam::_music_player_wants_looped(MusicPlayerWantsLooped_t* callData){
+	bool looped = callData->m_bLooped;
+	emit_signal("music_player_wants_looped", looped);
+}
+void Steam::_music_player_wants_pause(MusicPlayerWantsPause_t* callData){
+	emit_signal("music_player_wants_pause");
+}
+void Steam::_music_player_wants_playing_repeat_status(MusicPlayerWantsPlayingRepeatStatus_t* callData){
+	int status = callData->m_nPlayingRepeatStatus;
+	emit_signal("music_player_wants_playing_repeat_status", status);
+}
+void Steam::_music_player_wants_play_next(MusicPlayerWantsPlayNext_t* callData){
+	emit_signal("music_player_wants_play_next");
+}
+void Steam::_music_player_wants_play_previous(MusicPlayerWantsPlayPrevious_t* callData){
+	emit_signal("music_player_wants_play_previous");
+}
+void Steam::_music_player_wants_play(MusicPlayerWantsPlay_t* callData){
+	emit_signal("music_player_wants_play");
+}
+void Steam::_music_player_wants_shuffled(MusicPlayerWantsShuffled_t* callData){
+	bool shuffled = callData->m_bShuffled;
+	emit_signal("music_player_wants_shuffled", shuffled);
+}
+void Steam::_music_player_wants_volume(MusicPlayerWantsVolume_t* callData){
+	float volume = callData->m_flNewVolume;
+	emit_signal("music_player_wants_volume", volume);
+}
+void Steam::_music_player_will_quit(MusicPlayerWillQuit_t* callData){
+	emit_signal("music_player_will_quit");
+}
+//
 // Networking callbacks /////////////////////////
 //
 // Called when packets can't get through to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will retry making the connection (but will be dropped if we fail again).
@@ -3672,6 +4094,42 @@ void Steam::_p2p_session_connect_fail(P2PSessionConnectFail_t* callData) {
 void Steam::_p2p_session_request(P2PSessionRequest_t* callData){
 	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
 	emit_signal("p2p_session_request", steamIDRemote);
+}
+//
+// Parties callbacks ////////////////////////////
+//
+// This callback is used as a call response for ISteamParties::JoinParty. On success, you will have reserved a slot in the beacon-owner's party, and should use m_rgchConnectString to connect to their game and complete the process.
+void Steam::_join_party(JoinPartyCallback_t* callData){
+	int result = callData->m_eResult;
+	uint64_t beaconID = callData->m_ulBeaconID;
+	uint64_t steamID = callData->m_SteamIDBeaconOwner.ConvertToUint64();
+	String connectString = callData->m_rgchConnectString;
+	emit_signal("join_party", result, beaconID, steamID, connectString);
+}
+// This callback is used as a call response for ISteamParties::CreateBeacon. If successful, your beacon has been posted in the desired location and you may start receiving ISteamParties::ReservationNotificationCallback_t callbacks for users following the beacon. 
+void Steam::_create_beacon(CreateBeaconCallback_t* callData){
+	int result = callData->m_eResult;
+	uint64_t beaconID = callData->m_ulBeaconID;
+	emit_signal("create_beacon", result, beaconID);
+}
+// After creating a beacon, when a user "follows" that beacon Steam will send you this callback to know that you should be prepared for the user to join your game. When they do join, be sure to call ISteamParties::OnReservationCompleted to let Steam know.
+void Steam::_reservation_notification(ReservationNotificationCallback_t* callData){
+	uint64_t beaconID = callData->m_ulBeaconID;
+	uint64_t steamID = callData->m_steamIDJoiner.ConvertToUint64();
+	emit_signal("reservation_notifications", beaconID, steamID);
+}
+// Call result for ISteamParties::ChangeNumOpenSlots. 
+void Steam::_change_num_open_slots(ChangeNumOpenSlotsCallback_t* callData){
+	int result = callData->m_eResult;
+	emit_signal("change_num_open_slots", result);
+}
+// Notification that the list of available locations for posting a beacon has been updated. 
+void Steam::_available_beacon_locations_updated(AvailableBeaconLocationsUpdated_t* callData){
+	emit_signal("available_beacon_locations_updated");
+}
+// Notification that the list of active beacons visible to the current user has changed. 
+void Steam::_active_beacons_updated(ActiveBeaconsUpdated_t* callData){
+	emit_signal("active_beacons_updated");
 }
 //
 // Remote Play callbacks ////////////////////////
@@ -5146,7 +5604,7 @@ bool Steam::updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const St
 /////////////////////////////////////////////////
 //
 // Get an authentication ticket ID.
-uint32_t Steam::getAuthSessionTicket(){
+uint32_t Steam::getAuthSessionTicketID(){
 	if(SteamUser() == NULL){
 		return 0;
 	}
@@ -5159,18 +5617,16 @@ uint32_t Steam::getAuthSessionTicket(){
 	return id;
 }
 // Get the authentication ticket data.
-Dictionary Steam::getAuthSessionTicketID(){
+Dictionary Steam::getAuthSessionTicket(){
 	// Create the dictionary to use
 	Dictionary authTicket;
 	if(SteamUser() != NULL){
 		uint32_t ticketSize = 1024;
-
 		PoolByteArray buffer;
 		buffer.resize(ticketSize);
 		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticketSize, &ticketSize);
 		TicketData ticket = {id, (uint32_t *)buffer.read().ptr(), ticketSize};
 		tickets.push_back(ticket);
-
 		// Add this data to the dictionary
 		authTicket["id"] = id;
 		authTicket["buffer"] = buffer;
@@ -6147,7 +6603,41 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
 	ClassDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
 	
-	// P2P Bind Methods /////////////////////////
+	// Music Remote Bind Methods ////////////////
+	ClassDB::bind_method("activationSuccess", &Steam::activationSuccess);
+	ClassDB::bind_method("isCurrentMusicRemote", &Steam::isCurrentMusicRemote);
+	ClassDB::bind_method("currentEntryDidChange", &Steam::currentEntryDidChange);
+	ClassDB::bind_method("currentEntryIsAvailable", &Steam::currentEntryIsAvailable);
+	ClassDB::bind_method("currentEntryWillChange", &Steam::currentEntryWillChange);
+	ClassDB::bind_method("deregisterSteamMusicRemote", &Steam::deregisterSteamMusicRemote);
+	ClassDB::bind_method("enableLooped", &Steam::enableLooped);
+	ClassDB::bind_method("enablePlaylists", &Steam::enablePlaylists);
+	ClassDB::bind_method("enablePlayNext", &Steam::enablePlayNext);
+	ClassDB::bind_method("enablePlayPrevious", &Steam::enablePlayPrevious);
+	ClassDB::bind_method("enableQueue", &Steam::enableQueue);
+	ClassDB::bind_method("enableShuffled", &Steam::enableShuffled);
+	ClassDB::bind_method("playlistDidChange", &Steam::playlistDidChange);
+	ClassDB::bind_method("playlistWillChange", &Steam::playlistWillChange);
+	ClassDB::bind_method("queueDidChange", &Steam::queueDidChange);
+	ClassDB::bind_method("queueWillChange", &Steam::queueWillChange);
+	ClassDB::bind_method("registerSteamMusicRemote", &Steam::registerSteamMusicRemote);
+	ClassDB::bind_method("resetPlaylistEntries", &Steam::resetPlaylistEntries);
+	ClassDB::bind_method("resetQueueEntries", &Steam::resetQueueEntries);
+	ClassDB::bind_method("setCurrentPlaylistEntry", &Steam::setCurrentPlaylistEntry);
+	ClassDB::bind_method("setCurrentQueueEntry", &Steam::setCurrentQueueEntry);
+	ClassDB::bind_method("setDisplayName", &Steam::setDisplayName);
+	ClassDB::bind_method("setPlaylistEntry", &Steam::setPlaylistEntry);
+//	ClassDB::bind_method("setPNGIcon64x64", &Steam::setPNGIcon64x64);
+	ClassDB::bind_method("setQueueEntry", &Steam::setQueueEntry);
+//	ClassDB::bind_method("updateCurrentEntryCoverArt", &Steam::updateCurrentEntryCoverArt);
+	ClassDB::bind_method("updateCurrentEntryElapsedSeconds", &Steam::updateCurrentEntryElapsedSeconds);
+	ClassDB::bind_method("updateCurrentEntryText", &Steam::updateCurrentEntryText);
+	ClassDB::bind_method("updateLooped", &Steam::updateLooped);
+	ClassDB::bind_method("updatePlaybackStatus", &Steam::updatePlaybackStatus);
+	ClassDB::bind_method("updateShuffled", &Steam::updateShuffled);
+	ClassDB::bind_method("updateVolume", &Steam::updateVolume);
+
+	// Networking Bind Methods //////////////////
 	ClassDB::bind_method("acceptP2PSessionWithUser", &Steam::acceptP2PSessionWithUser);
 	ClassDB::bind_method("allowP2PPacketRelay", &Steam::allowP2PPacketRelay);
 	ClassDB::bind_method("closeP2PChannelWithUser", &Steam::closeP2PChannelWithUser);
@@ -6156,7 +6646,19 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getAvailableP2PPacketSize", &Steam::getAvailableP2PPacketSize);
 	ClassDB::bind_method("readP2PPacket", &Steam::readP2PPacket);
 	ClassDB::bind_method("sendP2PPacket", &Steam::sendP2PPacket);
-	
+
+	// Parties Bind Methods /////////////////////
+	ClassDB::bind_method("getAvailableBeaconLocations", &Steam::getAvailableBeaconLocations);
+	ClassDB::bind_method("createBeacon", &Steam::createBeacon);
+	ClassDB::bind_method("onReservationCompleted", &Steam::onReservationCompleted);
+	ClassDB::bind_method("changeNumOpenSlots", &Steam::changeNumOpenSlots);
+	ClassDB::bind_method("destroyBeacon", &Steam::destroyBeacon);
+	ClassDB::bind_method("getNumActiveBeacons", &Steam::getNumActiveBeacons);
+	ClassDB::bind_method("getBeaconByIndex", &Steam::getBeaconByIndex);
+	ClassDB::bind_method("getBeaconDetails", &Steam::getBeaconDetails);
+	ClassDB::bind_method("joinParty", &Steam::joinParty);
+	ClassDB::bind_method("getBeaconLocationData", &Steam::getBeaconLocationData);
+
 	// Remote Play Bind Methods /////////////////
 	ClassDB::bind_method("getSessionCount", &Steam::getSessionCount);
 	ClassDB::bind_method("getSessionID", &Steam::getSessionID);
@@ -6427,9 +6929,33 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("lobby_invite", PropertyInfo(Variant::INT, "inviter"), PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "game")));
 	ADD_SIGNAL(MethodInfo("lobby_match_list"));
 	
+	// Music Remote Signals /////////////////////
+	ADD_SIGNAL(MethodInfo("music_player_remote_to_front"));
+	ADD_SIGNAL(MethodInfo("music_player_remote_will_activate"));
+	ADD_SIGNAL(MethodInfo("music_player_remote_will_deactivate"));
+	ADD_SIGNAL(MethodInfo("music_player_selects_playlist_entry"));
+	ADD_SIGNAL(MethodInfo("music_player_selects_queue_entry"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_looped"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_pause"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_playing_repeat_status"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_play_next"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_play_previous"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_play"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_shuffled"));
+	ADD_SIGNAL(MethodInfo("music_player_wants_volume"));
+	ADD_SIGNAL(MethodInfo("music_player_will_quit"));
+
 	// Networking Signals ///////////////////////
 	ADD_SIGNAL(MethodInfo("p2p_session_request"));
 	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail"));
+
+	// Parties //////////////////////////////////
+	ADD_SIGNAL(MethodInfo("join_party"));
+	ADD_SIGNAL(MethodInfo("create_beacon"));
+	ADD_SIGNAL(MethodInfo("reservation_notification"));
+	ADD_SIGNAL(MethodInfo("change_num_open_slots"));
+	ADD_SIGNAL(MethodInfo("available_beacon_locations_updated"));
+	ADD_SIGNAL(MethodInfo("active_beacons_updated"));
 
 	// Remote Play Signals //////////////////////
 	ADD_SIGNAL(MethodInfo("remote_play_session_connected"));
@@ -7533,7 +8059,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);							// 4
 	BIND_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);										// 255
 
-	// ItemStateenum constants //////////////////
+	// ItemState enum constants /////////////////
 	BIND_CONSTANT(ITEM_STATE_NONE);														// 0
 	BIND_CONSTANT(ITEM_STATE_SUBSCRIBED);												// 1
 	BIND_CONSTANT(ITEM_STATE_LEGACY_ITEM);												// 2
@@ -7542,7 +8068,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ITEM_STATE_DOWNLOADING);												// 16
 	BIND_CONSTANT(ITEM_STATE_DOWNLOAD_PENDING);											// 32
 
-	// ItemStatisticenum constants //////////////
+	// ItemStatistic enum constants /////////////
 	BIND_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);									// 0
 	BIND_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);										// 1
 	BIND_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);										// 2
@@ -7557,7 +8083,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);				// 11
 	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);				// 12
 
-	// ItemUpdateStatusenum constants ///////////
+	// ItemUpdateStatus enum constants //////////
 	BIND_CONSTANT(ITEM_UPDATE_STATUS_INVALID);											// 0
 	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);									// 1
 	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);								// 2
@@ -7565,7 +8091,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);							// 4
 	BIND_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);								// 5
 
-	// UGCMatchingUGCTypeenum constants /////////
+	// UGCMatchingUGCType enum constants ////////
 	BIND_CONSTANT(UGCMATCHINGUGCTYPE_ITEMS);											// 0
 	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);										// 1
 	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);							// 2
@@ -7581,7 +8107,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);							// 12
 	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);											// ~0
 
-	// UGCQueryenum constants ///////////////////
+	// UGCQuery enum constants //////////////////
 	BIND_CONSTANT(UGCQUERY_RANKED_BY_VOTE);												// 0
 	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);								// 1
 	BIND_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);				// 2
@@ -7602,7 +8128,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);							// 17
 	BIND_CONSTANT(UGCQUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);						// 18
 
-	// UserUGCListenum constants ////////////////
+	// UserUGCList enum constants ///////////////
 	BIND_CONSTANT(USER_UGC_LIST_PUBLISHED);												// 0
 	BIND_CONSTANT(USER_UGC_LIST_VOTED_ON);												// 1
 	BIND_CONSTANT(USER_UGC_LIST_VOTED_UP);												// 2
@@ -7612,7 +8138,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);										// 7
 	BIND_CONSTANT(USER_UGC_LIST_FOLLOWED);												// 8
 
-	// UserUGCListSortOrderenum constants ///////
+	// UserUGCListSortOrder enum constants //////
 	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);								// 0
 	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);								// 1
 	BIND_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);										// 2

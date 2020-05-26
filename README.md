@@ -11,15 +11,16 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.4.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.5)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.4.1 Changes**
-- Added: organization separators for all binds
-- Changed: enums are now callable as constants in Godot
-- Changed: case on enums
-- Fixed: some mis-spelling in enums
-
-
+**Version 3.5 Changes**
+- Added: all Music Remote functions, callbacks, enums, and constants
+- Added: all Parties functions, callbacks, enums, and constants
+- Added: placeholders for function classes not added yet
+- Changed: minor tweaks to layout, comments, etc.
+- Changed: swapped getAuthSessionTicketID and getAuthSessionTicket to make more sense
+- Changed: moved pragma into Windows if
+- Fixed: getAuthSessionTicket to properly give buffer, thanks to _EIREXE_
 
 Known Issues
 ----------
