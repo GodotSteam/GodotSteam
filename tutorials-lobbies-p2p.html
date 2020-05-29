@@ -30,6 +30,10 @@
 							<h1>Tutorials - Lobbies And P2P Networking</h1>
 						</header>
 						<p>One of the more requested tutorials is multiplayer lobbies and P2P networking through Steam. I highly suggest you <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">check out the Example branch of the repo</a>, specifically the <strong>lobby.tscn</strong> which will have the full working code and test interface for this tutorial.</p>
+						<p>Additionaly, you can check out this video tutorial put together by DawnsCrow Games.</p>
+						<ul class="actions">
+							<li><a class="button big" href="https://youtu.be/si50G3S1XGU" target="_blank">Video Tutorial</a></li>
+						</ul>
 						<hr />
 						<header class="major">
 							<h3>Set Up</h3>
@@ -97,6 +101,17 @@ func _process(delta):
 	_read_P2P_Packet()
 </code></pre>
 						<p>If you are using the <strong>global.gd</strong> autoload singleton then you can omit the <strong>Steam.run_callbacks()</strong> command as they'll be running already.<p>
+						<p>If you are experiencing packet delay issues, you can try this bit of code submitted by <strong>Luekuu</strong>:</p>
+<pre><code>
+func _process(delta):
+	Steam.run_callbacks()
+
+	# Get packets
+	PACKET = Steam.getAvailableP2PPacketSize(0)
+
+	for pack in PACKET:
+		_read_P2P_Packet()
+</code></pre>
 						<hr />
 						<header class="major">
 							<h3>Creating Lobbies</h3>
@@ -176,7 +191,7 @@ func _on_Lobby_Match_List(lobbies):
 
 		# Create a button for the lobby
 		var LOBBY_BUTTON = Button.new()
-		LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_MEMBERS)+" Player(s)")
+		LOBBY_BUTTON.set_text("Lobby ", LOBBY, ": ", LOBBY_NAME, " [", LOBBY_MODE, "] - ", LOBBY_MEMBERS, " Player(s)")
 		LOBBY_BUTTON.set_size(Vector2(800, 50))
 		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
 		LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
@@ -190,6 +205,7 @@ func _on_Lobby_Match_List(lobbies):
 								<h3>Joining Lobbies</h3>
 							</header>
 							<p>Next we'll tackle joining a lobby. Clicking one of the lobby buttons we created in the last step will fire this function:</p>
+
 <pre><code>
 func _join_Lobby(lobbyID):
 	print("Attempting to join lobby "+str(lobbyID)+"...")

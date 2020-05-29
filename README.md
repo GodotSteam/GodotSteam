@@ -6,19 +6,23 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
-The newest things that have been added as of 5/26/20:
+**Update 5/29/20:**
+- Added: video tutorial link to lobbies / p2p
+- Added: possible FPS fix for packets in lobbies / p2p tutorial, thanks to _Luekuu_
+
+**Update 5/26/20:**
 - Added: new game to game list
 - Changed: change log to reflect GodotSteam 3.5
 - Changed: to-do list with new issues and completed Steam classes
 
-The newest things that have been added as of 4/15/20:
+**Update 4/15/20:**
 - Fixed: initialization and lobby tutorials
 
-The newest things that have been added as of 4/10/20:
+**Update 4/10/20:**
 - Changed: change log to reflect GodotSteam 3.4
 - Changed: various information on functions for that update
 
-The newest things that have been added as of 3/16/20:
+**Update 3/16/20:**
 - Added: new game to game list
 - Added: new Steam Inventory to functions
 - Added: new Steam Inventory to signals
@@ -26,7 +30,7 @@ The newest things that have been added as of 3/16/20:
 - Changed: removed unnecessary return data for HTTP signals
 - Changed: removed unnecessary arguments for HTML and HTTP functions
 
-The newest things that have been added as of 1/5/20:
+**Update 1/5/20:**
 - Added: various new functions and signals
 - Added: new Steam Input to functions
 - Added: achievement icon example tutorial
