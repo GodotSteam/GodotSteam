@@ -9,6 +9,7 @@ What's New
 **Update 5/29/20:**
 - Added: video tutorial link to lobbies / p2p
 - Added: possible FPS fix for packets in lobbies / p2p tutorial, thanks to _Luekuu_
+- Added: new game to game list
 
 **Update 5/26/20:**
 - Added: new game to game list
