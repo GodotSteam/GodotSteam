@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 6/5/20:**
+- Added: new game to game list
+
 **Update 5/29/20:**
 - Added: video tutorial link to lobbies / p2p
 - Added: possible FPS fix for packets in lobbies / p2p tutorial, thanks to _Luekuu_
