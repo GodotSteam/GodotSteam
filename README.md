@@ -24,7 +24,7 @@ You can download pre-compiled versions _(currently v3.5)_ of this repo here: htt
 
 Known Issues
 ----------
-- None... so far
+- WARNING: do not use MinGW to compile the module.  Due to calling convention differences between MinGW and MSVC, using MinGW to compile will cause crashes; particularly with getSteamID.  This is an issue instead the Steamworks header and I do not have a work-around for it yet.
 
 Quick How-To
 ----------
