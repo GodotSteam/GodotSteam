@@ -29,7 +29,7 @@
 						<header class="main">
 							<h1>How-To For Modules</h1>
 						</header>
-						<p>These instructions should work for both versions of the GodotSteam module.</p>
+						<p>These instructions should work for both versions of the GodotSteam module. <strong>Please note:</strong> do not use MinGW to compile for Windows.  Due to calling convention differences, compiling with MinGW will cause your editor or game to crash; generally with the getSteamID function.  Since this issue lies within Steamworks, it cannot be fixed in GodotSteam; as far as I can tell.  Until further notice I do not recommend using MinGW.</p>
 						<hr />
 						<h2>1. Preparing</h2>
 						<ul>

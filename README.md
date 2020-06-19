@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 6/18/20:**
+- Added: warning in module how-to against using minGW to compile for Windows
+
 **Update 6/5/20:**
 - Added: new game to game list
 
