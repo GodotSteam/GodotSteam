@@ -25,29 +25,34 @@ macro_snippet = r'''
 #endif
 '''
 
+header_relpath = os.path.join('sdk', 'public', 'steam', 'isteamuser.h')
+script_path = os.path.realpath(__file__)
+script_dirname = os.path.basename(os.path.split(script_path)[0])
+isteamuser_path = os.path.join(os.path.dirname(script_path), header_relpath)
+
 def check_if_in_godot_steam():
     # TODO: if this ever somehow becomes complex enough to need more configuration, switch
     # to argparse for handling arguments
-    if os.path.basename(__file__) != 'godotsteam' and '-f' not in sys.argv:
+    if script_dirname != 'godotsteam' and '-f' not in sys.argv:
         print('Refusing to run the script from anywhere but godotsteam/ (run with -f to force)')
+        sys.exit()
 
 def main():
-    check_if_in_godot_steam()
     result = ''
-    with open('godotsteam/sdk/public/steam/isteamuser.h', 'r') as file:
+    with open(isteamuser_path, 'r') as file:
         top, include, rest = file.read().partition('#include "steam_api_common.h\n')
         result = ''.join((
             top,
             include,
-            hack_snippet,
+            macro_snippet,
             rest.replace(
                 'virtual CSteamID() = 0;',
                 'STEAMWORKS_STRUCT_RETURN_0(CSteamID, GetSteamID)'
             )
         ))
-    with open('godotsteam/sdk/public/steam/isteamuser.h', 'x') as file:
+    with open(isteamuser_path, 'w') as file:
         file.write(result)
 
-
 if __name__ == '__main__':
+    check_if_in_godot_steam()
     main()
