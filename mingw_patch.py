@@ -11,6 +11,7 @@ import sys, os
 # taken from Open Steamworks
 # TODO: potentially rename it
 macro_snippet = r'''
+//======= begin steamworks mingw patch
 #if defined(_WIN32) && defined(__GNUC__) && !defined(_S4N_)
 	#define STEAMWORKS_STRUCT_RETURN_0(returnType, functionName)	\
 		virtual void functionName( returnType& ret ) = 0;			\
@@ -23,6 +24,15 @@ macro_snippet = r'''
 #else
 	#define STEAMWORKS_STRUCT_RETURN_0(returnType, functionName) virtual returnType functionName() = 0;
 #endif
+//======= end steamworks mingw patch
+'''
+
+getsteamid_snippet = '''
+//======= begin steamworks mingw patch
+STEAMWORKS_STRUCT_RETURN_0(CSteamID, GetSteamID)
+//======= original
+//virtual CSteamID GetSteamID() = 0;
+//======= end steamworks mingw patch
 '''
 
 header_relpath = os.path.join('sdk', 'public', 'steam', 'isteamuser.h')
@@ -40,14 +50,14 @@ def check_if_in_godot_steam():
 def main():
     result = ''
     with open(isteamuser_path, 'r') as file:
-        top, include, rest = file.read().partition('#include "steam_api_common.h\n')
+        top, include, rest = file.read().partition('#include "steam_api_common.h"\n')
         result = ''.join((
             top,
             include,
             macro_snippet,
             rest.replace(
-                'virtual CSteamID() = 0;',
-                'STEAMWORKS_STRUCT_RETURN_0(CSteamID, GetSteamID)'
+                'virtual CSteamID GetSteamID() = 0;',
+                getsteamid_snippet
             )
         ))
     with open(isteamuser_path, 'w') as file:
