@@ -13,6 +13,10 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v3.5)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
+**Version 3.6 Changes**
+- Added: newest functions for Apps, Friends, and UserStats
+- Added: all functions and callbacks for Videos
+
 **Version 3.5 Changes**
 - Added: all Music Remote functions, callbacks, enums, and constants
 - Added: all Parties functions, callbacks, enums, and constants
@@ -24,7 +28,7 @@ You can download pre-compiled versions _(currently v3.5)_ of this repo here: htt
 
 Known Issues
 ----------
-- WARNING: do not use MinGW to compile the module.  Due to calling convention differences between MinGW and MSVC, using MinGW to compile will cause crashes; particularly with getSteamID.  This is an issue instead the Steamworks header and I do not have a work-around for it yet.
+- None so far.
 
 Quick How-To
 ----------
@@ -48,6 +52,7 @@ Quick How-To
     godotsteam/register_types.h
 ````
 - Now move the "godotsteam" directory into the "modules" directory of the unpacked Godot Engine source.
+- **Note:** If you are compiling with MinGW, make sure to use the mingw-patch.py first to correct one of the Steamworks header files.
 - Recompile for your platform:
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
   - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
