@@ -1,5 +1,5 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.2.1). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.2.2). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
@@ -11,20 +11,16 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.5)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.6)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
 **Version 3.6 Changes**
 - Added: newest functions for Apps, Friends, and UserStats
 - Added: all functions and callbacks for Videos
-
-**Version 3.5 Changes**
-- Added: all Music Remote functions, callbacks, enums, and constants
-- Added: all Parties functions, callbacks, enums, and constants
-- Added: placeholders for function classes not added yet
-- Changed: minor tweaks to layout, comments, etc.
-- Changed: swapped getAuthSessionTicketID and getAuthSessionTicket to make more sense
-- Changed: moved pragma into Windows if
-- Fixed: getAuthSessionTicket to properly give buffer, thanks to _EIREXE_
+- Added: MinGW patch file for people using MinGW, thanks to _MichaelBelousov_
+- Added: all remaining Remote Storage, Utils, and Users functions and callbacks
+- Changed: some User callbacks were actually call results
+- Changed: moved callback code block to end of function block in godotsteam.cpp
+- Fixed: incorrect signal link for unsubscribe_item and subscribe_item callbacks
 
 Known Issues
 ----------
@@ -34,7 +30,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.0.6 or 3.2.1.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.2.2.
 - Move the following to godotsteam/sdk/:
 ````
     sdk/public/

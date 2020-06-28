@@ -346,6 +346,7 @@ class Steam: public Object {
 		bool isSubscribedApp(int value);
 		bool isSubscribedFromFamilySharing();
 		bool isSubscribedFromFreeWeekend();
+		Dictionary isTimedTrial();
 		bool isVACBanned();
 		int getAppBuildId();
 		String getAppInstallDir(AppId_t appID);
@@ -432,6 +433,7 @@ class Steam: public Object {
 		void joinClanChatRoom(uint64_t clanID);
 		bool leaveClanChatRoom(uint64_t clanID);
 		bool openClanChatWindowInSteam(uint64_t chatID);
+		bool registerProtocolInOverlayBrowser(const String& protocol);
 		bool replyToFriendMessage(uint64_t steamID, const String& message);
 		void requestClanOfficerList(uint64_t clanID);
 		void requestFriendRichPresence(uint64_t friendID);
@@ -700,21 +702,36 @@ class Steam: public Object {
 		bool sendRemotePlayTogetherInvite(uint64_t friendID);
 
 		// Remote Storage ///////////////////////
-		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
-		Dictionary fileRead(const String& file, int32_t dataToRead);
-		bool fileForget(const String& file);
 		bool fileDelete(const String& file);
 		bool fileExists(const String& file);
+		bool fileForget(const String& file);
 		bool filePersisted(const String& file);
-		int32_t getFileSize(const String& file);
-		int64_t getFileTimestamp(const String& file);
+		Dictionary fileRead(const String& file, int32_t dataToRead);
+		void fileReadAsync(const String& file, uint32 offset, uint32_t dataToRead);
+		void fileShare(const String& file);
+		bool fileWrite(const String& file, const PoolByteArray& data, int32_t dataSize);
+		void fileWriteAsync(const String& file, const PoolByteArray& data, int32_t dataSize);
+		bool fileWriteStreamCancel(uint64_t writeHandle);
+		bool fileWriteStreamClose(uint64_t writeHandle);
+		uint64_t fileWriteStreamOpen(const String& file);
+		bool fileWriteStreamWriteChunk(uint64_t writeHandle, PoolByteArray& data, int32_t dataSize);
+		int32 getCachedUGCCount();
+		uint64_t getCachedUGCHandle(int content);
 		int32_t getFileCount();
 		Dictionary getFileNameAndSize(int file);
+		int32_t getFileSize(const String& file);
+		int64_t getFileTimestamp(const String& file);
 		Dictionary getQuota();
 		uint32_t getSyncPlatforms(const String& file);
+		Dictionary getUGCDetails(uint64_t content);
+		Dictionary getUGCDownloadProgress(uint64_t content);
 		bool isCloudEnabledForAccount();
 		bool isCloudEnabledForApp();
 		void setCloudEnabledForApp(bool enabled);
+		bool setSyncPlatforms(const String& file, int platform);
+		void ugcDownload(uint64_t content, uint32 priority);
+		void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
+		int32 ugcRead(uint64_t content, PoolByteArray& data, int32_t dataSize, uint32 offset, int action);
 
 		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height);
@@ -803,17 +820,35 @@ class Steam: public Object {
 		bool updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
 
 		// Users ////////////////////////////////
+		void advertiseGame(const String& serverIP, int port);
+		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
+		void cancelAuthTicket(uint32_t authTicket);
+		Dictionary decompressVoice(const PoolByteArray& voice, uint32 voiceSize, uint32 sampleRate);
+		void endAuthSession(uint64_t steamID);
 		uint32_t getAuthSessionTicketID();
 		Dictionary getAuthSessionTicket();
-		void cancelAuthTicket(uint32_t authTicket);
-		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
-		void endAuthSession(uint64_t steamID);
-		uint64_t getSteamID();
-		bool loggedOn();
-		int getPlayerSteamLevel();
-		String getUserDataFolder();
-		void advertiseGame(const String& serverIP, int port);
+		int getAvailableVoice();
+		void getDurationControl();
+		Dictionary getEncryptedAppTicket();
 		int getGameBadgeLevel(int series, bool foil);
+		int getPlayerSteamLevel();
+		uint64_t getSteamID();		
+		String getUserDataFolder();		
+		uint32 getVoice();
+		uint32 getVoiceOptimalSampleRate();
+		Dictionary initiateGameConnection(uint64_t serverID, uint32 serverIP, uint16 serverPort, bool secure);
+		bool isBehindNAT();
+		bool isPhoneIdentifying();
+		bool isPhoneRequiringVerification();
+		bool isPhoneVerified();
+		bool isTwoFactorEnabled();
+		bool loggedOn();
+		void requestEncryptedAppTicket(const String& secret);
+		void requestStoreAuthURL(const String& redirect);
+		void startVoiceRecording();
+		void stopVoiceRecording();
+		void terminateGameConnection(uint32 serverIP, uint16 serverPort);
+		int userHasLicenseForApp(uint64_t steamID, int appID);
 
 		// User Stats ///////////////////////////
 		void attachLeaderboardUGC(uint64_t ugcHandle);
@@ -828,6 +863,8 @@ class Steam: public Object {
 		String getAchievementDisplayAttribute(const String& name, const String& key);
 		int getAchievementIcon(const String& name);
 		String getAchievementName(uint32_t achievement);
+		Dictionary getAchievementProgressLimitsInt(const String& name);
+		Dictionary getAchievementProgressLimitsFloat(const String& name);
 		int64 getGlobalStatInt(const String& name);
 		double getGlobalStatFloat(const String& name);
 		int64 getGlobalStatIntHistory(const String& name);
@@ -861,9 +898,10 @@ class Steam: public Object {
 		void setLeaderboardDetailsMax(int detailsMax);
 
 		// Utils ////////////////////////////////
+		String filterText(const String& message, bool legalOnly);
+		String getAPICallFailureReason();
 		int getAppID();
 		int getCurrentBatteryPower();
-		bool overlayNeedsPresent();
 		Dictionary getImageRGBA(int iImage);
 		Dictionary getImageSize(int iImage);
 		uint32 getIPCCallCount();
@@ -872,10 +910,14 @@ class Steam: public Object {
 		int getSecondsSinceComputerActive();
 		int getServerRealTime();
 		String getSteamUILanguage();
+		bool initFilterText();
+		Dictionary isAPICallCompleted();
 		bool isOverlayEnabled();
+		bool isSteamChinaLauncher();
 		bool isSteamInBigPictureMode();
 		bool isSteamRunningInVR();
 		bool isVRHeadsetStreamingEnabled();
+		bool overlayNeedsPresent();
 		void setOverlayNotificationInset(int horizontal, int vertical);
 		void setOverlayNotificationPosition(int pos);
 		void setVRHeadsetStreamingEnabled(bool enabled);
@@ -883,8 +925,10 @@ class Steam: public Object {
 		void startVRDashboard();
 
 		// Video ////////////////////////////////
-		////////////// NOT IMPLEMENTED YET //////
-		/////////////////////////////////////////
+		void getOPFSettings(int appID);
+		String getOPFStringForApp(int appID);
+		void getVideoURL(int appID);
+		Dictionary isBroadcasting();
 
 	protected:
 		static void _bind_methods();
@@ -926,10 +970,16 @@ class Steam: public Object {
 		// Remote Play
 		uint32 sessionID;
 
+		// Remote Storage
+		uint64_t writeStreamHandle;
+
 		// User stats
 		int numAchievements;
 		bool statsInitialized;
 		uint64 ugcHandle;
+
+		// Utils
+		uint64_t apiHandle = 0;
 
 		/////////////////////////////////////////
 		// STRUCTS //////////////////////////////
@@ -1055,6 +1105,7 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _join_clan_chat_complete, JoinClanChatRoomCompletionResult_t, callbackJoinClanChatComplete);
 		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t, callbackPersonaStateChange);
 		STEAM_CALLBACK(Steam, _name_changed, SetPersonaNameResponse_t, callbackNameChanged);
+		STEAM_CALLBACK(Steam, _overlay_browser_protocol, OverlayBrowserProtocolNavigation_t, callbackOverlayBrowserProtocol);
 
 		// HTML Surface callbacks ///////////////
 		STEAM_CALLBACK(Steam, _html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
@@ -1142,7 +1193,6 @@ class Steam: public Object {
 
 		// User callbacks ///////////////////////
 		STEAM_CALLBACK(Steam, _client_game_server_deny, ClientGameServerDeny_t, callbackClientGameServerDeny);
-		STEAM_CALLBACK(Steam, _encrypted_app_ticket_response, EncryptedAppTicketResponse_t, callbackEncryptedAppTicketResponse);
 		STEAM_CALLBACK(Steam, _game_web_callback, GameWebCallback_t, callbackGameWebCallback);
 		STEAM_CALLBACK(Steam, _get_auth_session_ticket_response, GetAuthSessionTicketResponse_t, callbackGetAuthSessionTicketResponse);
 		STEAM_CALLBACK(Steam, _ipc_failure, IPCFailure_t, callbackIPCFailure);
@@ -1150,7 +1200,6 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _microstransaction_auth_response, MicroTxnAuthorizationResponse_t, callbackMicrotransactionAuthResponse);
 		STEAM_CALLBACK(Steam, _steam_server_connected, SteamServersConnected_t, callbackSteamServerConnected);
 		STEAM_CALLBACK(Steam, _steam_server_disconnected, SteamServersDisconnected_t, callbackSteamServerDisconnected);
-		STEAM_CALLBACK(Steam, _store_auth_url_response, StoreAuthURLResponse_t, callbackStoreAuthURLResponse);
 		STEAM_CALLBACK(Steam, _validate_auth_ticket_response, ValidateAuthTicketResponse_t, callbackValidateAuthTicketResponse);
 
 		// User stat callbacks //////////////////
@@ -1165,6 +1214,12 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t, callbackLowPower);
 		STEAM_CALLBACK(Steam, _steam_api_call_completed, SteamAPICallCompleted_t, callbackSteamAPICallCompleted);
 		STEAM_CALLBACK(Steam, _steam_shutdown, SteamShutdown_t, callbackSteamShutdown);
+
+		// Video callbacks //////////////////////
+//		STEAM_CALLBACK(Steam, _broadcast_upload_start, BroadcastUploadStart_t, callbackBroadcastUploadStart);		// In documentation but not in actual SDK?
+//		STEAM_CALLBACK(Steam, _broadcast_upload_stop, BroadcastUploadStop_t, callbackBroadcastUploadStop);			// In documentation but not in actual SDK?
+		STEAM_CALLBACK(Steam, _get_opf_settings_result, GetOPFSettingsResult_t, callbackGetOPFSettingsResult);
+		STEAM_CALLBACK(Steam, _get_video_result, GetVideoURLResult_t, callbackGetVideoResult);
 
 		/////////////////////////////////////////
 		// STEAM CALL RESULTS ///////////////////
@@ -1195,6 +1250,14 @@ class Steam: public Object {
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
 
 		// Remote Storage call results //////////
+		CCallResult<Steam, RemoteStorageFileReadAsyncComplete_t> callResultFileReadAsyncComplete;
+		void _file_read_async_complete(RemoteStorageFileReadAsyncComplete_t *callData, bool bIOFailure);
+		CCallResult<Steam, RemoteStorageFileShareResult_t> callResultFileShareResult;
+		void _file_share_result(RemoteStorageFileShareResult_t *callData, bool bIOFailure);
+		CCallResult<Steam, RemoteStorageFileWriteAsyncComplete_t> callResultFileWriteAsyncComplete;
+		void _file_write_async_complete(RemoteStorageFileWriteAsyncComplete_t *callData, bool bIOFailure);
+		CCallResult<Steam, RemoteStorageDownloadUGCResult_t> callResultDownloadUGCResult;
+		void _download_ugc_result(RemoteStorageDownloadUGCResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, RemoteStorageUnsubscribePublishedFileResult_t> callResultUnsubscribeItem;
 		void _unsubscribe_item(RemoteStorageUnsubscribePublishedFileResult_t *callData, bool bIOFailure);
 		CCallResult<Steam, RemoteStorageSubscribePublishedFileResult_t> callResultSubscribeItem;
@@ -1231,8 +1294,14 @@ class Steam: public Object {
 		void _user_favorite_items_list_changed(UserFavoriteItemsListChanged_t *callData, bool bIOFailure);
 
 		// User call results ////////////////////
+		CCallResult<Steam, DurationControl_t> callResultDurationControl;
+		void _duration_control(DurationControl_t *callData, bool bIOFailure);
+		CCallResult<Steam, EncryptedAppTicketResponse_t> callResultEncryptedAppTicketResponse;
+		void _encrypted_app_ticket_response(EncryptedAppTicketResponse_t *callData, bool bIOFailure);
 		CCallResult<Steam, SteamServerConnectFailure_t> callResultSteamServerConnectFailure;
-		void _steam_server_connect_failed(SteamServerConnectFailure_t *callData);
+		void _steam_server_connect_failed(SteamServerConnectFailure_t *callData, bool bIOFailure);
+		CCallResult<Steam, StoreAuthURLResponse_t> callResultStoreAuthURLResponse;
+		void _store_auth_url_response(StoreAuthURLResponse_t *callData, bool bIOFailure);
 
 		// User stat call results ///////////////
 		CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
