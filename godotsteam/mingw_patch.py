@@ -50,7 +50,7 @@ def check_if_in_godot_steam():
 def main():
     result = ''
     with open(isteamuser_path, 'r') as file:
-        top, include, rest = file.read().partition('#include "steam_api_common.h"\n')
+        top, include, rest = file.read().partition('#include "steam_api_common.h"')
         result = ''.join((
             top,
             include,
