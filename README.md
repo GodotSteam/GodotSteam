@@ -48,7 +48,7 @@ Quick How-To
     godotsteam/register_types.h
 ````
 - Now move the "godotsteam" directory into the "modules" directory of the unpacked Godot Engine source.
-- **Note:** If you are compiling with MinGW, make sure to use the mingw-patch.py first to correct one of the Steamworks header files.
+- **Note:** If you are compiling with MinGW, make sure to use the _mingw-patch.py_ first to correct one of the Steamworks header files.  This step is **only** necessary if using minGW; do not use this patch otherwise.
 - Recompile for your platform:
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
   - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
