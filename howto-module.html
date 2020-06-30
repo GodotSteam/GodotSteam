@@ -63,7 +63,7 @@ godotsteam/register_types.h
 </code></pre><br/>
 							Now move the <Strong><em>godotsteam</em></Strong> directory into the <strong><em>modules</em></strong> directory of the unpacked Godot Engine source.
 						</p>
-						<p><strong>Note:</strong> if you intend on compiling with MinGW, make sure to use the mingw_patch.py file first to correct an issue with the Steamworks iSteamUsers.h header file. If you do not, your finished editor will crash when attempting to get the user's Steam ID.</p>
+						<p><strong>NOTE: using MinGW causes crashes.</strong> There is a _mingw-patch.py_ file that corrects one known crash due to compiling with MinGW but there is now a newer crash that hasn't been solved; as well as who knows how many unfound issues. I strong recommend you <strong>do not use MinGW</strong> to compile at this time.</p>
 						<h2>4. Compiling</h2>
 						<p>Recompile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
 						On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )<br/>
