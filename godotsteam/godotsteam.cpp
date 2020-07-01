@@ -291,18 +291,22 @@ Dictionary Steam::steamInit(){
 		verbal = "Steamworks active.";
 	}
 	// The Steam client is not running
-	if(!SteamAPI_IsSteamRunning()){
+	if(!isSteamRunning()){
 		status = RESULT_SERVICE_UNAVAILABLE;
 		verbal = "Steam not running.";
 	}
+	else if(SteamUser() == NULL){
+		status = RESULT_UNEXPECTED_ERROR;
+		verbal = "Invalid app ID or app not installed.";
+	}
 	// The user is not logged into Steam or there is no active connection to Steam
-	else if(!SteamUser()->BLoggedOn()){
+	else if(!loggedOn()){
 		status = RESULT_NOT_LOGGED_ON;
 		verbal = "Not logged on / no connection to Steam.";
 	}
 	// Steam is connected and active, so load the stats and achievements
 	if(status == RESULT_OK && SteamUserStats() != NULL){
-		SteamUserStats()->RequestCurrentStats();
+		requestCurrentStats();
 	}
 	// Get this app ID
 	currentAppID = getAppID();
@@ -2488,25 +2492,25 @@ bool Steam::setLobbyData(uint64_t steamIDLobby, const String& key, const String&
 	return SteamMatchmaking()->SetLobbyData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
 }
 // Get lobby data by the lobby's ID
-Dictionary Steam::getLobbyDataByIndex(uint64_t steamIDLobby){
-	Dictionary data;
-	if(SteamMatchmaking() == NULL){
-		return data;
-	}
-	CSteamID lobbyID = (uint64)steamIDLobby;
-	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobbyID);
-	char key;
-	char value;
-	for(int i = 0; i < dataCount; i++){
-		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, &key, MAX_LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
-		if(success){
-			data["index"] = i;
-			data["key"] = key;
-			data["value"] = value;
-		}
-	}
-	return data;
-}
+//Dictionary Steam::getAllLobbyData(uint64_t steamIDLobby){
+//	Dictionary data;
+//	if(SteamMatchmaking() == NULL){
+//		return data;
+//	}
+//	CSteamID lobbyID = (uint64)steamIDLobby;
+//	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobbyID);
+//	char key;
+//	char value;
+//	for(int i = 0; i < dataCount; i++){
+//		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, &key, MAX_LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
+//		if(success){
+//			data["index"] = i;
+//			data["key"] = key;
+//			data["value"] = value;
+//		}
+//	}
+//	return data;
+//}
 // Removes a metadata key from the lobby.
 bool Steam::deleteLobbyData(uint64_t steamIDLobby, const String& key){
 	if(SteamMatchmaking() == NULL){
@@ -5166,7 +5170,7 @@ bool Steam::requestCurrentStats(){
 		return false;
 	}
 	// If the user isn't logged in, you can't get stats
-	if(!SteamUser()->BLoggedOn()){
+	if(!loggedOn()){
 		return false;
 	}
 	return SteamUserStats()->RequestCurrentStats();
@@ -7062,7 +7066,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getLobbyMemberByIndex", &Steam::getLobbyMemberByIndex);
 	ClassDB::bind_method("getLobbyData", &Steam::getLobbyData);
 	ClassDB::bind_method("setLobbyData", &Steam::setLobbyData);
-	ClassDB::bind_method("getLobbyDataByIndex", &Steam::getLobbyDataByIndex);
+//	ClassDB::bind_method("getAllLobbyData", &Steam::getAllLobbyData);
 	ClassDB::bind_method("deleteLobbyData", &Steam::deleteLobbyData);
 	ClassDB::bind_method("getLobbyMemberData", &Steam::getLobbyMemberData);
 	ClassDB::bind_method("setLobbyMemberData", &Steam::setLobbyMemberData);

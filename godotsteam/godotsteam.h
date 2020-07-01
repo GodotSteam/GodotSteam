@@ -598,7 +598,7 @@ class Steam: public Object {
 		uint64_t getLobbyMemberByIndex(uint64_t steamIDLobby, int member);
 		String getLobbyData(uint64_t steamIDLobby, const String& key);
 		bool setLobbyData(uint64_t steamIDLobby, const String& key, const String& value);
-		Dictionary getLobbyDataByIndex(uint64_t steamIDLobby);
+//		Dictionary getAllLobbyData(uint64_t steamIDLobby);
 		bool deleteLobbyData(uint64_t steamIDLobby, const String& key);
 		String getLobbyMemberData(uint64_t steamIDLobby, uint64_t steamIDUser, const String& key);
 		void setLobbyMemberData(uint64_t steamIDLobby, const String& key, const String& value);

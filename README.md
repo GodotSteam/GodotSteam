@@ -11,7 +11,12 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.6)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.6.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+
+**Version 3.6.1 Changes**
+- Changed: function _getLobbyDataByIndex_ to _getAllLobbyData_
+- Changed: commented out _getAllLobbyData_ until crash is fixed
+- Fixed: issue where not having the game installed or owning the game caused a crash
 
 **Version 3.6 Changes**
 - Added: newest functions for Apps, Friends, and UserStats
