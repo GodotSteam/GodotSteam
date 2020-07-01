@@ -6,6 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 6/30/20:**
+- Changed: updated GodotSteam version
+- Fixed: incorrect status of Remote Storage on to-do list
+
 **Update 6/28/20:**
 - Added: new note about mingw_patch.py for minGW users
 - Added: a new contributor

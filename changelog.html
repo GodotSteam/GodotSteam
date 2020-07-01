@@ -40,6 +40,22 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.6.1 Changes</h3>
+						<ul>
+							<li>Changed: function getLobbyDataByIndex to getAllLobbyData</li>
+							<li>Changed: commented out getAllLobbyData until crash is fixed</li>
+							<li>Fixed: issue where not having the game installed or owning the game caused a crash</li>
+						</ul>
+						<h3>Version 3.6 Changes</h3>
+						<ul>
+							<li>Added: newest functions for Apps, Friends, and UserStats</li>
+							<li>Added: all functions and callbacks for Videos</li>
+							<li>Added: MinGW patch file for people using MinGW, thanks to MichaelBelousov</li>
+							<li>Added: all remaining Remote Storage, Utils, and Users functions and callbacks</li>
+							<li>Changed: some User callbacks were actually call results</li>
+							<li>Changed: moved callback code block to end of function block in godotsteam.cpp</li>
+							<li>Fixed: incorrect signal link for unsubscribe_item and subscribe_item callbacks</li>
+						</ul>
 						<h3>Version 3.5 Changes</h3>
 						<ul>
 							<li>Added: all Music Remote functions, callbacks, enums, and constants</li>
