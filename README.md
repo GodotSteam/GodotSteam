@@ -13,6 +13,9 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v3.6.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
+**Versoin 3.6.2 Changes**
+- Fixed: issue where published File IDs were passed as 32-bit integers instead of 64-bit integers
+
 **Version 3.6.1 Changes**
 - Changed: function _getLobbyDataByIndex_ to _getAllLobbyData_
 - Changed: commented out _getAllLobbyData_ until crash is fixed

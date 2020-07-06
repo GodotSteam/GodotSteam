@@ -355,10 +355,10 @@ class Steam: public Object {
 		String getCurrentBetaName();
 		String getCurrentGameLanguage();
 		int getDLCCount();
-		Dictionary getDLCDownloadProgress(int appID);
+		Dictionary getDLCDownloadProgress(uint32_t appID);
 		int getEarliestPurchaseUnixTime(int value);
 		void getFileDetails(const String& filename);
-		Array getInstalledDepots(int appID);
+		Array getInstalledDepots(uint32_t appID);
 		String getLaunchCommandLine();
 		String getLaunchQueryParam(const String& key);
 		void installDLC(int value);
@@ -368,7 +368,7 @@ class Steam: public Object {
 		// Friends //////////////////////////////
 		void activateGameOverlay(const String& type);
 		void activateGameOverlayInviteDialog(uint64_t steamID);
-		void activateGameOverlayToStore(int appID=0);
+		void activateGameOverlayToStore(uint32_t appID=0);
 		void activateGameOverlayToUser(const String& type, uint64_t steamID);
 		void activateGameOverlayToWebPage(const String& url);
 		void clearRichPresence();
@@ -745,25 +745,25 @@ class Steam: public Object {
 		uint32_t writeScreenshot(const PoolByteArray& RGB, int width, int height);
 
 		// UGC //////////////////////////////////
-		void addAppDependency(int publishedFileID, int appID);
-		void addDependency(int publishedFileID, int childPublishedFileID);
+		void addAppDependency(uint64_t publishedFileID, uint32_t appID);
+		void addDependency(uint64_t publishedFileID, uint64_t childPublishedFileID);
 		bool addExcludedTag(uint64_t queryHandle, const String& tagName);
 		bool addItemKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
 		bool addItemPreviewFile(uint64_t queryHandle, const String& previewFile, int type);
 		bool addItemPreviewVideo(uint64_t queryHandle, const String& videoID);
-		void addItemToFavorite(int appID, int publishedFileID);
+		void addItemToFavorite(uint32_t appID, uint64_t publishedFileID);
 		bool addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
 		bool addRequiredTag(uint64_t queryHandle, const String& tagName);
-		bool initWorkshopForGameServer(int workshopDepotID);
+		bool initWorkshopForGameServer(uint32_t workshopDepotID);
 		void createItem(AppId_t appID, int fileType);
-		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, int creatorID, int consumerID, uint32 page);
+		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page);
 		uint64_t createQueryUGCDetailsRequest(Array publishedFileID);
 //		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
-		void deleteItem(int publishedFileID);
-		bool downloadItem(int publishedFileID, bool highPriority);
-		Dictionary getItemDownloadInfo(int fileID);
-		Dictionary getItemInstallInfo(int publishedFileID);
-		int getItemState(int publishedFileID);
+		void deleteItem(uint64_t publishedFileID);
+		bool downloadItem(uint64_t publishedFileID, bool highPriority);
+		Dictionary getItemDownloadInfo(uint64_t publishedFileID);
+		Dictionary getItemInstallInfo(uint64_t publishedFileID);
+		int getItemState(uint64_t publishedFileID);
 		Dictionary getItemUpdateProgress(uint64_t updateHandle);
 		uint32 getNumSubscribedItems();
 		Dictionary getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex);
@@ -776,11 +776,11 @@ class Steam: public Object {
 		Dictionary getQueryUGCResult(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType);
 		Array getSubscribedItems();
-		void getUserItemVote(int publishedFileID);
+		void getUserItemVote(uint64_t publishedFileID);
 		bool releaseQueryUGCRequest(uint64_t queryHandle);
-		void removeAppDependency(int publishedFileID, int appID);
-		void removeDependency(int publishedFileID, int childPublishedFileID);
-		void removeItemFromFavorites(int appID, int publishedFileID);
+		void removeAppDependency(uint64_t publishedFileID, uint32_t appID);
+		void removeDependency(uint64_t publishedFileID, uint64_t childPublishedFileID);
+		void removeItemFromFavorites(uint32_t appID, uint64_t publishedFileID);
 		bool removeItemKeyValueTags(uint64_t updateHandle, const String& key);
 		bool removeItemPreview(uint64_t updateHandle, uint32 index);
 		void sendQueryUGCRequest(uint64_t updateHandle);
@@ -806,16 +806,16 @@ class Steam: public Object {
 		bool setReturnPlaytimeStats(uint64_t queryHandle, uint32 days);
 		bool setReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly);
 		bool setSearchText(uint64_t queryHandle, const String& searchText);
-		void setUserItemVote(int publishedFileID, bool voteUp);
-		uint64_t startItemUpdate(int appID, int fileId);
+		void setUserItemVote(uint64_t publishedFileID, bool voteUp);
+		uint64_t startItemUpdate(uint32_t appID, uint64_t fileId);
 		void startPlaytimeTracking(Array publishedFileIDs);
 		void stopPlaytimeTracking(Array publishedFileIDs);
 		void stopPlaytimeTrackingForAllItems();
-		void getAppDependencies(int publishedFileID);
+		void getAppDependencies(uint64_t publishedFileID);
 		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
-		void subscribeItem(int publishedFileID);
+		void subscribeItem(uint64_t publishedFileID);
 		void suspendDownloads(bool suspend);
-		void unsubscribeItem(int publishedFileID);
+		void unsubscribeItem(uint64_t publishedFileID);
 		bool updateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile);
 		bool updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
 
@@ -848,7 +848,7 @@ class Steam: public Object {
 		void startVoiceRecording();
 		void stopVoiceRecording();
 		void terminateGameConnection(uint32 serverIP, uint16 serverPort);
-		int userHasLicenseForApp(uint64_t steamID, int appID);
+		int userHasLicenseForApp(uint64_t steamID, uint32_t appID);
 
 		// User Stats ///////////////////////////
 		void attachLeaderboardUGC(uint64_t ugcHandle);
@@ -925,9 +925,9 @@ class Steam: public Object {
 		void startVRDashboard();
 
 		// Video ////////////////////////////////
-		void getOPFSettings(int appID);
-		String getOPFStringForApp(int appID);
-		void getVideoURL(int appID);
+		void getOPFSettings(uint32_t appID);
+		String getOPFStringForApp(uint32_t appID);
+		void getVideoURL(uint32_t appID);
 		Dictionary isBroadcasting();
 
 	protected:
@@ -1023,7 +1023,7 @@ class Steam: public Object {
 
 		// UGC item details /////////////////////
 		struct UGCDetails {
-			int publishedFileID;
+			uint64_t publishedFileID;
 			int result;
 			int fileType;
 			int creatorAppID;

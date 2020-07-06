@@ -486,7 +486,7 @@ int Steam::getDLCCount(){
 	return SteamApps()->GetDLCCount();
 }
 // Gets the download progress for optional DLC.
-Dictionary Steam::getDLCDownloadProgress(int appID){
+Dictionary Steam::getDLCDownloadProgress(uint32_t appID){
 	Dictionary progress;
 	if(SteamApps() == NULL){
 		progress["ret"] = false;
@@ -517,7 +517,7 @@ void Steam::getFileDetails(const String& filename){
 	}
 }
 // Gets a list of all installed depots for a given App ID in mount order.
-Array Steam::getInstalledDepots(int appID){
+Array Steam::getInstalledDepots(uint32_t appID){
 	if(SteamApps() == NULL){
 		return Array();
 	}
@@ -586,7 +586,7 @@ void Steam::activateGameOverlayInviteDialog(uint64_t steamID){
 	}
 }
 // Activates the overlay with the application/game Steam store page.
-void Steam::activateGameOverlayToStore(int appID){
+void Steam::activateGameOverlayToStore(uint32_t appID){
 	if(SteamFriends() != NULL){
 		SteamFriends()->ActivateGameOverlayToStore(AppId_t(appID), EOverlayToStoreFlag(0));
 	}
@@ -3503,20 +3503,20 @@ uint32_t Steam::writeScreenshot(const PoolByteArray& RGB, int width, int height)
 //
 // Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
 // This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.
-void Steam::addAppDependency(int publishedFileID, int appID){
+void Steam::addAppDependency(uint64_t publishedFileID, uint32_t appID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
-		AppId_t app = (int)appID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
+		AppId_t app = (uint32_t)appID;
 		SteamAPICall_t apiCall = SteamUGC()->AddAppDependency(fileID, app);
 		callResultAddAppDependency.Set(apiCall, this, &Steam::_add_app_dependency_result);
 	}
 }
 // Adds a workshop item as a dependency to the specified item. If the nParentPublishedFileID item is of type k_EWorkshopFileTypeCollection, than the nChildPublishedFileID is simply added to that collection.
 // Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the m_unNumChildren member variable of the SteamUGCDetails_t struct and GetQueryUGCChildren.
-void Steam::addDependency(int publishedFileID, int childPublishedFileID){
+void Steam::addDependency(uint64_t publishedFileID, uint64_t childPublishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t parent = (int)publishedFileID;
-		PublishedFileId_t child = (int)childPublishedFileID;
+		PublishedFileId_t parent = (uint64_t)publishedFileID;
+		PublishedFileId_t child = (uint64_t)childPublishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->AddDependency(parent, child);
 		callResultAddUGCDependency.Set(apiCall, this, &Steam::_add_ugc_dependency_result);
 	}
@@ -3573,10 +3573,10 @@ bool Steam::addItemPreviewVideo(uint64_t queryHandle, const String& videoID){
 	return SteamUGC()->AddItemPreviewVideo(handle, videoID.utf8().get_data());
 }
 // Adds a workshop item to the users favorites list.
-void Steam::addItemToFavorite(int appID, int publishedFileID){
+void Steam::addItemToFavorite(uint32_t appID, uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		AppId_t app = (int)appID;
-		PublishedFileId_t fileID = (int)publishedFileID;
+		AppId_t app = (uint32_t)appID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->AddItemToFavorites(app, fileID);
 		callResultFavoriteItemListChanged.Set(apiCall, this, &Steam::_user_favorite_items_list_changed);
 	}
@@ -3598,11 +3598,11 @@ bool Steam::addRequiredTag(uint64_t queryHandle, const String& tagName){
 	return SteamUGC()->AddRequiredTag(handle, tagName.utf8().get_data());
 }
 // Lets game servers set a specific workshop folder before issuing any UGC commands.
-bool Steam::initWorkshopForGameServer(int workshopDepotID){
+bool Steam::initWorkshopForGameServer(uint32_t workshopDepotID){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	DepotId_t workshop = (int)workshopDepotID;
+	DepotId_t workshop = (uint32_t)workshopDepotID;
 	const char *folder = new char[256];
 	return SteamUGC()->BInitWorkshopForGameServer(workshop, (char*)folder);
 }
@@ -3614,7 +3614,7 @@ void Steam::createItem(AppId_t appID, int fileType){
 	}
 }
 // Query for all matching UGC. You can use this to list all of the available UGC for your app.
-uint64_t Steam::createQueryAllUGCRequest(int queryType, int matchingType, int creatorID, int consumerID, uint32 page){
+uint64_t Steam::createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
@@ -3716,8 +3716,8 @@ uint64_t Steam::createQueryAllUGCRequest(int queryType, int matchingType, int cr
 	else{
 		match = k_EUGCMatchingUGCType_GameManagedItems;
 	}
-	AppId_t creator = (int)creatorID;
-	AppId_t consumer = (int)consumerID;
+	AppId_t creator = (uint32_t)creatorID;
+	AppId_t consumer = (uint32_t)consumerID;
 	UGCQueryHandle_t handle = SteamUGC()->CreateQueryAllUGCRequest(query, match, creator, consumer, page);
 	return (uint64_t)handle;
 }
@@ -3840,31 +3840,31 @@ uint64_t Steam::createQueryUGCDetailsRequest(Array publishedFileIDs){
 //	return (uint64_t)handle;
 //}
 // Deletes the item without prompting the user.
-void Steam::deleteItem(int publishedFileID){
+void Steam::deleteItem(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->DeleteItem(fileID);
 		callResultDeleteItem.Set(apiCall, this, &Steam::_item_deleted);
 	}
 }
 // Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.
 // If item is not subscribed to, it will be cached for some time. If bHighPriority is set, any other item download will be suspended and this item downloaded ASAP.
-bool Steam::downloadItem(int publishedFileID, bool highPriority){
+bool Steam::downloadItem(uint64_t publishedFileID, bool highPriority){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	PublishedFileId_t fileID = (int)publishedFileID;
+	PublishedFileId_t fileID = (uint64_t)publishedFileID;
 	return SteamUGC()->DownloadItem(fileID, highPriority);
 }
 // Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
-Dictionary Steam::getItemDownloadInfo(int fileID){
+Dictionary Steam::getItemDownloadInfo(uint64_t publishedFileID){
 	Dictionary info;
 	if(SteamUGC() == NULL){
 		return info;
 	}
 	uint64 downloaded = 0;
 	uint64 total = 0;
-	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)fileID, &downloaded, &total);
+	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)publishedFileID, &downloaded, &total);
 	if(info["ret"]){
 		info["downloaded"] = uint64_t(downloaded);
 		info["total"] = uint64_t(total);
@@ -3872,13 +3872,13 @@ Dictionary Steam::getItemDownloadInfo(int fileID){
 	return info;
 }
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
-Dictionary Steam::getItemInstallInfo(int publishedFileID){
+Dictionary Steam::getItemInstallInfo(uint64_t publishedFileID){
 	Dictionary info;
 	if(SteamUGC() == NULL){
 		info["ret"] = false;
 		return info;
 	}
-	PublishedFileId_t fileID = (int)publishedFileID;
+	PublishedFileId_t fileID = (uint64_t)publishedFileID;
 	uint64 sizeOnDisk;
 	char folder[1024] = { 0 };
 	uint32 timeStamp;
@@ -3892,11 +3892,11 @@ Dictionary Steam::getItemInstallInfo(int publishedFileID){
 	return info;
 }
 // Gets the current state of a workshop item on this client.
-int Steam::getItemState(int publishedFileID){
+int Steam::getItemState(uint64_t publishedFileID){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
-	PublishedFileId_t fileID = (int)publishedFileID;
+	PublishedFileId_t fileID = (uint64_t)publishedFileID;
 	return SteamUGC()->GetItemState(fileID);
 }
 // Gets the progress of an item update.
@@ -4137,9 +4137,9 @@ Array Steam::getSubscribedItems(){
 	return subscribed;
 }
 // Gets the users vote status on a workshop item.
-void Steam::getUserItemVote(int publishedFileID){
+void Steam::getUserItemVote(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->GetUserItemVote(fileID);
 		callResultGetUserItemVote.Set(apiCall, this, &Steam::_get_item_vote_result);
 	}
@@ -4153,28 +4153,28 @@ bool Steam::releaseQueryUGCRequest(uint64_t queryHandle){
 	return SteamUGC()->ReleaseQueryUGCRequest(handle);
 }
 // Removes the dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
-void Steam::removeAppDependency(int publishedFileID, int appID){
+void Steam::removeAppDependency(uint64_t publishedFileID, uint32_t appID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
-		AppId_t app = (int)appID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
+		AppId_t app = (uint32_t)appID;
 		SteamAPICall_t apiCall = SteamUGC()->RemoveAppDependency(fileID, app);
 		callResultRemoveAppDependency.Set(apiCall, this, &Steam::_remove_app_dependency_result);
 	}
 }
 // Removes a workshop item as a dependency from the specified item.
-void Steam::removeDependency(int publishedFileID, int childPublishedFileID){
+void Steam::removeDependency(uint64_t publishedFileID, uint64_t childPublishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
-		PublishedFileId_t childID = (int)childPublishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
+		PublishedFileId_t childID = (uint64_t)childPublishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->RemoveDependency(fileID, childID);
 		callResultRemoveUGCDependency.Set(apiCall, this, &Steam::_remove_ugc_dependency_result);
 	}
 }
 // Removes a workshop item from the users favorites list.
-void Steam::removeItemFromFavorites(int appID, int publishedFileID){
+void Steam::removeItemFromFavorites(uint32_t appID, uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
-		AppId_t app = (int)appID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
+		AppId_t app = (uint32_t)appID;
 		SteamAPICall_t apiCall = SteamUGC()->RemoveItemFromFavorites(app, fileID);
 		callResultFavoriteItemListChanged.Set(apiCall, this, &Steam::_user_favorite_items_list_changed);
 	}
@@ -4399,20 +4399,20 @@ bool Steam::setSearchText(uint64_t queryHandle, const String& searchText){
 	return SteamUGC()->SetSearchText(handle, searchText.utf8().get_data());
 }
 // Allows the user to rate a workshop item up or down.
-void Steam::setUserItemVote(int publishedFileID, bool voteUp){
+void Steam::setUserItemVote(uint64_t publishedFileID, bool voteUp){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->SetUserItemVote(fileID, voteUp);
 		callResultSetUserItemVote.Set(apiCall, this, &Steam::_set_user_item_vote);
 	}
 }
 // Starts the item update process.
-uint64_t Steam::startItemUpdate(int appID, int publishedFileID){
+uint64_t Steam::startItemUpdate(uint32_t appID, uint64_t publishedFileID){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
-	AppId_t app = (int)appID;
-	PublishedFileId_t fileID = (int)publishedFileID;
+	AppId_t app = (uint32_t)appID;
+	PublishedFileId_t fileID = (uint64_t)publishedFileID;
 	return SteamUGC()->StartItemUpdate(app, fileID);
 }
 // Start tracking playtime on a set of workshop items.
@@ -4452,9 +4452,9 @@ void Steam::stopPlaytimeTrackingForAllItems(){
 	}
 }
 // Returns any app dependencies that are associated with the given item.
-void Steam::getAppDependencies(int publishedFileID){
+void Steam::getAppDependencies(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->GetAppDependencies(fileID);
 		callResultGetAppDependencies.Set(apiCall, this, &Steam::_get_app_dependencies_result);
 	}
@@ -4468,9 +4468,9 @@ void Steam::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
 	}
 }
 // Subscribe to a workshop item. It will be downloaded and installed as soon as possible.
-void Steam::subscribeItem(int publishedFileID){
+void Steam::subscribeItem(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->SubscribeItem(fileID);
 		callResultSubscribeItem.Set(apiCall, this, &Steam::_subscribe_item);
 	}
@@ -4482,9 +4482,9 @@ void Steam::suspendDownloads(bool suspend){
 	}
 }
 // Unsubscribe from a workshop item. This will result in the item being removed after the game quits.
-void Steam::unsubscribeItem(int publishedFileID){
+void Steam::unsubscribeItem(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (int)publishedFileID;
+		PublishedFileId_t fileID = (uint64_t)publishedFileID;
 		SteamAPICall_t apiCall = SteamUGC()->UnsubscribeItem(fileID);
 		callResultUnsubscribeItem.Set(apiCall, this, &Steam::_unsubscribe_item);
 	}
@@ -4791,7 +4791,7 @@ void Steam::terminateGameConnection(uint32 serverIP, uint16 serverPort){
 	}
 }
 // Checks if the user owns a specific piece of Downloadable Content (DLC). This can only be called after sending the users auth ticket to ISteamGameServer::BeginAuthSession.
-int Steam::userHasLicenseForApp(uint64_t steamID, int appID){
+int Steam::userHasLicenseForApp(uint64_t steamID, uint32_t appID){
 	if(SteamUser() == NULL){
 		return 2;
 	}
@@ -5501,13 +5501,13 @@ void Steam::startVRDashboard(){
 /////////////////////////////////////////////////
 //
 // Get the OPF details for 360 video playback.
-void Steam::getOPFSettings(int appID){
+void Steam::getOPFSettings(uint32_t appID){
 	if(SteamVideo() != NULL){
 		SteamVideo()->GetOPFSettings((AppId_t)appID);
 	}
 }
 // Gets the OPF string for the specified video App ID.
-String Steam::getOPFStringForApp(int appID){
+String Steam::getOPFStringForApp(uint32_t appID){
 	String opf_string = "";
 	if(SteamVideo() != NULL){
 		int32 size = 48000;
@@ -5519,7 +5519,7 @@ String Steam::getOPFStringForApp(int appID){
 	return opf_string;
 }
 // Asynchronously gets the URL suitable for streaming the video associated with the specified video app ID.
-void Steam::getVideoURL(int appID){
+void Steam::getVideoURL(uint32_t appID){
 	if(SteamVideo() != NULL){
 		SteamVideo()->GetVideoURL((AppId_t)appID);
 	}
@@ -5544,7 +5544,7 @@ Dictionary Steam::isBroadcasting(){
 //
 // Triggered after the current user gains ownership of DLC and that DLC is installed.
 void Steam::_dlc_installed(DlcInstalled_t* callData){
-	int appID = (AppId_t)callData->m_nAppID;
+	uint32_t appID = (AppId_t)callData->m_nAppID;
 	emit_signal("dlc_installed", appID);
 }
 // Called after requesting the details of a specific file.
@@ -6318,7 +6318,7 @@ void Steam::_file_write_async_complete(RemoteStorageFileWriteAsyncComplete_t* ca
 void Steam::_download_ugc_result(RemoteStorageDownloadUGCResult_t* callData, bool bIOFailure){
 	int result = callData->m_eResult;
 	uint64_t handle = callData->m_hFile;
-	int appID = callData->m_nAppID;
+	uint32_t appID = callData->m_nAppID;
 	int32 size = callData->m_nSizeInBytes;
 	char filename = callData->m_pchFileName[k_cchFilenameMax];
 	uint64_t ownerID = callData->m_ulSteamIDOwner;
@@ -6364,7 +6364,7 @@ void Steam::_add_app_dependency_result(AddAppDependencyResult_t* callData, bool 
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	AppId_t appID = callData->m_nAppID;
-	emit_signal("add_app_dependency_result", result, (uint64_t)fileID, (int)appID);
+	emit_signal("add_app_dependency_result", result, (uint64_t)fileID, (uint32_t)appID);
 }
 // The result of a call to AddDependency.
 void Steam::_add_ugc_dependency_result(AddUGCDependencyResult_t* callData, bool bIOFailure){
@@ -6385,7 +6385,7 @@ void Steam::_item_downloaded(DownloadItemResult_t* callData){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	AppId_t appID = callData->m_unAppID;
-	emit_signal("item_downloaded", result, (uint64_t)fileID, (int)appID);
+	emit_signal("item_downloaded", result, (uint64_t)fileID, (uint32_t)appID);
 }
 // Called when getting the app dependencies for an item.
 void Steam::_get_app_dependencies_result(GetAppDependenciesResult_t* callData, bool bIOFailure){
@@ -6423,7 +6423,7 @@ void Steam::_remove_app_dependency_result(RemoveAppDependencyResult_t* callData,
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	AppId_t appID = callData->m_nAppID;
-	emit_signal("remove_app_dependency_result", result, (uint64_t)fileID, (int)appID);
+	emit_signal("remove_app_dependency_result", result, (uint64_t)fileID, (uint32_t)appID);
 }
 // Purpose: The result of a call to RemoveDependency.
 void Steam::_remove_ugc_dependency_result(RemoveUGCDependencyResult_t* callData, bool bIOFailure){
