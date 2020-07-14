@@ -6,6 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 7/13/20:**
+- Added: GodotSteamHL link to lobby/P2P tutorial
+- Added: additional information to lobby/P2P tutorial
+
 **Update 6/30/20:**
 - Changed: updated GodotSteam version
 - Fixed: incorrect status of Remote Storage on to-do list
