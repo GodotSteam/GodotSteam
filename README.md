@@ -11,28 +11,21 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.6.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can download pre-compiled versions _(currently v3.7)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Versoin 3.6.2 Changes**
-- Fixed: issue where published File IDs were passed as 32-bit integers instead of 64-bit integers
-
-**Version 3.6.1 Changes**
-- Changed: function _getLobbyDataByIndex_ to _getAllLobbyData_
-- Changed: commented out _getAllLobbyData_ until crash is fixed
-- Fixed: issue where not having the game installed or owning the game caused a crash
-
-**Version 3.6 Changes**
-- Added: newest functions for Apps, Friends, and UserStats
-- Added: all functions and callbacks for Videos
-- Added: MinGW patch file for people using MinGW, thanks to _MichaelBelousov_
-- Added: all remaining Remote Storage, Utils, and Users functions and callbacks
-- Changed: some User callbacks were actually call results
-- Changed: moved callback code block to end of function block in godotsteam.cpp
-- Fixed: incorrect signal link for unsubscribe_item and subscribe_item callbacks
+**Version 3.7 Changes**
+- Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)
+- Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)
+- Added: Game Search callbacks, enums, and functions
+- Added: missing Steam Parties functions
+- Changed: bIOFailure argument naming in godotsteam.cpp to ioFailure
+- Fixed: issue where Cyrillic characters did not display correctly or at all
+- Fixed: call result for JoinParty, was previously callback
+- Removed: mingw_patch.py since it fixes one issue but creates additional issues
 
 Known Issues
 ----------
-- **Using MinGW causes crashes.** There is a _mingw-patch.py_ file that corrects one known crash due to compiling with MinGW but there is now a newer crash that hasn't been solved; as well as who knows how many unfound issues. I strong recommend you **do not use MinGW** to compile at this time.
+- **Using MinGW causes crashes.** I strong recommend you **do not use MinGW** to compile at this time.
 
 Quick How-To
 ----------
@@ -91,7 +84,7 @@ Quick How-To
   steam_appid.txt
   ./godot.windows.tools.64.exe
   ```
-- Your game must ship with the executable, Steam API DLL/SO/DyLIB, and steam_appid.txt to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.
+- Your game must ship with the executable and Steam API DLL/SO/DyLIB. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.  Do not include the steam_appid.txt or any .lib files.
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
   - **NOTE:** For Linux, you may have to load the overlay library for Steam overlay to work:
   ```

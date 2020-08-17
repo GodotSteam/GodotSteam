@@ -123,6 +123,14 @@ class Steam: public Object {
 		enum UserRestriction {
 			USER_RESTRICTION_NONE = 0, USER_RESTRICTION_UNKNOWN = 1, USER_RESTRICTION_ANY_CHAT = 2, USER_RESTRICTION_VOICE_CHAT = 4, USER_RESTRICTION_GROUP_CHAT = 8, USER_RESTRICTION_RATING = 16, USER_RESTRICTION_GAME_INVITES = 32, USER_RESTRICTION_TRADING = 64
 		};
+		// Game Search enums
+		enum GameSearchErrorCode {
+			GAME_SEARCH_ERROR_CODE_OK = 1, GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS = 2, GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS = 3, GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER = 4, GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE = 5, GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID = 6, GAME_SEARCH_ERROR_CODE_OFFLINE = 7, GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED = 8,
+			GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR = 9
+		};
+		enum PlayerResult {
+			PLAYER_RESULT_FAILED_TO_CONNECT = 1, PLAYER_RESULT_ABANDONED = 2, PLAYER_RESULT_KICKED = 3, PLAYER_RESULT_INCOMPLETE = 4, PLAYER_RESULT_COMPLETED = 5
+		};
 		// HTMLSurface enums
 		enum HTMLKeyModifiers {
 			HTML_KEY_MODIFIER_NONE = 0, HTML_KEY_MODIFIER_ALT_DOWN = (1<<0), HTML_KEY_MODIFIER_CTRL_DOWN = (1<<1), HTML_KEY_MODIFIER_SHIFT_DOWN = (1<<2)
@@ -221,6 +229,44 @@ class Steam: public Object {
 		enum SNetSocketState {
 			NET_SOCKET_STATE_INVALID = 0, NET_SOCKET_STATE_CONNECTED = 1, NET_SOCKET_STATE_INITIATED = 10, NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND = 11, NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES = 12, NET_SOCKET_STATE_CHALLENGE_HANDSHAKE = 15, NET_SOCKET_STATE_DISCONNECTING = 21, NET_SOCKET_STATE_LOCAL_DISCONNECT = 22, NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT = 23,
 			NET_SOCKET_STATE_REMOTE_END_DISCONNECTED = 24, NET_SOCKET_STATE_BROKEN = 25
+		};
+		// Networking Sockets enums
+		enum NetworkingConfigValue {
+			NETWORKING_CONFIG_INVALID = 0, NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND = 2, NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV = 3, NETWORKING_CONFIG_FAKE_PACKET_LAG_SEND = 4, NETWORKING_CONFIG_FAKE_PACKET_LAG_RECV = 5, NETWORKING_CONFIG_FAKE_PACKET_REORDER_SEND = 6, NETWORKING_CONFIG_FAKE_PACKET_REORDER_RECV = 7, NETWORKING_CONFIG_FAKE_PACKET_REORDER_TIME = 8,
+			NETWORKING_CONFIG_FAKE_PACKET_DUP_SEND = 26, NETWORKING_CONFIG_FAKE_PACKET_DUP_REVC = 27, NETWORKING_CONFIG_FAKE_PACKET_DUP_TIME_MAX = 28, NETWORKING_CONFIG_TIMEOUT_INITIAL = 24, NETWORKING_CONFIG_TIMEOUT_CONNECTED = 25, NETWORKING_CONFIG_SEND_BUFFER_SIZE = 9, NETWORKING_CONFIG_SEND_RATE_MIN = 10, NETWORKING_CONFIG_SEND_RATE_MAX = 11,
+			NETWORKING_CONFIG_NAGLE_TIME = 12, NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH = 23, NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL_INITIAL = 19, NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL = 20, NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE = 21, NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET = 22,
+			NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER = 29, NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS = 30, NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR = 31, NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT = 13, NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE = 14, NETWORKING_CONFIG_LOG_LEVEL_MESSAGE = 15, NETWORKING_CONFIG_LOG_LEVEL_PACKET_GAPS = 16,
+			NETWORKING_CONFIG_LOG_LEVEL_P2P_RENDEZVOUS = 17, NETWORKING_CONFIG_LOG_LEVEL_SRD_RELAY_PINGS = 18
+		};
+		enum NetworkingGetConfigValueResult {
+			NETWORKING_GET_CONFIG_VALUE_BAD_VALUE = -1, NETWORKING_GET_CONFIG_VALUE_BAD_SCOPE_OBJ = -2, NETWORKING_GET_CONFIG_VALUE_BUFFER_TOO_SMALL = -3, NETWORKING_GET_CONFIG_VALUE_OK = 1, NETWORKING_GET_CONFIG_VALUE_OK_INHERITED = 2, NETWORKING_GET_CONFIG_VALUE_FORCE_32BIT = 0x7fffffff
+		};
+		enum NetworkingConnectionState {
+			CONNECTION_STATE_NONE = 0, CONNECTION_STATE_CONNECTING = 1, CONNECTION_STATE_FINDING_ROUTE = 2, CONNECTION_STATE_CONNECTED = 3, CONNECTION_STATE_CLOSED_BY_PEER = 4, CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY = 5, CONNECTION_STATE_FIN_WAIT = -1, CONNECTION_STATE_LINGER = -2, CONNECTION_STATE_DEAD = -3, CONNECTION_STATE_FORCE32BIT = 0x7fffffff
+		};
+		enum NetworkingConnectionEnd {
+			CONNECTION_END_INVALID = 0, CONNECTION_END_APP_MIN = 1000, CONNECTION_END_MAX = 1999, CONNECTION_END_APP_EXCEPTION_MIN = 2000, CONNECTION_END_APP_EXCEPTION_MAX = 2999, CONNECTION_END_LOCAL_MIN = 3000, CONNECTION_END_LOCAL_OFFLINE_MODE = 3001, CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY = 3002, CONNECTION_END_LOCAL_HOSTED_sERVER_PRIMARY_RELAY = 3003,
+			CONNECTION_END_LOCAL_NETWORK_CONFIG = 3004, CONNECTION_END_LOCAL_RIGHTS = 3005, CONNECTION_END_LOCAL_MAX = 3999, CONNECTION_END_REMOVE_MIN = 4000, CONNECTION_END_REMOTE_TIMEOUT = 4001, CONNECTION_END_REMOTE_BAD_CRYPT = 4002, CONNECTION_END_REMOTE_BAD_CERT = 4003, CONNECTION_END_REMOTE_NOT_LOGGED_IN = 4004, CONNECTION_END_REMOTE_NOT_RUNNING_APP = 4005,
+			CONNECTION_END_BAD_PROTOCOL_VERSION = 4006, CONNECTION_END_REMOTE_MAX = 4999, CONNECTION_END_MISC_MIN = 5000, CONNECTION_END_MISC_GENERIC = 5001, CONNECTION_END_MISC_INTERNAL_ERROR = 5002, CONNECTION_END_MISC_TIMEOUT = 5003, CONNECTION_END_MISC_RELAY_CONNECTIVITY = 5004, CONNECTION_END_MISC_STEAM_CONNECTIVITY = 5005,
+			CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT = 5006, CONNECTION_END_MISC_MAX = 5999
+		};
+		enum NetworkingIdentityType {
+			IDENTITY_TYPE_INVALID = 0, IDENTITY_TYPE_STEAMID = 16, IDENTITY_TYPE_IP_ADDRESS = 1, IDENTITY_TYPE_GENERIC_STRING = 2, IDENTITY_TYPE_GENERIC_BYTES = 3, IDENTITY_TYPE_FORCE_32BIT = 0x7fffffff
+		};
+		enum NetworkingSocketsDebugOutputType {
+			NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE = 0, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG = 1, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR = 2, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT = 3, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING = 4, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG = 5, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE = 6,
+			NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG = 7, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING = 8, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT = 0x7fffffff
+		};
+		// Networking Utils enums {
+		enum NetworkingAvailability {
+			NETWORKING_AVAILABILITY_CANNOT_TRY = -102, NETWORKING_AVAILABILITY_FAILED = -101, NETWORKING_AVAILABILITY_PREVIOUSLY = -100, NETWORKING_AVAILABILITY_NEVER_TRIED = 1, NETWORKING_AVAILABILITY_WAITING = 2, NETWORKING_AVAILABILITY_ATTEMPTING = 3, NETWORKING_AVAILABILITY_CURRENT = 100, NETWORKING_AVAILABILITY_UNKNOWN = 0,
+			NETWORKING_AVAILABILITY_FORCE_32BIT = 0x7fffffff
+		};
+		enum NetworkingConfigScope {
+			NETWORKING_CONFIG_SCOPE_GLOBAL = 1, NETWORKING_CONFIG_SCOPE_SOCKETS_INTERFACE = 2, NETWORKING_CONFIG_SCOPE_LISTEN_SOCKET = 3, NETWORKING_CONFIG_SCOPE_CONNECTION = 4, NETWORKING_CONFIG_SCOPE_FORCE_32BIT = 0x7fffffff
+		};
+		enum NetworkingConfigDataType {
+			NETWORKING_CONFIG_TYPE_INT32 = 1, NETWORKING_CONFIG_TYPE_INT64 = 2, NETWORKING_CONFIG_TYPE_FLOAT = 3, NETWORKING_CONFIG_TYPE_STRING = 4, NETWORKING_CONFIG_TYPE_FUNCTION_PTR = 5, NETWORKING_CONFIG_TYPE_FORCE_32BIT = 0x7fffffff
 		};
 		// Steam Parties enums
 		enum SteamPartyBeaconLocationType {
@@ -445,6 +491,22 @@ class Steam: public Object {
 		void setPlayedWith(uint64_t steamID);
 		bool setRichPresence(const String& key, const String& value);
 
+		// Game Search //////////////////////////
+		int addGameSearchParams(const String& key, const String& values);
+		int searchForGameWithLobby(uint64_t lobbyID, int playerMin, int playerMax);
+		int searchForGameSolo(int playerMin, int playerMax);
+		int acceptGame();
+		int declineGame();
+//		String retrieveConnectionDetails(uint64_t hostID);
+		int endGameSearch();
+		int setGameHostParams(const String& key, const String& value);
+		int setConnectionDetails(const String& details, int connectionDetails);
+		int requestPlayersForGame(int playerMin, int playerMax, int maxTeamSize);
+		int hostConfirmGameStart(uint64_t gameID);
+		int cancelRequestPlayersForGame();
+		int submitPlayerResult(uint64_t gameID, uint64_t playerID, int playerResult);
+		int endGame(uint64_t gameID);
+
 		// HTML Surface /////////////////////////
 		void addHeader(const String& key, const String& value);
 		void allowStartRequest(bool allowed);
@@ -615,8 +677,23 @@ class Steam: public Object {
 		bool setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent);
 
 		// Matchmaking Servers //////////////////
-		////////////// NOT IMPLEMENTED YET //////
-		/////////////////////////////////////////
+		void cancelQuery(uint64_t serverRequest);
+		void cancelServerQuery(int serverQuery);
+		int getServerCount(uint64_t serverRequest);
+//		gameserveritem_t * getServerDetails(uint64_t serverRequest, int server);
+		bool isRefreshing(uint64_t serverRequest);
+//		int pingServer(uint32 ip, uint16 port);
+//		int playerDetails(uint32 ip, uint16 port);
+		void refreshQuery(uint64_t serverRequest);
+		void refreshServer(uint64_t serverRequest, int server);
+		void releaseRequest(uint64_t serverRequest);
+//		uint64_t requestFavoritesServerList(int appID, Array filters);
+//		uint64_t requestFriendsServerList(int appID, Array filters);
+//		uint64_t requestHistoryServerList(int appID, Array filters);
+//		uint64_t requestInternetServerList(int appID, Array filters);
+//		uint64_t requestLANServerList(int appID, Array filters);
+//		uint64_t requestSpectatorServerList(int appID, Array filters);
+//		int serverRules(uint32 ip, uint16 port);
 
 		// Music ////////////////////////////////
 		bool musicIsEnabled();
@@ -672,18 +749,75 @@ class Steam: public Object {
 		Dictionary readP2PPacket(uint32_t packet, int channel = 0);
 		bool sendP2PPacket(uint64_t steamIDRemote, const PoolByteArray data, int eP2PSendType, int channel = 0);
 
-		// Networking Sockets ///////////////////
-		////////////// NOT IMPLEMENTED YET //////
-		/////////////////////////////////////////
+		// Networking Sockets ///////////////////		
+//		uint32 createListenSocketIP(const String& localAddress, int numOptions, const int options);
+//		uint32 connectByIPAddress(const String& address, int numOptions);
+//		uint32 createListenSocketP2P(int port, int optionSize, const NetworkingConfigValue options);
+//		uint32 connectP2P(int identity, int port, int numOptions);
+		int acceptConnection(uint32 connection);
+		bool closeConnection(uint32 peer, int reason, bool linger);
+		bool closeListenSocket(uint32 socket);
+//		bool createSocketPair(uint32 connection1, uint32 connection2, bool loopback, int identity1, int identity2);
+		int sendMessageToConnection(uint32 connection, const String& message, int flags);
+//		void sendMessages(int messages, const String& message, uint32 connection, int flags);
+		int flushMessagesOnConnection(uint32 connection);
+//		int receiveMessagesOnConnection(uint32 connection, int maxMessages);
+		uint32 createPollGroup();
+		bool destroyPollGroup(uint32 pollGroup);
+		bool setConnectionPollGroup(uint32 connection, uint32 pollGroup);
+//		int receiveMessagesOnPollGroup(uint32 pollGroup, int maxMessages);
+		bool getConnectionInfo(uint32 connection);
+		bool getQuickConnectionStatus(uint32 connection);
+		Dictionary getDetailedConnectionStatus(uint32 connection);
+		uint64_t getConnectionUserData(uint32 peer);
+		void setConnectionName(uint32 peer, const String& name);
+//		String getConnectionName(uint32 peer);
+		bool getListenSocketAddress(uint32 socket);
+//		bool getIdentity();
+		int initAuthentication();
+		int getAuthenticationStatus();
+//		bool receivedRelayAuthTicket(int ticketSize);
+//		int findRelayAuthTicketForServer(const SteamNetworkingIdentity gameServer, int port);
+//		uint32 connectToHostedDedicatedServer(const int target, int port, int optionSize, const NetworkingConfigValue options);
+		uint16 getHostedDedicatedServerPort();
+		uint32 getHostedDedicatedServerPOPId();
+//		int getHostedDedicatedServerAddress();
+//		uint32 createHostedDedicatedServerListenSocket(int port, int optionSize, const NetworkingConfigValue options);
+//		int getGameCoordinatorServerLogin();
 
 		// Networking Utils /////////////////////
-		////////////// NOT IMPLEMENTED YET //////
-		/////////////////////////////////////////
+		void initRelayNetworkAccess();
+		int getRelayNetworkStatus();
+		float getLocalPingLocation();
+//		int estimatePingTimeBetweenTwoLocations(const String& location1, const String& location2);
+//		int estimatePingTimeFromLocalHost(const uint8 location);
+//		String convertPingLocationToString(const String& location);
+//		bool parsePingLocationString(const String& string);
+		bool checkPingDataUpToDate(float maxAgeInSeconds);
+//		bool isPingMeasurementInProgress();
+//		int getPingToDataCenter(uint32 popID, uint32 viaRelayPOP);
+		int getDirectPingToPOP(uint32 popID);
+		int getPOPCount();
+//		int getPOPList();
+//		bool setConfigValue(int value, int scopeType, String& object);
+//		Dictionary getConfigValue(int value, int scopeType, String& object);
+//		Dictionary getConfigValueInfo(int value);
+		int getFirstConfigValue();
+		bool setGlobalConfigValueInt32(int config, int32 value);
+		bool setGlobalConfigValueFloat(int config, float value);
+		bool setGlobalConfigValueString(int config, const String& value);
+		bool setConnectionConfigValueInt32(uint32 connection, int config, int32 value);
+		bool setConnectionConfigValueFloat(uint32 connection, int config, float value);
+		bool setConnectionConfigValueString(uint32 connection, int config, const String& value);
+//		int allocateMessage(int buffer);
+		uint32 getLocalTimestamp();
+//		void setDebugOutputFunction(int detailLevel, String& function);
 
 		// Parties //////////////////////////////
 		Array getAvailableBeaconLocations(uint32 max);
 		void createBeacon(uint32 openSlots, uint64_t location, int type, const String& connectString, const String& metadata);
 		void onReservationCompleted(uint64_t beacon, uint64_t steamID);
+		void cancelReservation(uint64_t beacon, uint64_t steamID);
 		void changeNumOpenSlots(uint64_t beacon, uint32 openSlots);
 		bool destroyBeacon(uint64_t beacon);
 		uint32 getNumActiveBeacons();
@@ -963,6 +1097,13 @@ class Steam: public Object {
 
 		// Matchmaking Server
 		int serverQuery;
+		uint64_t serverRequest;
+
+		// Networking Sockets
+		uint32 networkConnection;
+		uint32 listenSocket;
+		uint32 networkPollGroup;
+		uint64_t networkingMicroseconds;
 
 		// Parties
 		uint64 partyBeaconID;
@@ -1061,12 +1202,78 @@ class Steam: public Object {
 		};
 		Vector<SteamItemDetails> itemDetails;
 
-		// Matchmaking Game Server Keky/Values
+		// Matchmaking Game Server Key/Values
 		struct MatchMakingKeyValuePair {
 			char key[256];
 			char value[256];
 		};
 		Vector<MatchMakingKeyValuePair> matchmakingPair;
+
+		// Networking configuration value
+		struct SteamNetworkingConfigValue {
+			int value;
+			int dataType;
+		};
+		Vector<SteamNetworkingConfigValue> configValue;
+
+		// Networking IP address
+		struct SteamNetworkingIPAddress {
+			char ip4;
+			uint16 m_port;
+		};
+		Vector<SteamNetworkingIPAddress> networkIP;
+
+		// Networking connection information
+		struct NetworkingConnectionInfo {
+			SteamNetworkingIdentity identityRemote;											// Who is on the other end?  Depending on the connection type and phase of the connection, we might not know
+			int64 userData;																	// Arbitrary user data set by the local application code
+			uint32 listenSocket;															// Handle to listen socket this was connected on, or k_HSteamListenSocket_Invalid if we initiated the connection
+			SteamNetworkingIPAddr addressRemote;											// Remote address.  Might be all 0's if we don't know it, or if this is N/A.
+			uint16 pad1;																	// What data center is the remote host in?  (0 if we don't know.)
+			SteamNetworkingPOPID idPOPRelay;												// What relay are we using to communicate with the remote host? (0 if not applicable.)
+			ESteamNetworkingConnectionState state;											// High level state of the connection
+			int endReason;																	// Basic cause of the connection termination or problem.
+			char endDebug[ k_cchSteamNetworkingMaxConnectionCloseReason ];					// Human-readable, but non-localized explanation for connection termination or problem.  This is intended for debugging / diagnostic purposes only, not to display to users.  It might have some details specific to the issue.
+			char connectionDescription[ k_cchSteamNetworkingMaxConnectionDescription ];		// Debug description.  This includes the connection handle, connection type (and peer information), and the app name. This string is used in various internal logging messages
+			uint32 reserved[64];
+		};
+		Vector<NetworkingConnectionInfo> connectionInfo;
+
+		// Networking identity
+		struct SteamNetworkingIdentity {
+			int type;
+			uint64_t steamID;
+			bool is_local_host;
+		};
+		Vector<SteamNetworkingIdentity> networkIdentity;
+
+		// Datagram Game Server Login
+		struct SteamDatagramGameCoordinatorServerLogin {
+			int identity;
+			int appID;
+			uint32 time;
+			int appData;
+			char extraData;
+		};
+		Vector<SteamDatagramGameCoordinatorServerLogin> datagramServerLogin;
+
+		// Networking connection status
+		struct SteamNetworkingQuickConnectStatus {
+			ESteamNetworkingConnectionState state;
+			int ping;
+			float connectionQualityLocal;
+			float connectionQualityRemote;
+			float outPacketsPerSec;
+			float outBytesPerSec;
+			float inPacketsPerSec;
+			float inBytesPerSec;
+			int sendRateBytesPerSec;
+			int pendingUnreliable;
+			int pendingReliable;
+			int sentUnackedReliable;
+			SteamNetworkingMicroseconds secQueueTime;
+		};
+		Vector<SteamNetworkingQuickConnectStatus> networkQuickConnect;
 
 		// Party Beacon Location
 		struct SteamPartyBeaconLocation {
@@ -1106,6 +1313,15 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _persona_state_change, PersonaStateChange_t, callbackPersonaStateChange);
 		STEAM_CALLBACK(Steam, _name_changed, SetPersonaNameResponse_t, callbackNameChanged);
 		STEAM_CALLBACK(Steam, _overlay_browser_protocol, OverlayBrowserProtocolNavigation_t, callbackOverlayBrowserProtocol);
+
+		// Game Search callbacks ////////////////
+		STEAM_CALLBACK(Steam, _search_for_game_progress, SearchForGameProgressCallback_t, callbackSearchForGameProgress);
+		STEAM_CALLBACK(Steam, _search_for_game_result, SearchForGameResultCallback_t, callbackSearchForGameResult);
+		STEAM_CALLBACK(Steam, _request_players_for_game_progress, RequestPlayersForGameProgressCallback_t, callbackRequestPlayersForGameProgress);
+		STEAM_CALLBACK(Steam, _request_players_for_game_result, RequestPlayersForGameResultCallback_t, callbackRequestPlayersForGameResult);
+		STEAM_CALLBACK(Steam, _request_players_for_game_final_result, RequestPlayersForGameFinalResultCallback_t, callbackRequestPlayersForGameFinalResult);
+		STEAM_CALLBACK(Steam, _submit_player_result, SubmitPlayerResultResultCallback_t, callbackSubmitPlayerResult);
+		STEAM_CALLBACK(Steam, _end_game_result, EndGameResultCallback_t, callbackEndGameResult);
 
 		// HTML Surface callbacks ///////////////
 		STEAM_CALLBACK(Steam, _html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
@@ -1171,11 +1387,15 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _p2p_session_connect_fail, P2PSessionConnectFail_t, callbackP2PSessionConnectFail);
 		STEAM_CALLBACK(Steam, _p2p_session_request, P2PSessionRequest_t, callbackP2PSessionRequest);
 
+		// Networking Sockets callbacks /////////
+		STEAM_CALLBACK(Steam, _network_connection_status_changed, SteamNetConnectionStatusChangedCallback_t, callbackNetworkConnectionStatusChanged);
+		STEAM_CALLBACK(Steam, _network_authentication_status, SteamNetAuthenticationStatus_t, callbackNetworkAuthenticationStatus);
+
+		// Networking Utils callbacks ///////////
+		STEAM_CALLBACK(Steam, _relay_network_status, SteamRelayNetworkStatus_t, callbackRelayNetworkStatus);
+
 		// Parties //////////////////////////////
-		STEAM_CALLBACK(Steam, _join_party, JoinPartyCallback_t, callbackJoinParty);
-		STEAM_CALLBACK(Steam, _create_beacon, CreateBeaconCallback_t, callbackCreateBeacon);
 		STEAM_CALLBACK(Steam, _reservation_notification, ReservationNotificationCallback_t, callbackReserveNotification);
-		STEAM_CALLBACK(Steam, _change_num_open_slots, ChangeNumOpenSlotsCallback_t, callbackChangeNumOpenSlots);
 		STEAM_CALLBACK(Steam, _available_beacon_locations_updated, AvailableBeaconLocationsUpdated_t, callbackAvailableBeaconLocationsUpdated);
 		STEAM_CALLBACK(Steam, _active_beacons_updated, ActiveBeaconsUpdated_t, callbackActiveBeaconsUpdated);
 
@@ -1248,6 +1468,14 @@ class Steam: public Object {
 		void _lobby_created(LobbyCreated_t *callData, bool bIOFailure);
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool bIOFailure);
+
+		// Parties call results /////////////////
+		CCallResult<Steam, JoinPartyCallback_t> callResultJoinParty;
+		void _join_party(JoinPartyCallback_t *callData, bool bIOFailure);
+		CCallResult<Steam, CreateBeaconCallback_t> callResultCreateBeacon;
+		void _create_beacon(CreateBeaconCallback_t *callData, bool bIOFailure);
+		CCallResult<Steam, ChangeNumOpenSlotsCallback_t> callResultChangeNumOpenSlots;
+		void _change_num_open_slots(ChangeNumOpenSlotsCallback_t *callData, bool bIOFailure);
 
 		// Remote Storage call results //////////
 		CCallResult<Steam, RemoteStorageFileReadAsyncComplete_t> callResultFileReadAsyncComplete;
