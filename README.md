@@ -6,6 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 8/16/20:**
+- Added: more tasks to to-do list
+- Changed: crossed off last remaining classes needing added
+
 **Update 7/13/20:**
 - Added: GodotSteamHL link to lobby/P2P tutorial
 - Added: additional information to lobby/P2P tutorial
