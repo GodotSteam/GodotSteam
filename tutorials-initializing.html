@@ -43,10 +43,11 @@ if INIT['status'] != 1:
 								<li>verbal - this is essential the verbose version of status</li>
 								<li>status
 									<ul>
-										<li>0 - if things are working</li>
-										<li>1 - if it fails to initialize (default error)</li>
-										<li>2 - if Steam is not running</li>
-										<li>3 - if user is not logged in or has no connection to Steam</li>
+										<li>1 - Successfully initialized</li>
+										<li>2 - Failed to initialize (default error)</li>
+										<li>20 - Steam is not running</li>
+										<li>21 - User is not logged in or has no connection to Steam</li>
+										<li>79 - Invalid app ID or app not installed</li>
 									</ul>
 								</li>
 							</ul>
