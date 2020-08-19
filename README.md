@@ -88,7 +88,6 @@ Quick How-To
   ./godot.windows.tools.64.exe
   ```
 - Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash when testing or running the game outside of the Steam client.
-  - **NOTE:** Your game *must ship* with the executable and Steam API DLL/SO/DyLIB.  *Do not* include the steam_appid.txt or any *.lib files.
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
   - **NOTE:** For Linux, you may have to load the overlay library for Steam overlay to work:
   ```
@@ -102,6 +101,8 @@ Quick How-To
   This can be done in an .sh file that runs these before running your executable.  This issue may not arise for all users and can also just be done by the user in a terminal separately.
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.
+
+- When uploading your game to Steam, you *must* upload your game's executable and Steam API DLL/SO/DyLIB (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary.
 
 Donate
 -------------
