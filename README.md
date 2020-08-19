@@ -59,7 +59,7 @@ Quick How-To
   - Copy the shared library (steam_api), for your OS, from sdk/redistributable_bin/ folders to the Godot binary location (by default in the godot source /bin/ file but you can move them to a new folder).
   - Create a steam_appid.txt file with your game's app ID or 480 in this folder.  Necessary if the editor or game is run _outside_ of Steam.
 
-- The finished hierarchy should look like this:
+- The finished hierarchy should look like this (if you downloaded the pre-compiles, the editor files go in place of these tools files, which are the same thing):
   - Linux 32/64-bit
   ```
   libsteam_api.so
