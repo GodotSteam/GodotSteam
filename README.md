@@ -13,9 +13,6 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v3.7)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
-**Version 3.7.1 Changes**
-- Added: argument to SteamInit to pull all current stats or not, defaults to false
-
 **Version 3.7 Changes**
 - Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)
 - Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)
