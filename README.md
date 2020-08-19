@@ -13,6 +13,9 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v3.7)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
+**Version 3.7.1 Changes**
+- Added: argument to SteamInit to pull all current stats or not, defaults to false
+
 **Version 3.7 Changes**
 - Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)
 - Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)
@@ -84,7 +87,8 @@ Quick How-To
   steam_appid.txt
   ./godot.windows.tools.64.exe
   ```
-- Your game must ship with the executable and Steam API DLL/SO/DyLIB. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.  Do not include the steam_appid.txt or any .lib files.
+- Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash when testing or running the game outside of the Steam client.
+  - **NOTE:** Your game *must ship* with the executable and Steam API DLL/SO/DyLIB.  *Do not* include the steam_appid.txt or any *.lib files.
   - **NOTE:** For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.
   - **NOTE:** For Linux, you may have to load the overlay library for Steam overlay to work:
   ```
