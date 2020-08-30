@@ -98,8 +98,8 @@ steam_appid.txt
 ./godot.windows.tools.64.exe
 </code></pre><br/>
 						<h2>6. Done / Shipping</h2>
-						<p>Your game must ship with the executable, Steam API DLL/SO/DyLIB, and steam_appid.txt to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) or the steam_appid.txt will cause it fail and crash.</p>
-						<p>NOTE: For OSX, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash. <a href="tutorials-mac-export.html" target="_blank">Mac Exporting</a></li>More on this on the Mac Export tutorial.</a></p>
+						<p>Your game must ship with the executable and Steam API DLL/SO/DyLIB to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) will cause it fail and crash. Do not, however, ship your steam_appid.txt file.</p>
+						<p>NOTE: For OSX, the libsteam_api.dylib must be in the Content/MacOS/ folder in your application zip or the game will crash. <a href="tutorials-mac-export.html" target="_blank">Mac Exporting</a></li>More on this on the Mac Export tutorial.</a></p>
 						<p>From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam. You can also check out the tutorial section.</p>
 						<p>You may notice that achievements and stats do not work properly if the game is tested outside of Steam (as in running it from the Steam client itself). This behavior seems to be new within the last few weeks and is most likely a changed on Valve's end.</p>
 					</section>

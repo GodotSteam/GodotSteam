@@ -6,6 +6,11 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 8/30/20:**
+- Changed: to-do list, finished some tasks, added some tasks
+- Changed: updated the change log for server
+- Changed; updated the how-to for server
+
 **Update 8/22/20:**
 - Changed: added new contributor
 

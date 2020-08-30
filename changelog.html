@@ -40,6 +40,17 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.7 Changes</h3>
+						<ul>
+							<li>Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
+							<li>Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
+							<li>Added: Game Search callbacks, enums, and functions</li>
+							<li>Added: missing Steam Parties functions</li>
+							<li>Changed: bIOFailure argument naming in godotsteam.cpp to ioFailure</li>
+							<li>Fixed: issue where Cyrillic characters did not display correctly or at all</li>
+							<li>Fixed: call result for JoinParty, was previously callback</li>
+							<li>Removed: mingw_patch.py since it fixes one issue but creates additional issues</li>
+    					</ul>
 						<h3>Version 3.6.1 Changes</h3>
 						<ul>
 							<li>Changed: function getLobbyDataByIndex to getAllLobbyData</li>
@@ -429,30 +440,6 @@
 							<li>Changed: minor things in godotsteam.cpp</li>
 						</ul>
 						<hr />
-						<h2>Minimal (Godot 2.x and Godot 3.x)</h2>
-						<a id="min"></a>
-						<h3>Version 1.1</h3>
-						<ul>
-							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
-							<li>Added: missing initialization constants</li>
-							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
-							<li>Fixed: currentAppID not utilized correctly</li>
-						</ul>
-						<h3>Version 1.0.2</h3>
-						<ul>
-							<li>Added: leaderboard functionality</li>
-							<li>Added: compiling flag for Linux and Mac (Godot 2.x only), need for new Steamworks 1.44</li>
-							<li>Changed: linked against Steamworks 1.44</li>
-						</ul>
-						<h3>Version 1.0.1</h3>
-						<ul>
-							<li>Fixed: Linux version now looks for libsteam_api.so in local directory</li>
-						</ul>
-						<h3>Version 1.0.0</h3>
-						<ul>
-							<li>Added: all the minimal useful functions for Steam</li>
-						</ul>
-						<hr />
 						<h2>GDNative</h2>
 						<a id="gdnative"></a>
 						<h3>Version 2.1.0</h3>
@@ -487,6 +474,13 @@
 						<hr />
 						<h2>Server</h2>
 						<a id="server"></a>
+						<h3>Version 1.1.0 Changes</h3>
+						<ul>
+							<li>Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes</li>
+							<li>Added: related callbacks, call results, constants, and enums</li>
+							<li>Added: headless server platform for linux</li>
+							<li>Fixed: OSX compiling config rules</li>
+						</ul>
 						<h3>Version 1.0.0</h3>
 						<ul>
 							<li>Added: missing server functions</li>
