@@ -1091,7 +1091,7 @@ void SteamServer::setDedicatedServer(bool dedicated){
 }
 // NOTE: The following are login functions.
 //
-// Being process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.
+// Begin process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.
 void SteamServer::logOn(const String& token){
 	if(SteamGameServer() == NULL){
 		return;
@@ -3271,6 +3271,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("serverInit", &SteamServer::serverInit);
 	ClassDB::bind_method("serverReleaseCurrentThreadMemory", &SteamServer::serverReleaseCurrentThreadMemory);
 	ClassDB::bind_method("serverShutdown", &SteamServer::serverShutdown);
+	ClassDB::bind_method("run_callbacks", &SteamServer::run_callbacks);
 
 	// Apps Bind Methods ////////////////////////
 	ClassDB::bind_method("isSubscribed", &SteamServer::isSubscribed);
