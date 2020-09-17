@@ -1,5 +1,5 @@
 # GodotSteam Server for Godot 3.x
-Steam Server API for the Godot game engine (versions 3 to 3.2.2). For the Windows, Linux, and Mac platforms. 
+Steam Server API for the Godot game engine (versions 3 to 3.2.3). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
@@ -13,20 +13,15 @@ You can also check out the Search Help section inside Godot Engine after compili
 
 Current Build
 ----------
+**Version 1.1.1 Changes**
+- Changed: includes Godot header file to allow more than 5 arguments in a function
+- Fixed: filterText for Steamworks SDK 1.50
+
 **Version 1.1.0 Changes**
 - Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes
 - Added: related callbacks, call results, constants, and enums
 - Added: headless server platform for linux
 - Fixed: OSX compiling config rules
-
-**Version 1.0.0 Changes**
-- Added: missing server functions
-- Fixed: missing argument in config.py
-- Fixed: missing Godot include that allows more than 5 arguments per function
-- Fixed: a lot of different functions
-- Fixed: issue with include in register_types.cpp
-- Removed: remaining depreciated functions
-- Removed: functions not compatible with new networking functions
 
 Known Issues
 ----------
@@ -36,7 +31,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.2.2.
+- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.2.3.
 - Move the following to godotsteam_server/sdk/:
 ````
     sdk/public/

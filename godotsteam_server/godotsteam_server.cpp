@@ -1716,108 +1716,107 @@ uint64_t SteamServer::createQueryUGCDetailsRequest(Array publishedFileIDs){
 	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUGCDetailsRequest(fileIDs, fileCount);
 	return (uint64_t)handle;
 }
-// WEIRD ERROR WHERE GODOT WON'T ALLOW MORE THAN 5 ARGUMENTS
 // Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.
-//uint64_t SteamServer::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
-//	if(SteamUGC() == NULL){
-//		return 0;
-//	}
-//	AccountID_t account = (int)accountID;
-//	EUserUGCList list;
-//	if(listType == 0){
-//		list = k_EUserUGCList_Published;
-//	}
-//	else if(listType == 1){
-//		list = k_EUserUGCList_VotedOn;
-//	}
-//	else if(listType == 2){
-//		list = k_EUserUGCList_VotedUp;
-//	}
-//	else if(listType == 3){
-//		list = k_EUserUGCList_VotedDown;
-//	}
-//	else if(listType == 4){
-//		list = k_EUserUGCList_WillVoteLater;
-//	}
-//	else if(listType == 5){
-//		list = k_EUserUGCList_Favorited;
-//	}
-//	else if(listType == 6){
-//		list = k_EUserUGCList_Subscribed;
-//	}
-//	else if(listType == 7){
-//		list = k_EUserUGCList_UsedOrPlayed;
-//	}
-//	else{
-//		list = k_EUserUGCList_Followed;
-//	}
-//	EUGCMatchingUGCType match;
-//	if(matchingUGCType == 0){
-//		match = k_EUGCMatchingUGCType_All;
-//	}
-//	else if(matchingUGCType == 1){
-//		match = k_EUGCMatchingUGCType_Items_Mtx;
-//	}
-//	else if(matchingUGCType == 2){
-//		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
-//	}
-//	else if(matchingUGCType == 3){
-//		match = k_EUGCMatchingUGCType_Collections;
-//	}
-//	else if(matchingUGCType == 4){
-//		match = k_EUGCMatchingUGCType_Artwork;
-//	}
-//	else if(matchingUGCType == 5){
-//		match = k_EUGCMatchingUGCType_Videos;
-//	}
-//	else if(matchingUGCType == 6){
-//		match = k_EUGCMatchingUGCType_Screenshots;
-//	}
-//	else if(matchingUGCType == 7){
-//		match = k_EUGCMatchingUGCType_AllGuides;
-//	}
-//	else if(matchingUGCType == 8){
-//		match = k_EUGCMatchingUGCType_WebGuides;
-//	}
-//	else if(matchingUGCType == 9){
-//		match = k_EUGCMatchingUGCType_IntegratedGuides;
-//	}
-//	else if(matchingUGCType == 10){
-//		match = k_EUGCMatchingUGCType_UsableInGame;
-//	}
-//	else if(matchingUGCType == 11){
-//		match = k_EUGCMatchingUGCType_ControllerBindings;
-//	}
-//	else{
-//		match = k_EUGCMatchingUGCType_GameManagedItems;
-//	}
-//	EUserUGCListSortOrder sort;
-//	if(sortOrder == 0){
-//		sort = k_EUserUGCListSortOrder_CreationOrderDesc;
-//	}
-//	else if(sortOrder == 1){
-//		sort = k_EUserUGCListSortOrder_CreationOrderAsc;
-//	}
-//	else if(sortOrder == 2){
-//		sort = k_EUserUGCListSortOrder_TitleAsc;
-//	}
-//	else if(sortOrder == 3){
-//		sort = k_EUserUGCListSortOrder_LastUpdatedDesc;
-//	}
-//	else if(sortOrder == 4){
-//		sort = k_EUserUGCListSortOrder_SubscriptionDateDesc;
-//	}
-//	else if(sortOrder == 5){
-//		sort = k_EUserUGCListSortOrder_VoteScoreDesc;
-//	}
-//	else{
-//		sort = k_EUserUGCListSortOrder_ForModeration;
-//	}
-//	AppId_t creator = (int)creatorID;
-//	AppId_t consumer = (int)consumerID;
-//	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUserUGCRequest(account, list, match, sort, creator, consumer, page);
-//	return (uint64_t)handle;
-//}
+uint64_t SteamServer::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
+	if(SteamUGC() == NULL){
+		return 0;
+	}
+	AccountID_t account = (int)accountID;
+	EUserUGCList list;
+	if(listType == 0){
+		list = k_EUserUGCList_Published;
+	}
+	else if(listType == 1){
+		list = k_EUserUGCList_VotedOn;
+	}
+	else if(listType == 2){
+		list = k_EUserUGCList_VotedUp;
+	}
+	else if(listType == 3){
+		list = k_EUserUGCList_VotedDown;
+	}
+	else if(listType == 4){
+		list = k_EUserUGCList_WillVoteLater;
+	}
+	else if(listType == 5){
+		list = k_EUserUGCList_Favorited;
+	}
+	else if(listType == 6){
+		list = k_EUserUGCList_Subscribed;
+	}
+	else if(listType == 7){
+		list = k_EUserUGCList_UsedOrPlayed;
+	}
+	else{
+		list = k_EUserUGCList_Followed;
+	}
+	EUGCMatchingUGCType match;
+	if(matchingUGCType == 0){
+		match = k_EUGCMatchingUGCType_All;
+	}
+	else if(matchingUGCType == 1){
+		match = k_EUGCMatchingUGCType_Items_Mtx;
+	}
+	else if(matchingUGCType == 2){
+		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
+	}
+	else if(matchingUGCType == 3){
+		match = k_EUGCMatchingUGCType_Collections;
+	}
+	else if(matchingUGCType == 4){
+		match = k_EUGCMatchingUGCType_Artwork;
+	}
+	else if(matchingUGCType == 5){
+		match = k_EUGCMatchingUGCType_Videos;
+	}
+	else if(matchingUGCType == 6){
+		match = k_EUGCMatchingUGCType_Screenshots;
+	}
+	else if(matchingUGCType == 7){
+		match = k_EUGCMatchingUGCType_AllGuides;
+	}
+	else if(matchingUGCType == 8){
+		match = k_EUGCMatchingUGCType_WebGuides;
+	}
+	else if(matchingUGCType == 9){
+		match = k_EUGCMatchingUGCType_IntegratedGuides;
+	}
+	else if(matchingUGCType == 10){
+		match = k_EUGCMatchingUGCType_UsableInGame;
+	}
+	else if(matchingUGCType == 11){
+		match = k_EUGCMatchingUGCType_ControllerBindings;
+	}
+	else{
+		match = k_EUGCMatchingUGCType_GameManagedItems;
+	}
+	EUserUGCListSortOrder sort;
+	if(sortOrder == 0){
+		sort = k_EUserUGCListSortOrder_CreationOrderDesc;
+	}
+	else if(sortOrder == 1){
+		sort = k_EUserUGCListSortOrder_CreationOrderAsc;
+	}
+	else if(sortOrder == 2){
+		sort = k_EUserUGCListSortOrder_TitleAsc;
+	}
+	else if(sortOrder == 3){
+		sort = k_EUserUGCListSortOrder_LastUpdatedDesc;
+	}
+	else if(sortOrder == 4){
+		sort = k_EUserUGCListSortOrder_SubscriptionDateDesc;
+	}
+	else if(sortOrder == 5){
+		sort = k_EUserUGCListSortOrder_VoteScoreDesc;
+	}
+	else{
+		sort = k_EUserUGCListSortOrder_ForModeration;
+	}
+	AppId_t creator = (int)creatorID;
+	AppId_t consumer = (int)consumerID;
+	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUserUGCRequest(account, list, match, sort, creator, consumer, page);
+	return (uint64_t)handle;
+}
 // Deletes the item without prompting the user.
 void SteamServer::deleteItem(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
@@ -2490,11 +2489,12 @@ bool SteamServer::updateItemPreviewVideo(uint64_t updateHandle, uint32 index, co
 /////////////////////////////////////////////////
 //
 // Filters the provided input message and places the filtered result into pchOutFilteredText.
-String SteamServer::filterText(const String& message, bool legalOnly){
+String SteamServer::filterText(int context, uint64_t steamID, const String& message){
 	String new_message = "";
 	if(SteamUtils() != NULL){
 		char *filtered = new char[2048];
-		SteamUtils()->FilterText(filtered, 2048, message.utf8().get_data(), legalOnly);
+		CSteamID sourceID = (uint64)steamID;
+		SteamUtils()->FilterText((ETextFilteringContext)context, sourceID, message.utf8().get_data(), filtered, strlen(filtered)+1);
 		new_message = filtered;
 	}
 	return new_message;

@@ -15,6 +15,7 @@
 #include "scene/resources/texture.h"
 #include "core/reference.h"
 #include "core/dictionary.h"
+#include "core/method_bind_ext.gen.inc"
 
 class SteamServer: public Object {
 	GDCLASS(SteamServer, Object);
@@ -352,7 +353,7 @@ class SteamServer: public Object {
 		void createItem(AppId_t appID, int fileType);
 		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page);
 		uint64_t createQueryUGCDetailsRequest(Array publishedFileID);
-//		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
+		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
 		void deleteItem(uint64_t publishedFileID);
 		bool downloadItem(uint64_t publishedFileID, bool highPriority);
 		Dictionary getItemDownloadInfo(uint64_t publishedFileID);
@@ -414,7 +415,7 @@ class SteamServer: public Object {
 		bool updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
 
 		// Utils ////////////////////////////////
-		String filterText(const String& message, bool legalOnly);
+		String filterText(int context, uint64_t steamID, const String& message);
 		String getAPICallFailureReason();
 		int getAppID();
 		int getCurrentBatteryPower();
