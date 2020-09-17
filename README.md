@@ -3,6 +3,8 @@ Steam API for the Godot game engine (versions 2 to 2.1.6). For the Windows, Linu
 
 Additional flavors include: [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master),[Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
+**Notice:** GodotSteam for Godot 2.x is now retired. Please use the Godot 3.x version and update your game. This branch still works fine but will not receive any further updates.
+
 Documentation
 ----------
 Documentation is available here: https://gramps.github.io/GodotSteam/
@@ -25,7 +27,7 @@ You can download pre-compiled versions _(currently v1.10)_ of this repo here: ht
 
 Known Issues
 ----------
-- None... so far.
+- **Using MinGW causes crashes.** I strong recommend you **do not use MinGW** to compile at this time.
 
 Quick How-To
 ----------
