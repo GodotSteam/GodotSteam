@@ -1,11 +1,11 @@
 def can_build(env, platform):
-	return platform=="x11" or platform=="windows" or platform=="osx"
+	return platform=="x11" or platform=="windows" or platform=="osx" or platform=="server"
 
 def configure(env):
 	env.Append(CPPPATH=["#modules/godotsteam/sdk/public/"])
 
 	# If compiling Linux
-	if env["platform"]== "x11":
+	if env["platform"]== "x11" or env["platform"] == "server":
 		env.Append(LIBS=["steam_api"])
 		env.Append(RPATH=["."])
 		if env["bits"]=="32":

@@ -107,10 +107,15 @@
 #define LEADERBOARD_NAME_MAX 128
 #define STAT_NAME_MAX 128
 
+// Declare some structs
+struct SteamNetworkingIdentity networkingIdentity;
+struct SteamNetworkingConfigValue_t networkingConfigValue;
+struct SteamNetworkingIPAddr networkingIPAddress;
+struct SteamNetworkPingLocation_t networkPingLocation;
+
 Steam* Steam::singleton = NULL;
 
-Steam::Steam()
-	:
+Steam::Steam():
 	// App callbacks ////////////////////////////
 	callbackDLCInstalled(this, &Steam::_dlc_installed),
 	callbackFileDetailsResult(this, &Steam::_file_details_result),
@@ -186,6 +191,7 @@ Steam::Steam()
 	callbackLobbyJoined(this, &Steam::_lobby_joined),
 	callbackLobbyGameCreated(this, &Steam::_lobby_game_created),
 	callbackLobbyInvite(this, &Steam::_lobby_invite),
+	callbackLobbyKicked(this, &Steam::_lobby_kicked),
 
 	// Music Remote callbacks ///////////////////
 	callbackMusicPlayerRemoteToFront(this, &Steam::_music_player_remote_to_front),
@@ -206,6 +212,9 @@ Steam::Steam()
 	// Networking callbacks /////////////////////
 	callbackP2PSessionConnectFail(this, &Steam::_p2p_session_connect_fail),
 	callbackP2PSessionRequest(this, &Steam::_p2p_session_request),
+
+	callbackNetworkMessagesSessionRequest(this, &Steam::_network_messages_session_request),
+	callbackNetworkMessagesSessionFailed(this, &Steam::_network_messages_session_failed),
 
 	// Networking Sockets callbacks /////////////
 	callbackNetworkConnectionStatusChanged(this, &Steam::_network_connection_status_changed),
@@ -290,7 +299,7 @@ bool Steam::restartAppIfNecessary(int value){
 	return SteamAPI_RestartAppIfNecessary((AppId_t)value);
 }
 // Initialize Steamworks
-Dictionary Steam::steamInit(){
+Dictionary Steam::steamInit(bool retrieve_stats){
 	// Create the response dictionary
 	Dictionary initialize;
 	// Attempt to initialize Steamworks
@@ -317,8 +326,8 @@ Dictionary Steam::steamInit(){
 		status = RESULT_NOT_LOGGED_ON;
 		verbal = "Not logged on / no connection to Steam.";
 	}
-	// Steam is connected and active, so load the stats and achievements
-	if(status == RESULT_OK && SteamUserStats() != NULL){
+	// Steam is connected and active, so load the stats and achievements if requested
+	if(status == RESULT_OK && SteamUserStats() != NULL && retrieve_stats){
 		requestCurrentStats();
 	}
 	// Get this app ID
@@ -1390,15 +1399,18 @@ int Steam::declineGame(){
 	return SteamGameSearch()->DeclineGame();
 }
 // After receiving GameStartedByHostCallback_t get connection details to server.
-//String Steam::retrieveConnectionDetails(uint64_t hostID){
-//	if(SteamGameSearch() == NULL){
-//		return "";
-//	}
-//	CSteamID host = (uint64)hostID;
-//	char connectionDetails;
-//	SteamGameSearch()->RetrieveConnectionDetails(host, &connectionDetails, 256);
-//	return connectionDetails;
-//}
+String Steam::retrieveConnectionDetails(uint64_t hostID){
+	if(SteamGameSearch() == NULL){
+		return "";
+	}
+	CSteamID host = (uint64)hostID;
+	char connectionDetails;
+	SteamGameSearch()->RetrieveConnectionDetails(host, &connectionDetails, 256);
+	// Messy conversion from char to String
+	String details;
+	details += connectionDetails;
+	return details;
+}
 // Leaves queue if still waiting.
 int Steam::endGameSearch(){
 	if(SteamGameSearch() == NULL){
@@ -1491,12 +1503,6 @@ void Steam::executeJavascript(const String& script){
 		SteamHTMLSurface()->ExecuteJavascript(browserHandle, script.utf8().get_data());
 	}
 }
-// Allows you to react to a page wanting to open a file load dialog. NOTE:You MUST call this in response to a HTML_FileOpenDialog_t callback.
-//void Steam::fileLoadDialogResponse(const String& selectedFiles){
-//	if(SteamHTMLSurface() != NULL){
-//		SteamHTMLSurface()->FileLoadDialogResponse(browserHandle, selectedFiles.utf8().get_data());
-//	}
-//}
 // Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call StopFind when the input string has changed or you want to stop searching.
 void Steam::find(const String& search, bool currentlyInFind, bool reverse){
 	if(SteamHTMLSurface() != NULL){
@@ -1612,11 +1618,11 @@ void Steam::setBackgroundMode(bool backgroundMode){
 	}
 }
 // Set a webcookie for a specific hostname. You can read more about the specifics of setting cookies here on wikipedia.
-//void Steam::setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool httpOnly){
-//	if(SteamHTMLSurface() != NULL){
-//		SteamHTMLSurface()->SetCookie(hostname.utf8().get_data(), key.utf8().get_data(), value.utf8().get_data(), path.utf8().get_data(), expires, secure, httpOnly);
-//	}
-//}
+void Steam::setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool httpOnly){
+	if(SteamHTMLSurface() != NULL){
+		SteamHTMLSurface()->SetCookie(hostname.utf8().get_data(), key.utf8().get_data(), value.utf8().get_data(), path.utf8().get_data(), expires, secure, httpOnly);
+	}
+}
 // Scroll the current page horizontally.
 void Steam::setHorizontalScroll(uint32 absolutePixelScroll){
 	if(SteamHTMLSurface() != NULL){
@@ -1790,7 +1796,7 @@ bool Steam::sendHTTPRequestAndStreamResponse(uint32 request){
 	return SteamHTTP()->SendHTTPRequestAndStreamResponse(request, &callHandle);
 }
 // Adds a cookie to the specified cookie container that will be used with future requests.
-bool Steam::setCookie(const String& host, const String& url, const String& cookie){
+bool Steam::setHTTPCookie(const String& host, const String& url, const String& cookie){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -1804,7 +1810,7 @@ bool Steam::setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds)
 	return SteamHTTP()->SetHTTPRequestAbsoluteTimeoutMS(request, milliseconds);
 }
 // Set a context value for the request, which will be returned in the HTTPRequestCompleted_t callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.
-bool Steam::setHTTPRequestContextValue(uint32 request, uint64 contextValue){
+bool Steam::setHTTPRequestContextValue(uint32 request, uint64_t contextValue){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -2147,11 +2153,11 @@ void Steam::triggerHapticPulse(uint64_t inputHandle, int targetPad, int duration
 	}
 }
 // Triggers a repeated haptic pulse on supported controllers.
-//void Steam::triggerRepeatedHapticPulse(uint64_t inputHandle, int targetPad, int duration, int offset, int repeat, int flags){
-//	if(SteamInput() != NULL){
-//		SteamInput()->TriggerRepeatedHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration, offset, repeat, flags);
-//	}
-//}
+void Steam::triggerRepeatedHapticPulse(uint64_t inputHandle, int targetPad, int duration, int offset, int repeat, int flags){
+	if(SteamInput() != NULL){
+		SteamInput()->TriggerRepeatedHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration, offset, repeat, flags);
+	}
+}
 // Trigger a vibration event on supported controllers.
 void Steam::triggerVibration(uint64_t inputHandle, uint16_t leftSpeed, uint16_t rightSpeed){
 	if(SteamInput() != NULL){
@@ -2638,25 +2644,25 @@ bool Steam::setLobbyData(uint64_t steamIDLobby, const String& key, const String&
 	return SteamMatchmaking()->SetLobbyData(lobbyID, key.utf8().get_data(), value.utf8().get_data());
 }
 // Get lobby data by the lobby's ID
-//Dictionary Steam::getAllLobbyData(uint64_t steamIDLobby){
-//	Dictionary data;
-//	if(SteamMatchmaking() == NULL){
-//		return data;
-//	}
-//	CSteamID lobbyID = (uint64)steamIDLobby;
-//	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobbyID);
-//	char key;
-//	char value;
-//	for(int i = 0; i < dataCount; i++){
-//		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, &key, MAX_LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
-//		if(success){
-//			data["index"] = i;
-//			data["key"] = key;
-//			data["value"] = value;
-//		}
-//	}
-//	return data;
-//}
+Dictionary Steam::getAllLobbyData(uint64_t steamIDLobby){
+	Dictionary data;
+	if(SteamMatchmaking() == NULL){
+		return data;
+	}
+	CSteamID lobbyID = (uint64)steamIDLobby;
+	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobbyID);
+	char key;
+	char value;
+	for(int i = 0; i < dataCount; i++){
+		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobbyID, i, &key, MAX_LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
+		if(success){
+			data["index"] = i;
+			data["key"] = key;
+			data["value"] = value;
+		}
+	}
+	return data;
+}
 // Removes a metadata key from the lobby.
 bool Steam::deleteLobbyData(uint64_t steamIDLobby, const String& key){
 	if(SteamMatchmaking() == NULL){
@@ -2841,13 +2847,32 @@ int Steam::getServerCount(uint64_t serverRequest){
 	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)serverRequest);
 }
 // Get the details of a given server in the list.
-//		gameserveritem_t * Steam::getServerDetails(uint64_t serverRequest, int server){
-//		if(SteamMatchmakingServers() == NULL){
-//			return;
-//		}
-//		return SteamMatchmakingServers()->GetServerDetails((HServerListRequest)serverRequest, server);
-//}
-// 
+Dictionary Steam::getServerDetails(uint64_t serverRequest, int server){
+	// Create a dictionary to populate
+	Dictionary gameServer;
+	if(SteamMatchmakingServers() != NULL){
+		gameserveritem_t* serverItem = new gameserveritem_t;
+		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)serverRequest, server);
+		// Populate the dictionary
+		gameServer["ping"] = serverItem->m_nPing;
+		gameServer["success_response"] = serverItem->m_bHadSuccessfulResponse;
+		gameServer["no_refresh"] = serverItem->m_bDoNotRefresh;
+		gameServer["game_dir"] = serverItem->m_szGameDir[k_cbMaxGameServerGameDir];
+		gameServer["map"] = serverItem->m_szMap[k_cbMaxGameServerMapName];
+		gameServer["description"] = serverItem->m_szGameDescription[k_cbMaxGameServerGameDescription];
+		gameServer["app_id"] = serverItem->m_nAppID;
+		gameServer["players"] = serverItem->m_nPlayers;
+		gameServer["max_players"] = serverItem->m_nMaxPlayers;
+		gameServer["bot_players"] = serverItem->m_nBotPlayers;
+		gameServer["password"] = serverItem->m_bPassword;
+		gameServer["secure"] = serverItem->m_bSecure;
+		gameServer["last_played"] = serverItem->m_ulTimeLastPlayed;
+		gameServer["server_version"] = serverItem->m_nServerVersion;
+	}
+	// Return the dictionary
+	return gameServer;
+}
+// Returns true if the list is currently refreshing its server list.
 bool Steam::isRefreshing(uint64_t serverRequest){
 	if(SteamMatchmakingServers() == NULL){
 		return false;
@@ -2855,13 +2880,31 @@ bool Steam::isRefreshing(uint64_t serverRequest){
 	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)serverRequest);
 }
 // Queries an individual game servers directly via IP/Port to request an updated ping time and other details from the server.
-//int Steam::pingServer(uint32 ip, uint16 port){
+//int Steam::pingServer(const String& ip, uint16 port){
 //	if(SteamMatchmakingServers() == NULL){
 //		return 0;
 //	}
-//	ISteamMatchmakingPingResponse serverResponse = 0;
-//	SteamMatchmakingServers()->PingServer(ip, port, &serverResponse);
-//	return (int)serverResponse;
+//	// Resolve address and convert it from IP_Address string to uint32_t
+//	IP_Address address;
+//	if(ip.is_valid_ip_address()){
+//		address = ip;
+//	}
+//	else{
+//		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+//	}
+//	// Resolution failed - Godot 3.0 has is_invalid() to check this
+//	if(address == IP_Address()){
+//		return 0;
+//	}
+//	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+//	// Swap the bytes
+//	uint8_t *ip4_p = (uint8_t *)&ip4;
+//	for(int i = 0; i < 2; i++){
+//		uint8_t temp = ip4_p[i];
+//		ip4_p[i] = ip4_p[3-i];
+//		ip4_p[3-i] = temp;
+//	}
+//	return SteamMatchmakingServers()->PingServer(*((uint32_t *)ip4_p), port, &ping_response);
 //}
 // Request the list of players currently playing on a server.
 //int Steam::playerDetails(uint32 ip, uint16 port){
@@ -2901,11 +2944,10 @@ void Steam::releaseRequest(uint64_t serverRequest){
 //		// Get the key/value pair
 //		Array pair = filters[i];
 //		// Get the key from the filter pair
-//		String key = pair[i];
-//		char this_key = key.utf8().get_data();
-//		ppchFilters->m_szKey[i] = this_key;
+//		String key = (String)pair[0];
+//		ppchFilters->m_szKey[i] = key.utf8().get_data();
 //		// Get the value from the filter pair
-//		String value = pair[i];
+//		String value = pair[1];
 //		ppchFilters->m_szValue[i] = value.utf8().get_data();
 //	}
 //	return SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)appID, ppchFilters, filterSize, serverResponse);
@@ -2996,7 +3038,7 @@ void Steam::releaseRequest(uint64_t serverRequest){
 //	if(SteamMatchmakingServers() == NULL){
 //		return 0;
 //	}
-//	int response;
+//	ISteamMatchmakingRulesResponse* response;
 //	return SteamMatchmakingServers()->ServerRules(ip, port, response);
 //}
 
@@ -3383,39 +3425,89 @@ bool Steam::sendP2PPacket(uint64_t steamIDRemote, PoolByteArray data, int sendTy
 }
 
 /////////////////////////////////////////////////
+///// NETWORKING MESSAGES ///////////////////////
+/////////////////////////////////////////////////
+//
+// Sends a message to the specified host. If we don't already have a session with that user, a session is implicitly created. There might be some handshaking that needs to happen before we can actually begin sending message data.
+int Steam::sendMessageToUser(const String& message, int flags, int channel){
+	if(SteamNetworkingMessages() == NULL){
+		return 0;
+	}
+	return SteamNetworkingMessages()->SendMessageToUser(networkingIdentity, message.utf8().get_data(), message.size(), flags, channel);
+}
+// Reads the next message that has been sent from another user via SendMessageToUser() on the given channel. Returns number of messages returned into your list.  (0 if no message are available on that channel.)
+//int Steam::receiveMessagesOnChannel(int channel, int maxMessages){
+//	if(SteamNetworkingMessages() == NULL){
+//		return 0;
+//	}
+//	// Acquire the message
+//	return SteamNetworkingMessages()->ReceiveMessagesOnChannel(channel, &networkMessages, maxMessages);
+//}
+// AcceptSessionWithUser() should only be called in response to a SteamP2PSessionRequest_t callback SteamP2PSessionRequest_t will be posted if another user tries to send you a message, and you haven't tried to talk to them.
+bool Steam::acceptSessionWithUser(){
+	if(SteamNetworkingMessages() == NULL){
+		return false;
+	}
+	return SteamNetworkingMessages()->AcceptSessionWithUser(networkingIdentity);
+}
+// Call this when you're done talking to a user to immediately free up resources under-the-hood.
+bool Steam::closeSessionWithUser(){
+	if(SteamNetworkingMessages() == NULL){
+		return false;
+	}
+	return SteamNetworkingMessages()->CloseSessionWithUser(networkingIdentity);
+}
+// Call this  when you're done talking to a user on a specific channel. Once all open channels to a user have been closed, the open session to the user will be closed, and any new data from this user will trigger a SteamP2PSessionRequest_t callback.
+bool Steam::closeChannelWithUser(int channel){
+	if(SteamNetworkingMessages() == NULL){
+		return false;
+	}
+	return SteamNetworkingMessages()->CloseChannelWithUser(networkingIdentity, channel);
+}
+// Returns information about the latest state of a connection, if any, with the given peer.
+int Steam::getSessionConnectionInfo(){
+	if(SteamNetworkingMessages() == NULL){
+		return 0;
+	}
+	SteamNetConnectionInfo_t info;
+	SteamNetworkingQuickConnectionStatus status;
+	return SteamNetworkingMessages()->GetSessionConnectionInfo(networkingIdentity, &info, &status);
+}
+
+/////////////////////////////////////////////////
 ///// NETWORKING SOCKETS ////////////////////////
 /////////////////////////////////////////////////
 //
 // Creates a "server" socket that listens for clients to connect to by calling ConnectByIPAddress, over ordinary UDP (IPv4 or IPv6)
-//uint32 Steam::createListenSocketIP(const String& localAddress, int numOptions, const int options){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingSockets()->CreateListenSocketIP(localAddress, options, &option);
-//}
+uint32 Steam::createListenSocketIP(const int options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	return SteamNetworkingSockets()->CreateListenSocketIP(networkingIPAddress, options, &networkingConfigValue);
+}
 // Creates a connection and begins talking to a "server" over UDP at the given IPv4 or IPv6 address. The remote host must be listening with a matching call to ISteamnetworkingSockets::CreateListenSocketIP on the specified port.
-//uint32 Steam::connectByIPAddress(const String& address, int numOptions){
+//uint32 Steam::connectByIPAddress(uint32 ip, uint16 port, Array options){
 //	if(SteamNetworkingSockets() == NULL){
 //		return 0;
 //	}
-//	SteamNetworkingConfigValue_t options;
-//	return SteamNetworkingSockets()->ConnectByIPAddress(address.utf8().get_data(), numOptions, options);
+//	// Set the address
+//	networkingIPAddress.SetIPv4(ip, port);
+//	return SteamNetworkingSockets()->ConnectByIPAddress(networkingIPAddress, numOptions, &networkingConfigValue);
 //}
 // Like CreateListenSocketIP, but clients will connect using ConnectP2P. The connection will be relayed through the Valve network.
-//uint32 Steam::createListenSocketP2P(int port, int optionSize, const NetworkingConfigValue options){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingSockets()->CreateListenSocketP2P(port, optionSize, options);
-//}
+uint32 Steam::createListenSocketP2P(int port, int optionSize){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	return SteamNetworkingSockets()->CreateListenSocketP2P(port, optionSize, &networkingConfigValue);
+}
 // Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
-//uint32 Steam::connectP2P(int identity, int port, int numOptions){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	SteamNetworkingConfigValue_t options;
-//	return SteamNetworkingSockets()->ConnectP2P((SteamNetworkingIdentity)identity, port, numOptions, options);
-//}
+uint32 Steam::connectP2P(int port, int numOptions){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	return SteamNetworkingSockets()->ConnectP2P(networkingIdentity, port, numOptions, &networkingConfigValue);
+}
 // Accept an incoming connection that has been received on a listen socket.
 int Steam::acceptConnection(uint32 connection){
 	if(SteamNetworkingSockets() == NULL){
@@ -3439,11 +3531,20 @@ bool Steam::closeListenSocket(uint32 socket){
 	return SteamNetworkingSockets()->CloseListenSocket((HSteamListenSocket)socket);
 }
 // Create a pair of connections that are talking to each other, e.g. a loopback connection. This is very useful for testing, or so that your client/server code can work the same even when you are running a local "server".
-//bool Steam::createSocketPair(uint32 connection1, uint32 connection2, bool loopback, int identity1, int identity2){
-//	if(SteamNetworkingSockets() == NULL){
-//		return false;
+//Dictionary Steam::createSocketPair(bool loopback, const String& identity1, const String& identity2){
+//	// Create a dictionary to populate
+//	Dictionary connection_pair;
+//	if(SteamNetworkingSockets() != NULL){
+//		// Get connections
+//		uint32 connection1 = 0;
+//		uint32 connection2 = 0;
+//		bool success = SteamNetworkingSockets()->CreateSocketPair(&connection1, &connection2, loopback, this_identity1, this_identity2);
+//		// Populate the dictionary
+//		connection_pair["success"] = success;
+//		connection_pair["connection1"] = connection1;
+//		connection_pair["connection2"] = connection2;
 //	}
-//	return SteamNetworkingSockets()->CreateSocketPair((HSteamNetConnection)connection1, (HSteamNetConnection)connection2, loopback, identity1, identity2);
+//	return connection_pair;
 //}
 // Send a message to the remote host on the specified connection.
 int Steam::sendMessageToConnection(uint32 connection, const String& message, int flags){
@@ -3456,12 +3557,13 @@ int Steam::sendMessageToConnection(uint32 connection, const String& message, int
 // Send one or more messages without copying the message payload. This is the most efficient way to send messages. To use this function, you must first allocate a message object using ISteamNetworkingUtils::AllocateMessage. (Do not declare one on the stack or allocate your own.)
 //void Steam::sendMessages(int messages, const String& message, uint32 connection, int flags){
 //	if(SteamNetworkingSockets() != NULL){
-//		SteamNetworkingMessage_t.m_pData = message;
-//		SteamNetworkingMessage_t.m_cbSize = message.size();
-//		SteamNetworkingMessage_t.m_conn = (HSteamNetConnection)connection;
-//		SteamNetworkingMessage_t.m_nFlags = flag;
+//		networkMessages = SteamNetworkingUtils()->AllocateMessage(0);
+//		networkMessages->m_pData = message.c_str();
+//		networkMessages->m_cbSize = message.size();
+//		networkMessages->m_conn = (HSteamNetConnection)connection;
+//		networkMessages->m_nFlags = flags;
 //		int64 result;
-//		SteamNetworkingSockets()->SendMessages(messages, messages, &result);
+//		SteamNetworkingSockets()->SendMessages(messages, *networkMessages, &result);
 //	}
 //}
 // Flush any messages waiting on the Nagle timer and send them at the next transmission opportunity (often that means right now).
@@ -3472,13 +3574,14 @@ int Steam::flushMessagesOnConnection(uint32 connection){
 	return SteamNetworkingSockets()->FlushMessagesOnConnection((HSteamNetConnection)connection);
 }
 // Fetch the next available message(s) from the connection, if any. Returns the number of messages returned into your array, up to nMaxMessages. If the connection handle is invalid, -1 is returned. If no data is available, 0, is returned.
-//int Steam::receiveMessagesOnConnection(uint32 connection, int maxMessages){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	SteamNetworkingMessage_t messages;
-//	return SteamNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection, &messages, maxMessages);
-//}
+int Steam::receiveMessagesOnConnection(uint32 connection, int maxMessages){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	// Should contain argument to set allocateMessage.
+	networkMessages = SteamNetworkingUtils()->AllocateMessage(0);
+	return SteamNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection, &networkMessages, maxMessages);
+}
 // Create a new poll group.
 uint32 Steam::createPollGroup(){
 	if(SteamNetworkingSockets() == NULL){
@@ -3501,13 +3604,13 @@ bool Steam::setConnectionPollGroup(uint32 connection, uint32 pollGroup){
 	return SteamNetworkingSockets()->SetConnectionPollGroup((HSteamNetConnection)connection, (HSteamNetPollGroup)pollGroup);
 }
 // Same as ReceiveMessagesOnConnection, but will return the next messages available on any connection in the poll group. Examine SteamNetworkingMessage_t::m_conn to know which connection. (SteamNetworkingMessage_t::m_nConnUserData might also be useful.)
-//int Steam::receiveMessagesOnPollGroup(uint32 pollGroup, int maxMessages){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	SteamNetworkingMessage_t *messages;
-//	return SteamNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)pollGroup, &messages, maxMessages);
-//}
+int Steam::receiveMessagesOnPollGroup(uint32 pollGroup, int maxMessages){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	networkMessages = SteamNetworkingUtils()->AllocateMessage(0);
+	return SteamNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)pollGroup, &networkMessages, maxMessages);
+}
 // Returns basic information about the high-level state of the connection. Returns false if the connection handle is invalid.
 bool Steam::getConnectionInfo(uint32 connection){
 	if(SteamNetworkingSockets() == NULL){
@@ -3551,14 +3654,17 @@ void Steam::setConnectionName(uint32 peer, const String& name){
 	}
 }
 // Fetch connection name into your buffer, which is at least nMaxLen bytes. Returns false if handle is invalid.
-//String Steam::getConnectionName(uint32 peer){
-//	if(SteamNetworkingSockets() == NULL){
-//		return "";
-//	}
-//	char name;
-//	bool success = SteamNetworkingSockets()->GetConnectionName((HSteamNetConnection)peer, &name, 256);
-//	return name;
-//}
+String Steam::getConnectionName(uint32 peer){
+	// Set empty string variable for use
+	String connection_name = "";
+	if(SteamNetworkingSockets() != NULL){
+		char name;
+		if(SteamNetworkingSockets()->GetConnectionName((HSteamNetConnection)peer, &name, 256)){
+			connection_name += name;	
+		}
+	}
+	return connection_name;
+}
 // Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
 bool Steam::getListenSocketAddress(uint32 socket){
 	if(SteamNetworkingSockets() == NULL){
@@ -3568,13 +3674,12 @@ bool Steam::getListenSocketAddress(uint32 socket){
 	return SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
 }
 // Get the identity assigned to this interface.
-//bool Steam::getIdentity(){
-//	if(SteamNetworkingSockets() == NULL){
-//		return false;
-//	}
-//	int identity;
-//	return SteamNetworkingSockets()->GetIdentity(&identity);
-//}
+bool Steam::getIdentity(){
+	if(SteamNetworkingSockets() == NULL){
+		return false;
+	}
+	return SteamNetworkingSockets()->GetIdentity(&networkingIdentity);
+}
 // Indicate our desire to be ready participate in authenticated communications. If we are currently not ready, then steps will be taken to obtain the necessary certificates. (This includes a certificate for us, as well as any CA certificates needed to authenticate peers.)
 int Steam::initAuthentication(){
 	if(SteamNetworkingSockets() == NULL){
@@ -3608,12 +3713,12 @@ int Steam::getAuthenticationStatus(){
 //	return SteamNetworkingSockets()->FindRelayAuthTicketForServer(gameServer, port, &ticket);
 //}
 // Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
-//uint32 Steam::connectToHostedDedicatedServer(const int target, int port, int optionSize, const NetworkingConfigValue options){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingSockets()->ConnectToHostedDedicatedServer((SteamNetworkingIdentity)target, port, optionSize, options);
-//}
+uint32 Steam::connectToHostedDedicatedServer(int port, int options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	return SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networkingIdentity, port, options, &networkingConfigValue);
+}
 // Returns the value of the SDR_LISTEN_PORT environment variable. This is the UDP server your server will be listening on. This will configured automatically for you in production environments.
 uint16 Steam::getHostedDedicatedServerPort(){
 	if(SteamNetworkingSockets() == NULL){
@@ -3637,20 +3742,19 @@ uint32 Steam::getHostedDedicatedServerPOPId(){
 //	return SteamNetworkingSockets()->GetHostedDedicatedServerAddress(&routing);
 //}
 // Create a listen socket on the specified virtual port. The physical UDP port to use will be determined by the SDR_LISTEN_PORT environment variable. If a UDP port is not configured, this call will fail.
-//uint32 Steam::createHostedDedicatedServerListenSocket(int port, int optionSize, const NetworkingConfigValue_t options){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, optionSize, options);
-//}
+uint32 Steam::createHostedDedicatedServerListenSocket(int port, int options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	return SteamNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, options, &networkingConfigValue);
+}
 // Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)
 //int Steam::getGameCoordinatorServerLogin(){
 //	if(SteamNetworkingSockets() == NULL){
 //		return 0;
 //	}
-//	datagramServerLogin loginInfo;
+//	SteamDatagramGameCoordinatorServerLogin loginInfo;
 //	int signedBlob;
-//
 //	return SteamNetworkingSockets()->GetGameCoordinatorServerLogin(&loginInfo, &signedBlob, &blob);
 //}
 
@@ -3680,38 +3784,48 @@ float Steam::getLocalPingLocation(){
 	return SteamNetworkingUtils()->GetLocalPingLocation(result);
 }
 // Estimate the round-trip latency between two arbitrary locations, in milliseconds. This is a conservative estimate, based on routing through the relay network. For most basic relayed connections, this ping time will be pretty accurate, since it will be based on the route likely to be actually used.
-//int Steam::estimatePingTimeBetweenTwoLocations(const String& location1, const String& location2){
-//	if(SteamNetworkingUtils() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingUtils()->EstimatePingTimeBetweenTwoLocations(location1.utf8().get_data(), location2.utf8().get_data());
-//}
+int Steam::estimatePingTimeBetweenTwoLocations(uint8 location1, uint8 location2){
+	if(SteamNetworkingUtils() == NULL){
+		return 0;
+	}
+	// Add these locations to ping structs
+	SteamNetworkPingLocation_t ping_location1;
+	SteamNetworkPingLocation_t ping_location2;
+	ping_location1.m_data[1] = {location1};
+	ping_location2.m_data[1] = {location2};
+	return SteamNetworkingUtils()->EstimatePingTimeBetweenTwoLocations(ping_location1, ping_location2);
+}
 // Same as EstimatePingTime, but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.
-//int Steam::estimatePingTimeFromLocalHost(uint8 location){
-//	if(SteamNetworkingUtils() == NULL){
-//		return 0;
-//	}
-//	SteamNetworkPingLocation_t pingLocation;
-//	pingLocation.m_data = location;
-//	return SteamNetworkingUtils()->EstimatePingTimeFromLocalHost(pingLocation);
-//}
+int Steam::estimatePingTimeFromLocalHost(uint8 location){
+	if(SteamNetworkingUtils() == NULL){
+		return 0;
+	}
+	// Add this location to ping struct
+	SteamNetworkPingLocation_t ping_location;
+	ping_location.m_data[1] = {location};
+	return SteamNetworkingUtils()->EstimatePingTimeFromLocalHost(ping_location);
+}
 // Convert a ping location into a text format suitable for sending over the wire. The format is a compact and human readable. However, it is subject to change so please do not parse it yourself. Your buffer must be at least k_cchMaxSteamNetworkingPingLocationString bytes.
-//String Steam::convertPingLocationToString(const String& location){
-//	if(SteamNetworkingUtils() != NULL){
-//		char buffer;
-//		SteamNetworkPingLocation_t pingLocation = (String)location.utf8().get_data();
-//		SteamNetworkingUtils()->ConvertPingLocationToString(pingLocation, &buffer, 1024);
-//		return buffer;
-//	}
-//}
+String Steam::convertPingLocationToString(uint8 location){
+	String location_string = "";
+	if(SteamNetworkingUtils() != NULL){
+		char buffer;
+		// Add this location to ping struct
+		SteamNetworkPingLocation_t ping_location;
+		ping_location.m_data[1] = {location};
+		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, &buffer, 1024);
+		location_string += buffer;
+	}
+	return location_string;
+}
 // Parse back SteamNetworkPingLocation_t string. Returns false if we couldn't understand the string.
-//bool Steam::parsePingLocationString(const String& string){
-//	if(SteamNetworkingUtils() == NULL){
-//		return false;
-//	}
-//	SteamNetworkPingLocation_t result;
-//	return SteamNetworkingUtils()->ParsePingLocationString(string.utf8().get_data(), &result);
-//}
+bool Steam::parsePingLocationString(const String& string){
+	if(SteamNetworkingUtils() == NULL){
+		return false;
+	}
+	SteamNetworkPingLocation_t result;
+	return SteamNetworkingUtils()->ParsePingLocationString(string.utf8().get_data(), result);
+}
 // Check if the ping data of sufficient recency is available, and if it's too old, start refreshing it.
 bool Steam::checkPingDataUpToDate(float maxAgeInSeconds){
 	if(SteamNetworkingUtils() == NULL){
@@ -3728,12 +3842,12 @@ bool Steam::checkPingDataUpToDate(float maxAgeInSeconds){
 //	return SteamNetworkingUtils()->IsPingMeasurementInProgress();
 //}
 // Fetch ping time of best available relayed route from this host to the specified data center.
-//int Steam::getPingToDataCenter(uint32 popID, uint32 viaRelayPOP){
-//	if(SteamNetworkingUtils() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingUtils()->GetPingToDataCenter(popID, (SteamNetworkingPOPID)*viaRelayPOP);
-//}
+int Steam::getPingToDataCenter(uint32 popID, uint64_t viaRelayPOP){
+	if(SteamNetworkingUtils() == NULL){
+		return 0;
+	}
+	return SteamNetworkingUtils()->GetPingToDataCenter(popID, (SteamNetworkingPOPID *)viaRelayPOP);
+}
 // Get *direct* ping time to the relays at the point of presence.
 int Steam::getDirectPingToPOP(uint32 popID){
 	if(SteamNetworkingUtils() == NULL){
@@ -3749,28 +3863,31 @@ int Steam::getPOPCount(){
 	return SteamNetworkingUtils()->GetPOPCount();
 }
 // Get list of all POP IDs. Returns the number of entries that were filled into your list.
-//int Steam::getPOPList(){
-//	if(SteamNetworkingUtils() == NULL){
-//		return 0;
-//	}
-//	SteamNetworkingPOPID list;
-//	return SteamNetworkingUtils()->GetPOPList(&list, list.size());
-//}
+int Steam::getPOPList(){
+	if(SteamNetworkingUtils() == NULL){
+		return 0;
+	}
+	SteamNetworkingPOPID list;
+	return SteamNetworkingUtils()->GetPOPList(&list, 256);
+}
 // Set a configuration value.
-//bool Steam::setConfigValue(int value, int scopeType, String& object){
+//bool Steam::setConfigValue(int setting, int scopeType, intptr_t object, int dataType, const void* value){
 //	if(SteamNetworkingUtils() == NULL){
 //		return false;
 //	}
-//	return SteamNetworkingUtils()->SetConfigValue(value, scopeType, (intptr_t)object.utf8().get_data(), dataType, arguments);
+//	ESteamNetworkingConfigValue config_setting = (ESteamNetworkingConfigValue)setting;
+//	ESteamNetworkingConfigScope config_scope = (ESteamNetworkingConfigScope)scopeType;
+//	ESteamNetworkingConfigDataType config_type = (ESteamNetworkingConfigDataType)dataType;
+//	return SteamNetworkingUtils()->SetConfigValue(config_setting, config_scope, object, config_type, value);
 //}
 // Get a configuration value.
-//Dictionary Steam::getConfigValue(int value, int scopeType, String& object){
+//Dictionary Steam::getConfigValue(int value, int scopeType, intptr_t object){
 //	Dictionary configValue;
 //	if(SteamNetworkingUtils() != NULL){
 //		ESteamNetworkingConfigDataType dataType;
 //		char result;
 //		size_t bufferSize;
-//		int valueResult = SteamNetworkingUtils()->GetConfigValue((ESteamNetworkingConfigValue)value, (ESteamNetworkingConfigScope)scopeType, (intptr_t)object.utf8().get_data(), &dataType, &result, &bufferSize);
+//		int valueResult = SteamNetworkingUtils()->GetConfigValue((ESteamNetworkingConfigValue)value, (ESteamNetworkingConfigScope)scopeType, object, &dataType, &result, &bufferSize);
 //		// Populate the dictionary
 //		configValue["result"] = valueResult;
 //		configValue["type"] = dataType;
@@ -3780,23 +3897,23 @@ int Steam::getPOPCount(){
 //	return configValue;
 //}
 // Returns info about a configuration value.
-//Dictionary Steam::getConfigValueInfo(int value){
-//	Dictionary configInfo;
-//	if(SteamNetworkingUtils() != NULL){
-//		char *name = new char[256];
-//		int dataType;
-//		int scope;
-//		int next;
-//		bool gotValue = SteamNetworkingUtils()->GetConfigValueInfo((ESteamNetworkingConfigValue)value, &name, &dataType, &scope, &next);
-//		// Populate the dictionary
-//		configInfo["success"] = gotValue;
-//		configInfo["value"] = name;
-//		configInfo["type"] = dataType;
-//		configInfo["scope"] = scope;
-//		configInfo["next"] = next;
-//	}
-//	return configInfo;
-//}
+Dictionary Steam::getConfigValueInfo(int value){
+	Dictionary configInfo;
+	if(SteamNetworkingUtils() != NULL){
+		const char *name;
+		ESteamNetworkingConfigDataType dataType;
+		ESteamNetworkingConfigScope scope;
+		ESteamNetworkingConfigValue next_value;
+		bool gotValue = SteamNetworkingUtils()->GetConfigValueInfo((ESteamNetworkingConfigValue)value, &name, &dataType, &scope, &next_value);
+		// Populate the dictionary
+		configInfo["success"] = gotValue;
+		configInfo["value"] = name;
+		configInfo["type"] = dataType;
+		configInfo["scope"] = scope;
+		configInfo["next_value"] = next_value;
+	}
+	return configInfo;
+}
 //
 int Steam::getFirstConfigValue(){
 	if(SteamNetworkingUtils() == NULL){
@@ -3842,12 +3959,11 @@ bool Steam::setConnectionConfigValueString(uint32 connection, int config, const 
 	return SteamNetworkingUtils()->SetConnectionConfigValueString(connection, (ESteamNetworkingConfigValue)config, value.utf8().get_data());
 }
 // Allocate and initialize a message object. Usually the reason you call this is to pass it to ISteamNetworkingSockets::SendMessages. The returned object will have all of the relevant fields cleared to zero.
-//int Steam::allocateMessage(int buffer){
-//	if(SteamNetworkingUtils() == NULL){
-//		return 0;
-//	}
-//	return SteamNetworkingUtils()->AllocateMessage(buffer);
-//}
+void Steam::allocateMessage(int buffer){
+	if(SteamNetworkingUtils() != NULL){
+		networkMessages = SteamNetworkingUtils()->AllocateMessage(buffer);
+	}
+}
 // A general purpose high resolution local timer with the following properties: Monotonicity is guaranteed. The initial value will be at least 24*3600*30*1e6, i.e. about 30 days worth of microseconds. In this way, the timestamp value of 0 will always be at least "30 days ago". Also, negative numbers will never be returned. Wraparound / overflow is not a practical concern.
 uint32 Steam::getLocalTimestamp(){
 	if(SteamNetworkingUtils() == NULL){
@@ -4550,108 +4666,107 @@ uint64_t Steam::createQueryUGCDetailsRequest(Array publishedFileIDs){
 	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUGCDetailsRequest(fileIDs, fileCount);
 	return (uint64_t)handle;
 }
-// WEIRD ERROR WHERE GODOT WON'T ALLOW MORE THAN 5 ARGUMENTS
 // Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.
-//uint64_t Steam::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
-//	if(SteamUGC() == NULL){
-//		return 0;
-//	}
-//	AccountID_t account = (int)accountID;
-//	EUserUGCList list;
-//	if(listType == 0){
-//		list = k_EUserUGCList_Published;
-//	}
-//	else if(listType == 1){
-//		list = k_EUserUGCList_VotedOn;
-//	}
-//	else if(listType == 2){
-//		list = k_EUserUGCList_VotedUp;
-//	}
-//	else if(listType == 3){
-//		list = k_EUserUGCList_VotedDown;
-//	}
-//	else if(listType == 4){
-//		list = k_EUserUGCList_WillVoteLater;
-//	}
-//	else if(listType == 5){
-//		list = k_EUserUGCList_Favorited;
-//	}
-//	else if(listType == 6){
-//		list = k_EUserUGCList_Subscribed;
-//	}
-//	else if(listType == 7){
-//		list = k_EUserUGCList_UsedOrPlayed;
-//	}
-//	else{
-//		list = k_EUserUGCList_Followed;
-//	}
-//	EUGCMatchingUGCType match;
-//	if(matchingUGCType == 0){
-//		match = k_EUGCMatchingUGCType_All;
-//	}
-//	else if(matchingUGCType == 1){
-//		match = k_EUGCMatchingUGCType_Items_Mtx;
-//	}
-//	else if(matchingUGCType == 2){
-//		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
-//	}
-//	else if(matchingUGCType == 3){
-//		match = k_EUGCMatchingUGCType_Collections;
-//	}
-//	else if(matchingUGCType == 4){
-//		match = k_EUGCMatchingUGCType_Artwork;
-//	}
-//	else if(matchingUGCType == 5){
-//		match = k_EUGCMatchingUGCType_Videos;
-//	}
-//	else if(matchingUGCType == 6){
-//		match = k_EUGCMatchingUGCType_Screenshots;
-//	}
-//	else if(matchingUGCType == 7){
-//		match = k_EUGCMatchingUGCType_AllGuides;
-//	}
-//	else if(matchingUGCType == 8){
-//		match = k_EUGCMatchingUGCType_WebGuides;
-//	}
-//	else if(matchingUGCType == 9){
-//		match = k_EUGCMatchingUGCType_IntegratedGuides;
-//	}
-//	else if(matchingUGCType == 10){
-//		match = k_EUGCMatchingUGCType_UsableInGame;
-//	}
-//	else if(matchingUGCType == 11){
-//		match = k_EUGCMatchingUGCType_ControllerBindings;
-//	}
-//	else{
-//		match = k_EUGCMatchingUGCType_GameManagedItems;
-//	}
-//	EUserUGCListSortOrder sort;
-//	if(sortOrder == 0){
-//		sort = k_EUserUGCListSortOrder_CreationOrderDesc;
-//	}
-//	else if(sortOrder == 1){
-//		sort = k_EUserUGCListSortOrder_CreationOrderAsc;
-//	}
-//	else if(sortOrder == 2){
-//		sort = k_EUserUGCListSortOrder_TitleAsc;
-//	}
-//	else if(sortOrder == 3){
-//		sort = k_EUserUGCListSortOrder_LastUpdatedDesc;
-//	}
-//	else if(sortOrder == 4){
-//		sort = k_EUserUGCListSortOrder_SubscriptionDateDesc;
-//	}
-//	else if(sortOrder == 5){
-//		sort = k_EUserUGCListSortOrder_VoteScoreDesc;
-//	}
-//	else{
-//		sort = k_EUserUGCListSortOrder_ForModeration;
-//	}
-//	AppId_t creator = (int)creatorID;
-//	AppId_t consumer = (int)consumerID;
-//	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUserUGCRequest(account, list, match, sort, creator, consumer, page);
-//	return (uint64_t)handle;
-//}
+uint64_t Steam::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
+	if(SteamUGC() == NULL){
+		return 0;
+	}
+	AccountID_t account = (int)accountID;
+	EUserUGCList list;
+	if(listType == 0){
+		list = k_EUserUGCList_Published;
+	}
+	else if(listType == 1){
+		list = k_EUserUGCList_VotedOn;
+	}
+	else if(listType == 2){
+		list = k_EUserUGCList_VotedUp;
+	}
+	else if(listType == 3){
+		list = k_EUserUGCList_VotedDown;
+	}
+	else if(listType == 4){
+		list = k_EUserUGCList_WillVoteLater;
+	}
+	else if(listType == 5){
+		list = k_EUserUGCList_Favorited;
+	}
+	else if(listType == 6){
+		list = k_EUserUGCList_Subscribed;
+	}
+	else if(listType == 7){
+		list = k_EUserUGCList_UsedOrPlayed;
+	}
+	else{
+		list = k_EUserUGCList_Followed;
+	}
+	EUGCMatchingUGCType match;
+	if(matchingUGCType == 0){
+		match = k_EUGCMatchingUGCType_All;
+	}
+	else if(matchingUGCType == 1){
+		match = k_EUGCMatchingUGCType_Items_Mtx;
+	}
+	else if(matchingUGCType == 2){
+		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
+	}
+	else if(matchingUGCType == 3){
+		match = k_EUGCMatchingUGCType_Collections;
+	}
+	else if(matchingUGCType == 4){
+		match = k_EUGCMatchingUGCType_Artwork;
+	}
+	else if(matchingUGCType == 5){
+		match = k_EUGCMatchingUGCType_Videos;
+	}
+	else if(matchingUGCType == 6){
+		match = k_EUGCMatchingUGCType_Screenshots;
+	}
+	else if(matchingUGCType == 7){
+		match = k_EUGCMatchingUGCType_AllGuides;
+	}
+	else if(matchingUGCType == 8){
+		match = k_EUGCMatchingUGCType_WebGuides;
+	}
+	else if(matchingUGCType == 9){
+		match = k_EUGCMatchingUGCType_IntegratedGuides;
+	}
+	else if(matchingUGCType == 10){
+		match = k_EUGCMatchingUGCType_UsableInGame;
+	}
+	else if(matchingUGCType == 11){
+		match = k_EUGCMatchingUGCType_ControllerBindings;
+	}
+	else{
+		match = k_EUGCMatchingUGCType_GameManagedItems;
+	}
+	EUserUGCListSortOrder sort;
+	if(sortOrder == 0){
+		sort = k_EUserUGCListSortOrder_CreationOrderDesc;
+	}
+	else if(sortOrder == 1){
+		sort = k_EUserUGCListSortOrder_CreationOrderAsc;
+	}
+	else if(sortOrder == 2){
+		sort = k_EUserUGCListSortOrder_TitleAsc;
+	}
+	else if(sortOrder == 3){
+		sort = k_EUserUGCListSortOrder_LastUpdatedDesc;
+	}
+	else if(sortOrder == 4){
+		sort = k_EUserUGCListSortOrder_SubscriptionDateDesc;
+	}
+	else if(sortOrder == 5){
+		sort = k_EUserUGCListSortOrder_VoteScoreDesc;
+	}
+	else{
+		sort = k_EUserUGCListSortOrder_ForModeration;
+	}
+	AppId_t creator = (int)creatorID;
+	AppId_t consumer = (int)consumerID;
+	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUserUGCRequest(account, list, match, sort, creator, consumer, page);
+	return (uint64_t)handle;
+}
 // Deletes the item without prompting the user.
 void Steam::deleteItem(uint64_t publishedFileID){
 	if(SteamUGC() != NULL){
@@ -6079,11 +6194,12 @@ Array Steam::getLeaderboardEntries(){
 /////////////////////////////////////////////////
 //
 // Filters the provided input message and places the filtered result into pchOutFilteredText.
-String Steam::filterText(const String& message, bool legalOnly){
+String Steam::filterText(int context, uint64_t steamID, const String& message){
 	String new_message = "";
 	if(SteamUtils() != NULL){
 		char *filtered = new char[2048];
-		SteamUtils()->FilterText(filtered, 2048, message.utf8().get_data(), legalOnly);
+		CSteamID sourceID = (uint64)steamID;
+		SteamUtils()->FilterText((ETextFilteringContext)context, sourceID, message.utf8().get_data(), filtered, strlen(filtered)+1);
 		new_message = filtered;
 	}
 	return new_message;
@@ -6695,6 +6811,10 @@ void Steam::_html_file_open_dialog(HTML_FileOpenDialog_t* callData){
 	browserHandle = callData->unBrowserHandle;
 	const String& title = callData->pchTitle;
 	const String& initialFile = callData->pchInitialFile;
+	// Allows you to react to a page wanting to open a file load dialog. NOTE: You MUST call this in response to a HTML_FileOpenDialog_t callback.
+	// So it is added here unless there is a case to use it separately.
+	SteamHTMLSurface()->FileLoadDialogResponse(browserHandle, &callData->pchInitialFile);
+	// Send the signal back to the user
 	emit_signal("html_file_open_dialog", title, initialFile);
 }
 // Called when a browser has finished loading a page.
@@ -7020,6 +7140,16 @@ void Steam::_lobby_data_update(LobbyDataUpdate_t* callData){
 	}
 	emit_signal("lobby_data_update", success, lobbyID, memberID, key);
 }
+// Posted if a user is forcefully removed from a lobby; can occur if a user loses connection to Steam.
+void Steam::_lobby_kicked(LobbyKicked_t* callData){
+	CSteamID steamLobbyID = callData->m_ulSteamIDLobby;
+	uint64_t lobbyID = steamLobbyID.ConvertToUint64();
+	CSteamID steamAdminID = callData->m_ulSteamIDAdmin;
+	uint64_t adminID = steamAdminID.ConvertToUint64();
+	uint8 due_to_disconnect = callData->m_bKickedDueToDisconnect;
+	emit_signal("lobby_kicked", lobbyID, adminID, due_to_disconnect);
+}
+
 // Received upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this.
 void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
 	CSteamID steamLobbyID = lobbyData->m_ulSteamIDLobby;
@@ -7131,6 +7261,21 @@ void Steam::_p2p_session_connect_fail(P2PSessionConnectFail_t* callData) {
 void Steam::_p2p_session_request(P2PSessionRequest_t* callData){
 	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
 	emit_signal("p2p_session_request", steamIDRemote);
+}
+
+// Networking Messages callbacks ////////////////
+//
+// Posted when a remote host is sending us a message, and we do not already have a session with them.
+void Steam::_network_messages_session_request(SteamNetworkingMessagesSessionRequest_t* callData){
+//	SteamNetworkingIdentity remote = callData->m_identityRemote;
+	emit_signal("network_messages_session_request");
+}
+// Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way.
+void Steam::_network_messages_session_failed(SteamNetworkingMessagesSessionFailed_t* callData){
+	SteamNetConnectionInfo_t info = callData->m_info;
+	// Parse out the reason for failure
+	int reason = info.m_eEndReason;
+	emit_signal("network_messages_session_failed", reason);
 }
 
 // Networking Sockets callbacks /////////////////
@@ -7777,7 +7922,7 @@ void Steam::_bind_methods(){
 	//
 	// Steam Main Bind Methods //////////////////
 	ClassDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
-	ClassDB::bind_method("steamInit", &Steam::steamInit);
+	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
 	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	
@@ -7878,7 +8023,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("searchForGameSolo", &Steam::searchForGameSolo);
 	ClassDB::bind_method("acceptGame", &Steam::acceptGame);
 	ClassDB::bind_method("declineGame", &Steam::declineGame);
-//	ClassDB::bind_method("retrieveConnectionDetails", &Steam::retrieveConnectionDetails);
+	ClassDB::bind_method("retrieveConnectionDetails", &Steam::retrieveConnectionDetails);
 	ClassDB::bind_method("endGameSearch", &Steam::endGameSearch);
 	ClassDB::bind_method("setGameHostParams", &Steam::setGameHostParams);
 	ClassDB::bind_method("setConnectionDetails", &Steam::setConnectionDetails);
@@ -7894,7 +8039,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("copyToClipboard", &Steam::copyToClipboard);
 	ClassDB::bind_method("createBrowser", &Steam::createBrowser);
 	ClassDB::bind_method("executeJavascript", &Steam::executeJavascript);
-//	ClassDB::bind_method("fileLoadDialogResponse", &Steam::fileLoadDialogResponse);
 	ClassDB::bind_method("find", &Steam::find);
 	ClassDB::bind_method("getLinkAtPosition", &Steam::getLinkAtPosition);
 	ClassDB::bind_method("goBack", &Steam::goBack);
@@ -7914,7 +8058,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("reload", &Steam::reload);
 	ClassDB::bind_method("removeBrowser", &Steam::removeBrowser);
 	ClassDB::bind_method("setBackgroundMode", &Steam::setBackgroundMode);
-//	ClassDB::bind_method("setCookie", &Steam::setCookie);
+	ClassDB::bind_method("setCookie", &Steam::setCookie);
 	ClassDB::bind_method("setHorizontalScroll", &Steam::setHorizontalScroll);
 	ClassDB::bind_method("setKeyFocus", &Steam::setKeyFocus);
 	ClassDB::bind_method("setPageScaleFactor", &Steam::setPageScaleFactor);
@@ -7924,6 +8068,33 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("stopFind", &Steam::stopFind);
 	ClassDB::bind_method("stopLoad", &Steam::stopLoad);
 	ClassDB::bind_method("viewSource", &Steam::viewSource);
+
+	// HTTP Bind Methods ////////////////////////
+	ClassDB::bind_method("createCookieContainer", &Steam::createCookieContainer);
+	ClassDB::bind_method("createHTTPRequest", &Steam::createHTTPRequest);
+	ClassDB::bind_method("deferHTTPRequest", &Steam::deferHTTPRequest);
+	ClassDB::bind_method("getHTTPDownloadProgressPct", &Steam::getHTTPDownloadProgressPct);
+	ClassDB::bind_method("getHTTPRequestWasTimedOut", &Steam::getHTTPRequestWasTimedOut);
+	ClassDB::bind_method("getHTTPResponseBodyData", &Steam::getHTTPResponseBodyData);
+	ClassDB::bind_method("getHTTPResponseBodySize", &Steam::getHTTPResponseBodySize);
+	ClassDB::bind_method("getHTTPResponseHeaderSize", &Steam::getHTTPResponseHeaderSize);
+	ClassDB::bind_method("getHTTPResponseHeaderValue", &Steam::getHTTPResponseHeaderValue);
+	ClassDB::bind_method("getHTTPStreamingResponseBodyData", &Steam::getHTTPStreamingResponseBodyData);
+	ClassDB::bind_method("prioritizeHTTPRequest", &Steam::prioritizeHTTPRequest);
+	ClassDB::bind_method("releaseCookieContainer", &Steam::releaseCookieContainer);
+	ClassDB::bind_method("releaseHTTPRequest", &Steam::releaseHTTPRequest);
+	ClassDB::bind_method("sendHTTPRequest", &Steam::sendHTTPRequest);
+	ClassDB::bind_method("sendHTTPRequestAndStreamResponse", &Steam::sendHTTPRequestAndStreamResponse);
+	ClassDB::bind_method("setHTTPCookie", &Steam::setHTTPCookie);
+	ClassDB::bind_method("setHTTPRequestAbsoluteTimeoutMS", &Steam::setHTTPRequestAbsoluteTimeoutMS);
+	ClassDB::bind_method("setHTTPRequestContextValue", &Steam::setHTTPRequestContextValue);
+	ClassDB::bind_method("setHTTPRequestCookieContainer", &Steam::setHTTPRequestCookieContainer);
+	ClassDB::bind_method("setHTTPRequestGetOrPostParameter", &Steam::setHTTPRequestGetOrPostParameter);
+	ClassDB::bind_method("setHTTPRequestHeaderValue", &Steam::setHTTPRequestHeaderValue);
+	ClassDB::bind_method("setHTTPRequestNetworkActivityTimeout", &Steam::setHTTPRequestNetworkActivityTimeout);
+	ClassDB::bind_method("setHTTPRequestRawPostBody", &Steam::setHTTPRequestRawPostBody);
+	ClassDB::bind_method("setHTTPRequestRequiresVerifiedCertificate", &Steam::setHTTPRequestRequiresVerifiedCertificate);
+	ClassDB::bind_method("setHTTPRequestUserAgentInfo", &Steam::setHTTPRequestUserAgentInfo);
 
 	// Input Bind Methods /////////////////
 	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
@@ -7957,7 +8128,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("stopAnalogActionMomentum", &Steam::stopAnalogActionMomentum);
 	ClassDB::bind_method("translateActionOrigin", &Steam::translateActionOrigin);
 	ClassDB::bind_method("triggerHapticPulse", &Steam::triggerHapticPulse);
-//	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
+	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
 	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
 
 	// Inventory Bind Methods ///////////////////
@@ -8014,7 +8185,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getLobbyMemberByIndex", &Steam::getLobbyMemberByIndex);
 	ClassDB::bind_method("getLobbyData", &Steam::getLobbyData);
 	ClassDB::bind_method("setLobbyData", &Steam::setLobbyData);
-//	ClassDB::bind_method("getAllLobbyData", &Steam::getAllLobbyData);
+	ClassDB::bind_method("getAllLobbyData", &Steam::getAllLobbyData);
 	ClassDB::bind_method("deleteLobbyData", &Steam::deleteLobbyData);
 	ClassDB::bind_method("getLobbyMemberData", &Steam::getLobbyMemberData);
 	ClassDB::bind_method("setLobbyMemberData", &Steam::setLobbyMemberData);
@@ -8034,9 +8205,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("cancelQuery", &Steam::cancelQuery);
 	ClassDB::bind_method("cancelServerQuery", &Steam::cancelServerQuery);
 	ClassDB::bind_method("getServerCount", &Steam::getServerCount);
-//	ClassDB::bind_method("getServerDetails", &Steam::getServerDetails);
+	ClassDB::bind_method("getServerDetails", &Steam::getServerDetails);
 	ClassDB::bind_method("isRefreshing", &Steam::isRefreshing);
-//	ClassDB::bind_method("pingServer", &Steam::pingServer);
+///	ClassDB::bind_method("pingServer", &Steam::pingServer);
 //	ClassDB::bind_method("playerDetails", &Steam::playerDetails);
 	ClassDB::bind_method("refreshQuery", &Steam::refreshQuery);
 	ClassDB::bind_method("refreshServer", &Steam::refreshServer);
@@ -8047,7 +8218,7 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method("requestInternetServerList", &Steam::requestInternetServerList);
 //	ClassDB::bind_method("requestLANServerList", &Steam::requestLANServerList);
 //	ClassDB::bind_method("requestSpectatorServerList", &Steam::requestSpectatorServerList);
-//	ClassDB::bind_method("serverRules", &Steam::serverRules);
+///	ClassDB::bind_method("serverRules", &Steam::serverRules);
 	
 	// Music Bind Methods ///////////////////////
 	ClassDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
@@ -8103,59 +8274,67 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("readP2PPacket", &Steam::readP2PPacket);
 	ClassDB::bind_method("sendP2PPacket", &Steam::sendP2PPacket);
 
+	// Networking Messages Bind Methods /////////
+	ClassDB::bind_method("sendMessageToUser", &Steam::sendMessageToUser);
+//	ClassDB::bind_method("receiveMessagesOnChannel", &Steam::receiveMessagesOnChannel);
+	ClassDB::bind_method("acceptSessionWithUser", &Steam::acceptSessionWithUser);
+	ClassDB::bind_method("closeSessionWithUser", &Steam::closeSessionWithUser);
+	ClassDB::bind_method("closeChannelWithUser", &Steam::closeChannelWithUser);
+	ClassDB::bind_method("getSessionConnectionInfo", &Steam::getSessionConnectionInfo);
+
 	// Networking Sockets Bind Methods //////////
-//	ClassDB::bind_method("createListenSocketIP", &Steam::createListenSocketIP);
-//	ClassDB::bind_method("connectByIPAddress", &Steam::connectByIPAddress);
-//	ClassDB::bind_method("createListenSocketP2P", &Steam::createListenSocketP2P);
-//	ClassDB::bind_method("connectP2P", &Steam::connectP2P);
+	ClassDB::bind_method("createListenSocketIP", &Steam::createListenSocketIP);
+///	ClassDB::bind_method("connectByIPAddress", &Steam::connectByIPAddress);
+	ClassDB::bind_method("createListenSocketP2P", &Steam::createListenSocketP2P);
+	ClassDB::bind_method("connectP2P", &Steam::connectP2P);
 	ClassDB::bind_method("acceptConnection", &Steam::acceptConnection);
 	ClassDB::bind_method("closeConnection", &Steam::closeConnection);
 	ClassDB::bind_method("closeListenSocket", &Steam::closeListenSocket);
-//	ClassDB::bind_method("createSocketPair", &Steam::createSocketPair);
+///	ClassDB::bind_method("createSocketPair", &Steam::createSocketPair);
 	ClassDB::bind_method("sendMessageToConnection", &Steam::sendMessageToConnection);
-//	ClassDB::bind_method("sendMessages", &Steam::sendMessages);
+///	ClassDB::bind_method("sendMessages", &Steam::sendMessages);
 	ClassDB::bind_method("flushMessagesOnConnection", &Steam::flushMessagesOnConnection);
-//	ClassDB::bind_method("receiveMessagesOnConnection", &Steam::receiveMessagesOnConnection);
+	ClassDB::bind_method("receiveMessagesOnConnection", &Steam::receiveMessagesOnConnection);
 	ClassDB::bind_method("createPollGroup", &Steam::createPollGroup);
 	ClassDB::bind_method("destroyPollGroup", &Steam::destroyPollGroup);
 	ClassDB::bind_method("setConnectionPollGroup", &Steam::setConnectionPollGroup);
-//	ClassDB::bind_method("receiveMessagesOnPollGroup", &Steam::receiveMessagesOnPollGroup);
+	ClassDB::bind_method("receiveMessagesOnPollGroup", &Steam::receiveMessagesOnPollGroup);
 	ClassDB::bind_method("getConnectionInfo", &Steam::getConnectionInfo);
 	ClassDB::bind_method("getQuickConnectionStatus", &Steam::getQuickConnectionStatus);
 	ClassDB::bind_method("getDetailedConnectionStatus", &Steam::getDetailedConnectionStatus);
 	ClassDB::bind_method("getConnectionUserData", &Steam::getConnectionUserData);
 	ClassDB::bind_method("setConnectionName", &Steam::setConnectionName);
-//	ClassDB::bind_method("getConnectionName", &Steam::getConnectionName);
+	ClassDB::bind_method("getConnectionName", &Steam::getConnectionName);
 	ClassDB::bind_method("getListenSocketAddress", &Steam::getListenSocketAddress);
-//	ClassDB::bind_method("getIdentity", &Steam::getIdentity);
+	ClassDB::bind_method("getIdentity", &Steam::getIdentity);
 	ClassDB::bind_method("initAuthentication", &Steam::initAuthentication);
 	ClassDB::bind_method("getAuthenticationStatus", &Steam::getAuthenticationStatus);
-//	ClassDB::bind_method("receivedRelayAuthTicket", &Steam::receivedRelayAuthTicket);
-//	ClassDB::bind_method("findRelayAuthTicketForServer", &Steam::findRelayAuthTicketForServer);
-//	ClassDB::bind_method("connectToHostedDedicatedServer", &Steam::connectToHostedDedicatedServer);
+///	ClassDB::bind_method("receivedRelayAuthTicket", &Steam::receivedRelayAuthTicket);
+///	ClassDB::bind_method("findRelayAuthTicketForServer", &Steam::findRelayAuthTicketForServer);
+	ClassDB::bind_method("connectToHostedDedicatedServer", &Steam::connectToHostedDedicatedServer);
 	ClassDB::bind_method("getHostedDedicatedServerPort", &Steam::getHostedDedicatedServerPort);
 	ClassDB::bind_method("getHostedDedicatedServerPOPId", &Steam::getHostedDedicatedServerPOPId);
-//	ClassDB::bind_method("getHostedDedicatedServerAddress", &Steam::getHostedDedicatedServerAddress);
-//	ClassDB::bind_method("createHostedDedicatedServerListenSocket", &Steam::createHostedDedicatedServerListenSocket);
-//	ClassDB::bind_method("getGameCoordinatorServerLogin", &Steam::getGameCoordinatorServerLogin);
+///	ClassDB::bind_method("getHostedDedicatedServerAddress", &Steam::getHostedDedicatedServerAddress);
+	ClassDB::bind_method("createHostedDedicatedServerListenSocket", &Steam::createHostedDedicatedServerListenSocket);
+///	ClassDB::bind_method("getGameCoordinatorServerLogin", &Steam::getGameCoordinatorServerLogin);
 
 	// Networking Utils Bind Methods ////////////
 	ClassDB::bind_method("initRelayNetworkAccess", &Steam::initRelayNetworkAccess);
 	ClassDB::bind_method("getRelayNetworkStatus", &Steam::getRelayNetworkStatus);
 	ClassDB::bind_method("getLocalPingLocation", &Steam::getLocalPingLocation);
-//	ClassDB::bind_method("estimatePingTimeBetweenTwoLocations", &Steam::estimatePingTimeBetweenTwoLocations);
-//	ClassDB::bind_method("estimatePingTimeFromLocalHost", &Steam::estimatePingTimeFromLocalHost);
-//	ClassDB::bind_method("convertPingLocationToString", &Steam::convertPingLocationToString);
-//	ClassDB::bind_method("parsePingLocationString", &Steam::parsePingLocationString);
+	ClassDB::bind_method("estimatePingTimeBetweenTwoLocations", &Steam::estimatePingTimeBetweenTwoLocations);
+	ClassDB::bind_method("estimatePingTimeFromLocalHost", &Steam::estimatePingTimeFromLocalHost);
+	ClassDB::bind_method("convertPingLocationToString", &Steam::convertPingLocationToString);
+	ClassDB::bind_method("parsePingLocationString", &Steam::parsePingLocationString);
 	ClassDB::bind_method("checkPingDataUpToDate", &Steam::checkPingDataUpToDate);
 //	ClassDB::bind_method("isPingMeasurementInProgress", &Steam::isPingMeasurementInProgress);
-//	ClassDB::bind_method("getPingToDataCenter", &Steam::getPingToDataCenter);
+	ClassDB::bind_method("getPingToDataCenter", &Steam::getPingToDataCenter);
 	ClassDB::bind_method("getDirectPingToPOP", &Steam::getDirectPingToPOP);
 	ClassDB::bind_method("getPOPCount", &Steam::getPOPCount);
-//	ClassDB::bind_method("getPOPList", &Steam::getPOPList);
-//	ClassDB::bind_method("setConfigValue", &Steam::setConfigValue);
-//	ClassDB::bind_method("getConfigValue", &Steam::getConfigValue);
-//	ClassDB::bind_method("getConfigValueInfo", &Steam::getConfigValueInfo);
+	ClassDB::bind_method("getPOPList", &Steam::getPOPList);
+///	ClassDB::bind_method("setConfigValue", &Steam::setConfigValue);
+///	ClassDB::bind_method("getConfigValue", &Steam::getConfigValue);
+	ClassDB::bind_method("getConfigValueInfo", &Steam::getConfigValueInfo);
 	ClassDB::bind_method("getFirstConfigValue", &Steam::getFirstConfigValue);
 	ClassDB::bind_method("setGlobalConfigValueInt32", &Steam::setGlobalConfigValueInt32);
 	ClassDB::bind_method("setGlobalConfigValueFloat", &Steam::setGlobalConfigValueFloat);
@@ -8163,7 +8342,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("setConnectionConfigValueInt32", &Steam::setConnectionConfigValueInt32);
 	ClassDB::bind_method("setConnectionConfigValueFloat", &Steam::setConnectionConfigValueFloat);
 	ClassDB::bind_method("setConnectionConfigValueString", &Steam::setConnectionConfigValueString);
-//	ClassDB::bind_method("allocateMessage", &Steam::allocateMessage);
+	ClassDB::bind_method("allocateMessage", &Steam::allocateMessage);
 	ClassDB::bind_method("getLocalTimestamp", &Steam::getLocalTimestamp);
 //	ClassDB::bind_method("setDebugOutputFunction", &Steam::setDebugOutputFunction);
 
@@ -8205,7 +8384,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
 	ClassDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
 	
-	// Screenshoot Bind Methods /////////////////
+	// Screenshot Bind Methods //////////////////
 	ClassDB::bind_method("addScreenshotToLibrary", &Steam::addScreenshotToLibrary);
 	ClassDB::bind_method("addVRScreenshotToLibrary", &Steam::addVRScreenshotToLibrary);
 	ClassDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
@@ -8483,6 +8662,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("lobby_game_created"));
 	ADD_SIGNAL(MethodInfo("lobby_invite", PropertyInfo(Variant::INT, "inviter"), PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "game")));
 	ADD_SIGNAL(MethodInfo("lobby_match_list"));
+	ADD_SIGNAL(MethodInfo("lobby_kicked"));
 	
 	// Music Remote Signals /////////////////////
 	ADD_SIGNAL(MethodInfo("music_player_remote_to_front"));
@@ -8503,6 +8683,10 @@ void Steam::_bind_methods(){
 	// Networking Signals ///////////////////////
 	ADD_SIGNAL(MethodInfo("p2p_session_request"));
 	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail"));
+
+	// Networking Messages //////////////////////
+	ADD_SIGNAL(MethodInfo("network_messages_session_request"));
+	ADD_SIGNAL(MethodInfo("network_messages_session_failed"));
 
 	// Networking Sockets Signals ///////////////
 	ADD_SIGNAL(MethodInfo("network_connection_status_changed"));
@@ -9926,6 +10110,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_STRING);										// 4
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FUNCTION_PTR);									// 5
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FORCE_32BIT);									// 0x7fffffff
+
+	// Text Filtering Context enum constants
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);										// 0
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);									// 1
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);											// 2
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);											// 3
 }
 
 Steam::~Steam(){
