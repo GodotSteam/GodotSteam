@@ -40,6 +40,17 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.8 Changes</h3>
+						<ul>
+							<li>Added: default argument to steamInit to pull all current stats or not, defaults to true so no one has to change anything</li>
+							<li>Added: new SteamNetworkingMessages class; with functions, callbacks, constants, and enums</li>
+							<li>Added: all missing functions due to 5 argument limit in Godot</li>
+							<li>Changed: filterText updated to match new SDK 1.50 function</li>
+							<li>Changed: HTTP class setCookie to setHTTPCookie to prevent confusion with HTML setCookie</li>
+							<li>Changed: moved fileLoadDialogReponse into html_file_open_dialog callback as it must follow the call anyway</li>
+							<li>Fixed: retrieveConnectionDetails and getAllLobbyData functions</li>
+							<li>Fixed: (probably) various NetworkingSockets and NetworkingUtils functions</li>
+						</ul>
 						<h3>Version 3.7 Changes</h3>
 						<ul>
 							<li>Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
