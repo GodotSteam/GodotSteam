@@ -27,81 +27,44 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Tutorials - Achievement Icons</h1>
+							<h1>Tutorials - Rich Presence</h1>
 						</header>
-						<p>This quick tutorial will cover to how get achievement icons from Steam's servers.  It was made because there are some extra steps folks need to use to render the images and it may not be very clear otherwise.</p>
-						<p>First you will need to request the icon handle by using the achievement's Steamworks name you set in the back-end:</p>
+						<p>This short tutorial is all about rich presence for your game; specifically the game's enhanced rich presence.  You have probably seen a friend in-game, in your friend list, that has a secondary text string with some information about the game.  Well, that's what this is all about.  <a href="https://partner.steamgames.com/doc/features/enhancedrichpresence" target="_blank">You can read more about enhanced rich presence in the Steamworks documentation</a>.</p>
+						<p>First you will need to set up your localization file in the Steamworks back-end.  I noticed without this step the rich presence text does not really work.  You will need to set it up like this:</p>
 <pre><code>
-var HANDLE = Steam.getAchievementIcon("achievement name")
+"lang"
+{
+	"language"
+	{
+		"english"
+		{
+			"tokens"
+			{
+				"#something1"	"Rich presence string"
+				"#something2"	"Another string"
+				"#something_with_input"	"{something: %input%"
+			}
+		}
+	}
+}
 </code></pre><br/>
-						<p>This handle is used to get the image information.  This would be passed to a buffer variable like so:</p>
+						<p>Make sure you tab separate the strings in the tokens bracket. Also make sure you publish the changes after your file is uploaded <em>before</em> you try to test it.</p>
+						<p>You can put various languages in their own nests so these show up for users how have their Steam client language set specifically. The first string in each token is what you'll end up using in your game's code.</p>
+						<p>I have a global function that handles this which is written something like this:</p>
 <pre><code>
-var BUFFER = Steam.getImageRGBA(HANDLE)
+func _set_Rich_Presence(token: String) -> void:
+	# Set the token
+	var SETTING_PRESENCE = Steam.setRichPresence("steam_display", token)
+	# Debug it
+	print("Setting rich presence to "+str(token)+": "+str(SETTING_PRESENCE))
 </code></pre><br/>
-						<p>This buffer is a contains the actual image data for our icon but is tricky to use.  Before that, we will need to create a new image and texture to attach to a sprite later on:
+						<p>And in whatever scene you want to set the token:</p>
 <pre><code>
-var SIZE = 32
-var ICON = Image.new()
-var ICON_TEXTURE = ImageTexture.new()
-ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
+global._set_Rich_Presence("#something1")
 </code></pre><br/>
-						<p>The size variable can be whatever you want; for our example, we will use 32 (32 pixels by 32 pixels).</p>
-						<p>Now let's go back and parts that buffer data:</p>
-<pre><code>
-ICON.lock()
-for y in range(0, SIZE):
-	for x in range(0, SIZE):
-		var pixel = 4 * (x + y * SIZE)
-		var r = float(BUFFER['buffer'][pixel]) / 255
-		var g = float(BUFFER['buffer'][pixel+1]) / 255
-		var b = float(BUFFER['buffer'][pixel+2]) / 255
-		var a = float(BUFFER['buffer'][pixel+3]) / 255
-		ICON.set_pixel(x, y, Color(r, g, b, a))
-ICON.unlock()
-</code></pre><br/>
-						<p>Now that all the pixels are set in the right places, we can create the texture:</p>
-<pre><code>	
-ICON_TEXTURE.create_from_image(ICON)
-</code></pre><br/>
-						<p>And finally we can display the icon.  Using the previous ICON_TEXTURE, we can place this icon on our waiting sprite:
-<pre><code>
-get_node("Sprite").set_texture(ICON_TEXTURE)
-</code></pre><br/>	
-						<p>Our complete example should look something like this:</p>
-<pre><code>
-# Set up some icon variables
-var SIZE = 32
-
-# Get the image's handle
-var HANDLE = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
-
-# Get the image data
-var BUFFER = Steam.getImageRGBA(HANDLE)
-
-#Create the image and texture for loading
-var ICON = Image.new()
-var ICON_TEXTURE = ImageTexture.new()
-ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
-
-# Lock and draw the image
-ICON.lock()
-for y in range(0, SIZE):
-	for x in range(0, SIZE):
-		var pixel = 4 * (x + y * SIZE)
-		var r = float(BUFFER['buffer'][pixel]) / 255
-		var g = float(BUFFER['buffer'][pixel+1]) / 255
-		var b = float(BUFFER['buffer'][pixel+2]) / 255
-		var a = float(BUFFER['buffer'][pixel+3]) / 255
-		ICON.set_pixel(x, y, Color(r, g, b, a))
-ICON.unlock()
-
-# Apply it to the texture
-ICON_TEXTURE.create_from_image(ICON)
-
-# Display it on a sprite node
-get_node("Sprite").set_texture(ICON_TEXTURE)
-</code></pre><br/>
-						<p>And that's how you display an achievement icon.  You can find this tutorial in the <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">Example branch of the repo</a> too.</p>
+						<p>And now Steam will set the text in your friend's list to what you have set it as in the token list in the Steamworks back-end. You can also hover over your own profile picture to see the in-game text; for testing purposes.</p>
+						<p>There are additional tags you can set which are <a href="https://partner.steamgames.com/doc/api/ISteamFriends#SetRichPresence" target="_blank">covered in detail in the SDK documentation here</a>.
+						<p>And that's a quick run-down on how to set your rich presence for your game!.</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
