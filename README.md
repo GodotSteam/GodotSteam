@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update: 10/7/20:**
+- Added: new game to list
+
 **Update: 10/4/20:**
 - Added: new game to list
 
