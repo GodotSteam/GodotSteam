@@ -11,7 +11,7 @@
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<!--[if lt IE 8]>
-		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+			<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
 		<![endif]-->
 	</head>
 	<body class="is-preload">
@@ -27,23 +27,30 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Tutorials - Mac Exporting</h1>
+							<h1>Tutorials - Linux Caveats</h1>
 						</header>
-						<p>This comes up sometimes so I figured I would cover it.  When exporting for the Mac, there are a few modifications you must make to the ZIP file to make it work. Sadly, as far as I nkow, there is no way to automate this during the export process.</p>
-						<p>First we need to add some files to the exported game's zip.  Inside the <strong><your game>.zip/<your game>.app/Contents/Resources</strong> folder, place the following file:
-							<ul>
-								<li>icon.icns</li>
-							</ul>
-							This icon.icns is, obviously, just the icon file for the game using Apple's weird icon extension.  You should be able to create it online or with a Photoshop plug-in.
-						</p>
-						<p>Second you need to add the following to the <strong><your game>.zip/<your game>.app/Contents/MacOS</strong> folder:
-							<ul>
-								<li>libsteam_api.dylib</li>
-								<li>steam_appid.txt</li>
-							</ul>
-							Make sure the <strong>libsteam_api.dylib</strong> matches the of the Steamworks API version you are using to compile the editor/template or it will crash.  The <strong>steam_appid.txt</strong> file should contain your game's Steam App ID but I think this can be omitted if the game is run directly through Steam itself.
-						</p>
-						<p>And that's about that for Mac exporting.</p>
+						<p>There are issues some users might run into on Linux when using Godot and GodotSteam. This tutorial page is here to cover them.</p>
+						<header class="major">
+							<h3>Libsteam_api.so Issues</h3>
+						</header>
+						<p>Sometimes on various Linux distributions you will run into the following error:</p>
+<pre><code>
+error while loading shared libraries: libsteam_api.so: cannot open shared object file: No such file or directory
+</code></pre>
+						<p>As far as I can tell, this has something to do with how Steam was installed on your system and Steam not installing the libsteam_api.so in the right places.  When it does happen, this issue does affect Linux Steam users in general and other games on Steam not using Godot or GodotSteam.  And while this is not a GodotSteam-specific issue or very common, it is one worth mentioning to save you or your players headaches.</p>
+						<p>To resolve this you need to place the libsteam_api.so in the proper places or set the LD_LIBRARY_PATH with a launcher .sh file. As Github user <strong>hadber</strong> points out, you can use this command to find out where your editor or game is looking for the library:</p>
+<pre><code>
+ldd < bin path >
+</code></pre>
+						<p>Once you figure out where it is looking you can run the following code from your project's directory (or where ever you have a copy of the libsteam_api.so file), also courtesy of <strong>hadber</strong>:</p>
+<pre><code>
+<strong>Manjaro and Ubuntu</strong>
+sudo cp libsteam_api.so /usr/lib/
+
+<strong>Fedora 32</strong>
+sudo cp libsteam_api.so /lib64/
+</code></pre>
+						<p>Please note the directories you are copying the libsteam_api.so file to may differ on your installation; make sure to copy it to the right folder. Also make sure to copy the right version of the libsteam_api.so since the naming convention Steam users for them is not denoted by 32 or 64.</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />

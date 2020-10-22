@@ -99,9 +99,11 @@ steam_appid.txt
 </code></pre><br/>
 						<h2>6. Done / Shipping</h2>
 						<p>Your game must ship with the executable and Steam API DLL/SO/DyLIB to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) will cause it fail and crash. Do not, however, ship your steam_appid.txt file.</p>
-						<p>NOTE: For OSX, the libsteam_api.dylib must be in the Content/MacOS/ folder in your application zip or the game will crash. <a href="tutorials-mac-export.html" target="_blank">Mac Exporting</a></li>More on this on the Mac Export tutorial.</a></p>
+						<p>NOTE: For Linux, some users may experience problems with the editor or game finding the libsteam_api.so file even with it right there in the directory. It is actually an issue with how Steam installed that file on the system. <a href="tutorials-linux-caveats.html" target="_blank">Read more on this in the Linux Caveats tutorial.</a></p>
+						<p>NOTE: For OSX, the libsteam_api.dylib must be in the Content/MacOS/ folder in your application zip or the game will crash. <a href="tutorials-mac-export.html" target="_blank">Read more on this in the Mac Exporting tutorial.</a></p>
 						<p>From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam. You can also check out the tutorial section.</p>
 						<p>You may notice that achievements and stats do not work properly if the game is tested outside of Steam (as in running it from the Steam client itself). This behavior seems to be new within the last few weeks and is most likely a changed on Valve's end.</p>
+						<p>There will be a "Game Shipping" tutorial soon too!</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
@@ -153,6 +155,7 @@ steam_appid.txt
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 									<li><a href="tutorials-achievement-icons.html">Achievment Icons</a></li>
 									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+									<li><a href="tutorials-linux-caveats.html">Linux Caveats</li>
 								</ul>
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
