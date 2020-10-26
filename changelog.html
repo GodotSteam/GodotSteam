@@ -40,6 +40,14 @@
 						<hr />
 						<h2>Godot 3.x Module</h2>
 						<a id="godot3"></a>
+						<h3>Version 3.8.1 Changes</h3>
+						<ul>
+							<li>Added: extra newline beween each class section for readability</li>
+							<li>Added: new signal, steamworks_error, currently used for call results failures</li>
+							<li>Changed: cleared most items from to-do list</li>
+							<li>Changed: getSyncPlatforms now returns a dictionary with the bitwise and full name version of the platform</li>
+							<li>Changed: separated callbacks and call results in the godotsteam.cpp into two categories</li>
+						</ul>
 						<h3>Version 3.8 Changes</h3>
 						<ul>
 							<li>Added: default argument to steamInit to pull all current stats or not, defaults to true so no one has to change anything</li>
@@ -61,7 +69,7 @@
 							<li>Fixed: issue where Cyrillic characters did not display correctly or at all</li>
 							<li>Fixed: call result for JoinParty, was previously callback</li>
 							<li>Removed: mingw_patch.py since it fixes one issue but creates additional issues</li>
-    					</ul>
+						</ul>
 						<h3>Version 3.6.1 Changes</h3>
 						<ul>
 							<li>Changed: function getLobbyDataByIndex to getAllLobbyData</li>

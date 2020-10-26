@@ -62,50 +62,44 @@
 						<hr/>
 						<h2>Both Modules</h2>
 						<ul>
-							<li>Fix getFriendPersonaNameHistory; should be in a loop to create an array instead.</li>
-							<li>Put getFriendFromSourceByIndex into a new function for iteration.</li>
-							<li><strike>Connect requestUserInformation to a callback.</strike></li>
-							<li>Make responses from getSyncPlatforms more user-friendly.</li>
-							<li>Fix indicateAchievementProgress.</li>
-							<li>Fix getAchievementAndUnlockTime to provide all data as a Dictionary.</li>
-							<li><strike>Add DownloadItemResult_t callback for downloadItem.</strike></li>
-							<li>Hook up both auth callbacks.</li>
-							<li><strike>Fix setItemTags.</strike></li>
-							<li><strike>Fix getItemInstallInfo.</strike></li>
-							<li>Make friend flags for hasFriend more simplified.</li>
-							<li>Finish join_requested callback/signal, rename it to join_lobby_requested, and add join_game_requested callback/signal.</li>
-							<li><strike>Add in-editor documentation.</strike></li>
-							<li>Organized Steam functions and callbacks alphabetically like in Steamworks SDK documentations.</li>
-							<li><strike>Fix k_ESteamInputType_GenericXInput not being a declared identifier in getInputTypeForHandle.</strike> Steamworks SDK Docs are incorrect for this type.</li>
-							<li><strike>triggerRepeatedHapticPulse has "too many arguments" and errors out compiling.</strike></li>
-							<li><strike>SetCookie has too many arguments for Godot.</strike></li>
-							<li><strike>fileLoadDialogResponse needs list of strings pointer fixed.</strike></li>
 							<li>sendHTTPRequest and sendHTTPRequestAndStreamResponse might need fixed up.</li>
-							<li><strike>Figure out Steam callback warning during compiling (offsetof within non-standard-layout type).</strike></li>
-							<li><strike>Fix Steam overlay in Linux.</strike></li>
 							<li>getConnectedControllers() doesn't send back any data.</li>
-							<li><strike>Russian character sets do not show up (Unicode issue?), just sends back blank strings or characters.</strike></li>
 							<li>Hybrid Godot high-level networking and Steamworks P2P example.</li>
-							<li>Make SteamInventoryResultReady_t result more verbose.</li>
-							<li>Implement all missing bIOFailure booleans in call results.</li>
 							<li>Should inventory handle be sent back to user?</li>
 							<li>Fix SetPNGIcon64x64 in Music Remote.</li>
 							<li>Fix updateCurrentEntryCoverArt in Music Remote.</li>
 							<li>Complete tutorials for each section of Steamworks.</li>
-							<li><strike>Fix getLobbyDataByIndex causes crash.</strike></li>
-							<li><strike>Function getSteamID causes crash in cross-compiled editor from Linux to Windows.</strike></li>
 							<li>Create auto-patch script for MinGW users.</li>
-							<li>Add if/else for io failure in call results.</li>
 							<li>Modify getRelayNetworkStatus to have default null but allow user to input for details.</li>
 							<li>NetworkingSockets and NetworkingUtils are both in beta still, go back through every single function again.</li>
 							<li>Tutorial on exporting and shipping games with GodotSteam.</li>
+							<li><strike>Connect requestUserInformation to a callback.</strike></li>
+							<li><strike>Make responses from getSyncPlatforms more user-friendly.</strike></li>
+							<li><strike>Fix getAchievementAndUnlockTime to provide all data as a Dictionary.</strike></li>
+							<li><strike>Add DownloadItemResult_t callback for downloadItem.</strike></li>
+							<li><strike>Hook up both auth callbacks.</strike></li>
+							<li><strike>Fix setItemTags.</strike></li>
+							<li><strike>Fix getItemInstallInfo.</strike></li>
+							<li><strike>Finish join_requested callback/signal, rename it to join_lobby_requested, and add join_game_requested callback/signal.</strike></li>
+							<li><strike>Add in-editor documentation.</strike></li>
+							<li><strike>Fix k_ESteamInputType_GenericXInput not being a declared identifier in getInputTypeForHandle.</strike> Steamworks SDK Docs are incorrect for this type.</li>
+							<li><strike>triggerRepeatedHapticPulse has "too many arguments" and errors out compiling.</strike></li>
+							<li><strike>SetCookie has too many arguments for Godot.</strike></li>
+							<li><strike>fileLoadDialogResponse needs list of strings pointer fixed.</strike></li>			
+							<li><strike>Figure out Steam callback warning during compiling (offsetof within non-standard-layout type).</strike></li>
+							<li><strike>Fix Steam overlay in Linux.</strike></li>
+							<li><strike>Russian character sets do not show up (Unicode issue?), just sends back blank strings or characters.</strike></li>
+							<li><strike>Implement all missing bIOFailure booleans in call results.</strike></li>
+							<li><strike>Fix getLobbyDataByIndex causes crash.</strike></li>
+							<li><strike>Function getSteamID causes crash in cross-compiled editor from Linux to Windows.</strike></li>
+							<li><strike>Add if/else for io failure in call results.</strike></li>
 							<li><strike>Create tutorial on rich presence.</strike></li>
 						</ul>
 						<hr />
 						<h2>Server</h2>
 						<ul>
-							<li><strike>Continue work on basic Steam server functionality.</strike></li>
 							<li>Create dedicated server tutorial.</li>
+							<li><strike>Continue work on basic Steam server functionality.</strike></li>
 						</ul>
 					</section>
 					<footer id="footer">

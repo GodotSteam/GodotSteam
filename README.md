@@ -6,6 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update: 10/26/20:**
+- Changed: finished a bunch of tasks from to-do list
+- Removed: unnecessary tasks from to-do list
+
 **Update: 10/22/20:**
 - Added: new game to list
 - Added: new tutorial for Linux caveats and issues
