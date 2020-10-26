@@ -21,7 +21,10 @@ class Steam: public Object {
 	GDCLASS(Steam, Object);
 
 	public:
-		// Steam API enums
+		/////////////////////////////////////////
+		// Steamworks API enums /////////////////
+		/////////////////////////////////////////
+		//
 		enum AccountType {
 			ACCOUNT_TYPE_INVALID = 0, ACCOUNT_TYPE_INDIVIDUAL = 1, ACCOUNT_TYPE_MULTISEAT = 2, ACCOUNT_TYPE_GAME_SERVER = 3, ACCOUNT_TYPE_ANON_GAME_SERVER = 4, ACCOUNT_TYPE_PENDING = 5, ACCOUNT_TYPE_CONTENT_SERVER = 6, ACCOUNT_TYPE_CLAN = 7, ACCOUNT_TYPE_CHAT = 8, ACCOUNT_TYPE_CONSOLE_USER = 9, ACCOUNT_TYPE_ANON_USER = 10, ACCOUNT_TYPE_MAX = 11
 		};
@@ -379,12 +382,17 @@ class Steam: public Object {
 		Steam();
 		~Steam();
 
+		/////////////////////////////////////////
+		// STEAMWORKS FUNCTIONS /////////////////
+		/////////////////////////////////////////
+		//
 		CSteamID createSteamID(uint32_t steamID, int accountType=-1);
 
 		// Main /////////////////////////////////
 		bool restartAppIfNecessary(int value);
 		Dictionary steamInit(bool retrieve_stats=true);
 		bool isSteamRunning();
+		void steamworksError(const String& failed_signal);
 
 		// Apps /////////////////////////////////
 		Array getDLCDataByIndex();
@@ -867,7 +875,7 @@ class Steam: public Object {
 		int32_t getFileSize(const String& file);
 		int64_t getFileTimestamp(const String& file);
 		Dictionary getQuota();
-		uint32_t getSyncPlatforms(const String& file);
+		Dictionary getSyncPlatforms(const String& file);
 		Dictionary getUGCDetails(uint64_t content);
 		Dictionary getUGCDownloadProgress(uint64_t content);
 		bool isCloudEnabledForAccount();
@@ -1136,6 +1144,7 @@ class Steam: public Object {
 		// Utils
 		uint64_t apiHandle = 0;
 
+
 		/////////////////////////////////////////
 		// STRUCTS //////////////////////////////
 		/////////////////////////////////////////
@@ -1227,6 +1236,7 @@ class Steam: public Object {
 		void run_callbacks(){
 			SteamAPI_RunCallbacks();
 		}
+
 
 		/////////////////////////////////////////
 		// STEAM CALLBACKS //////////////////////
@@ -1387,6 +1397,7 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _get_opf_settings_result, GetOPFSettingsResult_t, callbackGetOPFSettingsResult);
 		STEAM_CALLBACK(Steam, _get_video_result, GetVideoURLResult_t, callbackGetVideoResult);
 
+
 		/////////////////////////////////////////
 		// STEAM CALL RESULTS ///////////////////
 		/////////////////////////////////////////
@@ -1497,6 +1508,6 @@ class Steam: public Object {
 
 		// Utility call results /////////////////
 		CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
-		void _check_file_signature(CheckFileSignature_t *callData);
+		void _check_file_signature(CheckFileSignature_t *callData, bool ioFailure);
 };
 #endif // GODOTSTEAM_H
