@@ -38,7 +38,9 @@
 error while loading shared libraries: libsteam_api.so: cannot open shared object file: No such file or directory
 </code></pre>
 						<p>As far as I can tell, this has something to do with how Steam was installed on your system and Steam not installing the libsteam_api.so in the right places.  When it does happen, this issue does affect Linux Steam users in general and other games on Steam not using Godot or GodotSteam.  And while this is not a GodotSteam-specific issue or very common, it is one worth mentioning to save you or your players headaches.</p>
-						<p>To resolve this you need to place the libsteam_api.so in the proper places or set the LD_LIBRARY_PATH with a launcher .sh file. As Github user <strong>hadber</strong> points out, you can use this command to find out where your editor or game is looking for the library:</p>
+						<p>To resolve this you need to place the libsteam_api.so in the proper places or set the LD_LIBRARY_PATH with a launcher .sh file.  We'll look at each method below.</p>
+						<h4>Solution 1 - Copy The libsteam_api.so</h4>
+						<p>This method puts the solution squarely in the hands of your affected users.  As Github user <strong>hadber</strong> points out, you can use this command to find out where your editor or game is looking for the library:</p>
 <pre><code>
 ldd < bin path >
 </code></pre>
@@ -51,6 +53,34 @@ sudo cp libsteam_api.so /usr/lib/
 sudo cp libsteam_api.so /lib64/
 </code></pre>
 						<p>Please note the directories you are copying the libsteam_api.so file to may differ on your installation; make sure to copy it to the right folder. Also make sure to copy the right version of the libsteam_api.so since the naming convention Steam users for them is not denoted by 32 or 64.</p>
+						<h4>Solution 2 - Create a launcher .sh</h4>
+						<p>This solution will work for all users since they won't have to do anything on their end; it will be set up for them. As Github user <strong>nuggs</strong> showed, by way of an adapted script from the Godot documentation, you can just place this code into a blank text file:</p>
+
+<pre><code>
+#!/bin/bash
+
+HELP_STRING="-v - Run Godot with the --verbose option."
+verbose=""
+
+while getopts hv flag
+do
+        case "${flag}" in
+		h) help=
+			echo $HELP_STRING
+			exit
+		;;
+                v) verbose=--verbose;;
+        esac
+done
+
+export LD_LIBRARY_PATH="$PWD/bin/"
+./bin/godot.x11.opt.tools.64 $verbose
+</code></pre>
+					<p>Obviously, you will want to replace <em>bin/godot.x11.opt.tools.64</em> with your game's executable and path (if used). Ideally this script will be in the same folder as your game's executable so you only really need to have the executable's name.</p>
+					<p>You can save this file as <your game>.sh or whatever you'd like to name it.  Just make sure the extension is .sh and that you have edited the permissions to make this executable.  I am fairly confident that Steam will make said script executable during installation, but do it yourself just in case.</p>
+					<p>After all that, list it in <a href="https://partner.steamgames.com/apps/config/" target="_blank">your Steamworks back-end Launch Options</a> to run when the game is launched in Steam:</p>
+					<p><img src="img/steamworks-launch-options.png" "Launch Options" /></p>
+					<p>Make sure the operating system is set to Linux and save it.  At this point, Steam should use this .sh file to run your game and prevent any possible issues with it being unable to find the libsteam_api.so file.</p>
 					</section>
 					<footer id="footer">
 						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
