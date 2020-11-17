@@ -29,14 +29,14 @@
 						<header class="main">
 							<h1>Tutorials - Mac Exporting</h1>
 						</header>
-						<p>This comes up sometimes so I figured I would cover it.  When exporting for the Mac, there are a few modifications you must make to the ZIP file to make it work. Sadly, as far as I nkow, there is no way to automate this during the export process.</p>
-						<p>First we need to add some files to the exported game's zip.  Inside the <strong><your game>.zip/<your game>.app/Contents/Resources</strong> folder, place the following file:
+						<p>This comes up sometimes so I figured I would cover it.  When exporting for the Mac, there are a few modifications you must make to the ZIP file to make it work. Sadly, as far as I know, there is no way to automate this during the export process.</p>
+						<p>First, we need to add some files to the exported game's zip.  Inside the <strong><your game>.zip/<your game>.app/Contents/Resources</strong> folder, place the following file:
 							<ul>
 								<li>icon.icns</li>
 							</ul>
 							This icon.icns is, obviously, just the icon file for the game using Apple's weird icon extension.  You should be able to create it online or with a Photoshop plug-in.
 						</p>
-						<p>Second you need to add the following to the <strong><your game>.zip/<your game>.app/Contents/MacOS</strong> folder:
+						<p>Second, you need to add the following to the <strong><your game>.zip/<your game>.app/Contents/MacOS</strong> folder:
 							<ul>
 								<li>libsteam_api.dylib</li>
 								<li>steam_appid.txt</li>
