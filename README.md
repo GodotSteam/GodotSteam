@@ -4,20 +4,22 @@ This is a basic example of how GodotSteam can work in your game. It is based on 
 Current Build
 ----------
 This version covers:
-- main.tscn
-	- Initializing Steamworks
-	- Loading achievements and statistics
-		- Now utilizes both current and user statistics
-	- Firing achievements
-	- Loading avatars
-- lobby.tscn
-	- Creating a lobby
-	- Lobby message chat
-	- Getting lobby lists from Steam
-	- P2P packet sending / reading
-	- Joining a lobby
+- Initializing Steamworks
+- Loading and setting achievements and statistics
+	- Now utilizes both current and user statistics
+- Firing achievements
+- Loading player avatars
+- Creating a lobby
+- Lobby message chat
+- Getting lobby lists from Steam
+- P2P packet sending / reading
+- Joining a lobby
+- Achievement icons
+- Some input functions
 
 Updates:
+- Brand-new interface and overall theme
+- Main menu to swap between examples instead of having to open each scene
 - Many buttons are now renamed to the Steam functions they call.
 - More comments have been added to the code.
 
