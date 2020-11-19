@@ -16,8 +16,19 @@ _global_script_class_icons={
 [application]
 
 config/name="GodotSteam Example Project"
-run/main_scene="res://main.tscn"
+config/description="Various tests for the Steamworks API and GodotSteam."
+run/main_scene="res://src/main.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+global="*res://src/global.gd"
+
+[display]
+
+window/size/width=1280
+window/size/height=720
+window/size/resizable=false
 
 [rendering]
 

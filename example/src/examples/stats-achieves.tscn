@@ -1,0 +1,646 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://src/examples/stats-achieves.gd" type="Script" id=1]
+[ext_resource path="res://data/fonts/list-titles.tres" type="DynamicFont" id=2]
+[ext_resource path="res://data/themes/button-theme.tres" type="Theme" id=3]
+[ext_resource path="res://data/fonts/descriptions.tres" type="DynamicFont" id=4]
+[ext_resource path="res://data/themes/dropdown-theme.tres" type="Theme" id=5]
+[ext_resource path="res://data/fonts/sub-titles.tres" type="DynamicFont" id=6]
+[ext_resource path="res://data/fonts/output-text.tres" type="DynamicFont" id=7]
+[ext_resource path="res://data/images/default-avatar-small.png" type="Texture" id=8]
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=6]
+content_margin_left = 5.0
+content_margin_right = 5.0
+bg_color = Color( 0.258824, 0.258824, 0.258824, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[node name="StatsAchieves" type="Control"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Message" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 100.0
+margin_right = 900.0
+margin_bottom = 140.0
+custom_fonts/font = ExtResource( 4 )
+text = "Here we have functions for both achievements and statistics.  Since there is no way to query all available statistics and achievements for a game, only the Spacewars app ID will work in this example."
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 955.0
+margin_top = 200.0
+margin_right = 1255.0
+margin_bottom = 695.0
+custom_styles/panel = SubResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Options" type="VBoxContainer" parent="Panel"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 285.0
+margin_bottom = 465.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Stats Title" type="Label" parent="Panel/Options"]
+margin_right = 270.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 2 )
+text = "Statistic Function"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="requestCurrentStats" type="Button" parent="Panel/Options"]
+margin_top = 29.0
+margin_right = 270.0
+margin_bottom = 57.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Request Current Stats"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="requestUserStats" type="Button" parent="Panel/Options"]
+margin_top = 67.0
+margin_right = 270.0
+margin_bottom = 95.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Request User Stats"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="setStats" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Set Selected Statistic"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="resetAllStats" type="Button" parent="Panel/Options"]
+margin_top = 143.0
+margin_right = 270.0
+margin_bottom = 171.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Reset All Stats"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer1" type="Label" parent="Panel/Options"]
+margin_top = 181.0
+margin_right = 270.0
+margin_bottom = 200.0
+custom_fonts/font = ExtResource( 2 )
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Achievement Title" type="Label" parent="Panel/Options"]
+margin_top = 210.0
+margin_right = 270.0
+margin_bottom = 229.0
+custom_fonts/font = ExtResource( 2 )
+text = "Achievement Functions"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="setAchievement" type="Button" parent="Panel/Options"]
+margin_top = 239.0
+margin_right = 270.0
+margin_bottom = 267.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Fire Selected Achievement"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="getAchievementIcon" type="Button" parent="Panel/Options"]
+margin_top = 277.0
+margin_right = 270.0
+margin_bottom = 305.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Get Achievement Icon"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer2" type="Label" parent="Panel/Options"]
+margin_top = 315.0
+margin_right = 270.0
+margin_bottom = 334.0
+custom_fonts/font = ExtResource( 2 )
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Back" type="Button" parent="Panel/Options"]
+margin_top = 344.0
+margin_right = 270.0
+margin_bottom = 372.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 3 )
+text = "Back To Main Menu"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Readout" type="HBoxContainer" parent="."]
+margin_left = 25.0
+margin_top = 275.0
+margin_right = 900.0
+margin_bottom = 545.0
+custom_constants/separation = 25
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Achievements" type="Panel" parent="Readout"]
+margin_right = 425.0
+margin_bottom = 270.0
+rect_min_size = Vector2( 425, 270 )
+custom_styles/panel = SubResource( 3 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="List" type="VBoxContainer" parent="Readout/Achievements"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 410.0
+margin_bottom = 55.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Readout/Achievements/List"]
+margin_right = 395.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 6 )
+text = "Current Achievements"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Grid" type="GridContainer" parent="Readout/Achievements/List"]
+margin_top = 29.0
+margin_right = 395.0
+margin_bottom = 135.0
+custom_constants/vseparation = 10
+custom_constants/hseparation = 50
+columns = 2
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Achieve1" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_right = 193.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 7 )
+text = "ACH_WIN_ONE_GAME"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Value1" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_left = 243.0
+margin_right = 281.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 7 )
+text = "False"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Achieve2" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_top = 29.0
+margin_right = 193.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 7 )
+text = "ACH_WIN_100_GAMES"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Value2" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_left = 243.0
+margin_top = 29.0
+margin_right = 281.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 7 )
+text = "False"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Achieve3" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_top = 58.0
+margin_right = 193.0
+margin_bottom = 77.0
+custom_fonts/font = ExtResource( 7 )
+text = "ACH_TRAVEL_FAR_ACCUM"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Value3" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_left = 243.0
+margin_top = 58.0
+margin_right = 281.0
+margin_bottom = 77.0
+custom_fonts/font = ExtResource( 7 )
+text = "False"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Achieve4" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_top = 87.0
+margin_right = 193.0
+margin_bottom = 106.0
+custom_fonts/font = ExtResource( 7 )
+text = "ACH_TRAVEL_FAR_SINGLE"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Value4" type="Label" parent="Readout/Achievements/List/Grid"]
+margin_left = 243.0
+margin_top = 87.0
+margin_right = 281.0
+margin_bottom = 106.0
+custom_fonts/font = ExtResource( 7 )
+text = "False"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Spacer" type="Label" parent="Readout/Achievements/List"]
+margin_top = 145.0
+margin_right = 395.0
+margin_bottom = 164.0
+custom_fonts/font = ExtResource( 6 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Icon" type="Label" parent="Readout/Achievements/List"]
+margin_top = 174.0
+margin_right = 395.0
+margin_bottom = 193.0
+custom_fonts/font = ExtResource( 6 )
+text = "Selected Achievement Icon"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Icon" type="Sprite" parent="Readout/Achievements/List/Icon"]
+position = Vector2( 18, 45 )
+texture = ExtResource( 8 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Background" type="ColorRect" parent="Readout/Achievements/List/Icon/Icon"]
+show_behind_parent = true
+margin_left = -18.0
+margin_top = -18.0
+margin_right = 18.0
+margin_bottom = 18.0
+color = Color( 0.278431, 0.54902, 0.74902, 1 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Statistics" type="Panel" parent="Readout"]
+margin_left = 450.0
+margin_right = 875.0
+margin_bottom = 270.0
+rect_min_size = Vector2( 425, 270 )
+custom_styles/panel = SubResource( 4 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="List" type="VBoxContainer" parent="Readout/Statistics"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 410.0
+margin_bottom = 55.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Readout/Statistics/List"]
+margin_right = 395.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 6 )
+text = "Current Statistics"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Grid" type="GridContainer" parent="Readout/Statistics/List"]
+margin_top = 29.0
+margin_right = 395.0
+margin_bottom = 164.0
+custom_constants/vseparation = 10
+custom_constants/hseparation = 50
+columns = 2
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Stat1" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_right = 122.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 7 )
+text = "NumGames"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Value1" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_left = 172.0
+margin_right = 194.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 7 )
+text = "0"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Stat2" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_top = 29.0
+margin_right = 122.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 7 )
+text = "NumWins"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Value2" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_left = 172.0
+margin_top = 29.0
+margin_right = 194.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 7 )
+text = "0"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Stat3" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_top = 58.0
+margin_right = 122.0
+margin_bottom = 77.0
+custom_fonts/font = ExtResource( 7 )
+text = "NumLosses"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Value3" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_left = 172.0
+margin_top = 58.0
+margin_right = 194.0
+margin_bottom = 77.0
+custom_fonts/font = ExtResource( 7 )
+text = "0"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Stat4" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_top = 87.0
+margin_right = 122.0
+margin_bottom = 106.0
+custom_fonts/font = ExtResource( 7 )
+text = "FeetTraveled"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Value4" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_left = 172.0
+margin_top = 87.0
+margin_right = 194.0
+margin_bottom = 106.0
+custom_fonts/font = ExtResource( 7 )
+text = "0.0"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Stat5" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_top = 116.0
+margin_right = 122.0
+margin_bottom = 135.0
+custom_fonts/font = ExtResource( 7 )
+text = "MaxFeetTraveled"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Value5" type="Label" parent="Readout/Statistics/List/Grid"]
+margin_left = 172.0
+margin_top = 116.0
+margin_right = 194.0
+margin_bottom = 135.0
+custom_fonts/font = ExtResource( 7 )
+text = "0.0"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Selections" type="Panel" parent="."]
+margin_left = 25.0
+margin_top = 160.0
+margin_right = 900.0
+margin_bottom = 245.0
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Grid" type="GridContainer" parent="Selections"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 860.0
+margin_bottom = 75.0
+custom_constants/vseparation = 5
+custom_constants/hseparation = 25
+columns = 2
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Subtitle1" type="Label" parent="Selections/Grid"]
+margin_right = 410.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 6 )
+text = "Select An Achievement To Manipulate"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Subtitle2" type="Label" parent="Selections/Grid"]
+margin_left = 435.0
+margin_right = 845.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 6 )
+text = "Select A Statistics To Manipulate"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Achievements" type="OptionButton" parent="Selections/Grid"]
+margin_top = 24.0
+margin_right = 410.0
+margin_bottom = 52.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+theme = ExtResource( 5 )
+text = "Available Achievements"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Statistics" type="HBoxContainer" parent="Selections/Grid"]
+margin_left = 435.0
+margin_top = 24.0
+margin_right = 845.0
+margin_bottom = 52.0
+size_flags_horizontal = 3
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Select" type="OptionButton" parent="Selections/Grid/Statistics"]
+margin_right = 200.0
+margin_bottom = 28.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+theme = ExtResource( 5 )
+text = "Available Statistics"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Amount" type="LineEdit" parent="Selections/Grid/Statistics"]
+margin_left = 210.0
+margin_right = 410.0
+margin_bottom = 28.0
+size_flags_horizontal = 3
+custom_styles/normal = SubResource( 6 )
+custom_fonts/font = ExtResource( 7 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+placeholder_text = "Enter new value"
+caret_blink = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Output Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 575.0
+margin_right = 125.0
+margin_bottom = 594.0
+custom_fonts/font = ExtResource( 6 )
+text = "Debug Output"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output" type="RichTextLabel" parent="."]
+margin_left = 25.0
+margin_top = 600.0
+margin_right = 900.0
+margin_bottom = 695.0
+custom_styles/normal = SubResource( 5 )
+scroll_following = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="Panel/Options/requestCurrentStats" to="." method="_on_requestCurrentStats_pressed"]
+[connection signal="pressed" from="Panel/Options/requestUserStats" to="." method="_on_requestUserStats_pressed"]
+[connection signal="pressed" from="Panel/Options/setStats" to="." method="_on_setStats_pressed"]
+[connection signal="pressed" from="Panel/Options/resetAllStats" to="." method="_on_resetAllStats_pressed"]
+[connection signal="pressed" from="Panel/Options/setAchievement" to="." method="_on_setAchievement_pressed"]
+[connection signal="pressed" from="Panel/Options/getAchievementIcon" to="." method="_on_getAchievementIcon_pressed"]
+[connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]

@@ -1,0 +1,196 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://src/examples/inputs.gd" type="Script" id=1]
+[ext_resource path="res://data/themes/button-theme.tres" type="Theme" id=2]
+[ext_resource path="res://data/fonts/list-titles.tres" type="DynamicFont" id=3]
+[ext_resource path="res://data/fonts/descriptions.tres" type="DynamicFont" id=4]
+[ext_resource path="res://data/fonts/sub-titles.tres" type="DynamicFont" id=5]
+[ext_resource path="res://data/fonts/output-text.tres" type="DynamicFont" id=6]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[node name="Inputs" type="Control"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Message" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 100.0
+margin_right = 900.0
+margin_bottom = 139.0
+custom_fonts/font = ExtResource( 4 )
+text = "The Input class should be able to handle all types of controllers.  This example is currently a little wonky and may not work as intended."
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 175.0
+margin_right = 700.0
+margin_bottom = 195.0
+custom_fonts/font = ExtResource( 5 )
+text = "Input Output"
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output" type="RichTextLabel" parent="."]
+margin_left = 25.0
+margin_top = 200.0
+margin_right = 900.0
+margin_bottom = 695.0
+custom_styles/normal = SubResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+scroll_following = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 955.0
+margin_top = 200.0
+margin_right = 1255.0
+margin_bottom = 695.0
+rect_min_size = Vector2( 300, 345 )
+custom_styles/panel = SubResource( 2 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="VBoxContainer" parent="Panel"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 285.0
+margin_bottom = 249.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Panel/Options"]
+margin_right = 270.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 3 )
+text = "Input Options"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Init" type="Button" parent="Panel/Options"]
+margin_top = 29.0
+margin_right = 270.0
+margin_bottom = 57.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Initialize Inputs"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Shutdown" type="Button" parent="Panel/Options"]
+margin_top = 67.0
+margin_right = 270.0
+margin_bottom = 95.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Shutdown Inputs"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetControllers" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Get Controllers"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Vibrate" type="Button" parent="Panel/Options"]
+margin_top = 143.0
+margin_right = 270.0
+margin_bottom = 171.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Trigger Vibrate"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Haptic" type="Button" parent="Panel/Options"]
+margin_top = 181.0
+margin_right = 270.0
+margin_bottom = 209.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Trigger Haptic Pulse"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetName" type="Button" parent="Panel/Options"]
+margin_top = 219.0
+margin_right = 270.0
+margin_bottom = 247.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Get Input Name"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer" type="Label" parent="Panel/Options"]
+margin_top = 257.0
+margin_right = 270.0
+margin_bottom = 276.0
+custom_fonts/font = ExtResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Back" type="Button" parent="Panel/Options"]
+margin_top = 286.0
+margin_right = 270.0
+margin_bottom = 314.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Back To Main Menu"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+[connection signal="pressed" from="Panel/Options/Init" to="." method="_on_Init_pressed"]
+[connection signal="pressed" from="Panel/Options/Shutdown" to="." method="_on_Shutdown_pressed"]
+[connection signal="pressed" from="Panel/Options/GetControllers" to="." method="_on_GetControllers_pressed"]
+[connection signal="pressed" from="Panel/Options/Vibrate" to="." method="_on_Vibrate_pressed"]
+[connection signal="pressed" from="Panel/Options/Haptic" to="." method="_on_Haptic_pressed"]
+[connection signal="pressed" from="Panel/Options/GetName" to="." method="_on_GetName_pressed"]
+[connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]

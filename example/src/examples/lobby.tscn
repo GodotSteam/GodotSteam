@@ -1,0 +1,369 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://src/examples/lobby.gd" type="Script" id=1]
+[ext_resource path="res://data/themes/button-theme.tres" type="Theme" id=2]
+[ext_resource path="res://data/fonts/list-titles.tres" type="DynamicFont" id=3]
+[ext_resource path="res://data/fonts/descriptions.tres" type="DynamicFont" id=4]
+[ext_resource path="res://data/fonts/sub-titles.tres" type="DynamicFont" id=5]
+[ext_resource path="res://data/fonts/output-text.tres" type="DynamicFont" id=6]
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=6]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.258824, 0.258824, 0.258824, 1 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=8]
+bg_color = Color( 0.156863, 0.156863, 0.156863, 1 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[node name="P2P" type="Control"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Message" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 100.0
+margin_right = 900.0
+margin_bottom = 118.0
+custom_fonts/font = ExtResource( 4 )
+text = "This example will let you test various lobby functionality; as well as P2P packet functions."
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 150.0
+margin_right = 131.0
+margin_bottom = 169.0
+custom_fonts/font = ExtResource( 5 )
+text = "Output Display"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Lobby" type="Label" parent="."]
+margin_left = 300.0
+margin_top = 150.0
+margin_right = 605.0
+margin_bottom = 175.0
+custom_fonts/font = ExtResource( 5 )
+text = "Lobby ID: 0"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Output" type="RichTextLabel" parent="."]
+margin_left = 25.0
+margin_top = 175.0
+margin_right = 625.0
+margin_bottom = 575.0
+custom_styles/normal = SubResource( 2 )
+custom_fonts/normal_font = ExtResource( 6 )
+custom_constants/shadow_as_outline = 50
+scroll_following = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Players Title" type="Label" parent="."]
+margin_left = 650.0
+margin_top = 150.0
+margin_right = 752.0
+margin_bottom = 175.0
+custom_fonts/font = ExtResource( 5 )
+text = "Player List (0)"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Players" type="RichTextLabel" parent="."]
+margin_left = 650.0
+margin_top = 175.0
+margin_right = 925.0
+margin_bottom = 575.0
+custom_styles/normal = SubResource( 3 )
+custom_fonts/normal_font = ExtResource( 6 )
+custom_constants/shadow_as_outline = 50
+scroll_following = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Chat Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 600.0
+margin_right = 65.0
+margin_bottom = 614.0
+custom_fonts/font = ExtResource( 5 )
+text = "Chat"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Chat" type="LineEdit" parent="."]
+margin_left = 25.0
+margin_top = 625.0
+margin_right = 625.0
+margin_bottom = 660.0
+custom_styles/read_only = SubResource( 5 )
+custom_styles/focus = SubResource( 6 )
+custom_styles/normal = SubResource( 4 )
+custom_fonts/font = ExtResource( 6 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+editable = false
+placeholder_text = "Enter a chat message..."
+caret_blink = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Send" type="Button" parent="."]
+margin_left = 650.0
+margin_top = 625.0
+margin_right = 800.0
+margin_bottom = 660.0
+theme = ExtResource( 2 )
+disabled = true
+text = "Send Message"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Lobbies" type="Panel" parent="."]
+visible = false
+margin_left = 25.0
+margin_top = 150.0
+margin_right = 900.0
+margin_bottom = 650.0
+custom_styles/panel = SubResource( 7 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Title" type="Label" parent="Lobbies"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 315.0
+margin_bottom = 41.0
+custom_fonts/font = ExtResource( 5 )
+text = "Lobby List"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Scroll" type="ScrollContainer" parent="Lobbies"]
+margin_left = 15.0
+margin_top = 50.0
+margin_right = 860.0
+margin_bottom = 440.0
+custom_styles/bg = SubResource( 8 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="List" type="VBoxContainer" parent="Lobbies/Scroll"]
+margin_right = 825.0
+margin_bottom = 390.0
+rect_min_size = Vector2( 825, 390 )
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Close Lobbies" type="Button" parent="Lobbies"]
+margin_left = 660.0
+margin_top = 455.0
+margin_right = 861.0
+margin_bottom = 489.0
+theme = ExtResource( 2 )
+text = "Close Lobby List"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 955.0
+margin_top = 200.0
+margin_right = 1255.0
+margin_bottom = 695.0
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="VBoxContainer" parent="Panel"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 285.0
+margin_bottom = 490.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Lobby Title" type="Label" parent="Panel/Options"]
+margin_right = 270.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 3 )
+text = "Lobby Functions"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Create Lobby" type="Button" parent="Panel/Options"]
+margin_top = 29.0
+margin_right = 270.0
+margin_bottom = 57.0
+theme = ExtResource( 2 )
+text = "Create Lobby"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Open Lobby List" type="Button" parent="Panel/Options"]
+margin_top = 67.0
+margin_right = 270.0
+margin_bottom = 95.0
+theme = ExtResource( 2 )
+text = "Open Lobby List"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetLobbyData" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
+theme = ExtResource( 2 )
+disabled = true
+text = "Get Lobby Data"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Leave" type="Button" parent="Panel/Options"]
+margin_top = 143.0
+margin_right = 270.0
+margin_bottom = 171.0
+theme = ExtResource( 2 )
+disabled = true
+text = "Leave Lobby"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer1" type="Label" parent="Panel/Options"]
+margin_top = 181.0
+margin_right = 270.0
+margin_bottom = 200.0
+custom_fonts/font = ExtResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="P2P Title" type="Label" parent="Panel/Options"]
+margin_top = 210.0
+margin_right = 270.0
+margin_bottom = 229.0
+custom_fonts/font = ExtResource( 3 )
+text = "P2P Functions"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="SendPacket" type="Button" parent="Panel/Options"]
+margin_top = 239.0
+margin_right = 270.0
+margin_bottom = 267.0
+theme = ExtResource( 2 )
+disabled = true
+text = "Send Test Packet"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer2" type="Label" parent="Panel/Options"]
+margin_top = 277.0
+margin_right = 270.0
+margin_bottom = 296.0
+custom_fonts/font = ExtResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Back" type="Button" parent="Panel/Options"]
+margin_top = 306.0
+margin_right = 270.0
+margin_bottom = 334.0
+theme = ExtResource( 2 )
+text = "Back To Main Menu"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="Send" to="." method="_on_Send_Chat_pressed"]
+[connection signal="pressed" from="Lobbies/Close Lobbies" to="." method="_on_Close_Lobbies_pressed"]
+[connection signal="pressed" from="Panel/Options/Create Lobby" to="." method="_on_Create_Lobby_pressed"]
+[connection signal="pressed" from="Panel/Options/Open Lobby List" to="." method="_on_Open_Lobby_List_pressed"]
+[connection signal="pressed" from="Panel/Options/GetLobbyData" to="." method="_on_Get_Lobby_Data_pressed"]
+[connection signal="pressed" from="Panel/Options/Leave" to="." method="_on_Leave_Lobby_pressed"]
+[connection signal="pressed" from="Panel/Options/SendPacket" to="." method="_on_Send_Packet_pressed"]
+[connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]

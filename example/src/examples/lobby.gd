@@ -1,16 +1,18 @@
-extends Node2D
-# Set up some variables
-var STEAM_ID = 0
-var STEAM_USERNAME = ""
-var STEAM_LOBBY_ID = 0
-var LOBBY_MEMBERS = []
-var DATA
-var LOBBY_INVITE_ARG = false
+extends Control
+# Preload the button them
+onready var BUTTON_THEME = preload("res://data/themes/button-theme.tres")
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	# Initializing Steam
-	_initialize_Steam()
+# Set up some variables
+var STEAM_LOBBY_ID: int = 0
+var LOBBY_MEMBERS: Array = []
+var DATA
+var LOBBY_INVITE_ARG: bool = false
+
+# Set up some signals
+signal back_to_main
+
+
+func _ready() -> void:
 	# Set up some signals
 	Steam.connect("lobby_created", self, "_on_Lobby_Created")
 	Steam.connect("lobby_match_list", self, "_on_Lobby_Match_List")
@@ -25,288 +27,392 @@ func _ready():
 	# Check for command line arguments
 	_check_Command_Line()
 
-func _process(delta):
-	# Run Steam callbacks
-	Steam.run_callbacks()
+
+func _process(_delta) -> void:
 	# Get packets
 	_read_P2P_Packet()
 
-#################################################
-# INITIALIZING STEAM
-#################################################
-func _initialize_Steam():
-	var INIT = Steam.steamInit()
-	print("Did Steam initialize?: "+str(INIT))
-	STEAM_ID = Steam.getSteamID()
-	print("Your Steam ID is: "+str(STEAM_ID))
-	STEAM_USERNAME = Steam.getPersonaName()
-	print("Your Steam username is: "+str(STEAM_USERNAME))
 
 #################################################
 # LOBBY FUNCTIONS
 #################################################
 # When the user starts a game with multiplayer enabled
-func _create_Lobby():
+func _create_Lobby() -> void:
 	# Make sure a lobby is not already set
 	if STEAM_LOBBY_ID == 0:
 		# Set the lobby to public with two members max
 		Steam.createLobby(2, 2)
 
+
 # A lobby has been successfully created
-func _on_Lobby_Created(connect, lobbyID):
-	if connect == 0:
+func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
+	if connect == 1:
 		# Set the lobby ID
 		STEAM_LOBBY_ID = lobbyID
-		print("Created a lobby: "+str(STEAM_LOBBY_ID))
+		$Output.append_bbcode("[STEAM] Created a lobby: "+str(STEAM_LOBBY_ID)+"\n")
+
 		# Print the lobby ID to a label
 		$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
-		# Print to the output display
-		_append_Message("A lobby, with ID "+str(STEAM_LOBBY_ID)+" has been created.")
+
 		# Set some lobby data
-		Steam.setLobbyData(lobbyID, "name", "Gramps' Lobby")
+		Steam.setLobbyData(lobbyID, "name", str(global.STEAM_USERNAME)+"'s Lobby")
 		Steam.setLobbyData(lobbyID, "mode", "GodotSteam test")
+
 		# Allow P2P connections to fallback to being relayed through Steam if needed
-		var RELAY = Steam.allowP2PPacketRelay(true)
-		print("Allowing Steam to be relay backup: "+str(RELAY))
+		var IS_RELAY: bool = Steam.allowP2PPacketRelay(true)
+		$Output.append_bbcode("[STEAM] Allowing Steam to be relay backup: "+str(IS_RELAY)+"\n\n")
+		
 		# Enable the leave lobby button and all testing buttons
 		_change_Button_Controls(false)
 
+
 # Getting a lobby match list
-func _on_Lobby_Match_List(lobbies):
+func _on_Lobby_Match_List(lobbies: Array) -> void:
 	# Show the list 
 	for LOBBY in lobbies:
 		# Pull lobby data from Steam
-		var LOBBY_NAME = Steam.getLobbyData(LOBBY, "name")
-		var LOBBY_MODE = Steam.getLobbyData(LOBBY, "mode")
-		var LOBBY_MEMBERS = Steam.getNumLobbyMembers(LOBBY)
+		var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
+		var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
+		var LOBBY_MEMBERS: int = Steam.getNumLobbyMembers(LOBBY)
+
 		# Create a button for the lobby
-		var LOBBY_BUTTON = Button.new()
+		var LOBBY_BUTTON: Button = Button.new()
 		LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_MEMBERS)+" Player(s)")
 		LOBBY_BUTTON.set_size(Vector2(800, 50))
 		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
+		LOBBY_BUTTON.set_text_align(0)
+		LOBBY_BUTTON.set_theme(BUTTON_THEME)
 		LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
+
 		# Add the new lobby to the list
-		$"Lobby Panel/Panel/Scroll/VBox".add_child(LOBBY_BUTTON)
+		$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
+
 
 # When the player is joining a lobby
-func _join_Lobby(lobbyID):
-	_append_Message("Attempting to join lobby "+str(lobbyID)+"...")
+func _join_Lobby(lobbyID: int) -> void:
+	$Output.append_bbcode("[STEAM] Attempting to join lobby "+str(lobbyID)+"...\n")
+
 	# Close lobby panel if open
 	_on_Close_Lobbies_pressed()
+
 	# Clear any previous lobby lists
 	LOBBY_MEMBERS.clear()
+
 	# Make the lobby join request to Steam
 	Steam.joinLobby(lobbyID)
 
+
 # When a lobby is joined
-func _on_Lobby_Joined(lobbyID, permissions, locked, response):
+func _on_Lobby_Joined(lobbyID: int, permissions: int, locked: bool, response: int) -> void:
 	# Set this lobby ID as your lobby ID
 	STEAM_LOBBY_ID = lobbyID
+
 	# Print the lobby ID to a label
 	$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
+
 	# Append to output
-	_append_Message("Joined lobby "+str(STEAM_LOBBY_ID)+".")
+	$Output.append_bbcode("[STEAM] Joined lobby "+str(STEAM_LOBBY_ID)+".\n\n")
+
 	# Get the lobby members
 	_get_Lobby_Members()
+
 	# Enable all necessary buttons
 	_change_Button_Controls(false)
+
 	# Make the initial handshake
 	_make_P2P_Handshake()
 
+
 # When accepting an invite
-func _on_Lobby_Join_Requested(lobbyID, friendID):
+func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
 	# Get the lobby owner's name
 	var OWNER_NAME = Steam.getFriendPersonaName(friendID)
-	print("Joining "+str(OWNER_NAME)+"'s lobby...")
+	$Output.append_bbcode("[STEAM] Joining "+str(OWNER_NAME)+"'s lobby...\n\n")
+	
 	# Attempt to join the lobby
 	_join_Lobby(lobbyID)
 
+
 # When a lobby message is received
-func _on_Lobby_Message(result, user, message, type):
+func _on_Lobby_Message(result: int, user: int, message: String, type: int) -> void:
 	# We are only concerned with who is sending the message and what the message is
 	var SENDER = Steam.getFriendPersonaName(user)
-	_append_Message(str(SENDER)+" says '"+str(message)+"'")
+	$Output.append_bbcode(str(SENDER)+" says '"+str(message)+"'\n")
+
 
 # When a lobby chat is updated
-func _on_Lobby_Chat_Update(lobbyID, changedID, makingChangeID, chatState):
+func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, chatState: int) -> void:
 	# Note that chat state changes is: 1 - entered, 2 - left, 4 - user disconnected before leaving, 8 - user was kicked, 16 - user was banned
-	print("Lobby ID: "+str(lobbyID)+", Changed ID: "+str(changedID)+", Making Change: "+str(makingChangeID)+", Chat State: "+str(chatState))
+	$Output.append_bbcode("[STEAM] Lobby ID: "+str(lobbyID)+", Changed ID: "+str(changedID)+", Making Change: "+str(makingChangeID)+", Chat State: "+str(chatState)+"\n")
+
 	# Get the user who has made the lobby change
 	var CHANGER = Steam.getFriendPersonaName(makingChangeID)
+
 	# If a player has joined the lobby
 	if chatState == 1:
-		_append_Message(str(CHANGER)+" has joined the lobby.")
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has joined the lobby.\n\n")
 	# Else if a player has left the lobby
 	elif chatState == 2:
-		_append_Message(str(CHANGER)+" has left the lobby.")
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has left the lobby.\n\n")
 	# Else if a player has been kicked
 	elif chatState == 8:
-		_append_Message(str(CHANGER)+" has been kicked from the lobby.")
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been kicked from the lobby.\n\n")
 	# Else if a player has been banned
 	elif chatState == 16:
-		_append_Message(str(CHANGER)+" has been banned from the lobby.")
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been banned from the lobby.\n\n")
 	# Else there was some unknown change
 	else:
-		_append_Message(str(CHANGER)+" did... something.")
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" did... something.\n\n")
+
 	# Update the lobby now that a change has occurred
 	_get_Lobby_Members()
 
+
 # Whan lobby metadata has changed
-func _on_Lobby_Data_Update(success, lobbyID, memberID, key):
-	print("Success: "+str(success)+", Lobby ID: "+str(lobbyID)+", Member ID: "+str(memberID)+", Key: "+str(key))
+func _on_Lobby_Data_Update(success: bool, lobbyID: int, memberID: int, key: String) -> void:
+	$Output.append_bbcode("[STEAM] Success: "+str(success)+", Lobby ID: "+str(lobbyID)+", Member ID: "+str(memberID)+", Key: "+str(key)+"\n\n")
+
 
 # When the player leaves a lobby for whatever reason
-func _leave_Lobby():
+func _leave_Lobby() -> void:
 	# If in a lobby, leave it
 	if STEAM_LOBBY_ID != 0:
 		# Append a new message
-		_append_Message("Leaving lobby "+str(STEAM_LOBBY_ID)+".")
+		$Output.append_bbcode("[STEAM] Leaving lobby "+str(STEAM_LOBBY_ID)+".\n\n")
+
 		# Send leave request to Steam
 		Steam.leaveLobby(STEAM_LOBBY_ID)
+
 		# Wipe the Steam lobby ID then display the default lobby ID and player list title
 		STEAM_LOBBY_ID = 0
 		$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
-		$Players/Title.set_text("Player List (0)")
+		$"Players Title".set_text("Player List (0)")
+
 		# Close session with all users
 		for MEMBERS in LOBBY_MEMBERS:
 			Steam.closeP2PSessionWithUser(MEMBERS['steam_id'])
+
 		# Clear the local lobby list
 		LOBBY_MEMBERS.clear()
+		$Players.clear()
+
 		# Disable the leave lobby button and all test buttons
 		_change_Button_Controls(true)
+
 
 #################################################
 # P2P NETWORKING FUNCTIONS
 #################################################
 # Read a Steam P2P packet
-func _read_P2P_Packet():
-	var PACKET_SIZE = Steam.getAvailableP2PPacketSize(0)
+func _read_P2P_Packet() -> void:
+	var PACKET_SIZE: int = Steam.getAvailableP2PPacketSize(0)
 	# There is a packet
 	if PACKET_SIZE > 0:
-		_append_Message("There is a packet available.")
-		var PACKET = Steam.readP2PPacket(PACKET_SIZE, 0)
+		$Output.append_bbcode("[STEAM] There is a packet available.\n")
+
+		# Get the packet
+		var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, 0)
+		# If it is empty, set a warning
 		if PACKET.empty():
-			print("WARNING: read an empty packet with non-zero size!")
+			$Output.append_bbcode("[WARNING] Read an empty packet with non-zero size!\n")
+
 		# Get the remote user's ID
-		var PACKET_ID = str(PACKET.steamIDRemote)
-		var PACKET_CODE = str(PACKET.data[0])
+		var PACKET_ID: String = str(PACKET.steamIDRemote)
+		var PACKET_CODE: String = str(PACKET.data[0])
+
 		# Make the packet data readable
-		var READABLE = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+		var READABLE: PoolByteArray = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+
 		# Print the packet to output
-		_append_Message("Packet: "+str(READABLE))
+		$Output.append_bbcode("[STEAM] Packet: "+str(READABLE)+"\n\n")
 		# Append logic here to deal with packet data
 
+
 # Send a Steam P2P packet
-func _send_P2P_Packet(data, send_type, channel):
+func _send_P2P_Packet(data: PoolByteArray, send_type: int, channel: int) -> void:
 	# If there is more than one user, send packets
 	if LOBBY_MEMBERS.size() > 1:
 		# Loop through all members that aren't you
 		for MEMBER in LOBBY_MEMBERS:
-			if MEMBER['steam_id'] != STEAM_ID:
+			if MEMBER['steam_id'] != global.STEAM_ID:
 				Steam.sendP2PPacket(MEMBER['steam_id'], data, send_type, channel)
 
+
 # Make a Steam P2P handshake
-func _make_P2P_Handshake():
-	print("Sending P2P handshake to the lobby")
-	var DATA = PoolByteArray()
+func _make_P2P_Handshake() -> void:
+	$Output.append_bbcode("[STEAM] Sending P2P handshake to the lobby...\n\n")
+	var DATA: PoolByteArray = PoolByteArray()
 	DATA.append(256)
-	DATA.append_array(var2bytes({"message":"handshake", "from":STEAM_ID}))
+	DATA.append_array(var2bytes({"message":"handshake", "from":global.STEAM_ID}))
 	_send_P2P_Packet(DATA, 2, 0)
+
 
 # Send test packet information
-func _send_Test_Info():
-	print("Sending test packet data")
+func _send_Test_Info() -> void:
+	$Output.append_bbcode("[STEAM] Sending test packet data...\n\n")
 	var DATA = PoolByteArray()
 	DATA.append(256)
-	DATA.append_array(var2bytes({"title":"This is a test packet", "player_id":STEAM_ID, "player_hp":"5", "player_coord":"56,40"}))
+	DATA.append_array(var2bytes({"title":"This is a test packet", "player_id":global.STEAM_ID, "player_hp":"5", "player_coord":"56,40"}))
 	_send_P2P_Packet(DATA, 2, 0)
 
+
 # When receiving a P2P request from another user
-func _on_P2P_Session_Request(remoteID):
+func _on_P2P_Session_Request(remoteID: int) -> void:
 	# Get the requester's name
-	var REQUESTER = Steam.getFriendPersonaName(remoteID)
+	var REQUESTER: String = Steam.getFriendPersonaName(remoteID)
+
 	# Print the debug message to output
-	_append_Message("P2P session request from "+str(REQUESTER))
+	$Output.append_bbcode("[STEAM] P2P session request from "+str(REQUESTER)+"\n\n")
+
 	# Accept the P2P session; can apply logic to deny this request if needed
 	Steam.acceptP2PSessionWithUser(remoteID)
+
 	# Make the initial handshake
 	_make_P2P_Handshake()
 
+
 # P2P connection failure
-func _on_P2P_Session_Connect_Fail(lobbyID, session_error):
+func _on_P2P_Session_Connect_Fail(lobbyID: int, session_error: int) -> void:
 	# Note the session errors are: 0 - none, 1 - target user not running the same game, 2 - local user doesn't own app, 3 - target user isn't connected to Steam, 4 - connection timed out, 5 - unused
 	# If no error was given
 	if session_error == 0:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [no error given].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [no error given].\n\n")
 	# Else if target user was not running the same game
 	elif session_error == 1:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [target user not running the same game].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [target user not running the same game].\n\n")
 	# Else if local user doesn't own app / game
 	elif session_error == 2:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [local user doesn't own app / game].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [local user doesn't own app / game].\n\n")
 	# Else if target user isn't connected to Steam
 	elif session_error == 3:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [target user isn't connected to Steam].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [target user isn't connected to Steam].\n\n")
 	# Else if connection timed out
 	elif session_error == 4:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [connection timed out].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [connection timed out].\n\n")
 	# Else if unused
 	elif session_error == 5:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [unused].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [unused].\n\n")
 	# Else no known error
 	else:
-		_append_Message("WARNING: Session failure with "+str(lobbyID)+" [unknown error "+str(session_error)+"].")
+		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [unknown error "+str(session_error)+"].\n\n")
+
 
 #################################################
 # HELPER FUNCTIONS
 #################################################
-# Append a message to the output display
-func _append_Message(message):
-	$Output/Display.add_text("\n"+str(message))
-
 # Get the lobby members from Steam
 func _get_Lobby_Members():
 	# Clear your previous lobby list
 	LOBBY_MEMBERS.clear()
+
 	# Get the number of members from this lobby from Steam
-	var MEMBERS = Steam.getNumLobbyMembers(STEAM_LOBBY_ID)
-	print("Number of members in this lobby: "+str(MEMBERS))
+	var MEMBERS: int = Steam.getNumLobbyMembers(STEAM_LOBBY_ID)
+
 	# Update the player list title
-	$Players/Title.set_text("Player List ("+str(MEMBERS)+")")
+	$"Players Title".set_text("Player List ("+str(MEMBERS)+")")
+
 	# Get the data of these players from Steam
 	for MEMBER in range(0, MEMBERS):
 		# Get the member's Steam ID
-		var MEMBER_STEAM_ID = Steam.getLobbyMemberByIndex(STEAM_LOBBY_ID, MEMBER)
-		print("This member's Steam ID: "+str(MEMBER_STEAM_ID))
+		var MEMBER_STEAM_ID: int = Steam.getLobbyMemberByIndex(STEAM_LOBBY_ID, MEMBER)
+
 		# Get the member's Steam name
-		var MEMBER_STEAM_NAME = Steam.getFriendPersonaName(MEMBER_STEAM_ID)
-		print("This member's Steam username: "+str(MEMBER_STEAM_NAME))
+		var MEMBER_STEAM_NAME: String = Steam.getFriendPersonaName(MEMBER_STEAM_ID)
+
 		# Add them to the player list
 		_add_Player_List(MEMBER_STEAM_ID, MEMBER_STEAM_NAME)
 
+
 # Add a new Steam user to the connect users list
-func _add_Player_List(steam_id, steam_name):
+func _add_Player_List(steam_id: int, steam_name: String) -> void:
 	# Add them to the list
 	LOBBY_MEMBERS.append({"steam_id":steam_id, "steam_name":steam_name})
+
 	# Clear the original player list
-	$Players/Display.clear()
+	$Players.clear()
+
 	# Update the player list
 	for MEMBER in LOBBY_MEMBERS:
-		$Players/Display.add_text(str(MEMBER['steam_name'])+" ("+str(MEMBER['steam_id'])+")\n")
+		$Players.add_text(str(MEMBER['steam_name'])+" ("+str(MEMBER['steam_id'])+")\n")
+
 
 # Enable or disable a gang of buttons
-func _change_Button_Controls(toggle):
-	$"Leave Lobby".set_disabled(toggle)
-	$"Get Lobby Data".set_disabled(toggle)
-	$"Send Packet".set_disabled(toggle)
-	$"Send Chat".set_disabled(toggle)
+func _change_Button_Controls(toggle: bool) -> void:
+	$Panel/Options/Leave.set_disabled(toggle)
+	$Panel/Options/GetLobbyData.set_disabled(toggle)
+	$Panel/Options/SendPacket.set_disabled(toggle)
+	$Send.set_disabled(toggle)
 	# Caveat for the lineedit
 	if toggle:
 		$Chat.set_editable(false)
 	else:
 		$Chat.set_editable(true)
 
+
+#################################################
+# BUTTON FUNCTIONS
+#################################################
+# Creating a lobby
+func _on_Create_Lobby_pressed() -> void:
+	_create_Lobby()
+
+
+# Leaving the lobby
+func _on_Leave_Lobby_pressed() -> void:
+	_leave_Lobby()
+
+
+# Getting associated metadata for the lobby
+func _on_Get_Lobby_Data_pressed() -> void:
+	DATA = Steam.getLobbyData(STEAM_LOBBY_ID, "name")
+	$Output.append_bbcode("[STEAM] Lobby data, name: "+str(DATA)+"\n")
+	DATA = Steam.getLobbyData(STEAM_LOBBY_ID, "mode")
+	$Output.append_bbcode("[STEAM] Lobby data, mode: "+str(DATA)+"\n\n")
+
+
+# Sending a test packet out to the players
+func _on_Send_Packet_pressed() -> void:
+	_send_Test_Info()
+
+
+# Open the lobby list
+func _on_Open_Lobby_List_pressed() -> void:
+	$Lobbies.show()
+
+	# Set distance to worldwide
+	Steam.addRequestLobbyListDistanceFilter(3)
+
+	# Request the list
+	$Output.append_bbcode("[STEAM] Requesting a lobby list...\n\n")
+	Steam.requestLobbyList()
+
+
+# Close the lobbies screen
+func _on_Close_Lobbies_pressed() -> void:
+	$Lobbies.hide()
+
+
+# Send a chat message
+func _on_Send_Chat_pressed() -> void:
+	# Get the entered chat message
+	var MESSAGE: String = $Chat.get_text()
+
+	# Pass the message to Steam
+	var IS_SENT: bool = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, MESSAGE)
+
+	# Was it sent successfully?
+	if not IS_SENT:
+		$Output.append_bbcode("[ERROR] Chat message failed to send.\n\n")
+
+	# Clear the chat input
+	$Chat.clear()
+
+
+#################################################
+# COMMAND LINE ARGUMENTS
+#################################################
 # Check the command line for arguments
+# Used primarily if a player accepts an invite and does not have the game opened
 func _check_Command_Line():
 	var ARGUMENTS = OS.get_cmdline_args()
 	# There are arguments to process
@@ -321,48 +427,10 @@ func _check_Command_Line():
 			if ARGUMENT == "+connect_lobby":
 				LOBBY_INVITE_ARG = true
 
+
 #################################################
-# BUTTON FUNCTIONS
+# BACK BUTTON
 #################################################
-# Creating a lobby
-func _on_Create_Lobby_pressed():
-	_create_Lobby()
-
-# Leaving the lobby
-func _on_Leave_Lobby_pressed():
-	_leave_Lobby()
-
-# Getting associated metadata for the lobby
-func _on_Get_Lobby_Data_pressed():
-	DATA = Steam.getLobbyData(STEAM_LOBBY_ID, "name")
-	_append_Message("Lobby data, name: "+str(DATA))
-	DATA = Steam.getLobbyData(STEAM_LOBBY_ID, "mode")
-	_append_Message("Lobby data, mode: "+str(DATA))
-
-# Sending a test packet out to the players
-func _on_Send_Packet_pressed():
-	_send_Test_Info()
-
-# Open the lobby list
-func _on_Open_Lobby_List_pressed():
-	$"Lobby Panel".popup()
-	# Set distance to worldwide
-	Steam.addRequestLobbyListDistanceFilter(3)
-	print("Requesting a lobby list")
-	Steam.requestLobbyList()
-
-# Close the lobbies screen
-func _on_Close_Lobbies_pressed():
-	$"Lobby Panel".hide()
-
-# Send a chat message
-func _on_Send_Chat_pressed():
-	# Get the entered chat message
-	var MESSAGE = $Chat.get_text()
-	# Pass the message to Steam
-	var SENT = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, MESSAGE)
-	# Was it sent successfully?
-	if not SENT:
-		_append_Message("ERROR: Chat message failed to send.")
-	# Clear the chat input
-	$Chat.clear()
+# Emit a signal to the main node letting it know the user is done
+func _on_Back_pressed() -> void:
+	emit_signal("back_to_main")

@@ -1,0 +1,275 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://src/examples/leaderboards.gd" type="Script" id=1]
+[ext_resource path="res://data/themes/button-theme.tres" type="Theme" id=2]
+[ext_resource path="res://data/fonts/list-titles.tres" type="DynamicFont" id=3]
+[ext_resource path="res://data/fonts/sub-titles.tres" type="DynamicFont" id=4]
+[ext_resource path="res://data/fonts/descriptions.tres" type="DynamicFont" id=5]
+[ext_resource path="res://data/fonts/output-text.tres" type="DynamicFont" id=6]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+[sub_resource type="StyleBoxFlat" id=3]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[node name="Leaderboards" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Message" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 100.0
+margin_right = 900.0
+margin_bottom = 139.0
+custom_fonts/font = ExtResource( 5 )
+text = "Most of these leaderboard functions may not work with the default 480 app ID (Spacewars). If you are using your own game's app ID, however, you should be able to use all the leaderboard functions fine; provided everything is set up correctly in your Steamworks back-end."
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 175.0
+margin_right = 900.0
+margin_bottom = 200.0
+custom_fonts/font = ExtResource( 4 )
+text = "Output:"
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output" type="RichTextLabel" parent="."]
+anchor_right = 0.587
+anchor_bottom = 0.033
+margin_left = 25.0
+margin_top = 200.0
+margin_right = 148.64
+margin_bottom = 576.24
+custom_styles/normal = SubResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+custom_colors/default_color = Color( 1, 1, 1, 1 )
+scroll_following = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Input Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 625.0
+margin_right = 900.0
+margin_bottom = 650.0
+custom_fonts/font = ExtResource( 4 )
+text = "Leaderboard Name"
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Name" type="LineEdit" parent="."]
+margin_left = 25.0
+margin_top = 650.0
+margin_right = 900.0
+margin_bottom = 675.0
+custom_styles/focus = SubResource( 2 )
+custom_styles/normal = SubResource( 3 )
+custom_fonts/font = ExtResource( 6 )
+placeholder_text = "Enter a leaderboard name"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 955.0
+margin_top = 200.0
+margin_right = 1255.0
+margin_bottom = 695.0
+custom_styles/panel = SubResource( 4 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="VBoxContainer" parent="Panel"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 285.0
+margin_bottom = 490.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Panel/Options"]
+margin_right = 270.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 3 )
+text = "Leaderboard Options"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="attachUGC" type="Button" parent="Panel/Options"]
+margin_top = 29.0
+margin_right = 270.0
+margin_bottom = 57.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Attach Leaderboard UGC"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="DownloadEntries" type="Button" parent="Panel/Options"]
+margin_top = 67.0
+margin_right = 270.0
+margin_bottom = 95.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Download Entries"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="DownloadUserEntries" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Download Entries For Users"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="FindLeaderboard" type="Button" parent="Panel/Options"]
+margin_top = 143.0
+margin_right = 270.0
+margin_bottom = 171.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Find Leaderboard"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="FindOrCreateLeaderboard" type="Button" parent="Panel/Options"]
+margin_top = 181.0
+margin_right = 270.0
+margin_bottom = 209.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Find Or Create Leaderboard"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetLeaderboardDisplayType" type="Button" parent="Panel/Options"]
+margin_top = 219.0
+margin_right = 270.0
+margin_bottom = 247.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Get Leaderboard Display Type"
+align = 0
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="GetLeaderboardName" type="Button" parent="Panel/Options"]
+margin_top = 257.0
+margin_right = 270.0
+margin_bottom = 285.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Get Leaderboard Name"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetLeaderboardSortMethod" type="Button" parent="Panel/Options"]
+margin_top = 295.0
+margin_right = 270.0
+margin_bottom = 323.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Get Leaderboard Sort Method"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetLeaderboardEntryCount" type="Button" parent="Panel/Options"]
+margin_top = 333.0
+margin_right = 270.0
+margin_bottom = 361.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Get Leaderboard Entry Count"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer" type="Label" parent="Panel/Options"]
+margin_top = 371.0
+margin_right = 270.0
+margin_bottom = 390.0
+custom_fonts/font = ExtResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Back" type="Button" parent="Panel/Options"]
+margin_top = 400.0
+margin_right = 270.0
+margin_bottom = 428.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Back To Main Menu"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+[connection signal="pressed" from="Panel/Options/attachUGC" to="." method="_on_AttachLeaderboardUGC_pressed"]
+[connection signal="pressed" from="Panel/Options/DownloadEntries" to="." method="_on_DownloadLeaderboardEntries_pressed"]
+[connection signal="pressed" from="Panel/Options/DownloadUserEntries" to="." method="_on_DownloadLeaderboardEntriesForUsers_pressed"]
+[connection signal="pressed" from="Panel/Options/FindLeaderboard" to="." method="_on_FindLeaderboard_pressed"]
+[connection signal="pressed" from="Panel/Options/FindOrCreateLeaderboard" to="." method="_on_FindOrCreateLeaderboard_pressed"]
+[connection signal="pressed" from="Panel/Options/GetLeaderboardDisplayType" to="." method="_on_GetLeaderboardDisplayType_pressed"]
+[connection signal="pressed" from="Panel/Options/GetLeaderboardName" to="." method="_on_GetLeaderboardName_pressed"]
+[connection signal="pressed" from="Panel/Options/GetLeaderboardSortMethod" to="." method="_on_GetLeaderboardSortMethod_pressed"]
+[connection signal="pressed" from="Panel/Options/GetLeaderboardEntryCount" to="." method="_on_GetLeaderboardEntryCount_pressed"]
+[connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]

@@ -1,0 +1,240 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://src/examples/avatars.gd" type="Script" id=1]
+[ext_resource path="res://data/themes/button-theme.tres" type="Theme" id=2]
+[ext_resource path="res://data/fonts/list-titles.tres" type="DynamicFont" id=3]
+[ext_resource path="res://data/fonts/descriptions.tres" type="DynamicFont" id=4]
+[ext_resource path="res://data/fonts/sub-titles.tres" type="DynamicFont" id=5]
+[ext_resource path="res://data/images/default-avatar-medium.png" type="Texture" id=6]
+[ext_resource path="res://data/images/default-avatar-large.png" type="Texture" id=7]
+[ext_resource path="res://data/images/default-avatar-small.png" type="Texture" id=8]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="Theme" id=2]
+Panel/styles/panel = SubResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[node name="Avatars" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Message" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 100.0
+margin_right = 900.0
+margin_bottom = 160.0
+custom_fonts/font = ExtResource( 4 )
+text = "This very brief example shows how to obtain a player's Steam profile avatar.  There are three different sizes and, in this example, they will be applied to Sprite nodes. Note that sometimes the API will send back a large avatar bigger than 128 pixels."
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Images" type="GridContainer" parent="."]
+margin_left = 25.0
+margin_top = 175.0
+margin_right = 929.0
+margin_bottom = 570.0
+custom_constants/vseparation = 25
+custom_constants/hseparation = 25
+columns = 2
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Small" type="Panel" parent="Images"]
+margin_right = 454.0
+margin_bottom = 115.0
+rect_min_size = Vector2( 425, 80 )
+theme = SubResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Label" type="Label" parent="Images/Small"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 217.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 5 )
+text = "Small Avatar - 32 x 32 pixels"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Avatar" type="Sprite" parent="Images/Small"]
+position = Vector2( 10, 40 )
+texture = ExtResource( 8 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Medium" type="Panel" parent="Images"]
+margin_left = 479.0
+margin_right = 904.0
+margin_bottom = 115.0
+rect_min_size = Vector2( 425, 115 )
+custom_styles/panel = SubResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Label" type="Label" parent="Images/Medium"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 235.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 5 )
+text = "Medium Avatar - 64 x 64 pixels"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Avatar" type="Sprite" parent="Images/Medium"]
+position = Vector2( 10, 40 )
+texture = ExtResource( 6 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Large" type="Panel" parent="Images"]
+margin_top = 140.0
+margin_right = 454.0
+margin_bottom = 395.0
+rect_min_size = Vector2( 425, 180 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 4 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Label" type="Label" parent="Images/Large"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 236.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 5 )
+text = "Large Avatar - 128 x 128 pixels"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Avatar" type="Sprite" parent="Images/Large"]
+position = Vector2( 10, 40 )
+texture = ExtResource( 7 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 955.0
+margin_top = 200.0
+margin_right = 1255.0
+margin_bottom = 695.0
+custom_styles/panel = SubResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Options" type="VBoxContainer" parent="Panel"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 285.0
+margin_bottom = 186.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Load Avatars" type="Label" parent="Panel/Options"]
+margin_right = 270.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 3 )
+text = "Load Avatars"
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Small" type="Button" parent="Panel/Options"]
+margin_top = 29.0
+margin_right = 270.0
+margin_bottom = 57.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Show Small Avatar"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Medium" type="Button" parent="Panel/Options"]
+margin_top = 67.0
+margin_right = 270.0
+margin_bottom = 95.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Show Medium Avatar"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Large" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Show Large Avatar"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer" type="Label" parent="Panel/Options"]
+margin_top = 143.0
+margin_right = 270.0
+margin_bottom = 162.0
+custom_fonts/font = ExtResource( 3 )
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Back" type="Button" parent="Panel/Options"]
+margin_top = 172.0
+margin_right = 270.0
+margin_bottom = 200.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Back To Main Menu"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+[connection signal="pressed" from="Panel/Options/Small" to="." method="_on_Small_pressed"]
+[connection signal="pressed" from="Panel/Options/Medium" to="." method="_on_Medium_pressed"]
+[connection signal="pressed" from="Panel/Options/Large" to="." method="_on_Large_pressed"]
+[connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]
