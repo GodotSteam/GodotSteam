@@ -6,6 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 11/19/20:**
+- Added: new game to list
+- Fixed: misspelling in sidebar links
+
 **Updated 11/15/20:**
 - Changed: Linux caveats tutorial with new solution
 - Fixed: broken links on various pages for sidebar
