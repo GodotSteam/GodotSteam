@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<!-- Section -->
+					<section>
+						<header class="main">
+							<h1>Exporting and Shipping</h1>
+						</header>
+						<p>This topic comes up a lot and also trips folks up a lot; so this tutorial is here to help.  Exporting and shipping your game with GodotSteam is pretty easy once you get the flow down. This tutorial assumes you are downloading pre-compiled versions of the GodotSteam templates instead of compiling them; however, it will obviously work the same with the ones you compile yourself.</p>
+						<hr />
+						<header class="major">
+							<h3>Template Importing (Optional)</h3>
+						</header>
+						<p>As the title mentions, this step is completely optional.  Personally, I do not import template zips when exporting games; however, I figured it was worth covering for those of you who do.  And for those who do, there is now a separate template zip available in the GodotSteam release section which has all the operating system templates in one package.</p>
+						<p>Just like installing the official template zips, you want to click on the "Editor" option at the top then select "Manage Export Templates..." in the drop-down. Like so:</p>
+						<p><img src="img/export-ship1-1.png" alt="Editor > Manage Export Template" /></p>
+						<p>On the next screen you will want to click on the "Install From File" button and find your godotsteam-xxx-templates.tpz file. The editor will then install these templates so they will be available during export.</p>
+						<p><img src="img/export-ship1-2.png" alt="Install From File" /></p>
+						<p>At the time of writing, I am not sure how the editor decides which templates to use if you have both the regular Godot templates <em>and</em> the custom GodotSteam templates installed.  If anyone does, <a href="mailto:godotsteam@coaguco.com" target="_blank">please feel free to reach out</a>.</p>
+						<header class="major">
+							<h3>Exporting</h3>
+						</header>
+						<p>From this point on, I will assume you have skipped the template installer process above. To being our export process, first click on the "Project" button in the top menu then select "Export..." from the drop-down.</p>
+						<p><img src="img/export-ship2-1.png" alt="Export Start" /></p>
+						<p>Since the pre-compiles are <strong>never</strong> debug-release versions, you must make sure that <em>only</em> the <strong>release field contains a template</strong> and that the <strong>debug field is empty</strong>. this next step is important and also where people often get stuck:</p>
+						<p><img src="img/export-ship2-2.png" alt="Release Only" /></p>
+						<p>If you have the debug field filled in, <strong>especially while using the pre-compiled templates</strong>, the export process will fail. Also, if you use a non-GodotSteam template here or leave the release field blank as well, you will end up with an executable that crashes like so:</p>
+<pre><code>
+Parse Error: The identifier "Steam" isn't declared in the current scope.
+</code></pre>
+						<p>Obviously, because the Steamworks API isn't present without a GodotSteam template, the executable will not understand any Steam functions.  Also take note that the OSX export screen has a reversed order for the debug and release fields, for some reason:</p>
+						<p><img src="img/export-ship2-3.png" alt="Mac Reversed" /></p>
+						<p>On the last export screen, just before the process begins, make sure you turn the debugging option off:</p>
+						<p><img src="img/export-ship2-4.png" alt="Turn Debug Off" /></p>
+						<p>If you do not, your executable will crash since we are not using debug-release templates. That being said, if you compile the templates yourself and actually create debug-release templates then you can ignore both debug-specific parts above.</p>
+						<hr />
+						<header class="major">
+							<h3>Shipping</h3>
+						</header>
+						<p>For Windows and Linux, shipping is relatively simple.  You just need your game's executable, any accompanying .pck file, and the Steamworks API file.
+							<ul>
+								<li>For Windows, use the steam_api.dll for 32-bit and steam_api64.dll for 64-bit.</li>
+								<li>For Linux, make sure you use the libsteam_api.so file from the correct folder (I am not sure why Valve did not differentiate, in naming, between 32 and 64-bit files for Linux, but they do not).</li>
+							</ul>
+						Your exported game's directory should look something like this:</p>
+						<p><img src="img/export-ship3-1.png" alt="Export Folder" /></p>
+						<p>You will notice that the <em>steam_appid.txt</em> is not included. This file is <strong>only</strong> used for running your game <em>outside</em> of the Steam client so that it knows which game you are playing.  When run <em>through</em> the Steam client, Steam is aware of what game you are playing, thus it is not necessary.  You can ship the steam_appid.txt will your game but it is not necessary or recommended.</p>
+						<p>As for OSX, there are a few extra steps beyond these since OSX games / apps are contained in an .app folder.  Instead of going over it again, you can <a href="tutorials-mac-export.html" target="_blank">read more about the process in the Max Exporting tutorial</a>.</p>
+						<p>At this point, you are ready to upload your game to Steam!  <a href="https://partner.steamgames.com/doc/sdk/uploading" target="_blank">You can read more about that process on the offical Steamworks SDK documentation</a>. And, as usual, if you run into any issues, please contact us on the project's Github issues page or the Discord server.</p>
+					</section>
+					<footer id="footer">
+						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
+						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
+						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
+						Site Template by <a href="https://html5up.net">HTML5UP</a>
+					</footer>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+				<div class="inner">
+					<!-- Menu -->
+					<nav id="menu">
+						<header class="major">
+							<h2>Menu</h2>
+						</header>
+						<ul>
+							<li><a href="index.html">Introduction</a></li>
+							<li>
+								<span class="opener">How-To's</span>
+								<ul>
+									<li><a href="howto-module.html">How-To Godot 2 & 3</a></li>
+									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+									<li><a href="howto-server.html">How-To Server</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions</span>
+								<ul>
+									<li><a href="functions-module.html">Functions (Module) </a></li>
+									<li><a href="functions-server.html">Functions (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Signals</span>
+								<ul>
+									<li><a href="signals-modules.html">Signals (Module)</a></li>
+									<li><a href="signals-server.html">Signals (Server)</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Tutorials</span>
+								<ul>
+									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+									<li><a href="tutorials-avatars.html">Avatars</a></li>
+									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+								</ul>
+							</li>
+							<li><a href="games.html">Games Using GodotSteam</a></li>
+							<li><a href="todo.html">To-Do</a></li>
+							<li><a href="changelog.html">Change Log</a></li>
+							<li><a href="contributors.html">Contributors / Donate</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

@@ -6,6 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 11/24/20:**
+- Added: new tutorial - Exporting and Shipping
+- Changed: added new contributors
+
 **Updated 11/19/20:**
 - Added: new game to list
 - Fixed: misspelling in sidebar links
@@ -33,20 +37,6 @@ What's New
 
 **Update 10/4/20:**
 - Added: new game to list
-
-**Update 9/20/20:**
-- Changed: updated change log
-- Changed: to-do list, finished some tasks
-
-**Update 9/11/20:**
-- Added: new game to list
-
-**Update 9/3/20:**
-- Added: new game to list
-- Removed: all updates in readme over two months old
-
-**Update 9/1/20:**
-- Added: new contributor
 
 Donate
 -------------
