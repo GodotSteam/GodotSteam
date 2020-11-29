@@ -5000,6 +5000,14 @@ String Steam::getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index){
 	}
 	return "";
 }
+
+static wchar_t *charToWChar(const char *text) {
+	size_t size = strlen(text) + 1;
+	wchar_t *wa = new wchar_t[size];
+	mbstowcs(wa, text, size);
+	return wa;
+}
+
 // Retrieve the details of an individual workshop item after receiving a querying UGC call result.
 Dictionary Steam::getQueryUGCResult(uint64_t queryHandle, uint32 index){
 	Dictionary ugcResult;
@@ -5015,8 +5023,8 @@ Dictionary Steam::getQueryUGCResult(uint64_t queryHandle, uint32 index){
 		ugcResult["fileType"] = (uint64_t)pDetails.m_eFileType;
 		ugcResult["creatorAppID"] = (uint64_t)pDetails.m_nCreatorAppID;
 		ugcResult["consumerAppID"] = (uint64_t)pDetails.m_nConsumerAppID;
-		ugcResult["title"] = pDetails.m_rgchTitle;
-		ugcResult["description"] = pDetails.m_rgchDescription;
+		ugcResult["title"] = charToWChar(pDetails.m_rgchTitle);
+		ugcResult["description"] = charToWChar(pDetails.m_rgchDescription);
 		ugcResult["steamIDOwner"] = (uint64_t)pDetails.m_ulSteamIDOwner;
 		ugcResult["timeCreated"] = pDetails.m_rtimeCreated;
 		ugcResult["timeUpdated"] = pDetails.m_rtimeUpdated;
