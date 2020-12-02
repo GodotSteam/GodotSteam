@@ -466,7 +466,7 @@ String Steam::getAppInstallDir(AppId_t appID){
 	char *buffer = new char[folderBuffer];
 	SteamApps()->GetAppInstallDir(appID, (char*)buffer, folderBuffer);
 	String appDir = buffer;
-	delete buffer;
+	delete[] buffer;
 	return appDir;
 }
 // Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.
@@ -551,7 +551,7 @@ Array Steam::getInstalledDepots(uint32_t appID){
 	for(int i = 0; i < installed; i++){
 		installedDepots.append(depots[i]);
 	}
-	delete depots;
+	delete[] depots;
 	return installedDepots;
 }
 // Gets the command line if the game was launched via Steam URL, e.g. steam://run/<appid>//<command line>/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation > General page on your app.
@@ -2258,7 +2258,7 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String& name){
 	char *value = new char[bufferSize];
 	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), value, &bufferSize);
 	String property = value;
-	delete value;
+	delete[] value;
 	return property;
 }
 // Gets the state of a subset of the current user's inventory.
@@ -2315,7 +2315,7 @@ String Steam::getResultItemProperty(uint32 index, const String& name){
 		char *value = new char[bufferSize];
 		SteamInventory()->GetResultItemProperty(inventoryHandle, index, name.utf8().get_data(), (char*)value, &bufferSize);
 		String property = value;
-		delete value;
+		delete[] value;
 		return property;
 	}
 	return "";
@@ -5117,7 +5117,7 @@ Array Steam::getSubscribedItems(){
 	for(int i = 0; i < itemList; i++){
 		subscribed.append((uint64_t)items[i]);
 	}
-	delete items;
+	delete[] items;
 	return subscribed;
 }
 // Gets the users vote status on a workshop item.
@@ -5661,7 +5661,7 @@ String Steam::getUserDataFolder(){
 	char *buffer = new char[bufferSize];
 	SteamUser()->GetUserDataFolder((char*)buffer, bufferSize);
 	String data_path = buffer;
-	delete buffer;
+	delete[] buffer;
 	return data_path;
 }
 // Read captured audio data from the microphone buffer.
@@ -6445,7 +6445,7 @@ void Steam::setOverlayNotificationInset(int horizontal, int vertical){
 }
 // Set the position where overlay shows notifications.
 void Steam::setOverlayNotificationPosition(int pos){
-	if((pos > 0) || (pos < 4) || (SteamUtils() != NULL)){
+	if((pos >= 0) && (pos < 4) && (SteamUtils() != NULL)){
 		SteamUtils()->SetOverlayNotificationPosition(ENotificationPosition(pos));
 	}
 }
@@ -7004,7 +7004,7 @@ void Steam::_inventory_definition_update(SteamInventoryDefinitionUpdate_t *callD
 			}
 		}
 		// Delete the temporary array
-		delete idArray;
+		delete[] idArray;
 	}
 	// Return the item array as a signal
 	emit_signal("inventory_defintion_update", definitions);
@@ -7077,7 +7077,7 @@ void Steam::_lobby_data_update(LobbyDataUpdate_t* callData){
 	uint64_t memberID = callData->m_ulSteamIDMember;
 	uint64_t lobbyID = callData->m_ulSteamIDLobby;
 	uint8 success = callData->m_bSuccess;
-	char key;
+	char key = '\0';
 	// Is the lobby
 	if(memberID == lobbyID){
 		SteamMatchmaking()->GetLobbyMemberData(callData->m_ulSteamIDLobby, callData->m_ulSteamIDMember, &key);
@@ -7417,7 +7417,7 @@ void Steam::_user_stats_unloaded(UserStatsUnloaded_t* callData){
 //
 // Called when the big picture gamepad text input has been closed.
 void Steam::_gamepad_text_input_dismissed(GamepadTextInputDismissed_t* callData){
-	char text;
+	char text = '\0';
 	uint32 length = 0;
 	if(callData->m_bSubmitted){
 		SteamUtils()->GetEnteredGamepadTextInput(&text, callData->m_unSubmittedText);
@@ -7605,7 +7605,7 @@ void Steam::_inventory_eligible_promo_item(SteamInventoryEligiblePromoItemDefIDs
 			}
 		}
 		// Delete the temporary array
-		delete idArray;
+		delete[] idArray;
 		// Return the item array as a signal
 		emit_signal("inventory_eligible_promo_Item", result, cached, definitions);
 	}
