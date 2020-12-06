@@ -13,6 +13,14 @@ Current Build
 ----------
 You can download pre-compiled versions _(currently v3.8.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
 
+**Version 3.8.2 Changes**
+- Added: different avatar constants
+- Changed: array deletions for Clang, _thanks to thisismike97_
+- Changed: initializing char text, _thanks to thisismike97_
+- Fixed: createQueryUserUGCRequest being commented out accidentally
+- Fixed: logic check for setOverlayNotificationPosition, _thanks to thisismike97_
+- Fixed: UTF8 not being handled correctly in some UGC functions, _thanks to EIREXE_
+
 **Version 3.8.1 Changes**
 - Added: extra newline beween each class section for readability
 - Added: new signal, _steamworks_error_, currently used for call results failures

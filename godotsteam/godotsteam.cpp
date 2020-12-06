@@ -5889,7 +5889,7 @@ String Steam::getAchievementDisplayAttribute(const String& name, const String& k
 	}
 	return SteamUserStats()->GetAchievementDisplayAttribute(name.utf8().get_data(), key.utf8().get_data());
 }
-//Gets the icon for an achievement
+// Gets the icon for an achievement
 int Steam::getAchievementIcon(const String& name){
 	if(SteamUserStats() == NULL){
 		return 0;
@@ -8737,7 +8737,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("createItem", &Steam::createItem);
 	ClassDB::bind_method("createQueryAllUGCRequest", &Steam::createQueryAllUGCRequest);
 	ClassDB::bind_method("createQueryUGCDetailsRequest", &Steam::createQueryUGCDetailsRequest);
-//	ClassDB::bind_method("createQueryUserUGCRequest", &Steam::createQueryUserUGCRequest);
+	ClassDB::bind_method("createQueryUserUGCRequest", &Steam::createQueryUserUGCRequest);
 	ClassDB::bind_method("deleteItem", &Steam::deleteItem);
 	ClassDB::bind_method("downloadItem", &Steam::downloadItem);
 	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
@@ -10449,8 +10449,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);									// 1
 	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);											// 2
 	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);											// 3
-}
 
+	// Avatar constants	
+	BIND_CONSTANT(AVATAR_SMALL);														// 1
+	BIND_CONSTANT(AVATAR_MEDIUM);														// 2
+	BIND_CONSTANT(AVATAR_LARGE);														// 3
+}
 
 Steam::~Steam(){
 	// Store stats then shut down ///////////////
