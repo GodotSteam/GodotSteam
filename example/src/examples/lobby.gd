@@ -229,22 +229,32 @@ func _read_P2P_Packet() -> void:
 
 
 # Send a Steam P2P packet
-func _send_P2P_Packet(data: PoolByteArray, send_type: int, channel: int) -> void:
-	# If there is more than one user, send packets
-	if LOBBY_MEMBERS.size() > 1:
-		# Loop through all members that aren't you
-		for MEMBER in LOBBY_MEMBERS:
-			if MEMBER['steam_id'] != global.STEAM_ID:
-				Steam.sendP2PPacket(MEMBER['steam_id'], data, send_type, channel)
+func _send_P2P_Packet(target: String: packet_data: Dictionary) -> void:
+	# Set the send_type and channel
+	var SEND_TYPE: int = 2
+	var CHANNEL: int = 0
+	# Create a data array to send the data through
+	var DATA: PoolByteArray
+	DATA.append(256)
+	DATA.append_array(var2bytes(packet_data))
+	# If sending a packet to everyone
+	if target == "all":
+		# If there is more than one user, send packets
+		if LOBBY_MEMBERS.size() > 1:
+			# Loop through all members that aren't you
+			for MEMBER in LOBBY_MEMBERS:
+				if MEMBER['steam_id'] != global.STEAM_ID:
+					Steam.sendP2PPacket(MEMBER['steam_id'], DATA, SEND_TYPE, CHANNEL)
+	# Else send the packet to a particular user
+	else:
+		# Send this packet
+		Steam.sendP2PPacket(int(target), DATA, SEND_TYPE, CHANNEL)
 
 
 # Make a Steam P2P handshake
 func _make_P2P_Handshake() -> void:
 	$Output.append_bbcode("[STEAM] Sending P2P handshake to the lobby...\n\n")
-	var DATA: PoolByteArray = PoolByteArray()
-	DATA.append(256)
-	DATA.append_array(var2bytes({"message":"handshake", "from":global.STEAM_ID}))
-	_send_P2P_Packet(DATA, 2, 0)
+	_send_P2P_Packet("all", {"message":"handshake", "from":global.STEAM_ID})
 
 
 # Send test packet information
