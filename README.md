@@ -6,7 +6,10 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
-** 12/6/20:**
+** Updated 12/21/20:**
+- Added: new contributor
+
+** Updated 12/6/20:**
 - Changed: updates to the lobbies / p2p tutorial
 - Changed: main change-log for godot3 master branch
 
