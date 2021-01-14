@@ -87,8 +87,8 @@ func _on_DownloadLeaderboardEntries_pressed() -> void:
 
 
 # Leaderboard entries are ready to be retrieved
-func _leaderboard_Scores_Downloaded() -> void:
-	$Output.append_bbcode("Leaderboard entries for handle "+str(LEADERBOARD_HANDLE)+" are ready to be retrieved!")
+func _leaderboard_Scores_Downloaded(message: String, result: Array) -> void:
+	$Output.append_bbcode("Leaderboard entries for handle "+str(LEADERBOARD_HANDLE)+": "+str(message)+"\nResults are as such: "+str(result)+"\n\n")
 
 
 # Request all rows for a maximum of 100 users
