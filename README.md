@@ -6,14 +6,17 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 1/18/21:**
+- Added: new link to games list
+
 ** Updated 1/15/21:**
 - Added: new task to to-do
 - Added: new games to list
 
-** Updated 12/21/20:**
+**Updated 12/21/20:**
 - Added: new contributor
 
-** Updated 12/6/20:**
+**Updated 12/6/20:**
 - Changed: updates to the lobbies / p2p tutorial
 - Changed: main change-log for godot3 master branch
 
