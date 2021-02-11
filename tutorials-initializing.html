@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -29,18 +29,30 @@
 						<header class="main">
 							<h1>Tutorials - Initializing Steam</h1>
 						</header>
-						<p>I usually create an auto-load GDscript called global.gd which is added as a singleton. I add this code to the _ready() function:</p>
+						<p>In this tutorial, we will cover the basic initialization of Steamworks in your game; as well as getting callbacks globally.</p>
+						<hr/>
+						<header class="major">
+							<h3>Initialize Steam</h3>
+						</header>
+						<p>In my personal projects, I usually create an auto-load GDscript called <strong>global.gd</strong> which is added as a singleton. I then create a function called <strong>_initialize_Steam</strong> and add the code below.  This is then called from the <strong>_ready</strong> function in my <strong>global.gd</strong>:</p>
 <pre><code>
-var INIT = Steam.steamInit()
-print("Did Steam initialize?: "+str(INIT))
-	
-if INIT['status'] != 1:
-	print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
-	get_tree().quit()
-</code></pre><br/>
-						<p>This code will obviously shut down the game if Steam does not initialize, as well as print the verbal reason for shutting down. The function <strong>Steam.steamInit()</strong> will send back a dictionary with two keys / values:
+func _ready() -> void:
+	_initialize_Steam()
+
+func _initialize_Steam() -> void:
+	var INIT: Dictionary = Steam.steamInit()
+</code></pre>
+						<p>By default, <strong>Steam.steamInit()</strong> will query Steamworks for the local user's current statistics and send this data back as a callback (signal).  You can pass a boolean (false) to the function to prevent this behavior:</p>
+<pre><code>
+func _ready() -> void:
+	_initialize_Steam()
+
+func _initialize_Steam() -> void:
+	var INIT: Dictionary = Steam.steamInit(false)
+</code></pre>
+						<p><strong>Steam.steamInit()</strong> will always send back a dictionary with two keys / values:
 							<ul>
-								<li>verbal - this is essential the verbose version of status</li>
+								<li>verbal - this is essential the verbose, text version of status</li>
 								<li>status
 									<ul>
 										<li>1 - Successfully initialized</li>
@@ -52,60 +64,91 @@ if INIT['status'] != 1:
 								</li>
 							</ul>
 						</p>
+						<hr/>
+						<header class="major">
+							<h3>Checking For Errors</h3>
+						</header>
+						<p>Next we will check if Steamworks was actually initialized and the user can connect to Steam:</p>
+<pre><code>
+func _ready() -> void:
+	_initialize_Steam()
+
+func _initialize_Steam() -> void:
+	var INIT: Dictionary = Steam.steamInit()
+	print("Did Steam initialize?: "+str(INIT))
+
+	if INIT['status'] != 1:
+		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
+		get_tree().quit()
+</code></pre>
+						
+						<p>This code will obviously shut down the game if Steam does not initialize and returns a status of anything except 1.  It will also print the verbal reason for shutting down so you know exactly why the error occurred.</p>
+						<hr/>
+						<header class="major">
+							<h3>Getting More Data</h3>
+						</header>
 						<p>You can check for a few additional things at boot like:</p>
 <pre><code>
-var ONLINE = Steam.loggedOn()
-var STEAM_ID = Steam.getSteamID()
-var OWNED = Steam.isSubscribed()
-</code></pre><br/>
+var IS_ONLINE: bool = Steam.loggedOn()
+var STEAM_ID: int = Steam.getSteamID()
+var IS_OWNED: bool = Steam.isSubscribed()
+</code></pre>
 						<p>This will check if Steam is online, get the current user's Steam ID64, and check if the current user owns the game. You can also have the game turn itself off if the current user does not own the game by simply doing this:</p>
 <pre><code>
-if OWNED == false:
+if IS_OWNED == false:
 	print("User does not own this game")
 	get_tree().quit()
-</code></pre><br/>
-						<p>There are other things you may want to do during a boot-up process after Steamworks is initialized, like getting current achievements or statistics, and we'll cover that next. Last, but not least, anywhere you want or need to retrieve callbacks from Steam, you'll need to add this:</p>
+</code></pre>
+						<p>There are other things you may want to do during a boot-up process after Steamworks is initialized, like getting current achievements or statistics, but we'll cover that in another tutorial.</p>
+						<hr/>
+						<header class="major">
+							<h3>Callbacks</h3>
+						</header>
+						Last, but not least, anywhere you want or need to retrieve callbacks from Steam, you'll need to add this:</p>
 <pre><code>
-func _process(delta):
+func _process(_delta: float) -> void:
 	Steam.run_callbacks()
-</code></pre><br/>
+</code></pre>
+						<p>I highly suggest, much like the initialization process, you put this <strong>_process</strong> function with the <strong>Steam.run_callbacks()</strong> in a global (singleton) script so it is always checking for callbacks. Though, if you want, you can put it in any <strong>_process</strong> function in any given script that might be using callback information.</p>
+						<hr/>
+						<header class="major">
+							<h3>Altogether Now</h3>
+						</header>
 						<p>Putting it all together should give us something like this:</p>
 <pre><code>
 extends Node
 
 # Steam variables
-var OWNED = false
-var ONLINE = false
-var STEAM_ID = 0
+var IS_OWNED: bool = false
+var IS_ONLINE: bool = false
+var STEAM_ID: int = 0
 
-func _ready():
-	var INIT = Steam.steamInit()
+func _ready() -> void:
+	_initialize_Steam()
+
+func _process(_delta: float) -> void:
+	Steam.run_callbacks()
+
+func _initialize_Steam() -> void:
+	var INIT: Dictionary = Steam.steamInit()
 	print("Did Steam initialize?: "+str(INIT))
 	
 	if INIT['status'] != 1:
 		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
 		get_tree().quit()
 	
-	ONLINE = Steam.loggedOn()
+	IS_ONLINE = Steam.loggedOn()
 	STEAM_ID = Steam.getSteamID()
-	OWNED = Steam.isSubscribed()
+	IS_OWNED = Steam.isSubscribed()
 	
 	# Check if account owns the game
-	if OWNED == false:
+	if IS_OWNED == false:
 		logging.error("User does not own this game")
 		get_tree().quit()
-
-func _process(delta):
-	Steam.run_callbacks()
 </code></pre>
+						<hr/>
 						<p>This covers the initialization and basic set-up.</p>
 					</section>
-					<footer id="footer">
-						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
-						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
-						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
-						Site Template by <a href="https://html5up.net">HTML5UP</a>
-					</footer>
 				</div>
 			</div>
 			<!-- Sidebar -->
@@ -127,10 +170,48 @@ func _process(delta):
 								</ul>
 							</li>
 							<li>
-								<span class="opener">Functions</span>
+								<span class="opener">Functions (Module)</span>
 								<ul>
-									<li><a href="functions-module.html">Functions (Module) </a></li>
-									<li><a href="functions-server.html">Functions (Server)</a></li>
+									<li><a href="functions-module.html">All</a></li>
+									<li><a href="functions-module.html#core">Core</a></li>
+									<li><a href="functions-module.html#apps">Apps</a></li>
+									<li><a href="functions-module.html#friends">Friends</a></li>
+									<li><a href="functions-module.html#game-search">Game Search</a></li>
+									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
+									<li><a href="functions-module.html#http">HTTP</a></li>
+									<li><a href="functions-module.html#input">Input</a></li>
+									<li><a href="functions-module.html#inventory">Inventory</a></li>
+									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
+									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
+									<li><a href="functions-module.html#music">Music</a></li>
+									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
+									<li><a href="functions-module.html#networking">Networking</a></li>
+									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
+									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
+									<li><a href="functions-module.html#parties">Parties</a></li>
+									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
+									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
+									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#ugc">UGC</a></li>
+									<li><a href="functions-module.html#users">Users</a></li>
+									<li><a href="functions-module.html#user-stats">User Stats</a></li>
+									<li><a href="functions-module.html#utils">Utils</a></li>
+									<li><a href="functions-module.html#video">Video</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions (Server)</span>
+								<ul>
+									<li><a href="functions-server.html">All</a></li>
+									<li><a href="functions-server.html#core">Core</a></li>
+									<li><a href="functions-server.html#apps">Apps</a></li>
+									<li><a href="functions-server.html#http">HTTP</a></li>
+									<li><a href="functions-server.html#inventory">Inventory</a></li>
+									<li><a href="functions-server.html#networking">Networking</a></li>
+									<li><a href="functions-server.html#server">Server</a></li>
+									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
+									<li><a href="functions-server.html#ugc">UGC</a></li>
+									<li><a href="functions-server.html#utils">Utils</a></li>
 								</ul>
 							</li>
 							<li>
@@ -156,10 +237,49 @@ func _process(delta):
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
-							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="contributors.html">Contributors / Donate</a></li>
+							<li>
+								<span class="opener">Change Log</span>
+								<ul>
+									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+									<li><a href="changelog-gdnative.html">GDNative</a></li>
+									<li><a href="changelog-server.html">Server</a></li>
+								</ul>
+							</li>
+							<li><a href="contributors.html">Contributors</a></li>
 						</ul>
 					</nav>
+					<section>
+						<header class="major">
+							<h2>Stuck? Need Help?</h2>
+						</header>
+						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+						</ul>
+					</section>
+					<section>
+						<header class="major">
+							<h2>Donate</h2>
+						</header>
+						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+						</ul>
+					</section>
+					<footer>
+						<ul class="actions stacked">
+							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+						</ul>
+					</footer>
+					<footer id="footer" class="copyright">
+						2021 &copy; GP Garcia & CoaguCo Industries
+					</footer>
 				</div>
 			</div>
 		</div>

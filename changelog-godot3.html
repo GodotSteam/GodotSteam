@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -27,28 +27,18 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Change Log</h1>
+							<h1>Change Log | Godot 3.x Module</h1>
 						</header>
-						<p>The change log for the repository.</p>
-						<ul class="actions">
-							<li><a class="button" href="#godot3">Godot 3.x</a></li>
-							<li><a class="button" href="#godot2">Godot 2.x</a></li>
-							<li><a class="button" href="#min">Minimal</a></li>
-							<li><a class="button" href="#gdnative">GDNative</a></li>
-							<li><a class="button" href="#server">Server</a></li>
-						</ul>
-						<hr />
-						<h2>Godot 3.x Module</h2>
-						<a id="godot3"></a>
+						<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
 						<h3>Version 3.8.2 Changes</h3>
 						<ul>
-							<li>Added: different avatar constants
+							<li>Added: different avatar constants</li>
 							<li>Changed: array deletions for Clang, <em>thanks to thisismike97</em></li>
 							<li>Changed: initializing char text, <em>thanks to thisismike97</em></li>
 							<li>Fixed: createQueryUserUGCRequest being commented out accidentally</li>
 							<li>Fixed: logic check for setOverlayNotificationPosition, <em>thanks to thisismike97</em></li>
 							<li>Fixed: UTF8 not being handled correctly in some UGC functions, <em>thanks to EIREXE</em></li>
-						</li>
+						</ul>
 						<h3>Version 3.8.1 Changes</h3>
 						<ul>
 							<li>Added: extra newline beween each class section for readability</li>
@@ -352,202 +342,7 @@
 							<li>Added: new functions to documentation</li>
 							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
 						</ul>
-						<hr />
-						<h2>Godot 2.x Module</h2>
-						<a id="godot2"></a>
-						<h3>Version 1.10 Changes</h3>
-						<ul>
-							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
-							<li>Added: missing initialization constants</li>
-							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
-							<li>Changed: minor formatting to match Godot 3 version</li>
-							<li>Fixed: currentAppID not utilized correctly</li>
-							<li>Removed: unneeded gameInfo struct</li>
-						</ul>
-						<h3>Version 1.9.3 Changes</h3>
-						<ul>
-							<li>Added: networking functions, big thanks to Antokolos</li>
-							<li>Added: compiling flag for Linux and Mac, need for new Steamworks 1.44</li>
-							<li>Changed: linked against Steamworks 1.44</li>
-							<li>Fixed: issue with leaderboard upload returning false no matter what</li>
-						</ul>
-						<h3>Version 1.9.2 Changes</h3>
-						<ul>
-							<li>Added: persona_state_change callback</li>
-							<li>Changed: getFriendAvatar to getPlayerAvatar</li>
-							<li>Changed: avatar_loaded now sends back Steam ID of avatar by avencherus</li>
-							<li>Fixed: issue with avatar and Steam ID on Linux compile</li>
-							<li>Fixed: join_requested signal by Fischer96 (requires further work)</li>
-						</ul>
-						<h3>Version 1.9.1 Changes</h3>
-						<ul>
-							<li>Added: additional user statistics and achievement signals</li>
-							<li>Changed: minor notations</li>
-							<li>Fixed: Linux not compiling correctly with new Friends and Matchmaking updates</li>
-							<li>Fixed: various Friends functions not providing correct data</li>
-							<li>Fixed: missing bind methods for integers</li>
-						</ul>
-						<h3>Version 1.9.0 Changes</h3>
-						<ul>
-							<li>Added: all remaining matchmaking functions</li>
-							<li>Added: all remaining friend functions</li>
-							<li>Changed: getRecentPlayers to include timestamp</li>
-							<li>Changed: naming of leaderboard_handle and leaderboard_entries for consistency</li>
-							<li>Changed: getAchievement to dictionary (courtesy of jandrewlong)</li>
-							<li>Fixed: invite functions giving incorrect steam ids</li>
-							<li>Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems</li>
-							<li>Removed: setGameInfo, clearGameInfo, inviteFriend</li>
-						</ul>
-						<h3>Version 1.8.0 Changes</h3>
-						<ul>
-							<li>Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)</li>
-							<li>Added: all missing SteamApps functions</li>
-							<li>Changed: NULL statements for achievement functions</li>
-							<li>Changed: cleaned up and organized signal functions in godotteam.h</li>
-							<li>Fixed: issue with getAchievement failing to compile</li>
-							<li>Removed: hasOtherApp function</li>
-						</ul>
-						<h3>Version 1.7.0 Changes</h3>
-						<ul>
-							<li>Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)</li>
-							<li>Added: Steam controller functionality (courtesy of marcelofg55)</li>
-							<li>Added: more workshop functionality</li>
-							<li>Changed: various small maintenance changes</li>
-							<li>Fixed: compiling error on Linux</li>
-						</ul>
-						<h3>Version 1.6.0 Changes</h3>
-						<ul>
-							<li>Added: getFileNameAndSize, getQuota, getSyncPlatforms functions</li>
-							<li>Changed: small corrections with Steam ID variable</li>
-							<li>Fixed: small things with getQuota</li>
-						</ul>
-						<h3>Version 1.5.1 Update</h3>
-						<ul>
-							<li>Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions</li>
-							<li>Added: related signals to new functions</li>
-							<li>Added: minor notes</li>
-							<li>Removed: is_valid for updateLeaderboardHandle</li>
-							<li>Removed: depreciated function requestAppProofOfPurchaseKey</li>
-							<li>Removed: callback for requestAppProofOfPurchaseKey</li>
-							<li>Removed: commented out depreciated functions</li>
-						</ul>
-						<h3>Version 1.5.0 Update</h3>
-						<ul>
-							<li>Added: more Screenshot features</li>
-							<li>Added: notes for callback</li>
-							<li>Changed: documentation to reflect new features and signals</li>
-							<li>Fixed: types in _validate_auth_ticket_response</li>
-						</ul>
-						<h3>Version 1.4.0 Update</h3>
-						<ul>
-							<li>Added: Auth Session functions added to Godot 3 branch thanks to marcelofg55</li>
-							<li>Added: Auth Session constants</li>
-						</ul>
-						<h3>Version 1.3.0 Updates</h3>
-						<ul>
-							<li>Added: getNumberOfCurrentPlayers, thanks to marcelofg55</li>
-							<li>Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55</li>
-							<li>Changed: signals in godotsteam.h with CCallback instead of SteamCallback</li>
-						</ul>
-						<h3>Version 1.2.1 Updates</h3>
-						<ul>
-							<li>Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation</li>
-							<li>Changed: readme to reflect Godot 3 release</li>
-						</ul>
-						<h3>Version 1.2.0 Updates</h3>
-						<ul>
-							<li>Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55</li>
-							<li>Added: new functions to documentation</li>
-							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
-						</ul>
-						<h3>Version 1.1.0</h3>
-						<ul>
-							<li>Added: getCurrentGameLanguage</li>
-							<li>Added: Pre-compiled engines and templates for Windows</li>
-							<li>Added: change log to documentation</li>
-							<li>Changed: minor things in godotsteam.cpp</li>
-						</ul>
-						<hr />
-						<h2>GDNative</h2>
-						<a id="gdnative"></a>
-						<h3>Version 2.1.0</h3>
-						<ul>
-							<li>Added: Steamworks P2P functions thanks to Antokolos</li>
-						</ul>
-						<h3>Version 2.0.0</h3>
-						<ul>
-							<li>Added: all current GodotSteam functions and signals</li>
-							<li>Added: godotsteam.h file</li>
-							<li>Changed: compile process; big thanks to willnationsdev</li>
-							<li>Changed: various parts of the CPP files</li>
-							<li>Removed: pre-compiled TSCN and TRES files</li>
-						</ul>
-						<h3>Version 1.1.0</h3>
-						<ul>
-							<li>Added: godotsteam.h file</li>
-							<li>Added: getCurrentGameLanguage</li>
-							<li>Added: Pre-compiled engines and templates for Linux, Mac, and Windows</li>
-							<li>Added: change log to documentation</li>
-							<li>Changed: various parts of the CPP files</li>
-							<li>Changed: minor things in godotsteam.cpp</li>
-							<li>Removed: pre-compiled TSCN and TRES files</li>
-						</ul>
-						<h3>Version 1.0.0</h3>
-						<ul>
-							<li>Added: most pre-existing GodotSteam code over</li>
-							<li>Added: GodotSteam GDNative documentation</li>
-							<li>Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS</li>
-							<li>Bugs: Windows does not work for compiling yet, waiting for GDNative update</li>
-						</ul>
-						<hr />
-						<h2>Server</h2>
-						<a id="server"></a>
-						<h3>Version 1.1.1 Changes</h3>
-						<ul>
-							<li>Changed: includes Godot header file to allow more than 5 arguments in a function</li>
-							<li>Fixed: filterText for Steamworks SDK 1.50</li>
-						</ul>
-						<h3>Version 1.1.0 Changes</h3>
-						<ul>
-							<li>Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes</li>
-							<li>Added: related callbacks, call results, constants, and enums</li>
-							<li>Added: headless server platform for linux</li>
-							<li>Fixed: OSX compiling config rules</li>
-						</ul>
-						<h3>Version 1.0.0</h3>
-						<ul>
-							<li>Added: missing server functions</li>
-							<li>Fixed: missing argument in config.py</li>
-							<li>Fixed: missing Godot include that allows more than 5 arguments per function</li>
-							<li>Fixed: a lot of different functions</li>
-							<li>Fixed: issue with include in register_types.cpp</li>
-							<li>Removed: remaining depreciated functions</li>
-							<li>Removed: functions not compatible with new networking functions</li>
-						</ul>
-						<h3>Version 0.0.3</h3>
-						<ul>
-							<li>Removed: depreciated signal _client_Achieve_Status</li>
-							<li>Removed: depreciated signal _gameplay_Stats</li>
-							<li>Removed: depreciated signal _reputation</li>
-						</ul>
-						<h3>Version 0.0.2</h3>
-						<ul>
-							<li>Added: all of the result enums</li>
-							<li>Added: missing signals</li>
-							<li>Changed: module folder name</li>
-							<li>Removed: depreciated functions</li>
-						</ul>
-						<h3>Version 0.0.1</h3>
-						<ul>
-							<li>Added: Added: basically everything in Steam server main</li>
-						</ul>
 					</section>
-					<footer id="footer">
-						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
-						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
-						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
-						Site Template by <a href="https://html5up.net">HTML5UP</a>
-					</footer>
 				</div>
 			</div>
 			<!-- Sidebar -->
@@ -569,10 +364,48 @@
 								</ul>
 							</li>
 							<li>
-								<span class="opener">Functions</span>
+								<span class="opener">Functions (Module)</span>
 								<ul>
-									<li><a href="functions-module.html">Functions (Module) </a></li>
-									<li><a href="functions-server.html">Functions (Server)</a></li>
+									<li><a href="functions-module.html">All</a></li>
+									<li><a href="functions-module.html#core">Core</a></li>
+									<li><a href="functions-module.html#apps">Apps</a></li>
+									<li><a href="functions-module.html#friends">Friends</a></li>
+									<li><a href="functions-module.html#game-search">Game Search</a></li>
+									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
+									<li><a href="functions-module.html#http">HTTP</a></li>
+									<li><a href="functions-module.html#input">Input</a></li>
+									<li><a href="functions-module.html#inventory">Inventory</a></li>
+									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
+									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
+									<li><a href="functions-module.html#music">Music</a></li>
+									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
+									<li><a href="functions-module.html#networking">Networking</a></li>
+									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
+									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
+									<li><a href="functions-module.html#parties">Parties</a></li>
+									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
+									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
+									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#ugc">UGC</a></li>
+									<li><a href="functions-module.html#users">Users</a></li>
+									<li><a href="functions-module.html#user-stats">User Stats</a></li>
+									<li><a href="functions-module.html#utils">Utils</a></li>
+									<li><a href="functions-module.html#video">Video</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions (Server)</span>
+								<ul>
+									<li><a href="functions-server.html">All</a></li>
+									<li><a href="functions-server.html#core">Core</a></li>
+									<li><a href="functions-server.html#apps">Apps</a></li>
+									<li><a href="functions-server.html#http">HTTP</a></li>
+									<li><a href="functions-server.html#inventory">Inventory</a></li>
+									<li><a href="functions-server.html#networking">Networking</a></li>
+									<li><a href="functions-server.html#server">Server</a></li>
+									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
+									<li><a href="functions-server.html#ugc">UGC</a></li>
+									<li><a href="functions-server.html#utils">Utils</a></li>
 								</ul>
 							</li>
 							<li>
@@ -598,10 +431,49 @@
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
-							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="contributors.html">Contributors / Donate</a></li>
+							<li>
+								<span class="opener">Change Log</span>
+								<ul>
+									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+									<li><a href="changelog-gdnative.html">GDNative</a></li>
+									<li><a href="changelog-server.html">Server</a></li>
+								</ul>
+							</li>
+							<li><a href="contributors.html">Contributors</a></li>
 						</ul>
 					</nav>
+					<section>
+						<header class="major">
+							<h2>Stuck? Need Help?</h2>
+						</header>
+						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+						</ul>
+					</section>
+					<section>
+						<header class="major">
+							<h2>Donate</h2>
+						</header>
+						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+						</ul>
+					</section>
+					<footer>
+						<ul class="actions stacked">
+							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+						</ul>
+					</footer>
+					<footer id="footer" class="copyright">
+						2021 &copy; GP Garcia & CoaguCo Industries
+					</footer>
 				</div>
 			</div>
 		</div>

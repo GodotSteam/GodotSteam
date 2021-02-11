@@ -2354,7 +2354,8 @@ div.contributors strong {
 		input[type="button"].primary,
 		button.primary,
 		.button.primary {
-			background-color: #f56a6a;
+			background-color: #478cbf;
+			width: 90%;
 			box-shadow: none;
 			color: #ffffff !important;
 		}
@@ -2364,7 +2365,8 @@ div.contributors strong {
 			input[type="button"].primary:hover,
 			button.primary:hover,
 			.button.primary:hover {
-				background-color: #f67878;
+				background-color: #ffffff;
+				color: #424242 !important;
 			}
 
 			input[type="submit"].primary:active,
@@ -2372,7 +2374,8 @@ div.contributors strong {
 			input[type="button"].primary:active,
 			button.primary:active,
 			.button.primary:active {
-				background-color: #f45c5c;
+				background-color: #ffffff;
+				color: #424242 !important;
 			}
 
 		input[type="submit"].disabled, input[type="submit"]:disabled,
@@ -2966,6 +2969,20 @@ div.contributors strong {
 			margin-left: -26em;
 		}
 
+#sidebar p, #sidebar footer {
+  color: #ffffff;
+}
+
+#sidebar p a, #sidebar footer a {
+	color: #ffffff;
+}
+
+#sidebar p a:hover, #sidebar footer a:hover {
+	color: #478CBF !important;
+	border-bottom: none;
+}
+
+
 		@media screen and (max-width: 1680px) {
 
 			#sidebar {
@@ -3140,7 +3157,6 @@ div.contributors strong {
 #footer {
 	display: block;
 	margin-bottom: 5em;
-	border-top: 1px solid rgba(157, 157, 157, 0.75);
 	padding-top: 3em;
 	font-size: 0.8em;
 }

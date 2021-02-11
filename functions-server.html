@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -32,218 +32,1107 @@
 						<p>Here is a list of all the functions available in the GodotSteam Server module. Many will reference appID or steamID. AppID always references to a game, applications, or DLC's ID number in Steam. The steamID, however, can reference a user, lobby session, server, or such.</p>
 						<hr />
 						<header class="major">
-							<h3>Basics</h3>
+							<h3>Core</h3>
 						</header>
-						<h4>serverInit( <sup>int</sup> ip, <sup>int</sup> steamPort, <sup>int</sup> gamePort, <sup>int</sup> queryPort, <sup>int</sup> serverMode, <sup>string</sup> versionString )</h4>
+						<a id="core"></a>
+						<h4>serverInit(<sup>dictionary</sup> connectData, <sup>int</sup> serverMode, <sup>string</sup> versionString)</h4>
 						<ul>
 							<li>Initialize the server to Steam.</li>
-							<li>BOOL; returns true if successful and false if not.</li>
+							<li>Returns a BOOL (true / false).</li>
 						</ul>
 						<h4>serverReleaseCurrentThreadMemory()</h4>
 						<ul>
-							<li>Frees all API-related memory associated with the calling thread. This memory is released automatically by RunCallbacks so single-threaded servers do not need to call this.</li>
-							<li>VOID.</li>
+							<li>Frees all API-related memory associated with the calling thread. This memory is released automatically by <strong>RunCallbacks</strong> so single-threaded servers do not need to call this.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
 						<h4>serverShutdown()</h4>
 						<ul>
 							<li>Shut down the server connection to Steam.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Apps</h3>
+						</header>
+						<a id="apps"></a>
+						<h4>getDLCDataByIndex()</h4>
+						<ul>
+							<li>Returns metadata for a DLC by index.
+							<li>Returns an ARRAY. Provides the following values, in order:
+								<ul>
+									<li>DLC's ID (int)</li>
+									<li>if available (bool)</li>
+									<li>name (string)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>isAppInstalled(<sup>int</sup> value)</h4>
+						<ul>
+							<li>Check if given application/game is installed, not necessarily owned.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isCybercafe()</h4>
+						<ul>
+							<li>Checks whether the current App ID is for Cyber Cafes.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isDLCInstalled(<sup>int</sup> value)</h4>
+						<ul>
+							<li>Checks if the user owns a specific DLC and if the DLC is installed
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isLowViolence()</h4>
+						<ul>
+							<li>Checks if the license owned by the user provides low violence depots.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isSubscribed()</h4>
+						<ul>
+							<li>Checks if the active user is subscribed to the current app ID.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isSubscribedApp(<sup>int</sup> value)</h4>
+						<ul>
+							<li>Checks if the active user is subscribed to a specified app ID.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isSubscribedFromFamilySharing()</h4>
+						<ul>
+							<li>Checks if the active user is accessing the current app ID via a temporary Family Shared license owned by another user. If you need to determine the Steam ID of the permanent owner of the license, use <strong>getAppOwner</strong>.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isSubscribedFromFreeWeekend()</h4>
+						<ul>
+							<li>Checks if the user is subscribed to the current app through a free weekend. This function will return false for users who have a retail or other type of license. Suggested you contact Valve on how to package and secure your free weekend properly.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isTimedTrial()</h4>
+						<ul>
+							<li>Check if game is a timed trial with limited playtime.</li>
+							<li>Returns a DICTIONARY. Provides the following keys, in order:
+								<ul>
+									<li>seconds_allowed (int)</li>
+									<li>seconds_played (int).</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>isVACBanned()</h4>
+						<ul>
+							<li>Checks if the user has a VAC ban on their account.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getAppBuildId()</h4>
+						<ul>
+							<li>Return the build ID for this app; will change based on backend updates.
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getAppInstallDir(<sup>int</sup> appID)</h4>
+						<ul>
+							<li>Gets the install folder for a specific app ID.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getAppOwner()</h4>
+						<ul>
+							<li>Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getAvailableGameLanguages()</h4>
+						<ul>
+							<li>Gets a comma separated list of the languages the current app supports.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getCurrentBetaName()</h4>
+						<ul>
+							<li>Checks if the user is running from a beta branch, and gets the name of the branch if they are.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getCurrentGameLanguage()</h4>
+						<ul>
+							<li>Gets the current language that the user has set.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getDLCCount()</h4>
+						<ul>
+							<li>Get the number of DLC the user owns for a parent application/game.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getDLCDownloadProgress(<sup>int</sup> appID)</h4>
+						<ul>
+							<li>Gets the download progress for optional DLC.</li>
+							<li>Returns a DICTIONARY. Provides the following keys, in order:
+								<ul>
+									<li>ret (bool) - Retrieval success, or not</li>
+									<li>downloaded (int)</li>
+									<li>total (int).</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getEarliestPurchaseUnixTime(<sup>int</sup> value)</h4>
+						<ul>
+							<li>Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getFileDetails(<sup>string</sup> filename)</h4>
+						<ul>
+							<li>Asynchronously retrieves metadata details about a specific file in the depot manifest.
+							<li>Returns nothing; VOID. It will trigger a <strong><em>file_details_result</em></strong> callback.</li>
+						</ul>
+						<h4>getInstalledDepots(<sup>int</sup> appID)</h4>
+						<ul>
+							<li>Gets a list of all installed depots for a given app ID in mount order.</li>
+							<li>Returns an ARRAY. Provides the following values, in order:
+								<ul>
+									<li>the depots' IDs (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getLaunchCommandLine()</h4>
+						<ul>
+							<li>Gets the command line if the game was launched via Steam URL, e.g. steam://run/(appid)//(command line)/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation > General page on your app.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getLaunchQueryParam(<sup>string</sup> key)</h4>
+						<ul>
+							<li>Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>installDLC(<sup>int</sup> value)</h4>
+						<ul>
+							<li>Allows you to install an optional DLC.
+							<li>Returns nothing; VOID. It will trigger a <strong><em>dlc_installed</em></strong> callback.</li>
+						</ul>
+						<h4>markContentCorrupt(<sup>bool</sup> missingFilesOnly)</h4>
+						<ul>
+							<li>Allows you to force verify game content on next launch.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>uninstallDLC(<sup>int</sup> value)</h4>
+						<ul>
+							<li>Allows you to uninstall an optional DLC.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>	
+						<hr/>
+						<header class="major">
+							<h3>HTTP</h3>
+						</header>
+						<a id="http"></a>
+						<h4>createCookieContainer(<sup>bool</sup> allowResponsesToModify)</h4>						
+						<ul>
+							<li>Creates a cookie container to store cookies during the lifetime of the process. This API is just for during process lifetime, after steam restarts no cookies are persisted and you have no way to access the cookie container across repeat executions of your process.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>createHTTPRequest(<sup>int</sup> requestMethod, <sup>string</sup> absoluteURL)</h4>
+						<ul>
+							<li>Initializes a new HTTP request. Don't forget to free the HTTP request when you're done with it to prevent leaking memory by calling ReleaseHTTPRequest!</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>deferHTTPRequest(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Defers a request which has already been sent by moving it at the back of the queue.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getHTTPDownloadProgressPct(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Gets progress on downloading the body for the request.</li>
+							<li>Returns a FLOAT.</li>
+						</ul>
+						<h4>getHTTPRequestWasTimedOut(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Check if the reason the request failed was because we timed it out (rather than some harder failure).</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getHTTPResponseBodyData(<sup>int</sup> request, <sup>int</sup> bufferSize)</h4>
+						<ul>
+							<li>Gets the body data from an HTTP response.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getHTTPResponseBodySize(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Gets the size of the body data from an HTTP response.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getHTTPResponseHeaderSize(<sup>int</sup> request, <sup>string</sup> headerName)</h4>
+						<ul>
+							<li>Checks if a header is present in an HTTP response and returns its size.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getHTTPResponseHeaderValue(<sup>int</sup> request, <sup>string</sup> headerName, <sup>int</sup> bufferSize)</h4>
+						<ul>
+							<li>Gets a header value from an HTTP response.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getHTTPStreamingResponseBodyData(<sup>int</sup> request, <sup>int</sup> offset, <sup>int</sup> bufferSize)</h4>
+						<ul>
+							<li>Gets the body data from a streaming HTTP response.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>prioritizeHTTPRequest(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Prioritizes a request which has already been sent by moving it at the front of the queue.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>releaseCookieContainer(<sup>int</sup> cookieHandle)</h4>
+						<ul>
+							<li>Releases a cookie container, freeing the memory allocated within Steam.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>releaseHTTPRequest(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Releases an HTTP request handle, freeing the memory allocated within Steam.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>sendHTTPRequest(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Sends an HTTP request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>sendHTTPRequestAndStreamResponse(<sup>int</sup> request)</h4>
+						<ul>
+							<li>Sends an HTTP request and streams the response back in chunks.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setCookie(<sup>string</sup> host, <sup>string</sup> url, <sup>string</sup> cookie, <sup>int</sup> cookieHandle)</h4>
+						<ul>
+							<li>Adds a cookie to the specified cookie container that will be used with future requests.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestAbsoluteTimeoutMS(<sup>int</sup> request, <sup>int</sup> milliseconds)</h4>
+						<ul>
+							<li>Set an absolute timeout in milliseconds for the HTTP request. This is the total time timeout which is different than the network activity timeout which is set with <strong>SetHTTPRequestNetworkActivityTimeout</strong> which can bump everytime we get more data.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestContextValue(<sup>int</sup> request, <sup>int</sup> contextValue)</h4>
+						<ul>
+							<li>Set a context value for the request, which will be returned in the <strong><em>HTTPRequestCompleted_t</em></strong> callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestCookieContainer(<sup>int</sup> request, <sup>int</sup> cookieHandle)</h4>
+						<ul>
+							<li>Associates a cookie container to use for an HTTP request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestGetOrPostParameter(<sup>int</sup> request, <sup>string</sup> name, <sup>string</sup> value)</h4>
+						<ul>
+							<li>Set a GET or POST parameter value on the HTTP request. Must be called prior to sending the request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestHeaderValue(<sup>int</sup> request, <sup>string</sup> headerName, <sup>string</sup> headerValue)</h4>
+						<ul>
+							<li>Set a request header value for the HTTP request. Must be called before sending the request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestNetworkActivityTimeout(<sup>int</sup> request, <sup>int</sup> timeoutSeconds)</h4>
+						<ul>
+							<li>Set the timeout in seconds for the HTTP request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestRawPostBody(<sup>int</sup> request, <sup>string</sup> contentType, <sup>int</sup> bodyLen)</h4>
+						<ul>
+							<li>Sets the body for an HTTP Post request.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>setHTTPRequestRequiresVerifiedCertificate(<sup>int</sup> request, <sup>bool</sup> requireVerifiedCertificate)</h4>
+						<ul>
+							<li>Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only works Windows and macOS.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setHTTPRequestUserAgentInfo(<sup>int</sup> request, <sup>string</sup> userAgentInfo)</h4>
+						<ul>
+							<li>Set additional user agent info for a request.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Inventory</h3>
+						</header>
+						<a id="inventory"></a>
+						<p><strong><em>Important note for the Inventory class:</strong> when dealing with any inventory handles, you should call <strong>CheckResultSteamID</strong> on the result handle when it completes to verify that a remote player is not pretending to have a different user's inventory. Also, you must call <strong>DestroyResult</strong> on the provided inventory result when you are done with it.</em></p>
+						<h4>addPromoItem(<sup>int</sup> item)</h4>
+						<ul>
+							<li>Grant a specific one-time promotional item to the current user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>addPromoItems(<sup>PoolIntArray</sup> items)</h4>
+						<ul>
+							<li>Grant a specific one-time promotional items to the current user.
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>checkResultSteamID(<sup>int</sup> steamIDExpected)</h4>
+						<ul>
+							<li>Checks whether an inventory result handle belongs to the specified Steam ID.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>consumeItem(<sup>int</sup> itemConsume, <sup>int</sup> quantity)</h4>
+						<ul>
+							<li>Consumes items from a user's inventory. If the quantity of the given item goes to zero, it is permanently removed.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>deserializeResult()</h4>
+						<ul>
+							<li>Deserializes a result set and verifies the signature bytes.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>destroyResult()</h4>
+						<ul>
+							<li>Destroys a result handle and frees all associated memory.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>
+						<h4>exchangeItems(<sup>PoolIntArray</sup> outputItems, <sup>int</sup> outputQuantity, <sup>int</sup> inputItems, <sup>int</sup> inputQuantity)</h4>
+						<ul>
+							<li>Grant one item in exchange for a set of other items.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>generateItems(<sup>PoolIntArray</sup> items, <sup>int</sup> quantity)</h4>
+						<ul>
+							<li>Grants specific items to the current user, for developers only.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getAllItems()</h4>
+						<ul>
+							<li>Start retrieving all items in the current users inventory.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getItemDefinitionProperty(<sup>int</sup> definition, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Gets a string property from the specified item definition.  Gets a property value for a specific item definition.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getItemsByID(<sup>int</sup> idArray, <sup>int</sup> count)</h4>
+						<ul>
+							<li>Gets the state of a subset of the current user's inventory.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getItemPrice(<sup>int</sup> definition)</h4>
+						<ul>
+							<li>After a successful call to <strong>RequestPrices</strong>, you can call this method to get the pricing for a specific item definition.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getItemsWithPrices(<sup>int</sup> length)</h4>
+						<ul>
+							<li>After a successful call to <strong>RequestPrices</strong>, you can call this method to get all the pricing for applicable item definitions. Use the result of <strong>GetNumItemsWithPrices</strong> as the the size of the arrays that you pass in.</li>
+							<li>Returns an ARRAY. Provides a list of dictionaries, one per item, containing:
+								<ul>
+									<li>item (int) - the item's Steam ID</li>
+									<li>price (int)</li>
+									<li>base_prices (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getNumItemsWithPrices()</h4>
+						<ul>
+							<li>After a successful call to <strong>RequestPrices</strong>, this will return the number of item definitions with valid pricing.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getResultItemProperty(<sup>int</sup> index, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Gets the dynamic properties from an item in an inventory result set.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getResultItems()</h4>
+						<ul>
+							<li>Get the items associated with an inventory result handle.</li>
+							<li>Returns an ARRAY. Provides the following values, in order:
+								<ul>
+									<li>items (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getResultStatus()</h4>
+						<ul>
+							<li>Find out the status of an asynchronous inventory result handle.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>grantPromoItems()</h4>
+						<ul>
+							<li>Grant all potential one-time promotional items to the current user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>loadItemDefinitions()</h4>
+						<ul>
+							<li>Triggers an asynchronous load and refresh of item definitions.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>requestEligiblePromoItemDefinitionsIDs(<sup>int</sup> steamID)</h4>
+						<ul>
+							<li>Request the list of "eligible" promo items that can be manually granted to the given user.</li>
+							<li>Returns nothing; VOID. It will trigger a <strong><em>inventory_eligible_promo_item</em></strong> call result.</li>
+						</ul>
+						<h4>requestPrices()</h4>
+						<ul>
+							<li>Request prices for all item definitions that can be purchased in the user's local currency. A <strong><em>SteamInventoryRequestPricesResult_t</em></strong> call result will be returned with the user's local currency code. After that, you can call <strong>GetNumItemsWithPrices</strong> and <strong>GetItemsWithPrices</strong> to get prices for all the known item definitions, or <strong>GetItemPrice</strong> for a specific item definition.</li>
+							<li>Returns nothing; VOID. It will trigger a <strong><em>inventory_request_prices_result</em></strong> call result.</li>
+						</ul>
+						<ul>
+							<h4>serializeResult()</h4>
+							<li>Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>transferItemQuantity(<sup>int</sup> itemID, <sup>int</sup> quantity, <sup>int</sup> itemDestination, <sup>bool</sup> split)</h4>
+						<ul>
+							<li>Transfer items between stacks within a user's inventory.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>triggerItemDrop(<sup>int</sup> definition)</h4>						
+						<ul>
+							<li>Trigger an item drop if the user has played a long enough period of time.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>startUpdateProperties()</h4>
+						<ul>
+							<li>Starts a transaction request to update dynamic properties on items for the current user. This call is rate-limited by user, so property modifications should be batched as much as possible (e.g. at the end of a map or game session). After calling <strong>SetProperty</strong> or <strong>RemoveProperty</strong> for all the items that you want to modify, you will need to call <strong>SubmitUpdateProperties</strong> to send the request to the Steam servers. A <strong><em>SteamInventoryResultReady_t</em></strong> callback will be fired with the results of the operation.</li>
+							<li>Returns nothing; VOID. It will trigger a <strong><em>inventory_result_ready</em></strong> callback.</li>
+						</ul>
+						<h4>submitUpdateProperties()</h4>
+						<ul>
+							<li>Submits the transaction request to modify dynamic properties on items for the current user. See <strong>StartUpdateProperties</strong>.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>removeProperty(<sup>int</sup> itemID, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Removes a dynamic property for the given item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setPropertyString(<sup>int</sup> itemID, <sup>string</sup> name, <sup>string</sup> value)</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are strings.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setPropertyBool(<sup>int</sup> itemID, <sup>string</sup> name, <sup>bool</sup> value)</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are boolean.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setPropertyInt(<sup>int</sup> itemID, <sup>string</sup> name, <sup>int</sup> value)</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are 64 bit integers.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setPropertyFloat(<sup>int</sup> itemID, <sup>string</sup> name, float value)</h4>
+						<ul>
+							<li>Sets a dynamic property for the given item. Supported value types are 32 bit floats.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Networking</h3>
+						</header>
+						<a id="networking"></a>
+						<h4>acceptP2PSessionWithUser(<sup>int</sup> steamIDRemote)</h4>
+						<ul>
+							<li>This allows the game to specify accept an incoming packet.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>allowP2PPacketRelay(<sup>bool</sup> allow)</h4>
+						<ul>
+							<li>Allow or disallow P2P connections to fall back to being relayed through the Steam servers if a direct connection or NAT-traversal cannot be established.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>closeP2PChannelWithUser(<sup>int</sup> steamIDRemote, <sup>int</sup> channel)</h4>
+						<ul>
+							<li>Closes a P2P channel when you're done talking to a user on the specific channel.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>closeP2PSessionWithUser(<sup>int</sup> steamIDRemote)</h4>
+						<ul>
+							<li>This should be called when you're done communicating with a user, as this will free up all of the resources allocated for the connection under-the-hood.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getP2PSessionState(<sup>int</sup> steamIDRemote)</h4>
+						<ul>
+							<li>Fills out a <strong><em>P2PSessionState_t</em></strong> structure with details about the connection like whether or not there is an active connection.</li>
+							<li>Returns a DICTIONARY. Provides these keys, in order:
+								<ul>
+									<li>connection_active (bool) - True if we've got an active open connection</li>
+									<li>connecting (bool) - True if we're currently trying to establish a connection</li>
+									<li>session_error (int) - Last error recorded (see enums in isteamnetworking.h)</li>
+									<li>using_relay(bool) - True if it's going through a relay server (TURN)</li>
+									<li>bytes_queued_for_send (int)</li>
+									<li>packets_queued_for_send (int)</li>
+									<li>remote_ip (int) - Potential IP:Port of remote host. Could be TURN server</li>
+									<li>remote_port (int) - Only exists for compatibility with older auth API's</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>readP2PPacket(<sup>int</sup> packet, <sup>int</sup> channel)</h4>
+						<ul>
+							<li>Reads in a packet that has been sent from another user via <strong>SendP2PPacket</strong>.</li>
+							<li>Returns a DICTIONARY. Provides these keys, in order:
+								<ul>
+									<li>data (PoolByteArray)</li>
+									<li>steamIDRemote (int) - The sender's Steam ID</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>sendP2PPacket(<sup>int</sup> steamIDRemote, <sup>PoolByteArray</sup> data, <sup>int</sup> sendType, <sup>int</sup> channel)</h4>
+						<ul>
+							<li>Sends a P2P packet to the specified user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<hr/>
 						<header class="major">
 							<h3>Server</h3>
 						</header>
-						<h4>initGameServer( <sup>int</sup> ip, <sup>int</sup> steamPort, <sup>int</sup> gamePort, <sup>int</sup> queryPort, <sup>int</sup> serverMode, <sup>string</sup> versionString )</h4>
+						<a id="server"></a>
+						<h4>initGameServer(<sup>dictionary</sup> connectData, <sup>int</sup> serverMode, <sup>string</sup> versionString)</h4>
 						<ul>
-							<li>This is called by SteamGameServer_Init and will usually not need to be called directly.</li>
-							<li>BOOL; returns true or false.</li>
+							<li>NOTE: The following, if set, must be set before calling LogOn; they may not be changed after.</li>
+							<li>This is called by <strong>SteamGameServer_Init</strong> and will usually not need to be called directly.</li>
+							<li>Returns a BOOL (true / false).</li>
 						</ul>
-						<h4>setProduct( <sup>string</sup> product )</h4>
-						<ul>
-							<li>Game product identifier; currently used by the master server for version checking purposes.</li>
-							<li>VOID.</li>
-						</ul>
-						<h4>setGameDescription( <sup>string</sup> description )</h4>
+						<h4>setGameDescription(<sup>string</sup> description)</h4>
 						<ul>
 							<li>Description of the game; required field and is displayed in the Steam server browser.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setModDir( <sup>string</sup> modDir )</h4>
+						<h4>setModDir(<sup>string</sup> modDir)</h4>
 						<ul>
-							<li>If your game is a mod, pass the <sup>string</sup> that identifies it. Default is empty meaning the app is the original game.</li>
-							<li>VOID.</li>
+							<li>If your game is a mod, pass the string that identifies it. Default is empty meaning the app is the original game.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setDedicatedServer( <sup>bool</sup> dedicated )</h4>
+						<h4>setDedicatedServer(<sup>bool</sup> dedicated)</h4>
 						<ul>
 							<li>Is this a dedicated server? Default is false.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>logOn( <sup>string</sup> token )</h4>
+						<h4>logOn(<sup>string</sup> token)</h4>
 						<ul>
-							<li>Being process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.</li>
-							<li>VOID.</li>
+							<li>Begin process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>server_connect_failure</em></strong>, <strong><em>server_connected</em></strong>, and <strong><em>server_disconnected</em></strong> callbacks.</li>
 						</ul>
 						<h4>logOnAnonymous()</h4>
 						<ul>
 							<li>Login to a generic, anonymous account.</li>
-							<li>VOID</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>server_connect_failure</em></strong>, <strong><em>server_connected</em></strong>, and <strong><em>server_disconnected</em></strong> callbacks.</li>
 						</ul>
 						<h4>logOff()</h4>
 						<ul>
 							<li>Begin process of logging game server out of Steam.</li>
-							<li>VOID</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>server_connect_failure</em></strong>, <strong><em>server_connected</em></strong>, and <strong><em>server_disconnected</em></strong> callbacks.</li>
 						</ul>
 						<h4>loggedOn()</h4>
 						<ul>
 							<li>Status functions.</li>
-							<li>BOOL; returns true or false.</li>
+							<li>Returns a BOOL (true / false).</li>
 						</ul>
 						<h4>secure()</h4>
 						<ul>
-							<li>Check if game server is secured.</li>
-							<li>BOOL; returns true or false.</li>
+							<li>Checks whether the game server is in "Secure" mode.</li>
+							<li>Returns a BOOL (true / false).</li>
 						</ul>
 						<h4>getSteamID()</h4>
 						<ul>
-							<li>Get the game server's Steam ID.</li>
-							<li>INT.</li>
+							<li>Gets the Steam ID of the game server.</li>
+							<li>Returns an INT.</li>
 						</ul>
 						<h4>wasRestartRequested()</h4>
 						<ul>
 							<li>Returns true if the master server has requested a restart. Only returns true once per request.</li>
-							<li>BOOL; returns true or false.</li>
+							<li>Returns a BOOL (true / false).</li>
 						</ul>
-						<h4>setMaxPlayerCount( <sup>int</sup> max )</h4>
+						<p><strong><em>NOTE: These are server state functions and can be changed at any time.</em></strong></p>
+						<h4>setMaxPlayerCount(<sup>int</sup> max)</h4>
 						<ul>
 							<li>Max player count that will be reported to server browser and client queries.</li>
-							<li>VOID.</li>
 						</ul>
-						<h4>setBotPlayerCount( <sup>int</sup> bots )</h4>
+						<h4>setBotPlayerCount(<sup>int</sup> bots)</h4>
 						<ul>
 							<li>Number of bots. Default is zero.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setServerName( <sup>string</sup> name )</h4>
+						<h4>setServerName(<sup>string</sup> name)</h4>
 						<ul>
 							<li>Set the naem of the server as it will appear in the server browser.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setMapName( <sup>string</sup> map )</h4>
+						<h4>setMapName(<sup>string</sup> map)</h4>
 						<ul>
 							<li>Set name of map to report in server browser.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setPasswordProtected( <sup>bool</sup> protected )</h4>
+						<h4>setPasswordProtected(<sup>bool</sup> password)</h4>
 						<ul>
 							<li>Let people know if your server requires a password.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setSpectatorPort( <sup>int</sup> port )</h4>
+						<h4>setSpectatorPort(<sup>int</sup> port)</h4>
 						<ul>
 							<li>Spectator server. Default is zero, meaning it is now used.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setSpectatorServerName( <sup>string</sup> name )</h4>
+						<h4>setSpectatorServerName(<sup>string</sup> name)</h4>
 						<ul>
 							<li>Name of spectator server. Only used if spectator port is non-zero.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
 						<h4>clearAllKeyValues()</h4>
 						<ul>
 							<li>Call this to clear the whole list of key/values that are sent in rule queries.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setKeyValue( <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<h4>setKeyValue(<sup>string</sup> key, <sup>string</sup> value)</h4>
 						<ul>
 							<li>Call this to add/update a key/value pair.</li>
-							<li>VOID></li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setGameTags( <sup>string</sup> tags )</h4>
-						<ul>					
-							<li>Set a <sup>string</sup> defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.</li>
-							<li>VOID.</li>
-						</ul>
-						<h4>setGameData( <sup>string</sup> data )</h4>
+						<h4>setGameTags(<sup>string</sup> tags)</h4>
 						<ul>
-							<li>Set a <sup>string</sup> defining game data for this server; optional. Allows users to filter in matchmaking/server browser.</li>
-							<li>VOID.</li>
+							<li>Set a string defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>setRegion( <sup>string</sup> region )</h4>
+						<h4>setGameData(<sup>string</sup> data)</h4>
+						<ul>
+							<li>Set a string defining game data for this server; optional. Allows users to filter in matchmaking/server browser.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>
+						<h4>setRegion(<sup>string</sup> region)</h4>
 						<ul>
 							<li>Region identifier; optional. Default is empty meaning 'world'.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
+						<p><strong><em>NOTE: These functions are player list management / authentication.</em></strong></p>
 						<h4>getAuthSessionTicket()</h4>
 						<ul>
-							<li>Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).</li>
-							<li>INT; returns the ticket handle.</li>
+							<li>Retrieve ticket to be sent to the entity who wishes to authenticate you (using <strong>BeginAuthSession</strong> API).</li>
+							<li>Returns an INT.</li>
 						</ul>
-						<h4>beginAuthSession( <sup>int</sup> authTicket, <sup>int</sup> steamID )</h4>
+						<h4>beginAuthSession(<sup>int</sup> authTicket, <sup>int</sup> steamID)</h4>
 						<ul>
-							<li>Begin an authenticated session.</li>
-							<li>INT.</li>
+							<li>Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.</li>
+							<li>Returns an INT.</li>
 						</ul>
-						<h4>endAuthSession( <sup>int</sup> steamID )</h4>
+						<h4>endAuthSession(<sup>int</sup> steamID)</h4>
 						<ul>
-							<li>Stop tracking started by beginAuthSession; called when no longer playing game with this entity.</li>
-							<li>VOID.</li>
+							<li>Stop tracking started by <strong>beginAuthSession</strong>; called when no longer playing game with this entity.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>cancelAuthTicket( <sup>int</sup> authTicket )</h4>
+						<h4>cancelAuthTicket(<sup>int</sup> authTicket)</h4>
 						<ul>
-							<li>Cancel auth ticket from getAuthSessionTicket; called when no longer playing game with the entity you gave the ticket to.</li>
-							<li>VOID.</li>
+							<li>Cancel auth ticket from <strong>getAuthSessionTicket</strong>; called when no longer playing game with the entity you gave the ticket to.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>userHasLicenceForApp( <sup>int</sup> steamID, <sup>int</sup> appID )</h4>
+						<h4>userHasLicenceForApp(<sup>int</sup> steamID, AppId_t appID)</h4>
 						<ul>
-							<li>After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC.</li>
-							<li>INT.</li>
+							<li>After receiving a user's authentication data, and passing it to <strong>sendUserConnectAndAuthenticate</strong>, use to determine if user owns DLC</li>
+							<li>Returns an INT.</li>
 						</ul>
-						<h4>requestUserGroupStatus( <sup>int</sup> steamID, <sup>int</sup> groupID )</h4>
+						<h4>requestUserGroupStatus(<sup>int</sup> steamID, <sup>int</sup> groupID)</h4>
 						<ul>
-							<li>Ask if user is in specified group; results returned by GSUserGroupStatus_t.</li>
-							<li>BOOL; returns true or false.</li>
+							<li>Ask if user is in specified group; results returned by <strong><em>GSUserGroupStatus_t</em></strong>.</li>
+							<li>BOOL.  This will also trigger a <strong><em>client_Group_Status</em></strong> callback.</li>
 						</ul>
-						<h4>handleIncomingPacket( <sup>int</sup> packet, <sup>string</sup> ip, <sup>int</sup> port )</h4>
+						<p><strong><em>NOTE: These are in GameSocketShare mode, where instead of ISteamGameServer creating sockets to talk to master server, it lets the game use its socket to forward messages back and forth.</em></strong></p>
+						<h4>handleIncomingPacket(<sup>int</sup> packet, <sup>string</sup> ip, <sup>int</sup> port)</h4>
 						<ul>
 							<li>These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.</li>
-							<li>DICTIONARY; contains the packet as a POOLBYTEARRAY.</li>
+							<li>Returns a DICTIONARY. Provides these keys, in order:
+								<ul>
+									<li>data (PoolByteArray)</li>
+								</ul>
+							</li>
 						</ul>
-						<h4>getNextOutgoingPacket()</h4>
+						<h4>setHeartbeatInterval(<sup>int</sup> interval)</h4>
 						<ul>
-							<li>AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP.</li>
-							<li>DICTIONARY; contains the length, packet as a POOLBYTEARRAY, the IP address it goes to, and the port. If it fails or there are not more packets, the length will be 0.</li>
-						</ul>
-						<h4>enableHeartbeats( <sup>bool</sup> active )</h4>
-						<ul>
-							<li>Call this as often as you like to tell the master server updater whether or not you want it to be active (default: off).</li>
-							<li>VOID.</li>
-						</ul>
-						<h4>setHeartbeatInterval( <sup>int</sup> interval )</h4>
-						<ul>
-							<li>You usually don't need to modify this. Pass -1 to use the default value for iHeartbeatInterval. Some mods change this.</li>
-							<li>VOID.</li>
+							<li>You usually don't need to modify this. Pass -1 to use the default value for <strong>iHeartbeatInterval</strong>. Some mods change this.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
 						<h4>forceHeartbeat()</h4>
 						<ul>
 							<li>Force a heartbeat to Steam at next opportunity.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID.</li>
 						</ul>
-						<h4>associateWithClan( <sup>int</sup> clanID )</h4>
+						<h4>associateWithClan(<sup>int</sup> clanID)</h4>
 						<ul>
 							<li>Associate this game server with this clan for the purposes of computing player compatibility.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>associate_Clan</em></strong> callback.</li>
 						</ul>
-						<h4>computeNewPlayerCompatibility( <sup>int</sup> steamID )</h4>
+						<h4>computeNewPlayerCompatibility(<sup>int</sup> steamID)</h4>
 						<ul>
 							<li>Ask if any of the current players dont want to play with this new player - or vice versa.</li>
-							<li>VOID.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>player_Compat</em></strong> callback.</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Server Stats</h3>
+						</header>
+						<a id="server-stats"></a>
+						<h4>clearUserAchievement(<sup>int</sup> steamID, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Resets the unlock status of an achievement for the specified user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>getUserAchievement(<sup>int</sup> steamID, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Gets the unlock status of the achievement.</li>
+							<li>Returns a DICTIONARY. Provides these keys, in order:
+								<ul>
+									<li>result (bool)</li>
+									<li>user (int)</li>
+									<li>name (string)</li>
+									<li>unlocked (bool</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getUserStatFloat(<sup>int</sup> steamID, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Gets the current value of the a stat for the specified user.</li>
+							<li>Returns a FLOAT.</li>
+						</ul>
+						<h4>requestUserStats(<sup>int</sup> steamID)</h4>
+						<ul>
+							<li>Asynchronously downloads stats and achievements for the specified user from the server.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>stat_received</em></strong> call result.</li>
+						</ul>
+						<h4>setUserAchievement(<sup>int</sup> steamID, <sup>string</sup> name)</h4>
+						<ul>
+							<li>Unlocks an achievement for the specified user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setUserStatInt(<sup>int</sup> steamID, <sup>string</sup> name, <sup>int</sup> stat)</h4>
+						<ul>
+							<li>Sets / updates the value of a given stat for the specified user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setUserStatFloat(<sup>int</sup> steamID, <sup>string</sup> name, <sup>float</sup> stat)</h4>
+						<ul>
+							<li>Sets / updates the value of a given stat for the specified user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>storeUserStats(<sup>int</sup> steamID)</h4>
+						<ul>
+							<li>Send the changed stats and achievements data to the server for permanent storage for the specified user.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>stats_stored</em></strong> callback.</li>
+						</ul>
+						<h4>updateUserAvgRateStat(<sup>int</sup> steamID, <sup>string</sup> name, <sup>float</sup> thisSession, <sup>double</sup> sessionLength)</h4>
+						<ul>
+							<li>Updates an AVGRATE stat with new values for the specified user.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>UGC</h3>
+						</header>
+						<a id="ugc"></a>
+						<h4>addAppDependency(<sup>int</sup> publishedFileID, <sup>int</sup> appID)</h4>
+						<ul>
+							<li>Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling <strong>GetAppDependencies</strong>. This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>add_app_dependency_result</em></strong> call result.</li>
+						</ul>
+						<h4>addDependency(<sup>int</sup> publishedFileID, <sup>int</sup> childPublishedFileID)</h4>
+						<ul>
+							<li>Adds a workshop item as a dependency to the specified item. If the <strong>nParentPublishedFileID</strong> item is of type <strong>k_EWorkshopFileTypeCollection</strong>, than the <strong>nChildPublishedFileID</strong> is simply added to that collection. Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the <strong>ISteamUGC</strong> API using a combination of the <strong>m_unNumChildren</strong> member variable of the <strong><em>SteamUGCDetails_t</em></strong> struct and <strong>GetQueryUGCChildren</strong>.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>add_ugc_dependency_result</em></strong> call result.</li>
+						</ul>
+						<h4>addExcludedTag(<sup>int</sup> queryHandle, <sup>string</sup> tagName)</h4>
+						<ul>
+							<li>Adds a excluded tag to a pending UGC Query. This will only return UGC without the specified tag.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>addItemKeyValueTag(<sup>int</sup> updateHandle, <sup>string</sup> key, <sup>string</sup> value)</h4>
+						<ul>
+							<li>Adds a key-value tag pair to an item. Keys can map to multiple different values (1-to-many relationship).</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>addItemPreviewFile(<sup>int</sup> queryHandle, <sup>string</sup> previewFile, <sup>int</sup> type)</h4>
+						<ul>
+							<li>Adds an additional preview file for the item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>addItemToFavorite(<sup>int</sup> appID, <sup>int</sup> publishedFileID)</h4>
+						<ul>
+							<li>Adds a workshop item to the users favorites list.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>user_favorite_items_list_changed</em></strong> call result.</li>
+						</ul>
+						<h4>setItemDescription(<sup>int</sup> updateHandle, <sup>string</sup> description)</h4>
+						<ul>
+							<li>Sets a new description for an item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setItemMetadata(<sup>int</sup> updateHandle, <sup>string</sup> metadata)</h4>
+						<ul>
+							<li>Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setItemPreview(<sup>int</sup> updateHandle, <sup>string</sup> previewFile)</h4>
+						<ul>
+							<li>Sets the primary preview image for the item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setItemTags(<sup>int</sup> updateHandle, <sup>array</sup> tagArray)</h4>
+						<ul>
+							<li>Sets arbitrary developer specified tags on an item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setItemTitle(<sup>int</sup> updateHandle, <sup>string</sup> title)</h4>
+						<ul>
+							<li>Sets a new title for an item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setItemUpdateLanguage(<sup>int</sup> updateHandle, <sup>string</sup> language)</h4>
+						<ul>
+							<li>Sets the language of the title and description that will be set in this item update.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setItemVisibility(<sup>int</sup> updateHandle, <sup>int</sup> visibility)</h4>
+						<ul>
+							<li>Sets the visibility of an item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setLanguage(<sup>int</sup> queryHandle, <sup>string</sup> language)</h4>
+						<ul>
+							<li>Sets the language to return the title and description in for the items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setMatchAnyTag(<sup>int</sup> queryHandle, <sup>bool</sup> matchAnyTag)</h4>
+						<ul>
+							<li>Sets whether workshop items will be returned if they have one or more matching tag, or if all tags need to match on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setRankedByTrendDays(<sup>int</sup> queryHandle, <sup>int</sup> days)</h4>
+						<ul>
+							<li>Sets whether the order of the results will be updated based on the rank of items over a number of days on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnAdditionalPreviews(<sup>int</sup> queryHandle, <sup>bool</sup> returnAdditionalPreviews)</h4>
+						<ul>
+							<li>Sets whether to return any additional images/videos attached to the items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnChildren(<sup>int</sup> queryHandle, <sup>bool</sup> returnChildren)</h4>
+						<ul>
+							<li>Sets whether to return the IDs of the child items of the items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnKeyValueTags(<sup>int</sup> queryHandle, <sup>bool</sup> returnKeyValueTags)</h4>
+						<ul>
+							<li>Sets whether to return any key-value tags for the items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnLongDescription(<sup>int</sup> queryHandle, <sup>bool</sup> returnLongDescription)</h4>
+						<ul>
+							<li>Sets whether to return the full description for the items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnMetadata(<sup>int</sup> queryHandle, <sup>bool</sup> returnMetadata)</h4>
+						<ul>
+							<li>Sets whether to return the developer specified metadata for the items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnOnlyIDs(<sup>int</sup> queryHandle, <sup>bool</sup> returnOnlyIDs)</h4>
+						<ul>
+							<li>Sets whether to only return IDs instead of all the details on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnPlaytimeStats(<sup>int</sup> queryHandle, <sup>int</sup> days)</h4>
+						<ul>
+							<li>Sets whether to return the the playtime stats on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setReturnTotalOnly(<sup>int</sup> queryHandle, <sup>bool</sup> returnTotalOnly)</h4>
+						<ul>
+							<li>Sets whether to only return the the total number of matching items on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setSearchText(<sup>int</sup> queryHandle, <sup>string</sup> searchText)</h4>
+						<ul>
+							<li>Sets a string to that items need to match in either the title or the description on a pending UGC Query.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setUserItemVote(<sup>int</sup> publishedFileID, <sup>bool</sup> voteUp)</h4>
+						<ul>
+							<li>Allows the user to rate a workshop item up or down.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>set_user_item_vote</em></strong> call result.</li>
+						</ul>
+						<h4>startItemUpdate(<sup>int</sup> appID, <sup>int</sup> publishedFileID)</h4>
+						<ul>
+							<li>Starts the item update process.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>startPlaytimeTracking(<sup>array</sup> publishedFileIDs)</h4>
+						<ul>
+							<li>Start tracking playtime on a set of workshop items.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>start_playtime_tracking</em></strong> call result.</li>
+						</ul>
+						<h4>stopPlaytimeTracking(<sup>array</sup> publishedFileIDs)</h4>
+						<ul>
+							<li>Stop tracking playtime on a set of workshop items.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>stop_playtime_tracking</em></strong> call result.</li>
+						</ul>
+						<h4>stopPlaytimeTrackingForAllItems()</h4>
+						<ul>
+							<li>Stop tracking playtime of all workshop items.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>stop_playtime_tracking</em></strong> call result.</li>
+						</ul>
+						<h4>getAppDependencies(<sup>int</sup> publishedFileID)</h4>
+						<ul>
+							<li>Returns any app dependencies that are associated with the given item.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>get_app_dependencies_result</em></strong> call result.</li>
+						</ul>
+						<h4>submitItemUpdate(<sup>int</sup> updateHandle, <sup>string</sup> changeNote)</h4>
+						<ul>
+							<li>Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>item_updated</em></strong> call result.</li>
+						</ul>
+						<h4>subscribeItem(<sup>int</sup> publishedFileID)</h4>
+						<ul>
+							<li>Subscribe to a workshop item. It will be downloaded and installed as soon as possible.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>subscribe_item</em></strong> call result.</li>
+						</ul>
+						<h4>suspendDownloads(<sup>bool</sup> suspend)</h4>
+						<ul>
+							<li><strong>SuspendDownloads( true )</strong> will suspend all workshop downloads until <strong>SuspendDownloads( false )</strong> is called or the game ends.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>
+						<h4>unsubscribeItem(<sup>int</sup> publishedFileID)</h4>
+						<ul>
+							<li>Unsubscribe from a workshop item. This will result in the item being removed after the game quits.</li>
+							<li>Returns nothing; VOID. This will trigger a <strong><em>unsubscribe_item</em></strong> call result.</li>
+						</ul>
+						<h4>updateItemPreviewFile(<sup>int</sup> updateHandle, <sup>int</sup> index, <sup>string</sup> previewFile)</h4>
+						<ul>
+							<li>Updates an existing additional preview file for the item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>updateItemPreviewVideo(<sup>int</sup> updateHandle, <sup>int</sup> index, <sup>string</sup> videoID)</h4>
+						<ul>
+							<li>Updates an additional video preview from YouTube for the item.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Utils</h3>
+						</header>
+						<a id="utils"></a>
+						<h4>filterText(<sup>int</sup> context, <sup>int</sup> steamID, <sup>string</sup> message)</h4>
+						<ul>
+							<li>Filters the provided input message and places the filtered result into <strong>pchOutFilteredText</strong>.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getAPICallFailureReason()</h4>
+						<ul>
+							<li>Used to get the failure reason of a call result. The primary usage for this function is debugging. The failure reasons are typically out of your control and tend to not be very important. Just keep retrying your API Call until it works.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getAppID()</h4>
+						<ul>
+							<li>Get the Steam ID of the running application/game.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getCurrentBatteryPower()</h4>
+						<ul>
+							<li>Get the amount of battery power, clearly for laptops.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getImageRGBA(<sup>int</sup> image)</h4>
+						<ul>
+							<li>Gets the image bytes from an image handle.</li>
+							<li>Returns a DICTIONARY. Provides these keys, in order:
+								<ul>
+									<li>buffer (PoolByteArray)</li>
+									<li>success (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getImageSize(<sup>int</sup> image)</h4>
+						<ul>
+							<li>Gets the size of a Steam image handle.</li>
+							<li>Returns a DICTIONARY. Provides these keys, in order:
+								<ul>
+									<li>width (int)</li>
+									<li>height (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>getIPCCallCount()</h4>
+						<ul>
+							<li>Returns the number of IPC calls made since the last time this function was called.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getIPCountry()</h4>
+						<ul>
+							<li>Get the user's country by IP.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>getSecondsSinceAppActive()</h4>
+						<ul>
+							<li>Return amount of time, in seconds, user has spent in this session.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getSecondsSinceComputerActive()</h4>
+						<ul>
+							<li>Returns the number of seconds since the user last moved the mouse.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getServerRealTime()</h4>
+						<ul>
+							<li>Get the actual time.</li>
+							<li>Returns an INT.</li>
+						</ul>
+						<h4>getSteamUILanguage()</h4>
+						<ul>
+							<li>Get the Steam user interface language.</li>
+							<li>Returns a STRING.</li>
+						</ul>
+						<h4>initFilterText()</h4>
+						<ul>
+							<li>Initializes text filtering. Returns false if filtering is unavailable for the language the user is currently running in. If the language is unsupported, the <strong>FilterText</strong> API will act as a passthrough.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isAPICallCompleted()</h4>
+						<ul>
+							<li>Checks if an API Call is completed. Provides the backend of the CallResult wrapper.</li>
+							<li>Returns a DICTIONARY. Provides the following keys, in order:
+								<ul>
+									<li>ccompleted (bool)</li>
+									<li>failed (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>isSteamChinaLauncher()</h4>
+						<ul>
+							<li>Returns whether the current launcher is a Steam China launcher. You can cause the client to behave as the Steam China launcher by adding -dev -steamchina to the command line when running Steam.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isSteamInBigPictureMode()</h4>
+						<ul>
+							<li>Returns true if Steam & the Steam Overlay are running in Big Picture mode.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isSteamRunningInVR()</h4>
+						<ul>
+							<li>Is Steam running in VR?
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>isVRHeadsetStreamingEnabled()</h4>
+						<ul>
+							<li>Checks if the HMD view will be streamed via Steam In-Home Streaming.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>overlayNeedsPresent()</h4>
+						<ul>
+							<li>Checks if the overlay needs a present. Only required if using event driven render updates.</li>
+							<li>Returns a BOOL (true / false).</li>
+						</ul>
+						<h4>setOverlayNotificationInset(<sup>int</sup> horizontal, <sup>int</sup> vertical)</h4>
+						<ul>
+							<li>Sets the inset of the overlay notification from the corner specified by <strong>SetOverlayNotificationPosition</strong>.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>
+						<h4>setOverlayNotificationPosition(<sup>int</sup> pos)</h4>
+						<ul>
+							<li>Set the position where overlay shows notifications.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>
+						<h4>setVRHeadsetStreamingEnabled(<sup>bool</sup> enabled)</h4>
+						<ul>
+							<li>Set whether the HMD content will be streamed via Steam In-Home Streaming.</li>
+							<li>Returns nothing; VOID.</li>
+						</ul>
+						<h4>showGamepadTextInput(<sup>int</sup> inputMode, <sup>int</sup> lineInputMode, <sup>string</sup> description, <sup>int</sup> maxText, <sup>string</sup> presetText)</h4>
+						<ul>
+							<li>Activates the Big Picture text input dialog which only supports gamepad input.</li>
+							<li>Returns a BOOL (true / false).</li>
 						</ul>
 					</section>
-					<footer id="footer">
-						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
-						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
-						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
-						Site Template by <a href="https://html5up.net">HTML5UP</a>
-					</footer>
 				</div>
 			</div>
 			<!-- Sidebar -->
@@ -265,10 +1154,48 @@
 								</ul>
 							</li>
 							<li>
-								<span class="opener">Functions</span>
+								<span class="opener">Functions (Module)</span>
 								<ul>
-									<li><a href="functions-module.html">Functions (Module) </a></li>
-									<li><a href="functions-server.html">Functions (Server)</a></li>
+									<li><a href="functions-module.html">All</a></li>
+									<li><a href="functions-module.html#core">Core</a></li>
+									<li><a href="functions-module.html#apps">Apps</a></li>
+									<li><a href="functions-module.html#friends">Friends</a></li>
+									<li><a href="functions-module.html#game-search">Game Search</a></li>
+									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
+									<li><a href="functions-module.html#http">HTTP</a></li>
+									<li><a href="functions-module.html#input">Input</a></li>
+									<li><a href="functions-module.html#inventory">Inventory</a></li>
+									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
+									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
+									<li><a href="functions-module.html#music">Music</a></li>
+									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
+									<li><a href="functions-module.html#networking">Networking</a></li>
+									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
+									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
+									<li><a href="functions-module.html#parties">Parties</a></li>
+									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
+									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
+									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#ugc">UGC</a></li>
+									<li><a href="functions-module.html#users">Users</a></li>
+									<li><a href="functions-module.html#user-stats">User Stats</a></li>
+									<li><a href="functions-module.html#utils">Utils</a></li>
+									<li><a href="functions-module.html#video">Video</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions (Server)</span>
+								<ul>
+									<li><a href="functions-server.html">All</a></li>
+									<li><a href="functions-server.html#core">Core</a></li>
+									<li><a href="functions-server.html#apps">Apps</a></li>
+									<li><a href="functions-server.html#http">HTTP</a></li>
+									<li><a href="functions-server.html#inventory">Inventory</a></li>
+									<li><a href="functions-server.html#networking">Networking</a></li>
+									<li><a href="functions-server.html#server">Server</a></li>
+									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
+									<li><a href="functions-server.html#ugc">UGC</a></li>
+									<li><a href="functions-server.html#utils">Utils</a></li>
 								</ul>
 							</li>
 							<li>
@@ -294,10 +1221,49 @@
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
-							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="contributors.html">Contributors / Donate</a></li>
+							<li>
+								<span class="opener">Change Log</span>
+								<ul>
+									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+									<li><a href="changelog-gdnative.html">GDNative</a></li>
+									<li><a href="changelog-server.html">Server</a></li>
+								</ul>
+							</li>
+							<li><a href="contributors.html">Contributors</a></li>
 						</ul>
 					</nav>
+					<section>
+						<header class="major">
+							<h2>Stuck? Need Help?</h2>
+						</header>
+						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+						</ul>
+					</section>
+					<section>
+						<header class="major">
+							<h2>Donate</h2>
+						</header>
+						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+						</ul>
+					</section>
+					<footer>
+						<ul class="actions stacked">
+							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+						</ul>
+					</footer>
+					<footer id="footer" class="copyright">
+						2021 &copy; GP Garcia & CoaguCo Industries
+					</footer>
 				</div>
 			</div>
 		</div>

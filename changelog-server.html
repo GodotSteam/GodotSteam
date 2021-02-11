@@ -27,80 +27,47 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>To-Do List</h1>
+							<h1>Change Log | Server</h1>
 						</header>
-						<p>Short lists of things still needed to do with the project.</p>
-						<hr />
-						<h2>Current Class Implementation</h2>
-						<p>All Steamworks classes are implemented in the module.</p>
+						<p>The change log for the server repository.</p>
+						<h3>Version 1.1.1 Changes</h3>
 						<ul>
-							<li><strike>Apps <em>(complete)</em></strike></li>
-							<li><strike>Controller <em>(depreciated)</em></strike></li>
-							<li><strike>Friends <em>(complete)</em></strike></li>
-							<li><strike>Game Search <em>(complete)</em></strike></li>
-							<li><strike>HTML Surface <em>(complete)</em></strike></li>
-							<li><strike>HTTP <em>(complete)</em></strike></li>
-							<li><strike>Input <em>(complete)</em></strike></li>
-							<li><strike>Inventory <em>(complete)</em></strike></li>
-							<li><strike>Matchmaking <em>(complete)</em></strike></li>
-							<li><strike>Matchmaking Servers <em>(complete)</em></strike></li>
-							<li><strike>Music <em>(complete)</em></strike></li>
-							<li><strike>Music Remote <em>(complete)</em></strike></li>
-							<li><strike>Networking <em>(complete)</em></strike></li>
-							<li><strike>Networking Sockets <em>(complete)</em></strike></li>
-							<li><strike>Networking Utils <em>(complete)</em></strike></li>
-							<li><strike>Parties <em>(complete)</em></strike></li>
-							<li><strike>RemotePlay <em>(complete)</em></strike></li>
-							<li><strike>Remote Storage <em>(complete)</em></strike></li>
-							<li><strike>Screenshots <em>(complete)</em></strike></li>
-							<li><strike>UGC <em>(complete)</em></strike></li>
-							<li><strike>User <em>(complete)</em></strike></li>
-							<li><strike>User Stats <em>(complete)</em></strike></li>
-							<li><strike>Utils <em>(complete)</em></strike></li>
-							<li><strike>Video <em>(complete)</em></strike></li>
+							<li>Changed: includes Godot header file to allow more than 5 arguments in a function</li>
+							<li>Fixed: filterText for Steamworks SDK 1.50</li>
 						</ul>
-						<hr/>
-						<h2>Both Modules</h2>
+						<h3>Version 1.1.0 Changes</h3>
 						<ul>
-							<li>Fix _get_app_dependencies_result call result, missing array of app dependencies.</li>
-							<li>sendHTTPRequest and sendHTTPRequestAndStreamResponse might need fixed up.</li>
-							<li>getConnectedControllers() doesn't send back any data.</li>
-							<li>Hybrid Godot high-level networking and Steamworks P2P example.</li>
-							<li>Should inventory handle be sent back to user?</li>
-							<li>Fix SetPNGIcon64x64 in Music Remote.</li>
-							<li>Fix updateCurrentEntryCoverArt in Music Remote.</li>
-							<li>Complete tutorials for each section of Steamworks.</li>
-							<li><strike>Create auto-patch script for MinGW users.</strike> Virtually impossible due to growing number of bugs with each attempt.</li>
-							<li>Modify getRelayNetworkStatus to have default null but allow user to input for details.</li>
-							<li>NetworkingSockets and NetworkingUtils are both in beta still, go back through every single function again.</li>
-							<li><strike>Tutorial on exporting and shipping games with GodotSteam.</strike></li>
-							<li><strike>Connect requestUserInformation to a callback.</strike></li>
-							<li><strike>Make responses from getSyncPlatforms more user-friendly.</strike></li>
-							<li><strike>Fix getAchievementAndUnlockTime to provide all data as a Dictionary.</strike></li>
-							<li><strike>Add DownloadItemResult_t callback for downloadItem.</strike></li>
-							<li><strike>Hook up both auth callbacks.</strike></li>
-							<li><strike>Fix setItemTags.</strike></li>
-							<li><strike>Fix getItemInstallInfo.</strike></li>
-							<li><strike>Finish join_requested callback/signal, rename it to join_lobby_requested, and add join_game_requested callback/signal.</strike></li>
-							<li><strike>Add in-editor documentation.</strike></li>
-							<li><strike>Fix k_ESteamInputType_GenericXInput not being a declared identifier in getInputTypeForHandle.</strike> Steamworks SDK Docs are incorrect for this type.</li>
-							<li><strike>triggerRepeatedHapticPulse has "too many arguments" and errors out compiling.</strike></li>
-							<li><strike>SetCookie has too many arguments for Godot.</strike></li>
-							<li><strike>fileLoadDialogResponse needs list of strings pointer fixed.</strike></li>			
-							<li><strike>Figure out Steam callback warning during compiling (offsetof within non-standard-layout type).</strike></li>
-							<li><strike>Fix Steam overlay in Linux.</strike></li>
-							<li><strike>Russian character sets do not show up (Unicode issue?), just sends back blank strings or characters.</strike></li>
-							<li><strike>Implement all missing bIOFailure booleans in call results.</strike></li>
-							<li><strike>Fix getLobbyDataByIndex causes crash.</strike></li>
-							<li><strike>Function getSteamID causes crash in cross-compiled editor from Linux to Windows.</strike></li>
-							<li><strike>Add if/else for io failure in call results.</strike></li>
-							<li><strike>Create tutorial on rich presence.</strike></li>
+							<li>Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes</li>
+							<li>Added: related callbacks, call results, constants, and enums</li>
+							<li>Added: headless server platform for linux</li>
+							<li>Fixed: OSX compiling config rules</li>
 						</ul>
-						<hr />
-						<h2>Server</h2>
+						<h3>Version 1.0.0</h3>
 						<ul>
-							<li>Create dedicated server tutorial.</li>
-							<li><strike>Continue work on basic Steam server functionality.</strike></li>
+							<li>Added: missing server functions</li>
+							<li>Fixed: missing argument in config.py</li>
+							<li>Fixed: missing Godot include that allows more than 5 arguments per function</li>
+							<li>Fixed: a lot of different functions</li>
+							<li>Fixed: issue with include in register_types.cpp</li>
+							<li>Removed: remaining depreciated functions</li>
+							<li>Removed: functions not compatible with new networking functions</li>
+						</ul>
+						<h3>Version 0.0.3</h3>
+						<ul>
+							<li>Removed: depreciated signal _client_Achieve_Status</li>
+							<li>Removed: depreciated signal _gameplay_Stats</li>
+							<li>Removed: depreciated signal _reputation</li>
+						</ul>
+						<h3>Version 0.0.2</h3>
+						<ul>
+							<li>Added: all of the result enums</li>
+							<li>Added: missing signals</li>
+							<li>Changed: module folder name</li>
+							<li>Removed: depreciated functions</li>
+						</ul>
+						<h3>Version 0.0.1</h3>
+						<ul>
+							<li>Added: Added: basically everything in Steam server main</li>
 						</ul>
 					</section>
 				</div>

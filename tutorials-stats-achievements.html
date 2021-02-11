@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -29,33 +29,42 @@
 						<header class="main">
 							<h1>Tutorials - Stats And Achievements</h1>
 						</header>
-						<p>At some point you may want to save statistics to Steam's database and/or use their achievement system.  You will want to <a href="https://partner.steamgames.com/doc/features/achievements" target="_blank">read up about these in Steam's documentation</a> as I won't be covering the basics on how to set it up in the Steamworks interface.</p>
+						<p>At some point you may want to save statistics to Steam's database and/or use their achievement system.  You will want to <a href="https://partner.steamgames.com/doc/features/achievements" target="_blank">read up about these in Steam's documentation</a> as I won't be covering the basics on how to set it up in the Steamworks back-end.</p>
+						<hr/>
 						<header class="major">
 							<h3>Getting Steam Statistics And Achievements</h3>
 						</header>
-						<p>When starting up your game, you'll want to pull all related achievements and statistics from Steam's servers.  This is done by default when Steam is initialized.  To get work with the data you need to connect the <strong><em>current_stats_received</em></strong> callback to a function like so:</p>
+						<p>When starting up your game, in most cases, you'll want to pull all related achievements and statistics from Steam's servers for the local user.  There are a few ways to handle connecting the callback for statistics / achievements data received from Steam's servers.</p>
+						<p>Unless you choose to turn it off by passing <strong><em>false</em></strong> to the <strong>steamInit()</strong> function; it will automatically request the local user's current statistics and achievements.  I generally pass false to prevent this.</p>
+
+						<p>To retrieve the data from the resulting callback, you need to connect the <strong><em>current_stats_received</em></strong> callback to a function like so:</p>
 <pre><code>
 Steam.connect("current_stats_received", self, "_steam_Stats_Ready", [], CONNECT_ONESHOT)
-</code></pre><br/>
-						<p>You'll notice that <strong>CONNECT_ONESHOT</strong> is passed along to prevent this from firing again.  This is because that signal is sent any time stats are updated or received.  If you don't mind these stats being updated from Steam's servers each time, you can omit it.
-						<p>If you do keep the <strong>CONNECT_ONESHOT</strong>, I suggest calling for Steam stat updates with <strong>requestUserStats</strong> and pass with it the user's Steam ID.  This will work with any user, local or remote.  You'll also want to connect it's signal:</p>
+</code></pre>
+						<p>You'll notice that <strong>CONNECT_ONESHOT</strong> is passed along to prevent this from firing more than once.  This is because that signal is sent any time stats are updated or received and will run the <strong>_steam_Stats_Ready</strong> again.  In my use-cases this is not desirable, but it may be in yours. If you don't mind the <strong>_steam_Stats_Ready</strong> firing each time, depending on your function's logic, feel free to omit that part like so:</p>
+<pre><code>
+Steam.connect("current_stats_received", self, "_steam_Stats_Ready")
+</code></pre>
+						<p>If you do keep the <strong>CONNECT_ONESHOT</strong> as I do, I suggest calling for Steam stat updates with <strong>requestUserStats</strong> and pass with it the user's Steam ID.  This function will work with any user: local or remote. You'll also want to connect it's signal in a similar manner:</p>
 <pre><code>
 Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
-</code></pre><br/>		
+</code></pre>
 						<p>It can be connected to the same function as <strong>requestCurrentStats</strong> as they send the same data back.  For our example, here is the <strong><em>_steam_Stats_Ready</em></strong> function we listed in the connected signals:</p>
 <pre><code>
-func _steam_Stats_Ready(game, result, user):
+func _steam_Stats_Ready(game: int, result: int, user: int) -> void:
 	print("This game's ID: "+str(game))
 	print("Call result: "+str(result))
 	print("This user's Steam ID: "+str(user))
-</code></pre><br/>
+</code></pre>
 						<hr />
 						<header class="major">
 							<h3>Working With The Data</h3>
 						</header>
 						<p>In this function you can check if the result is what you expect (ideally it is 1), see if the given stats are for the current player, and check that the game's ID matches.  Also you can now pass the achievements and stats to local variables or functions. I will often pass the achievement to a function to parse them correctly as they send back a BOOL for retrieval and a BOOL for earned or not.</p>
 <pre><code>
-func _steam_Stats_Ready(game, result, user):
+var ACHIEVEMENTS: Dictionary = {"achieve1":false, "achieve2":false, "achieve3":false}
+
+func _steam_Stats_Ready(game: int, result: int, user: int) -> void:
 	print("This game's ID: "+str(game))
 	print("Call result: "+str(result))
 	print("This user's Steam ID: "+str(user))
@@ -66,13 +75,13 @@ func _steam_Stats_Ready(game, result, user):
 	_get_Achievement("acheive3")
 
 	# Get statistics (int) and pass them to variables
-	var HIGHSCORE = Steam.getStatInt("HighScore")
-	var HEALTH = Steam.getStatInt("Health")
-	var MONEY = Steam.getStatInt("Money")
+	var HIGHSCORE: int = Steam.getStatInt("HighScore")
+	var HEALTH: int = Steam.getStatInt("Health")
+	var MONEY: int = Steam.getStatInt("Money")
 
 # Process achievements
-func _get_Achievement(value):
-	var ACHIEVEMENT = Steam.getAchievement(value)
+func _get_Achievement(value: String) -> void:
+	var ACHIEVEMENT: Dictionary = Steam.getAchievement(value)
 	# Achievement exists
 	if ACHIEVEMENT['ret']:
 		# Achievement is unlocked
@@ -84,7 +93,7 @@ func _get_Achievement(value):
 	# Achievement does not exist
 	else:
 		ACHIEVEMENTS[value] = false
-</code></pre><br/>		
+</code></pre>
 						<hr />
 						<header class="major">
 							<h3>Setting Achievements</h3>
@@ -93,16 +102,17 @@ func _get_Achievement(value):
 <pre><code>
 Steam.setAchievement("achieve1")
 Steam.storeStats()
-</code></pre><br/>
-						<p>If you don't call storeStats() the achievement pop-up won't trigger but the achievement should be recorded. However, you will still have to call storeStats() at some point to upload them.  I generally make a generic function to house this process then call it when needed:</p>
+</code></pre>
+						<p>If you don't call <strong>Steam.storeStats()</strong> the achievement pop-up won't trigger but the achievement should be recorded. However, you will still have to call <strong>Steam.storeStats()</strong> at some point to upload them.  I generally make a generic function to house this process then call it when needed:</p>
 <pre><code>
-func _fire_Steam_Achievement(value):
+func _fire_Steam_Achievement(value: String) -> void:
 	# Set the achievement to an in-game variable
 	player.ACHIEVEMENTS[value] = true
+
 	# Pass the value to Steam then fire it
 	Steam.setAchievement(value)
 	Steam.storeStats()
-</code></pre><br/>
+</code></pre>
 						When that last <strong>Steam.storeStats()</strong> is called the achievement will "pop" visually for the user and update their Steam client.</p>
 						<hr />
 						<header class="major">
@@ -113,16 +123,11 @@ func _fire_Steam_Achievement(value):
 Steam.setStatInt("stat1", value)
 Steam.setStatFloat("stat2", value)
 Steam.storeStats()
-</code></pre><br/>
+</code></pre>
 						<p>When that last <strong>Steam.storeStats()</strong> is called the stats will update on Steam's servers.</p>
+						<hr/>
 						<p>That covers the basics of statistics and achievements.</p>
 					</section>
-					<footer id="footer">
-						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
-						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
-						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
-						Site Template by <a href="https://html5up.net">HTML5UP</a>
-					</footer>
 				</div>
 			</div>
 			<!-- Sidebar -->
@@ -144,10 +149,48 @@ Steam.storeStats()
 								</ul>
 							</li>
 							<li>
-								<span class="opener">Functions</span>
+								<span class="opener">Functions (Module)</span>
 								<ul>
-									<li><a href="functions-module.html">Functions (Module) </a></li>
-									<li><a href="functions-server.html">Functions (Server)</a></li>
+									<li><a href="functions-module.html">All</a></li>
+									<li><a href="functions-module.html#core">Core</a></li>
+									<li><a href="functions-module.html#apps">Apps</a></li>
+									<li><a href="functions-module.html#friends">Friends</a></li>
+									<li><a href="functions-module.html#game-search">Game Search</a></li>
+									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
+									<li><a href="functions-module.html#http">HTTP</a></li>
+									<li><a href="functions-module.html#input">Input</a></li>
+									<li><a href="functions-module.html#inventory">Inventory</a></li>
+									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
+									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
+									<li><a href="functions-module.html#music">Music</a></li>
+									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
+									<li><a href="functions-module.html#networking">Networking</a></li>
+									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
+									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
+									<li><a href="functions-module.html#parties">Parties</a></li>
+									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
+									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
+									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#ugc">UGC</a></li>
+									<li><a href="functions-module.html#users">Users</a></li>
+									<li><a href="functions-module.html#user-stats">User Stats</a></li>
+									<li><a href="functions-module.html#utils">Utils</a></li>
+									<li><a href="functions-module.html#video">Video</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions (Server)</span>
+								<ul>
+									<li><a href="functions-server.html">All</a></li>
+									<li><a href="functions-server.html#core">Core</a></li>
+									<li><a href="functions-server.html#apps">Apps</a></li>
+									<li><a href="functions-server.html#http">HTTP</a></li>
+									<li><a href="functions-server.html#inventory">Inventory</a></li>
+									<li><a href="functions-server.html#networking">Networking</a></li>
+									<li><a href="functions-server.html#server">Server</a></li>
+									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
+									<li><a href="functions-server.html#ugc">UGC</a></li>
+									<li><a href="functions-server.html#utils">Utils</a></li>
 								</ul>
 							</li>
 							<li>
@@ -173,10 +216,49 @@ Steam.storeStats()
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
-							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="contributors.html">Contributors / Donate</a></li>
+							<li>
+								<span class="opener">Change Log</span>
+								<ul>
+									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+									<li><a href="changelog-gdnative.html">GDNative</a></li>
+									<li><a href="changelog-server.html">Server</a></li>
+								</ul>
+							</li>
+							<li><a href="contributors.html">Contributors</a></li>
 						</ul>
 					</nav>
+					<section>
+						<header class="major">
+							<h2>Stuck? Need Help?</h2>
+						</header>
+						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+						</ul>
+					</section>
+					<section>
+						<header class="major">
+							<h2>Donate</h2>
+						</header>
+						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+						</ul>
+					</section>
+					<footer>
+						<ul class="actions stacked">
+							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+						</ul>
+					</footer>
+					<footer id="footer" class="copyright">
+						2021 &copy; GP Garcia & CoaguCo Industries
+					</footer>
 				</div>
 			</div>
 		</div>

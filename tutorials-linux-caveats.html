@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -37,12 +37,14 @@
 <pre><code>
 error while loading shared libraries: libsteam_api.so: cannot open shared object file: No such file or directory
 </code></pre>
-						<p>As far as I can tell, this has something to do with how Steam was installed on your system and Steam not installing the libsteam_api.so in the right places.  When it does happen, this issue does affect Linux Steam users in general and other games on Steam not using Godot or GodotSteam.  And while this is not a GodotSteam-specific issue or very common, it is one worth mentioning to save you or your players headaches.</p>
+						<p>As far as I can tell, this has something to do with how Steam was installed on your system and it not installing the libsteam_api.so in the right places.  This issue affects Linux Steam users in general and other games on Steam not using Godot or GodotSteam.  And while this is not a GodotSteam-specific issue, or very common, it is one worth mentioning to save you and your players some headaches.</p>
 						<p>To resolve this you need to place the libsteam_api.so in the proper places or set the LD_LIBRARY_PATH with a launcher .sh file.  We'll look at each method below.</p>
-						<h4>Solution 1 - Copy The libsteam_api.so</h4>
+						<header class="major">
+							<h3>Solution 1 - Copy The libsteam_api.so</h3>
+						</header>
 						<p>This method puts the solution squarely in the hands of your affected users.  As Github user <strong>hadber</strong> points out, you can use this command to find out where your editor or game is looking for the library:</p>
 <pre><code>
-ldd < bin path >
+ldd < bin path for your game >
 </code></pre>
 						<p>Once you figure out where it is looking you can run the following code from your project's directory (or where ever you have a copy of the libsteam_api.so file), also courtesy of <strong>hadber</strong>:</p>
 <pre><code>
@@ -52,10 +54,11 @@ sudo cp libsteam_api.so /usr/lib/
 <strong>Fedora 32</strong>
 sudo cp libsteam_api.so /lib64/
 </code></pre>
-						<p>Please note the directories you are copying the libsteam_api.so file to may differ on your installation; make sure to copy it to the right folder. Also make sure to copy the right version of the libsteam_api.so since the naming convention Steam users for them is not denoted by 32 or 64.</p>
-						<h4>Solution 2 - Create a launcher .sh</h4>
-						<p>This solution will work for all users since they won't have to do anything on their end; it will be set up for them. As Github user <strong>nuggs</strong> showed, by way of an adapted script from the Godot documentation, you can just place this code into a blank text file:</p>
-
+						<p>Please note that the directories you are copying the libsteam_api.so file to may differ on your installation; make sure to copy it to the right folder. Also make sure to copy the right version of the libsteam_api.so since the naming convention Steam users for them is not denoted by 32 or 64 bits.</p>
+						<header class="major">
+							<h3>Solution 2 - Create A Launcher .sh File</h3>
+						</header>
+						<p>This solution is preferred as it will work for all users and they won't have to do anything on their end.  As Github user <strong>nuggs</strong> showed, by way of an adapted script from the Godot documentation, you can just place this code into a blank text file:</p>
 <pre><code>
 #!/bin/bash
 
@@ -80,14 +83,8 @@ export LD_LIBRARY_PATH="$PWD/bin/"
 					<p>You can save this file as <your game>.sh or whatever you'd like to name it.  Just make sure the extension is .sh and that you have edited the permissions to make this executable.  I am fairly confident that Steam will make said script executable during installation, but do it yourself just in case.</p>
 					<p>After all that, list it in <a href="https://partner.steamgames.com/apps/config/" target="_blank">your Steamworks back-end Launch Options</a> to run when the game is launched in Steam:</p>
 					<p><img src="img/steamworks-launch-options.png" "Launch Options" /></p>
-					<p>Make sure the operating system is set to Linux and save it.  At this point, Steam should use this .sh file to run your game and prevent any possible issues with it being unable to find the libsteam_api.so file.</p>
+					<p>Obviously, in the screenshot, this is a Windows example, but fill it in for Linux.  Make sure the operating system is also set to Linux and then save it.  At this point, Steam should use this .sh file to run your game and prevent any possible issues with it being unable to find the libsteam_api.so file.</p>
 					</section>
-					<footer id="footer">
-						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
-						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
-						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
-						Site Template by <a href="https://html5up.net">HTML5UP</a>
-					</footer>
 				</div>
 			</div>
 			<!-- Sidebar -->
@@ -109,10 +106,48 @@ export LD_LIBRARY_PATH="$PWD/bin/"
 								</ul>
 							</li>
 							<li>
-								<span class="opener">Functions</span>
+								<span class="opener">Functions (Module)</span>
 								<ul>
-									<li><a href="functions-module.html">Functions (Module) </a></li>
-									<li><a href="functions-server.html">Functions (Server)</a></li>
+									<li><a href="functions-module.html">All</a></li>
+									<li><a href="functions-module.html#core">Core</a></li>
+									<li><a href="functions-module.html#apps">Apps</a></li>
+									<li><a href="functions-module.html#friends">Friends</a></li>
+									<li><a href="functions-module.html#game-search">Game Search</a></li>
+									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
+									<li><a href="functions-module.html#http">HTTP</a></li>
+									<li><a href="functions-module.html#input">Input</a></li>
+									<li><a href="functions-module.html#inventory">Inventory</a></li>
+									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
+									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
+									<li><a href="functions-module.html#music">Music</a></li>
+									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
+									<li><a href="functions-module.html#networking">Networking</a></li>
+									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
+									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
+									<li><a href="functions-module.html#parties">Parties</a></li>
+									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
+									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
+									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#ugc">UGC</a></li>
+									<li><a href="functions-module.html#users">Users</a></li>
+									<li><a href="functions-module.html#user-stats">User Stats</a></li>
+									<li><a href="functions-module.html#utils">Utils</a></li>
+									<li><a href="functions-module.html#video">Video</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions (Server)</span>
+								<ul>
+									<li><a href="functions-server.html">All</a></li>
+									<li><a href="functions-server.html#core">Core</a></li>
+									<li><a href="functions-server.html#apps">Apps</a></li>
+									<li><a href="functions-server.html#http">HTTP</a></li>
+									<li><a href="functions-server.html#inventory">Inventory</a></li>
+									<li><a href="functions-server.html#networking">Networking</a></li>
+									<li><a href="functions-server.html#server">Server</a></li>
+									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
+									<li><a href="functions-server.html#ugc">UGC</a></li>
+									<li><a href="functions-server.html#utils">Utils</a></li>
 								</ul>
 							</li>
 							<li>
@@ -138,10 +173,49 @@ export LD_LIBRARY_PATH="$PWD/bin/"
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
-							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="contributors.html">Contributors / Donate</a></li>
+							<li>
+								<span class="opener">Change Log</span>
+								<ul>
+									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+									<li><a href="changelog-gdnative.html">GDNative</a></li>
+									<li><a href="changelog-server.html">Server</a></li>
+								</ul>
+							</li>
+							<li><a href="contributors.html">Contributors</a></li>
 						</ul>
 					</nav>
+					<section>
+						<header class="major">
+							<h2>Stuck? Need Help?</h2>
+						</header>
+						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+						</ul>
+					</section>
+					<section>
+						<header class="major">
+							<h2>Donate</h2>
+						</header>
+						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+						</ul>
+					</section>
+					<footer>
+						<ul class="actions stacked">
+							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+						</ul>
+					</footer>
+					<footer id="footer" class="copyright">
+						2021 &copy; GP Garcia & CoaguCo Industries
+					</footer>
 				</div>
 			</div>
 		</div>

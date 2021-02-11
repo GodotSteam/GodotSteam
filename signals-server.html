@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -29,75 +29,622 @@
 						<header class="main">
 							<h1>Signals For Server</h1>
 						</header>
-						<p>Here is a list of all the currently available signals in the GodotSteam Server module.</p>
+						<p>Here is a list of all the currently available signals, both callbacks and call results, in the GodotSteam Server module.</p>
 						<hr />
-						<h3>_associate_Clan</h3>
+						<header class="major">
+							<h3>Apps</h3>
+						</header>
+						<a id="apps"></a>
+						<h4>_dlc_installed</h4>
 						<ul>
-							<li>Sent when the game server attempted to be associated with a Steam Group.</li>
-							<li>Emits signal <strong><em>clan_associate</em></strong> in response to function <strong><em>associateWithClan</em></strong>.</li>
-							<li>Sends along the result as an INT; 1 for success and 2 for failure.
+							<li>Triggered after the current user gains ownership of DLC and that DLC is installed.</li>
+							<li>Emits signal <strong><em>dlc_installed</em></strong> in response to function <strong>installDLC</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>appID (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_client_Approved</h3>
+						<h4>_file_details_result</h4>
+						<ul>
+							<li>Called after requesting the details of a specific file.</li>
+							<li>Emits signal <strong><em>file_details_result</em></strong> in response to function <strong>getFileDetails</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileSize (int)</li>
+									<li>fileHash (PoolByteArray)</li>
+									<li>flags (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_new_launch_url_parameters</h4>
+						<ul>
+							<li>Posted after the user executes a steam url with command line or query parameters such as <strong><em>steam://run/(appid)//?param1=value1;param2=value2;param3=value3</em></strong>; while the game is already running. The new params can be queried with <strong>getLaunchCommandLine</strong> and <strong>getLaunchQueryParam</strong>.</li>
+							<li>Emits signal <strong><em>new_launch_url_parameters</em></strong> in response to function <strong>getLaunchCommandLine</strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<h4>_new_launch_query_parameters</h4>
+						<ul>
+							<li>Posted after the user executes a steam url with query parameters such as <strong><em>steam://run/(appid)//?param1=value1;param2=value2;param3=value3</em></strong>; while the game is already running. The new params can be queried with <strong>getLaunchQueryParam</strong>.</li>
+							<li><strong>ISSUE:</strong> when compiling says it is an undeclared identifier</li>
+							<li>Emits signal <strong><em>new_launch_query_parameters</em></strong> in response to function <strong>getLaunchQueryParam</strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<hr/>	
+						<header class="major">
+							<h3>HTTP</h3>
+						</header>
+						<a id="http"></a>
+						<h4>_http_request_completed</h4>
+						<ul>
+							<li>Result when an HTTP request completes. If you're using <strong>GetHTTPStreamingResponseBodyData</strong> then you should be using the <strong><em>HTTPRequestHeadersReceived_t</em></strong> or <strong><em>HTTPRequestDataReceived_t</em></strong>.</li>
+							<li>Emits signal <strong><em>http_request_completed</em></strong> in response to function <strong>SendHTTPRequest</strong> or <strong>SendHTTPRequestAndStreamResponse</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>cookieHandle (int)</li>
+									<li>contextValue (int)</li>
+									<li>requestSuccess (bool)</li>
+									<li>statusCode (int)</li>
+									<li>bodySize (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_http_request_data_received</h4>
+						<ul>
+							<li>Triggered when a chunk of data is received from a streaming HTTP request.</li>
+							<li>Emits signal <strong><em>http_request_data_received</em></strong> in response to function <strong>SendHTTPRequestAndStreamResponse</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>cookieHandle (int)</li>
+									<li>contextValue (int)</li>
+									<li>offset (int)</li>
+									<li>bytesReceived (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_http_request_headers_received</h4>
+						<ul>
+							<li>Triggered when HTTP headers are received from a streaming HTTP request.</li>
+							<li>Emits signal <strong><em>http_request_headers_received</em></strong> in response to function <strong>SendHTTPRequestAndStreamResponse</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>cookieHandle (int)</li>
+									<li>contextValue (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Inventory</h3>
+						</header>
+						<a id="inventory"></a>
+						<h4>_inventory_definition_update</h4>
+						<ul>
+							<li>This callback is triggered whenever item definitions have been updated, which could be in response to <strong>LoadItemDefinitions</strong> or any time new item definitions are available (eg, from the dynamic addition of new item types while players are still in-game).</li>
+							<li>Emits signal <strong><em>inventory_definition_update</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>definitions (array)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_inventory_eligible_promo_item</h4>
+						<ul>
+							<li>Returned when you have requested the list of "eligible" promo items that can be manually granted to the given user. These are promo items of type "manual" that won't be granted automatically.</li>
+							<li>Emits signal <strong><em>inventory_eligible_promo_item</em></strong> in response to function <strong>RequestEligiblePromoItemDefinitionsIDs</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>eligible (int)</li>
+									<li>cached (bool)</li>
+									<li>definitions (array)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_inventory_full_update</h4>
+						<ul>
+							<li>Triggered when <strong>GetAllItems</strong> successfully returns a result which is newer / fresher than the last known result. (It will not trigger if the inventory hasn't changed, or if results from two overlapping calls are reversed in flight and the earlier result is already known to be stale/out-of-date.) The regular <strong>SteamInventoryResultReady_t</strong> callback will still be triggered immediately afterwards; this is an additional notification for your convenience.</li>
+							<li>Emits signal <strong><em>inventory_full_update</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>inventoryHandle (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_inventory_result_ready</h4>
+						<ul>
+							<li>This is fired whenever an inventory result transitions from <strong><em>k_EResultPending</em></strong> to any other completed state, see <strong>GetResultStatus</strong> for the complete list of states. There will always be exactly one callback per handle.</li>
+							<li>Emits signal <strong><em>inventory_result_ready</em></strong> in response to function <strong>GetAllItems</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>handle (int)</li>
+									<li>result (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_inventory_start_purchase_result</h4>
+						<ul>
+							<li>Returned after <strong>StartPurchase</strong> is called.</li>
+							<li>Emits signal <strong><em>inventory_start_purchase_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>success or failure (string)</li>
+									<li>orderID (int)</li>
+									<li>transactionID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_inventory_request_prices_result</h4>
+						<ul>
+							<li>Returned after <strong>RequestPrices</strong> is called.</li>
+							<li>Emits signal <strong><em>inventory_request_prices_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>currency (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Networking</h3>
+						</header>
+						<a id="networking"></a>
+						<h4>_p2p_session_connect_fail</h4>
+						<ul>
+							<li>Called when packets can't get through to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will retry making the connection (but will be dropped if we fail again).</li>
+							<li>Emits signal <strong><em>p2p_session_connect_fail</em></strong> in response to function <strong>SendP2PPacket</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamIDRemote (int)</li>
+									<li>sessionError (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_p2p_session_request</h4>
+						<ul>
+							<li>A user wants to communicate with us over the P2P channel via the <strong>sendP2PPacket</strong>. In response, a call to <strong>acceptP2PSessionWithUser</strong> needs to be made, if you want to open the network channel with them.</li>
+							<li>Emits signal <strong><em>p2p_session_request</em></strong> in response to function <strong>SendP2PPacket</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamIDRemote (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Remote Storage</h3>
+						</header>
+						<a id="remote-storage"></a>
+						<h4>_unsubscribe_item</h4>
+						<ul>
+							<li>Called when the user has unsubscribed from a piece of UGC.</li>
+							<li>Emits signal <strong><em>unsubscribe_item</em></strong> in response to function <strong>UnsubscribeItem</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_subscribe_item</h4>
+						<ul>
+							<li>Called when the user has subscribed to a piece of UGC.</li>
+							<li>Emits signal <strong><em>subscribe_item</em></strong> in response to function <strong>SubscribeItem</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Server</h3>
+						</header>
+						<a id="server"></a>
+						<h4>_server_Connect_Failure</h4>
+						<ul>
+							<li>Logging the game server onto Steam.</li>
+							<li>Emits signal <strong><em>server_Connect_Failure</em></strong> in response to functions <strong>LogOff</strong>, <strong>LogOn</strong>, or <strong>LogOnAnonymous</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>retrying (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_server_Connected</h4>
+						<ul>
+							<li>Server has connected to the Steam back-end.</li>
+							<li>Emits signal <strong><em>server_Connected</em></strong> in response to functions <strong>LogOff</strong>, <strong>LogOn</strong>, or <strong>LogOnAnonymous</strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<h4>_server_Disconnected</h4>
+						<ul>
+							<li>Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching <strong><em>SteamServersConnected_t</em></strong> has been posted.</li>
+							<li>Emits signal <strong><em>server_Disconnected</em></strong> in response to functions <strong>LogOff</strong>, <strong>LogOn</strong>, or <strong>LogOnAnonymous</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_client_Approved</h4>
 						<ul>
 							<li>Client has been approved to connect to this game server.</li>
-							<li>Emits signal <strong><em>client_approved</em></strong> in response to function <strong><em>sendUserConnectAndAuthenticate</em></strong>, if successful.</li>
-							<li>Sends along the Steam ID of the user wanting to connect and the Steam ID that owns the game. The second will be different if it is borrowed from Family Sharing.</li>
+							<li>Emits signal <strong><em>client_Approved</em></strong> in response to function <strong>SendUserConnectAndAuthenticate</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>ownerID (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_client_Denied</h3>
+						<h4>_client_Denied</h4>
 						<ul>
 							<li>Client has been denied to connection to this game server.</li>
-							<li>Emits signal <strong><em>client_denied</em></strong> in response to function <strong><em>sendUserConnectAndAuthenticate</em></strong>, if failed.</li>
-							<li>Sends along the Steam ID of the user wanting to connect, the reason they were denied as an INT, and any additional text message about the denial.</li> 
+							<li>Emits signal <strong><em>client_Denied</em></strong> in response to function <strong>SendUserConnectAndAuthenticate</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>reason (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_client_Group_Status</h3>
+						<h4>_client_Kick</h4>
 						<ul>
-							<li>Called when we have recieved the group status of a user.</li>
-							<li>Emits signal <strong><em>group_status</em></strong> in response to function <strong><em>RequestUserGroupStatus</em></strong>.</li>
-							<li> Sends along the Steam ID whose group status is queried, the Steam ID of the group queried, is the user a member as a BOOL, and is the user an officer of the group as a BOOL.</li>
+							<li>Request the game server should kick the user.</li>
+							<li>Emits signal <strong><em>client_Kick</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>reason (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_client_Kick</h3>
+						<h4>_policy_Response</h4>
 						<ul>
-							<li>Called when the game server should kick the user.</li>
-							<li>Emits signal <strong><em>client_kick</em></strong>.</li>
-							<li>Sends along the Steam ID of the user being kicked and the reason they were kicked as an INT.</li>
+							<li>Received when the game server requests to be displayed as secure (VAC protected). <strong><em>m_bSecure</em></strong> is true if the game server should display itself as secure to users, false otherwise.</li>
+							<li>Emits signal <strong><em>policy_Response</em></strong> in response to function <strong>Secure</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>secure (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_player_Compat</h3>
+						<h4>_client_Group_Status</h4>
 						<ul>
-							<li>Sent when the game server is checking if the new player is a good fit for the server based on the frenemy system.</li>
-							<li>Emits signal <strong><em>player_compatibility</em></strong> in response to function <strong><em>computeNewPlayerCompatibility</em></strong>.</li>
-							<li>Sends along the result as an INT, number of players that don't like playing with the given player, number of players on the server that the given player doesn't like playing with, number of players in the associated Steam group that don't like playing with the player, and the Steam ID of the given player.</li>
+							<li>Sent as a reply to <strong>RequestUserGroupStatus</strong>.</li>
+							<li>Emits signal <strong><em>client_Group_Status</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>groupID (int)</li>
+									<li>member (bool)</li>
+									<li>officer (bool)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_policy_Response</h3>
+						<h4>_associate_Clan</h4>
 						<ul>
-							<li>Received when the game server requests to be displayed as secure (VAC protected).</li>
-							<li>Emits signal <strong><em>server_secure</em></strong>.</li>
-							<li>Sends along security response as a BOOL. If true, the game server should display itself as secure to users, false otherwise.</li>
+							<li>Sent as a reply to <strong>AssociateWithClan</strong>.</li>
+							<li>Emits signal <strong><em>associate_Clan</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_server_Connect_Failure</h3>
+						<h4>_player_Compat</h4>
 						<ul>
-							<li>Server has failed connecting to the Steam back-end. Provides a result reason and possibly retrying.</li>
-							<li>Emits signal <strong><em>server_failure</em></strong>.
-							<li>Sends along the result as an INT and if it is retrying to connect as a BOOL.</li>
+							<li>Sent as a reply to <strong>ComputeNewPlayerCompatibility</strong>.</li>
+							<li>Emits signal <strong><em>player_Compat</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>playersDontLikeCandidate (int)</li>
+									<li>playersCandidateDoesntLike (int)</li>
+									<li>clanPlayersDontLikeCandidate (int)</li>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_server_Connected</h3>
+						<hr/>
+						<header class="major">
+							<h3>Server Stats</h3>
+						</header>
+						<a id="server-stats"></a>
+						<h4>_stat_received</h4>
 						<ul>
-							<li>Server has connected to the Steam back-end; serverData has no fields.</li>
-							<li>Emits signal <strong><em>server_connected</em></strong>.
-							<li>Sends along no additional data.</li>
+							<li>Result when getting the latests stats and achievements for a user from the server.</li>
+							<li>Emits signal <strong><em>stat_received</em></strong> in response to function <strong>RequestUserStats</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
 						</ul>
-						<h3>_server_Disconnected</h3>
+						<h4>_stats_stored</h4>
 						<ul>
-							<li>Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching SteamServersConnected_t has been posted.</li>
-							<li>Emits signal <strong><em>server_disconnected</em></strong>.
-							<li>Sends along the result as an INT.</li>
+							<li>Result of a request to store the user stats.</li>
+							<li>Emits signal <strong><em>stats_stored</em></strong> in response to function <strong>StoreUserStats</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_stats_unloaded</h4>
+						<ul>
+							<li>Callback indicating that a user's stats have been unloaded.</li>
+							<li>Emits signal <strong><em>stats_unloaded</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>UGC</h3>
+						</header>
+						<a id="ugc"></a>
+						<h4>_add_app_dependency_result</h4>
+						<ul>
+							<li>The result of a call to <strong>AddAppDependency</strong>.</li>
+							<li>Emits signal <strong><em>add_app_dependency_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>appID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_add_ugc_dependency_result</h4>
+						<ul>
+							<li>The result of a call to <strong>AddDependency</strong>.</li>
+							<li>Emits signal <strong><em>add_ugc_dependency_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>childID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_item_created</h4>
+						<ul>
+							<li>Result of a workshop item being created.</li>
+							<li>Emits signal <strong><em>item_created</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>acceptTOS (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_item_downloaded</h4>
+						<ul>
+							<li>Called when a workshop item has been downloaded.</li>
+							<li>Emits signal <strong><em>item_downloaded</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>appID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_get_app_dependencies_result</h4>
+						<ul>
+							<li>Called when getting the app dependencies for an item.</li>
+							<li>Emits signal <strong><em>get_app_dependencies_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>appID (array) - Currently omitted</li>
+									<li>appDependencies (int)</li>
+									<li>totalAppDependencies (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_item_deleted</h4>
+						<ul>
+							<li>Called when an attempt at deleting an item completes.</li>
+							<li>Emits signal <strong><em>item_deleted</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_get_item_vote_result</h4>
+						<ul>
+							<li>Called when getting the users vote status on an item.</li>
+							<li>Emits signal <strong><em>get_item_vote_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>voteUp (bool)</li>
+									<li>voteDown (bool)</li>
+									<li>voteSkipped (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_item_installed</h4>
+						<ul>
+							<li>Called when a workshop item has been installed or updated.</li>
+							<li>Emits signal <strong><em>item_installed</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>appID (int)</li>
+									<li>fileID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_remove_app_dependency_result</h4>
+						<ul>
+							<li>Purpose: The result of a call to <strong>RemoveAppDependency</strong>.</li>
+							<li>Emits signal <strong><em>remove_app_dependency_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>appID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_remove_ugc_dependency_result</h4>
+						<ul>
+							<li>Purpose: The result of a call to <strong>RemoveDependency</strong>.</li>
+							<li>Emits signal <strong><em>remove_ugc_dependency_result</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>childID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_set_user_item_vote</h4>
+						<ul>
+							<li>Called when the user has voted on an item.</li>
+							<li>Emits signal <strong><em>set_user_item_vote</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>voteUp (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_start_playtime_tracking</h4>
+						<ul>
+							<li>Called when workshop item playtime tracking has started.</li>
+							<li>Emits signal <strong><em>start_playtime_tracking</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_ugc_query_completed</h4>
+						<ul>
+							<li>Called when a UGC query request completes.</li>
+							<li>Emits signal <strong><em>ugc_query_completed</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>handle (int)</li>
+									<li>result (int)</li>
+									<li>resultsReturned (int)</li>
+									<li>totalMatching (int)</li>
+									<li>cached (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_stop_playtime_tracking</h4>
+						<ul>
+							<li>Called when workshop item playtime tracking has stopped.</li>
+							<li>Emits signal <strong><em>stop_playtime_tracking</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_item_updated</h4>
+						<ul>
+							<li>Result of a workshop item being updated.</li>
+							<li>Emits signal <strong><em>item_updated</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>acceptTOS (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_user_favorite_items_list_changed</h4>
+						<ul>
+							<li>Called when the user has added or removed an item to/from their favorites.</li>
+							<li>Emits signal <strong><em>user_favorite_items_list_changed</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>fileID (int)</li>
+									<li>wasAddRequest (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Utility</h3>
+						</header>
+						<a id="utility"></a>
+						<h4>_check_file_signature</h4>
+						<ul>
+							<li>CallResult for <strong>checkFileSignature</strong>.</li>
+							<li>Emits signal <strong><em>check_file_signature</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>signature (string)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_gamepad_text_input_dismissed</h4>
+						<ul>
+							<li>Called when the Big Picture gamepad text input has been closed.</li>
+							<li>Emits signal <strong><em>gamepad_text_input_dismissed</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>text (string)</li>
+									<li>length (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_ip_country</h4>
+						<ul>
+							<li>Called when the country of the user changed. The country should be updated with <strong>getIPCountry</strong>.</li>
+							<li>Emits signal <strong><em>ip_country</em></strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<h4>_low_power</h4>
+						<ul>
+							<li>Called when running on a laptop and less than 10 minutes of battery is left, and then fires then every minute afterwards.</li>
+							<li>Emits signal <strong><em>low_power</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>power (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_steam_api_call_completed</h4>
+						<ul>
+							<li>Called when a <strong><em>SteamAPICall_t</em></strong> has completed (or failed).</li>
+							<li>Emits signal <strong><em>steam_api_call_completed</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>asyncCall (int)</li>
+									<li>callback (int)</li>
+									<li>parameter (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_steam_shutdown</h4>
+						<ul>
+							<li>Called when Steam wants to shutdown.</li>
+							<li>Emits signal <strong><em>steam_showdown</em></strong>.</li>
+							<li>Sends back no data.</li>
 						</ul>
 					</section>
-					<footer id="footer">
-						Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a><br />
-						Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a><br />
-						GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors<br />
-						Site Template by <a href="https://html5up.net">HTML5UP</a>
-					</footer>
 				</div>
 			</div>
 			<!-- Sidebar -->
@@ -119,10 +666,48 @@
 								</ul>
 							</li>
 							<li>
-								<span class="opener">Functions</span>
+								<span class="opener">Functions (Module)</span>
 								<ul>
-									<li><a href="functions-module.html">Functions (Module) </a></li>
-									<li><a href="functions-server.html">Functions (Server)</a></li>
+									<li><a href="functions-module.html">All</a></li>
+									<li><a href="functions-module.html#core">Core</a></li>
+									<li><a href="functions-module.html#apps">Apps</a></li>
+									<li><a href="functions-module.html#friends">Friends</a></li>
+									<li><a href="functions-module.html#game-search">Game Search</a></li>
+									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
+									<li><a href="functions-module.html#http">HTTP</a></li>
+									<li><a href="functions-module.html#input">Input</a></li>
+									<li><a href="functions-module.html#inventory">Inventory</a></li>
+									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
+									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
+									<li><a href="functions-module.html#music">Music</a></li>
+									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
+									<li><a href="functions-module.html#networking">Networking</a></li>
+									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
+									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
+									<li><a href="functions-module.html#parties">Parties</a></li>
+									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
+									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
+									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#ugc">UGC</a></li>
+									<li><a href="functions-module.html#users">Users</a></li>
+									<li><a href="functions-module.html#user-stats">User Stats</a></li>
+									<li><a href="functions-module.html#utils">Utils</a></li>
+									<li><a href="functions-module.html#video">Video</a></li>
+								</ul>
+							</li>
+							<li>
+								<span class="opener">Functions (Server)</span>
+								<ul>
+									<li><a href="functions-server.html">All</a></li>
+									<li><a href="functions-server.html#core">Core</a></li>
+									<li><a href="functions-server.html#apps">Apps</a></li>
+									<li><a href="functions-server.html#http">HTTP</a></li>
+									<li><a href="functions-server.html#inventory">Inventory</a></li>
+									<li><a href="functions-server.html#networking">Networking</a></li>
+									<li><a href="functions-server.html#server">Server</a></li>
+									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
+									<li><a href="functions-server.html#ugc">UGC</a></li>
+									<li><a href="functions-server.html#utils">Utils</a></li>
 								</ul>
 							</li>
 							<li>
@@ -148,10 +733,49 @@
 							</li>
 							<li><a href="games.html">Games Using GodotSteam</a></li>
 							<li><a href="todo.html">To-Do</a></li>
-							<li><a href="changelog.html">Change Log</a></li>
-							<li><a href="contributors.html">Contributors / Donate</a></li>
+							<li>
+								<span class="opener">Change Log</span>
+								<ul>
+									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+									<li><a href="changelog-gdnative.html">GDNative</a></li>
+									<li><a href="changelog-server.html">Server</a></li>
+								</ul>
+							</li>
+							<li><a href="contributors.html">Contributors</a></li>
 						</ul>
 					</nav>
+					<section>
+						<header class="major">
+							<h2>Stuck? Need Help?</h2>
+						</header>
+						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+						</ul>
+					</section>
+					<section>
+						<header class="major">
+							<h2>Donate</h2>
+						</header>
+						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+						<ul class="actions stacked">
+							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+						</ul>
+					</section>
+					<footer>
+						<ul class="actions stacked">
+							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+						</ul>
+					</footer>
+					<footer id="footer" class="copyright">
+						2021 &copy; GP Garcia & CoaguCo Industries
+					</footer>
 				</div>
 			</div>
 		</div>

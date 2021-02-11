@@ -27,80 +27,120 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>To-Do List</h1>
+							<h1>Change Log | Godot 2.x</h1>
 						</header>
-						<p>Short lists of things still needed to do with the project.</p>
-						<hr />
-						<h2>Current Class Implementation</h2>
-						<p>All Steamworks classes are implemented in the module.</p>
+						<p>The change log for the godot2 repository.</p>
+						<h3>Version 1.10 Changes</h3>
 						<ul>
-							<li><strike>Apps <em>(complete)</em></strike></li>
-							<li><strike>Controller <em>(depreciated)</em></strike></li>
-							<li><strike>Friends <em>(complete)</em></strike></li>
-							<li><strike>Game Search <em>(complete)</em></strike></li>
-							<li><strike>HTML Surface <em>(complete)</em></strike></li>
-							<li><strike>HTTP <em>(complete)</em></strike></li>
-							<li><strike>Input <em>(complete)</em></strike></li>
-							<li><strike>Inventory <em>(complete)</em></strike></li>
-							<li><strike>Matchmaking <em>(complete)</em></strike></li>
-							<li><strike>Matchmaking Servers <em>(complete)</em></strike></li>
-							<li><strike>Music <em>(complete)</em></strike></li>
-							<li><strike>Music Remote <em>(complete)</em></strike></li>
-							<li><strike>Networking <em>(complete)</em></strike></li>
-							<li><strike>Networking Sockets <em>(complete)</em></strike></li>
-							<li><strike>Networking Utils <em>(complete)</em></strike></li>
-							<li><strike>Parties <em>(complete)</em></strike></li>
-							<li><strike>RemotePlay <em>(complete)</em></strike></li>
-							<li><strike>Remote Storage <em>(complete)</em></strike></li>
-							<li><strike>Screenshots <em>(complete)</em></strike></li>
-							<li><strike>UGC <em>(complete)</em></strike></li>
-							<li><strike>User <em>(complete)</em></strike></li>
-							<li><strike>User Stats <em>(complete)</em></strike></li>
-							<li><strike>Utils <em>(complete)</em></strike></li>
-							<li><strike>Video <em>(complete)</em></strike></li>
+							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
+							<li>Added: missing initialization constants</li>
+							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
+							<li>Changed: minor formatting to match Godot 3 version</li>
+							<li>Fixed: currentAppID not utilized correctly</li>
+							<li>Removed: unneeded gameInfo struct</li>
 						</ul>
-						<hr/>
-						<h2>Both Modules</h2>
+						<h3>Version 1.9.3 Changes</h3>
 						<ul>
-							<li>Fix _get_app_dependencies_result call result, missing array of app dependencies.</li>
-							<li>sendHTTPRequest and sendHTTPRequestAndStreamResponse might need fixed up.</li>
-							<li>getConnectedControllers() doesn't send back any data.</li>
-							<li>Hybrid Godot high-level networking and Steamworks P2P example.</li>
-							<li>Should inventory handle be sent back to user?</li>
-							<li>Fix SetPNGIcon64x64 in Music Remote.</li>
-							<li>Fix updateCurrentEntryCoverArt in Music Remote.</li>
-							<li>Complete tutorials for each section of Steamworks.</li>
-							<li><strike>Create auto-patch script for MinGW users.</strike> Virtually impossible due to growing number of bugs with each attempt.</li>
-							<li>Modify getRelayNetworkStatus to have default null but allow user to input for details.</li>
-							<li>NetworkingSockets and NetworkingUtils are both in beta still, go back through every single function again.</li>
-							<li><strike>Tutorial on exporting and shipping games with GodotSteam.</strike></li>
-							<li><strike>Connect requestUserInformation to a callback.</strike></li>
-							<li><strike>Make responses from getSyncPlatforms more user-friendly.</strike></li>
-							<li><strike>Fix getAchievementAndUnlockTime to provide all data as a Dictionary.</strike></li>
-							<li><strike>Add DownloadItemResult_t callback for downloadItem.</strike></li>
-							<li><strike>Hook up both auth callbacks.</strike></li>
-							<li><strike>Fix setItemTags.</strike></li>
-							<li><strike>Fix getItemInstallInfo.</strike></li>
-							<li><strike>Finish join_requested callback/signal, rename it to join_lobby_requested, and add join_game_requested callback/signal.</strike></li>
-							<li><strike>Add in-editor documentation.</strike></li>
-							<li><strike>Fix k_ESteamInputType_GenericXInput not being a declared identifier in getInputTypeForHandle.</strike> Steamworks SDK Docs are incorrect for this type.</li>
-							<li><strike>triggerRepeatedHapticPulse has "too many arguments" and errors out compiling.</strike></li>
-							<li><strike>SetCookie has too many arguments for Godot.</strike></li>
-							<li><strike>fileLoadDialogResponse needs list of strings pointer fixed.</strike></li>			
-							<li><strike>Figure out Steam callback warning during compiling (offsetof within non-standard-layout type).</strike></li>
-							<li><strike>Fix Steam overlay in Linux.</strike></li>
-							<li><strike>Russian character sets do not show up (Unicode issue?), just sends back blank strings or characters.</strike></li>
-							<li><strike>Implement all missing bIOFailure booleans in call results.</strike></li>
-							<li><strike>Fix getLobbyDataByIndex causes crash.</strike></li>
-							<li><strike>Function getSteamID causes crash in cross-compiled editor from Linux to Windows.</strike></li>
-							<li><strike>Add if/else for io failure in call results.</strike></li>
-							<li><strike>Create tutorial on rich presence.</strike></li>
+							<li>Added: networking functions, big thanks to Antokolos</li>
+							<li>Added: compiling flag for Linux and Mac, need for new Steamworks 1.44</li>
+							<li>Changed: linked against Steamworks 1.44</li>
+							<li>Fixed: issue with leaderboard upload returning false no matter what</li>
 						</ul>
-						<hr />
-						<h2>Server</h2>
+						<h3>Version 1.9.2 Changes</h3>
 						<ul>
-							<li>Create dedicated server tutorial.</li>
-							<li><strike>Continue work on basic Steam server functionality.</strike></li>
+							<li>Added: persona_state_change callback</li>
+							<li>Changed: getFriendAvatar to getPlayerAvatar</li>
+							<li>Changed: avatar_loaded now sends back Steam ID of avatar by avencherus</li>
+							<li>Fixed: issue with avatar and Steam ID on Linux compile</li>
+							<li>Fixed: join_requested signal by Fischer96 (requires further work)</li>
+						</ul>
+						<h3>Version 1.9.1 Changes</h3>
+						<ul>
+							<li>Added: additional user statistics and achievement signals</li>
+							<li>Changed: minor notations</li>
+							<li>Fixed: Linux not compiling correctly with new Friends and Matchmaking updates</li>
+							<li>Fixed: various Friends functions not providing correct data</li>
+							<li>Fixed: missing bind methods for integers</li>
+						</ul>
+						<h3>Version 1.9.0 Changes</h3>
+						<ul>
+							<li>Added: all remaining matchmaking functions</li>
+							<li>Added: all remaining friend functions</li>
+							<li>Changed: getRecentPlayers to include timestamp</li>
+							<li>Changed: naming of leaderboard_handle and leaderboard_entries for consistency</li>
+							<li>Changed: getAchievement to dictionary (courtesy of jandrewlong)</li>
+							<li>Fixed: invite functions giving incorrect steam ids</li>
+							<li>Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems</li>
+							<li>Removed: setGameInfo, clearGameInfo, inviteFriend</li>
+						</ul>
+						<h3>Version 1.8.0 Changes</h3>
+						<ul>
+							<li>Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)</li>
+							<li>Added: all missing SteamApps functions</li>
+							<li>Changed: NULL statements for achievement functions</li>
+							<li>Changed: cleaned up and organized signal functions in godotteam.h</li>
+							<li>Fixed: issue with getAchievement failing to compile</li>
+							<li>Removed: hasOtherApp function</li>
+						</ul>
+						<h3>Version 1.7.0 Changes</h3>
+						<ul>
+							<li>Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)</li>
+							<li>Added: Steam controller functionality (courtesy of marcelofg55)</li>
+							<li>Added: more workshop functionality</li>
+							<li>Changed: various small maintenance changes</li>
+							<li>Fixed: compiling error on Linux</li>
+						</ul>
+						<h3>Version 1.6.0 Changes</h3>
+						<ul>
+							<li>Added: getFileNameAndSize, getQuota, getSyncPlatforms functions</li>
+							<li>Changed: small corrections with Steam ID variable</li>
+							<li>Fixed: small things with getQuota</li>
+						</ul>
+						<h3>Version 1.5.1 Update</h3>
+						<ul>
+							<li>Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions</li>
+							<li>Added: related signals to new functions</li>
+							<li>Added: minor notes</li>
+							<li>Removed: is_valid for updateLeaderboardHandle</li>
+							<li>Removed: depreciated function requestAppProofOfPurchaseKey</li>
+							<li>Removed: callback for requestAppProofOfPurchaseKey</li>
+							<li>Removed: commented out depreciated functions</li>
+						</ul>
+						<h3>Version 1.5.0 Update</h3>
+						<ul>
+							<li>Added: more Screenshot features</li>
+							<li>Added: notes for callback</li>
+							<li>Changed: documentation to reflect new features and signals</li>
+							<li>Fixed: types in _validate_auth_ticket_response</li>
+						</ul>
+						<h3>Version 1.4.0 Update</h3>
+						<ul>
+							<li>Added: Auth Session functions added to Godot 3 branch thanks to marcelofg55</li>
+							<li>Added: Auth Session constants</li>
+						</ul>
+						<h3>Version 1.3.0 Updates</h3>
+						<ul>
+							<li>Added: getNumberOfCurrentPlayers, thanks to marcelofg55</li>
+							<li>Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55</li>
+							<li>Changed: signals in godotsteam.h with CCallback instead of SteamCallback</li>
+						</ul>
+						<h3>Version 1.2.1 Updates</h3>
+						<ul>
+							<li>Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation</li>
+							<li>Changed: readme to reflect Godot 3 release</li>
+						</ul>
+						<h3>Version 1.2.0 Updates</h3>
+						<ul>
+							<li>Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55</li>
+							<li>Added: new functions to documentation</li>
+							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
+						</ul>
+						<h3>Version 1.1.0</h3>
+						<ul>
+							<li>Added: getCurrentGameLanguage</li>
+							<li>Added: Pre-compiled engines and templates for Windows</li>
+							<li>Added: change log to documentation</li>
+							<li>Changed: minor things in godotsteam.cpp</li>
 						</ul>
 					</section>
 				</div>

@@ -27,80 +27,37 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>To-Do List</h1>
+							<h1>Change Log | GDNative</h1>
 						</header>
-						<p>Short lists of things still needed to do with the project.</p>
-						<hr />
-						<h2>Current Class Implementation</h2>
-						<p>All Steamworks classes are implemented in the module.</p>
+						<p>The change log for the gdnative repository.  This repo is currently "on hold" until Godot 4.0 is released.</p>
+						<h3>Version 2.1.0</h3>
 						<ul>
-							<li><strike>Apps <em>(complete)</em></strike></li>
-							<li><strike>Controller <em>(depreciated)</em></strike></li>
-							<li><strike>Friends <em>(complete)</em></strike></li>
-							<li><strike>Game Search <em>(complete)</em></strike></li>
-							<li><strike>HTML Surface <em>(complete)</em></strike></li>
-							<li><strike>HTTP <em>(complete)</em></strike></li>
-							<li><strike>Input <em>(complete)</em></strike></li>
-							<li><strike>Inventory <em>(complete)</em></strike></li>
-							<li><strike>Matchmaking <em>(complete)</em></strike></li>
-							<li><strike>Matchmaking Servers <em>(complete)</em></strike></li>
-							<li><strike>Music <em>(complete)</em></strike></li>
-							<li><strike>Music Remote <em>(complete)</em></strike></li>
-							<li><strike>Networking <em>(complete)</em></strike></li>
-							<li><strike>Networking Sockets <em>(complete)</em></strike></li>
-							<li><strike>Networking Utils <em>(complete)</em></strike></li>
-							<li><strike>Parties <em>(complete)</em></strike></li>
-							<li><strike>RemotePlay <em>(complete)</em></strike></li>
-							<li><strike>Remote Storage <em>(complete)</em></strike></li>
-							<li><strike>Screenshots <em>(complete)</em></strike></li>
-							<li><strike>UGC <em>(complete)</em></strike></li>
-							<li><strike>User <em>(complete)</em></strike></li>
-							<li><strike>User Stats <em>(complete)</em></strike></li>
-							<li><strike>Utils <em>(complete)</em></strike></li>
-							<li><strike>Video <em>(complete)</em></strike></li>
+							<li>Added: Steamworks P2P functions thanks to Antokolos</li>
 						</ul>
-						<hr/>
-						<h2>Both Modules</h2>
+						<h3>Version 2.0.0</h3>
 						<ul>
-							<li>Fix _get_app_dependencies_result call result, missing array of app dependencies.</li>
-							<li>sendHTTPRequest and sendHTTPRequestAndStreamResponse might need fixed up.</li>
-							<li>getConnectedControllers() doesn't send back any data.</li>
-							<li>Hybrid Godot high-level networking and Steamworks P2P example.</li>
-							<li>Should inventory handle be sent back to user?</li>
-							<li>Fix SetPNGIcon64x64 in Music Remote.</li>
-							<li>Fix updateCurrentEntryCoverArt in Music Remote.</li>
-							<li>Complete tutorials for each section of Steamworks.</li>
-							<li><strike>Create auto-patch script for MinGW users.</strike> Virtually impossible due to growing number of bugs with each attempt.</li>
-							<li>Modify getRelayNetworkStatus to have default null but allow user to input for details.</li>
-							<li>NetworkingSockets and NetworkingUtils are both in beta still, go back through every single function again.</li>
-							<li><strike>Tutorial on exporting and shipping games with GodotSteam.</strike></li>
-							<li><strike>Connect requestUserInformation to a callback.</strike></li>
-							<li><strike>Make responses from getSyncPlatforms more user-friendly.</strike></li>
-							<li><strike>Fix getAchievementAndUnlockTime to provide all data as a Dictionary.</strike></li>
-							<li><strike>Add DownloadItemResult_t callback for downloadItem.</strike></li>
-							<li><strike>Hook up both auth callbacks.</strike></li>
-							<li><strike>Fix setItemTags.</strike></li>
-							<li><strike>Fix getItemInstallInfo.</strike></li>
-							<li><strike>Finish join_requested callback/signal, rename it to join_lobby_requested, and add join_game_requested callback/signal.</strike></li>
-							<li><strike>Add in-editor documentation.</strike></li>
-							<li><strike>Fix k_ESteamInputType_GenericXInput not being a declared identifier in getInputTypeForHandle.</strike> Steamworks SDK Docs are incorrect for this type.</li>
-							<li><strike>triggerRepeatedHapticPulse has "too many arguments" and errors out compiling.</strike></li>
-							<li><strike>SetCookie has too many arguments for Godot.</strike></li>
-							<li><strike>fileLoadDialogResponse needs list of strings pointer fixed.</strike></li>			
-							<li><strike>Figure out Steam callback warning during compiling (offsetof within non-standard-layout type).</strike></li>
-							<li><strike>Fix Steam overlay in Linux.</strike></li>
-							<li><strike>Russian character sets do not show up (Unicode issue?), just sends back blank strings or characters.</strike></li>
-							<li><strike>Implement all missing bIOFailure booleans in call results.</strike></li>
-							<li><strike>Fix getLobbyDataByIndex causes crash.</strike></li>
-							<li><strike>Function getSteamID causes crash in cross-compiled editor from Linux to Windows.</strike></li>
-							<li><strike>Add if/else for io failure in call results.</strike></li>
-							<li><strike>Create tutorial on rich presence.</strike></li>
+							<li>Added: all current GodotSteam functions and signals</li>
+							<li>Added: godotsteam.h file</li>
+							<li>Changed: compile process; big thanks to willnationsdev</li>
+							<li>Changed: various parts of the CPP files</li>
+							<li>Removed: pre-compiled TSCN and TRES files</li>
 						</ul>
-						<hr />
-						<h2>Server</h2>
+						<h3>Version 1.1.0</h3>
 						<ul>
-							<li>Create dedicated server tutorial.</li>
-							<li><strike>Continue work on basic Steam server functionality.</strike></li>
+							<li>Added: godotsteam.h file</li>
+							<li>Added: getCurrentGameLanguage</li>
+							<li>Added: Pre-compiled engines and templates for Linux, Mac, and Windows</li>
+							<li>Added: change log to documentation</li>
+							<li>Changed: various parts of the CPP files</li>
+							<li>Changed: minor things in godotsteam.cpp</li>
+							<li>Removed: pre-compiled TSCN and TRES files</li>
+						</ul>
+						<h3>Version 1.0.0</h3>
+						<ul>
+							<li>Added: most pre-existing GodotSteam code over</li>
+							<li>Added: GodotSteam GDNative documentation</li>
+							<li>Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS</li>
+							<li>Bugs: Windows does not work for compiling yet, waiting for GDNative update</li>
 						</ul>
 					</section>
 				</div>

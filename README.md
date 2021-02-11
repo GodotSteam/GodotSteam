@@ -6,6 +6,18 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 2/11/21:**
+- Added: a new games to list
+- Added: quick-links to functions in sidebar
+- Added: quick-links for support and donation to sidebar
+- Changed: main page layout, includes links to necessary downloads
+- Changed: module and server function lists to match current versions
+- Changed: various updates and corrections to how-to instructions
+- Changed: module and server signals lists to match current versions
+- Changed: various updates and corrections to tutorials
+- Fixed: various spelling and grammar mistakes
+- Fixed: incorrect signal names for module signals
+
 **Updated 1/18/21:**
 - Added: new link to games list
 
