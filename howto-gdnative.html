@@ -68,6 +68,13 @@
 								</ul>
 							</li>
 						</ul>
+						<h4>Alternate Preparation Option</h4>
+						<ul>
+							<li><a href="https://github.com/Gramps/GodotSteam/releases" target="_blank">Downloading pre-compiled versions of the GodotSteam editor and template.</a></li>
+							<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
+						</ul>
+						<p>Once you have the pre-compiles and Steamworks SDK, skip ahead to Step 5 in this tutorial.</p>
+						<hr/>
 						<header class="major">
 							<h3>2. Compiling Bindings</h3>
 						</header>
@@ -76,6 +83,7 @@
 							scons godotbinpath="../<your binary>" headers="../godot_headers" platform=<your platform> generate_bindings=yes
 						</blockquote>
 						<p>Once this is finished, copy the resulting file from the <strong><em>cpp_bindings/bin</em></strong> folder to the <strong><em>cpp_bindings/lib</em></strong> folder.</p>
+						<hr/>
 						<header class="major">
 							<h3>3. Folder Layout</h3>
 						</header>
@@ -117,6 +125,7 @@
 							--- README.md<br />
 							--- LICENSE.txt
 						</blockquote>
+						<hr/>
 						<header class="major">
 							<h3>4. Compile It</h3>
 						</header>
@@ -168,6 +177,7 @@
 							</li>
 							<li>You can enter the bit architecture with <strong><em>bits</em></strong> or <strong><em>b</em></strong> arguments or not. There is a fallback to automatically find this. However, I recommend you use one.</li>
 						</ul>
+						<hr/>
 						<header class="major">
 							<h3>5. Adding It To Your Project</h3>
 						</header>
@@ -239,10 +249,12 @@
 							</li>
 						</ul>
 						<p>Save the scene as <strong><em>godotsteam.tscn</em></strong> and place it where ever you want.
+						<hr/>
 						<header class="major">
 							<h3>6. Adding Singleton</h3>
 						</header>
 						<p>Go to <strong><em>Project > Project Settings</em></strong> then click on <strong><em>Autoload</em></strong>. Add your <strong><em>godotsteam.tscn</em></strong> as a singleton, with the node name of <strong><em>godotsteam</em></strong>. Done!</p>
+						<hr/>
 						<header class="major">
 							<h3>7. Use It</h3>
 						</header>
@@ -262,6 +274,7 @@
 							&nbsp;&nbsp;runFunction()<br /><br />
 							godotsteam.setAchievement(achieve)
 						</blockquote>
+						<hr/>
 						<header class="major">
 							<h3>A New How-To Soon</h3>
 						</header>

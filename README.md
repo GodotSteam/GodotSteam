@@ -6,6 +6,12 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 2/23/21:**
+- Added: new link to release section on Github
+- Added: alternative options to preparation in how-to sections
+- Added: reminder to create templates in how-to sections
+- Changed: minor wording in how-to sections for compiling
+
 **Updated 2/11/21:**
 - Added: a new games to list
 - Added: quick-links to functions in sidebar

@@ -46,6 +46,13 @@
 						</ul>
 						<p>Unzip the Godot Engine source code and place the contents into a folder.  For the purpose of this how-to we will name the folder <strong>godot</strong>.</p>
 						<p>Unzip the GodotSteam you downloaded and copy the <strong>godotsteam</strong> folder from it into the <strong>godot/modules/</strong> folder.</p>
+						<h4>Alternate Preparation Option</h4>
+						<ul>
+							<li><a href="https://github.com/Gramps/GodotSteam/releases" target="_blank">Downloading pre-compiled versions of the GodotSteam editor and template.</a></li>
+							<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
+						</ul>
+						<p>Once you have the pre-compiles and Steamworks SDK, skip ahead to Step 5 in this tutorial.</p>
+						<hr/>
 						<header class="major">
 							<h3>2. Copy The Steamworks SDK</h3>
 						</header>
@@ -55,6 +62,7 @@ public/
 redistributable_bin/
 </code></pre>
 						</p>
+						<hr/>
 						<header class="major">
 							<h3>3. Folder Layout</h3>
 						</header>
@@ -70,14 +78,17 @@ godot/modules/godotsteam/register_types.cpp
 godot/modules/godotsteam/register_types.h
 </code></pre>
 						</p>
+						<hr/>
 						<header class="major">
 							<h3>4. Compiling</h3>
 						</header>
-						<p>Recompile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
+						<p>Compile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
 						On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )<br/>
 						On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
+						<p><strong>REMEMBER:</strong> You must also compile the templates for your target operating system(s).  Typically by adding <code>target=release tools=no use_lto=yes</code> to your compiling command.</p>
 						<p><strong>NOTE:</strong> when creating templates for OSX, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em></p>
 						<p><strong>NOTE: using MinGW causes crashes.</strong> There is a _mingw-patch.py_ file that corrects one known crash due to compiling with MinGW but there is now a newer crash that hasn't been solved; as well as who knows how many unfound issues. I strong recommend you <strong>do not use MinGW</strong> to compile at this time.</p>
+						<hr/>
 						<header class="major">
 							<h3>5. Copy Steamworks Redistributables</h3>
 						</header>
@@ -114,11 +125,13 @@ godot/bin/steam_api64.dll
 godot/bin/steam_appid.txt
 godot/bin/godot.windows.tools.64.exe
 </code></pre>
+						<hr/>
 						<header class="major">
 							<h3>6. Done</h3>
 						</header>
 						<p>Now you can open the editor you just created and get to work!  If you are are starting from scratch or importing an existing project, you can just start adding in Steamworks code.  Remember, every function starts with the <strong>Steam</strong> class; e.g. <strong><em>Steam.run_callbacks()</em></strong> or <strong><em>Steam.getUserID()</em></strong>.  All of the available functions can be found in the editor in the <strong>Search</strong> section under Steam.  Additionally, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.</p>
 						<p>I suggest checking out the various tutorials available here in the documentation to get you started on most of the main features of Steamworks.  Though I do recommend that you create a separate copy of your project if you intend to have a non-Steam version of your game.</p>
+						<hr/>
 						<header class="major">
 							<h3>7. Exporting / Shipping</h3>
 						</header>
