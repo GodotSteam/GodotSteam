@@ -4962,8 +4962,8 @@ String Steam::getQueryUGCMetadata(uint64_t queryHandle, uint32 index){
 		return "";
 	}
 	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	char *metadata = new char[256];
-	bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)metadata, 256);
+	char *metadata = new char[5000];
+	bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)metadata, 5000);
 	if(success){
 		String ugcMetadata = metadata;
 		return ugcMetadata;
@@ -5221,8 +5221,8 @@ bool Steam::setItemMetadata(uint64_t updateHandle, const String& metadata){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	if (metadata.length() > 255){
-		printf("Metadata cannot have more than %d ASCII characters. Metadata not set.", 255);
+	if (metadata.utf8().length() > 5000){
+		printf("Metadata cannot be more than %d bytes. Metadata not set.", 5000);
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
 	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
