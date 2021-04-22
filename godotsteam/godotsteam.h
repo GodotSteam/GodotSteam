@@ -1,15 +1,27 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
+
+/////////////////////////////////////////////////
+// SILENCE STEAMWORKS WARNINGS
+/////////////////////////////////////////////////
+//
 // Turn off MSVC-only warning about strcpy
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable:4996)
 #pragma warning(disable:4828)
 #endif
+
+/////////////////////////////////////////////////
+// INCLUDE HEADERS
+/////////////////////////////////////////////////
+//
 // Include INT types header
 #include <inttypes.h>
+
 // Include Steamworks API header
 #include "steam/steam_api.h"
+
 // Include Godot headers
 #include "core/object.h"
 #include "scene/resources/texture.h"
@@ -106,6 +118,7 @@ class Steam: public Object {
 		enum VRHMDType {
 			VR_HMD_TYPE_NONE = -1, VR_HMD_TYPE_UNKNOWN = 0, VR_HMD_TYPE_HTC_DEV = 1, VR_HMD_TYPE_HTC_VIVEPRE = 2, VR_HMD_TYPE_HTC_VIVE = 3, VR_HMD_TYPE_HTC_UNKNOWN = 20, VR_HMD_TYPE_OCULUS_DK1 = 21, VR_HMD_TYPE_OCULUS_DK2 = 22, VR_HMD_TYPE_OCULUS_RIFT = 23, VR_HMD_TYPE_OCULUS_UNKNOWN = 40
 		};
+
 		// Friends enums
 		enum AvatarSizes {
 			AVATAR_SMALL = 1, AVATAR_MEDIUM = 2, AVATAR_LARGE = 3
@@ -130,6 +143,7 @@ class Steam: public Object {
 		enum UserRestriction {
 			USER_RESTRICTION_NONE = 0, USER_RESTRICTION_UNKNOWN = 1, USER_RESTRICTION_ANY_CHAT = 2, USER_RESTRICTION_VOICE_CHAT = 4, USER_RESTRICTION_GROUP_CHAT = 8, USER_RESTRICTION_RATING = 16, USER_RESTRICTION_GAME_INVITES = 32, USER_RESTRICTION_TRADING = 64
 		};
+
 		// Game Search enums
 		enum GameSearchErrorCode {
 			GAME_SEARCH_ERROR_CODE_OK = 1, GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS = 2, GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS = 3, GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER = 4, GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE = 5, GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID = 6, GAME_SEARCH_ERROR_CODE_OFFLINE = 7, GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED = 8,
@@ -138,6 +152,7 @@ class Steam: public Object {
 		enum PlayerResult {
 			PLAYER_RESULT_FAILED_TO_CONNECT = 1, PLAYER_RESULT_ABANDONED = 2, PLAYER_RESULT_KICKED = 3, PLAYER_RESULT_INCOMPLETE = 4, PLAYER_RESULT_COMPLETED = 5
 		};
+
 		// HTMLSurface enums
 		enum HTMLKeyModifiers {
 			HTML_KEY_MODIFIER_NONE = 0, HTML_KEY_MODIFIER_ALT_DOWN = (1<<0), HTML_KEY_MODIFIER_CTRL_DOWN = (1<<1), HTML_KEY_MODIFIER_SHIFT_DOWN = (1<<2)
@@ -150,6 +165,7 @@ class Steam: public Object {
 			DC_MIDDLE_PAN = 22, DC_NORTH_PAN = 23, DC_NORTH_EAST_PAN = 24, DC_EAST_PAN = 25, DC_SOUTH_EAST_PAN = 26, DC_SOUTH_PAN = 27, DC_SOUTH_WEST_PAN = 28, DC_WEST_PAN = 29, DC_NORTH_WEST_PAN = 30, DC_ALIAS = 31, DC_CELL = 32, DC_COL_RESIZE = 33, DC_COPY_CUR = 34, DC_VERTICAL_TEXT = 35, DC_ROW_RESIZE = 36, DC_ZOOM_IN = 37, DC_ZOOM_OUT = 38, DC_HELP = 39,
 			DC_CUSTOM = 40, DC_LAST = 41
 		};
+
 		// HTTP enums
 		enum HTTPMethod {
 			HTTP_METHOD_INVALID = 0, HTTP_METHOD_GET = 1, HTTP_METHOD_HEAD = 2, HTTP_METHOD_POST = 3, HTTP_METHOD_PUT = 4, HTTP_METHOD_DELETE = 5, HTTP_METHOD_OPTIONS = 6, HTTP_METHOD_PATCH = 7
@@ -162,6 +178,7 @@ class Steam: public Object {
 			HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE = 416, HTTP_STATUS_CODE_417_EXPECTATION_FAILED = 417, HTTP_STATUS_CODE_4XX_UNKNOWN = 418, HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS = 429, HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR = 500, HTTP_STATUS_CODE_501_NOT_IMPLEMENTED = 501, HTTP_STATUS_CODE_502_BAD_GATEWAY = 502,
 			HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE = 503, HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT = 504, HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED = 505, HTTP_STATUS_CODE_5XX_UNKNOWN = 599
 		};
+
 		// Input enums
 		enum InputActionOrigin {
 			INPUT_ACTION_ORIGIN_NONE = 0, INPUT_ACTION_ORIGIN_A = 1, INPUT_ACTION_ORIGIN_B = 2, INPUT_ACTION_ORIGIN_X = 3, INPUT_ACTION_ORIGIN_Y = 4, INPUT_ACTION_ORIGIN_LEFT_BUMPER = 5, INPUT_ACTION_ORIGIN_RIGHT_BUMPER = 6, INPUT_ACTION_ORIGIN_LEFTGRIP = 7, INPUT_ACTION_ORIGIN_RIGHTGRIP = 8, INPUT_ACTION_ORIGIN_START = 9, INPUT_ACTION_ORIGIN_BACK = 10,
@@ -198,10 +215,12 @@ class Steam: public Object {
 			INPUT_ACTION_ORIGIN_SWITCH_RESERVED0 = 225, INPUT_ACTION_ORIGIN_SWITCH_RESERVED1 = 226, INPUT_ACTION_ORIGIN_SWITCH_RESERVED2 = 227, INPUT_ACTION_ORIGIN_SWITCH_RESERVED3 = 228, INPUT_ACTION_ORIGIN_SWITCH_RESERVED4 = 229, INPUT_ACTION_ORIGIN_SWITCH_RESERVED5 = 230, INPUT_ACTION_ORIGIN_SWITCH_RESERVED6 = 231, INPUT_ACTION_ORIGIN_SWITCH_RESERVED7 = 232,
 			INPUT_ACTION_ORIGIN_SWITCH_RESERVED8 = 233, INPUT_ACTION_ORIGIN_SWITCH_RESERVED9 = 234, INPUT_ACTION_ORIGIN_SWITCH_RESERVED10 = 235, INPUT_ACTION_ORIGIN_COUNT = 258, INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE = 32767
 		};
+
 		// Inventory enums
 		enum SteamItemFlags {
 			STEAM_ITEM_NO_TRADE = (1<<0), STEAM_ITEM_REMOVED = (1<<8), STEAM_ITEM_CONSUMED = (1<<9)
 		};
+
 		// Matchmaking enums
 		enum ChatMemberStateChange {
 			CHAT_MEMBER_STATE_CHANGE_ENTERED = 0X0001, CHAT_MEMBER_STATE_CHANGE_LEFT = 0X0002, CHAT_MEMBER_STATE_CHANGE_DISCONNECTED = 0X0004, CHAT_MEMBER_STATE_CHANGE_KICKED = 0X0008, CHAT_MEMBER_STATE_CHANGE_BANNED = 0X0010
@@ -215,14 +234,17 @@ class Steam: public Object {
 		enum LobbyType {
 			LOBBY_TYPE_PRIVATE = 0, LOBBY_TYPE_FRIENDS_ONLY = 1, LOBBY_TYPE_PUBLIC = 2, LOBBY_TYPE_INVISIBLE = 3
 		};
+
 		// Matchmaking Servers enums
 		enum MatchMakingServerResponse {
 			SERVER_RESPONDED = 0, SERVER_FAILED_TO_RESPOND = 1, NO_SERVERS_LISTED_ON_MASTER_SERVER = 2
 		};
+
 		// Music enums
 		enum AudioPlaybackStatus {
 			AUDIO_PLAYBACK_UNDEFINED = 0, AUDIO_PLAYBACK_PLAYING = 1, AUDIO_PLAYBACK_PAUSED = 2, AUDIO_PLAYBACK_IDLE = 3
 		};
+
 		// Networking enums
 		enum P2PSend {
 			P2P_SEND_UNRELIABLE = 0, P2P_SEND_UNRELIABLE_NO_DELAY = 1, P2P_SEND_RELIABLE = 2, P2P_SEND_RELIABLE_WITH_BUFFERING = 3
@@ -237,6 +259,7 @@ class Steam: public Object {
 			NET_SOCKET_STATE_INVALID = 0, NET_SOCKET_STATE_CONNECTED = 1, NET_SOCKET_STATE_INITIATED = 10, NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND = 11, NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES = 12, NET_SOCKET_STATE_CHALLENGE_HANDSHAKE = 15, NET_SOCKET_STATE_DISCONNECTING = 21, NET_SOCKET_STATE_LOCAL_DISCONNECT = 22, NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT = 23,
 			NET_SOCKET_STATE_REMOTE_END_DISCONNECTED = 24, NET_SOCKET_STATE_BROKEN = 25
 		};
+
 		// Networking Sockets enums
 		enum NetworkingConfigValue {
 			NETWORKING_CONFIG_INVALID = 0, NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND = 2, NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV = 3, NETWORKING_CONFIG_FAKE_PACKET_LAG_SEND = 4, NETWORKING_CONFIG_FAKE_PACKET_LAG_RECV = 5, NETWORKING_CONFIG_FAKE_PACKET_REORDER_SEND = 6, NETWORKING_CONFIG_FAKE_PACKET_REORDER_RECV = 7, NETWORKING_CONFIG_FAKE_PACKET_REORDER_TIME = 8,
@@ -264,6 +287,7 @@ class Steam: public Object {
 			NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE = 0, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG = 1, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR = 2, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT = 3, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING = 4, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG = 5, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE = 6,
 			NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG = 7, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING = 8, NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT = 0x7fffffff
 		};
+
 		// Networking Utils enums {
 		enum NetworkingAvailability {
 			NETWORKING_AVAILABILITY_CANNOT_TRY = -102, NETWORKING_AVAILABILITY_FAILED = -101, NETWORKING_AVAILABILITY_PREVIOUSLY = -100, NETWORKING_AVAILABILITY_NEVER_TRIED = 1, NETWORKING_AVAILABILITY_WAITING = 2, NETWORKING_AVAILABILITY_ATTEMPTING = 3, NETWORKING_AVAILABILITY_CURRENT = 100, NETWORKING_AVAILABILITY_UNKNOWN = 0,
@@ -275,6 +299,7 @@ class Steam: public Object {
 		enum NetworkingConfigDataType {
 			NETWORKING_CONFIG_TYPE_INT32 = 1, NETWORKING_CONFIG_TYPE_INT64 = 2, NETWORKING_CONFIG_TYPE_FLOAT = 3, NETWORKING_CONFIG_TYPE_STRING = 4, NETWORKING_CONFIG_TYPE_FUNCTION_PTR = 5, NETWORKING_CONFIG_TYPE_FORCE_32BIT = 0x7fffffff
 		};
+
 		// Steam Parties enums
 		enum SteamPartyBeaconLocationType {
 			STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID = 0, STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP = 1, STEAM_PARTY_BEACON_LOCATION_TYPE_MAX
@@ -282,6 +307,7 @@ class Steam: public Object {
 		enum SteamPartyBeaconLocationData {
 			STEAM_PARTY_BEACON_LOCATION_DATA = 0, STEAM_PARTY_BEACON_LOCATION_DATA_NAME = 1, STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL, STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM, STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE
 		};
+
 		// Remote Storage enums
 		enum RemoteStoragePlatform {
 			REMOTE_STORAGE_PLATFORM_NONE = 0, REMOTE_STORAGE_PLATFORM_WINDOWS = (1<<0), REMOTE_STORAGE_PLATFORM_OSX = (1<<1), REMOTE_STORAGE_PLATFORM_PS3 = (1<<2), REMOTE_STORAGE_PLATFORM_LINUX = (1<<3), REMOTE_STORAGE_PLATFORM_RESERVED2 = (1<<4), REMOTE_STORAGE_PLATFORM_ALL = 0XFFFFFFFF
@@ -308,10 +334,12 @@ class Steam: public Object {
 		enum WorkshopVote {
 			WORKSHOP_VOTE_UNVOTED = 0, WORKSHOP_VOTE_FOR = 1, WORKSHOP_VOTE_AGAINST = 2, WORKSHOP_VOTE_LATER = 3
 		};
+
 		// Screenshot enums
 		enum VRScreenshotType {
 			VR_SCREENSHOT_TYPE_NONE = 0, VR_SCREENSHOT_TYPE_MONO = 1, VR_SCREENSHOT_TYPE_STEREO = 2, VR_SCREENSHOT_TYPE_MONO_CUBE_MAP = 3, VR_SCREENSHOT_TYPE_MONO_PANORAMA = 4, VR_SCREENSHOT_TYPE_STEREO_PANORAMA = 5
 		};
+
 		// UGC enums
 		enum ItemPreviewType {
 			ITEM_PREVIEW_TYPE_IMAGE = 0, ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO = 1, ITEM_PREVIEW_TYPE_SKETCHFAB = 2, ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS = 3, ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG = 4, ITEM_PREVIEW_TYPE_RESERVED_MAX = 255
@@ -341,6 +369,7 @@ class Steam: public Object {
 		enum UserUGCListSortOrder {
 			USERUGCLISTSORTORDER_CREATIONORDERDESC = 0, USERUGCLISTSORTORDER_CREATIONORDERASC = 1, USERUGCLISTSORTORDER_TITLEASC = 2, USERUGCLISTSORTORDER_LASTUPDATEDDESC = 3, USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC = 4, USERUGCLISTSORTORDER_VOTESCOREDESC = 5, USERUGCLISTSORTORDER_FORMODERATION = 6
 		};
+
 		// User enums
 		enum FailureType {
 			FAILURE_FLUSHED_CALLBACK_QUEUE = 0, FAILURE_PIPE_FAIL = 1
@@ -351,6 +380,7 @@ class Steam: public Object {
 		enum DurationControlNotification {
 			DURATION_CONTROL_NOTIFICATION_NONE = 0, DURATION_CONTROL_NOTIFICATION_1_HOUR = 1, DURATION_CONTROL_NOTIFICATION_3_HOURS = 3, DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS = 3, DURATION_CONTROL_NOTIFICATION_NO_PROGRESS = 4
 		};
+
 		// User Stats enums
 		enum LeaderboardDataRequest {
 			LEADERBOARD_DATA_REQUEST_GLOBAL = 0, LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER = 1, LEADERBOARD_DATA_REQUEST_FRIENDS = 2, LEADERBOARD_DATA_REQUEST_USERS = 3
@@ -364,6 +394,7 @@ class Steam: public Object {
 		enum LeaderboardUploadScoreMethod {
 			LEADERBOARD_UPLOAD_SCORE_METHOD = 0, LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST = 1, LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE = 2
 		};
+
 		// Utils enums
 		enum CheckFileSignature {
 			CHECK_FILE_SIGNATURE_INVALID_SIGNATURE = 0, CHECK_FILE_SIGNATURE_VALID_SIGNATURE = 1, CHECK_FILE_SIGNATURE_FILE_NOT_FOUND = 2, CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP = 3, CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE = 4
@@ -429,6 +460,7 @@ class Steam: public Object {
 		// Friends //////////////////////////////
 		void activateGameOverlay(const String& type);
 		void activateGameOverlayInviteDialog(uint64_t steamID);
+		void activateGameOverlayInviteDialogConnectString(const String& connectString);
 		void activateGameOverlayToStore(uint32_t appID=0);
 		void activateGameOverlayToUser(const String& type, uint64_t steamID);
 		void activateGameOverlayToWebPage(const String& url);
@@ -907,9 +939,10 @@ class Steam: public Object {
 		bool addItemKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
 		bool addItemPreviewFile(uint64_t queryHandle, const String& previewFile, int type);
 		bool addItemPreviewVideo(uint64_t queryHandle, const String& videoID);
-		void addItemToFavorite(uint32_t appID, uint64_t publishedFileID);
+		void addItemToFavorites(uint32_t appID, uint64_t publishedFileID);
 		bool addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
 		bool addRequiredTag(uint64_t queryHandle, const String& tagName);
+		bool addRequiredTagGroup(uint64_t queryHandle, Array tagArray);
 		bool initWorkshopForGameServer(uint32_t workshopDepotID);
 		void createItem(AppId_t appID, int fileType);
 		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page);
@@ -928,9 +961,12 @@ class Steam: public Object {
 		String getQueryUGCMetadata(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index);
+		uint32 getQueryUGCNumTags(uint64_t queryHandle, uint32 index);
 		String getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCResult(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType);
+		String getQueryUGCTag(uint64_t queryHandle, uint32 index, uint32 tagIndex);
+		String getQueryUGCTagDisplayName(uint64_t queryHandle, uint32 index, uint32 tagIndex);
 		Array getSubscribedItems();
 		void getUserItemVote(uint64_t publishedFileID);
 		bool releaseQueryUGCRequest(uint64_t queryHandle);
@@ -977,11 +1013,10 @@ class Steam: public Object {
 
 		// Users ////////////////////////////////
 		void advertiseGame(const String& serverIP, int port);
-		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
+		int beginAuthSession(PoolByteArray ticket, int ticketSize, uint64_t steamID);
 		void cancelAuthTicket(uint32_t authTicket);
 		Dictionary decompressVoice(const PoolByteArray& voice, uint32 voiceSize, uint32 sampleRate);
 		void endAuthSession(uint64_t steamID);
-		uint32_t getAuthSessionTicketID();
 		Dictionary getAuthSessionTicket();
 		int getAvailableVoice();
 		void getDurationControl();
@@ -1007,10 +1042,10 @@ class Steam: public Object {
 		int userHasLicenseForApp(uint64_t steamID, uint32_t appID);
 
 		// User Stats ///////////////////////////
-		void attachLeaderboardUGC(uint64_t ugcHandle);
+		void attachLeaderboardUGC(uint64_t ugcHandle, uint64_t thisLeaderboard=0);
 		bool clearAchievement(const String& name);
-		void downloadLeaderboardEntries(int start, int end, int type=k_ELeaderboardDataRequestGlobal);
-		void downloadLeaderboardEntriesForUsers(Array usersID);
+		void downloadLeaderboardEntries(int start, int end, int type=k_ELeaderboardDataRequestGlobal, uint64_t thisLeaderboard=0);
+		void downloadLeaderboardEntriesForUsers(Array usersID, uint64_t thisLeaderboard=0);
 		void findLeaderboard(const String& name);
 		void findOrCreateLeaderboard(const String& name, int sortMethod, int displayType);
 		Dictionary getAchievement(const String& name);
@@ -1025,10 +1060,10 @@ class Steam: public Object {
 		double getGlobalStatFloat(const String& name);
 		int64 getGlobalStatIntHistory(const String& name);
 		double getGlobalStatFloatHistory(const String& name);
-		Dictionary getLeaderboardDisplayType();
-		int getLeaderboardEntryCount();
-		String getLeaderboardName();
-		Dictionary getLeaderboardSortMethod();
+		Dictionary getLeaderboardDisplayType(uint64_t thisLeaderboard=0);
+		int getLeaderboardEntryCount(uint64_t thisLeaderboard=0);
+		String getLeaderboardName(uint64_t thisLeaderboard=0);
+		Dictionary getLeaderboardSortMethod(uint64_t thisLeaderboard=0);
 		Array getMostAchievedAchievementInfo();
 		uint32_t getNumAchievements();
 		void getNumberOfCurrentPlayers();
@@ -1049,9 +1084,8 @@ class Steam: public Object {
 		bool setStatInt(const String& name, int value);
 		bool storeStats();
 		bool updateAvgRateStat(const String& name, float thisSession, double sessionLength);
-		void uploadLeaderboardScore(int score, bool keepBest=false, PoolIntArray details=PoolIntArray());
+		void uploadLeaderboardScore(int score, bool keepBest=false, PoolIntArray details=PoolIntArray(), uint64_t thisLeaderboard=0);
 		Array getLeaderboardEntries();
-		void setLeaderboardDetailsMax(int detailsMax);
 
 		// Utils ////////////////////////////////
 		String filterText(int context, uint64_t steamID, const String& message);
@@ -1097,6 +1131,9 @@ class Steam: public Object {
 		// Apps
 		uint64 currentAppID;
 		
+		// Friends
+		CSteamID clanActivity;
+
 		// HTML Surface
 		uint32 browserHandle;
 
@@ -1112,10 +1149,6 @@ class Steam: public Object {
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntriesArray;
-		int leaderboardDetailsMax;
-
-		// Matchmaking
-		CSteamID clanActivity;
 
 		// Matchmaking Server
 		int serverQuery;
@@ -1152,14 +1185,6 @@ class Steam: public Object {
 		// STRUCTS //////////////////////////////
 		/////////////////////////////////////////
 		//
-		// Authentication ///////////////////////
-		struct TicketData {
-			uint32_t id;
-			uint32_t *buffer;
-			uint32_t size;
-		};
-		Vector<TicketData> tickets;
-
 		// Friend session state info ////////////
 		struct FriendSessionStateInfo {
 			uint32 onlineSessionInstance;

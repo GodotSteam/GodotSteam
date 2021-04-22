@@ -1,42 +1,43 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.2.3). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.3). For the Windows, Linux, and Mac platforms. 
 
-Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Server](https://github.com/Gramps/GodotSteam/tree/server), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
+Additional flavors include:
+- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
+- [Server](https://github.com/Gramps/GodotSteam/tree/server)
+- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
 
 Documentation
 ----------
-Documentation is available here: https://gramps.github.io/GodotSteam/
+[Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
 
-You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
+You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam Server.
+
+Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ----------
-You can download pre-compiled versions _(currently v3.8.1)_ of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can [download pre-compiled versions _(currently v3.8.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 3.8.2 Changes**
-- Added: different avatar constants
-- Changed: array deletions for Clang, _thanks to thisismike97_
-- Changed: initializing char text, _thanks to thisismike97_
-- Fixed: createQueryUserUGCRequest being commented out accidentally
-- Fixed: logic check for setOverlayNotificationPosition, _thanks to thisismike97_
-- Fixed: UTF8 not being handled correctly in some UGC functions, _thanks to EIREXE_
-
-**Version 3.8.1 Changes**
-- Added: extra newline beween each class section for readability
-- Added: new signal, _steamworks_error_, currently used for call results failures
-- Changed: cleared most items from to-do list
-- Changed: getSyncPlatforms now returns a dictionary with the bitwise and full name version of the platform
-- Changed: separated callbacks and call results in the godotsteam.cpp into two categories
-
-**Version 3.8 Changes**
-- Added: default argument to steamInit to pull all current stats or not, defaults to true so no one has to change anything
-- Added: new SteamNetworkingMessages class; with functions, callbacks, constants, and enums
-- Added: all missing functions due to 5 argument limit in Godot
-- Changed: filterText updated to match new SDK 1.50 function
-- Changed: HTTP class setCookie to setHTTPCookie to prevent confusion with HTML setCookie
-- Changed: moved fileLoadDialogReponse into html_file_open_dialog callback as it must follow the call anyway
-- Fixed: retrieveConnectionDetails and getAllLobbyData functions
-- Fixed: (probably) various NetworkingSockets and NetworkingUtils functions
+**Version 3.9 Changes**
+- Added: new UGC functions addRequiredTagGroup, getQueryUGCNumTags, getQueryUGCTag, getQueryUGCTagDisplayName
+- Added: new Friends function activateGameOverlayInviteDialogConnectString
+- Added: default values to leaderboard functions, you can now pass handles for specific leaderboards or use the internally-stored, last-called handle
+- Added: multiple controller types from Input function getInputTypeForHandle
+- Changed: minor readability changes to function arguments and defaults
+- Changed: additional spacing and readability to overall module
+- Changed: replaced leaderboardDetailsMax with k_cLeaderboardDetailsMax
+- Changed: applied _EIREXE_'s UTF-16 fix module-wide
+- Changed: minor corrections to comments and added missing comments
+- Changed: some additional code to some call results and callbacks
+- Changed: metadata length for UGC to 5000 from 255, thanks to _EIREXE_
+- Changed: beginAuthSession to use new auth function arguments
+- Changed: cancelAuthTicket to actually use the Steamworks function
+- Fixed: renamed addItemToFavorite to addItemToFavorites to match SDK
+- Fixed: incorrect class check in some UGC functions
+- Fixed: minor corrections to various functions
+- Fixed: destroyResult and getResultItemProperty being bound to the wrong functions
+- Removed: setLeaderboardDetailsMax as it is unnecessary
+- Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes
 
 Known Issues
 ----------
@@ -45,9 +46,9 @@ Known Issues
 Quick How-To
 ----------
 - Download this repository and unpack it.
-- Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.2.3.
-- Move the following to godotsteam/sdk/:
+- Download and unpack the [Steamworks SDK 1.51](https://partner.steamgames.com); this requires a Steam developer account.
+- Download and unpack the [Godot source 3.3](https://github.com/godotengine/godot).
+- Move the following to godotsteam/sdk/ folder:
 ````
     sdk/public/
     sdk/redistributable_bin/
