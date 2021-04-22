@@ -4,7 +4,7 @@ Steam API for the Godot game engine (version 3.0 - 3.3). For the Windows, Linux,
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
-- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
+- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
 Documentation
 ----------
@@ -16,7 +16,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.8.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.9)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 3.9 Changes**
 - Added: new UGC functions addRequiredTagGroup, getQueryUGCNumTags, getQueryUGCTag, getQueryUGCTagDisplayName
