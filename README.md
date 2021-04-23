@@ -39,6 +39,9 @@ You can [download pre-compiled versions _(currently v3.9)_ of this repo here](ht
 - Removed: setLeaderboardDetailsMax as it is unnecessary
 - Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes
 
+**Version 3.9.1 Changes**
+- Removed: unused C++ line from config.py for Mac, which caused compiling issues
+
 Known Issues
 ----------
 - **Using MinGW causes crashes.** I strong recommend you **do not use MinGW** to compile at this time.
