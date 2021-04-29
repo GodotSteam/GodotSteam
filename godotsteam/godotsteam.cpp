@@ -9298,7 +9298,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("checkResultSteamID", &Steam::checkResultSteamID);
 	ClassDB::bind_method("consumeItem", &Steam::consumeItem);
 	ClassDB::bind_method("deserializeResult", &Steam::deserializeResult);
-	ClassDB::bind_method("destroyResult", &Steam::exchangeItems);
+	ClassDB::bind_method("destroyResult", &Steam::destroyResult);
 	ClassDB::bind_method("exchangeItems", &Steam::exchangeItems);
 	ClassDB::bind_method("generateItems", &Steam::generateItems);
 	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
@@ -9307,7 +9307,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getItemPrice", &Steam::getItemPrice);
 	ClassDB::bind_method("getItemsWithPrices", &Steam::getItemsWithPrices);
 	ClassDB::bind_method("getNumItemsWithPrices", &Steam::getNumItemsWithPrices);
-	ClassDB::bind_method("getResultItemProperty", &Steam::getResultItems);
+	ClassDB::bind_method("getResultItemProperty", &Steam::getResultItemProperty);
 	ClassDB::bind_method("getResultItems", &Steam::getResultItems);
 	ClassDB::bind_method("getResultStatus", &Steam::getResultStatus);
 	ClassDB::bind_method("getResultTimestamp", &Steam::getResultTimestamp);

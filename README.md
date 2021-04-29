@@ -40,6 +40,7 @@ You can [download pre-compiled versions _(currently v3.9)_ of this repo here](ht
 - Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes
 
 **Version 3.9.1 Changes**
+- Fixed: destroyResult and getResultItemProperty being bound to the wrong functions
 - Removed: unused C++ line from config.py for Mac, which caused compiling issues
 
 Known Issues
