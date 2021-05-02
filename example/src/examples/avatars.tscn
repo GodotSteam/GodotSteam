@@ -234,6 +234,7 @@ align = 0
 __meta__ = {
 "_edit_lock_": true
 }
+
 [connection signal="pressed" from="Panel/Options/Small" to="." method="_on_Small_pressed"]
 [connection signal="pressed" from="Panel/Options/Medium" to="." method="_on_Medium_pressed"]
 [connection signal="pressed" from="Panel/Options/Large" to="." method="_on_Large_pressed"]

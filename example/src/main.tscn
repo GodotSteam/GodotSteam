@@ -227,19 +227,32 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Spacer" type="Label" parent="Examples/List"]
+[node name="Authentication" type="Button" parent="Examples/List"]
 margin_top = 219.0
 margin_right = 270.0
-margin_bottom = 238.0
+margin_bottom = 247.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 7 )
+custom_fonts/font = ExtResource( 5 )
+text = "Authentication"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Spacer" type="Label" parent="Examples/List"]
+margin_top = 257.0
+margin_right = 270.0
+margin_bottom = 276.0
 custom_fonts/font = ExtResource( 6 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Exit" type="Button" parent="Examples/List"]
-margin_top = 248.0
+margin_top = 286.0
 margin_right = 270.0
-margin_bottom = 276.0
+margin_bottom = 314.0
 mouse_default_cursor_shape = 2
 theme = ExtResource( 7 )
 custom_fonts/font = ExtResource( 5 )
@@ -250,9 +263,11 @@ __meta__ = {
 }
 
 [node name="Example" type="Node" parent="."]
+
 [connection signal="pressed" from="Examples/List/Avatars" to="." method="_start_Example" binds= [ "avatars" ]]
 [connection signal="pressed" from="Examples/List/Inputs" to="." method="_start_Example" binds= [ "inputs" ]]
 [connection signal="pressed" from="Examples/List/Leaderboards" to="." method="_start_Example" binds= [ "leaderboards" ]]
 [connection signal="pressed" from="Examples/List/Lobby" to="." method="_start_Example" binds= [ "lobby" ]]
 [connection signal="pressed" from="Examples/List/StatsAchievements" to="." method="_start_Example" binds= [ "stats-achieves" ]]
+[connection signal="pressed" from="Examples/List/Authentication" to="." method="_start_Example" binds= [ "authentication" ]]
 [connection signal="pressed" from="Examples/List/Exit" to="." method="_on_Exit_pressed"]

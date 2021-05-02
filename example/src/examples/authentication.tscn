@@ -1,0 +1,161 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://src/examples/authentication.gd" type="Script" id=1]
+[ext_resource path="res://data/themes/button-theme.tres" type="Theme" id=2]
+[ext_resource path="res://data/themes/panel-theme.tres" type="Theme" id=3]
+[ext_resource path="res://data/fonts/sub-titles.tres" type="DynamicFont" id=4]
+[ext_resource path="res://data/fonts/descriptions.tres" type="DynamicFont" id=5]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.0901961, 0.0901961, 0.0901961, 1 )
+
+[node name="Authentication" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Message" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 100.0
+margin_right = 900.0
+margin_bottom = 160.0
+custom_fonts/font = ExtResource( 5 )
+text = "This example shows how to acquire an authentication ticket from Steam and pass it to another client or server.  Also validating the ticket, closing the session, and all that.  Please note this example is only creating and using auth tickets with yourself.  You will need networking logic to use this correctly with servers and other players."
+autowrap = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output Title" type="Label" parent="."]
+margin_left = 25.0
+margin_top = 175.0
+margin_right = 700.0
+margin_bottom = 195.0
+custom_fonts/font = ExtResource( 4 )
+text = "Output"
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Output" type="RichTextLabel" parent="."]
+margin_left = 25.0
+margin_top = 200.0
+margin_right = 900.0
+margin_bottom = 695.0
+custom_styles/normal = SubResource( 1 )
+scroll_following = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 955.0
+margin_top = 200.0
+margin_right = 1255.0
+margin_bottom = 695.0
+theme = ExtResource( 3 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="VBoxContainer" parent="Panel"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 285.0
+margin_bottom = 215.0
+custom_constants/separation = 10
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Panel/Options"]
+margin_right = 270.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 0, 19 )
+custom_fonts/font = ExtResource( 4 )
+text = "Authentication Options"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetAuthTicket" type="Button" parent="Panel/Options"]
+margin_top = 29.0
+margin_right = 270.0
+margin_bottom = 57.0
+theme = ExtResource( 2 )
+text = "Get Auth Ticket"
+align = 0
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="BeginAuthSession" type="Button" parent="Panel/Options"]
+margin_top = 67.0
+margin_right = 270.0
+margin_bottom = 95.0
+theme = ExtResource( 2 )
+text = "Begin Auth Session"
+align = 0
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="CancelAuthTicket" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
+theme = ExtResource( 2 )
+text = "Cancel Auth Ticket"
+align = 0
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="EndAuthSession" type="Button" parent="Panel/Options"]
+margin_top = 143.0
+margin_right = 270.0
+margin_bottom = 171.0
+theme = ExtResource( 2 )
+text = "End Auth Session"
+align = 0
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Spacer" type="Label" parent="Panel/Options"]
+margin_top = 181.0
+margin_right = 270.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 0, 19 )
+valign = 1
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Back" type="Button" parent="Panel/Options"]
+margin_top = 210.0
+margin_right = 270.0
+margin_bottom = 238.0
+theme = ExtResource( 2 )
+text = "Back To Main Menu"
+align = 0
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="Panel/Options/GetAuthTicket" to="." method="_on_GetAuthTicket_pressed"]
+[connection signal="pressed" from="Panel/Options/BeginAuthSession" to="." method="_on_BeginAuthSession_pressed"]
+[connection signal="pressed" from="Panel/Options/CancelAuthTicket" to="." method="_on_CancelAuthTicket_pressed"]
+[connection signal="pressed" from="Panel/Options/EndAuthSession" to="." method="_on_EndAuthSession_pressed"]
+[connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]

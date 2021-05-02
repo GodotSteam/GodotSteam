@@ -16,6 +16,7 @@ This version covers:
 - Joining a lobby
 - Achievement icons
 - Some input functions
+- Authentication
 
 Updates:
 - Brand-new interface and overall theme

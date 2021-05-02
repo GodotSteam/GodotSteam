@@ -29,6 +29,7 @@ func _start_Example(which: String) -> void:
 		"leaderboards": $Title.set_text("Steamworks Leaderboards")
 		"lobby": $Title.set_text("Steamworks Lobby")
 		"stats-achieves": $Title.set_text("Steamworks Statistics And Achievements")
+		"authentication": $Title.set_text("Steamworks Authentication")
 
 	# Instance the example
 	var EXAMPLE: Object = load("res://src/examples/"+str(which)+".tscn").instance()
