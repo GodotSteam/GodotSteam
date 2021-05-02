@@ -27,50 +27,111 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Exporting and Shipping</h1>
+							<h1>Tutorial| Authentication</h1>
 						</header>
-						<p>This topic comes up a lot and <em>also</em> trips folks up a lot; so this tutorial is here to help.  Exporting and shipping your game with GodotSteam is pretty easy once you get the flow down. This tutorial assumes you are downloading pre-compiled versions of the GodotSteam templates instead of compiling them; however, it will obviously work the same with the ones you compile yourself.</p>
-						<hr />
-						<header class="major">
-							<h3>Template Importing (Optional)</h3>
-						</header>
-						<p>As the title mentions, this step is completely optional.  Personally, I do not import template zips when exporting games; however, I figured it was worth covering for those of you who do.  And for those who do, there is now a separate template zip available in the GodotSteam release section which has all the operating system templates in one package.</p>
-						<p>Just like installing the official template zips, you want to click on the "Editor" option at the top then select "Manage Export Templates..." in the drop-down. Like so:</p>
-						<p><img src="img/export-ship1-1.png" alt="Editor > Manage Export Template" /></p>
-						<p>On the next screen you will want to click on the "Install From File" button and find your godotsteam-xxx-templates.tpz file. The editor will then install these templates so they will be available during export.</p>
-						<p><img src="img/export-ship1-2.png" alt="Install From File" /></p>
-						<p>At the time of writing, I am not sure how the editor decides which templates to use if you have both the regular Godot templates <em>and</em> the custom GodotSteam templates installed.  If anyone does, <a href="mailto:godotsteam@coaguco.com" target="_blank">please feel free to reach out</a>.</p>
+						<p>In this tutorial we will talk about authenticating users with Steam. You will need to implement your own networking code; <a href="tutorials-lobbies-p2p.html" target="_blank">you can check out the P2P networking tutorial for more on that</a> or even use Godot's high-level networking. <a href="https://partner.steamgames.com/doc/features/auth" target="_blank">You can read more about the whole authentication process in Steam's documentation page on the subject.</a></p>
 						<hr/>
 						<header class="major">
-							<h3>Exporting</h3>
+							<h3>Setting Up Signals</h3>
 						</header>
-						<p>From this point on, I will assume you have skipped the template installer process above. To being our export process, first click on the "Project" button in the top menu then select "Export..." from the drop-down.</p>
-						<p><img src="img/export-ship2-1.png" alt="Export Start" /></p>
-						<p>Since the pre-compiles are <strong>never</strong> debug-release versions, you must make sure that <em>only</em> the <strong>release field contains a template</strong> and that the <strong>debug field is empty</strong>. this next step is important and also where people often get stuck:</p>
-						<p><img src="img/export-ship2-2.png" alt="Release Only" /></p>
-						<p>If you have the debug field filled in, <strong>especially while using the pre-compiled templates</strong>, the export process will fail. Also, if you use a non-GodotSteam template here or leave the release field blank as well, you will end up with an executable that crashes like so:</p>
+						<p>First, in both your clients and server, you'll want to set two variables: <strong>TICKET</strong> and <strong>CLIENT_TICKETS</strong>.  You will keep the local client's ticket dictionary in, obviously, <strong>TICKET</strong> and a list of all connected clients in your <strong>CLIENT_TICKETS</strong> array.  More on that later.  Now, we'll set up the signals for authentication callbacks and their respective functions:</p>
 <pre><code>
-Parse Error: The identifier "Steam" isn't declared in the current scope.
+# Set up some variables
+var TICKET: Dictionary		# Your auth ticket
+var CLIENT_TICKETS: Array	# Array of clients tickets
+
+func _ready() -> void:
+	Steam.connect("get_auth_session_ticket_response", self, "_get_Auth_Session_Ticket_Response")
+	Steam.connect("validate_auth_ticket_response", self, "_validate_Auth_Ticket_Response")
+
+# Callback from getting the auth ticket from Steam
+func _get_Auth_Session_Ticket_Response(auth_ticket: int, result: int) -> void:
+	print("Auth session result: "+str(result))
+	print("Auth session ticket handle: "+str(auth_ticket))
+
+
+# Callback from attempting to validate the auth ticket
+func _validate_Auth_Ticket_Response(authID: int, response: int, ownerID: int) -> void:
+	print("Ticket Owner: "+str(authID))
+
+	# Make the response more verbose, highly unnecessary but good for this example
+	var VERBOSE_RESPONSE: String
+	match response:
+		0: VERBOSE_RESPONSE = "Steam has verified the user is online, the ticket is valid and ticket has not been reused."
+		1: VERBOSE_RESPONSE = "The user in question is not connected to Steam."
+		2: VERBOSE_RESPONSE = "The user doesn't have a license for this App ID or the ticket has expired."
+		3: VERBOSE_RESPONSE = "The user is VAC banned for this game."
+		4: VERBOSE_RESPONSE = "The user account has logged in elsewhere and the session containing the game instance has been disconnected."
+		5: VERBOSE_RESPONSE = "VAC has been unable to perform anti-cheat checks on this user."
+		6: VERBOSE_RESPONSE = "The ticket has been canceled by the issuer."
+		7: VERBOSE_RESPONSE = "This ticket has already been used, it is not valid."
+		8: VERBOSE_RESPONSE = "This ticket is not from a user instance currently connected to steam."
+		9: VERBOSE_RESPONSE = "The user is banned for this game. The ban came via the web api and not VAC."
+	print("Auth response: "+str(VERBOSE_RESPONSE))
+	print("Game owner ID: "+str(ownerID))
 </code></pre>
-						<p>Obviously, because the Steamworks API isn't present without a GodotSteam template, the executable will not understand any Steam functions.  Also take note that the OSX export screen has a reversed order for the debug and release fields, for some reason:</p>
-						<p><img src="img/export-ship2-3.png" alt="Mac Reversed" /></p>
-						<p>On the last export screen, just before the process begins, make sure you turn the debugging option off:</p>
-						<p><img src="img/export-ship2-4.png" alt="Turn Debug Off" /></p>
-						<p>If you do not, your executable will crash since we are not using debug-release templates. That being said, if you compile the templates yourself and actually create debug-release templates then you can ignore both debug-specific parts above.</p>
-						<hr />
+						<p>Our <strong>_get_Auth_Session_Ticket_Response</strong> function will send back the auth ticket's handle and whether getting the ticket was successful (returns a 1) or not (anything else).  You can add logic for success or failure based on your game's needs.  If successful, you'll probably want to send you new ticket to the server or other clients for validation at this point.</p>
+						<p>The <strong>_validate_Auth_Ticket_Response</strong> function is in response to <strong>beginAuthSession</strong>, when the ticket has been validated.  It sends back the Steam ID of the client that provided the auth ticket for validation, the result of the validation (success is 0, failure is anything else), and finally the Steam ID that owns the game.  As Valve notes, this may be different if the game is borrowed from Steam Family Share.  Inside this function, you can again put in whatever logic your game requires.  You will probably want to add the client to the server if successful, obviously.</p>
+						<hr/>
 						<header class="major">
-							<h3>Shipping</h3>
+							<h3>Getting Your Auth Ticket</h3>
 						</header>
-						<p>For Windows and Linux, shipping is relatively simple.  You just need your game's executable, any accompanying .pck file, and the Steamworks API file.
-							<ul>
-								<li>For Windows, use the steam_api.dll for 32-bit and steam_api64.dll for 64-bit.</li>
-								<li>For Linux, make sure you use the libsteam_api.so file from the correct folder (I am not sure why Valve did not differentiate, in naming, between 32 and 64-bit files for Linux, but they do not).</li>
-							</ul>
-						Your exported game's directory should look something like this:</p>
-						<p><img src="img/export-ship3-1.png" alt="Export Folder" /></p>
-						<p>You will notice that the <em>steam_appid.txt</em> is not included. This file is <strong>only</strong> used for running your game <em>outside</em> of the Steam client so that it knows which game you are playing.  When run <em>through</em> the Steam client, Steam is aware of what game you are playing, thus it is not necessary.  You can ship the steam_appid.txt will your game but it is not necessary or recommended.</p>
-						<p>As for OSX, there are a few extra steps beyond these since OSX games / apps are contained in an .app folder.  Instead of going over it again, you can <a href="tutorials-mac-export.html" target="_blank">read more about the process in the Max Exporting tutorial</a>.</p>
-						<p>At this point, you are ready to upload your game to Steam!  <a href="https://partner.steamgames.com/doc/sdk/uploading" target="_blank">You can read more about that process on the offical Steamworks SDK documentation</a>. And, as usual, if you run into any issues, please contact us on the project's Github issues page or the Discord server.</p>
+						<p>First you'll want to get an auth ticket from Steam and pass it to your <strong>TICKET</strong> dictionary variable; this way you can pass it along to the server or other clients as needed:</p>
+<pre><code>
+TICKET = Steam.getAuthSessionTicket()
+</code></pre>
+						<p>Now that you have your auth ticket, you'll want to pass it along to the server or other clients for validation.</p>
+						<hr/>
+						<header class="major">
+							<h3>Validating The Auth Ticket</h3>
+						</header>
+						<p>Your server or other clients will now want to take your auth ticket and validate it before allowing you to join the game. In a peer-to-peer situation, every client will want to validate the ticket of every other player. The server or clients will want to pass your <strong>TICKET</strong> dictionary's buffer and size, as well as your Steam ID, to <strong>beginAuthSession</strong>.  For this we'll create a <strong>_validate_Auth_Session</strong> function:</p>
+<pre><code>
+func _validate_Auth_Session(ticket: Dictionary, steam_id: int) -> void:
+	var RESPONSE: int = Steam.beginAuthSession(ticket['buffer'], ticket['size'], steam_id)
+
+	# Get a verbose response; unnecessary but useful in this example
+	var VERBOSE_RESPONSE: String
+	match RESPONSE:
+		0: VERBOSE_RESPONSE = "Ticket is valid for this game and this Steam ID."
+		1: VERBOSE_RESPONSE = "The ticket is invalid."
+		2: VERBOSE_RESPONSE = "A ticket has already been submitted for this Steam ID."
+		3: VERBOSE_RESPONSE = "Ticket is from an incompatible interface version."
+		4: VERBOSE_RESPONSE = "Ticket is not for this game."
+		5: VERBOSE_RESPONSE = "Ticket has expired."
+	print("Auth verifcation response: "+str(VERBOSE_RESPONSE))
+
+	if RESPONSE == 0:
+		print("Validation successful, adding user to CLIENT_TICKETS")
+		CLIENT_TICKETS.append({"id": steam_id, ticket": ticket['id']} )
+		# You can now add the client to the game
+
+</code></pre>
+						<p>If the response is 0, you can allow the player to connect to the server or game.  A callback will also be received and trigger our <strong>_validate_Auth_Ticket_Response</strong> function; which, as we saw before, sends along the Steam ID of the auth ticket provider, the result, and owner of the game.  This callback will also be triggered when the client cancels or ends the auth session.</p>
+						<p>After the ticket is validated, you'll want to save the player's Steam ID and their ticket handle in your <stromg>CLIENT_TICKETS</stromg> array either as an array or dictionary so they can be called later to cancel the auth sessions. In our example above, we used a dictionary so we can just pull the ticket handle by the user's Steam ID.</p>
+						<hr/>
+						<header class="major">
+							<h3>Ending Auth Sessions</h3>
+						</header>
+						<p>Finally when the game is over or the client is leaving the game, you'll want to end the auth sessions. When the client is ready to leave the game, they will pass their own ticket handle to the <strong>cancelAuthTIcket</strong> function like so:</p>
+<pre><code>
+Steam.cancelAuthTicket(TICKET['id'])
+</code></pre>
+						<p>This will trigger the <strong>_validate_Auth_Ticket_Response</strong> function for the server or other clients to let them know the player has left and invalidated their auth ticket.  Additionally, if the game session is over, the server or other clients can call <strong>endAuthSession</strong> to also close out the auth session:</p>
+<pre><code>
+Steam.endAuthSession(steam_id)
+</code></pre>
+						<p>They will need to pass the Steam ID of every client connected. You can do this in a loop from your <strong>CLIENT_TICKETS</strong> array like so:</p>
+<pre><code>
+for C in CLIENT_TICKETS:
+	Steam.endAuthSession(C['id'])
+
+	# Then remove this client from the ticket array
+	CLIENT_TICKETS.erase(C)
+</code></pre>
+						<p>At the time of writing, I'm not totally clear on whether or not each client must still call <strong>cancelAuthTicket</strong> on their own auth ticket even if <strong>endAuthSession</strong> was used. However, it is probably good practice to do it just in case.</p>
+						<hr/>
+						<p>That concludes this simple tutorial for authenticated sessions.</p>
 					</section>
 				</div>
 			</div>

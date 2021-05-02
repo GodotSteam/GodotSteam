@@ -30,6 +30,33 @@
 							<h1>Change Log | Godot 3.x Module</h1>
 						</header>
 						<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+						<h3>Version 3.9.1 Changes</h3>
+						<ul>
+							<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
+							<li>Removed: unused C++ line from config.py for Mac, which caused compiling issues</li>
+						</ul>
+						<h3>Version 3.9 Changes</h3>
+						<ul>
+							<li>Added: new UGC functions addRequiredTagGroup, getQueryUGCNumTags, getQueryUGCTag, getQueryUGCTagDisplayName</li>
+							<li>Added: new Friends function activateGameOverlayInviteDialogConnectString</li>
+							<li>Added: default values to leaderboard functions, you can now pass handles for specific leaderboards or use the internally-stored, last-called handle</li>
+							<li>Added: multiple controller types from Input function getInputTypeForHandle</li>
+							<li>Changed: minor readability changes to function arguments and defaults</li>
+							<li>Changed: additional spacing and readability to overall module</li>
+							<li>Changed: replaced leaderboardDetailsMax with k_cLeaderboardDetailsMax</li>
+							<li>Changed: applied EIREXE's UTF-16 fix module-wide</li>
+							<li>Changed: minor corrections to comments and added missing comments</li>
+							<li>Changed: some additional code to some call results and callbacks</li>
+							<li>Changed: metadata length for UGC to 5000 from 255, thanks to EIREXE</li>
+							<li>Changed: beginAuthSession to use new auth function arguments</li>
+							<li>Changed: cancelAuthTicket to actually use the Steamworks function</li>
+							<li>Fixed: renamed addItemToFavorite to addItemToFavorites to match SDK</li>
+							<li>Fixed: incorrect class check in some UGC functions</li>
+							<li>Fixed: minor corrections to various functions</li>
+							<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
+							<li>Removed: setLeaderboardDetailsMax as it is unnecessary</li>
+							<li>Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes</li>
+						</ul>
 						<h3>Version 3.8.2 Changes</h3>
 						<ul>
 							<li>Added: different avatar constants</li>
@@ -422,6 +449,7 @@
 									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
 									<li><a href="tutorials-avatars.html">Avatars</a></li>
 									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+									<li><a href="tutorials-authentication.html">Authentication</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
 									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
