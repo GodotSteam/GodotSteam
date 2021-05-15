@@ -26,9 +26,12 @@
 		<method name="acceptP2PSessionWithUser">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="steamID" type="int">
 			</argument>
 			<description>
+				Allows P2P packets to be received from the specified user. This function must be called before a user can start receiving P2P packets from another user. Using [method sendP2PPacket] to send a packet to the other user will automatically accept the session with the other user.
+				Note that this function should only be called in response to the signal [signal p2p_session_request].
+				Returns [code]false[/code] if the parameter [code]steamID[/code] contains an invalid steam ID; otherwise returns [code]true[/code].
 			</description>
 		</method>
 		<method name="acceptSessionWithUser">
@@ -378,9 +381,10 @@
 		<method name="allowP2PPacketRelay">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="bool">
+			<argument index="0" name="allow" type="bool">
 			</argument>
 			<description>
+				Allow or disallow P2P connections to fall back to being relayed through the Steam servers if a direct connection or NAT-traversal cannot be established. This only applies to connections created after setting this value, or to existing connections that need to automatically reconnect after this value is set. P2P packet relay is allowed by default.
 			</description>
 		</method>
 		<method name="allowStartRequest">
@@ -520,19 +524,23 @@
 		<method name="closeP2PChannelWithUser">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="steamID" type="int">
 			</argument>
-			<argument index="1" name="arg1" type="int">
+			<argument index="1" name="channel" type="int">
 			</argument>
 			<description>
+				Closes the specified P2P channel with the specified user automatically. Once all channels to the user have been closed, the open session to the user will be closed.
+				Returns true if the channel was successfully closed; otherwise returns false if there was no active session or channel with the user.
 			</description>
 		</method>
 		<method name="closeP2PSessionWithUser">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="steamID" type="int">
 			</argument>
 			<description>
+				Closes the P2P session with the specified user.
+				Returns true if the session was successfully closed; otherwise returns false if no connection was open with the user.
 			</description>
 		</method>
 		<method name="closeSessionWithUser">
@@ -1340,9 +1348,11 @@
 		<method name="getAvailableP2PPacketSize">
 			<return type="int">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="channel" type="int">
 			</argument>
 			<description>
+				Returns the size of the next available P2P packet if one is available; otherwise returns 0.
+				This should be called in a loop for each channel that you use. If there is a packet available then you can call [method readP2PPacket] to get the packet data.
 			</description>
 		</method>
 		<method name="getAvailableVoice">
@@ -2196,9 +2206,11 @@
 		<method name="getP2PSessionState">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="steamID" type="int">
 			</argument>
 			<description>
+				Returns a Dictionary with the following keys: [code]connection_active[/code], [code]connecting[/code], [code]session_error[/code], [code]using_relay[/code], [code]bytes_queued_for_send[/code], [code]packets_queued_for_send[/code], [code]remote_ip[/code] and [code]remote_port[/code].
+				"This should only needed for debugging purposes." - Steam
 			</description>
 		</method>
 		<method name="getPOPCount">
@@ -3320,11 +3332,13 @@
 		<method name="readP2PPacket">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="packetSize" type="int">
 			</argument>
-			<argument index="1" name="arg1" type="int">
+			<argument index="1" name="channel" type="int">
 			</argument>
 			<description>
+				Reads in a packet that has been sent from another user via [method sendP2PPacket]. If [code]packetSize[/code] is too short for the packet then the message will be truncated. Use [method getAvailableP2PPacketSize] to get the size of any incoming packets.
+				Returns a Dictionary with the raw bytes of the packet being stored in the key [code]data[/code] and the steam id of the sending user in [code]steamIDRemote[/code]. If there is no packet to read then the function will return an empty Dictionary.
 			</description>
 		</method>
 		<method name="receiveMessagesOnConnection">
@@ -3752,15 +3766,19 @@
 		<method name="sendP2PPacket">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="steamID" type="int">
 			</argument>
-			<argument index="1" name="arg1" type="PoolByteArray">
+			<argument index="1" name="data" type="PoolByteArray">
 			</argument>
-			<argument index="2" name="arg2" type="int">
+			<argument index="2" name="sendType" type="int">
 			</argument>
-			<argument index="3" name="arg3" type="int">
+			<argument index="3" name="channel" type="int">
 			</argument>
 			<description>
+				Sends a P2P packet to the user with the ID contained in [code]steamID[/code]. This is a session-less API which automatically establishes NAT-traversing or Steam relay server connections. The type of data you can send is arbitrary, you can use an off the shelf system like Protocol Buffers or Cap'n Proto to encode your packets in an efficient way, or you can create your own messaging system. If after 20 seconds the packet has not been received then the signal [signal p2p_session_connect_fail] will be emitted.
+				The maximum number of bytes that can be sent in a single packet depends on the send mode. See [constant P2P_SEND_UNRELIABLE], [constant P2P_SEND_UNRELIABLE_NO_DELAY], [constant P2P_SEND_RELIABLE], or [constant P2P_SEND_RELIABLE_WITH_BUFFERING] for more details. 
+				Note that the first packet send may be delayed as the NAT-traversal code runs.
+				Returns true if the packet is successfully sent (not necessarily if the packet is received) and returns false if the packet is too large to send, the target steam ID is invalid, or there are too many bytes queued to be sent. 
 			</description>
 		</method>
 		<method name="sendQueryUGCRequest">
@@ -5595,10 +5613,14 @@
 		</signal>
 		<signal name="p2p_session_connect_fail">
 			<description>
+				Emitted when [method sendP2PPacket] fails to get the packet to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will try reconnecting but will drop if failures continue. 
+				The signal passes the variables [code]steamID[/code], which contains the id of the user that we're attempting to connect with, and [code]sessionError[/code], which maps to one of the following constants: [constant P2P_SESSION_ERROR_NONE], [constant P2P_SESSION_ERROR_NOT_RUNNING_APP], [constant P2P_SESSION_ERROR_NO_RIGHTS_TO_APP], [constant P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON], [constant P2P_SESSION_ERROR_TIMEOUT] or [constant P2P_SESSION_ERROR_MAX].
 			</description>
 		</signal>
 		<signal name="p2p_session_request">
 			<description>
+				Emitted when a packet sent via [method sendP2PPacket] is received from another user. If the user wants to receive the packet(s) a call to the function [method acceptP2PSessionWithUser] must be made to accept the connection with the sending user. 
+				The signal passes the variable [code]steamID[/code], which contains the steam ID of the sending user.
 			</description>
 		</signal>
 		<signal name="persona_state_change">
@@ -7356,24 +7378,34 @@
 		<constant name="AUDIO_PLAYBACK_IDLE" value="3">
 		</constant>
 		<constant name="P2P_SEND_UNRELIABLE" value="0">
+			Basic UDP send. Packets can't be larger than 1200 bytes (your typical MTU size). The packets can be lost or arrive out of order, but this is rare. The sending API does have some knowledge of the underlying connection, so if there is no NAT-traversal accomplished or there is a recognized adjustment happening on the connection, the packet will be batched until the connection is open again.
 		</constant>
 		<constant name="P2P_SEND_UNRELIABLE_NO_DELAY" value="1">
+			Same as [constant P2P_SEND_UNRELIABLE], but if the underlying P2P connection isn't yet established the packet will just be thrown away. Using this on the first packet sent to a remote host almost guarantees the packet will be dropped. This is only really useful for kinds of data that should never buffer up, i.e. voice payload packets
 		</constant>
 		<constant name="P2P_SEND_RELIABLE" value="2">
+			Reliable message send. Can send up to 1MB of data in a single message. Does fragmentation/re-assembly of messages under the hood, as well as a sliding window for efficient sends of large chunks of data.
 		</constant>
 		<constant name="P2P_SEND_RELIABLE_WITH_BUFFERING" value="3">
+			Same as [constant P2P_SEND_RELIABLE], but applies the Nagle algorithm to the send - sends will accumulate until the current MTU size (typically ~1200 bytes, but can change) or ~200ms has passed (Nagle algorithm). This is useful if you want to send a set of smaller messages but have them coalesced into a single packet. Since the reliable stream is all ordered, you can do several small message sends with [constant P2P_SEND_RELIABLE_WITH_BUFFERING] and then do a normal [constant P2P_SEND_RELIABLE] to force all the buffered data to be sent.
 		</constant>
 		<constant name="P2P_SESSION_ERROR_NONE" value="0">
+			No errors.
 		</constant>
 		<constant name="P2P_SESSION_ERROR_NOT_RUNNING_APP" value="1">
+			The target user is not running the same game.
 		</constant>
 		<constant name="P2P_SESSION_ERROR_NO_RIGHTS_TO_APP" value="2">
+			The local user doesn't own the app that is running.
 		</constant>
 		<constant name="P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON" value="3">
+			Target user isn't connected to Steam.
 		</constant>
 		<constant name="P2P_SESSION_ERROR_TIMEOUT" value="4">
+			The connection timed out because the target user didn't respond, perhaps they aren't calling [method acceptP2PSessionWithUser]. Corporate firewalls can also block this (NAT traversal is not firewall traversal), make sure that UDP ports 3478, 4379, and 4380 are open in an outbound direction.
 		</constant>
 		<constant name="P2P_SESSION_ERROR_MAX" value="5">
+			Unused.
 		</constant>
 		<constant name="NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED" value="0">
 		</constant>

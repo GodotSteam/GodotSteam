@@ -9426,15 +9426,16 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("updateVolume", &Steam::updateVolume);
 
 	// NETWORKING BIND METHODS //////////////////
-	ClassDB::bind_method("acceptP2PSessionWithUser", &Steam::acceptP2PSessionWithUser);
-	ClassDB::bind_method("allowP2PPacketRelay", &Steam::allowP2PPacketRelay);
-	ClassDB::bind_method("closeP2PChannelWithUser", &Steam::closeP2PChannelWithUser);
-	ClassDB::bind_method("closeP2PSessionWithUser", &Steam::closeP2PSessionWithUser);
-	ClassDB::bind_method("getP2PSessionState", &Steam::getP2PSessionState);
-	ClassDB::bind_method("getAvailableP2PPacketSize", &Steam::getAvailableP2PPacketSize);
-	ClassDB::bind_method("readP2PPacket", &Steam::readP2PPacket);
-	ClassDB::bind_method("sendP2PPacket", &Steam::sendP2PPacket);
-
+	ClassDB::bind_method(D_METHOD("acceptP2PSessionWithUser",  "steamID"),                                &Steam::acceptP2PSessionWithUser);
+	ClassDB::bind_method(D_METHOD("allowP2PPacketRelay",       "allow"),                                  &Steam::allowP2PPacketRelay);
+	ClassDB::bind_method(D_METHOD("closeP2PChannelWithUser",   "steamID", "channel"),                     &Steam::closeP2PChannelWithUser);
+	ClassDB::bind_method(D_METHOD("closeP2PChannelWithUser",   "steamID"),                                &Steam::closeP2PSessionWithUser);
+	ClassDB::bind_method(D_METHOD("getP2PSessionState",        "steamID"),                                &Steam::getP2PSessionState);
+	ClassDB::bind_method(D_METHOD("getAvailableP2PPacketSize", "channel"),                                &Steam::getAvailableP2PPacketSize);
+	ClassDB::bind_method(D_METHOD("readP2PPacket",             "packetSize", "channel"),                  &Steam::readP2PPacket);
+	ClassDB::bind_method(D_METHOD("sendP2PPacket",             "steamID", "data", "sendType", "channel"), &Steam::sendP2PPacket);
+	
+	
 	// NETWORKING MESSAGES BIND METHODS /////////
 	ClassDB::bind_method("sendMessageToUser", &Steam::sendMessageToUser);
 //	ClassDB::bind_method("receiveMessagesOnChannel", &Steam::receiveMessagesOnChannel);
@@ -9848,8 +9849,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("music_player_will_quit"));
 
 	// NETWORKING SIGNALS ///////////////////////
-	ADD_SIGNAL(MethodInfo("p2p_session_request"));
-	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail"));
+	ADD_SIGNAL(MethodInfo("p2p_session_request", PropertyInfo(Variant::INT, "steamID")));
+	ADD_SIGNAL(MethodInfo("p2p_session_connect_fail", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "sessionError")));
 
 	// NETWORKING MESSAGES //////////////////////
 	ADD_SIGNAL(MethodInfo("network_messages_session_request"));
