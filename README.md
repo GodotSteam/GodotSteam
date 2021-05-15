@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 5/15/21:**
+- Add: new contributor
+
 **Updated 5/1/21:**
 - Added: authentication tutorial
 - Added: new contributor
