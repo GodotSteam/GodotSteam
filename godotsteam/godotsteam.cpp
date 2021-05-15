@@ -6869,8 +6869,8 @@ bool Steam::setAchievement(const String& name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
-	SteamUserStats()->SetAchievement(name.utf8().get_data());
-	return SteamUserStats()->StoreStats();
+	bool ach_set = SteamUserStats()->SetAchievement(name.utf8().get_data());
+	return SteamUserStats()->StoreStats() && ach_set;
 }
 
 // Set a float statistic.
