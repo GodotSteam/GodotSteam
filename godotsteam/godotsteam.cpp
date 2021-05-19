@@ -6860,8 +6860,7 @@ void Steam::requestUserStats(uint64_t steamID){
 
 // Reset all Steam statistics; optional to reset achievements.
 bool Steam::resetAllStats(bool achievementsToo){
-	SteamUserStats()->ResetAllStats(achievementsToo);
-	return SteamUserStats()->StoreStats();
+	return SteamUserStats()->ResetAllStats(achievementsToo);
 }
 
 // Set a given achievement.
@@ -6869,8 +6868,7 @@ bool Steam::setAchievement(const String& name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
-	bool ach_set = SteamUserStats()->SetAchievement(name.utf8().get_data());
-	return SteamUserStats()->StoreStats() && ach_set;
+	return SteamUserStats()->SetAchievement(name.utf8().get_data());
 }
 
 // Set a float statistic.
@@ -6888,8 +6886,7 @@ bool Steam::storeStats(){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
-	SteamUserStats()->StoreStats();
-	return SteamUserStats()->RequestCurrentStats();
+	return SteamUserStats()->StoreStats();
 }
 
 // Updates an AVGRATE stat with new values.
