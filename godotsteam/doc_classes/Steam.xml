@@ -474,9 +474,11 @@
 		<method name="clearAchievement">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<description>
+				Reverts the unlock status of the specified achievement. This is primarily used for testing. This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call [method storeStats]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns [code]true[/code] if clearing the achievement was executed successful.
 			</description>
 		</method>
 		<method name="clearRichPresence">
@@ -530,7 +532,7 @@
 			</argument>
 			<description>
 				Closes the specified P2P channel with the specified user automatically. Once all channels to the user have been closed, the open session to the user will be closed.
-				Returns true if the channel was successfully closed; otherwise returns false if there was no active session or channel with the user.
+				Returns [code]true[/code] if the channel was successfully closed; otherwise returns [code]false[/code] if there was no active session or channel with the user.
 			</description>
 		</method>
 		<method name="closeP2PSessionWithUser">
@@ -540,7 +542,7 @@
 			</argument>
 			<description>
 				Closes the P2P session with the specified user.
-				Returns true if the session was successfully closed; otherwise returns false if no connection was open with the user.
+				Returns [code]true[/code] if the session was successfully closed; otherwise returns [code]false[/code] if no connection was open with the user.
 			</description>
 		</method>
 		<method name="closeSessionWithUser">
@@ -1146,51 +1148,70 @@
 		<method name="getAchievement">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<description>
+				Gets whether or not the specified achievement has been unlocked by the user. To check the achievement status for a different user use [method getUserAchievement]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns a Dictionary with two entries. The key [code]ret[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the call was made successfully. The key [code]achieved[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the specified achievement has been unlocked by the user.
 			</description>
 		</method>
 		<method name="getAchievementAchievedPercent">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<description>
+				Gets the percentage of players who have achieved the specified achievement. Before calling this function you must have called [method requestGlobalAchievementPercentages].
+				Returns a Dictionary with two entries. The key [code]ret[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the achieved percent was retrieved successfully. The key [code]percent[/code] in the Dictionary is mapped to a float containing the percentage of players who unlocked the specified achievement.
 			</description>
 		</method>
 		<method name="getAchievementAndUnlockTime">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<description>
+				Gets if and when the specified achievement was unlocked. If the specified achievement was unlocked but it's unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). To check the achievement status for a different user use [method getUserAchievementAndUnlockTime]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns a Dictionary with three entries. The key [code]ret[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the call was made successfully. The key [code]achieved[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the specified achievement has been unlocked by the user. The key [code]unlocked[/code] in the Dictionary is mapped to an int containing the unlock time of the specified achievement in seconds since January 1, 1970 UTC.
 			</description>
 		</method>
 		<method name="getAchievementDisplayAttribute">
 			<return type="String">
 			</return>
-			<argument index="0" name="name" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<argument index="1" name="key" type="String">
 			</argument>
 			<description>
+				Gets the general attributes for the specified achievement. Currently provides: Name, Description, and Hidden status. The localization is provided based on the game's language if it's set, otherwise it checks if a localization is available from the user's Steam UI Language. If that fails too, then it falls back to english. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns the name of the specified achievement if [code]key[/code] is set to [code]"name"[/code], the description of the specified achievement if [code]key[/code] is set to [code]"desc"[/code], or the hidden state of the specified achievement if [code]key[/code] is set to [code]"hidden"[/code] ([code]"0"[/code] for shown and [code]"1"[/code] for hidden.) The function will also return an empty string if [method requestCurrentStats] did not return it's callback successfully, the specified achievement does not exist within the App Admin, or the specified key is invalid.
 			</description>
 		</method>
 		<method name="getAchievementIcon">
 			<return type="int">
 			</return>
-			<argument index="0" name="name" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<description>
+				Gets the icon of the specified achievement. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns an int as a handle to be used with [method getImageRGBA] to get the actual image data. An invalid handle of 0 will be returned if [method requestCurrentStats] has not completed or has not successfully returned its callback, the specified achievement was not found in the App Admin, or Steam is still fetching the image data from the server.
+				Example: [br][code]var image_handle:int = Steam.getAchievementIcon("achievement_api_name")
+				var image_dict:Dictionary = Steam.getImageRGBA(image_handle)
+				var image:Image = Image.new()
+				image.create_from_data(256, 256, false, Image.FORMAT_RGBA8, image_dict.buffer)
+				var texture:ImageTexture = ImageTexture.new()
+				texture.create_from_image(image)
+				$Sprite.texture = texture [/code]
 			</description>
 		</method>
 		<method name="getAchievementName">
 			<return type="String">
 			</return>
-			<argument index="0" name="achievement" type="int">
+			<argument index="0" name="achievementIndex" type="int">
 			</argument>
 			<description>
+				Gets the 'API name' for an achievement by it's index between 0 and [method getNumAchievements]. This function must be used in conjunction with [method getNumAchievements] to loop over the list of achievements. In general, games should not need these functions as they should have the list of achievements compiled into them. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns the 'API Name' of the achievement; otherwise returns an empty string if [code]achievementIndex[/code] is not a valid index.
 			</description>
 		</method>
 		<method name="getAchievementProgressLimitsFloat">
@@ -2161,6 +2182,8 @@
 			<return type="Array">
 			</return>
 			<description>
+				Gets a list of achievements and their info ordered from most achieved to least achieved. Before calling this function, [method requestGlobalAchievementPercentages] must be called first.
+				Returns an Array of Dictionaries. Each Dictionary in the Array contains four entries. The key [code]rank[/code] in the Dictionaries is mapped to an int containing where the achievement ranks in achieved percentages. The key [code]name[/code] in the Dictionaries is mapped to a String containing the api name of the achievement. The key [code]percent[/code] in the Dictionaries is mapped to a float containing the percentage of users who have unlocked the achievement. The key [code]achieved[/code] in the Dictionaries is mapped to a bool that is true if the local user has unlocked the achievement.
 			</description>
 		</method>
 		<method name="getMotionData">
@@ -2175,6 +2198,8 @@
 			<return type="int">
 			</return>
 			<description>
+				Get the number of achievements defined in the App Admin panel of the Steamworks website. This is used for iterating through all of the achievements with [method getAchievementName]. In general games should not need these functions because they should have a list of existing achievements compiled into them. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns the number of achievements defined in the App Admin; otherwise returns 0 if [method requestCurrentStats] has not been called or has not been successfully called.
 			</description>
 		</method>
 		<method name="getNumActiveBeacons">
@@ -2608,21 +2633,25 @@
 		<method name="getUserAchievement">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="userID" type="int">
 			</argument>
-			<argument index="1" name="arg1" type="String">
+			<argument index="1" name="achievementName" type="String">
 			</argument>
 			<description>
+				Gets whether or not the specified achievement has been unlocked by the specified user. To check the achievement status of the local user use [method getAchievement]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns a Dictionary with four entries. The key [code]retrieved[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the call was made successfully. The key [code]achieved[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the specified achievement has been unlocked by the specified user. The key [code]name[/code] in the Dictionary is mapped to a String containing the api name of the achievement (aka [code]achievementName[/code]). The key [code]steam_id[/code] in the Dictionary is mapped to an int containing the user's steam id.
 			</description>
 		</method>
 		<method name="getUserAchievementAndUnlockTime">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="userID" type="int">
 			</argument>
-			<argument index="1" name="arg1" type="String">
+			<argument index="1" name="achievementName" type="String">
 			</argument>
 			<description>
+				Gets if and when the specified achievement was unlocked by the specified user. If the specified achievement was unlocked but it's unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). To check the achievement status for the local user use [method getAchievementAndUnlockTime]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns a Dictionary with three entries. The key [code]retrieved[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the call was made successfully. The key [code]achieved[/code] in the Dictionary is mapped to a boolean that is [code]true[/code] if the specified achievement has been unlocked by the user. The key [code]unlocked[/code] in the Dictionary is mapped to an int containing the unlock time of the specified achievement in seconds since January 1, 1970 UTC. The key [code]name[/code] in the Dictionary is mapped to a String containing the api name of the achievement (aka [code]achievementName[/code]).
 			</description>
 		</method>
 		<method name="getUserDataFolder">
@@ -2754,13 +2783,15 @@
 		<method name="indicateAchievementProgress">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
-			<argument index="1" name="arg1" type="int">
+			<argument index="1" name="currentProgress" type="int">
 			</argument>
-			<argument index="2" name="arg2" type="int">
+			<argument index="2" name="targetProgress" type="int">
 			</argument>
 			<description>
+				Shows the user a pop-up notification with the current progress of the specified achievement. Calling this function will NOT set the progress or unlock the achievement, the game must do that manually by calling [method setStatInt] or [method setStatFloat]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				Returns [code]true[/code] if [method requestCurrentStats] has been successfully called, the specified achievement is found in the App Admin, and the specified achievement isn't already unlocked; otherwise returns [code]false[/code].
 			</description>
 		</method>
 		<method name="initAuthentication">
@@ -3565,6 +3596,8 @@
 			<return type="void">
 			</return>
 			<description>
+				Asynchronously fetches the data for the percentage of players who have received each achievement for the current game, globally. Emits [signal global_achievement_percentages_ready] when the results have been received. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted.
+				See also: [method getMostAchievedAchievementInfo] and [method getAchievementAchievedPercent]
 			</description>
 		</method>
 		<method name="requestGlobalStats">
@@ -3778,7 +3811,7 @@
 				Sends a P2P packet to the user with the ID contained in [code]steamID[/code]. This is a session-less API which automatically establishes NAT-traversing or Steam relay server connections. The type of data you can send is arbitrary, you can use an off the shelf system like Protocol Buffers or Cap'n Proto to encode your packets in an efficient way, or you can create your own messaging system. If after 20 seconds the packet has not been received then the signal [signal p2p_session_connect_fail] will be emitted.
 				The maximum number of bytes that can be sent in a single packet depends on the send mode. See [constant P2P_SEND_UNRELIABLE], [constant P2P_SEND_UNRELIABLE_NO_DELAY], [constant P2P_SEND_RELIABLE], or [constant P2P_SEND_RELIABLE_WITH_BUFFERING] for more details. 
 				Note that the first packet send may be delayed as the NAT-traversal code runs.
-				Returns true if the packet is successfully sent (not necessarily if the packet is received) and returns false if the packet is too large to send, the target steam ID is invalid, or there are too many bytes queued to be sent. 
+				Returns [code]true[/code] if the packet is successfully sent (not necessarily if the packet is received) and returns [code]false[/code] if the packet is too large to send, the target steam ID is invalid, or there are too many bytes queued to be sent. 
 			</description>
 		</method>
 		<method name="sendQueryUGCRequest">
@@ -3806,9 +3839,11 @@
 		<method name="setAchievement">
 			<return type="bool">
 			</return>
-			<argument index="0" name="arg0" type="String">
+			<argument index="0" name="achievementName" type="String">
 			</argument>
 			<description>
+				Unlocks the the specified achievement. This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call [method storeStats]. Before calling this function, [method requestCurrentStats] must have been called ([method steamInit] does this automatically by default.) and it’s callback signal [signal user_stats_stored] must have been emitted. 
+				Returns [code]true[/code] if the specified achievement has been unlocked successfully; otherwise returns [code]false[/code] if [code]achievementName[/code] is not a valid achievement api name.
 			</description>
 		</method>
 		<method name="setAllowCachedResponse">
@@ -5237,6 +5272,8 @@
 			<argument index="1" name="result" type="int">
 			</argument>
 			<description>
+				This signal is emitted in response to [method requestGlobalAchievementPercentages] when the global achievement percentages have been received.
+				This signal requires [method run_callbacks] to be called every frame in [method Node._process].
 			</description>
 		</signal>
 		<signal name="global_stats_received">
@@ -5615,12 +5652,14 @@
 			<description>
 				Emitted when [method sendP2PPacket] fails to get the packet to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will try reconnecting but will drop if failures continue. 
 				The signal passes the variables [code]steamID[/code], which contains the id of the user that we're attempting to connect with, and [code]sessionError[/code], which maps to one of the following constants: [constant P2P_SESSION_ERROR_NONE], [constant P2P_SESSION_ERROR_NOT_RUNNING_APP], [constant P2P_SESSION_ERROR_NO_RIGHTS_TO_APP], [constant P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON], [constant P2P_SESSION_ERROR_TIMEOUT] or [constant P2P_SESSION_ERROR_MAX].
+				This signal requires [method run_callbacks] to be called every frame in [method Node._process].
 			</description>
 		</signal>
 		<signal name="p2p_session_request">
 			<description>
 				Emitted when a packet sent via [method sendP2PPacket] is received from another user. If the user wants to receive the packet(s) a call to the function [method acceptP2PSessionWithUser] must be made to accept the connection with the sending user. 
 				The signal passes the variable [code]steamID[/code], which contains the steam ID of the sending user.
+				This signal requires [method run_callbacks] to be called every frame in [method Node._process].
 			</description>
 		</signal>
 		<signal name="persona_state_change">
@@ -5745,6 +5784,8 @@
 		</signal>
 		<signal name="user_achievement_stored">
 			<description>
+				Emits with the results of a request to store achievement updates to the server, or an "indicate progress" call. If both [code]currentProgress[/code] and [code]maxProgress[/code] are zero, that means the achievement has been fully unlocked.
+				This signal requires [method run_callbacks] to be called every frame in [method Node._process].
 			</description>
 		</signal>
 		<signal name="user_favorite_items_list_changed">
