@@ -9423,14 +9423,14 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("updateVolume", &Steam::updateVolume);
 
 	// NETWORKING BIND METHODS //////////////////
-	ClassDB::bind_method(D_METHOD("acceptP2PSessionWithUser",  "steamID"),                                &Steam::acceptP2PSessionWithUser);
-	ClassDB::bind_method(D_METHOD("allowP2PPacketRelay",       "allow"),                                  &Steam::allowP2PPacketRelay);
-	ClassDB::bind_method(D_METHOD("closeP2PChannelWithUser",   "steamID", "channel"),                     &Steam::closeP2PChannelWithUser);
-	ClassDB::bind_method(D_METHOD("closeP2PSessionWithUser",   "steamID"),                                &Steam::closeP2PSessionWithUser);
-	ClassDB::bind_method(D_METHOD("getP2PSessionState",        "steamID"),                                &Steam::getP2PSessionState);
-	ClassDB::bind_method(D_METHOD("getAvailableP2PPacketSize", "channel"),                                &Steam::getAvailableP2PPacketSize);
-	ClassDB::bind_method(D_METHOD("readP2PPacket",             "packetSize", "channel"),                  &Steam::readP2PPacket);
-	ClassDB::bind_method(D_METHOD("sendP2PPacket",             "steamID", "data", "sendType", "channel"), &Steam::sendP2PPacket);
+	ClassDB::bind_method(D_METHOD("acceptP2PSessionWithUser", "steamID"), &Steam::acceptP2PSessionWithUser);
+	ClassDB::bind_method(D_METHOD("allowP2PPacketRelay", "allow"), &Steam::allowP2PPacketRelay);
+	ClassDB::bind_method(D_METHOD("closeP2PSessionWithUser", "steamID", "channel"), &Steam::closeP2PChannelWithUser);
+	ClassDB::bind_method(D_METHOD("closeP2PChannelWithUser", "steamID"), &Steam::closeP2PSessionWithUser);
+	ClassDB::bind_method(D_METHOD("getP2PSessionState", "steamID"), &Steam::getP2PSessionState);
+	ClassDB::bind_method(D_METHOD("getAvailableP2PPacketSize", "channel"), &Steam::getAvailableP2PPacketSize);
+	ClassDB::bind_method(D_METHOD("readP2PPacket", "packetSize", "channel"), &Steam::readP2PPacket);
+	ClassDB::bind_method(D_METHOD("sendP2PPacket", "steamID", "data", "sendType", "channel"), &Steam::sendP2PPacket);
 	
 	
 	// NETWORKING MESSAGES BIND METHODS /////////
