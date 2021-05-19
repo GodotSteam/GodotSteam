@@ -85,7 +85,14 @@ godot/modules/godotsteam/register_types.h
 						<p>Compile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
 						On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )<br/>
 						On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
-						<p><strong>REMEMBER:</strong> You must also compile the templates for your target operating system(s).  Typically by adding <code>target=release tools=no use_lto=yes</code> to your compiling command.</p>
+						<p>For the best results (size and performance), you will want to use these SCONS flags when compiling your editor:</p>
+<pre><code>
+production=yes tools=yes target=release_debug
+</code></pre>
+						<p>Use this for your template:</p>
+<pre><code>
+production=yes tools=no target=release
+</code></pre>
 						<p><strong>NOTE:</strong> when creating templates for OSX, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em></p>
 						<p><strong>NOTE: using MinGW causes crashes.</strong> There is a _mingw-patch.py_ file that corrects one known crash due to compiling with MinGW but there is now a newer crash that hasn't been solved; as well as who knows how many unfound issues. I strong recommend you <strong>do not use MinGW</strong> to compile at this time.</p>
 						<hr/>

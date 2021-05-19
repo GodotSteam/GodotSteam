@@ -32,8 +32,12 @@
 						<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
 						<h3>Version 3.9.1 Changes</h3>
 						<ul>
+							<li>Added: documentation to P2P functions, constants, and signals; thanks to blaze-the-star</li>
 							<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
+							<li>Fixed: incorrect function bind from pull request</li>
 							<li>Removed: unused C++ line from config.py for Mac, which caused compiling issues</li>
+							<li>Removed: storeStats from setAchievement, resetAllStats as it should be called manually after them</li>
+							<li>Removed: requestCurrentStats from storeStats as it should be called manually</li>
 						</ul>
 						<h3>Version 3.9 Changes</h3>
 						<ul>
