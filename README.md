@@ -1,5 +1,5 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.3). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.3.1). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
@@ -16,28 +16,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.9)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
-
-**Version 3.9 Changes**
-- Added: new UGC functions addRequiredTagGroup, getQueryUGCNumTags, getQueryUGCTag, getQueryUGCTagDisplayName
-- Added: new Friends function activateGameOverlayInviteDialogConnectString
-- Added: default values to leaderboard functions, you can now pass handles for specific leaderboards or use the internally-stored, last-called handle
-- Added: multiple controller types from Input function getInputTypeForHandle
-- Changed: minor readability changes to function arguments and defaults
-- Changed: additional spacing and readability to overall module
-- Changed: replaced leaderboardDetailsMax with k_cLeaderboardDetailsMax
-- Changed: applied _EIREXE_'s UTF-16 fix module-wide
-- Changed: minor corrections to comments and added missing comments
-- Changed: some additional code to some call results and callbacks
-- Changed: metadata length for UGC to 5000 from 255, thanks to _EIREXE_
-- Changed: beginAuthSession to use new auth function arguments
-- Changed: cancelAuthTicket to actually use the Steamworks function
-- Fixed: renamed addItemToFavorite to addItemToFavorites to match SDK
-- Fixed: incorrect class check in some UGC functions
-- Fixed: minor corrections to various functions
-- Fixed: destroyResult and getResultItemProperty being bound to the wrong functions
-- Removed: setLeaderboardDetailsMax as it is unnecessary
-- Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes
+You can [download pre-compiled versions _(currently v3.9.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 3.9.1 Changes**
 - Added: documentation to P2P functions, constants, and signals; thanks to **blaze-the-star**
@@ -55,7 +34,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK 1.51](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source 3.3](https://github.com/godotengine/godot).
+- Download and unpack the [Godot source 3.3.1](https://github.com/godotengine/godot).
 - Move the following to godotsteam/sdk/ folder:
 ````
     sdk/public/
@@ -74,6 +53,7 @@ Quick How-To
 ````
 - Now move the "godotsteam" directory into the "modules" directory of the unpacked Godot Engine source.
 - Recompile for your platform:
+  - **NOTE:** use SCONS flags ````production=yes tools=yes target=release_debug```` for your editor and ````production=yes tools=no target=release```` for your templates.
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
   - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
     - If using Ubuntu 16.10 or higher and having issues with PIE security in GCC, use LINKFLAGS='-no-pie' to get an executable instead of a shared library.
