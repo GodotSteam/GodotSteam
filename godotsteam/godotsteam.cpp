@@ -9664,17 +9664,17 @@ void Steam::_bind_methods(){
 	
 	// User Stats Bind Methods //////////////////
 	ClassDB::bind_method(D_METHOD("attachLeaderboardUGC", "ugcHandle", "thisLeaderboard"), &Steam::attachLeaderboardUGC, DEFVAL(0));
-	ClassDB::bind_method("clearAchievement", &Steam::clearAchievement);
+	ClassDB::bind_method(D_METHOD("clearAchievement", "achievementName"), &Steam::clearAchievement);
 	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "start", "end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntriesForUsers", "usersID", "thisLeaderboard"), &Steam::downloadLeaderboardEntriesForUsers, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("findLeaderboard", "name"), &Steam::findLeaderboard);
 	ClassDB::bind_method("findOrCreateLeaderboard", &Steam::findOrCreateLeaderboard);
-	ClassDB::bind_method("getAchievement", &Steam::getAchievement);
-	ClassDB::bind_method("getAchievementAchievedPercent", &Steam::getAchievementAchievedPercent);
-	ClassDB::bind_method("getAchievementAndUnlockTime", &Steam::getAchievementAndUnlockTime);
-	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "name", "key"), &Steam::getAchievementDisplayAttribute);
-	ClassDB::bind_method(D_METHOD("getAchievementIcon", "name"), &Steam::getAchievementIcon);
-	ClassDB::bind_method(D_METHOD("getAchievementName", "achievement"), &Steam::getAchievementName);
+	ClassDB::bind_method(D_METHOD("getAchievement",                 "achievementName"),        &Steam::getAchievement);
+	ClassDB::bind_method(D_METHOD("getAchievementAchievedPercent",  "achievementName"),        &Steam::getAchievementAchievedPercent);
+	ClassDB::bind_method(D_METHOD("getAchievementAndUnlockTime",    "achievementName"),        &Steam::getAchievementAndUnlockTime);
+	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "achievementName", "key"), &Steam::getAchievementDisplayAttribute);
+	ClassDB::bind_method(D_METHOD("getAchievementIcon",             "achievementName"),        &Steam::getAchievementIcon);
+	ClassDB::bind_method(D_METHOD("getAchievementName",             "achievementIndex"),       &Steam::getAchievementName);
 //	ClassDB::bind_method("getGlobalStatInt", &Steam::getGlobalStatInt);
 	ClassDB::bind_method("getGlobalStatFloat", &Steam::getGlobalStatFloat);
 //	ClassDB::bind_method("getGlobalStatIntHistory", &Steam::getGlobalStatIntHistory);
@@ -9688,17 +9688,17 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);
 	ClassDB::bind_method("getStatInt", &Steam::getStatInt);
-	ClassDB::bind_method("getUserAchievement", &Steam::getUserAchievement);
-	ClassDB::bind_method("getUserAchievementAndUnlockTime", &Steam::getUserAchievementAndUnlockTime);
+	ClassDB::bind_method(D_METHOD("getUserAchievement",              "userID", "achievementName"), &Steam::getUserAchievement);
+	ClassDB::bind_method(D_METHOD("getUserAchievementAndUnlockTime", "userID", "achievementName"), &Steam::getUserAchievementAndUnlockTime);
 	ClassDB::bind_method("getUserStatFloat", &Steam::getUserStatFloat);
 	ClassDB::bind_method("getUserStatInt", &Steam::getUserStatInt);
-	ClassDB::bind_method("indicateAchievementProgress", &Steam::indicateAchievementProgress);
+	ClassDB::bind_method(D_METHOD("indicateAchievementProgress", "achievementName", "currentProgress", "targetProgress"), &Steam::indicateAchievementProgress);
 	ClassDB::bind_method("requestCurrentStats", &Steam::requestCurrentStats);
 	ClassDB::bind_method("requestGlobalAchievementPercentages", &Steam::requestGlobalAchievementPercentages);
 	ClassDB::bind_method("requestGlobalStats", &Steam::requestGlobalStats);
 	ClassDB::bind_method("requestUserStats", &Steam::requestUserStats);
 	ClassDB::bind_method("resetAllStats", &Steam::resetAllStats);
-	ClassDB::bind_method("setAchievement", &Steam::setAchievement);
+	ClassDB::bind_method(D_METHOD("setAchievement", "achievementName"), &Steam::setAchievement);
 	ClassDB::bind_method("setStatFloat", &Steam::setStatFloat);
 	ClassDB::bind_method("setStatInt", &Steam::setStatInt);
 	ClassDB::bind_method("storeStats", &Steam::storeStats);
@@ -9925,7 +9925,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("leaderboard_score_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
 	ADD_SIGNAL(MethodInfo("leaderboard_ugc_set"));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "players")));
-	ADD_SIGNAL(MethodInfo("user_achievement_stored"));
+	ADD_SIGNAL(MethodInfo("user_achievement_stored", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::BOOL, "groupAchieve"), PropertyInfo(Variant::STRING, "achievementName"), PropertyInfo(Variant::INT, "currentProgress"), PropertyInfo(Variant::INT, "maxProgress")));
 	ADD_SIGNAL(MethodInfo("current_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
 	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "gameID"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "userID")));
 	ADD_SIGNAL(MethodInfo("user_stats_stored"));
