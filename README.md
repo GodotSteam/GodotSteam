@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 5/22/21:**
+- Added: changelog for GodotSteam 3.9.2
+
 **Updated 5/15/21:**
 - Add: new contributor
 
@@ -41,45 +44,6 @@ What's New
 ** Updated 1/15/21:**
 - Added: new task to to-do
 - Added: new games to list
-
-**Updated 12/21/20:**
-- Added: new contributor
-
-**Updated 12/6/20:**
-- Changed: updates to the lobbies / p2p tutorial
-- Changed: main change-log for godot3 master branch
-
-**Updated 11/24/20:**
-- Added: new tutorial - Exporting and Shipping
-- Changed: added new contributors
-
-**Updated 11/19/20:**
-- Added: new game to list
-- Fixed: misspelling in sidebar links
-
-**Updated 11/15/20:**
-- Changed: Linux caveats tutorial with new solution
-- Fixed: broken links on various pages for sidebar
-
-**Updated 11/7/20:**
-- Added: new game to list
-
-**Updated 10/30/20:**
-- Added: new game to list
-
-**Update 10/26/20:**
-- Changed: finished a bunch of tasks from to-do list
-- Removed: unnecessary tasks from to-do list
-
-**Update 10/22/20:**
-- Added: new game to list
-- Added: new tutorial for Linux caveats and issues
-
-**Update 10/7/20:**
-- Added: new game to list
-
-**Update 10/4/20:**
-- Added: new game to list
 
 Donate
 -------------
