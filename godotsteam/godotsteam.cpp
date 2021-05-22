@@ -6692,27 +6692,43 @@ Dictionary Steam::getLeaderboardSortMethod(uint64_t thisLeaderboard){
 }
 
 // Gets the info on the most achieved achievement for the game.
-Array Steam::getMostAchievedAchievementInfo(){
+Dictionary Steam::getMostAchievedAchievementInfo(){
+	Dictionary entry;
 	if(SteamUserStats() == NULL){
-		return Array();
+		return entry;
 	}
-	Array achieve;
-	char name;
+	char *name = new char[64];
 	float percent = 0;
 	bool achieved = false;
 	// Get the data from Steam
-	int result = SteamUserStats()->GetMostAchievedAchievementInfo(&name, 64, &percent, &achieved);
-	while(result != -1){
-		Dictionary entry;
+	int result = SteamUserStats()->GetMostAchievedAchievementInfo(name, 64, &percent, &achieved);
+	if(result > -1){
 		entry["rank"] = result;
 		entry["name"] = name;
 		entry["percent"] = percent;
 		entry["achieved"] = achieved;
-		achieve.append(entry);
-		// Get the next most achieved achievement
-		result = SteamUserStats()->GetNextMostAchievedAchievementInfo(result, &name, 64, &percent, &achieved);
 	}
-	return achieve;
+	return entry;
+}
+
+// Gets the info on the next most achieved achievement for the game.
+Dictionary Steam::getNextMostAchievedAchievementInfo(int iterator){
+	Dictionary entry;
+	if(SteamUserStats() == NULL){
+		return entry;
+	}
+	char *name = new char[64];
+	float percent = 0;
+	bool achieved = false;
+	// Get the data from Steam
+	int result = SteamUserStats()->GetNextMostAchievedAchievementInfo(iterator, name, 64, &percent, &achieved);
+	if(result > -1){
+		entry["rank"] = result;
+		entry["name"] = name;
+		entry["percent"] = percent;
+		entry["achieved"] = achieved;
+	}
+	return entry;
 }
 
 // Get the number of achievements.
@@ -9684,6 +9700,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getLeaderboardName", "thisLeaderboard"), &Steam::getLeaderboardName, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLeaderboardSortMethod", "thisLeaderboard"), &Steam::getLeaderboardSortMethod, DEFVAL(0));
 	ClassDB::bind_method("getMostAchievedAchievementInfo", &Steam::getMostAchievedAchievementInfo);
+	ClassDB::bind_method("getNextMostAchievedAchievementInfo", &Steam::getNextMostAchievedAchievementInfo);
 	ClassDB::bind_method("getNumAchievements", &Steam::getNumAchievements);
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);

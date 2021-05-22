@@ -20,8 +20,10 @@ You can [download pre-compiled versions _(currently v3.9.1)_ of this repo here](
 
 **Version 3.9.1 Changes**
 - Added: documentation to P2P functions, constants, and signals; thanks to **blaze-the-star**
+- Added: getNextMostAchievedAchievementInfo function, moved out of getMostAchievedAchievementInfo
 - Fixed: destroyResult and getResultItemProperty being bound to the wrong functions
 - Fixed: incorrect function bind from pull request
+- Fixed: getMostAchievedAchievementInfo causing a crash
 - Removed: unused C++ line from config.py for Mac, which caused compiling issues
 - Removed: storeStats from setAchievement, resetAllStats as it should be called manually after them
 - Removed: requestCurrentStats from storeStats as it should be called manually

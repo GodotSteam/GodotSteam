@@ -1064,7 +1064,8 @@ class Steam: public Object {
 		int getLeaderboardEntryCount(uint64_t thisLeaderboard=0);
 		String getLeaderboardName(uint64_t thisLeaderboard=0);
 		Dictionary getLeaderboardSortMethod(uint64_t thisLeaderboard=0);
-		Array getMostAchievedAchievementInfo();
+		Dictionary getMostAchievedAchievementInfo();
+		Dictionary getNextMostAchievedAchievementInfo(int iterator);
 		uint32_t getNumAchievements();
 		void getNumberOfCurrentPlayers();
 		float getStatFloat(const String& name);
