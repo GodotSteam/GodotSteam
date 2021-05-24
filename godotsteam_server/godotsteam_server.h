@@ -1,15 +1,27 @@
 #ifndef GODOTSTEAM_SERVER_H
 #define GODOTSTEAM_SERVER_H
+
+/////////////////////////////////////////////////
+// SILENCE STEAMWORKS WARNINGS
+/////////////////////////////////////////////////
+//
 // Turn off MSVC-only warning about strcpy
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable:4996)
 #pragma warning(disable:4828)
 #endif
+
+/////////////////////////////////////////////////
+// INCLUDE HEADERS
+/////////////////////////////////////////////////
+//
 // Include INT types header
 #include <inttypes.h>
+
 // Include Steamworks Server API header
-#include <steam/steam_gameserver.h>
+#include "steam/steam_gameserver.h"
+
 // Include some Godot headers
 #include "core/object.h"
 #include "scene/resources/texture.h"
@@ -21,7 +33,10 @@ class SteamServer: public Object {
 	GDCLASS(SteamServer, Object);
 	
 	public:
-		// Steam API enums
+		/////////////////////////////////////////
+		// Steamworks API enums /////////////////
+		/////////////////////////////////////////
+		//
 		enum AccountType {
 			ACCOUNT_TYPE_INVALID = 0, ACCOUNT_TYPE_INDIVIDUAL = 1, ACCOUNT_TYPE_MULTISEAT = 2, ACCOUNT_TYPE_GAME_SERVER = 3, ACCOUNT_TYPE_ANON_GAME_SERVER = 4, ACCOUNT_TYPE_PENDING = 5, ACCOUNT_TYPE_CONTENT_SERVER = 6, ACCOUNT_TYPE_CLAN = 7, ACCOUNT_TYPE_CHAT = 8, ACCOUNT_TYPE_CONSOLE_USER = 9, ACCOUNT_TYPE_ANON_USER = 10, ACCOUNT_TYPE_MAX = 11
 		};
@@ -66,7 +81,7 @@ class SteamServer: public Object {
 		enum GameIDType {
 			GAME_TYPE_APP = 0, GAME_TYPE_GAME_MOD = 1, GAME_TYPE_SHORTCUT = 2, GAME_TYPE_P2P = 3
 		};
-		enum LAUNCH_OPTION_Type {
+		enum Launch_Option_Type {
 			LAUNCH_OPTION_TYPE_NONE = 0, LAUNCH_OPTION_TYPE_DEFAULT = 1, LAUNCH_OPTION_TYPE_SAFE_MODE = 2, LAUNCH_OPTION_TYPE_MULTIPLAYER = 3, LAUNCH_OPTION_TYPE_CONFIG = 4, LAUNCH_OPTION_TYPE_OPEN_VR = 5, LAUNCH_OPTION_TYPE_SERVER = 6, LAUNCH_OPTION_TYPE_EDITOR = 7, LAUNCH_OPTION_TYPE_MANUAL = 8, LAUNCH_OPTION_TYPE_BENCHMARK = 9, LAUNCH_OPTION_TYPE_OPTION1 = 10,
 			LAUNCH_OPTION_TYPE_OPTION2 = 11, LAUNCH_OPTION_TYPE_OPTION3 = 12, LAUNCH_OPTION_TYPE_OCULUS_VR = 13, LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY = 14, LAUNCH_OPTION_TYPE_OS_VR = 15, LAUNCH_OPTION_TYPE_DIALOG = 1000
 		};
@@ -103,6 +118,7 @@ class SteamServer: public Object {
 		enum VRHMDType {
 			VR_HMD_TYPE_NONE = -1, VR_HMD_TYPE_UNKNOWN = 0, VR_HMD_TYPE_HTC_DEV = 1, VR_HMD_TYPE_HTC_VIVEPRE = 2, VR_HMD_TYPE_HTC_VIVE = 3, VR_HMD_TYPE_HTC_UNKNOWN = 20, VR_HMD_TYPE_OCULUS_DK1 = 21, VR_HMD_TYPE_OCULUS_DK2 = 22, VR_HMD_TYPE_OCULUS_RIFT = 23, VR_HMD_TYPE_OCULUS_UNKNOWN = 40
 		};
+
 		// HTTP enums
 		enum HTTPMethod {
 			HTTP_METHOD_INVALID = 0, HTTP_METHOD_GET = 1, HTTP_METHOD_HEAD = 2, HTTP_METHOD_POST = 3, HTTP_METHOD_PUT = 4, HTTP_METHOD_DELETE = 5, HTTP_METHOD_OPTIONS = 6, HTTP_METHOD_PATCH = 7
@@ -115,10 +131,12 @@ class SteamServer: public Object {
 			HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE = 416, HTTP_STATUS_CODE_417_EXPECTATION_FAILED = 417, HTTP_STATUS_CODE_4XX_UNKNOWN = 418, HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS = 429, HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR = 500, HTTP_STATUS_CODE_501_NOT_IMPLEMENTED = 501, HTTP_STATUS_CODE_502_BAD_GATEWAY = 502,
 			HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE = 503, HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT = 504, HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED = 505, HTTP_STATUS_CODE_5XX_UNKNOWN = 599
 		};
+
 		// Inventory enums
 		enum SteamItemFlags {
 			STEAM_ITEM_NO_TRADE = (1<<0), STEAM_ITEM_REMOVED = (1<<8), STEAM_ITEM_CONSUMED = (1<<9)
 		};
+
 		// Networking enums
 		enum P2PSend {
 			P2P_SEND_UNRELIABLE = 0, P2P_SEND_UNRELIABLE_NO_DELAY = 1, P2P_SEND_RELIABLE = 2, P2P_SEND_RELIABLE_WITH_BUFFERING = 3
@@ -133,6 +151,7 @@ class SteamServer: public Object {
 			NET_SOCKET_STATE_INVALID = 0, NET_SOCKET_STATE_CONNECTED = 1, NET_SOCKET_STATE_INITIATED = 10, NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND = 11, NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES = 12, NET_SOCKET_STATE_CHALLENGE_HANDSHAKE = 15, NET_SOCKET_STATE_DISCONNECTING = 21, NET_SOCKET_STATE_LOCAL_DISCONNECT = 22, NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT = 23,
 			NET_SOCKET_STATE_REMOTE_END_DISCONNECTED = 24, NET_SOCKET_STATE_BROKEN = 25
 		};
+
 		// UGC enums
 		enum ItemPreviewType {
 			ITEM_PREVIEW_TYPE_IMAGE = 0, ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO = 1, ITEM_PREVIEW_TYPE_SKETCHFAB = 2, ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS = 3, ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG = 4, ITEM_PREVIEW_TYPE_RESERVED_MAX = 255
@@ -162,6 +181,7 @@ class SteamServer: public Object {
 		enum UserUGCListSortOrder {
 			USERUGCLISTSORTORDER_CREATIONORDERDESC = 0, USERUGCLISTSORTORDER_CREATIONORDERASC = 1, USERUGCLISTSORTORDER_TITLEASC = 2, USERUGCLISTSORTORDER_LASTUPDATEDDESC = 3, USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC = 4, USERUGCLISTSORTORDER_VOTESCOREDESC = 5, USERUGCLISTSORTORDER_FORMODERATION = 6
 		};
+
 		// Utils enums
 		enum CheckFileSignature {
 			CHECK_FILE_SIGNATURE_INVALID_SIGNATURE = 0, CHECK_FILE_SIGNATURE_VALID_SIGNATURE = 1, CHECK_FILE_SIGNATURE_FILE_NOT_FOUND = 2, CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP = 3, CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE = 4
@@ -180,6 +200,10 @@ class SteamServer: public Object {
 		SteamServer();
 		~SteamServer();
 
+		/////////////////////////////////////////
+		// STEAMWORKS FUNCTIONS /////////////////
+		/////////////////////////////////////////
+		//
 		CSteamID createSteamID(uint64_t steamID, int accountType=-1);
 
 		// Main /////////////////////////////////
@@ -232,7 +256,7 @@ class SteamServer: public Object {
 		bool releaseHTTPRequest(uint32 request);
 		bool sendHTTPRequest(uint32 request);
 		bool sendHTTPRequestAndStreamResponse(uint32 request);
-		bool setCookie(const String& host, const String& url, const String& cookie);
+		bool setHTTPCookie(const String& host, const String& url, const String& cookie);
 		bool setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds);
 		bool setHTTPRequestContextValue(uint32 request, uint64_t contextValue);
 		bool setHTTPRequestCookieContainer(uint32 request);
@@ -313,10 +337,10 @@ class SteamServer: public Object {
 		void setGameTags(const String& tags);
 		void setGameData(const String& data);
 		void setRegion(const String& region);
-		uint32_t getAuthSessionTicket();
-		int beginAuthSession(uint32_t authTicket, uint64_t steamID);
+		Dictionary getAuthSessionTicket();
+		int beginAuthSession(PoolByteArray ticket, int ticketSize, uint64_t steamID);
 		void endAuthSession(uint64_t steamID);
-		void cancelAuthTicket(int authTicket);
+		void cancelAuthTicket(uint32_t authTicket);
 		int userHasLicenceForApp(uint64_t steamID, AppId_t appID);
 		bool requestUserGroupStatus(uint64_t steamID, int groupID);
 		Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
@@ -349,6 +373,7 @@ class SteamServer: public Object {
 		void addItemToFavorite(uint32_t appID, uint64_t publishedFileID);
 		bool addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
 		bool addRequiredTag(uint64_t queryHandle, const String& tagName);
+		bool addRequiredTagGroup(uint64_t queryHandle, Array tagArray);
 		bool initWorkshopForGameServer(uint32_t workshopDepotID);
 		void createItem(AppId_t appID, int fileType);
 		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page);
@@ -364,12 +389,15 @@ class SteamServer: public Object {
 		Dictionary getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex);
 		Dictionary getQueryUGCChildren(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex);
+		uint32 getQueryUGCNumTags(uint64_t queryHandle, uint32 index);
 		String getQueryUGCMetadata(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index);
 		uint32 getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index);
 		String getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCResult(uint64_t queryHandle, uint32 index);
 		Dictionary getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType);
+		String getQueryUGCTag(uint64_t queryHandle, uint32 index, uint32 tagIndex);
+		String getQueryUGCTagDisplayName(uint64_t queryHandle, uint32 index, uint32 tagIndex);
 		Array getSubscribedItems();
 		void getUserItemVote(uint64_t publishedFileID);
 		bool releaseQueryUGCRequest(uint64_t queryHandle);
@@ -446,6 +474,7 @@ class SteamServer: public Object {
 		static SteamServer* singleton;
 
 	private:
+		// Main
 		bool isInitSuccess;
 
 		// Apps
@@ -467,14 +496,6 @@ class SteamServer: public Object {
 		// STRUCTS //////////////////////////////
 		/////////////////////////////////////////
 		//
-		// Authentication ///////////////////////
-		struct TicketData {
-			uint32_t id;
-			uint32_t *buffer;
-			uint32_t size;
-		};
-		Vector<TicketData> tickets;
-
 		// UGC item details /////////////////////
 		struct UGCDetails {
 			uint64_t publishedFileID;

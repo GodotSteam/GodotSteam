@@ -1,18 +1,34 @@
 # GodotSteam Server for Godot 3.x
-Steam Server API for the Godot game engine (versions 3 to 3.2.3). For the Windows, Linux, and Mac platforms. 
+Steam Server API for the Godot game engine (versions 3.0 to 3.3.1). For the Windows, Linux, and Mac platforms.
 
-Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), and [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative).
+Additional flavors include:
+- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
+- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
 Documentation
 ----------
-Documentation is available here: https://gramps.github.io/GodotSteam/
-
-Alternately, there is the project's Wiki page here: https://github.com/Gramps/GodotSteam/wiki
+[Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
 
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam Server.
 
+Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
+
 Current Build
 ----------
+You can [download pre-compiled versions _(currently v1.1.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 1.2 Changes**
+- Added: various notations and spacing
+- Added: addRequiredTagGroup, getQueryUGCTag, getQueryUGCTagDisplayName, and getQueryUGCNumTags functions from UGC
+- Changed: setCookie to setHTTPCookie
+- Fixed: various delete statements
+- Fixed: converting user ID in createQueryUserUGCRequest
+- Fixed: metadata length in setItemMetadata
+- Fixed: library paths in config.py
+- Removed: compiling flag in config.py for OSX
+- Removed: ticket struct as it causes craches
+
 **Version 1.1.1 Changes**
 - Changed: includes Godot header file to allow more than 5 arguments in a function
 - Fixed: filterText for Steamworks SDK 1.50
@@ -31,7 +47,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source](https://github.com/godotengine/godot); preferably 3.2.3.
+- Download and unpack the [Godot source 3.3.1](https://github.com/godotengine/godot).
 - Move the following to godotsteam_server/sdk/:
 ````
     sdk/public/
@@ -50,6 +66,7 @@ Quick How-To
 ````
 - Now move the "godotsteam_server" directory into the "modules" directory of the unpacked Godot Engine source.
 - Recompile for your platform:
+  - **NOTE:** use SCONS flags ````production=yes tools=yes target=release_debug```` for your editor and ````production=yes tools=no target=release```` for your templates.
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
   - Linux ( http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html )
     - If using Ubuntu 16.10 or higher and having issues with PIE security in GCC, use LINKFLAGS='-no-pie' to get an executable instead of a shared library.
