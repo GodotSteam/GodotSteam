@@ -592,11 +592,11 @@ class Steam: public Object {
 
 		// HTTP /////////////////////////////////
 		void createCookieContainer( bool allowResponsesToModify);
-		void createHTTPRequest(int requestMethod, const String& absoluteURL);
+		uint32_t createHTTPRequest(int requestMethod, const String& absoluteURL);
 		bool deferHTTPRequest(uint32 request);
 		float getHTTPDownloadProgressPct(uint32 request);
 		bool getHTTPRequestWasTimedOut(uint32 request);
-		uint8 getHTTPResponseBodyData(uint32 request, uint32 bufferSize);
+		PoolByteArray getHTTPResponseBodyData(uint32 request, uint32 bufferSize);
 		uint32 getHTTPResponseBodySize(uint32 request);
 		uint32 getHTTPResponseHeaderSize(uint32 request, const String& headerName);
 		uint8 getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize);

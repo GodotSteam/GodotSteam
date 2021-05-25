@@ -1880,10 +1880,11 @@ void Steam::createCookieContainer(bool allowResponsesToModify){
 }
 
 // Initializes a new HTTP request.
-void Steam::createHTTPRequest(int requestMethod, const String& absoluteURL){
+uint32_t Steam::createHTTPRequest(int requestMethod, const String& absoluteURL){
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->CreateHTTPRequest((EHTTPMethod)requestMethod, absoluteURL.utf8().get_data());
+		return SteamHTTP()->CreateHTTPRequest((EHTTPMethod)requestMethod, absoluteURL.utf8().get_data());
 	}
+	return HTTPREQUEST_INVALID_HANDLE;
 }
 
 // Defers a request which has already been sent by moving it at the back of the queue.
@@ -1913,10 +1914,11 @@ bool Steam::getHTTPRequestWasTimedOut(uint32 request){
 }
 
 // Gets the body data from an HTTP response.
-uint8 Steam::getHTTPResponseBodyData(uint32 request, uint32 bufferSize){
-	uint8 bodyData = 0; 
+PoolByteArray Steam::getHTTPResponseBodyData(uint32 request, uint32 bufferSize){
+	PoolByteArray bodyData;
+	bodyData.resize(bufferSize);
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseBodyData(request, &bodyData, bufferSize);
+		SteamHTTP()->GetHTTPResponseBodyData(request, bodyData.write().ptr(), bufferSize);
 	}
 	return bodyData;
 }
