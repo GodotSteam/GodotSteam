@@ -235,7 +235,7 @@ String Steam::getAppInstallDir(AppId_t appID){
 	char *buffer = new char[folderBuffer];
 	SteamApps()->GetAppInstallDir(appID, (char*)buffer, folderBuffer);
 	String appDir = buffer;
-	delete buffer;
+	delete[] buffer;
 	return appDir;
 }
 // Check if given application/game is installed, not necessarily owned.
@@ -995,7 +995,7 @@ void Steam::getPlayerAvatar(int size, uint64_t steamID){
 	avatarData->m_iWide = size;
 	avatarData->m_iTall = size;
 	_avatar_loaded(avatarData);
-	delete avatarData;
+	delete[] avatarData;
 	return;
 }
 // Draw the given avatar.
@@ -2516,7 +2516,7 @@ void Steam::_check_file_signature(CheckFileSignature_t *callData){
 }
 // Called when the big picture gamepad text input has been closed.
 void Steam::_gamepad_text_input_dismissed(GamepadTextInputDismissed_t* callData){
-	char text;
+	char text = '\0';
 	uint32 length = 0;
 	if(callData->m_bSubmitted){
 		SteamUtils()->GetEnteredGamepadTextInput(&text, callData->m_unSubmittedText);
@@ -2756,7 +2756,7 @@ Array Steam::getSubscribedItems(){
 	for(int i = 0; i < itemList; i++){
 		subscribed.append((uint64_t)items[i]);
 	}
-	delete items;
+	delete[] items;
 	return subscribed;
 }
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
@@ -2879,7 +2879,7 @@ String Steam::getUserDataFolder(){
 	char *buffer = new char[bufferSize];
 	SteamUser()->GetUserDataFolder((char*)buffer, bufferSize);
 	String data_path = buffer;
-	delete buffer;
+	delete[] buffer;
 	return data_path;
 }
 // (LEGACY FUNCTION) Set data to be replicated to friends so that they can join your game.
@@ -3291,10 +3291,9 @@ void Steam::setOverlayNotificationInset(int horizontal, int vertical){
 }
 // Set the position where overlay shows notifications.
 void Steam::setOverlayNotificationPosition(int pos){
-	if((pos < 0) || (pos > 3) || (SteamUtils() == NULL)){
-		return;
+	if((pos >= 0) && (pos < 4) && (SteamUtils() != NULL)){
+		SteamUtils()->SetOverlayNotificationPosition(ENotificationPosition(pos));
 	}
-	SteamUtils()->SetOverlayNotificationPosition(ENotificationPosition(pos));
 }
 // Set whether the HMD content will be streamed via Steam In-Home Streaming.
 void Steam::setVRHeadsetStreamingEnabled(bool enabled){
