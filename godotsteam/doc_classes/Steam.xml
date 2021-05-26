@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="Steam" inherits="Object" version="3.2">
+<class name="Steam" inherits="Object" version="3.3">
 	<brief_description>
 		Steamworks API for the Godot game engine.
 	</brief_description>
@@ -408,9 +408,11 @@
 		<method name="beginAuthSession">
 			<return type="int">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="arg0" type="PoolByteArray">
 			</argument>
 			<argument index="1" name="arg1" type="int">
+			</argument>
+			<argument index="2" name="arg2" type="int">
 			</argument>
 			<description>
 			</description>
@@ -630,7 +632,7 @@
 			</description>
 		</method>
 		<method name="createHTTPRequest">
-			<return type="void">
+			<return type="int">
 			</return>
 			<argument index="0" name="arg0" type="int">
 			</argument>
@@ -848,16 +850,8 @@
 			</description>
 		</method>
 		<method name="destroyResult">
-			<return type="bool">
+			<return type="void">
 			</return>
-			<argument index="0" name="arg0" type="PoolIntArray">
-			</argument>
-			<argument index="1" name="arg1" type="int">
-			</argument>
-			<argument index="2" name="arg2" type="int">
-			</argument>
-			<argument index="3" name="arg3" type="int">
-			</argument>
 			<description>
 			</description>
 		</method>
@@ -1336,12 +1330,6 @@
 		</method>
 		<method name="getAuthSessionTicket">
 			<return type="Dictionary">
-			</return>
-			<description>
-			</description>
-		</method>
-		<method name="getAuthSessionTicketID">
-			<return type="int">
 			</return>
 			<description>
 			</description>
@@ -1849,7 +1837,7 @@
 			</description>
 		</method>
 		<method name="getHTTPResponseBodyData">
-			<return type="int">
+			<return type="PoolByteArray">
 			</return>
 			<argument index="0" name="arg0" type="int">
 			</argument>
@@ -2179,7 +2167,7 @@
 			</description>
 		</method>
 		<method name="getMostAchievedAchievementInfo">
-			<return type="Array">
+			<return type="Dictionary">
 			</return>
 			<description>
 				Gets a list of achievements and their info ordered from most achieved to least achieved. Before calling this function, [method requestGlobalAchievementPercentages] must be called first.
@@ -2187,6 +2175,14 @@
 			</description>
 		</method>
 		<method name="getMotionData">
+			<return type="Dictionary">
+			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="getNextMostAchievedAchievementInfo">
 			<return type="Dictionary">
 			</return>
 			<argument index="0" name="arg0" type="int">
@@ -2461,8 +2457,12 @@
 			</description>
 		</method>
 		<method name="getResultItemProperty">
-			<return type="Array">
+			<return type="String">
 			</return>
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<argument index="1" name="arg1" type="String">
+			</argument>
 			<description>
 			</description>
 		</method>
@@ -5649,6 +5649,10 @@
 			</description>
 		</signal>
 		<signal name="p2p_session_connect_fail">
+			<argument index="0" name="steamID" type="int">
+			</argument>
+			<argument index="1" name="sessionError" type="int">
+			</argument>
 			<description>
 				Emitted when [method sendP2PPacket] fails to get the packet to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will try reconnecting but will drop if failures continue. 
 				The signal passes the variables [code]steamID[/code], which contains the id of the user that we're attempting to connect with, and [code]sessionError[/code], which maps to one of the following constants: [constant P2P_SESSION_ERROR_NONE], [constant P2P_SESSION_ERROR_NOT_RUNNING_APP], [constant P2P_SESSION_ERROR_NO_RIGHTS_TO_APP], [constant P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON], [constant P2P_SESSION_ERROR_TIMEOUT] or [constant P2P_SESSION_ERROR_MAX].
@@ -5656,6 +5660,8 @@
 			</description>
 		</signal>
 		<signal name="p2p_session_request">
+			<argument index="0" name="steamID" type="int">
+			</argument>
 			<description>
 				Emitted when a packet sent via [method sendP2PPacket] is received from another user. If the user wants to receive the packet(s) a call to the function [method acceptP2PSessionWithUser] must be made to accept the connection with the sending user. 
 				The signal passes the variable [code]steamID[/code], which contains the steam ID of the sending user.
@@ -5783,6 +5789,16 @@
 			</description>
 		</signal>
 		<signal name="user_achievement_stored">
+			<argument index="0" name="gameID" type="int">
+			</argument>
+			<argument index="1" name="groupAchieve" type="bool">
+			</argument>
+			<argument index="2" name="achievementName" type="String">
+			</argument>
+			<argument index="3" name="currentProgress" type="int">
+			</argument>
+			<argument index="4" name="maxProgress" type="int">
+			</argument>
 			<description>
 				Emits with the results of a request to store achievement updates to the server, or an "indicate progress" call. If both [code]currentProgress[/code] and [code]maxProgress[/code] are zero, that means the achievement has been fully unlocked.
 				This signal requires [method run_callbacks] to be called every frame in [method Node._process].
@@ -5926,7 +5942,7 @@
 		</constant>
 		<constant name="DEVICE_FORM_FACTOR_TV" value="4">
 		</constant>
-		<constant name="FILENAME_MAX" value="260">
+		<constant name="FILENAME_MAX" value="4096">
 		</constant>
 		<constant name="PUBLISHED_DOCUMENT_CHANGE_DESCRIPTION_MAX" value="8000">
 		</constant>
