@@ -9702,7 +9702,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getLeaderboardName", "thisLeaderboard"), &Steam::getLeaderboardName, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLeaderboardSortMethod", "thisLeaderboard"), &Steam::getLeaderboardSortMethod, DEFVAL(0));
 	ClassDB::bind_method("getMostAchievedAchievementInfo", &Steam::getMostAchievedAchievementInfo);
-	ClassDB::bind_method("getNextMostAchievedAchievementInfo", &Steam::getNextMostAchievedAchievementInfo);
+	ClassDB::bind_method(D_METHOD("getNextMostAchievedAchievementInfo", "index"), &Steam::getNextMostAchievedAchievementInfo);
 	ClassDB::bind_method("getNumAchievements", &Steam::getNumAchievements);
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
 	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);
