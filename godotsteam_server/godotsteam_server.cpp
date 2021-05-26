@@ -428,7 +428,7 @@ Array SteamServer::getInstalledDepots(uint32_t appID){
 	for(int i = 0; i < installed; i++){
 		installedDepots.append(depots[i]);
 	}
-	delete depots;
+	delete[] depots;
 	return installedDepots;
 }
 
@@ -3156,7 +3156,7 @@ void SteamServer::_inventory_eligible_promo_item(SteamInventoryEligiblePromoItem
 		}
 	}
 	// Delete the temporary array
-	delete idArray;
+	delete[] idArray;
 	// Return the item array as a signal
 	emit_signal("inventory_eligible_promo_Item", result, cached, definitions);
 }
@@ -3594,7 +3594,7 @@ void SteamServer::_check_file_signature(CheckFileSignature_t *callData, bool bio
 
 // Called when the big picture gamepad text input has been closed.
 void SteamServer::_gamepad_text_input_dismissed(GamepadTextInputDismissed_t* callData){
-	char text;
+	char text = '\0';
 	uint32 length = 0;
 	if(callData->m_bSubmitted){
 		SteamUtils()->GetEnteredGamepadTextInput(&text, callData->m_unSubmittedText);
