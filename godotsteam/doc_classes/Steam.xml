@@ -2170,8 +2170,9 @@
 			<return type="Dictionary">
 			</return>
 			<description>
-				Gets a list of achievements and their info ordered from most achieved to least achieved. Before calling this function, [method requestGlobalAchievementPercentages] must be called first.
-				Returns an Array of Dictionaries. Each Dictionary in the Array contains four entries. The key [code]rank[/code] in the Dictionaries is mapped to an int containing where the achievement ranks in achieved percentages. The key [code]name[/code] in the Dictionaries is mapped to a String containing the api name of the achievement. The key [code]percent[/code] in the Dictionaries is mapped to a float containing the percentage of users who have unlocked the achievement. The key [code]achieved[/code] in the Dictionaries is mapped to a bool that is true if the local user has unlocked the achievement.
+				This function gets info on the most achieved achievement, like its api name, the percentage of users who have unlocked it, and whether the local user has unlocked it.
+				[b]NOTE:[/b] This function should be called only after [method requestGlobalAchievementPercentages] was called successfully and it's callback, [signal global_achievement_percentages_ready], was received successfully.
+				Returns a Dictionary with the following entries: [br]    [code]"rank"[/code]: An integer that holds where this achievement ranks in terms of most achieived achievements. If the call was successful then this will equal [code]0[/code]; otherwise this will equal [code]-1[/code] if [method requestGlobalAchievementPercentages] was not called, or there were no global achievement stats found for this game. [br]    [code]"name"[/code]: A string that holds the API name of the achievement. [br]    [code]"percent"[/code]: A float that holds the percentage of users who have achieved the achievement. [br]    [code]"achieved"[/code]: A boolean that is true if the local user has unlocked the achievement.
 			</description>
 		</method>
 		<method name="getMotionData">
@@ -2185,9 +2186,12 @@
 		<method name="getNextMostAchievedAchievementInfo">
 			<return type="Dictionary">
 			</return>
-			<argument index="0" name="arg0" type="int">
+			<argument index="0" name="index" type="int">
 			</argument>
 			<description>
+				This function gets info on the [code]index[/code]-th most achieved achievement, like its api name, the percentage of users who have unlocked it, and whether the local user has unlocked it.
+				[b]NOTE:[/b] This function should be called only after [method requestGlobalAchievementPercentages] was called successfully and it's callback, [signal global_achievement_percentages_ready], was received successfully.
+				Returns a Dictionary with the following entries: [br]    [code]"rank"[/code]: An integer that holds where this achievement ranks in terms of most achieived achievements. It equals [code]-1[/code] if [method requestGlobalAchievementPercentages] is not called, or global achievement stats were not found for this game. [br]    [code]"name"[/code]: A string that holds the API name of the achievement. [br]    [code]"percent"[/code]: A float that holds the percentage of users who have achieved the achievement. [br]    [code]"achieved"[/code]: A boolean that is true if the local user has unlocked the achievement.
 			</description>
 		</method>
 		<method name="getNumAchievements">
