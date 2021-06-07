@@ -9693,9 +9693,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "achievementName", "key"), &Steam::getAchievementDisplayAttribute);
 	ClassDB::bind_method(D_METHOD("getAchievementIcon",             "achievementName"),        &Steam::getAchievementIcon);
 	ClassDB::bind_method(D_METHOD("getAchievementName",             "achievementIndex"),       &Steam::getAchievementName);
-//	ClassDB::bind_method("getGlobalStatInt", &Steam::getGlobalStatInt);
+	ClassDB::bind_method("getGlobalStatInt", &Steam::getGlobalStatInt);
 	ClassDB::bind_method("getGlobalStatFloat", &Steam::getGlobalStatFloat);
-//	ClassDB::bind_method("getGlobalStatIntHistory", &Steam::getGlobalStatIntHistory);
+	ClassDB::bind_method("getGlobalStatIntHistory", &Steam::getGlobalStatIntHistory);
 	ClassDB::bind_method("getGlobalStatFloatHistory", &Steam::getGlobalStatFloatHistory);
 	ClassDB::bind_method(D_METHOD("getLeaderboardDisplayType", "thisLeaderboard"), &Steam::getLeaderboardDisplayType, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLeaderboardEntryCount", "thisLeaderboard"), &Steam::getLeaderboardEntryCount, DEFVAL(0));

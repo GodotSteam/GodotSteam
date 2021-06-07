@@ -18,6 +18,10 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.9.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.9.3 Changes**
+- Changed: restored getGlobalStatInt and getGlobalStatIntHistory
+- Fixed: various "band-aid" fixes for functions in HTTP by **IlyaStuurFedorov** 
+
 **Version 3.9.2 Changes**
 - Added: getNextMostAchievedAchievementInfo function, moved out of getMostAchievedAchievementInfo
 - Fixed: getMostAchievedAchievementInfo causing a crash
