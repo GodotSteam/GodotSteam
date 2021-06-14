@@ -5800,8 +5800,8 @@ bool Steam::setItemDescription(uint64_t updateHandle, const String& description)
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	if (description.length() > 255){
-		printf("Description cannot have more than %d ASCII characters. Description not set.", 255);
+	if (description.length() > k_cchPublishedDocumentDescriptionMax){
+		printf("Description cannot have more than %d ASCII characters. Description not set.", k_cchPublishedDocumentDescriptionMax);
 		return false;
 	}
 	UGCUpdateHandle_t handle = uint64(updateHandle);
