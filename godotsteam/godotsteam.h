@@ -1056,9 +1056,9 @@ class Steam: public Object {
 		String getAchievementName(uint32_t achievement);
 		Dictionary getAchievementProgressLimitsInt(const String& name);
 		Dictionary getAchievementProgressLimitsFloat(const String& name);
-		int64 getGlobalStatInt(const String& name);
+		uint64_t getGlobalStatInt(const String& name);
 		double getGlobalStatFloat(const String& name);
-		int64 getGlobalStatIntHistory(const String& name);
+		uint64_t getGlobalStatIntHistory(const String& name);
 		double getGlobalStatFloatHistory(const String& name);
 		Dictionary getLeaderboardDisplayType(uint64_t thisLeaderboard=0);
 		int getLeaderboardEntryCount(uint64_t thisLeaderboard=0);

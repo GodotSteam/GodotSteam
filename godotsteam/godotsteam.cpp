@@ -6571,13 +6571,13 @@ Dictionary Steam::getAchievementProgressLimitsFloat(const String& name){
 }
 
 // Gets the lifetime totals for an aggregated stat; as an int
-int64 Steam::getGlobalStatInt(const String& name){
+uint64_t Steam::getGlobalStatInt(const String& name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
 	int64 stat = 0;
 	SteamUserStats()->GetGlobalStat(name.utf8().get_data(), &stat);
-	return stat;
+	return (uint64_t)stat;
 }
 
 // Gets the lifetime totals for an aggregated stat; as an int
@@ -6591,13 +6591,13 @@ double Steam::getGlobalStatFloat(const String& name){
 }
 
 // Gets the daily history for an aggregated stat; int.
-int64 Steam::getGlobalStatIntHistory(const String& name){
+uint64_t Steam::getGlobalStatIntHistory(const String& name){
 	if(SteamUserStats() == NULL){
 		return 0;
 	}
 	int64 history = 0;
 	SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), &history, 60);
-	return history;
+	return (uint64_t)history;
 }
 
 // Gets the daily history for an aggregated stat; float / double.

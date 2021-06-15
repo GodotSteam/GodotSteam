@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.9.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.9.4 Changes**
+- Fixed: conversion issue in getGlobalStatInt and getGlobalStatIntHistory that caused compiling failure on Linux
+
 **Version 3.9.3 Changes**
 - Changed: restored getGlobalStatInt and getGlobalStatIntHistory
 - Fixed: various "band-aid" fixes for functions in HTTP by **IlyaStuurFedorov** 
