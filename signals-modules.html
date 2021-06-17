@@ -103,11 +103,15 @@
 						<ul>
 							<li>Called when a Steam group activity has received.</li>
 							<li>Emits signal <strong><em>clan_activity_downloaded</em></strong> in response to function <strong><em>downloadClanActivityCounts</em></strong>.</li>
-							<li>Sends back the following data in a <strong>DICTIONARY</strong> called <strong>activity</strong>:
+							<li>Sends back the following data:
 								<ul>
-									<li>online (int)</li>
-									<li>ingame (int)</li>
-									<li>chatting (int)</li>
+									<li>activity (dictionary)
+										<ul>
+											<li>online (int)</li>
+											<li>ingame (int)</li>
+											<li>chatting (int)</li>
+										</ul>
+									</li>
 								</ul>
 							</li>
 						</ul>
@@ -150,12 +154,16 @@
 						<ul>
 							<li>Called when a chat message has been received in a Steam group chat that we are in.</li>
 							<li>Emits signal <strong><em>clan_chat_message</em></strong>.</li>
-							<li>Sends back the following data in a <strong>DICTIONARY</strong> called <strong>chat</strong>:
+							<li>Sends back the following data:
 								<ul>
-									<li>ret (int)</li>
-									<li>text (string)</li>
-									<li>type (string)</li>
-									<li>chatter (int)</li>
+									<li>chat (dictionary)
+										<ul>
+											<li>ret (int)</li>
+											<li>text (string)</li>
+											<li>type (string)</li>
+											<li>chatter (int)</li>
+										</ul>
+									</li>
 								</ul>
 							</li>
 						</ul>
@@ -163,10 +171,14 @@
 						<ul>
 							<li>Called when chat message has been received from a friend.</li>
 							<li>Emits signal <strong><em>friend_chat_message</em></strong>.</li>
-							<li>Sends back the following data in a <strong>DICTIONARY</strong> called <strong>chat</strong>:
+							<li>Sends back the following data:
 								<ul>
-									<li>ret (int)</li>
-									<li>text (string)</li>
+									<li>chat (dictionary)
+										<ul>
+											<li>ret (int)</li>
+											<li>text (string)</li>
+										</ul>
+									</li>
 								</ul>
 							</li>
 						</ul>
@@ -713,6 +725,7 @@
 							<li>Emits signal <strong><em>http_request_completed</em></strong>.</li>
 							<li>Sends back the following data:
 								<ul>
+									<li>cookieHandle (int)</li>
 									<li>contextValue (int)</li>
 									<li>requestSuccess (bool)</li>
 									<li>statusCode (int)</li>
@@ -726,6 +739,7 @@
 							<li>Emits signal <strong><em>http_request_data_received</em></strong>.</li>
 							<li>Sends back the following data:
 								<ul>
+									<li>cookieHandle (int)</li>
 									<li>contextValue (int)</li>
 									<li>offset (int)</li>
 									<li>bytesReceived (int)</li>
@@ -738,6 +752,7 @@
 							<li>Emits signal <strong><em>http_request_headers_received</em></strong>.</li>
 							<li>Sends back the following data:
 								<ul>
+									<li>cookieHandle (int)</li>
 									<li>contextValue (int)</li>
 								</ul>
 							</li>
