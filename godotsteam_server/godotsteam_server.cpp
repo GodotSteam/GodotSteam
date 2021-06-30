@@ -3816,7 +3816,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("getItemInstallInfo", &SteamServer::getItemInstallInfo);
 	ClassDB::bind_method("getItemState", &SteamServer::getItemState);
 	ClassDB::bind_method("getItemUpdateProgress", &SteamServer::getItemUpdateProgress);
-	ClassDB::bind_method("getSubscribedItems", &SteamServer::getSubscribedItems);
+	ClassDB::bind_method("getNumSubscribedItems", &SteamServer::getNumSubscribedItems);
 	ClassDB::bind_method("getQueryUGCAdditionalPreview", &SteamServer::getQueryUGCAdditionalPreview);
 	ClassDB::bind_method("getQueryUGCChildren", &SteamServer::getQueryUGCChildren);
 	ClassDB::bind_method("getQueryUGCKeyValueTag", &SteamServer::getQueryUGCKeyValueTag);
