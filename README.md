@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 7/1/21:**
+- Changed: lobby tutorial, added more description to lobby types
+
 **Updated 6/23/21:**
 - Added new game to game list
 

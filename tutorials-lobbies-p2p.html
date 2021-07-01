@@ -127,10 +127,10 @@ func _create_Lobby() -> void:
 </code></pre>
 						<p>In this example we have <strong>createLobby</strong> using 2's for each variable.  The first variables covers the type of lobby; we are using a public lobby open to all.  There are, of course, four settings in total you can use:
 							<ul>
-								<li>0 - Private</li>
-								<li>1 - Friends only</li>
-								<li>2 - Public</li>
-								<li>3 - Invisible</li>
+								<li>0 - Private - The only way to join the lobby is from an invite.</li>
+								<li>1 - Friends only - Joinable by friends and invitees, but does not show up in the lobby list.</li>
+								<li>2 - Public - Returned by search and visible to friends.</li>
+								<li>3 - Invisible - Returned by search, but not visible to other friends.</li>
 							</ul>
 						The second variable is the maximum number of players allowed to join the lobby. This cannot be set higher than 250.</p>
 						<p>Next we'll cover the callback from Steam saying the lobby has been created:</p>
