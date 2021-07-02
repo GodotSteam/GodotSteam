@@ -407,7 +407,7 @@ func _read_P2P_Packet() -> void:
 		var PACKET_CODE: String = str(PACKET.data[0])
 
 		# Make the packet data readable
-		var READABLE: PoolByteArray = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
 
 		# Print the packet to output
 		print("Packet: "+str(READABLE))
@@ -421,7 +421,7 @@ func _read_P2P_Packet() -> void:
 							</header>
 							<p>Beyond the handshake, you will probably want to pass a lot of different pieces of data back and forth between players. I have mine set up with two arguments: the first is the recipient as a string and the second is a dictionary. I think the dictionary is best for sending data so you can have a key / value pair to reference and make things less confusing on the receiving end. Each packet will go through the following function:</p>
 <pre><code>
-func _send_P2P_Packet(target: String: packet_data: Dictionary) -> void:
+func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 	# Set the send_type and channel
 	var SEND_TYPE: int = 2
 	var CHANNEL: int = 0
