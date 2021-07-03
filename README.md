@@ -1,5 +1,5 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.3.1). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.3.2). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
@@ -16,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.9.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.9.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.9.5 Changes**
+- Added: setLeaderboardDetailsMax function back in to set the internal details variable
+- Fixed: leaderboard_scores_downloaded sigal to provide the actual details for leaderboard results
 
 **Version 3.9.4 Changes**
 - Fixed: conversion issue in getGlobalStatInt and getGlobalStatIntHistory that caused compiling failure on Linux
@@ -45,7 +49,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK 1.51](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source 3.3.1](https://github.com/godotengine/godot).
+- Download and unpack the [Godot source 3.3.2](https://github.com/godotengine/godot).
 - Move the following to godotsteam/sdk/ folder:
 ````
     sdk/public/

@@ -6889,6 +6889,22 @@ bool Steam::setAchievement(const String& name){
 	return SteamUserStats()->SetAchievement(name.utf8().get_data());
 }
 
+// Set the maximum number of details to return for leaderboard entries
+int Steam::setLeaderboardDetailsMax(int max){
+	bool success = false;
+	// If the user submitted too high of a maximum, set to the real max
+	if(max > k_cLeaderboardDetailsMax){
+		max = k_cLeaderboardDetailsMax;
+	}
+	// If the user submitted too low of a maximum, set it to 0
+	if(max < 0){
+		max = 0;
+	}
+	// Now set the internal variable
+	leaderboardDetailsMax = max;
+	return leaderboardDetailsMax;
+}
+
 // Set a float statistic.
 bool Steam::setStatFloat(const String& name, float value){
 	return SteamUserStats()->SetStat(name.utf8().get_data(), value);
@@ -8948,28 +8964,28 @@ void Steam::_leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *callDa
 			PoolIntArray details;
 			int32 *detailsPointer = NULL;
 			// Resize array
-			if(k_cLeaderboardDetailsMax > 0){
-				details.resize(k_cLeaderboardDetailsMax);
+			if(leaderboardDetailsMax > 0){
+				details.resize(leaderboardDetailsMax);
 				PoolIntArray::Write w = details.write();
 				detailsPointer = w.ptr();
-				for(int i = 0; i < k_cLeaderboardDetailsMax; i++){
+				for(int i = 0; i < leaderboardDetailsMax; i++){
 					detailsPointer[i] = 0;
 				}
 			}
 			// Loop through the entries and add them as dictionaries to the array
 			for(int i = 0; i < callData->m_cEntryCount; i++){
-				if(SteamUserStats()->GetDownloadedLeaderboardEntry(callData->m_hSteamLeaderboardEntries, i, entry, detailsPointer, k_cLeaderboardDetailsMax)){
+				if(SteamUserStats()->GetDownloadedLeaderboardEntry(callData->m_hSteamLeaderboardEntries, i, entry, detailsPointer, leaderboardDetailsMax)){
 					Dictionary entryDict;
 					entryDict["score"] = entry->m_nScore;
 					entryDict["steamID"] = uint64_t(entry->m_steamIDUser.ConvertToUint64());
 					entryDict["global_rank"] = entry->m_nGlobalRank;
 					entryDict["ugc_handle"] = uint64_t(entry->m_hUGC);
-					if(k_cLeaderboardDetailsMax > 0){
+					if(leaderboardDetailsMax > 0){
 						PoolIntArray array;
-						array.resize(k_cLeaderboardDetailsMax);
+						array.resize(leaderboardDetailsMax);
 						PoolIntArray::Write w = array.write();
 						int32_t *ptr = w.ptr();
-						for(int j = 0; j < k_cLeaderboardDetailsMax; j++){
+						for(int j = 0; j < leaderboardDetailsMax; j++){
 							ptr[j] = detailsPointer[j];
 						}
 						entryDict["details"] = array;
@@ -9718,6 +9734,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("requestUserStats", &Steam::requestUserStats);
 	ClassDB::bind_method("resetAllStats", &Steam::resetAllStats);
 	ClassDB::bind_method(D_METHOD("setAchievement", "achievementName"), &Steam::setAchievement);
+	ClassDB::bind_method("setLeaderboardDetailsMax", &Steam::setLeaderboardDetailsMax);
 	ClassDB::bind_method("setStatFloat", &Steam::setStatFloat);
 	ClassDB::bind_method("setStatInt", &Steam::setStatInt);
 	ClassDB::bind_method("storeStats", &Steam::storeStats);

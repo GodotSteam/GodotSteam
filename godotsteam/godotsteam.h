@@ -1081,6 +1081,7 @@ class Steam: public Object {
 		void requestUserStats(uint64_t steamID);
 		bool resetAllStats(bool achievementsToo=true);
 		bool setAchievement(const String& name);
+		int setLeaderboardDetailsMax(int max);
 		bool setStatFloat(const String& name, float value);
 		bool setStatInt(const String& name, int value);
 		bool storeStats();
@@ -1150,6 +1151,7 @@ class Steam: public Object {
 		// Leaderboards
 		SteamLeaderboard_t leaderboardHandle;
 		Array leaderboardEntriesArray;
+		int leaderboardDetailsMax = 0;
 
 		// Matchmaking Server
 		int serverQuery;
