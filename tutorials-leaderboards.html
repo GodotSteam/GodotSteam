@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
-		<!--[if lt IE 9]>ff
+		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<!--[if lt IE 8]>
@@ -27,125 +27,111 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>How-To For Modules</h1>
+							<h1>Tutorials - Leaderboards</h1>
 						</header>
-						<p>These instructions should work for both 2.x and 3.x versions of the GodotSteam module.</p>
+						<p>This tutorial will cover setting up leaderboards for your games.  <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">You can check out the example project on Github to see a somewhat working version.</a>
 						<hr />
 						<header class="major">
-							<h3>1. Preparing</h3>
+							<h3>Set Up</h3>
 						</header>
-						<ul>
-							<li><a href="https://github.com/Gramps/GodotSteam" target="_blank">Download the branch corresponding to your Godot version.</a></li>
-							<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
-							<li><a href="https://github.com/godotengine/godot" target="_blank">Download the Godot Engine source.</a>
-								<ul>
-									<li>For GodotSteam with Godot 2, preferably use 2.1.6. <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
-									<li>For GodotSteam with Godot 3, preferably use 3.3. <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
-								</ul>
-							</li>
-						</ul>
-						<p>Unzip the Godot Engine source code and place the contents into a folder.  For the purpose of this how-to we will name the folder <strong>godot</strong>.</p>
-						<p>Unzip the GodotSteam you downloaded and copy the <strong>godotsteam</strong> folder from it into the <strong>godot/modules/</strong> folder.</p>
-						<h4>Alternate Preparation Option</h4>
-						<ul>
-							<li><a href="https://github.com/Gramps/GodotSteam/releases" target="_blank">Downloading pre-compiled versions of the GodotSteam editor and template.</a></li>
-							<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
-						</ul>
-						<p>Once you have the pre-compiles and Steamworks SDK, skip ahead to Step 5 in this tutorial.</p>
-						<hr/>
-						<header class="major">
-							<h3>2. Copy The Steamworks SDK</h3>
-						</header>
-						<p>Unzip the Steamworks SDK and extract the following folders into the <strong>godot/modules/godotsteam/sdk/</strong> folder:
+						<p>First, let's get our signals set up.</p>
 <pre><code>
-public/
-redistributable_bin/
+Steam.connect("leaderboard_find_result", self, "_leaderboard_Find_Result")
+Steam.connect("leaderboard_score_uploaded", self, "_leaderboard_Score_Uploaded")
+Steam.connect("leaderboard_scores_downloaded", self, "_leaderboard_Scores_Downloaded")
 </code></pre>
+						<p>We'll go over each signal and related function in order.  First, you'll need to pass your leaderboard's Steamworks back-end name to the <strong>findLeaderboard</strong> function like so:</p>
+<pre><code>
+Steam.findLeaderboard( your_leaderboard_name )
+</code></pre>
+						<p>Once Steam finds your leaderboard it will pass back the handle to the <strong>leaderboard_find_result</strong> callback.  The <strong>_leaderboard_Find_Result</strong> function that it is connected to it should look something like this:</p>
+<pre><code>
+func _leaderboard_Find_Result(handle: int, found: int) -> void:
+	if found == 1:
+		LEADERBOARD_HANDLE = handle
+		print("Leaderboard handle found: "+str(LEADERBOARD_HANDLE))
+	else:
+		print("No handle was found")
+</code></pre>
+						<p>Once you have this handle you can use all the additional functions.  <strong>Please note</strong> you do not need to save the leaderboard handle since it is stored internally.  However, you will only be able to work with one leaderboard at a time unless you store them locally in a variable. I would keep a dictioary of handles locally like:</p>
+<pre><code>
+var LEADERBOARD_HANDLES: Dictionary = {
+	"top_score": handle1,
+	"most_kills": handle2,
+	"most_games": handlde3
+}
+</code></pre>
+						<p>This way you can call whatever handle you need when updating leaderboards quickly. Otherwise you have to query each leaderboard again with <strong>findLeaderboard</strong> then wait for the callback then upload the new score.  If you aren't updating leaderboards frequently or that many of them, then using the internally stored handle will probably work fine.</p>
+						<hr />
+						<header class="major">
+							<h3>Uploading Scores</h3>
+						</header>
+						<p>Before we can download scores, we need to upload them.  The function itself is pretty simple:</p>
+<pre><code>
+Steam.uploadLeaderboardScore( score, keep_best, details, handle )
+</code></pre>
+						<p>The first argument is, obviously, the score. The second is if you want the score to update regardless of whether it is better than the current score for the user. The third are details which must be integers; they essentially can be anything but <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UploadLeaderboardScore" target="_blank">here is what Valve says about it</a>.  The fourth is the leaderboard handle we are updating.  You do not have to pass the handle though, if you want to use the internally stored one.</p>
+						<p>Once you pass a score to Steam, you should receive a callback from <strong>leaderboard_score_uploaded</strong>.  This will trigger our <strong>_leaderboard_Score_Uploaded</strong> function:</p>
+<pre><code>
+func _leaderboard_Score_Uploaded(success: int, score: int, score_changed: int, new_rank: int, prev_rank:int) -> void:
+	if success == 1:
+		print("Successfully uploaded scores!")
+		# Add additional logic to use other variables passed back
+	else:
+		print("Failed to upload scores!")
+</code></pre>		
+						<p>For the most part you are just looking for a success of 1 to tell that it worked.  However, you may with to use the additional variables passed back by the signal for logic in your game:
+							<ul>
+								<li><strong>score:</strong> the new score as it stands</li>
+								<li><strong>score_changed:</strong> if the score was changed (0 if false, 1 if true)</li>
+								<li><strong>new_rank:</strong> the new global rank of this player</li>
+								<li><strong>prev_rank:</strong> the previous rank of this player</li>
+							</ul>
 						</p>
-						<hr/>
+						<hr />
 						<header class="major">
-							<h3>3. Folder Layout</h3>
+							<h3>Downloading Scores</h3>
 						</header>
-						<p>The repo's directory contents should now look like this:
+						<p>Naturally you'll want to display leaderboard scores to the player.  But before we pull any leaderboard entries, we need to set the maximum amount of details each one contains by setting the <strong>setLeaderboardDetailsMax</strong> function up:</p>
 <pre><code>
-godot/modules/godotsteam/sdk/public/*
-godot/modules/godotsteam/sdk/redistributable_bin/*
-godot/modules/godotsteam/SCsub
-godot/modules/godotsteam/config.py
-godot/modules/godotsteam/godotsteam.cpp
-godot/modules/godotsteam/godotsteam.h
-godot/modules/godotsteam/register_types.cpp
-godot/modules/godotsteam/register_types.h
+var DETAILS_MAX: int = Steam.setLeaderboardDetailsMax( value )
+print("Max details: "+str(DETAILS_MAX)
 </code></pre>
+						<p>By default the value is set to 0 but you will want to change it to match the number of details you upload with scores from the previous section. If you do not save any details with the scores you can safely ignore this part and move on to just requesting leaderboard entries.</p>
+						<p>In most cases you'll want to use <strong>downloadLeaderboardEntries</strong>, but you can also use <strong>downloadLeaderboardEntriesForUsers</strong> by passing an array of users' Steam IDs to it.  Both will respond with the same callback, but <strong>downloadLeaderboardEntriesForUsers</strong> does not allow as much control over what you can request:</p>
+<pre><code>
+Steam.downloadLeaderboardEntries( 1, 10, 0, leaderboard_handle )
+
+Steam.downloadLeaderboardEntriesForUsers( user_array, leaderboard_handle )
+</code></pre>
+						<p>Just like uploading, downloading scores does not require a leaderboard handle to be included if you are using the internally stored one.  You will noticed, as I mentioned above, that <strong>downloadLeaderboardEntriesForUsers</strong> only takes an array of users' Steam IDs as it's other argument whereas <strong>downloadLeaderboardEntries</strong> has quite a few others; which we will cover right now.</p>
+						<p>The first argument the index of entries you are starting with; this is usually 1 for your first request. The second argument is the last index to retrieve; there isn't a listed cap to this number but make it something you can display easily like 10 or so.  The third argument is the type of data request; <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#ELeaderboardDataRequest" target="_blank">you can read more details about it in the SDK documentation</a>. For a quick overview:
+							<ul>
+								<li>0 - Used for a sequential range by leaderboard rank.</li>
+								<li>1 - Used to get entries relative to the user's entry. You may want to use negatives for the start to get entries before the user's.</li>
+								<li>2 - Used to get all entries for friends for the current user. Start and end arguments are ignored.</li>
+								<li>3 - Used internally by Steam, <strong>do not use this</strong>.</li>
+							</ul>
+						<p>After you request leaderboard entries, you should receive a <strong>leaderboard_scores_downloaded</strong> callback which will trigger our <strong>_leaderboard_Scores_Downloaded</strong> function.  That function should look similar to this:</p>
+<pre><code>
+func _leaderboard_Scores_Downloaded(message: string, result: Array) -> void:
+	print("Scores downloaded message: "+str(message)
+
+	# Add logic to display results
+	for R in result:
+		# Use each entry that is returned
+</code></pre>
+						<p>The message is just a basic message to inform you to the status the download; whether successful or not and why. The second piece sent back are the results as an array. Each entry in the array is actually a dictionary like so:
+							<ul>
+								<li><strong>score:</strong> this user's score</li>
+								<li><strong>steamID:</strong> this user's Steam ID; you can use this to get their avatar, name, etc.</li>
+								<li><strong>global_rank:</strong> obviously their global ranking for this leaderboard</li>
+								<li><strong>ugc_handle:</strong> handle for any UGC that is attached to this entry</li>
+								<li><strong>details:</strong> any details you stored with this entry for later use</li>
+							</ul>
 						</p>
-						<hr/>
-						<header class="major">
-							<h3>4. Compiling</h3>
-						</header>
-						<p>Compile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
-						On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )<br/>
-						On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
-						<p>For the best results (size and performance), you will want to use these SCONS flags when compiling your editor:</p>
-<pre><code>
-production=yes tools=yes target=release_debug
-</code></pre>
-						<p>Use this for your template:</p>
-<pre><code>
-production=yes tools=no target=release
-</code></pre>
-						<p><strong>NOTE:</strong> when creating templates for OSX, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em></p>
-						<p><strong>NOTE: using MinGW causes crashes.</strong> There is a _mingw-patch.py_ file that corrects one known crash due to compiling with MinGW but there is now a newer crash that hasn't been solved; as well as who knows how many unfound issues. I strong recommend you <strong>do not use MinGW</strong> to compile at this time.</p>
-						<hr/>
-						<header class="major">
-							<h3>5. Copy Steamworks Redistributables</h3>
-						</header>
-						<p>When compiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong>, for your OS, from <strong>godot/modules/godotsteam/sdk/redistributable_bin/</strong> folder to the Godot binary location. By default, it is in the Godot source <strong>godot/bin/</strong> folder.  You can move them to a new folder but, for the sake of the how-to, we will leave them in the <strong>bin</strong> folder.</p>
-						<p>In the <strong>godot/bin/</strong> folder, or wherever you put the editor executable, you must include a <strong><em>steam_appid.txt</em></strong> file with either your game's Steam ID, or the generic 480, as the only text inside. Running the game from the editor or <em>outside</em> of the Steam client will cause a crash without it.</p>
-						<p> With everything now in place, your working directory should look like this:</p>
-						<strong>Linux 32-bit</strong>
-<pre><code>
-godot/bin/libsteam_api.so
-godot/bin/steam_appid.txt
-godot/bin/godot.linux.tools.32
-</code></pre>
-						<strong>Linux 64-bit</strong>
-<pre><code>
-godot/bin/libsteam_api.so
-godot/bin/steam_appid.txt
-godot/bin/godot.linux.tools.64
-</code></pre>
-						<strong>OSX</strong>
-<pre><code>
-godot/bin/libsteam_api.dylib
-godot/bin/steam_appid.txt
-godot/bin/godot.osx.tools.64
-</code></pre>
-						<strong>Windows 32-bit</strong>
-<pre><code>
-godot/bin/steam_api.dll
-godot/bin/steam_appid.txt
-godot/bin/godot.windows.tools.32.exe
-</code></pre>
-						<strong>Windows 64-bit</strong>
-<pre><code>
-godot/bin/steam_api64.dll
-godot/bin/steam_appid.txt
-godot/bin/godot.windows.tools.64.exe
-</code></pre>
-						<hr/>
-						<header class="major">
-							<h3>6. Done</h3>
-						</header>
-						<p>Now you can open the editor you just created and get to work!  If you are are starting from scratch or importing an existing project, you can just start adding in Steamworks code.  Remember, every function starts with the <strong>Steam</strong> class; e.g. <strong><em>Steam.run_callbacks()</em></strong> or <strong><em>Steam.getUserID()</em></strong>.  All of the available functions can be found in the editor in the <strong>Search</strong> section under Steam.  Additionally, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.</p>
-						<p>I suggest checking out the various tutorials available here in the documentation to get you started on most of the main features of Steamworks.  Though I do recommend that you create a separate copy of your project if you intend to have a non-Steam version of your game.</p>
-						<hr/>
-						<header class="major">
-							<h3>7. Exporting / Shipping</h3>
-						</header>
-						<p><a href="tutorials-exporting-shipping.html">Check out the exporting and shipping tutorial to learn more details about process.</a>  Here are a few important bits though:</p>
-						<p>Your game must ship with the executable and Steam API DLL/SO/DyLIB to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) will cause it fail and crash. Do not, however, ship your <strong><em>steam_appid.txt</em></strong> file; it is a harmless file to include by Valve recommends you do not.</p>
-						<p><strong>NOTE:</strong> For Linux, some users may experience problems with the editor or game finding the <strong><em>libsteam_api.so</em></strong> file even with it right there in the directory. It is actually an issue with how Steam installed that file on the system. <a href="tutorials-linux-caveats.html" target="_blank">Read more on this in the Linux Caveats tutorial.</a></p>
-						<p><strong>NOTE:</strong> For OSX, the <strong><em>libsteam_api.dylib</em></strong> must be in the <strong>Content/MacOS/</strong> folder in your application zip or the game will crash. <a href="tutorials-mac-export.html" target="_blank">Read more on this in the Mac Exporting tutorial.</a>  Those of you using the pre-compiled OSX template from the GodotSteam release section can ignore this as <strong><em>libsteam_api.dylib</em></strong> is already included.</p>
+						<hr />
+						<p>I will add more to this tutorial at a later date with other functions but this should cover all the basics for working with leaderboards.</p>
 					</section>
 				</div>
 			</div>
