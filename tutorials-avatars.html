@@ -49,7 +49,7 @@ Steam.connect("avatar_loaded", self, "loaded_avatar")
 </code></pre>
 						<p>This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  If you have read the <a href="tutorials-achievement-icons.html">Achievement Icons tutorial</a>, this should all look pretty familiar.  Our <strong>loaded_avatar</strong> function will look something like this:</p>
 <pre><code>
-func loaded_avatar(id: int, size: int, buffer: Dictionary) -> void:
+func loaded_avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 	print("Avatar for user: "+str(id))
 	print("Size: "+str(size))
 	# Create a new image and texture to fill out
