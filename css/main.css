@@ -2391,6 +2391,21 @@ div.contributors strong {
 			opacity: 0.25;
 		}
 
+.store {
+	font-weight: 100 !important;
+	font-size: 1.5em;
+	padding: 0.25em 0.5em !important;
+  height: 1.5em;
+	letter-spacing: 0em;
+	line-height: 0em !important;
+	text-align: center !important;
+}
+
+.store-header {
+	text-decoration: none !important;
+	border: none !important;
+}
+
 /* Posts */
 .posts article img {
 	width: 100%;

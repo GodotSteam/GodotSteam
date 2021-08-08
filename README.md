@@ -6,6 +6,11 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 8/8/21:**
+- Added: two new games to game list\
+- Added: link to main game header image
+- Changed: store text to icons in game list
+
 **Updated 8/6/21:**
 - Added: new game to game list
 
