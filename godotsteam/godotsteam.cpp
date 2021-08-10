@@ -8232,13 +8232,14 @@ void Steam::_user_stats_unloaded(UserStatsUnloaded_t* callData){
 //
 // Called when the big picture gamepad text input has been closed.
 void Steam::_gamepad_text_input_dismissed(GamepadTextInputDismissed_t* callData){
-	char text = '\0';
-	uint32 length = 0;
+	const uint32 buffer_length = 1024+1;
+	char *text = new char[buffer_length];
+	uint32 length = buffer_length;
 	if(callData->m_bSubmitted){
-		SteamUtils()->GetEnteredGamepadTextInput(&text, callData->m_unSubmittedText);
+		SteamUtils()->GetEnteredGamepadTextInput(text, buffer_length);
 		length = SteamUtils()->GetEnteredGamepadTextLength();
 	}
-	emit_signal("gamepad_text_input_dismissed", text, length);
+	emit_signal("gamepad_text_input_dismissed", callData->m_bSubmitted, String::utf8(text, (int)length));
 }
 
 // Called when the country of the user changed. The country should be updated with getIPCountry.
@@ -9969,7 +9970,7 @@ void Steam::_bind_methods(){
 
 	// UTILITY SIGNALS //////////////////////////
 	ADD_SIGNAL(MethodInfo("check_file_signature"));
-	ADD_SIGNAL(MethodInfo("gamepad_text_input_dismissed"));
+	ADD_SIGNAL(MethodInfo("gamepad_text_input_dismissed", PropertyInfo(Variant::BOOL, "submitted"), PropertyInfo(Variant::STRING, "entered_text")));
 	ADD_SIGNAL(MethodInfo("ip_country"));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
 	ADD_SIGNAL(MethodInfo("steam_api_call_completed"));
