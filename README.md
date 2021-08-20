@@ -8,6 +8,7 @@ What's New
 -------------
 **Updated 8/20/21:**
 - Added: new instructions for module how-to
+- Added: new game to game list
 
 **Updated 8/17/21:**
 - Added: new link for a game
