@@ -2,38 +2,12 @@ def can_build(env, platform):
 	return platform=="x11" or platform=="windows" or platform=="osx" or platform=="server"
 
 def configure(env):
-	env.Append(CPPPATH=["#modules/godotsteam_server/sdk/public/"])
+	pass
 
-	# If compiling Linux
-	if env["platform"]== "x11" or env["platform"] == "server":
-		env.Append(LIBS=["steam_api"])
-		env.Append(RPATH=["."])
-		if env["bits"]=="32":
-			env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin/linux32"])
-		else: # 64 bit
-			env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin/linux64"])
+def get_doc_classes():
+	return [
+		"Steam",
+	]
 
-	# If compiling Windows
-	elif env["platform"] == "windows":
-		# Mostly VisualStudio
-		if env["CC"] == "cl":
-			if env["bits"]=="32":
-				env.Append(LINKFLAGS=["steam_api.lib"])
-				env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin"])
-			else: # 64 bit
-				env.Append(LINKFLAGS=["steam_api64.lib"])
-				env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin/win64"])
-		
-		# Mostly "GCC"
-		else:
-			if env["bits"]=="32":
-				env.Append(LIBS=["steam_api"])
-				env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin"])
-			else: # 64 bit
-				env.Append(LIBS=["steam_api64"])
-				env.Append(LIBPATH=["#modules/godotsteam_server/sdk/redistributable_bin/win64"])
-
-	# If compiling OSX
-	elif env["platform"] == "osx":
-		env.Append(LIBS=["steam_api"])
-		env.Append(LIBPATH=['#modules/godotsteam_server/sdk/redistributable_bin/osx'])
+def get_doc_path():
+	return "doc_classes"

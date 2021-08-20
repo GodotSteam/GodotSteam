@@ -1,5 +1,5 @@
 # GodotSteam Server for Godot 3.x
-Steam Server API for the Godot game engine (versions 3.0 to 3.3.1). For the Windows, Linux, and Mac platforms.
+Steam Server API for the Godot game engine (versions 3.0 to 3.3.3). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
@@ -16,7 +16,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v1.2.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v1.2.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 1.2.2 Changes**
+- Added: Added: ability to provide different locations for custom modules, thanks to dsnopek
 
 **Version 1.2.1 Changes**
 - Fixed: getNumSubscribedItems was mislabeled as getSubscribedItems
@@ -50,7 +53,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source 3.3.1](https://github.com/godotengine/godot).
+- Download and unpack the [Godot source 3.3.3](https://github.com/godotengine/godot).
 - Move the following to godotsteam_server/sdk/:
 ````
     sdk/public/
@@ -68,6 +71,7 @@ Quick How-To
     godotsteam_server/register_types.h
 ````
 - Now move the "godotsteam_server" directory into the "modules" directory of the unpacked Godot Engine source.
+  - You can also just put the godotsteam directory where ever you like and just apply the custom_modules=.../path/to/dir/godotsteam flag in SCONS when compiling. Make sure the custom_modules= flag points to where godotsteam is located.
 - Recompile for your platform:
   - **NOTE:** use SCONS flags ````production=yes tools=yes target=release_debug```` for your editor and ````production=yes tools=no target=release```` for your templates.
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
