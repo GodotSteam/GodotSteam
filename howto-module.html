@@ -39,13 +39,14 @@
 							<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
 							<li><a href="https://github.com/godotengine/godot" target="_blank">Download the Godot Engine source.</a>
 								<ul>
-									<li>For GodotSteam with Godot 2, preferably use 2.1.6. <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
-									<li>For GodotSteam with Godot 3, preferably use 3.3. <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
+									<li>For GodotSteam with Godot 2, preferably use 2.1.6 (or latest). <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
+									<li>For GodotSteam with Godot 3, preferably use 3.3.3 (or latest). <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
 								</ul>
 							</li>
 						</ul>
 						<p>Unzip the Godot Engine source code and place the contents into a folder.  For the purpose of this how-to we will name the folder <strong>godot</strong>.</p>
 						<p>Unzip the GodotSteam you downloaded and copy the <strong>godotsteam</strong> folder from it into the <strong>godot/modules/</strong> folder.</p>
+						<p><strong>NOTE:</strong> You may now put the <strong>godotsteam</strong> folder anywhere you want and just append the <strong><em>custom_modules=</em></strong> flag in SCONS as long as it points to the godotsteam folder's location. For example: <strong><em>scons platform=windows production=yes tools=yes target=release_debug custom_modules=C:\stuff\godotsteam</em></strong>.</p>
 						<h4>Alternate Preparation Option</h4>
 						<ul>
 							<li><a href="https://github.com/Gramps/GodotSteam/releases" target="_blank">Downloading pre-compiled versions of the GodotSteam editor and template.</a></li>
