@@ -1,5 +1,5 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.0 - 3.3.2). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.3.3). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
@@ -16,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.9.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.9.6)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.9.6 Changes**
+- Added: ability to provide different locations for custom modules, thanks to dsnopek
+- Changed: gamepad_text_input_dismissed to return submitted boolean and use UTF8 string, thanks to EIREXE
 
 **Version 3.9.5 Changes**
 - Added: setLeaderboardDetailsMax function back in to set the internal details variable
@@ -49,7 +53,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK 1.51](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source 3.3.2](https://github.com/godotengine/godot).
+- Download and unpack the [Godot source 3.x](https://github.com/godotengine/godot).
 - Move the following to godotsteam/sdk/ folder:
 ````
     sdk/public/
@@ -67,6 +71,7 @@ Quick How-To
     godotsteam/register_types.h
 ````
 - Now move the "godotsteam" directory into the "modules" directory of the unpacked Godot Engine source.
+  - You can also just put the godotsteam directory where ever you like and just apply the ````custom_modules=.../path/to/dir/godotsteam```` flag in SCONS when compiling.  Make sure the ````custom_modules=```` flag points to where godotsteam is located.
 - Recompile for your platform:
   - **NOTE:** use SCONS flags ````production=yes tools=yes target=release_debug```` for your editor and ````production=yes tools=no target=release```` for your templates.
   - Windows ( http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html )
