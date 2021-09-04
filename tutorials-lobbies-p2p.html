@@ -281,7 +281,7 @@ func _make_P2P_Handshake() -> void:
 
 	print("Sending P2P handshake to the lobby")
 
-	_send_P2P_Packet(var2bytes("all", {"message":"handshake", "from":STEAM_ID}))
+	_send_P2P_Packet("all", var2bytes({"message":"handshake", "from":STEAM_ID}))
 </code></pre>
 							<p>We won't get into what all this means just yet, but I wanted to show the code for the handshake function here since it is referenced. Your handshake messages can be anything and disregarded for the most part. Again, it is just to test our P2P session.</p>
 							<hr />
@@ -459,35 +459,35 @@ func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 							</header>
 							<p>For the last part of this tutorial we'll handle P2P failures with the following function which is triggered by the <strong>p2p_session_connect_fail</strong> callback:</p>
 <pre><code>
-func _on_P2P_Session_Connect_Fail(lobbyID: int, session_error: int) -> void:
+func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 
 	# If no error was given
 	if session_error == 0:
-		print("WARNING: Session failure with "+str(lobbyID)+" [no error given].")
+		print("WARNING: Session failure with "+str(steamID)+" [no error given].")
 
 	# Else if target user was not running the same game
 	elif session_error == 1:
-		print("WARNING: Session failure with "+str(lobbyID)+" [target user not running the same game].")
+		print("WARNING: Session failure with "+str(steamID)+" [target user not running the same game].")
 
 	# Else if local user doesn't own app / game
 	elif session_error == 2:
-		print("WARNING: Session failure with "+str(lobbyID)+" [local user doesn't own app / game].")
+		print("WARNING: Session failure with "+str(steamID)+" [local user doesn't own app / game].")
 
 	# Else if target user isn't connected to Steam
 	elif session_error == 3:
-		print("WARNING: Session failure with "+str(lobbyID)+" [target user isn't connected to Steam].")
+		print("WARNING: Session failure with "+str(steamID)+" [target user isn't connected to Steam].")
 
 	# Else if connection timed out
 	elif session_error == 4:
-		print("WARNING: Session failure with "+str(lobbyID)+" [connection timed out].")
+		print("WARNING: Session failure with "+str(steamID)+" [connection timed out].")
 
 	# Else if unused
 	elif session_error == 5:
-		print("WARNING: Session failure with "+str(lobbyID)+" [unused].")
+		print("WARNING: Session failure with "+str(steamID)+" [unused].")
 
 	# Else no known error
 	else:
-		print("WARNING: Session failure with "+str(lobbyID)+" [unknown error "+str(session_error)+"].")
+		print("WARNING: Session failure with "+str(steamID)+" [unknown error "+str(session_error)+"].")
 </code></pre>
 						<p>This will print a warning message so you know why the session connection failed. From here you can add any additional functionality you want like retrying the connection or something else.</p>
 						<p>That concludes the first part of the lobby / P2P networking tutorial.</p>
