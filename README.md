@@ -1,84 +1,80 @@
 # GodotSteam for GDNative
-Steam API for the Godot game engine. For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.0 - 3.3.3). For the Windows, Linux, and Mac platforms. 
 
 **WARNING**: This GDNative branch is still in active development! While functional, I do not suggest using it for production code for your game; testing only.  Please use one of the GodotSteam modules instead.
 
-Additional flavors include: [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2), [Godot 2.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot2-min), [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master), [Godot 3.x Minimal](https://github.com/Gramps/GodotSteam/tree/godot3-min), and [Server](https://github.com/Gramps/GodotSteam/tree/server).
+Additional flavors include:
+- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
+- [Server](https://github.com/Gramps/GodotSteam/tree/server)
 
 Documentation
 ----------
-Documentation is available here: https://gramps.github.io/GodotSteam/
+[Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
 
-Alternately, there is the project's Wiki page here: https://github.com/Gramps/GodotSteam/wiki
+You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam Server.
+
+Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ----------
-You can download pre-compiled versions (currently v2.0.0) of this repo here: https://github.com/Gramps/GodotSteam/releases
+You can [download pre-compiled versions _(currently v3.0.0)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 2.1.0**
-- Added: Steamworks P2P functions thanks to Antokolos 
+**Version 3.0.0 Changes**
+- Added: all missing functions to bring GDNative version in-line with module version
+- Changed: rebuilt and restructured layout of project folder
+- Removed: enums as they don't work in GDNative
+- Removed: default arguments for functions as they don't work in GDNative
 
-"Quick" How-To
+Known Issues
+----------
+- The GDNative version does not allow for default arguments in functions, thus some functions may have odd behaviors.  If you are using this version of GodotSteam you are required to pass any argument that has a default in the module version. Also, there are no enums in the GDNative version due to how it is structured.
+
+Quick How-To
 ----------
 - Create a new folder and call it **GDNative** (or whatever you want).
-- Download this repository.
-	- Unpack this repo and place it inside the GDNative folder.
-		- _I usually rename it **GodotSteam** for the sake of ease._
+- Download this repository and unpack it into the **GDNative** folder.
 - Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-	- Unpack the Steamworks SDK then copy the **public** and **redistributable_bin** to the /include/sdk folder in the unpacked repo folder.
-- Download the [Godot 3.0 binary](https://github.com/GodotBuilder/godot-builds/releases) if you do not have it already.
-	- _Preferably you use the **Godot 3.0.6 binary**, at this time of writing._
-	- Unpack it and place it GDNative folder.
-- Download the [Godot cpp](https://github.com/GodotNativeTools/godot-cpp/tree/3.0) and [Godot headers](https://github.com/GodotNativeTools/godot_headers/tree/3.0).
-	- **Note:** these are not the _master_ branches but the Godot 3.0 branches. If you use the master branches, make sure you are also using the 3.1 binary.
-	- Unpack both **godot_cpp** and **godot_header** into the **GDNative** folder.
+	- Unpack the Steamworks SDK then copy the **public** and **redistributable_bin** to the **/godotsteam/sdk** folder in the unpacked repo folder.
+- Download the [Godot 3.3.3 binary](https://github.com/GodotBuilder/godot-builds/releases) if you do not have it already.
+	- _Preferably you use the **Godot 3.3.3 binary**, at this time of writing._
+	- Unpack it and place it in the root of the **GDNative** folder.
+- Download the [Godot cpp](https://github.com/godotengine/godot-cpp), the 3.3 branch.
+	- Unpack the **godot_cpp** into the **GDNative** folder.
 	- **Alternatively**, you can just use these commands inside the **GDNative** folder to clone them:
 	````
-		git clone https://github.com/GodotNativeTools/godot-cpp
-		git clone https://github.com/GodotNativeTools/godot_headers
+		git clone --recursive -b 3.3 https://github.com/godotengine/godot-cpp
 	````
 - CD into the **godot-cpp** folder and compile the bindings (make sure your slashes are OS appropriate):
 ````
-	scons godotbinpath="../<your binary file>" headers="../godot_headers" platform=<your platform> generate_bindings=yes
+	scons platform=<your platform> generate_bindings=yes
 ````
-- Once this is finished, copy the resulting file from the **godot-cpp/bin** folder to the **godot-cpp/lib** folder.
 - You should end up with a **GDNative** folder that looks something like this:
 ````
-	Godot_v3.0.6-stable_x11.64 (or whatever your binary is for your platform)
+	Godot_v3.3.3-stable_x11.64 (or whatever your binary is for your platform)
 	godot-cpp/
 	--- bin/*
-	--- lib/* (this should contain your compiled godot-cpp)
+	--- godot-headers/*
+	--- include/*
+	--- misc/*
 	--- src/*
+	--- test/*
 	--- binding_generator.py
-	--- binding_generator.pyc
-	--- godot_api.json
+	--- CMakeLists.txt
 	--- LICENSE
 	--- Makefile
 	--- README.md
 	--- SConstruct
-	godot_headers/
-	--- arvr/*
-	--- gdnative/*
-	--- images/*
-	--- nativescript/*
-	--- pluginscript/*
-	--- gdnative_api.json
-	--- gdnative_ap_struct.gen.h
-	--- LICENSE
-	--- README.md
-	GodotSteam/
-	--- include/
-	--- --- sdk/
-	--- --- --- public/steam/*
-	--- --- --- redistributable_bin/*
-	--- --- godotsteam.h
-	--- lib/
-	--- src/
-	--- --- godotsteam.cpp
-	--- --- init.cpp
-	--- SConstruct
-	--- README.md
-	--- LICENSE.txt
+	godotsteam/
+	--- sdk/
+	--- --- public/steam/*
+	--- --- redistributable_bin/*
+	--- godotsteam.h
+	--- godotsteam.cpp
+	--- init.cpp
+	SConstruct
+	README.md
+	LICENSE.txt
 ````
 - **Windows users**, follow these steps for Visual Studio (big thanks to **willnationsdev**):
 	- Create a new Visual Studio project.
@@ -95,9 +91,9 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 		- The options are located in the toolbar at the top left.
 	- Go to "Project > GDNative Properties" to open the project properties.
 	- Ensure you are on the x64 Debug configurations at the top and make these changes:
-		- VC++ Directories > Include Directories. Add 'GDNative\godot-cpp\include', 'GDNative\godot-cpp\include\core', and 'GDNative\godot_headers' to the list.
-		- VC++ Directories > Library Directories. Add 'GDNative\GodotSteam\lib'.
-		- VC++ Directories > Source Directories. Add 'GDNative\GodotSteam\src'.
+		- VC++ Directories > Include Directories. Add 'GDNative\godot-cpp\include', 'GDNative\godot-cpp\include\core', and 'GDNative\godot-cpp\godot-headers' to the list.
+		- VC++ Directories > Library Directories. Add 'GDNative\godotsteam'.
+		- VC++ Directories > Source Directories. Add 'GDNative\godotsteam'.
 		- C/C++ > Linker > System. Subsystem = "Console (/SUBSYSTEM:CONSOLE)"
 		- C/C++ > Linker > Input. Add "godot-cpp.windows.64.lib" (without quotes) to the Additional Dependencies parameter.
 	- Click on Apply and then Save.
@@ -112,11 +108,10 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 	````
 		scons platform=<your platform>
 	````
-	- You can enter the bit architecture with **bits** or **b** arguments or not. There is a fallback to automatically find this. However, I recommend you use one.
-- Copy the resulting file from your **GodotSteam/bin/** folder into your game project folder and copy the matching Steam API file; preferably the root folder.
-	- For Windows, you want **godotsteam.windows.<your arch>.dll **and **steam_api.dll** or **steam_api64.dll**.
-	- For Linux, you want **libgodotsteam.linux.<your arch>.so** and **libsteam_api.so**.
-	- For Mac, you want **libgodotsteam.osx.<your arch>.dylib** and **libsteam_api.dylib**.
+- Copy the resulting file from your **/bin/win64 or /bin/linux or /bin/osx** folder and copy the matching Steam API file into an **/addons/godotsteam** folder inside your **game's project folder**. For example:
+	- For Windows: /addons/godotsteam/win64/, you want **godotsteam.dll** and **steam_api64.dll**.
+	- For Linux: /addons/godotsteam/linux/, you want **libgodotsteam.so** and **libsteam_api.so**.
+	- For Mac: /addons/godotsteam/osx, you want **libgodotsteam.dylib** and **libsteam_api.dylib**.
 - In a text editor, create a file called **godotsteam.gdnlib** (this may need to be renamed as such if using Windows).
 	- Place the following inside this file and save it in the root of your project (game) folder:
 	````
@@ -132,28 +127,20 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 	[dependencies]
 	(read below)
 	````
-	- If using Windows enter either of these pairs (do not put both 32 and 64 lines unless including all files):
+	- If using Windows:
 	````
 		[entry]
-		Windows.32="res://godotsteam.windows.32.dll"
-		(or)
-		Windows.64="res://godotsteam.windows.64.dll"
+		Windows.64="res://godotsteam.dll"
 
 		[dependencies]
-		Windows.32=["res://steam_api.dll"]
-		(or)
 		Windows.64=["res://steam_api64.dll"]
 	````
-	- If using Linux enter either of these pairs (do not put both 32 and 64 lines as Steam does not use separate naming conventions):
+	- If using Linux:
 	````
 		[entry]
-		X11.32="res://libgodotsteam.linux.32.so"
-		(or)
-		X11.64="res://libgodotsteam.linux.64.so"
+		X11.64="res://libgodotsteam.so"
 
 		[dependencies]
-		X11.32=["res://libsteam_api.so"]
-		(or)
 		X11.64=["res://libsteam_api.so"]
 	````
 	- To double-check this worked, in your Godot project, open the **.gdnlib** file in the **Inspector**. It will have the correct data in the GUI editor that pops up in the bottom panel.
@@ -168,12 +155,12 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 	- Click the arrow and select Load to add the **godotsteam.gdnlib** file.
 	- Click the save icon in the Inspector.
 - Create a new scene in your game project.
-	- Add a Node node with a built-in GDScript as the script.
+	- Add a Node node with a GDScript as the script.
 	- Add the following code:
 	````
 	extends Node
 
-	onready var Steam = preload("godotsteam.gdns").new()
+	onready var Steam = preload("res://addons/godotsteam/godotsteam.gdns").new()
 
 	func _ready():
 		Steam.steamInit()
@@ -181,7 +168,7 @@ You can download pre-compiled versions (currently v2.0.0) of this repo here: htt
 	````
 - Save the scene as **steam.tscn** and place it where ever you want.
 - Go to "Project > Project Settings" then click on **Autoload**.
-- Add your **steam.tscn** as a singleton, with the node name of **steam**.
+- Add your **steam.tscn** as a singleton, with the node name of **Steam**.
 - Done!
 
 Usage

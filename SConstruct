@@ -1,118 +1,121 @@
 #!python
+import os
 
-import os, sys, platform
-#################################################
-# Project name can be changed, using GodotSteam
-project_name = "godotsteam"
-# Set up the environment
-env = Environment()
-host_platform = platform.system()
-# Get the platform specified
-target_platform = ARGUMENTS.get('p', ARGUMENTS.get('platform', False))
-# If bits is not specified, use this fallback
-if ARGUMENTS.get("bits", ARGUMENTS.get("b", False)):
-	target_arch = ARGUMENTS.get("bits", ARGUMENTS.get("b", False))
-	print("Bits used! Arch is %s") % (target_arch)
-else:
-	if sys.maxsize > (2**32):
-		target_arch = "64"
-	else:
-		target_arch = "32"
-	print("Bits not used! Considering using the bits or b argument. System reported as %s-bit") % (target_arch)
-# Default to debug build, must be same setting as used for cpp_bindings
-target = ARGUMENTS.get('target', 'debug')
-# Using Clang instead of GCC
-if ARGUMENTS.get('use_llvm', 'no') == 'yes':
-	env['CXX'] = 'clang++'
+opts = Variables([], ARGUMENTS)
+
+# Gets the standard flags CC, CCX, etc.
+env = DefaultEnvironment()
+
+# Define our options
+opts.Add(EnumVariable('target', "Compilation target", 'debug', ['d', 'debug', 'r', 'release']))
+opts.Add(EnumVariable('platform', "Compilation platform", '', ['', 'windows', 'linuxbsd', 'linux', 'osx']))
+opts.Add(EnumVariable('p', "Compilation target, alias for 'platform'", '', ['', 'windows', 'linuxbsd', 'linux', 'osx']))
+opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
+opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'bin/'))
+opts.Add(PathVariable('target_name', 'The library name.', 'godotsteam', PathVariable.PathAccept))
+
 # Local dependency paths, adapt them to your setup
-cpp_bindings = ARGUMENTS.get('cpp_bindings', '../godot-cpp')
-godot_headers = ARGUMENTS.get('headers', '../godot-cpp/godot_headers')
-result_path = "bin/"
-result_name = project_name
-steam_lib_path = "include/sdk/redistributable_bin"
+godot_headers_path = "godot-cpp/godot-headers/"
+cpp_bindings_path = "godot-cpp/"
+cpp_library = "libgodot-cpp"
+steam_lib_path = "godotsteam/sdk/redistributable_bin"
 steam_lib = "steam_api"
-# Add all files that have a .cpp extension from the path
-def add_sources(sources, dir, extension):
-		for f in os.listdir(dir):
-				if f.endswith('.' + extension):
-						sources.append(dir + '/' + f)
-# If platform is Linux
-if target_platform == 'linux' or target_platform == 'x11':
-	result_name += '.linux.' + target_arch
-	# Set compiler variables
-	env['CXX']='gcc-7'
-	# If using Clang
-	if ARGUMENTS.get('use_llvm', 'no') == 'yes':
-		env['CXX'] = 'clang++'
-	env.Append(CCFLAGS = [ '-fPIC', '-g', '-O3', '-std=c++14' ])
-	env.Append(LINKFLAGS = [ '-Wl,-R,\'$$ORIGIN\'', '-static-libgcc', '-static-libstdc++' ])
-	# If 32-bit
-	if target_arch == '32':
-		env.Append(CCFLAGS = [ '-m32' ])
-		env.Append(LINKFLAGS = [ '-m32' ])
-		# Set correct Steam library
-		steam_lib_path += "/linux32"
-	# If 64-bit
-	elif target_arch == '64':
-		env.Append(CCFLAGS = [ '-m64' ])
-		env.Append(LINKFLAGS = [ '-m64' ])
-		# Set correct Steam library
-		steam_lib_path += "/linux64"
-	# Attach the CPP bindings lib
-	env.Append(LIBS = [ 'libgodot-cpp.' + target_platform + '.' + target_arch + '.a' ])
-# If platform is Windows
-if target_platform == 'windows':
-	result_name += '.windows.' + target_arch
-	# If the host is actually Windows
-	if host_platform == 'Windows':
-		result_name += '.dll'
-		# Set compiler variables
-		env.Append(LINKFLAGS = [ '/WX' ])
-		if target == 'debug':
-			env.Append(CCFLAGS = ['-EHsc', '-D_DEBUG', '/MTd' ])
-		else:
-			env.Append(CCFLAGS = ['-O2', '-EHsc', '-DNDEBUG', '/MT' ])
-	# If the host is not actually Windows
-	else:
-		# Set compiler variables
-		if target_arch == '32':
-			env['CXX']='i686-w64-mingw32-g++'
-		elif target_arch == '64':
-			env['CXX']='x86_64-w64-mingw32-g++'
-		env.Append(CCFLAGS = [ '-g', '-O3', '-std=c++14', '-Wwrite-strings' ])
-		env.Append(LINKFLAGS = [ '--static', '-Wl,--no-undefined', '-static-libgcc', '-static-libstdc++' ])
-	# Set correct Steam library
-	steam_lib = "steam_api.lib"
-	# If using 64-bit
-	if target_arch == "64":
-		steam_lib = "steam_api64.lib"
-		steam_lib_path += "\win64"
-		# Mostly VisualStudio
-		if env["CC"] == "cl":
-			env.Append(LINKFLAGS=[ steam_lib ])
-	# Attach the CPP bindings lib
-	env.Append(LIBS = [ 'godot-cpp.' + target_platform + '.' + target_arch + '.lib' ])
-# If platform is OSX
-if target_platform == 'osx':
-	result_name += '.osx.' + target_arch + '.dylib'
-	# If using Clang
-	if ARGUMENTS.get('use_llvm', 'no') == 'yes':
-		env['CXX'] = 'clang++'
-	# Set compiler variables
-	env.Append(CCFLAGS = [ '-g','-O3', '-std=c++14', '-arch', 'x86_64' ])
-	env.Append(LINKFLAGS = [ '-arch', 'x86_64', '-framework', 'Cocoa', '-Wl,-undefined,dynamic_lookup' ])
-	env.Append(RPATH=env.Literal("\\$$ORIGIN"))
-	# Set correct Steam library
-	steam_lib_path += "/osx32"
-	# Attach the CPP bindings lib
-	env.Append(LIBS = [ 'libgodot-cpp.' + target_platform + '.' + target_arch + '.a' ])
-# Append the last paths
-env.Append(CPPPATH = [ '.', 'src', 'include', godot_headers, cpp_bindings + '/include', cpp_bindings + '/include/core', 'include/sdk/public' ])
-env.Append(LIBS = [ steam_lib ])
-env.Append(LIBPATH = [ cpp_bindings + '/include', cpp_bindings + '/bin', 'lib', steam_lib_path ])
-# Finally add the CPP sources
-sources = []
-add_sources(sources, 'src', 'cpp')
-# Where to output the new shared library
-library = env.SharedLibrary(target=(result_path + '/' + result_name), source=sources)
+
+# only support 64 at this time..
+bits = 64
+
+# Updates the environment with the option variables.
+opts.Update(env)
+
+# Process some arguments
+if env['use_llvm']:
+    env['CC'] = 'clang'
+    env['CXX'] = 'clang++'
+
+if env['p'] != '':
+    env['platform'] = env['p']
+
+if env['platform'] == '':
+    print("No valid target platform selected.")
+    quit();
+
+# For the reference:
+# - CCFLAGS are compilation flags shared between C and C++
+# - CFLAGS are for C-specific compilation flags
+# - CXXFLAGS are for C++-specific compilation flags
+# - CPPFLAGS are for pre-processor flags
+# - CPPDEFINES are for pre-processor defines
+# - LINKFLAGS are for linking flags
+
+# Check our platform specifics
+if env['platform'] == "osx":
+    env['target_path'] += 'osx/'
+    cpp_library += '.osx'
+    env.Append(CCFLAGS=['-arch', 'x86_64'])
+    env.Append(CXXFLAGS=['-std=c++17'])
+    env.Append(LINKFLAGS=['-arch', 'x86_64'])
+    if env['target'] in ('debug', 'd'):
+        env.Append(CCFLAGS=['-g', '-O2'])
+    else:
+        env.Append(CCFLAGS=['-g', '-O3'])
+    # Set the correct Steam library
+    steam_lib_path += "/osx32"
+
+
+elif env['platform'] in ('linuxbsd', 'linux'):
+    env['target_path'] += 'linuxbsd/'
+    cpp_library += '.linux'
+    env.Append(CCFLAGS=['-fPIC'])
+    env.Append(CXXFLAGS=['-std=c++17'])
+    if env['target'] in ('debug', 'd'):
+        env.Append(CCFLAGS=['-g3', '-Og'])
+    else:
+        env.Append(CCFLAGS=['-g', '-O3'])
+    # Set correct Steam library
+    steam_lib_path += "/linux64"
+
+elif env['platform'] == "windows":
+    env['target_path'] += 'win64/'
+    cpp_library += '.windows'
+    # This makes sure to keep the session environment variables on windows,
+    # that way you can run scons in a vs 2017 prompt and it will find all the required tools
+    env.Append(ENV=os.environ)
+
+    env.Append(CPPDEFINES=['WIN32', '_WIN32', '_WINDOWS', '_CRT_SECURE_NO_WARNINGS'])
+    env.Append(CCFLAGS=['-W3', '-GR', '-FS'])
+    env.Append(CXXFLAGS='/std:c++17')
+    if env['target'] in ('debug', 'd'):
+        env.Append(CPPDEFINES=['_DEBUG'])
+        env.Append(CCFLAGS=['-EHsc', '-MDd', '-ZI'])
+        env.Append(LINKFLAGS=['-DEBUG'])
+    else:
+        env.Append(CPPDEFINES=['NDEBUG'])
+        env.Append(CCFLAGS=['-O2', '-EHsc', '-MD'])
+    # Set correct Steam library
+    steam_lib_path += "/win64"
+    steam_lib = "steam_api64.lib"
+    if env["CC"] == "cl":
+        env.Append(LINKFLAGS=[ steam_lib ])
+
+if env['target'] in ('debug', 'd'):
+    cpp_library += '.debug'
+else:
+    cpp_library += '.release'
+
+cpp_library += '.' + str(bits)
+
+# make sure our binding library is properly includes
+env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/', cpp_bindings_path + 'include/core/', cpp_bindings_path + 'include/gen/', 'godotsteam/sdk/public'])
+env.Append(LIBPATH=[cpp_bindings_path + 'bin/', steam_lib_path])
+env.Append(LIBS=[cpp_library])
+
+# tweak this if you want to use different folders, or more folders, to store your source code in.
+env.Append(CPPPATH=['godotsteam/'])
+sources = Glob('godotsteam/*.cpp')
+
+library = env.SharedLibrary(target=env['target_path'] + env['target_name'] , source=sources)
+
 Default(library)
+
+# Generates help for the -h scons option.
+Help(opts.GenerateHelpText(env))
