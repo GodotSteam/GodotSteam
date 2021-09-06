@@ -6,6 +6,11 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 9/5/21:**
+- Added: changelog for GodotSteam 3.9.6
+- Added: changelog for GodotSteam GDNative 3.0
+- Changed: new how-to for GDNative
+
 **Update 9/4/21:**
 - Added: new contributor 
 
