@@ -20,6 +20,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.0.0)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.0.1 Changes**
+- Fixed: two issues with godotsteam.cpp that causes compiling error on Linux
+
 **Version 3.0.0 Changes**
 - Added: all missing functions to bring GDNative version in-line with module version
 - Changed: rebuilt and restructured layout of project folder
@@ -104,11 +107,11 @@ Quick How-To
 	````
 - **Linux and Mac users**, follow these steps:
 	- **Note:** Linux users must use platform=linux or you'll get errors
-	- Simply CD into the **GodotSteam** folder and run:
+	- Simply CD into the root of the **GDNative** folder and run:
 	````
 		scons platform=<your platform>
 	````
-- Copy the resulting file from your **/bin/win64 or /bin/linux or /bin/osx** folder and copy the matching Steam API file into an **/addons/godotsteam** folder inside your **game's project folder**. For example:
+- Copy the resulting file from your **/bin/win64 or /bin/linuxbsd or /bin/osx** folder and copy the matching Steam API file into an **/addons/godotsteam** folder inside your **game's project folder**. For example:
 	- For Windows: /addons/godotsteam/win64/, you want **godotsteam.dll** and **steam_api64.dll**.
 	- For Linux: /addons/godotsteam/linux/, you want **libgodotsteam.so** and **libsteam_api.so**.
 	- For Mac: /addons/godotsteam/osx, you want **libgodotsteam.dylib** and **libsteam_api.dylib**.

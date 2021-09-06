@@ -8583,7 +8583,7 @@ void Steam::_unsubscribe_item(RemoteStorageUnsubscribePublishedFileResult_t* cal
 	}
 	else{
 		int result = callData->m_eResult;
-		uint64 fileID = callData->m_nPublishedFileId;
+		uint64_t fileID = callData->m_nPublishedFileId;
 		emit_signal("unsubscribe_item", result, fileID);
 	}
 }
@@ -8595,7 +8595,7 @@ void Steam::_subscribe_item(RemoteStorageSubscribePublishedFileResult_t* callDat
 	}
 	else{
 		int result = callData->m_eResult;
-		uint64 fileID = callData->m_nPublishedFileId;
+		uint64_t fileID = callData->m_nPublishedFileId;
 		emit_signal("subscribe_item", result, fileID);
 	}
 }
