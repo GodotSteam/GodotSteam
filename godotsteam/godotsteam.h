@@ -593,29 +593,29 @@ class Steam: public Object {
 		// HTTP /////////////////////////////////
 		void createCookieContainer( bool allowResponsesToModify);
 		uint32_t createHTTPRequest(int requestMethod, const String& absoluteURL);
-		bool deferHTTPRequest(uint32 request);
-		float getHTTPDownloadProgressPct(uint32 request);
-		bool getHTTPRequestWasTimedOut(uint32 request);
-		PoolByteArray getHTTPResponseBodyData(uint32 request, uint32 bufferSize);
-		uint32 getHTTPResponseBodySize(uint32 request);
-		uint32 getHTTPResponseHeaderSize(uint32 request, const String& headerName);
-		uint8 getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize);
-		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize);
-		bool prioritizeHTTPRequest(uint32 request);
-		bool releaseCookieContainer();
-		bool releaseHTTPRequest(uint32 request);
-		bool sendHTTPRequest(uint32 request);
-		bool sendHTTPRequestAndStreamResponse(uint32 request);
-		bool setHTTPCookie(const String& host, const String& url, const String& cookie);
-		bool setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds);
-		bool setHTTPRequestContextValue(uint32 request, uint64_t contextValue);
-		bool setHTTPRequestCookieContainer(uint32 request);
-		bool setHTTPRequestGetOrPostParameter(uint32 request, const String& name, const String& value);
-		bool setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue);
-		bool setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds);
-		uint8 setHTTPRequestRawPostBody(uint32 request, const String& contentType, uint32 bodyLen);
-		bool setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool requireVerifiedCertificate);
-		bool setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentInfo);
+		bool deferHTTPRequest(uint32 requestHandle);
+		float getHTTPDownloadProgressPct(uint32 requestHandle);
+		bool getHTTPRequestWasTimedOut(uint32 requestHandle);
+		PoolByteArray getHTTPResponseBodyData(uint32 requestHandle, uint32 bufferSize);
+		uint32 getHTTPResponseBodySize(uint32 requestHandle);
+		uint32 getHTTPResponseHeaderSize(uint32 requestHandle, const String& headerName);
+		uint8 getHTTPResponseHeaderValue(uint32 requestHandle, const String& headerName, uint32 bufferSize);
+		uint8 getHTTPStreamingResponseBodyData(uint32 requestHandle, uint32 offset, uint32 bufferSize);
+		bool prioritizeHTTPRequest(uint32 requestHandle);
+		bool releaseCookieContainer(uint32 cookieHandle);
+		bool releaseHTTPRequest(uint32 requestHandle);
+		bool sendHTTPRequest(uint32 requestHandle);
+		bool sendHTTPRequestAndStreamResponse(uint32 requestHandle);
+		bool setHTTPCookie(uint32 cookieHandle, const String& host, const String& url, const String& cookie);
+		bool setHTTPRequestAbsoluteTimeoutMS(uint32 requestHandle, uint32 milliseconds);
+		bool setHTTPRequestContextValue(uint32 requestHandle, uint64_t contextValue);
+		bool setHTTPRequestCookieContainer(uint32 requestHandle, uint32 cookieHandle);
+		bool setHTTPRequestGetOrPostParameter(uint32 requestHandle, const String& name, const String& value);
+		bool setHTTPRequestHeaderValue(uint32 requestHandle, const String& headerName, const String& headerValue);
+		bool setHTTPRequestNetworkActivityTimeout(uint32 requestHandle, uint32 timeoutSeconds);
+		uint8 setHTTPRequestRawPostBody(uint32 requestHandle, const String& contentType, uint32 bodyLen);
+		bool setHTTPRequestRequiresVerifiedCertificate(uint32 requestHandle, bool requireVerifiedCertificate);
+		bool setHTTPRequestUserAgentInfo(uint32 requestHandle, const String& userAgentInfo);
 		
 		// Input ////////////////////////////////
 		void activateActionSet(uint64_t inputHandle, uint64_t actionSetHandle);
@@ -723,23 +723,23 @@ class Steam: public Object {
 		bool setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent);
 
 		// Matchmaking Servers //////////////////
-		void cancelQuery(uint64_t serverRequest);
+		void cancelQuery(uint64_t serverListRequest);
 		void cancelServerQuery(int serverQuery);
-		int getServerCount(uint64_t serverRequest);
-		Dictionary getServerDetails(uint64_t serverRequest, int server);
-		bool isRefreshing(uint64_t serverRequest);
-///		int pingServer(const String& ip, uint16 port);
-//		int playerDetails(uint32 ip, uint16 port);
-		void refreshQuery(uint64_t serverRequest);
-		void refreshServer(uint64_t serverRequest, int server);
-		void releaseRequest(uint64_t serverRequest);
+		int getServerCount(uint64_t serverListRequest);
+		Dictionary getServerDetails(uint64_t serverListRequest, int server);
+		bool isRefreshing(uint64_t serverListRequest);
+		int pingServer(const String& ip, uint16 port);
+		int playerDetails(uint32 ip, uint16 port);
+		void refreshQuery(uint64_t serverListRequest);
+		void refreshServer(uint64_t serverListRequest, int server);
+		void releaseRequest(uint64_t serverListRequest);
 //		uint64_t requestFavoritesServerList(int appID, Array filters);
 ///		uint64_t requestFriendsServerList(int appID, Array filters);
 ///		uint64_t requestHistoryServerList(int appID, Array filters);
 ///		uint64_t requestInternetServerList(int appID, Array filters);
 ///		uint64_t requestLANServerList(int appID, Array filters);
 ///		uint64_t requestSpectatorServerList(int appID, Array filters);
-///		int serverRules(uint32 ip, uint16 port);
+		int serverRules(uint32 ip, uint16 port);
 
 		// Music ////////////////////////////////
 		bool musicIsEnabled();
@@ -797,29 +797,29 @@ class Steam: public Object {
 
 		// Networking Messages //////////////////
 		int sendMessageToUser(const String& message, int flags, int channel);
-//		int receiveMessagesOnChannel(int channel, int maxMessages);
+		Array receiveMessagesOnChannel(int channel, int max_messages);
 		bool acceptSessionWithUser();
 		bool closeSessionWithUser();
 		bool closeChannelWithUser(int channel);
 		int getSessionConnectionInfo();
 
-		// Networking Sockets ///////////////////		
+		// Networking Sockets ///////////////////
 		uint32 createListenSocketIP(const int options);
-///		uint32 connectByIPAddress(uint32 ip, uint16 port, Array options);
+		uint32 connectByIPAddress(uint32 ip, uint16 port, Array options);
 		uint32 createListenSocketP2P(int port, int optionSize);
 		uint32 connectP2P(int port, int numOptions);
 		int acceptConnection(uint32 connection);
 		bool closeConnection(uint32 peer, int reason, bool linger);
 		bool closeListenSocket(uint32 socket);
-///		Dictionary createSocketPair(bool loopback, const String& identity1, const String& identity2);
+		Dictionary createSocketPair(bool loopback, const String& identity1, const String& identity2);
 		int sendMessageToConnection(uint32 connection, const String& message, int flags);
-///		void sendMessages(int messages, const String& message, uint32 connection, int flags);
+		void sendMessages(int messages, const PoolStringArray& message, uint32 connection, int flags);
 		int flushMessagesOnConnection(uint32 connection);
-		int receiveMessagesOnConnection(uint32 connection, int maxMessages);
+		Array receiveMessagesOnConnection(uint32 connection, int max_messages);
 		uint32 createPollGroup();
 		bool destroyPollGroup(uint32 pollGroup);
 		bool setConnectionPollGroup(uint32 connection, uint32 pollGroup);
-		int receiveMessagesOnPollGroup(uint32 pollGroup, int maxMessages);
+		Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
 		bool getConnectionInfo(uint32 connection);
 		bool getQuickConnectionStatus(uint32 connection);
 		Dictionary getDetailedConnectionStatus(uint32 connection);
@@ -917,9 +917,9 @@ class Steam: public Object {
 		bool isCloudEnabledForApp();
 		void setCloudEnabledForApp(bool enabled);
 		bool setSyncPlatforms(const String& file, int platform);
-		void ugcDownload(uint64_t content, uint32 priority);
-		void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
-		int32 ugcRead(uint64_t content, PoolByteArray& data, int32_t dataSize, uint32 offset, int action);
+//		void ugcDownload(uint64_t content, uint32 priority);
+//		void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
+//		int32 ugcRead(uint64_t content, PoolByteArray& data, int32_t dataSize, uint32 offset, int action);
 
 		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnailFilename, int width, int height);
@@ -1154,8 +1154,12 @@ class Steam: public Object {
 		int leaderboardDetailsMax = 0;
 
 		// Matchmaking Server
-		int serverQuery;
-		uint64_t serverRequest;
+		HServerListRequest serverListRequest;
+		HServerQuery serverQuery = HSERVERQUERY_INVALID;
+		ISteamMatchmakingServerListResponse *serverListResponse;
+		ISteamMatchmakingPingResponse *pingResponse;
+		ISteamMatchmakingPlayersResponse *playerResponse;
+		ISteamMatchmakingRulesResponse *rulesResponse;
 
 		// Networking Messages
 		SteamNetworkingMessage_t *networkMessages;
@@ -1165,6 +1169,7 @@ class Steam: public Object {
 		uint32 listenSocket;
 		uint32 networkPollGroup;
 		uint64_t networkingMicroseconds;
+		SteamNetworkingIdentity networkingIdentity;
 
 		// Parties
 		uint64 partyBeaconID;
@@ -1205,16 +1210,6 @@ class Steam: public Object {
 			int icon;
 		};
 		Vector<AchievementData> achievementData;
-
-		// Leaderboard entry ////////////////////
-		struct LeaderboardEntry {
-			uint64_t steamID;
-			int32 globalRank;
-			int32 score;
-			int32 details;
-			uint64 ugcHandle; 
-		};
-		Vector<LeaderboardEntry> leaderboardEntry;
 
 		// UGC item details /////////////////////
 		struct UGCDetails {
@@ -1456,6 +1451,10 @@ class Steam: public Object {
 		void _lobby_created(LobbyCreated_t *callData, bool ioFailure);
 		CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 		void _lobby_match_list(LobbyMatchList_t *callData, bool ioFailure);
+
+		// Matchmaking Server call results //////
+		void _server_Responded(gameserveritem_t server);
+		void _server_Failed_To_Respond();
 
 		// Parties call results /////////////////
 		CCallResult<Steam, JoinPartyCallback_t> callResultJoinParty;

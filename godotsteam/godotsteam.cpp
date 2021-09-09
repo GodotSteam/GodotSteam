@@ -1888,87 +1888,87 @@ uint32_t Steam::createHTTPRequest(int requestMethod, const String& absoluteURL){
 }
 
 // Defers a request which has already been sent by moving it at the back of the queue.
-bool Steam::deferHTTPRequest(uint32 request){
+bool Steam::deferHTTPRequest(uint32 requestHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->DeferHTTPRequest(request);
+	return SteamHTTP()->DeferHTTPRequest(requestHandle);
 }
 
 // Gets progress on downloading the body for the request.
-float Steam::getHTTPDownloadProgressPct(uint32 request){
+float Steam::getHTTPDownloadProgressPct(uint32 requestHandle){
 	float percentOut = 0.0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPDownloadProgressPct(request, &percentOut);
+		SteamHTTP()->GetHTTPDownloadProgressPct(requestHandle, &percentOut);
 	}
 	return percentOut;
 }
 
 // Check if the reason the request failed was because we timed it out (rather than some harder failure).
-bool Steam::getHTTPRequestWasTimedOut(uint32 request){
+bool Steam::getHTTPRequestWasTimedOut(uint32 requestHandle){
 	bool wasTimedOut = false;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPRequestWasTimedOut(request, &wasTimedOut);
+		SteamHTTP()->GetHTTPRequestWasTimedOut(requestHandle, &wasTimedOut);
 	}
 	return wasTimedOut;
 }
 
 // Gets the body data from an HTTP response.
-PoolByteArray Steam::getHTTPResponseBodyData(uint32 request, uint32 bufferSize){
+PoolByteArray Steam::getHTTPResponseBodyData(uint32 requestHandle, uint32 bufferSize){
 	PoolByteArray bodyData;
 	bodyData.resize(bufferSize);
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseBodyData(request, bodyData.write().ptr(), bufferSize);
+		SteamHTTP()->GetHTTPResponseBodyData(requestHandle, bodyData.write().ptr(), bufferSize);
 	}
 	return bodyData;
 }
 
 // Gets the size of the body data from an HTTP response.
-uint32 Steam::getHTTPResponseBodySize(uint32 request){
+uint32 Steam::getHTTPResponseBodySize(uint32 requestHandle){
 	uint32 bodySize = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseBodySize(request, &bodySize);
+		SteamHTTP()->GetHTTPResponseBodySize(requestHandle, &bodySize);
 	}
 	return bodySize;
 }
 
 // Checks if a header is present in an HTTP response and returns its size.
-uint32 Steam::getHTTPResponseHeaderSize(uint32 request, const String& headerName){
+uint32 Steam::getHTTPResponseHeaderSize(uint32 requestHandle, const String& headerName){
 	uint32 responseHeaderSize = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseHeaderSize(request, headerName.utf8().get_data(), &responseHeaderSize);
+		SteamHTTP()->GetHTTPResponseHeaderSize(requestHandle, headerName.utf8().get_data(), &responseHeaderSize);
 	}
 	return responseHeaderSize;
 }
 
 // Gets a header value from an HTTP response.
-uint8 Steam::getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize){
+uint8 Steam::getHTTPResponseHeaderValue(uint32 requestHandle, const String& headerName, uint32 bufferSize){
 	uint8 valueBuffer = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseHeaderValue(request, headerName.utf8().get_data(), &valueBuffer, bufferSize);
+		SteamHTTP()->GetHTTPResponseHeaderValue(requestHandle, headerName.utf8().get_data(), &valueBuffer, bufferSize);
 	}
 	return valueBuffer;
 }
 
 // Gets the body data from a streaming HTTP response.
-uint8 Steam::getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize){
+uint8 Steam::getHTTPStreamingResponseBodyData(uint32 requestHandle, uint32 offset, uint32 bufferSize){
 	uint8 bodyDataBuffer = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPStreamingResponseBodyData(request, offset, &bodyDataBuffer, bufferSize);
+		SteamHTTP()->GetHTTPStreamingResponseBodyData(requestHandle, offset, &bodyDataBuffer, bufferSize);
 	}
 	return bodyDataBuffer;
 }
 
 // Prioritizes a request which has already been sent by moving it at the front of the queue.
-bool Steam::prioritizeHTTPRequest(uint32 request){
+bool Steam::prioritizeHTTPRequest(uint32 requestHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->PrioritizeHTTPRequest(request);
+	return SteamHTTP()->PrioritizeHTTPRequest(requestHandle);
 }
 
 // Releases a cookie container, freeing the memory allocated within Steam.
-bool Steam::releaseCookieContainer(){
+bool Steam::releaseCookieContainer(uint32 cookieHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -1976,33 +1976,33 @@ bool Steam::releaseCookieContainer(){
 }
 
 // Releases an HTTP request handle, freeing the memory allocated within Steam.
-bool Steam::releaseHTTPRequest(uint32 request){
+bool Steam::releaseHTTPRequest(uint32 requestHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->ReleaseHTTPRequest(request);
+	return SteamHTTP()->ReleaseHTTPRequest(requestHandle);
 }
 
 // Sends an HTTP request.
-bool Steam::sendHTTPRequest(uint32 request){
+bool Steam::sendHTTPRequest(uint32 requestHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
 	SteamAPICall_t callHandle;
-	return SteamHTTP()->SendHTTPRequest(request, &callHandle);
+	return SteamHTTP()->SendHTTPRequest(requestHandle, &callHandle);
 }
 
 // Sends an HTTP request and streams the response back in chunks.
-bool Steam::sendHTTPRequestAndStreamResponse(uint32 request){
+bool Steam::sendHTTPRequestAndStreamResponse(uint32 requestHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
 	SteamAPICall_t callHandle;
-	return SteamHTTP()->SendHTTPRequestAndStreamResponse(request, &callHandle);
+	return SteamHTTP()->SendHTTPRequestAndStreamResponse(requestHandle, &callHandle);
 }
 
 // Adds a cookie to the specified cookie container that will be used with future requests.
-bool Steam::setHTTPCookie(const String& host, const String& url, const String& cookie){
+bool Steam::setHTTPCookie(uint32 cookieHandle, const String& host, const String& url, const String& cookie){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
@@ -2010,76 +2010,76 @@ bool Steam::setHTTPCookie(const String& host, const String& url, const String& c
 }
 
 // Set an absolute timeout in milliseconds for the HTTP request. This is the total time timeout which is different than the network activity timeout which is set with SetHTTPRequestNetworkActivityTimeout which can bump everytime we get more data.
-bool Steam::setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds){
+bool Steam::setHTTPRequestAbsoluteTimeoutMS(uint32 requestHandle, uint32 milliseconds){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestAbsoluteTimeoutMS(request, milliseconds);
+	return SteamHTTP()->SetHTTPRequestAbsoluteTimeoutMS(requestHandle, milliseconds);
 }
 
 // Set a context value for the request, which will be returned in the HTTPRequestCompleted_t callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.
-bool Steam::setHTTPRequestContextValue(uint32 request, uint64_t contextValue){
+bool Steam::setHTTPRequestContextValue(uint32 requestHandle, uint64_t contextValue){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestContextValue(request, contextValue);
+	return SteamHTTP()->SetHTTPRequestContextValue(requestHandle, contextValue);
 }
 
 // Associates a cookie container to use for an HTTP request.
-bool Steam::setHTTPRequestCookieContainer(uint32 request){
+bool Steam::setHTTPRequestCookieContainer(uint32 requestHandle, uint32 cookieHandle){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestCookieContainer(request, cookieHandle);
+	return SteamHTTP()->SetHTTPRequestCookieContainer(requestHandle, cookieHandle);
 }
 
 // Set a GET or POST parameter value on the HTTP request. Must be called prior to sending the request.
-bool Steam::setHTTPRequestGetOrPostParameter(uint32 request, const String& name, const String& value){
+bool Steam::setHTTPRequestGetOrPostParameter(uint32 requestHandle, const String& name, const String& value){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestGetOrPostParameter(request, name.utf8().get_data(), value.utf8().get_data());
+	return SteamHTTP()->SetHTTPRequestGetOrPostParameter(requestHandle, name.utf8().get_data(), value.utf8().get_data());
 }
 
 // Set a request header value for the HTTP request. Must be called before sending the request.
-bool Steam::setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue){
+bool Steam::setHTTPRequestHeaderValue(uint32 requestHandle, const String& headerName, const String& headerValue){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestHeaderValue(request, headerName.utf8().get_data(), headerValue.utf8().get_data());
+	return SteamHTTP()->SetHTTPRequestHeaderValue(requestHandle, headerName.utf8().get_data(), headerValue.utf8().get_data());
 }
 
 // Set the timeout in seconds for the HTTP request.
-bool Steam::setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds){
+bool Steam::setHTTPRequestNetworkActivityTimeout(uint32 requestHandle, uint32 timeoutSeconds){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestNetworkActivityTimeout(request, timeoutSeconds);
+	return SteamHTTP()->SetHTTPRequestNetworkActivityTimeout(requestHandle, timeoutSeconds);
 }
 
 // Sets the body for an HTTP Post request.
-uint8 Steam::setHTTPRequestRawPostBody(uint32 request, const String& contentType, uint32 bodyLen){
+uint8 Steam::setHTTPRequestRawPostBody(uint32 requestHandle, const String& contentType, uint32 bodyLen){
 	uint8 body = 0;
 	if(SteamHTTP()){
-		SteamHTTP()->SetHTTPRequestRawPostBody(request, contentType.utf8().get_data(), &body, bodyLen);
+		SteamHTTP()->SetHTTPRequestRawPostBody(requestHandle, contentType.utf8().get_data(), &body, bodyLen);
 	}
 	return body;
 }
 
 // Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only works Windows and macOS.
-bool Steam::setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool requireVerifiedCertificate){
+bool Steam::setHTTPRequestRequiresVerifiedCertificate(uint32 requestHandle, bool requireVerifiedCertificate){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestRequiresVerifiedCertificate(request, requireVerifiedCertificate);
+	return SteamHTTP()->SetHTTPRequestRequiresVerifiedCertificate(requestHandle, requireVerifiedCertificate);
 }
 
 // Set additional user agent info for a request.
-bool Steam::setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentInfo){
+bool Steam::setHTTPRequestUserAgentInfo(uint32 requestHandle, const String& userAgentInfo){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestUserAgentInfo(request, userAgentInfo.utf8().get_data());
+	return SteamHTTP()->SetHTTPRequestUserAgentInfo(requestHandle, userAgentInfo.utf8().get_data());
 }
 
 
@@ -3020,9 +3020,10 @@ bool Steam::sendLobbyChatMsg(uint64_t steamIDLobby, const String& messageBody){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	int messageLength = messageBody.length();
+//	const char message = messageBody.utf8().get_data();
+//	int messageLength = messageBody.length() + 1;
 	CSteamID lobbyID = (uint64)steamIDLobby;
-	return SteamMatchmaking()->SendLobbyChatMsg(lobbyID, messageBody.utf8().get_data(), messageLength);
+	return SteamMatchmaking()->SendLobbyChatMsg(lobbyID, messageBody.utf8().get_data(), 4096);
 }
 
 // Refreshes metadata for a lobby you're not necessarily in right now.
@@ -3167,9 +3168,9 @@ bool Steam::setLinkedLobby(uint64_t steamIDLobby, uint64_t steamIDLobbyDependent
 /////////////////////////////////////////////////
 //
 // Cancel an outstanding server list request.
-void Steam::cancelQuery(uint64_t serverRequest){
+void Steam::cancelQuery(uint64_t serverListRequest){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->CancelQuery((HServerListRequest)serverRequest);
+		SteamMatchmakingServers()->CancelQuery((HServerListRequest)serverListRequest);
 	}
 }
 
@@ -3181,20 +3182,20 @@ void Steam::cancelServerQuery(int serverQuery){
 }
 
 // Gets the number of servers in the given list.
-int Steam::getServerCount(uint64_t serverRequest){
+int Steam::getServerCount(uint64_t serverListRequest){
 	if(SteamMatchmakingServers() == NULL){
 		return 0;
 	}
-	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)serverRequest);
+	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)serverListRequest);
 }
 
 // Get the details of a given server in the list.
-Dictionary Steam::getServerDetails(uint64_t serverRequest, int server){
+Dictionary Steam::getServerDetails(uint64_t serverListRequest, int server){
 	// Create a dictionary to populate
 	Dictionary gameServer;
 	if(SteamMatchmakingServers() != NULL){
 		gameserveritem_t* serverItem = new gameserveritem_t;
-		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)serverRequest, server);
+		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)serverListRequest, server);
 		// Populate the dictionary
 		gameServer["ping"] = serverItem->m_nPing;
 		gameServer["success_response"] = serverItem->m_bHadSuccessfulResponse;
@@ -3216,69 +3217,67 @@ Dictionary Steam::getServerDetails(uint64_t serverRequest, int server){
 }
 
 // Returns true if the list is currently refreshing its server list.
-bool Steam::isRefreshing(uint64_t serverRequest){
+bool Steam::isRefreshing(uint64_t serverListRequest){
 	if(SteamMatchmakingServers() == NULL){
 		return false;
 	}
-	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)serverRequest);
+	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)serverListRequest);
 }
 
 // Queries an individual game servers directly via IP/Port to request an updated ping time and other details from the server.
-//int Steam::pingServer(const String& ip, uint16 port){
-//	if(SteamMatchmakingServers() == NULL){
-//		return 0;
-//	}
-//	// Resolve address and convert it from IP_Address string to uint32_t
-//	IP_Address address;
-//	if(ip.is_valid_ip_address()){
-//		address = ip;
-//	}
-//	else{
-//		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
-//	}
-//	// Resolution failed - Godot 3.0 has is_invalid() to check this
-//	if(address == IP_Address()){
-//		return 0;
-//	}
-//	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
-//	// Swap the bytes
-//	uint8_t *ip4_p = (uint8_t *)&ip4;
-//	for(int i = 0; i < 2; i++){
-//		uint8_t temp = ip4_p[i];
-//		ip4_p[i] = ip4_p[3-i];
-//		ip4_p[3-i] = temp;
-//	}
-//	return SteamMatchmakingServers()->PingServer(*((uint32_t *)ip4_p), port, &ping_response);
-//}
+int Steam::pingServer(const String& ip, uint16 port){
+	if(SteamMatchmakingServers() == NULL){
+		return 0;
+	}
+	// Resolve address and convert it from IP_Address string to uint32_t
+	IP_Address address;
+	if(ip.is_valid_ip_address()){
+		address = ip;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(address == IP_Address()){
+		return 0;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	return SteamMatchmakingServers()->PingServer(*((uint32_t *)ip4_p), port, pingResponse);
+}
 
 // Request the list of players currently playing on a server.
-//int Steam::playerDetails(uint32 ip, uint16 port){
-//	if(SteamMatchmakingServers() == NULL){
-//		return 0;
-//	}
-//
-//	SteamMatchmakingServers()->PlayerDetails(ip, port, &serverResponse);
-//	return (int)serverResponse;
-//}
+int Steam::playerDetails(uint32 ip, uint16 port){
+	if(SteamMatchmakingServers() == NULL){
+		return 0;
+	}
+	return SteamMatchmakingServers()->PlayerDetails(ip, port, playerResponse);
+}
 
 // Ping every server in your list again but don't update the list of servers. Query callback installed when the server list was requested will be used again to post notifications and RefreshComplete, so the callback must remain valid until another RefreshComplete is called on it or the request is released with ReleaseRequest( hRequest ).
-void Steam::refreshQuery(uint64_t serverRequest){
+void Steam::refreshQuery(uint64_t serverListRequest){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->RefreshQuery((HServerListRequest)serverRequest);
+		SteamMatchmakingServers()->RefreshQuery((HServerListRequest)serverListRequest);
 	}
 }
 
 // Refresh a single server inside of a query (rather than all the servers).
-void Steam::refreshServer(uint64_t serverRequest, int server){
+void Steam::refreshServer(uint64_t serverListRequest, int server){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->RefreshServer((HServerListRequest)serverRequest, server);
+		SteamMatchmakingServers()->RefreshServer((HServerListRequest)serverListRequest, server);
 	}
 }
 
 // Releases the asynchronous request object and cancels any pending query on it if there's a pending query in progress.
-void Steam::releaseRequest(uint64_t serverRequest){
+void Steam::releaseRequest(uint64_t serverListRequest){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->ReleaseRequest((HServerListRequest)serverRequest);
+		SteamMatchmakingServers()->ReleaseRequest((HServerListRequest)serverListRequest);
 	}
 }
 
@@ -3389,13 +3388,12 @@ void Steam::releaseRequest(uint64_t serverRequest){
 //}
 
 // Request the list of rules that the server is running (See ISteamGameServer::SetKeyValue() to set the rules server side)
-//int serverRules(uint32 ip, uint16 port){
-//	if(SteamMatchmakingServers() == NULL){
-//		return 0;
-//	}
-//	ISteamMatchmakingRulesResponse* response;
-//	return SteamMatchmakingServers()->ServerRules(ip, port, response);
-//}
+int Steam::serverRules(uint32 ip, uint16 port){
+	if(SteamMatchmakingServers() == NULL){
+		return 0;
+	}
+	return SteamMatchmakingServers()->ServerRules(ip, port, rulesResponse);
+}
 
 
 /////////////////////////////////////////////////
@@ -3841,13 +3839,41 @@ int Steam::sendMessageToUser(const String& message, int flags, int channel){
 }
 
 // Reads the next message that has been sent from another user via SendMessageToUser() on the given channel. Returns number of messages returned into your list.  (0 if no message are available on that channel.)
-//int Steam::receiveMessagesOnChannel(int channel, int maxMessages){
-//	if(SteamNetworkingMessages() == NULL){
-//		return 0;
-//	}
-//	// Acquire the message
-//	return SteamNetworkingMessages()->ReceiveMessagesOnChannel(channel, &networkMessages, maxMessages);
-//}
+Array Steam::receiveMessagesOnChannel(int channel, int max_messages){
+	Array messages;
+	if(SteamNetworkingMessages() != NULL){
+		// Allocate the space for the messages
+		SteamNetworkingMessage_t *channel_messages;
+		channel_messages = SteamNetworkingUtils()->AllocateMessage(0);
+		// Get the messages
+		int available_messages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(channel, &channel_messages, max_messages);
+		// Which is bigger, max messages or available messages?
+		int message_iteration = available_messages;
+		if(available_messages < max_messages){
+			message_iteration = max_messages;
+		}
+		// Loop through and create the messages as dictionaries then add to the messages array
+		for(int i = 1; i < message_iteration; i++){
+			Dictionary message;
+			message["payload"] = channel_messages[i].m_pData;
+			message["size"] = channel_messages[i].m_cbSize;
+			message["connection"] = channel_messages[i].m_conn;
+			char identity;
+			channel_messages[i].m_identityPeer.ToString(&identity, 128);
+			message["identity"] = identity;
+			message["user_data"] = (uint64_t)channel_messages[i].m_nConnUserData;
+			message["time_received"] = (uint64_t)channel_messages[i].m_usecTimeReceived;
+			message["message_number"] = (uint64_t)channel_messages[i].m_nMessageNumber;
+			message["channel"] = channel_messages[i].m_nChannel;
+			message["flags"] = channel_messages[i].m_nFlags;
+			message["user_data"] = (uint64_t)channel_messages[i].m_nUserData;
+			messages.append(message);
+		}
+		// Release the messages
+		channel_messages->Release();
+	}
+	return messages;
+}
 
 // AcceptSessionWithUser() should only be called in response to a SteamP2PSessionRequest_t callback SteamP2PSessionRequest_t will be posted if another user tries to send you a message, and you haven't tried to talk to them.
 bool Steam::acceptSessionWithUser(){
@@ -3897,14 +3923,15 @@ uint32 Steam::createListenSocketIP(const int options){
 }
 
 // Creates a connection and begins talking to a "server" over UDP at the given IPv4 or IPv6 address. The remote host must be listening with a matching call to ISteamnetworkingSockets::CreateListenSocketIP on the specified port.
-//uint32 Steam::connectByIPAddress(uint32 ip, uint16 port, Array options){
-//	if(SteamNetworkingSockets() == NULL){
-//		return 0;
-//	}
-//	// Set the address
-//	networkingIPAddress.SetIPv4(ip, port);
-//	return SteamNetworkingSockets()->ConnectByIPAddress(networkingIPAddress, numOptions, &networkingConfigValue);
-//}
+uint32 Steam::connectByIPAddress(uint32 ip, uint16 port, Array options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	// Set the address
+	networkingIPAddress.SetIPv4(ip, port);
+	int numOptions = options.size();
+	return SteamNetworkingSockets()->ConnectByIPAddress(networkingIPAddress, numOptions, &networkingConfigValue);
+}
 
 // Like CreateListenSocketIP, but clients will connect using ConnectP2P. The connection will be relayed through the Valve network.
 uint32 Steam::createListenSocketP2P(int port, int optionSize){
@@ -3948,21 +3975,26 @@ bool Steam::closeListenSocket(uint32 socket){
 }
 
 // Create a pair of connections that are talking to each other, e.g. a loopback connection. This is very useful for testing, or so that your client/server code can work the same even when you are running a local "server".
-//Dictionary Steam::createSocketPair(bool loopback, const String& identity1, const String& identity2){
-//	// Create a dictionary to populate
-//	Dictionary connection_pair;
-//	if(SteamNetworkingSockets() != NULL){
-//		// Get connections
-//		uint32 connection1 = 0;
-//		uint32 connection2 = 0;
-//		bool success = SteamNetworkingSockets()->CreateSocketPair(&connection1, &connection2, loopback, this_identity1, this_identity2);
-//		// Populate the dictionary
-//		connection_pair["success"] = success;
-//		connection_pair["connection1"] = connection1;
-//		connection_pair["connection2"] = connection2;
-//	}
-//	return connection_pair;
-//}
+Dictionary Steam::createSocketPair(bool loopback, const String& identity1, const String& identity2){
+	// Create a dictionary to populate
+	Dictionary connection_pair;
+	if(SteamNetworkingSockets() != NULL){
+		// Turn the strings back to structs - Should be a check for failure to parse from string
+		SteamNetworkingIdentity identity_struct1;
+		SteamNetworkingIdentity identity_struct2;
+		identity_struct1.ParseString(identity1.utf8().get_data());
+		identity_struct2.ParseString(identity2.utf8().get_data());
+		// Get connections
+		uint32 connection1 = 0;
+		uint32 connection2 = 0;
+		bool success = SteamNetworkingSockets()->CreateSocketPair(&connection1, &connection2, loopback, &identity_struct1, &identity_struct2);
+		// Populate the dictionary
+		connection_pair["success"] = success;
+		connection_pair["connection1"] = connection1;
+		connection_pair["connection2"] = connection2;
+	}
+	return connection_pair;
+}
 
 // Send a message to the remote host on the specified connection.
 int Steam::sendMessageToConnection(uint32 connection, const String& message, int flags){
@@ -3974,17 +4006,20 @@ int Steam::sendMessageToConnection(uint32 connection, const String& message, int
 }
 
 // Send one or more messages without copying the message payload. This is the most efficient way to send messages. To use this function, you must first allocate a message object using ISteamNetworkingUtils::AllocateMessage. (Do not declare one on the stack or allocate your own.)
-//void Steam::sendMessages(int messages, const String& message, uint32 connection, int flags){
-//	if(SteamNetworkingSockets() != NULL){
-//		networkMessages = SteamNetworkingUtils()->AllocateMessage(0);
-//		networkMessages->m_pData = message.c_str();
-//		networkMessages->m_cbSize = message.size();
-//		networkMessages->m_conn = (HSteamNetConnection)connection;
-//		networkMessages->m_nFlags = flags;
-//		int64 result;
-//		SteamNetworkingSockets()->SendMessages(messages, *networkMessages, &result);
-//	}
-//}
+void Steam::sendMessages(int messages, const PoolStringArray& message, uint32 connection, int flags){
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingMessage_t *networkMessage;
+		networkMessage = SteamNetworkingUtils()->AllocateMessage(0);
+		networkMessage->m_pData = (void *)message.read().ptr();
+		networkMessage->m_cbSize = message.size();
+		networkMessage->m_conn = (HSteamNetConnection)connection;
+		networkMessage->m_nFlags = flags;
+		int64 result;
+		SteamNetworkingSockets()->SendMessages(messages, &networkMessage, &result);
+		// Release the message
+		networkMessage->Release();
+	}
+}
 
 // Flush any messages waiting on the Nagle timer and send them at the next transmission opportunity (often that means right now).
 int Steam::flushMessagesOnConnection(uint32 connection){
@@ -3995,13 +4030,40 @@ int Steam::flushMessagesOnConnection(uint32 connection){
 }
 
 // Fetch the next available message(s) from the connection, if any. Returns the number of messages returned into your array, up to nMaxMessages. If the connection handle is invalid, -1 is returned. If no data is available, 0, is returned.
-int Steam::receiveMessagesOnConnection(uint32 connection, int maxMessages){
-	if(SteamNetworkingSockets() == NULL){
-		return 0;
+Array Steam::receiveMessagesOnConnection(uint32 connection, int max_messages){
+	Array messages;
+	if(SteamNetworkingSockets() != NULL){
+		// Allocate the space for the messages
+		SteamNetworkingMessage_t *connection_messages;
+		connection_messages = SteamNetworkingUtils()->AllocateMessage(0);
+		// Get the messages
+		int available_messages = SteamNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection, &connection_messages, max_messages);
+		// Which is bigger, max messages or available messages?
+		int message_iteration = available_messages;
+		if(available_messages < max_messages){
+			message_iteration = max_messages;
+		}
+		// Loop through and create the messages as dictionaries then add to the messages array
+		for(int i = 1; i < message_iteration; i++){
+			Dictionary message;
+			message["payload"] = connection_messages[i].m_pData;
+			message["size"] = connection_messages[i].m_cbSize;
+			message["connection"] = connection_messages[i].m_conn;
+			char identity;
+			connection_messages[i].m_identityPeer.ToString(&identity, 128);
+			message["identity"] = identity;
+			message["user_data"] = (uint64_t)connection_messages[i].m_nConnUserData;
+			message["time_received"] = (uint64_t)connection_messages[i].m_usecTimeReceived;
+			message["message_number"] = (uint64_t)connection_messages[i].m_nMessageNumber;
+			message["channel"] = connection_messages[i].m_nChannel;
+			message["flags"] = connection_messages[i].m_nFlags;
+			message["user_data"] = (uint64_t)connection_messages[i].m_nUserData;
+			messages.append(message);
+		}
+		// Release the messages
+		connection_messages->Release();
 	}
-	// Should contain argument to set allocateMessage.
-	networkMessages = SteamNetworkingUtils()->AllocateMessage(0);
-	return SteamNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection, &networkMessages, maxMessages);
+	return messages;
 }
 
 // Create a new poll group.
@@ -4029,12 +4091,40 @@ bool Steam::setConnectionPollGroup(uint32 connection, uint32 pollGroup){
 }
 
 // Same as ReceiveMessagesOnConnection, but will return the next messages available on any connection in the poll group. Examine SteamNetworkingMessage_t::m_conn to know which connection. (SteamNetworkingMessage_t::m_nConnUserData might also be useful.)
-int Steam::receiveMessagesOnPollGroup(uint32 pollGroup, int maxMessages){
-	if(SteamNetworkingSockets() == NULL){
-		return 0;
+Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
+	Array messages;
+	if(SteamNetworkingSockets() != NULL){
+		// Allocate the space for the messages
+		SteamNetworkingMessage_t *poll_messages;
+		poll_messages = SteamNetworkingUtils()->AllocateMessage(0);
+		// Get the messages
+		int available_messages = SteamNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)poll_group, &poll_messages, max_messages);
+		// Which is bigger, max messages or available messages?
+		int message_iteration = available_messages;
+		if(available_messages < max_messages){
+			message_iteration = max_messages;
+		}
+		// Loop through and create the messages as dictionaries then add to the messages array
+		for(int i = 1; i < message_iteration; i++){
+			Dictionary message;
+			message["payload"] = poll_messages[i].m_pData;
+			message["size"] = poll_messages[i].m_cbSize;
+			message["connection"] = poll_messages[i].m_conn;
+			char identity;
+			poll_messages[i].m_identityPeer.ToString(&identity, 128);
+			message["identity"] = identity;
+			message["user_data"] = (uint64_t)poll_messages[i].m_nConnUserData;
+			message["time_received"] = (uint64_t)poll_messages[i].m_usecTimeReceived;
+			message["message_number"] = (uint64_t)poll_messages[i].m_nMessageNumber;
+			message["channel"] = poll_messages[i].m_nChannel;
+			message["flags"] = poll_messages[i].m_nFlags;
+			message["user_data"] = (uint64_t)poll_messages[i].m_nUserData;
+			messages.append(message);
+		}
+		// Release the messages
+		poll_messages->Release();
 	}
-	networkMessages = SteamNetworkingUtils()->AllocateMessage(0);
-	return SteamNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)pollGroup, &networkMessages, maxMessages);
+	return messages;
 }
 
 // Returns basic information about the high-level state of the connection. Returns false if the connection handle is invalid.
@@ -4889,6 +4979,14 @@ void Steam::setCloudEnabledForApp(bool enabled){
 	if(SteamRemoteStorage() != NULL){
 		SteamRemoteStorage()->SetCloudEnabledForApp(enabled);
 	}
+}
+
+// Allows you to specify which operating systems a file will be synchronized to. Use this if you have a multiplatform game but have data which is incompatible between platforms.
+bool Steam::setSyncPlatforms(const String& file, int platform){
+	if(SteamRemoteStorage() == NULL){
+		return false;
+	}
+	return SteamRemoteStorage()->SetSyncPlatforms(file.utf8().get_data(), (ERemoteStoragePlatform)platform);
 }
 
 
@@ -5800,7 +5898,7 @@ bool Steam::setItemDescription(uint64_t updateHandle, const String& description)
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	if (description.length() > k_cchPublishedDocumentDescriptionMax){
+	if ((uint32_t)description.length() > (uint32_t)k_cchPublishedDocumentDescriptionMax){
 		printf("Description cannot have more than %d ASCII characters. Description not set.", k_cchPublishedDocumentDescriptionMax);
 		return false;
 	}
@@ -6891,7 +6989,6 @@ bool Steam::setAchievement(const String& name){
 
 // Set the maximum number of details to return for leaderboard entries
 int Steam::setLeaderboardDetailsMax(int max){
-	bool success = false;
 	// If the user submitted too high of a maximum, set to the real max
 	if(max > k_cLeaderboardDetailsMax){
 		max = k_cLeaderboardDetailsMax;
@@ -7746,28 +7843,28 @@ void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* callData){
 //
 // Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.
 void Steam::_http_request_completed(HTTPRequestCompleted_t* callData){
-	cookieHandle = callData->m_hRequest;
+	uint32 cookieHandle = callData->m_hRequest;
 	uint64_t contextValue = callData->m_ulContextValue;
 	bool requestSuccess = callData->m_bRequestSuccessful;
 	int statusCode = callData->m_eStatusCode;
 	uint32 bodySize = callData->m_unBodySize;
-	emit_signal("http_request_completed", contextValue, requestSuccess, statusCode, bodySize);
+	emit_signal("http_request_completed", cookieHandle, contextValue, requestSuccess, statusCode, bodySize);
 }
 
 // Triggered when a chunk of data is received from a streaming HTTP request.
 void Steam::_http_request_data_received(HTTPRequestDataReceived_t* callData){
-	cookieHandle = callData->m_hRequest;
+	uint32 cookieHandle = callData->m_hRequest;
 	uint64_t contextValue = callData->m_ulContextValue;
 	uint32 offset = callData->m_cOffset;
 	uint32 bytesReceived = callData->m_cBytesReceived;
-	emit_signal("http_request_data_received", contextValue, offset, bytesReceived);
+	emit_signal("http_request_data_received", cookieHandle, contextValue, offset, bytesReceived);
 }
 
 // Triggered when HTTP headers are received from a streaming HTTP request.
 void Steam::_http_request_headers_received(HTTPRequestHeadersReceived_t* callData){
-	cookieHandle = callData->m_hRequest;
+	uint32 cookieHandle = callData->m_hRequest;
 	uint64_t contextValue = callData->m_ulContextValue;
-	emit_signal("http_request_headers_received", contextValue);
+	emit_signal("http_request_headers_received", cookieHandle, contextValue);
 }
 
 // INVENTORY CALLBACKS //////////////////////////
@@ -7848,10 +7945,10 @@ void Steam::_lobby_message(LobbyChatMsg_t* callData){
 	// Convert the chat type over
 	EChatEntryType type = (EChatEntryType)chatType;
 	// Get the chat message data
-	char buffer[4096] = {0};
+	char buffer[4096];
 	int result = SteamMatchmaking()->GetLobbyChatEntry(callData->m_ulSteamIDLobby, callData->m_iChatID, &userID, &buffer, 4096, &type);
 	uint64_t user = userID.ConvertToUint64();
-	emit_signal("lobby_message", result, user, String(buffer), chatType);
+	emit_signal("lobby_message", result, user, String::utf8(buffer), chatType);
 }
 
 // A lobby chat room state has changed, this is usually sent when a user has joined or left the lobby.
@@ -7999,8 +8096,10 @@ void Steam::_p2p_session_request(P2PSessionRequest_t* callData){
 //
 // Posted when a remote host is sending us a message, and we do not already have a session with them.
 void Steam::_network_messages_session_request(SteamNetworkingMessagesSessionRequest_t* callData){
-//	SteamNetworkingIdentity remote = callData->m_identityRemote;
-	emit_signal("network_messages_session_request");
+	SteamNetworkingIdentity remote = callData->m_identityRemote;
+	char identity;
+	remote.ToString(&identity, 128);
+	emit_signal("network_messages_session_request", identity);
 }
 
 // Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way.
@@ -8018,12 +8117,27 @@ void Steam::_network_connection_status_changed(SteamNetConnectionStatusChangedCa
 	// Connection handle.
 	uint64_t connect_handle = callData->m_hConn;
 	// Full connection info.
-//	connectionInfo = callData->m_info;
+	SteamNetConnectionInfo_t connectionInfo = callData->m_info;
+	// Move connection info into a dictionary
+	Dictionary connection;
+	char identity;
+	connectionInfo.m_identityRemote.ToString(&identity, 128);
+	connection["identity"] = identity;
+	connection["user_data"] = (uint64_t)connectionInfo.m_nUserData;
+	connection["listen_socket"] = connectionInfo.m_hListenSocket;
+	char ip_address;
+	connectionInfo.m_addrRemote.ToString(&ip_address, 128, true);
+	connection["remote_address"] = ip_address;
+	connection["remote_pop"] = connectionInfo.m_idPOPRemote;
+	connection["pop_relay"] = connectionInfo.m_idPOPRelay;
+	connection["connection_state"] = connectionInfo.m_eState;
+	connection["end_reason"] = connectionInfo.m_eEndReason;
+	connection["end_debug"] = connectionInfo.m_szEndDebug;
+	connection["debug_description"] = connectionInfo.m_szConnectionDescription;
 	// Previous state (current state is in m_info.m_eState).
 	int old_state = callData->m_eOldState;
 	// Send the data back via signal
-//	emit_signal("network_connection_status_changed", connect_handle, connectionInfo, old_state);
-	emit_signal("network_connection_status_changed", connect_handle, old_state);
+	emit_signal("network_connection_status_changed", connect_handle, connection, old_state);
 }
 
 // This callback is posted whenever the state of our readiness changes.
@@ -8491,6 +8605,17 @@ void Steam::_lobby_match_list(LobbyMatchList_t *callData, bool ioFailure){
 		}	
 		emit_signal("lobby_match_list", lobbies);
 	}
+}
+
+// MATCHMAKING SERVER CALL RESULTS //////////////
+//
+void Steam::_server_Responded(gameserveritem_t server){
+	emit_signal("server_responded");
+}
+
+//
+void Steam::_server_Failed_To_Respond(){
+	emit_signal("server_failed_to_respond");
 }
 
 // PARTIES CALL RESULTS /////////////////////////
@@ -9400,8 +9525,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getServerCount", &Steam::getServerCount);
 	ClassDB::bind_method("getServerDetails", &Steam::getServerDetails);
 	ClassDB::bind_method("isRefreshing", &Steam::isRefreshing);
-///	ClassDB::bind_method("pingServer", &Steam::pingServer);
-//	ClassDB::bind_method("playerDetails", &Steam::playerDetails);
+	ClassDB::bind_method("pingServer", &Steam::pingServer);
+	ClassDB::bind_method("playerDetails", &Steam::playerDetails);
 	ClassDB::bind_method("refreshQuery", &Steam::refreshQuery);
 	ClassDB::bind_method("refreshServer", &Steam::refreshServer);
 	ClassDB::bind_method("releaseRequest", &Steam::releaseRequest);
@@ -9411,7 +9536,7 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method("requestInternetServerList", &Steam::requestInternetServerList);
 //	ClassDB::bind_method("requestLANServerList", &Steam::requestLANServerList);
 //	ClassDB::bind_method("requestSpectatorServerList", &Steam::requestSpectatorServerList);
-///	ClassDB::bind_method("serverRules", &Steam::serverRules);
+	ClassDB::bind_method("serverRules", &Steam::serverRules);
 	
 	// MUSIC BIND METHODS ///////////////////////
 	ClassDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
@@ -9470,7 +9595,7 @@ void Steam::_bind_methods(){
 	
 	// NETWORKING MESSAGES BIND METHODS /////////
 	ClassDB::bind_method("sendMessageToUser", &Steam::sendMessageToUser);
-//	ClassDB::bind_method("receiveMessagesOnChannel", &Steam::receiveMessagesOnChannel);
+	ClassDB::bind_method("receiveMessagesOnChannel", &Steam::receiveMessagesOnChannel);
 	ClassDB::bind_method("acceptSessionWithUser", &Steam::acceptSessionWithUser);
 	ClassDB::bind_method("closeSessionWithUser", &Steam::closeSessionWithUser);
 	ClassDB::bind_method("closeChannelWithUser", &Steam::closeChannelWithUser);
@@ -9478,13 +9603,13 @@ void Steam::_bind_methods(){
 
 	// NETWORKING SOCKETS BIND METHODS //////////
 	ClassDB::bind_method("createListenSocketIP", &Steam::createListenSocketIP);
-///	ClassDB::bind_method("connectByIPAddress", &Steam::connectByIPAddress);
+	ClassDB::bind_method("connectByIPAddress", &Steam::connectByIPAddress);
 	ClassDB::bind_method("createListenSocketP2P", &Steam::createListenSocketP2P);
 	ClassDB::bind_method("connectP2P", &Steam::connectP2P);
 	ClassDB::bind_method("acceptConnection", &Steam::acceptConnection);
 	ClassDB::bind_method("closeConnection", &Steam::closeConnection);
 	ClassDB::bind_method("closeListenSocket", &Steam::closeListenSocket);
-///	ClassDB::bind_method("createSocketPair", &Steam::createSocketPair);
+	ClassDB::bind_method("createSocketPair", &Steam::createSocketPair);
 	ClassDB::bind_method("sendMessageToConnection", &Steam::sendMessageToConnection);
 ///	ClassDB::bind_method("sendMessages", &Steam::sendMessages);
 	ClassDB::bind_method("flushMessagesOnConnection", &Steam::flushMessagesOnConnection);
@@ -9577,6 +9702,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isCloudEnabledForAccount", &Steam::isCloudEnabledForAccount);
 	ClassDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
 	ClassDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
+	ClassDB::bind_method("setSyncPlatforms", &Steam::setSyncPlatforms);
 	
 	// SCREENSHOT BIND METHODS //////////////////
 	ClassDB::bind_method("addScreenshotToLibrary", &Steam::addScreenshotToLibrary);

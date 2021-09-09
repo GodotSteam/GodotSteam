@@ -16,7 +16,22 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.9.6)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.9.7)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.9.7 Changes**
+- Added: two Matchmaking Server call results
+- Added: requestHandle to various HTTP functions so handle can be passed
+- Added: new internal variables for Matchmaking Servers
+- Added: setSyncPlatforms in Remote Storage, actual function was missing
+- Changed: serverRequest is now serverListRequest
+- Changed: various HTTP callbacks now return cookieHandle as well
+- Fixed: issue where lobby chat messages were truncated for every accented character used
+- Fixed: pingServer, playerDetails, serverRules functions in Matchmaking Servers
+- Fixed: receiveMessagesOnChannel, receiveMessagesOnPollGroup, receiveMessagesOnConnection in Networking Sockets, should now return an array of messages
+- Fixed: connectByIPAddress, createSocketPair in Networking Sockets
+- Fixed: network_messages_session_request callback, now provides identity of remote host
+- Fixed: network_connection_status_changed callback, now provides the full connection information
+- Removed: unnecessary bool from setLeaderboardDetailsMax
 
 **Version 3.9.6 Changes**
 - Added: ability to provide different locations for custom modules, thanks to dsnopek
