@@ -1,6 +1,7 @@
 extends Node
 
 # Steam variables
+onready var Steam = preload("res://addons/godotsteam/godotsteam.gdns").new()
 var IS_OWNED: bool = false
 var IS_ONLINE: bool = false
 var IS_FREE_WEEKEND: bool = false
@@ -13,7 +14,7 @@ func _ready() -> void:
 	print("[STEAM] Did Steam initialize?: "+str(INIT))
 	if INIT['status'] != 1:
 		# If Steam fails to start up, shut down the app
-		print("[STEAM] Failed to initialize Steam. "+str(INT['verbal']+" Shutting down...")
+		print("[STEAM] Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
 #		get_tree().quit()
 	#Is the user online?
 	IS_ONLINE = Steam.loggedOn()

@@ -1,5 +1,5 @@
 # GodotSteam for GDNative
-Steam API for the Godot game engine (version 3.0 - 3.3.3). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.3.3). For the Windows, Linux, and Mac platforms. 
 
 **WARNING**: This GDNative branch is still in active development! While functional, I do not suggest using it for production code for your game; testing only.  Please use one of the GodotSteam modules instead.
 
@@ -31,9 +31,13 @@ Known Issues
 
 Quick How-To
 ----------
+Obtain the plugin through one of two ways:
 - Visit the Godot Asset Library either through the website or in the editor and search for GodotSteam.
 - Download this repo and unzip it into the base of your game project.
-- Tinker with Steamworks!
+
+Go into **Project > Settings > Plugins** and activate the plugin.
+
+Tinker with Steamworks!
 
 Donate
 -------------
