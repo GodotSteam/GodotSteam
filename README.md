@@ -16,6 +16,9 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
+**Version 3.0.2 Changes**
+- Added: for the add-on only, new production-ready API libs were made
+
 **Version 3.0.1 Changes**
 - Fixed: two issues with godotsteam.cpp that causes compiling error on Linux
 
