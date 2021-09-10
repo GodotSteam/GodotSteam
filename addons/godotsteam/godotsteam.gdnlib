@@ -1,0 +1,18 @@
+[general]
+
+singleton=false
+load_once=true
+symbol_prefix="godot_"
+reloadable=true
+
+[entry]
+
+X11.64="res://addons/godotsteam/x11/godotsteam.so"
+Windows.64="res://addons/godotsteam/win64/godotsteam.dll"
+OSX.64="res://addons/godotsteam/osx/godotsteam.dylib"
+
+[dependencies]
+
+X11.64=[ "res://addons/godotsteam/x11/libsteam_api.so" ]
+Windows.64=[ "res://addon/godotsteam/win64/steam_api64.dll" ]
+OSX.64=[ "res://addons/godotsteam/osx/libsteam_api.dylib" ]
