@@ -1016,47 +1016,47 @@
 							<li>Initializes a new HTTP request.
 							<li>Returns nothing; <strong>void</strong>.</li>
 						</ul>
-						<h4>deferHTTPRequest( <sup>int</sup> request )</h4>
+						<h4>deferHTTPRequest( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Defers a request which has already been sent by moving it at the back of the queue.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>getHTTPDownloadProgressPct( <sup>int</sup> request )</h4>
+						<h4>getHTTPDownloadProgressPct( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Gets progress on downloading the body for the request.
 							<li>Returns a <strong>float</strong>.</li>
 						</ul>
-						<h4>getHTTPRequestWasTimedOut( <sup>int</sup> request )</h4>
+						<h4>getHTTPRequestWasTimedOut( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Check if the reason the request failed was because we timed it out (rather than some harder failure).
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>getHTTPResponseBodyData( <sup>int</sup> request, <sup>int</sup> bufferSize )</h4>
+						<h4>getHTTPResponseBodyData( <sup>int</sup> requestHandle, <sup>int</sup> bufferSize )</h4>
 						<ul>
 							<li>Gets the body data from an HTTP response.
-							<li>Returns an <strong>int</strong>.</li>
+							<li>Returns an <strong>PoolByteArray</strong>.</li>
 						</ul>
-						<h4>getHTTPResponseBodySize( <sup>int</sup> request )</h4>
+						<h4>getHTTPResponseBodySize( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Gets the size of the body data from an HTTP response.
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>getHTTPResponseHeaderSize( <sup>int</sup> request, <sup>string</sup> headerName )</h4>
+						<h4>getHTTPResponseHeaderSize( <sup>int</sup> requestHandle, <sup>string</sup> headerName )</h4>
 						<ul>
 							<li>Checks if a header is present in an HTTP response and returns its size.
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>getHTTPResponseHeaderValue( <sup>int</sup> request, <sup>string</sup> headerName, <sup>int</sup> bufferSize )</h4>
+						<h4>getHTTPResponseHeaderValue( <sup>int</sup> requestHandle, <sup>string</sup> headerName, <sup>int</sup> bufferSize )</h4>
 						<ul>
 							<li>Gets a header value from an HTTP response.
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>getHTTPStreamingResponseBodyData( <sup>int</sup> request, <sup>int</sup> offset, <sup>int</sup> bufferSize )</h4>
+						<h4>getHTTPStreamingResponseBodyData( <sup>int</sup> requestHandle, <sup>int</sup> offset, <sup>int</sup> bufferSize )</h4>
 						<ul>
 							<li>Gets the body data from a streaming HTTP response.
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>prioritizeHTTPRequest( <sup>int</sup> request )</h4>
+						<h4>prioritizeHTTPRequest( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Prioritizes a request which has already been sent by moving it at the front of the queue.
 							<li>Returns a <strong>bool</strong>.</li>
@@ -1066,17 +1066,17 @@
 							<li>Releases a cookie container, freeing the memory allocated within Steam.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>releaseHTTPRequest( <sup>int</sup> request )</h4>
+						<h4>releaseHTTPRequest( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Releases an HTTP request handle, freeing the memory allocated within Steam.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>sendHTTPRequest( <sup>int</sup> request )</h4>
+						<h4>sendHTTPRequest( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Sends an HTTP request.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>sendHTTPRequestAndStreamResponse( <sup>int</sup> request )</h4>
+						<h4>sendHTTPRequestAndStreamResponse( <sup>int</sup> requestHandle )</h4>
 						<ul>
 							<li>Sends an HTTP request and streams the response back in chunks.
 							<li>Returns a <strong>bool</strong>.</li>
@@ -1086,47 +1086,47 @@
 							<li>Adds a cookie to the specified cookie container that will be used with future requests.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestAbsoluteTimeoutMS( <sup>int</sup> request, <sup>int</sup> milliseconds )</h4>
+						<h4>setHTTPRequestAbsoluteTimeoutMS( <sup>int</sup> requestHandle, <sup>int</sup> milliseconds )</h4>
 						<ul>
 							<li>Set an absolute timeout in milliseconds for the HTTP request. This is the total time timeout which is different than the network activity timeout which is set with SetHTTPRequestNetworkActivityTimeout which can bump everytime we get more data.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestContextValue( <sup>int</sup> request, <sup>int</sup> contextValue )</h4>
+						<h4>setHTTPRequestContextValue( <sup>int</sup> requestHandle, <sup>int</sup> contextValue )</h4>
 						<ul>
 							<li>Set a context value for the request, which will be returned in the HTTPRequestCompleted_t callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestCookieContainer( <sup>int</sup> request, <sup>int</sup> cookieHandle )</h4>
+						<h4>setHTTPRequestCookieContainer( <sup>int</sup> requestHandle, <sup>int</sup> cookieHandle )</h4>
 						<ul>
 							<li>Associates a cookie container to use for an HTTP request.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestGetOrPostParameter( <sup>int</sup> request, <sup>string</sup> name, <sup>string</sup> value )</h4>
+						<h4>setHTTPRequestGetOrPostParameter( <sup>int</sup> requestHandle, <sup>string</sup> name, <sup>string</sup> value )</h4>
 						<ul>
 							<li>Set a GET or POST parameter value on the HTTP request. Must be called prior to sending the request.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestHeaderValue( <sup>int</sup> request, <sup>string</sup> headerName, <sup>string</sup> headerValue )</h4>
+						<h4>setHTTPRequestHeaderValue( <sup>int</sup> requestHandle, <sup>string</sup> headerName, <sup>string</sup> headerValue )</h4>
 						<ul>
 							<li>Set a request header value for the HTTP request. Must be called before sending the request.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestNetworkActivityTimeout( <sup>int</sup> request, <sup>int</sup> timeoutSeconds )</h4>
+						<h4>setHTTPRequestNetworkActivityTimeout( <sup>int</sup> requestHandle, <sup>int</sup> timeoutSeconds )</h4>
 						<ul>
 							<li>Set the timeout in seconds for the HTTP request.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestRawPostBody( <sup>int</sup> request, <sup>string</sup> contentType, <sup>int</sup> bodyLen )</h4>
+						<h4>setHTTPRequestRawPostBody( <sup>int</sup> requestHandle, <sup>string</sup> contentType, <sup>int</sup> bodyLen )</h4>
 						<ul>
 							<li>Sets the body for an HTTP Post request.
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestRequiresVerifiedCertificate( <sup>int</sup> request, <sup>bool</sup> requireVerifiedCertificate )</h4>
+						<h4>setHTTPRequestRequiresVerifiedCertificate( <sup>int</sup> requestHandle, <sup>bool</sup> requireVerifiedCertificate )</h4>
 						<ul>
 							<li>Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only works Windows and macOS.
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>setHTTPRequestUserAgentInfo( <sup>int</sup> request, <sup>string</sup> userAgentInfo )</h4>
+						<h4>setHTTPRequestUserAgentInfo( <sup>int</sup> requestHandle, <sup>string</sup> userAgentInfo )</h4>
 						<ul>
 							<li>Set additional user agent info for a request.
 							<li>Returns a <strong>bool</strong>.</li>
@@ -1713,7 +1713,7 @@
 							<h3>Matchmaking Servers</h3>
 						</header>
 						<a id="matchmaking-servers"></a>
-						<h4>cancelQuery( <sup>int</sup> serverRequest )</h4>
+						<h4>cancelQuery( <sup>int</sup> serverListRequest )</h4>
 						<ul>
 							<li>Cancel an outstanding server list request.</li>
 							<li>Returns nothing; <strong>void</strong>.</li>
@@ -1723,12 +1723,12 @@
 							<li>Cancel an outstanding individual server query.</li>
 							<li>Returns nothing; <strong>void</strong>.</li>
 						</ul>
-						<h4>getServerCount( <sup>int</sup> serverRequest )</h4>
+						<h4>getServerCount( <sup>int</sup> serverListRequest )</h4>
 						<ul>
 							<li>Gets the number of servers in the given list.</li>
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>getServerDetails( <sup>int</sup> serverRequest, <sup>int</sup> server )</h4>
+						<h4>getServerDetails( <sup>int</sup> serverListRequest, <sup>int</sup> server )</h4>
 						<ul>
 							<li>Get the details of a given server in the list.</li>
 							<li>Returns a <strong>dictionary</strong>:
@@ -1750,7 +1750,7 @@
 								</ul>
 							</li>
 						</ul>
-						<h4>isRefreshing( <sup>int</sup> serverRequest )</h4>
+						<h4>isRefreshing( <sup>int</sup> serverListRequest )</h4>
 						<ul>
 							<li>Returns true if the list is currently refreshing its server list.</li>
 							<li>Returns a <strong>bool</strong>.</li>
@@ -1767,17 +1767,17 @@
 							<li><strong>Currently not enabled.</strong></li>
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>refreshQuery( <sup>int</sup> serverRequest )</h4>
+						<h4>refreshQuery( <sup>int</sup> serverListRequest )</h4>
 						<ul>
 							<li>Ping every server in your list again but don't update the list of servers. Query callback installed when the server list was requested will be used again to post notifications and RefreshComplete, so the callback must remain valid until another RefreshComplete is called on it or the request is released with ReleaseRequest( hRequest ).</li>
 							<li>Returns nothing; <strong>void</strong>.</li>
 						</ul>
-						<h4>refreshServer( <sup>int</sup> serverRequest, <sup>int</sup> server )</h4>
+						<h4>refreshServer( <sup>int</sup> serverListRequest, <sup>int</sup> server )</h4>
 						<ul>
 							<li>Refresh a single server inside of a query (rather than all the servers).</li>
 							<li>Returns nothing; <strong>void</strong>.</li>
 						</ul>
-						<h4>releaseRequest( <sup>int</sup> serverRequest )</h4>
+						<h4>releaseRequest( <sup>int</sup> serverListRequest )</h4>
 						<ul>
 							<li>Releases the asynchronous request object and cancels any pending query on it if there's a pending query in progress.</li>
 							<li>Returns nothing; <strong>void</strong>.</li>
@@ -2108,11 +2108,28 @@
 							<li>Sends a message to the specified host. If we don't already have a session with that user, a session is implicitly created. There might be some handshaking that needs to happen before we can actually begin sending message data.</li>
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>receiveMessagesOnChannel( <sup>int</sup> channel, <sup>int</sup> maxMessages )</h4>
+						<h4>receiveMessagesOnChannel( <sup>int</sup> channel, <sup>int</sup> max_messages )</h4>
 						<ul>
 							<li>Reads the next message that has been sent from another user via SendMessageToUser() on the given channel. Returns number of messages returned into your list.  (0 if no message are available on that channel.)</li>
 							<li><strong>Currently not enabled.</strong>
-							<li>Returns an <strong>int</strong>.</li>
+							<li>Returns an <strong>array</strong> of:
+								<ul>
+									<li> messages (dictionary)
+										<ul>
+											<li>payload (string)</li>
+											<li>size (int)</li>
+											<li>connection (int)</li>
+											<li>identity (string)</li>
+											<li>user_data (int)</li>
+											<li>time_received (int)</li>
+											<li>message_number (int)</li>
+											<li>channel (int)</li>
+											<li>flags (int)</li>
+											<li>user_data (int)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 						</ul>
 						<h4>acceptSessionWithUser()</h4>
 						<ul>
@@ -2203,10 +2220,27 @@
 							<li>Flush any messages waiting on the Nagle timer and send them at the next transmission opportunity (often that means right now).</li>
 							<li>Returns an <strong>int</strong>.</li>
 						</ul>
-						<h4>receiveMessagesOnConnection( <sup>int</sup> connection, <sup>int</sup> maxMessages )</h4>
+						<h4>receiveMessagesOnConnection( <sup>int</sup> connection, <sup>int</sup> max_messages )</h4>
 						<ul>
 							<li>Fetch the next available message(s) from the connection, if any. Returns the number of messages returned into your array, up to nMaxMessages. If the connection handle is invalid, -1 is returned. If no data is available, 0, is returned.</li>
-							<li>Returns an <strong>int</strong>.</li>
+							<li>Returns an <strong>array</strong> of:
+								<ul>
+									<li> messages (dictionary)
+										<ul>
+											<li>payload (string)</li>
+											<li>size (int)</li>
+											<li>connection (int)</li>
+											<li>identity (string)</li>
+											<li>user_data (int)</li>
+											<li>time_received (int)</li>
+											<li>message_number (int)</li>
+											<li>channel (int)</li>
+											<li>flags (int)</li>
+											<li>user_data (int)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 						</ul>
 						<h4>createPollGroup()</h4>
 						<ul>
@@ -2223,10 +2257,27 @@
 							<li>Assign a connection to a poll group. Note that a connection may only belong to a single poll group. Adding a connection to a poll group implicitly removes it from any other poll group it is in.</li>
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
-						<h4>receiveMessagesOnPollGroup( <sup>int</sup> pollGroup, <sup>int</sup> maxMessages )</h4>
+						<h4>receiveMessagesOnPollGroup( <sup>int</sup> pollGroup, <sup>int</sup> max_messages )</h4>
 						<ul>
 							<li>Same as ReceiveMessagesOnConnection, but will return the next messages available on any connection in the poll group. Examine SteamNetworkingMessage_t::m_conn to know which connection. (SteamNetworkingMessage_t::m_nConnUserData might also be useful.)</li>
-							<li>Returns an <strong>int</strong>.</li>
+							<li>Returns an <strong>array</strong> of:
+								<ul>
+									<li> messages (dictionary)
+										<ul>
+											<li>payload (string)</li>
+											<li>size (int)</li>
+											<li>connection (int)</li>
+											<li>identity (string)</li>
+											<li>user_data (int)</li>
+											<li>time_received (int)</li>
+											<li>message_number (int)</li>
+											<li>channel (int)</li>
+											<li>flags (int)</li>
+											<li>user_data (int)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 						</ul>							
 						<h4>getConnectionInfo( <sup>int</sup> connection )</h4>
 						<ul>
@@ -2754,6 +2805,11 @@
 						<h4>setCloudEnabledForApp( <sup>bool</sup> enabled )</h4>
 						<ul>
 							<li>Enable or disable Steam Cloud for this application. This must only ever be called as the direct result of the user explicitly requesting that it's enabled or not. This is typically accomplished with a checkbox within your in-game options.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setSyncPlatforms( <sup>string</sup> file, <sup>int</sup> platform )</h4>
+						<ul>
+							<li>Allows you to specify which operating systems a file will be synchronized to. Use this if you have a multiplatform game but have data which is incompatible between platforms.</li>
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
 						<hr/>

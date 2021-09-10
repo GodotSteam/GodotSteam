@@ -30,6 +30,22 @@
 							<h1>Change Log | Godot 3.x Module</h1>
 						</header>
 						<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+						<h3>Version 3.9.7 Changes</h3>
+						<ul>
+							<li>Added: two Matchmaking Server call results</li>
+							<li>Added: requestHandle to various HTTP functions so handle can be passed</li>
+							<li>Added: new internal variables for Matchmaking Servers</li>
+							<li>Added: setSyncPlatforms in Remote Storage, actual function was missing</li>
+							<li>Changed: serverRequest is now serverListRequest</li>
+							<li>Changed: various HTTP callbacks now return cookieHandle as well</li>
+							<li>Fixed: issue where lobby chat messages were truncated for every accented character used</li>
+							<li>Fixed: pingServer, playerDetails, serverRules functions in Matchmaking Servers</li>
+							<li>Fixed: receiveMessagesOnChannel, receiveMessagesOnPollGroup, receiveMessagesOnConnection in Networking Sockets, should now return an array of messages</li>
+							<li>Fixed: connectByIPAddress, createSocketPair in Networking Sockets</li>
+							<li>Fixed: network_messages_session_request callback, now provides identity of remote host</li>
+							<li>Fixed: network_connection_status_changed callback, now provides the full connection information</li>
+							<li>Removed: unnecessary bool from setLeaderboardDetailsMax</li>
+						</ul>
 						<h3>Version 3.9.6 Changes</h3>
 						<ul>
 							<li>Added: ability to provide different locations for custom modules, thanks to dsnopek</li>

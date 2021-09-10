@@ -970,6 +970,21 @@
 							</li>
 						</ul>
 						<header class="major">
+							<h3>Matchmaking Servers</h3>
+						</header>
+						<h4>_server_responded</h4>
+						<ul>
+							<li>There are no notes in the Steamworks documentation.</li>
+							<li>Emits signal <strong><em>server_responded</em></strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<h4>_server_failed_to_respond</h4>
+						<ul>
+							<li>There are no notes in the Steamworks documentation.</li>
+							<li>Emits signal <strong><em>server_failed_to_respond</em></strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<header class="major">
 							<h3>Music Remote</h3>
 						</header>
 						<h4>_music_player_remote_to_front</h4>
@@ -1111,7 +1126,11 @@
 						<ul>
 							<li>Posted when a remote host is sending us a message, and we do not already have a session with them.</li>
 							<li>Emits signal <strong><em>network_messages_session_request</em></strong>.</li>
-							<li>Sends back no data.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>identity (string)</li>
+								</ul>
+							</li>
 						</ul>
 						<h4>_network_messages_session_failed</h4>
 						<ul>
@@ -1133,6 +1152,19 @@
 							<li>Sends back the following data:
 								<ul>
 									<li>connect_handle (int)</li>
+									<li>connection (dictionary)
+										<ul>
+											<li>identity (string)</li>
+											<li>user_data (int)</li>
+											<li>listen_socket (int)</li>
+											<li>remote_address (int)</li>
+											<li>remote_pop (int)</li>
+											<li>pop_relay (int)</li>
+											<li>connection_state (int)</li>
+											<li>end_reason (string)</li>
+											<li>end_debug (string)</li>
+											<li>debug_description (string)</li>
+										</ul>
 									<li>old_state (int)</li>
 								</ul>
 							</li>

@@ -6,6 +6,13 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Update 9/8/21:**
+- Added: changelog for GodotSteam 3.9.7
+- Added: two new call results for Matchmaking servers
+- Changed: added new tasks to to-do list
+- Changed: various functions data in the documentation
+- Fixed: avatar tutorial with incorrect variable type
+
 **Update 9/5/21:**
 - Added: changelog for GodotSteam 3.9.6
 - Added: changelog for GodotSteam GDNative 3.0
