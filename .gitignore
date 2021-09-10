@@ -1,9 +1,6 @@
-**/.vs/
-**/*.sdf
-**/*.VC.opendb
-**/Debug/
-**/Generated\ Files/
-**/Release/
-**/ipch/
-**/*.obj
-**/*.VC.db
+# Normalize EOL for all files that Git considers text files.
+* text=auto eol=lf
+
+/.gitignore         export-ignore
+/LICENSE.txt        export-ignore
+/README.md          export-ignore
