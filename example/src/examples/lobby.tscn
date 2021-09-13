@@ -211,6 +211,20 @@ margin_bottom = 489.0
 theme = ExtResource( 2 )
 text = "Close Lobby List"
 __meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Refresh" type="Button" parent="Lobbies"]
+margin_left = 434.903
+margin_top = 455.289
+margin_right = 632.903
+margin_bottom = 489.289
+theme = ExtResource( 2 )
+disabled = true
+text = "Refresh"
+__meta__ = {
+"_edit_lock_": true,
 "_edit_use_anchors_": false
 }
 
@@ -351,6 +365,7 @@ __meta__ = {
 
 [connection signal="pressed" from="Send" to="." method="_on_Send_Chat_pressed"]
 [connection signal="pressed" from="Lobbies/Close Lobbies" to="." method="_on_Close_Lobbies_pressed"]
+[connection signal="pressed" from="Lobbies/Refresh" to="." method="_on_Refresh_pressed"]
 [connection signal="pressed" from="Panel/Options/Create Lobby" to="." method="_on_Create_Lobby_pressed"]
 [connection signal="pressed" from="Panel/Options/Open Lobby List" to="." method="_on_Open_Lobby_List_pressed"]
 [connection signal="pressed" from="Panel/Options/GetLobbyData" to="." method="_on_Get_Lobby_Data_pressed"]

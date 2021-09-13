@@ -88,6 +88,9 @@ func _on_Lobby_Match_List(lobbies: Array) -> void:
 
 		# Add the new lobby to the list
 		$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
+	
+	# Enable the refresh button
+	$Lobbies/Refresh.set_disabled(false)
 
 
 # When the player is joining a lobby
@@ -439,6 +442,23 @@ func _on_Open_Lobby_List_pressed() -> void:
 # Close the lobbies screen
 func _on_Close_Lobbies_pressed() -> void:
 	$Lobbies.hide()
+
+
+# Refresh the lobby list
+func _on_Refresh_pressed() -> void:
+	# Clear all previous server entries
+	for SERVER in $Lobbies/Scroll/List.get_children():
+		SERVER.free()
+	
+	# Disable the refresh button
+	$Lobbies/Refresh.set_disabled(true)
+	
+	# Set distance to world (or maybe change this option)
+	Steam.addRequestLobbyListDistanceFilter(3)
+	
+	# Request a new server list
+	Steam.requestLobbyList()
+
 
 
 #################################################
