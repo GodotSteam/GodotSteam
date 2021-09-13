@@ -249,7 +249,7 @@ func _read_P2P_Packet() -> void:
 		var PACKET_CODE: String = str(PACKET.data[0])
 
 		# Make the packet data readable
-		var READABLE: PoolByteArray = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
 
 		# Print the packet to output
 		$Output.append_bbcode("[STEAM] Packet: "+str(READABLE)+"\n\n")
