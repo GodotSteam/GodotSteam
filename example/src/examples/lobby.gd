@@ -42,7 +42,7 @@ func _process(_delta) -> void:
 func _create_Lobby() -> void:
 	# Make sure a lobby is not already set
 	if STEAM_LOBBY_ID == 0:
-		# Set the lobby to public with two members max
+		# Set the lobby to public with ten members max
 		Steam.createLobby(2, 10)
 
 
@@ -341,6 +341,11 @@ func _get_Lobby_Members():
 	# Clear your previous lobby list
 	LOBBY_MEMBERS.clear()
 
+	# Clear the original player list
+	for MEMBER in $Players.get_children():
+		MEMBER.hide()
+		MEMBER.queue_free()
+
 	# Get the number of members from this lobby from Steam
 	var MEMBERS: int = Steam.getNumLobbyMembers(STEAM_LOBBY_ID)
 
@@ -366,29 +371,22 @@ func _add_Player_List(steam_id: int, steam_name: String) -> void:
 	# Add them to the list
 	LOBBY_MEMBERS.append({"steam_id":steam_id, "steam_name":steam_name})
 
-	# Clear the original player list
-	for MEMBER in $Players.get_children():
-		MEMBER.hide()
-		MEMBER.queue_free()
+	# Instance the lobby member object
+	var THIS_MEMBER: Object = LOBBY_MEMBER.instance()
 
-	# Update the player list
-	for MEMBER in LOBBY_MEMBERS:
-		# Instance the lobby member object
-		var THIS_MEMBER: Object = LOBBY_MEMBER.instance()
+	# Add their Steam name and ID
+	THIS_MEMBER.name = str(steam_id)
+	THIS_MEMBER._set_Member(steam_id, steam_name)
 
-		# Add their Steam name and ID
-		THIS_MEMBER.name = str(steam_id)
-		THIS_MEMBER._set_Member(steam_id, steam_name)
+	# Connect the kick signal
+	THIS_MEMBER.connect("kick_player", self, "_on_Lobby_Kick")
 
-		# Connect the kick signal
-		THIS_MEMBER.connect("kick_player", self, "_on_Lobby_Kick")
-		
-		# Add the child node
-		$Players.add_child(THIS_MEMBER)
-		
-		# If you are the host, enable the kick button
-		if global.STEAM_ID == Steam.getLobbyOwner(STEAM_LOBBY_ID):
-			get_node("Players/"+str(THIS_MEMBER.name)+"/Member/Stuff/Controls/Kick").set_disabled(false)
+	# Add the child node
+	$Players.add_child(THIS_MEMBER)
+
+	# If you are the host, enable the kick button
+	if global.STEAM_ID == Steam.getLobbyOwner(STEAM_LOBBY_ID):
+		get_node("Players/"+str(THIS_MEMBER.name)+"/Member/Stuff/Controls/Kick").set_disabled(false)
 
 
 # Enable or disable a gang of buttons
