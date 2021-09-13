@@ -43,7 +43,7 @@ func _create_Lobby() -> void:
 	# Make sure a lobby is not already set
 	if STEAM_LOBBY_ID == 0:
 		# Set the lobby to public with two members max
-		Steam.createLobby(2, 2)
+		Steam.createLobby(2, 10)
 
 
 # A lobby has been successfully created
@@ -432,7 +432,7 @@ func _on_Open_Lobby_List_pressed() -> void:
 	$Lobbies.show()
 
 	# Set distance to worldwide
-	Steam.addRequestLobbyListDistanceFilter(3)
+#	Steam.addRequestLobbyListDistanceFilter(3)
 
 	# Request the list
 	$Output.append_bbcode("[STEAM] Requesting a lobby list...\n\n")
@@ -454,7 +454,7 @@ func _on_Refresh_pressed() -> void:
 	$Lobbies/Refresh.set_disabled(true)
 	
 	# Set distance to world (or maybe change this option)
-	Steam.addRequestLobbyListDistanceFilter(3)
+#	Steam.addRequestLobbyListDistanceFilter(3)
 	
 	# Request a new server list
 	Steam.requestLobbyList()

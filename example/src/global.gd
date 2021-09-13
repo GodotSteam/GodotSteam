@@ -1,4 +1,7 @@
 extends Node
+#################################################
+# GODOTSTEAM EXAMPLE PROJECT v2.1
+
 # Set up some global Steam variables
 var IS_OWNED: bool = false
 var IS_ONLINE: bool = false
