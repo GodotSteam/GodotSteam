@@ -37,26 +37,27 @@ func _on_View_pressed() -> void:
 #################################################
 # Load an avatar
 func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
-	print("Loading avatar for user: "+str(id))
-	# Create the image and texture for loading
-	var AVATAR: Image = Image.new()
-	var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
-	AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
+	if id == STEAM_ID:
+		print("Loading avatar for user: "+str(id))
+		# Create the image and texture for loading
+		var AVATAR: Image = Image.new()
+		var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
+		AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
 	
-	# Lock and draw the image
-	AVATAR.lock()
-	for y in range(0, size):
-		for x in range(0, size):
-			var pixel: int = 4 * (x + y * size)
-			var r: float = float(buffer[pixel]) / 255
-			var g: float = float(buffer[pixel+1]) / 255
-			var b: float = float(buffer[pixel+2]) / 255
-			var a: float = float(buffer[pixel+3]) / 255
-			AVATAR.set_pixel(x, y, Color(r, g, b, a))
-	AVATAR.unlock()
+		# Lock and draw the image
+		AVATAR.lock()
+		for y in range(0, size):
+			for x in range(0, size):
+				var pixel: int = 4 * (x + y * size)
+				var r: float = float(buffer[pixel]) / 255
+				var g: float = float(buffer[pixel+1]) / 255
+				var b: float = float(buffer[pixel+2]) / 255
+				var a: float = float(buffer[pixel+3]) / 255
+				AVATAR.set_pixel(x, y, Color(r, g, b, a))
+		AVATAR.unlock()
 	
-	# Apply it to the texture
-	AVATAR_TEXTURE.create_from_image(AVATAR)
+		# Apply it to the texture
+		AVATAR_TEXTURE.create_from_image(AVATAR)
 	
-	# Set it
-	$Member/Avatar.set_texture(AVATAR_TEXTURE)
+		# Set it
+		$Member/Avatar.set_texture(AVATAR_TEXTURE)

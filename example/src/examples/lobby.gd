@@ -354,6 +354,7 @@ func _get_Lobby_Members():
 
 	# Get the data of these players from Steam
 	for MEMBER in range(0, MEMBERS):
+		print(MEMBER)
 		# Get the member's Steam ID
 		var MEMBER_STEAM_ID: int = Steam.getLobbyMemberByIndex(STEAM_LOBBY_ID, MEMBER)
 
@@ -488,6 +489,14 @@ func _on_Lobby_Kick(kick_id: int) -> void:
 	# Was it send successfully?
 	if not IS_SENT:
 		$Output.append_bbcode("[ERROR] Kick command failed to send.\n\n")
+
+
+func _unhandled_input(event):
+	if event is InputEventKey and event.is_pressed() and !event.is_echo():
+		if event.command: #ctrl pressed
+			match event.scancode:
+				KEY_ENTER:
+					_on_Send_Chat_pressed()
 
 
 #################################################
