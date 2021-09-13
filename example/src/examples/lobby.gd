@@ -53,6 +53,9 @@ func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
 		STEAM_LOBBY_ID = lobbyID
 		$Output.append_bbcode("[STEAM] Created a lobby: "+str(STEAM_LOBBY_ID)+"\n")
 
+		# Set lobby joinable as a test
+		Steam.setLobbyJoinable(STEAM_LOBBY_ID, true)
+
 		# Print the lobby ID to a label
 		$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
 
@@ -432,7 +435,7 @@ func _on_Open_Lobby_List_pressed() -> void:
 	$Lobbies.show()
 
 	# Set distance to worldwide
-#	Steam.addRequestLobbyListDistanceFilter(3)
+	Steam.addRequestLobbyListDistanceFilter(3)
 
 	# Request the list
 	$Output.append_bbcode("[STEAM] Requesting a lobby list...\n\n")
@@ -454,7 +457,7 @@ func _on_Refresh_pressed() -> void:
 	$Lobbies/Refresh.set_disabled(true)
 	
 	# Set distance to world (or maybe change this option)
-#	Steam.addRequestLobbyListDistanceFilter(3)
+	Steam.addRequestLobbyListDistanceFilter(3)
 	
 	# Request a new server list
 	Steam.requestLobbyList()
