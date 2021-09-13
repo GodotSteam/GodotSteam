@@ -63,10 +63,11 @@ func _on_joy_connection_changed(device_id, connected):
 
 # Vibrate all connected input handles
 func _on_Vibrate_pressed() -> void:
-	$Output.append_bbcode("[Steam Inputs] Vibrating all applicable and connected controllers...\n\n")
+	$Output.append_bbcode("[Steam Inputs] Vibrating all applicable and connected controllers...\n")
 
 	for CONTROLLER in STEAM_CONTROLLERS.size():
-		Steam.triggerVibration(STEAM_CONTROLLERS[CONTROLLER], 2, 2)
+		$Output.append_bbcode("[Steam Inputs] Vibrating controller "+str(STEAM_CONTROLLERS[CONTROLLER])+" with speeds 1000\n")
+		Steam.triggerVibration(STEAM_CONTROLLERS[CONTROLLER], 5000, 5000)
 
 
 # Create a haptic pulse
@@ -74,7 +75,15 @@ func _on_Haptic_pressed() -> void:
 	$Output.append_bbcode("[Steam Inputs] Sending haptic pulse to all applicable and connected controllers...\n\n")
 
 	for CONTROLLER in STEAM_CONTROLLERS.size():
-		Steam.triggerHapticPulse(STEAM_CONTROLLERS[CONTROLLER], 2, 2)
+		Steam.triggerHapticPulse(STEAM_CONTROLLERS[CONTROLLER], 0, 500000)
+
+
+# Create a repeated haptic pulse
+func _on_HapticRepeated_pressed() -> void:
+	$Output.append_bbcode("[Steam Inputs] Sending repeated haptic pulse to all applicable and connected controllers...\n\n")
+
+	for CONTROLLER in STEAM_CONTROLLERS.size():
+		Steam.triggerRepeatedHapticPulse(STEAM_CONTROLLERS[CONTROLLER], 0, 50000, 500000, 10, 0)
 
 
 # Get the input's type by handle

@@ -1,12 +1,14 @@
 extends Control
 # Preload the button them
 onready var BUTTON_THEME = preload("res://data/themes/button-theme.tres")
+onready var LOBBY_MEMBER = preload("res://src/examples/lobby-member.tscn")
 
 # Set up some variables
 var STEAM_LOBBY_ID: int = 0
 var LOBBY_MEMBERS: Array = []
 var DATA
 var LOBBY_INVITE_ARG: bool = false
+var LOBBY_VOTE_KICK: bool = false
 
 # Set up some signals
 signal back_to_main
@@ -134,10 +136,27 @@ func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
 
 
 # When a lobby message is received
+# Using / delimiter for host commands like kick
 func _on_Lobby_Message(result: int, user: int, message: String, type: int) -> void:
 	# We are only concerned with who is sending the message and what the message is
 	var SENDER = Steam.getFriendPersonaName(user)
-	$Output.append_bbcode(str(SENDER)+" says '"+str(message)+"'\n")
+	
+	# If the lobby owner and the sender are the same, check for commands
+	if user == Steam.getLobbyOwner(STEAM_LOBBY_ID) and message.begins_with("/"):
+		print("Message sender is the lobby owner.")
+		# Get any commands
+		if message.begins_with("/kick"):
+			# Get the user ID for kicking
+			var COMMANDS: PoolStringArray = message.split(":", true)
+
+			# If this is your ID, leave the lobby
+			if global.STEAM_ID == int(COMMANDS[1]):
+				_leave_Lobby()
+	# Else this is just chat message
+	else:
+		# Print the outpubt before showing the message
+		print(str(SENDER)+" says: "+str(message))
+		$Output.append_bbcode(str(SENDER)+" says '"+str(message)+"'\n")
 
 
 # When a lobby chat is updated
@@ -169,7 +188,7 @@ func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, ch
 
 
 # Whan lobby metadata has changed
-func _on_Lobby_Data_Update(success: bool, lobbyID: int, memberID: int, key: String) -> void:
+func _on_Lobby_Data_Update(success: bool, lobbyID: int, memberID: int, key: int) -> void:
 	$Output.append_bbcode("[STEAM] Success: "+str(success)+", Lobby ID: "+str(lobbyID)+", Member ID: "+str(memberID)+", Key: "+str(key)+"\n\n")
 
 
@@ -194,7 +213,10 @@ func _leave_Lobby() -> void:
 
 		# Clear the local lobby list
 		LOBBY_MEMBERS.clear()
-		$Players.clear()
+		for MEMBER in $Players.get_children():
+			MEMBER.hide()
+			MEMBER.queue_free()
+
 
 		# Disable the leave lobby button and all test buttons
 		_change_Button_Controls(true)
@@ -229,7 +251,7 @@ func _read_P2P_Packet() -> void:
 
 
 # Send a Steam P2P packet
-func _send_P2P_Packet(target: String: packet_data: Dictionary) -> void:
+func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 	# Set the send_type and channel
 	var SEND_TYPE: int = 2
 	var CHANNEL: int = 0
@@ -260,10 +282,8 @@ func _make_P2P_Handshake() -> void:
 # Send test packet information
 func _send_Test_Info() -> void:
 	$Output.append_bbcode("[STEAM] Sending test packet data...\n\n")
-	var DATA = PoolByteArray()
-	DATA.append(256)
-	DATA.append_array(var2bytes({"title":"This is a test packet", "player_id":global.STEAM_ID, "player_hp":"5", "player_coord":"56,40"}))
-	_send_P2P_Packet(DATA, 2, 0)
+	var DATA: Dictionary = {"title":"This is a test packet", "player_id":global.STEAM_ID, "player_hp":"5", "player_coord":"56,40"}
+	_send_P2P_Packet("all", DATA)
 
 
 # When receiving a P2P request from another user
@@ -335,15 +355,34 @@ func _get_Lobby_Members():
 
 # Add a new Steam user to the connect users list
 func _add_Player_List(steam_id: int, steam_name: String) -> void:
+	print("Adding new player to the list: "+str(steam_id)+" / "+str(steam_name))
+
 	# Add them to the list
 	LOBBY_MEMBERS.append({"steam_id":steam_id, "steam_name":steam_name})
 
 	# Clear the original player list
-	$Players.clear()
+	for MEMBER in $Players.get_children():
+		MEMBER.hide()
+		MEMBER.queue_free()
 
 	# Update the player list
 	for MEMBER in LOBBY_MEMBERS:
-		$Players.add_text(str(MEMBER['steam_name'])+" ("+str(MEMBER['steam_id'])+")\n")
+		# Instance the lobby member object
+		var THIS_MEMBER: Object = LOBBY_MEMBER.instance()
+
+		# Add their Steam name and ID
+		THIS_MEMBER.name = str(steam_id)
+		THIS_MEMBER._set_Member(steam_id, steam_name)
+
+		# Connect the kick signal
+		THIS_MEMBER.connect("kick_player", self, "_on_Lobby_Kick")
+		
+		# Add the child node
+		$Players.add_child(THIS_MEMBER)
+		
+		# If you are the host, enable the kick button
+		if global.STEAM_ID == Steam.getLobbyOwner(STEAM_LOBBY_ID):
+			get_node("Players/"+str(THIS_MEMBER.name)+"/Member/Stuff/Controls/Kick").set_disabled(false)
 
 
 # Enable or disable a gang of buttons
@@ -402,6 +441,9 @@ func _on_Close_Lobbies_pressed() -> void:
 	$Lobbies.hide()
 
 
+#################################################
+# LOBBY CHAT FUNCTIONS
+#################################################
 # Send a chat message
 func _on_Send_Chat_pressed() -> void:
 	# Get the entered chat message
@@ -416,6 +458,15 @@ func _on_Send_Chat_pressed() -> void:
 
 	# Clear the chat input
 	$Chat.clear()
+
+
+func _on_Lobby_Kick(kick_id: int) -> void:
+	# Pass the kick message to Steam
+	var IS_SENT: bool = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, "/kick:"+str(kick_id))
+	
+	# Was it send successfully?
+	if not IS_SENT:
+		$Output.append_bbcode("[ERROR] Kick command failed to send.\n\n")
 
 
 #################################################

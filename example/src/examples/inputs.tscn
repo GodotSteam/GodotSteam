@@ -155,10 +155,22 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="GetName" type="Button" parent="Panel/Options"]
+[node name="HapticRepeated" type="Button" parent="Panel/Options"]
 margin_top = 219.0
 margin_right = 270.0
 margin_bottom = 247.0
+mouse_default_cursor_shape = 2
+theme = ExtResource( 2 )
+text = "Trigger Repeated Haptic Pulse"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GetName" type="Button" parent="Panel/Options"]
+margin_top = 257.0
+margin_right = 270.0
+margin_bottom = 285.0
 mouse_default_cursor_shape = 2
 theme = ExtResource( 2 )
 text = "Get Input Name"
@@ -168,18 +180,18 @@ __meta__ = {
 }
 
 [node name="Spacer" type="Label" parent="Panel/Options"]
-margin_top = 257.0
+margin_top = 295.0
 margin_right = 270.0
-margin_bottom = 276.0
+margin_bottom = 314.0
 custom_fonts/font = ExtResource( 3 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Back" type="Button" parent="Panel/Options"]
-margin_top = 286.0
+margin_top = 324.0
 margin_right = 270.0
-margin_bottom = 314.0
+margin_bottom = 352.0
 mouse_default_cursor_shape = 2
 theme = ExtResource( 2 )
 text = "Back To Main Menu"
@@ -193,5 +205,6 @@ __meta__ = {
 [connection signal="pressed" from="Panel/Options/GetControllers" to="." method="_on_GetControllers_pressed"]
 [connection signal="pressed" from="Panel/Options/Vibrate" to="." method="_on_Vibrate_pressed"]
 [connection signal="pressed" from="Panel/Options/Haptic" to="." method="_on_Haptic_pressed"]
+[connection signal="pressed" from="Panel/Options/HapticRepeated" to="." method="_on_HapticRepeated_pressed"]
 [connection signal="pressed" from="Panel/Options/GetName" to="." method="_on_GetName_pressed"]
 [connection signal="pressed" from="Panel/Options/Back" to="." method="_on_Back_pressed"]
