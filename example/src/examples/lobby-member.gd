@@ -8,7 +8,8 @@ signal kick_player
 # Is it ready? Do stuff!
 func _ready():
 	# connect some signals
-	Steam.connect("avatar_loaded", self, "_loaded_Avatar")
+	var SIGNAL_CONNECT: int = Steam.connect("avatar_loaded", self, "_loaded_Avatar")
+	print("[STEAM] Connecting avatar_loaded to function _loaded_Avatar successfully: "+str(SIGNAL_CONNECT))
 
 
 # Set this player up
@@ -16,7 +17,6 @@ func _set_Member(steam_id: int, steam_name: String) -> void:
 	# Set the ID and username
 	STEAM_ID = steam_id
 	$Member/Stuff/Username.set_text(steam_name)
-	
 	# Get the avatar and show it
 	Steam.getPlayerAvatar(2, STEAM_ID)
 
@@ -43,7 +43,6 @@ func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 		var AVATAR: Image = Image.new()
 		var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
 		AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
-	
 		# Lock and draw the image
 		AVATAR.lock()
 		for y in range(0, size):
@@ -55,9 +54,7 @@ func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 				var a: float = float(buffer[pixel+3]) / 255
 				AVATAR.set_pixel(x, y, Color(r, g, b, a))
 		AVATAR.unlock()
-	
 		# Apply it to the texture
 		AVATAR_TEXTURE.create_from_image(AVATAR)
-	
 		# Set it
 		$Member/Avatar.set_texture(AVATAR_TEXTURE)

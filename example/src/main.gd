@@ -37,7 +37,8 @@ func _start_Example(which: String) -> void:
 	$Example.add_child(EXAMPLE)
 
 	# Connect the back button
-	EXAMPLE.connect("back_to_main", self, "_show_Main")
+	var THIS_SIGNAL: int = EXAMPLE.connect("back_to_main", self, "_show_Main")
+	print("Connecting back_to_main to function _show_Main successfully: "+str(THIS_SIGNAL))
 
 
 #################################################
