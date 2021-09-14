@@ -270,10 +270,22 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Open Lobby List" type="Button" parent="Panel/Options"]
+[node name="Start Match" type="Button" parent="Panel/Options"]
 margin_top = 67.0
 margin_right = 270.0
 margin_bottom = 95.0
+theme = ExtResource( 2 )
+disabled = true
+text = "Start Match"
+align = 0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Open Lobby List" type="Button" parent="Panel/Options"]
+margin_top = 105.0
+margin_right = 270.0
+margin_bottom = 133.0
 theme = ExtResource( 2 )
 text = "Open Lobby List"
 align = 0
@@ -282,9 +294,9 @@ __meta__ = {
 }
 
 [node name="GetLobbyData" type="Button" parent="Panel/Options"]
-margin_top = 105.0
+margin_top = 143.0
 margin_right = 270.0
-margin_bottom = 133.0
+margin_bottom = 171.0
 theme = ExtResource( 2 )
 disabled = true
 text = "Get Lobby Data"
@@ -294,9 +306,9 @@ __meta__ = {
 }
 
 [node name="Leave" type="Button" parent="Panel/Options"]
-margin_top = 143.0
+margin_top = 181.0
 margin_right = 270.0
-margin_bottom = 171.0
+margin_bottom = 209.0
 theme = ExtResource( 2 )
 disabled = true
 text = "Leave Lobby"
@@ -306,18 +318,18 @@ __meta__ = {
 }
 
 [node name="Spacer1" type="Label" parent="Panel/Options"]
-margin_top = 181.0
+margin_top = 219.0
 margin_right = 270.0
-margin_bottom = 200.0
+margin_bottom = 238.0
 custom_fonts/font = ExtResource( 3 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="P2P Title" type="Label" parent="Panel/Options"]
-margin_top = 210.0
+margin_top = 248.0
 margin_right = 270.0
-margin_bottom = 229.0
+margin_bottom = 267.0
 custom_fonts/font = ExtResource( 3 )
 text = "P2P Functions"
 __meta__ = {
@@ -325,9 +337,9 @@ __meta__ = {
 }
 
 [node name="SendPacket" type="Button" parent="Panel/Options"]
-margin_top = 239.0
+margin_top = 277.0
 margin_right = 270.0
-margin_bottom = 267.0
+margin_bottom = 305.0
 theme = ExtResource( 2 )
 disabled = true
 text = "Send Test Packet"
@@ -337,18 +349,18 @@ __meta__ = {
 }
 
 [node name="Spacer2" type="Label" parent="Panel/Options"]
-margin_top = 277.0
+margin_top = 315.0
 margin_right = 270.0
-margin_bottom = 296.0
+margin_bottom = 334.0
 custom_fonts/font = ExtResource( 3 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Back" type="Button" parent="Panel/Options"]
-margin_top = 306.0
+margin_top = 344.0
 margin_right = 270.0
-margin_bottom = 334.0
+margin_bottom = 372.0
 theme = ExtResource( 2 )
 text = "Back To Main Menu"
 align = 0
@@ -367,6 +379,7 @@ __meta__ = {
 [connection signal="pressed" from="Lobbies/Close Lobbies" to="." method="_on_Close_Lobbies_pressed"]
 [connection signal="pressed" from="Lobbies/Refresh" to="." method="_on_Refresh_pressed"]
 [connection signal="pressed" from="Panel/Options/Create Lobby" to="." method="_on_Create_Lobby_pressed"]
+[connection signal="pressed" from="Panel/Options/Start Match" to="." method="_on_Start_Match_pressed"]
 [connection signal="pressed" from="Panel/Options/Open Lobby List" to="." method="_on_Open_Lobby_List_pressed"]
 [connection signal="pressed" from="Panel/Options/GetLobbyData" to="." method="_on_Get_Lobby_Data_pressed"]
 [connection signal="pressed" from="Panel/Options/Leave" to="." method="_on_Leave_Lobby_pressed"]

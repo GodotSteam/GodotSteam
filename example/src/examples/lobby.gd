@@ -70,29 +70,6 @@ func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
 		_change_Button_Controls(false)
 
 
-# Getting a lobby match list
-func _on_Lobby_Match_List(lobbies: Array) -> void:
-	# Show the list 
-	for LOBBY in lobbies:
-		# Pull lobby data from Steam
-		var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
-		var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
-		var LOBBY_NUMS: int = Steam.getNumLobbyMembers(LOBBY)
-		# Create a button for the lobby
-		var LOBBY_BUTTON: Button = Button.new()
-		LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_NUMS)+" Player(s)")
-		LOBBY_BUTTON.set_size(Vector2(800, 50))
-		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
-		LOBBY_BUTTON.set_text_align(0)
-		LOBBY_BUTTON.set_theme(BUTTON_THEME)
-# warning-ignore:return_value_discarded
-		LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
-		# Add the new lobby to the list
-		$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
-	# Enable the refresh button
-	$Lobbies/Refresh.set_disabled(false)
-
-
 # When the player is joining a lobby
 func _join_Lobby(lobbyID: int) -> void:
 	$Output.append_bbcode("[STEAM] Attempting to join lobby "+str(lobbyID)+"...\n")
@@ -134,68 +111,6 @@ func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
 	$Output.append_bbcode("[STEAM] Joining "+str(OWNER_NAME)+"'s lobby...\n\n")
 	# Attempt to join the lobby
 	_join_Lobby(lobbyID)
-
-
-# When a lobby message is received
-# Using / delimiter for host commands like kick
-func _on_Lobby_Message(_result: int, user: int, message: String, type: int) -> void:
-	# We are only concerned with who is sending the message and what the message is
-	var SENDER = Steam.getFriendPersonaName(user)
-	# If this is a message or host command
-	if type == 1:
-		# If the lobby owner and the sender are the same, check for commands
-		if user == Steam.getLobbyOwner(STEAM_LOBBY_ID) and message.begins_with("/"):
-			print("Message sender is the lobby owner.")
-			# Get any commands
-			if message.begins_with("/kick"):
-				# Get the user ID for kicking
-				var COMMANDS: PoolStringArray = message.split(":", true)
-				# If this is your ID, leave the lobby
-				if global.STEAM_ID == int(COMMANDS[1]):
-					_leave_Lobby()
-		# Else this is just chat message
-		else:
-			# Print the outpubt before showing the message
-			print(str(SENDER)+" says: "+str(message))
-			$Output.append_bbcode(str(SENDER)+" says '"+str(message)+"'\n")
-	# Else this is a different type of message
-	else:
-		match type:
-			2: $Output.append_bbcode(str(SENDER)+" is typing...\n")
-			3: $Output.append_bbcode(str(SENDER)+" sent an invite that won't work in this chat!\n")
-			4: $Output.append_bbcode(str(SENDER)+" sent a text emote that is depreciated.\n")
-			6: $Output.append_bbcode(str(SENDER)+" has left the chat.\n")
-			7: $Output.append_bbcode(str(SENDER)+" has entered the chat.\n")
-			8: $Output.append_bbcode(str(SENDER)+" was kicked!\n")
-			9: $Output.append_bbcode(str(SENDER)+" was banned!\n")
-			10: $Output.append_bbcode(str(SENDER)+" disconnected.\n")
-			11: $Output.append_bbcode(str(SENDER)+" sent an old, offline message.\n")
-			12: $Output.append_bbcode(str(SENDER)+" sent a link that was removed by the chat filter.\n")
-
-
-# When a lobby chat is updated
-func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, chatState: int) -> void:
-	# Note that chat state changes is: 1 - entered, 2 - left, 4 - user disconnected before leaving, 8 - user was kicked, 16 - user was banned
-	$Output.append_bbcode("[STEAM] Lobby ID: "+str(lobbyID)+", Changed ID: "+str(changedID)+", Making Change: "+str(makingChangeID)+", Chat State: "+str(chatState)+"\n")
-	# Get the user who has made the lobby change
-	var CHANGER = Steam.getFriendPersonaName(makingChangeID)
-	# If a player has joined the lobby
-	if chatState == 1:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has joined the lobby.\n\n")
-	# Else if a player has left the lobby
-	elif chatState == 2:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has left the lobby.\n\n")
-	# Else if a player has been kicked
-	elif chatState == 8:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been kicked from the lobby.\n\n")
-	# Else if a player has been banned
-	elif chatState == 16:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been banned from the lobby.\n\n")
-	# Else there was some unknown change
-	else:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" did... something.\n\n")
-	# Update the lobby now that a change has occurred
-	_get_Lobby_Members()
 
 
 # Whan lobby metadata has changed
@@ -427,16 +342,45 @@ func _on_Send_Packet_pressed() -> void:
 	_send_Test_Info()
 
 
+# Start the game match
+func _on_Start_Match_pressed() -> void:
+	pass # Replace with function body.
+
+
+#################################################
+# LOBBY BROWSER FUNCTIONS
+#################################################
 # Open the lobby list
 func _on_Open_Lobby_List_pressed() -> void:
 	$Lobbies.show()
-
 	# Set distance to worldwide
 	Steam.addRequestLobbyListDistanceFilter(3)
-
 	# Request the list
 	$Output.append_bbcode("[STEAM] Requesting a lobby list...\n\n")
 	Steam.requestLobbyList()
+
+
+# Getting a lobby match list
+func _on_Lobby_Match_List(lobbies: Array) -> void:
+	# Show the list 
+	for LOBBY in lobbies:
+		# Pull lobby data from Steam
+		var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
+		var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
+		var LOBBY_NUMS: int = Steam.getNumLobbyMembers(LOBBY)
+		# Create a button for the lobby
+		var LOBBY_BUTTON: Button = Button.new()
+		LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_NUMS)+" Player(s)")
+		LOBBY_BUTTON.set_size(Vector2(800, 50))
+		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
+		LOBBY_BUTTON.set_text_align(0)
+		LOBBY_BUTTON.set_theme(BUTTON_THEME)
+		var LOBBY_SIGNAL: int = LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
+		print("Connecting pressed to function _join_Lobby for "+str(LOBBY)+" successfully: "+str(LOBBY_SIGNAL))
+		# Add the new lobby to the list
+		$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
+	# Enable the refresh button
+	$Lobbies/Refresh.set_disabled(false)
 
 
 # Close the lobbies screen
@@ -457,7 +401,6 @@ func _on_Refresh_pressed() -> void:
 	Steam.requestLobbyList()
 
 
-
 #################################################
 # LOBBY CHAT FUNCTIONS
 #################################################
@@ -474,6 +417,68 @@ func _on_Send_Chat_pressed() -> void:
 			$Output.append_bbcode("[ERROR] Chat message failed to send.\n\n")
 		# Clear the chat input
 		$Chat.clear()
+
+
+# When a lobby message is received
+# Using / delimiter for host commands like kick
+func _on_Lobby_Message(_result: int, user: int, message: String, type: int) -> void:
+	# We are only concerned with who is sending the message and what the message is
+	var SENDER = Steam.getFriendPersonaName(user)
+	# If this is a message or host command
+	if type == 1:
+		# If the lobby owner and the sender are the same, check for commands
+		if user == Steam.getLobbyOwner(STEAM_LOBBY_ID) and message.begins_with("/"):
+			print("Message sender is the lobby owner.")
+			# Get any commands
+			if message.begins_with("/kick"):
+				# Get the user ID for kicking
+				var COMMANDS: PoolStringArray = message.split(":", true)
+				# If this is your ID, leave the lobby
+				if global.STEAM_ID == int(COMMANDS[1]):
+					_leave_Lobby()
+		# Else this is just chat message
+		else:
+			# Print the outpubt before showing the message
+			print(str(SENDER)+" says: "+str(message))
+			$Output.append_bbcode(str(SENDER)+" says '"+str(message)+"'\n")
+	# Else this is a different type of message
+	else:
+		match type:
+			2: $Output.append_bbcode(str(SENDER)+" is typing...\n")
+			3: $Output.append_bbcode(str(SENDER)+" sent an invite that won't work in this chat!\n")
+			4: $Output.append_bbcode(str(SENDER)+" sent a text emote that is depreciated.\n")
+			6: $Output.append_bbcode(str(SENDER)+" has left the chat.\n")
+			7: $Output.append_bbcode(str(SENDER)+" has entered the chat.\n")
+			8: $Output.append_bbcode(str(SENDER)+" was kicked!\n")
+			9: $Output.append_bbcode(str(SENDER)+" was banned!\n")
+			10: $Output.append_bbcode(str(SENDER)+" disconnected.\n")
+			11: $Output.append_bbcode(str(SENDER)+" sent an old, offline message.\n")
+			12: $Output.append_bbcode(str(SENDER)+" sent a link that was removed by the chat filter.\n")
+
+
+# When a lobby chat is updated
+func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, chatState: int) -> void:
+	# Note that chat state changes is: 1 - entered, 2 - left, 4 - user disconnected before leaving, 8 - user was kicked, 16 - user was banned
+	$Output.append_bbcode("[STEAM] Lobby ID: "+str(lobbyID)+", Changed ID: "+str(changedID)+", Making Change: "+str(makingChangeID)+", Chat State: "+str(chatState)+"\n")
+	# Get the user who has made the lobby change
+	var CHANGER = Steam.getFriendPersonaName(makingChangeID)
+	# If a player has joined the lobby
+	if chatState == 1:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has joined the lobby.\n\n")
+	# Else if a player has left the lobby
+	elif chatState == 2:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has left the lobby.\n\n")
+	# Else if a player has been kicked
+	elif chatState == 8:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been kicked from the lobby.\n\n")
+	# Else if a player has been banned
+	elif chatState == 16:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been banned from the lobby.\n\n")
+	# Else there was some unknown change
+	else:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" did... something.\n\n")
+	# Update the lobby now that a change has occurred
+	_get_Lobby_Members()
 
 
 func _on_Lobby_Kick(kick_id: int) -> void:
