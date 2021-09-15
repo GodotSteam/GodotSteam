@@ -2272,7 +2272,7 @@ String Steam::getGlyphForActionOrigin(int origin){
 	if(SteamInput() != NULL){
 		return "";
 	}
-	return SteamInput()->GetGlyphForActionOrigin((EInputActionOrigin)origin);
+	return SteamInput()->GetGlyphForActionOrigin_Legacy((EInputActionOrigin)origin);
 }
 
 // Get the input type (device model) for the specified controller. 
@@ -2365,7 +2365,7 @@ String Steam::getStringForActionOrigin(int origin){
 // Start SteamInputs interface.
 bool Steam::inputInit(){
 	if(SteamInput() != NULL){
-		return SteamInput()->Init();
+		return SteamInput()->Init(false);
 	}
 	return false;
 }
@@ -2418,14 +2418,14 @@ int Steam::translateActionOrigin(int destinationInput, int sourceOrigin){
 // Triggers a (low-level) haptic pulse on supported controllers.
 void Steam::triggerHapticPulse(uint64_t inputHandle, int targetPad, int duration){
 	if(SteamInput() != NULL){
-		SteamInput()->TriggerHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration);
+		SteamInput()->Legacy_TriggerHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration);
 	}
 }
 
 // Triggers a repeated haptic pulse on supported controllers.
 void Steam::triggerRepeatedHapticPulse(uint64_t inputHandle, int targetPad, int duration, int offset, int repeat, int flags){
 	if(SteamInput() != NULL){
-		SteamInput()->TriggerRepeatedHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration, offset, repeat, flags);
+		SteamInput()->Legacy_TriggerRepeatedHapticPulse((InputHandle_t)inputHandle, (ESteamControllerPad)targetPad, duration, offset, repeat, flags);
 	}
 }
 
@@ -6391,7 +6391,7 @@ Dictionary Steam::initiateGameConnection(uint64_t serverID, uint32 serverIP, uin
 		int authSize = 2048;
 		auth.resize(authSize);
 		CSteamID server = (uint64)serverID;
-		if(SteamUser()->InitiateGameConnection(&auth, authSize, server, serverIP, serverPort, secure) > 0){
+		if(SteamUser()->InitiateGameConnection_DEPRECATED(&auth, authSize, server, serverIP, serverPort, secure) > 0){
 			connection["auth_blob"] = auth;
 			connection["server_id"] = serverID;
 			connection["server_ip"] = serverIP;
@@ -6482,7 +6482,7 @@ void Steam::stopVoiceRecording(){
 // Notify the game server that we are disconnecting. NOTE: This is part of the old user authentication API and should not be mixed with the new API.
 void Steam::terminateGameConnection(uint32 serverIP, uint16 serverPort){
 	if(SteamUser() != NULL){
-		SteamUser()->TerminateGameConnection(serverIP, serverPort);
+		SteamUser()->TerminateGameConnection_DEPRECATED(serverIP, serverPort);
 	}
 }
 
@@ -10125,8 +10125,8 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(STEAM_USER_CONSOLE_INSTANCE); 										// 2
 	BIND_CONSTANT(STEAM_USER_DESKTOP_INSTANCE); 										// 1
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
-	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
-	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
+	BIND_CONSTANT(PORT_QUERY_ERROR); 													// 0xFFFE
+	BIND_CONSTANT(PORT_QUERY_NOT_INITIALIZED); 											// 0xFFFF
 
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
