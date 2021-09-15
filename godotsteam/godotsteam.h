@@ -405,6 +405,9 @@ class Steam: public Object {
 		enum GamepadTextInputMode {
 			GAMEPAD_TEXT_INPUT_MODE_NORMAL = 0, GAMEPAD_TEXT_INPUT_MODE_PASSWORD = 1
 		};
+		enum FloatingGamepadTextInputMode {
+			FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE = 0, FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES = 1, FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL = 2, FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC = 3,
+		};
 		enum SteamAPICallFailure {
 			STEAM_API_CALL_FAILURE_NONE = -1, STEAM_API_CALL_FAILURE_STEAM_GONE = 0, STEAM_API_CALL_FAILURE_NETWORK_FAILURE = 1, STEAM_API_CALL_FAILURE_INVALID_HANDLE = 2, STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK = 3
 		};
@@ -1114,7 +1117,10 @@ class Steam: public Object {
 		void setOverlayNotificationPosition(int pos);
 		void setVRHeadsetStreamingEnabled(bool enabled);
 		bool showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText);
+		bool showFloatingGamepadTextInput(int inputMode, int nTextFieldXPosition, int nTextFieldYPosition, int nTextFieldWidth, int nTextFieldHeight);
+		void setGameLauncherMode(bool mode);
 		void startVRDashboard();
+		bool isSteamRunningOnSteamDeck();
 
 		// Video ////////////////////////////////
 		void getOPFSettings(uint32_t appID);
@@ -1416,6 +1422,8 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _low_power, LowBatteryPower_t, callbackLowPower);
 		STEAM_CALLBACK(Steam, _steam_api_call_completed, SteamAPICallCompleted_t, callbackSteamAPICallCompleted);
 		STEAM_CALLBACK(Steam, _steam_shutdown, SteamShutdown_t, callbackSteamShutdown);
+		STEAM_CALLBACK(Steam, _app_resuming_from_suspend, AppResumingFromSuspend_t, callbackAppResumingFromSuspend);
+		STEAM_CALLBACK(Steam, _floating_gamepad_text_input_dismissed, FloatingGamepadTextInputDismissed_t, callbackFloatingGamepadTextInputDismissed);
 
 		// Video callbacks //////////////////////
 //		STEAM_CALLBACK(Steam, _broadcast_upload_start, BroadcastUploadStart_t, callbackBroadcastUploadStart);		// In documentation but not in actual SDK?

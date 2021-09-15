@@ -309,6 +309,8 @@ Steam::Steam():
 	callbackLowPower(this, &Steam::_low_power),
 	callbackSteamAPICallCompleted(this, &Steam::_steam_api_call_completed),
 	callbackSteamShutdown(this, &Steam::_steam_shutdown),
+	callbackAppResumingFromSuspend(this, &Steam::_app_resuming_from_suspend),
+	callbackFloatingGamepadTextInputDismissed(this, &Steam::_floating_gamepad_text_input_dismissed),
 
 	// Video callbacks //////////////////////////
 //	callbackBroadcastUploadStart(this, &Steam::_broadcast_upload_start),	// In documentation but not in actual SDK?
@@ -7233,6 +7235,14 @@ bool Steam::isSteamChinaLauncher(){
 	return SteamUtils()->IsSteamChinaLauncher();
 }
 
+// Returns true if currently running on the Steam Deck device
+bool Steam::isSteamRunningOnSteamDeck(){
+	if(SteamUtils() == NULL){
+		return false;
+	}
+	return SteamUtils()->IsSteamRunningOnSteamDeck();
+}
+
 // Returns true if Steam & the Steam Overlay are running in Big Picture mode.
 bool Steam::isSteamInBigPictureMode(){
 	if(SteamUtils() == NULL){
@@ -7307,6 +7317,26 @@ bool Steam::showGamepadTextInput(int inputMode, int lineInputMode, const String&
 		lineMode = k_EGamepadTextInputLineModeMultipleLines;
 	}
 	return SteamUtils()->ShowGamepadTextInput(mode, lineMode, description.utf8().get_data(), maxText, presetText.utf8().get_data());
+}
+
+// Opens a floating keyboard over the game content and sends OS keyboard keys directly to the game.
+// The text field position is specified in pixels relative the origin of the game window and is used to position the floating keyboard in a way that doesn't cover the text field
+bool Steam::showFloatingGamepadTextInput(int inputMode, int nTextFieldXPosition, int nTextFieldYPosition, int nTextFieldWidth, int nTextFieldHeight) {
+	if(SteamUtils() == NULL){
+		return false;
+	}
+
+	EFloatingGamepadTextInputMode mode = (EFloatingGamepadTextInputMode)inputMode;
+
+	return SteamUtils()->ShowFloatingGamepadTextInput(mode, nTextFieldXPosition, nTextFieldYPosition, nTextFieldWidth, nTextFieldHeight);
+}
+
+// In game launchers that don't have controller support you can call this to have Steam Input translate the controller input into mouse/kb to navigate the launcher
+void Steam::setGameLauncherMode(bool mode) {
+	if(SteamUtils() == NULL){
+		return;
+	}
+	SteamUtils()->SetGameLauncherMode(mode);
 }
 
 // Ask SteamUI to create and render its OpenVR dashboard.
@@ -8378,6 +8408,16 @@ void Steam::_steam_api_call_completed(SteamAPICallCompleted_t* callData){
 // Called when Steam wants to shutdown.
 void Steam::_steam_shutdown(SteamShutdown_t* callData){
 	emit_signal("steam_shutdown");
+}
+
+// Sent after the device returns from sleep/suspend mode.
+void Steam::_app_resuming_from_suspend(AppResumingFromSuspend_t *callData) {
+	emit_signal("app_resuming_from_suspend");
+}
+
+// Sent after the device returns from sleep/suspend mode.
+void Steam::_floating_gamepad_text_input_dismissed(FloatingGamepadTextInputDismissed_t *callData) {
+	emit_signal("floating_gamepad_text_input_dismissed");
 }
 
 // VIDEO CALLBACKS //////////////////////////////
@@ -9897,6 +9937,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("initFilterText", &Steam::initFilterText);
 	ClassDB::bind_method("isAPICallCompleted", &Steam::isAPICallCompleted);
 	ClassDB::bind_method("isSteamChinaLauncher", &Steam::isSteamChinaLauncher);
+	ClassDB::bind_method("isSteamRunningOnSteamDeck", &Steam::isSteamRunningOnSteamDeck);
+	ClassDB::bind_method(D_METHOD("showFloatingGamepadTextInput", "inputMode", "nTextFieldXPosition", "nTextFieldYPosition", "nTextFieldWidth", "nTextFieldHeight"), &Steam::showFloatingGamepadTextInput);
+	ClassDB::bind_method(D_METHOD("setGameLauncherMode", "mode"), &Steam::setGameLauncherMode);
 
 
 	/////////////////////////////////////////////
@@ -10101,6 +10144,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
 	ADD_SIGNAL(MethodInfo("steam_api_call_completed"));
 	ADD_SIGNAL(MethodInfo("steam_shutdown"));
+	ADD_SIGNAL(MethodInfo("app_resuming_from_suspend"));
+	ADD_SIGNAL(MethodInfo("floating_gamepad_text_input_dismissed"));
 
 	// VIDEO SIGNALS ////////////////////////////
 //	ADD_SIGNAL(MethodInfo("broadcast_upload_start"));	// In documentation but not in actual SDK?
@@ -11285,6 +11330,12 @@ void Steam::_bind_methods(){
 	// GAMEPADTEXTINPUTMODE ENUM CONSTANTS //////
 	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);										// 0
 	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);									// 1
+
+	// FLOATINGGAMEPADTEXTINPUTMODE ENUM CONSTANTS //////
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);						// 0
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);						// 1
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);								// 2
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);							// 3
 
 	// STEAMAPICALLFAILURE ENUM CONSTANTS ///////
 	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NONE);											// -1
