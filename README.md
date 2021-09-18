@@ -10,6 +10,9 @@ What's New
 - Added: new game to game list
 - Changed: various things on lobby tutorial
 
+**Updated 9/15/21:**
+- Added: new game to game list
+
 **Update 9/8/21:**
 - Added: changelog for GodotSteam 3.9.7
 - Added: two new call results for Matchmaking servers
