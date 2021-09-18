@@ -35,7 +35,14 @@
 							<li><a class="button big" href="https://youtu.be/si50G3S1XGU" target="_blank">Video Tutorial</a></li>
 							<li><a class="button big" href="https://github.com/JDare/GodotSteamHL" target="_blank">GodotSteamHL</a></li>
 						</ul>
-						<p>I highly suggest you read through <a href="https://partner.steamgames.com/doc/features/multiplayer/networking" target="_blank">Valve's networking documentations</a>; it also contains some links to other articles about networking which should prove helpful.</p>  
+						<p>I highly suggest you read through <a href="https://partner.steamgames.com/doc/features/multiplayer/networking" target="_blank">Valve's networking documentations</a>; it also contains some links to other articles about networking which should prove helpful.  Here are some additional networking article resources to check out:
+							<ul>
+								<li><a href="https://github.com/MFatihMAR/Game-Networking-Resources" target="_blank">https://github.com/MFatihMAR/Game-Networking-Resources</a></li>
+								<li><a href="https://gamedev.stackexchange.com/questions/249/how-to-write-a-network-game" target="_blank">https://gamedev.stackexchange.com/questions/249/how-to-write-a-network-game</a></li>
+								<li><a href="https://web.archive.org/web/20180823014743/https://gafferongames.com/tags/networking" target="_blank">https://web.archive.org/web/20180823014743/https://gafferongames.com/tags/networking</a></li>
+								<li><a href="https://www.gabrielgambetta.com/client-server-game-architecture.html" target="_blank">https://www.gabrielgambetta.com/client-server-game-architecture.html</a></li>
+							</ul>
+						</p>
 						<hr />
 						<header class="major">
 							<h3>Set Up</h3>
@@ -49,7 +56,7 @@ var LOBBY_MEMBERS: Array = []
 var DATA
 var LOBBY_INVITE_ARG: bool = false
 </code></pre>
-						<p>Your Steam ID and username may actually be in a different GDScript, especially if you use the <strong>global.gd</strong> the way I do (<a href="https://gramps.github.io/GodotSteam/tutorials-initializing.html" target="_blank">mentioned in the initialization tutorial</a>). The most important will be the <strong>STEAM_LOBBY_ID</strong>, which obviously houses the lobby'S ID, and <strong>LOBBY_MEMBERS</strong>, which will be an array of dictionaries of lobby members and their Steam ID 64's. <strong>LOBBY_INVITE_ARG</strong> is mostly used when the game is started by accepting a Steam invite or joining a game from your friends list if the game isn't running.</p>
+						<p>Your Steam ID and username may actually be in a different GDScript, especially if you use the <strong>global.gd</strong> the way I do (<a href="https://gramps.github.io/GodotSteam/tutorials-initializing.html" target="_blank">mentioned in the initialization tutorial</a>). The most important will be the <strong>STEAM_LOBBY_ID</strong>, which obviously houses the lobby's ID, and <strong>LOBBY_MEMBERS</strong>, which will be an array of dictionaries of lobby members and their Steam ID 64's. <strong>LOBBY_INVITE_ARG</strong> is mostly used when the game is started by accepting a Steam invite or joining a game from your friends list if the game isn't running.</p>
 						<hr />
 						<header class="major">
 							<h3>The _ready() Function</h3>
@@ -57,6 +64,7 @@ var LOBBY_INVITE_ARG: bool = false
 						<p>Next we'll want to set up the signal connections for Steamwork and a command line checker like so:</p>
 <pre><code>
 func _ready() -> void:
+
 	Steam.connect("lobby_created", self, "_on_Lobby_Created")
 	Steam.connect("lobby_match_list", self, "_on_Lobby_Match_List")
 	Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
@@ -73,6 +81,7 @@ func _ready() -> void:
 						<p>We will get into each of these below. You noticed we added a check for command line arguments. Here is how our basic function will look:</p>
 <pre><code>
 func _check_Command_Line() -> void:
+
 	var ARGUMENTS = OS.get_cmdline_args()
 
 	# There are arguments to process
@@ -99,6 +108,7 @@ func _check_Command_Line() -> void:
 						<p>We'll also need to set <strong>_read_P2P_Packet</strong> in our <strong>_process()</strong> function so it is always looking for new packets:</p>
 <pre><code>
 func _process(_delta) -> void:
+
 	Steam.run_callbacks()
 	_read_P2P_Packet()
 </code></pre>
@@ -106,6 +116,7 @@ func _process(_delta) -> void:
 						<p>If you are experiencing packet delay issues, you can try this bit of code submitted by <strong>Luekuu</strong>:</p>
 <pre><code>
 func _process(delta):
+
 	Steam.run_callbacks()
 
 	# Get packets
@@ -121,6 +132,7 @@ func _process(delta):
 						<p>Next we'll set up our lobby creation functions.  You'll probably want to connect this function to a button somewhere in your game:</p>
 <pre><code>
 func _create_Lobby() -> void:
+
 	# Make sure a lobby is not already set
 	if STEAM_LOBBY_ID == 0:
 		Steam.createLobby(2, 2)
@@ -136,10 +148,14 @@ func _create_Lobby() -> void:
 						<p>Next we'll cover the callback from Steam saying the lobby has been created:</p>
 <pre><code>
 func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
+
 	if connect == 1:
 		# Set the lobby ID
 		STEAM_LOBBY_ID = lobbyID
 		print("Created a lobby: "+str(STEAM_LOBBY_ID))
+
+		# Set this lobby as joinable, just in case, though this should be done by default
+		Steam.setLobbyJoinable(STEAM_LOBBY_ID, true)
 
 		# Set some lobby data
 		Steam.setLobbyData(lobbyID, "name", "Gramps' Lobby")
@@ -149,7 +165,7 @@ func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
 		var RELAY: bool = Steam.allowP2PPacketRelay(true)
 		print("Allowing Steam to be relay backup: "+str(RELAY))
 </code></pre>
-						<p>Once this callback fires, you'll have your lobby ID which you can pass off to our <strong>STEAM_LOBBY_ID</strong> variable for later use.  You can also se some lobby data now; which can be whatever <strong>key / value</strong> pair you want.  I'm not aware of a maximum amount of pairs you can set. And you'll notice I set <strong>allowP2PPacketRelay</strong> to true at this point; this allows, as the note mentions, P2P connections to fallback to being relayed through Steam if needed.  This usually happens if you have NAT or firewall issues.</p>
+						<p>Once this callback fires, you'll have your lobby ID which you can pass off to our <strong>STEAM_LOBBY_ID</strong> variable for later use.  As the note says, the lobby should be set to joinable by default but, just in case, we add it here.  You can make the lobby unjoinable too. You can also se some lobby data now; which can be whatever <strong>key / value</strong> pair you want.  I'm not aware of a maximum amount of pairs you can set. And you'll notice I set <strong>allowP2PPacketRelay</strong> to true at this point; this allows, as the note mentions, P2P connections to fallback to being relayed through Steam if needed.  This usually happens if you have NAT or firewall issues.</p>
 						<hr />
 						<header class="major">
 							<h3>Get Lobby Lists</h3>
@@ -157,6 +173,7 @@ func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
 						<p>Now that we can create lobbies, let's query and pull a list of lobbies.  I usually have a button that will open a lobby interface which is a list of buttons, one per lobby:</p>
 <pre><code>
 func _on_Open_Lobby_List_pressed() -> void:
+
 	# Set distance to worldwide
 	Steam.addRequestLobbyListDistanceFilter(3)
 
@@ -182,6 +199,7 @@ func _on_Open_Lobby_List_pressed() -> void:
 							Once you set all or none of these, you can then call <strong>requestLobbyList</strong>. Once it pulls your lobby list it will fire a callback <strong>_on_Lobby_Match_List</strong>. You can then loop through the lobbies however you want. In our example code, I do something like this to make buttons for each lobby:</p>
 <pre><code>
 func _on_Lobby_Match_List(lobbies: Array) -> void:
+
 	for LOBBY in lobbies:
 
 		# Pull lobby data from Steam, these are specific to our example
@@ -189,11 +207,11 @@ func _on_Lobby_Match_List(lobbies: Array) -> void:
 		var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
 
 		# Get the current number of members
-		var LOBBY_MEMBERS: int = Steam.getNumLobbyMembers(LOBBY)
+		var LOBBY_NUM_MEMBERS: int = Steam.getNumLobbyMembers(LOBBY)
 
 		# Create a button for the lobby
 		var LOBBY_BUTTON: Button = Button.new()
-		LOBBY_BUTTON.set_text("Lobby ", LOBBY, ": ", LOBBY_NAME, " [", LOBBY_MODE, "] - ", LOBBY_MEMBERS, " Player(s)")
+		LOBBY_BUTTON.set_text("Lobby ", LOBBY, ": ", LOBBY_NAME, " [", LOBBY_MODE, "] - ", LOBBY_NUM_MEMBERS, " Player(s)")
 		LOBBY_BUTTON.set_size(Vector2(800, 50))
 		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
 		LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
@@ -210,6 +228,7 @@ func _on_Lobby_Match_List(lobbies: Array) -> void:
 
 <pre><code>
 func _join_Lobby(lobbyID: int) -> void:
+
 	print("Attempting to join lobby "+str(lobbyID)+"...")
 	
 	# Clear any previous lobby members lists, if you were in a previous lobby
@@ -220,23 +239,32 @@ func _join_Lobby(lobbyID: int) -> void:
 </code></pre>
 							<p>This will attempt to join the lobby you click on and, when it succeeds, it will fire the <strong>_on_Lobby_Joined</strong> callback:</p>
 <pre><code>
-func _on_Lobby_Joined(lobbyID: int, permissions: int, locked: bool, response: int) -> void:
+func _on_Lobby_Joined(lobbyID: int, _permissions: int, _locked: bool, response: int) -> void:
+
+	# If joining was successful
+	if response == 1:
+
+		# Set this lobby ID as your lobby ID
+		STEAM_LOBBY_ID = lobbyID
 	
-	# Set this lobby ID as your lobby ID
-	STEAM_LOBBY_ID = lobbyID
+		# Get the lobby members
+		_get_Lobby_Members()
 	
-	# Get the lobby members
-	_get_Lobby_Members()
-	
-	# Make the initial handshake
-	_make_P2P_Handshake()
+		# Make the initial handshake
+		_make_P2P_Handshake()
+
+	# Else it failed for some reason
+	else:
+		#Reopen the lobby list
+		_on_Open_Lobby_List_pressed()
 </code></pre>
 							<p>If the player is already in-game and accepts a Steam invite or clicks on a friend in their friend list then selects 'Join Game' from there, it will trigger the <strong>join_requested</strong> callback. This function will handle that:</p>
 <pre><code>
 func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
-	
+
 	# Get the lobby owner's name
 	var OWNER_NAME: String = Steam.getFriendPersonaName(friendID)
+
 	print("Joining "+str(OWNER_NAME)+"'s lobby...")
 	
 	# Attempt to join the lobby
@@ -281,7 +309,7 @@ func _make_P2P_Handshake() -> void:
 
 	print("Sending P2P handshake to the lobby")
 
-	_send_P2P_Packet("all", var2bytes({"message":"handshake", "from":STEAM_ID}))
+	_send_P2P_Packet("all", {"message":"handshake", "from":STEAM_ID})
 </code></pre>
 							<p>We won't get into what all this means just yet, but I wanted to show the code for the handshake function here since it is referenced. Your handshake messages can be anything and disregarded for the most part. Again, it is just to test our P2P session.</p>
 							<hr />
@@ -293,7 +321,7 @@ func _make_P2P_Handshake() -> void:
 func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, chatState: int) -> void:
 
 	# Get the user who has made the lobby change
-	var CHANGER: String = Steam.getFriendPersonaName(makingChangeID)
+	var CHANGER: String = Steam.getFriendPersonaName(changedID)
 
 	# If a player has joined the lobby
 	if chatState == 1:
@@ -318,7 +346,7 @@ func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, ch
 	# Update the lobby now that a change has occurred
 	_get_Lobby_Members()
 </code></pre>
-							<p>For the most part this will update when players join or leave the lobby. However, if you add functionality to kick or ban players, it will show that too.  At the end of this function, I always update the player list so we can show the correct list of players i the lobby.</p>
+							<p>For the most part this will update when players join or leave the lobby. However, if you add functionality to kick or ban players, it will show that too.  At the end of this function, I always update the player list so we can show the correct list of players in the lobby.</p>
 							<hr />
 							<header class="major">
 								<h3>Lobby Chat / Messages</h3>
@@ -330,15 +358,18 @@ func _on_Send_Chat_pressed() -> void:
 	# Get the entered chat message
 	var MESSAGE: String = $Chat.get_text()
 
-	# Pass the message to Steam
-	var SENT: bool = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, MESSAGE)
+	# If there is even a message
+	if MESSAGE.length() > 0:
 
-	# Was it sent successfully?
-	if not SENT:
-		print("ERROR: Chat message failed to send.")
+		# Pass the message to Steam
+		var SENT: bool = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, MESSAGE)
 
-	# Clear the chat input
-	$Chat.clear()
+		# Was it sent successfully?
+		if not SENT:
+			print("ERROR: Chat message failed to send.")
+
+		# Clear the chat input
+		$Chat.clear()
 </code></pre>
 							<p>The $Chat is your <strong>LineEdit</strong> and will probably be different in your project. Most importantly is your get the text and send it to <strong>sendLobbyChatMsg</strong>.
 							<hr />
@@ -360,7 +391,12 @@ func _leave_Lobby() -> void:
 
 		# Close session with all users
 		for MEMBERS in LOBBY_MEMBERS:
-			Steam.closeP2PSessionWithUser(MEMBERS['steam_id'])
+
+			# Make sure this isn't your Steam ID
+			if MEMBERS['steam_id'] != STEAM_ID:
+
+				# Close the P2P session
+				Steam.closeP2PSessionWithUser(MEMBERS['steam_id'])
 		
 		# Clear the local lobby list
 		LOBBY_MEMBERS.clear()
@@ -404,7 +440,6 @@ func _read_P2P_Packet() -> void:
 
 		# Get the remote user's ID
 		var PACKET_ID: String = str(PACKET.steamIDRemote)
-		var PACKET_CODE: String = str(PACKET.data[0])
 
 		# Make the packet data readable
 		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
@@ -428,7 +463,6 @@ func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 
 	# Create a data array to send the data through
 	var DATA: PoolByteArray
-	DATA.append(256)
 	DATA.append_array(var2bytes(packet_data))
 
 	# If sending a packet to everyone
@@ -452,7 +486,7 @@ func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 									<li>2 - Send reliable</li>
 									<li>3 - Send reliable with buffering</li>
 								</ul>
-							The channel used should match for both read and send functions.</p>
+							The channel used should match for both read and send functions. You may want to use multiple channels so this should obviously be adjusted.</p>
 							<hr />
 							<header class="major">
 								<h3>P2P Session Failures</h3>
@@ -490,7 +524,7 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 		print("WARNING: Session failure with "+str(steamID)+" [unknown error "+str(session_error)+"].")
 </code></pre>
 						<p>This will print a warning message so you know why the session connection failed. From here you can add any additional functionality you want like retrying the connection or something else.</p>
-						<p>That concludes the first part of the lobby / P2P networking tutorial.</p>
+						<p>That concludes the first part of the lobby / P2P networking tutorial.  Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.</p>
 					</section>
 				</div>
 			</div>
