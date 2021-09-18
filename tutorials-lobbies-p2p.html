@@ -255,9 +255,39 @@ func _on_Lobby_Joined(lobbyID: int, _permissions: int, _locked: bool, response: 
 
 	# Else it failed for some reason
 	else:
+		# Get the failure reason
+		var FAIL_REASON: String
+
+		match response:
+			2:	FAIL_REASON = "This lobby no longer exists."
+			3:	FAIL_REASON = "You don't have permission to join this lobby."
+			4:	FAIL_REASON = "The lobby is now full."
+			5:	FAIL_REASON = "Uh... something unexpected happened!"
+			6:	FAIL_REASON = "You are banned from this lobby."
+			7:	FAIL_REASON = "You cannot join due to having a limited account."
+			8:	FAIL_REASON = "This lobby is locked or disabled."
+			9:	FAIL_REASON = "This lobby is community locked."
+			10:	FAIL_REASON = "A user in the lobby has blocked you from joining."
+			11:	FAIL_REASON = "A user you have blocked is in the lobby."
+
 		#Reopen the lobby list
 		_on_Open_Lobby_List_pressed()
 </code></pre>
+							<p>For a more clear explanation of these join responses:
+								<ul>
+									<li>1 (k_EChatRoomEnterResponseSuccess) - Success.</li>
+									<li>2 (k_EChatRoomEnterResponseDoesntExist) - Chat doesn't exist (probably closed).</li>
+									<li>3 (k_EChatRoomEnterResponseNotAllowed) - General Denied - You don't have the permissions needed to join the chat.</li>
+									<li>4 (k_EChatRoomEnterResponseFull) - Chat room has reached its maximum size.</li>
+									<li>5 (k_EChatRoomEnterResponseError) - Unexpected Error.</li>
+									<li>6 (k_EChatRoomEnterResponseBanned) - You are banned from this chat room and may not join.</li>
+									<li>7 (k_EChatRoomEnterResponseLimited) - Joining this chat is not allowed because you are a limited user (no value on account).</li>
+									<li>8 (k_EChatRoomEnterResponseClanDisabled) - Attempt to join a clan chat when the clan is locked or disabled.</li>
+									<li>9 (k_EChatRoomEnterResponseCommunityBan) - Attempt to join a chat when the user has a community lock on their account.</li>
+									<li>10 (k_EChatRoomEnterResponseMemberBlockedYou) - Join failed - a user that is in the chat has blocked you from joining.</li>
+									<li>11 (k_EChatRoomEnterResponseYouBlockedMember) - Join failed - you have blocked a user that is already in the chat.</li>
+								</ul>
+							</p>
 							<p>If the player is already in-game and accepts a Steam invite or clicks on a friend in their friend list then selects 'Join Game' from there, it will trigger the <strong>join_requested</strong> callback. This function will handle that:</p>
 <pre><code>
 func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
