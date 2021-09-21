@@ -204,12 +204,13 @@ class SteamServer: public Object {
 		// STEAMWORKS FUNCTIONS /////////////////
 		/////////////////////////////////////////
 		//
-		CSteamID createSteamID(uint64_t steamID, int accountType=-1);
+		CSteamID createSteamID(uint64_t steam_id, int account_type=-1);
 
 		// Main /////////////////////////////////
-		bool serverInit(Dictionary connectData, int serverMode, const String& versionString);
+		bool serverInit(Dictionary connect_data, int server_mode, const String& version_string);
 		void serverReleaseCurrentThreadMemory();
 		void serverShutdown();
+		void steamworksError(const String& failed_signal);
 
 		// Apps /////////////////////////////////
 		Array getDLCDataByIndex();
@@ -224,33 +225,35 @@ class SteamServer: public Object {
 		Dictionary isTimedTrial();
 		bool isVACBanned();
 		int getAppBuildId();
-		String getAppInstallDir(AppId_t appID);
+		String getAppInstallDir(AppId_t app_id);
 		uint64_t getAppOwner();
 		String getAvailableGameLanguages();
 		String getCurrentBetaName();
 		String getCurrentGameLanguage();
 		int getDLCCount();
-		Dictionary getDLCDownloadProgress(uint32_t appID);
+		Dictionary getDLCDownloadProgress(uint32_t app_id);
 		int getEarliestPurchaseUnixTime(int value);
 		void getFileDetails(const String& filename);
-		Array getInstalledDepots(uint32_t appID);
+		Array getInstalledDepots(uint32_t app_id);
 		String getLaunchCommandLine();
 		String getLaunchQueryParam(const String& key);
 		void installDLC(int value);
-		bool markContentCorrupt(bool missingFilesOnly);
+		bool markContentCorrupt(bool missing_files_only);
 		void uninstallDLC(int value);
+		void requestAllProofOfPurchaseKeys();
+		void requestAppProofOfPurchaseKey(AppId_t app_id);
 
 		// HTTP /////////////////////////////////
-		void createCookieContainer( bool allowResponsesToModify);
-		void createHTTPRequest(int requestMethod, const String& absoluteURL);
+		void createCookieContainer( bool allow_responses_to_modify);
+		void createHTTPRequest(int request_method, const String& absolute_url);
 		bool deferHTTPRequest(uint32 request);
 		float getHTTPDownloadProgressPct(uint32 request);
 		bool getHTTPRequestWasTimedOut(uint32 request);
-		uint8 getHTTPResponseBodyData(uint32 request, uint32 bufferSize);
+		uint8 getHTTPResponseBodyData(uint32 request, uint32 buffer_size);
 		uint32 getHTTPResponseBodySize(uint32 request);
-		uint32 getHTTPResponseHeaderSize(uint32 request, const String& headerName);
-		uint8 getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize);
-		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize);
+		uint32 getHTTPResponseHeaderSize(uint32 request, const String& header_name);
+		uint8 getHTTPResponseHeaderValue(uint32 request, const String& header_name, uint32 buffer_size);
+		uint8 getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 buffer_size);
 		bool prioritizeHTTPRequest(uint32 request);
 		bool releaseCookieContainer();
 		bool releaseHTTPRequest(uint32 request);
@@ -258,27 +261,27 @@ class SteamServer: public Object {
 		bool sendHTTPRequestAndStreamResponse(uint32 request);
 		bool setHTTPCookie(const String& host, const String& url, const String& cookie);
 		bool setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 milliseconds);
-		bool setHTTPRequestContextValue(uint32 request, uint64_t contextValue);
+		bool setHTTPRequestContextValue(uint32 request, uint64_t context_value);
 		bool setHTTPRequestCookieContainer(uint32 request);
 		bool setHTTPRequestGetOrPostParameter(uint32 request, const String& name, const String& value);
-		bool setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue);
-		bool setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds);
-		uint8 setHTTPRequestRawPostBody(uint32 request, const String& contentType, uint32 bodyLen);
-		bool setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool requireVerifiedCertificate);
-		bool setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentInfo);
+		bool setHTTPRequestHeaderValue(uint32 request, const String& header_name, const String& header_value);
+		bool setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeout_seconds);
+		uint8 setHTTPRequestRawPostBody(uint32 request, const String& content_type, uint32 body_length);
+		bool setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool require_verified_certificate);
+		bool setHTTPRequestUserAgentInfo(uint32 request, const String& user_agent_info);
 
 		// Inventory ////////////////////////////
 		bool addPromoItem(uint32 item);
 		bool addPromoItems(const PoolIntArray items);
 		bool checkResultSteamID(uint64_t steamIDExpected);
-		bool consumeItem(uint64_t itemConsume, uint32 quantity);
+		bool consumeItem(uint64_t item_consume, uint32 quantity);
 		bool deserializeResult();
 		void destroyResult();
-		bool exchangeItems(const PoolIntArray outputItems, const uint32 outputQuantity, const uint64_t inputItems, const uint32 inputQuantity);
+		bool exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
 		bool generateItems(const PoolIntArray items, const uint32 quantity);
 		bool getAllItems();
 		String getItemDefinitionProperty(uint32 definition, const String& name);
-		bool getItemsByID(const uint64_t idArray, uint32 count);
+		bool getItemsByID(const uint64_t id_array, uint32 count);
 		uint64_t getItemPrice(uint32 definition);
 		Array getItemsWithPrices(uint32 length);
 		uint32 getNumItemsWithPrices();
@@ -288,35 +291,35 @@ class SteamServer: public Object {
 		uint32 getResultTimestamp();
 		bool grantPromoItems();
 		bool loadItemDefinitions();
-		void requestEligiblePromoItemDefinitionsIDs(uint64_t steamID);
+		void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 		void requestPrices();
 		bool serializeResult();
 		void startPurchase(const PoolIntArray items, const uint32 quantity);
-		bool transferItemQuantity(uint64_t itemID, uint32 quantity, uint64_t itemDestination, bool split);
+		bool transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 		bool triggerItemDrop(uint32 definition);
 		void startUpdateProperties();
 		bool submitUpdateProperties();
-		bool removeProperty(uint64_t itemID, const String& name);
-		bool setPropertyString(uint64_t itemID, const String& name, const String& value);
-		bool setPropertyBool(uint64_t itemID, const String& name, bool value);
-		bool setPropertyInt(uint64_t itemID, const String& name, uint64_t value);
-		bool setPropertyFloat(uint64_t itemID, const String& name, float value);
+		bool removeProperty(uint64_t item_id, const String& name);
+		bool setPropertyString(uint64_t item_id, const String& name, const String& value);
+		bool setPropertyBool(uint64_t item_id, const String& name, bool value);
+		bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value);
+		bool setPropertyFloat(uint64_t item_id, const String& name, float value);
 
 		// Networking ///////////////////////////
-		bool acceptP2PSessionWithUser(uint64_t steamIDRemote);
+		bool acceptP2PSessionWithUser(uint64_t steam_id_remote);
 		bool allowP2PPacketRelay(bool allow);
-		bool closeP2PChannelWithUser(uint64_t steamIDRemote, int channel);
-		bool closeP2PSessionWithUser(uint64_t steamIDRemote);
-		Dictionary getP2PSessionState(uint64_t steamIDRemote);
+		bool closeP2PChannelWithUser(uint64_t steam_id_remote, int channel);
+		bool closeP2PSessionWithUser(uint64_t steam_id_remote);
+		Dictionary getP2PSessionState(uint64_t steam_id_remote);
 		uint32_t getAvailableP2PPacketSize(int channel = 0);
 		Dictionary readP2PPacket(uint32_t packet, int channel = 0);
-		bool sendP2PPacket(uint64_t steamIDRemote, const PoolByteArray data, int eP2PSendType, int channel = 0);
+		bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, int send_type, int channel = 0);
 
 		// Server ///////////////////////////////
-		bool initGameServer(Dictionary connectData, int serverMode, const String& versionString);
+		bool initGameServer(Dictionary connect_data, int server_mode, const String& version_string);
 		void setProduct(const String& product);
 		void setGameDescription(const String& description);
-		void setModDir(const String& modDir);
+		void setModDir(const String& mod_directory);
 		void setDedicatedServer(bool dedicated);
 		void logOn(const String& token);
 		void logOnAnonymous();
@@ -338,117 +341,117 @@ class SteamServer: public Object {
 		void setGameData(const String& data);
 		void setRegion(const String& region);
 		Dictionary getAuthSessionTicket();
-		int beginAuthSession(PoolByteArray ticket, int ticketSize, uint64_t steamID);
-		void endAuthSession(uint64_t steamID);
-		void cancelAuthTicket(uint32_t authTicket);
-		int userHasLicenceForApp(uint64_t steamID, AppId_t appID);
-		bool requestUserGroupStatus(uint64_t steamID, int groupID);
+		int beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
+		void endAuthSession(uint64_t steam_id);
+		void cancelAuthTicket(uint32_t auth_ticket);
+		int userHasLicenceForApp(uint64_t steam_id, AppId_t app_id);
+		bool requestUserGroupStatus(uint64_t steam_id, int group_id);
 		Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
 		Dictionary getNextOutgoingPacket();
-		void enableHeartbeats(bool active);
-		void setHeartbeatInterval(int interval);
-		void forceHeartbeat();
-		void associateWithClan(uint64_t clanID);
-		void computeNewPlayerCompatibility(uint64_t steamID);
+		void setAdvertiseServerActive(bool active);
+		void associateWithClan(uint64_t clan_id);
+		void computeNewPlayerCompatibility(uint64_t steam_id);
 
 		// Server Stats /////////////////////////
-		bool clearUserAchievement(uint64_t steamID, const String& name);
-		Dictionary getUserAchievement(uint64_t steamID, const String& name);
-		uint32_t getUserStatInt(uint64_t steamID, const String& name);
-		float getUserStatFloat(uint64_t steamID, const String& name);
-		void requestUserStats(uint64_t steamID);
-		bool setUserAchievement(uint64_t steamID, const String& name);
-		bool setUserStatInt(uint64_t steamID, const String& name, int32 stat);
-		bool setUserStatFloat(uint64_t steamID, const String& name, float stat);
-		void storeUserStats(uint64_t steamID);
-		bool updateUserAvgRateStat(uint64_t steamID, const String& name, float thisSession, double sessionLength);
+		bool clearUserAchievement(uint64_t steam_id, const String& name);
+		Dictionary getUserAchievement(uint64_t steam_id, const String& name);
+		uint32_t getUserStatInt(uint64_t steam_id, const String& name);
+		float getUserStatFloat(uint64_t steam_id, const String& name);
+		void requestUserStats(uint64_t steam_id);
+		bool setUserAchievement(uint64_t steam_id, const String& name);
+		bool setUserStatInt(uint64_t steam_id, const String& name, int32 stat);
+		bool setUserStatFloat(uint64_t steam_id, const String& name, float stat);
+		void storeUserStats(uint64_t steam_id);
+		bool updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length);
 
 		// UGC //////////////////////////////////
-		void addAppDependency(uint64_t publishedFileID, uint32_t appID);
-		void addDependency(uint64_t publishedFileID, uint64_t childPublishedFileID);
-		bool addExcludedTag(uint64_t queryHandle, const String& tagName);
-		bool addItemKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
-		bool addItemPreviewFile(uint64_t queryHandle, const String& previewFile, int type);
-		bool addItemPreviewVideo(uint64_t queryHandle, const String& videoID);
-		void addItemToFavorite(uint32_t appID, uint64_t publishedFileID);
-		bool addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value);
-		bool addRequiredTag(uint64_t queryHandle, const String& tagName);
-		bool addRequiredTagGroup(uint64_t queryHandle, Array tagArray);
-		bool initWorkshopForGameServer(uint32_t workshopDepotID);
-		void createItem(AppId_t appID, int fileType);
-		uint64_t createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page);
-		uint64_t createQueryUGCDetailsRequest(Array publishedFileID);
-		uint64_t createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page);
-		void deleteItem(uint64_t publishedFileID);
-		bool downloadItem(uint64_t publishedFileID, bool highPriority);
-		Dictionary getItemDownloadInfo(uint64_t publishedFileID);
-		Dictionary getItemInstallInfo(uint64_t publishedFileID);
-		int getItemState(uint64_t publishedFileID);
-		Dictionary getItemUpdateProgress(uint64_t updateHandle);
+		void addAppDependency(uint64_t published_file_id, uint32_t app_id);
+		void addDependency(uint64_t published_file_id, uint64_t child_published_file_id);
+		bool addExcludedTag(uint64_t query_handle, const String& tag_name);
+		bool addItemKeyValueTag(uint64_t query_handle, const String& key, const String& value);
+		bool addItemPreviewFile(uint64_t query_handle, const String& preview_file, int type);
+		bool addItemPreviewVideo(uint64_t query_handle, const String& video_id);
+		void addItemToFavorite(uint32_t app_id, uint64_t published_file_id);
+		bool addRequiredKeyValueTag(uint64_t query_handle, const String& key, const String& value);
+		bool addRequiredTag(uint64_t query_handle, const String& tag_name);
+		bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
+		bool initWorkshopForGameServer(uint32_t workshop_depot_id);
+		void createItem(AppId_t app_id, int file_type);
+		uint64_t createQueryAllUGCRequest(int query_type, int matching_type, uint32_t creator_id, uint32_t consume_id, uint32 page);
+		uint64_t createQueryUGCDetailsRequest(Array published_file_id);
+		uint64_t createQueryUserUGCRequest(int account_id, int list_type, int matching_ugc_type, int sort_order, int creator_id, int consume_id, uint32 page);
+		void deleteItem(uint64_t published_file_id);
+		bool downloadItem(uint64_t published_file_id, bool high_priority);
+		Dictionary getItemDownloadInfo(uint64_t published_file_id);
+		Dictionary getItemInstallInfo(uint64_t published_file_id);
+		int getItemState(uint64_t published_file_id);
+		Dictionary getItemUpdateProgress(uint64_t update_handle);
 		uint32 getNumSubscribedItems();
-		Dictionary getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex);
-		Dictionary getQueryUGCChildren(uint64_t queryHandle, uint32 index);
-		Dictionary getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex);
-		uint32 getQueryUGCNumTags(uint64_t queryHandle, uint32 index);
-		String getQueryUGCMetadata(uint64_t queryHandle, uint32 index);
-		uint32 getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index);
-		uint32 getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index);
-		String getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index);
-		Dictionary getQueryUGCResult(uint64_t queryHandle, uint32 index);
-		Dictionary getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType);
-		String getQueryUGCTag(uint64_t queryHandle, uint32 index, uint32 tagIndex);
-		String getQueryUGCTagDisplayName(uint64_t queryHandle, uint32 index, uint32 tagIndex);
+		Dictionary getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 index, uint32 preview_index);
+		Dictionary getQueryUGCChildren(uint64_t query_handle, uint32 index);
+		Dictionary getQueryUGCKeyValueTag(uint64_t query_handle, uint32 index, uint32 key_value_tag_index);
+		uint32 getQueryUGCNumTags(uint64_t query_handle, uint32 index);
+		String getQueryUGCMetadata(uint64_t query_handle, uint32 index);
+		uint32 getQueryUGCNumAdditionalPreviews(uint64_t query_handle, uint32 index);
+		uint32 getQueryUGCNumKeyValueTags(uint64_t query_handle, uint32 index);
+		String getQueryUGCPreviewURL(uint64_t query_handle, uint32 index);
+		Dictionary getQueryUGCResult(uint64_t query_handle, uint32 index);
+		Dictionary getQueryUGCStatistic(uint64_t query_handle, uint32 index, int stat_type);
+		String getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index);
+		String getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index);
 		Array getSubscribedItems();
-		void getUserItemVote(uint64_t publishedFileID);
-		bool releaseQueryUGCRequest(uint64_t queryHandle);
-		void removeAppDependency(uint64_t publishedFileID, uint32_t appID);
-		void removeDependency(uint64_t publishedFileID, uint64_t childPublishedFileID);
-		void removeItemFromFavorites(uint32_t appID, uint64_t publishedFileID);
-		bool removeItemKeyValueTags(uint64_t updateHandle, const String& key);
-		bool removeItemPreview(uint64_t updateHandle, uint32 index);
-		void sendQueryUGCRequest(uint64_t updateHandle);
-		bool setAllowCachedResponse(uint64_t updateHandle, uint32 maxAgeSeconds);
-		bool setCloudFileNameFilter(uint64_t updateHandle, const String& matchCloudFilename);
-		bool setItemContent(uint64_t updateHandle, const String& contentFolder);
-		bool setItemDescription(uint64_t updateHandle, const String& description);
-		bool setItemMetadata(uint64_t updateHandle, const String& metadata);
-		bool setItemPreview(uint64_t updateHandle, const String& previewFile);
-		bool setItemTags(uint64_t updateHandle, Array tagArray);
-		bool setItemTitle(uint64_t updateHandle, const String& title);
-		bool setItemUpdateLanguage(uint64_t updateHandle, const String& language);
-		bool setItemVisibility(uint64_t updateHandle, int visibility);
-		bool setLanguage(uint64_t queryHandle, const String& language);
-		bool setMatchAnyTag(uint64_t queryHandle, bool matchAnyTag);
-		bool setRankedByTrendDays(uint64_t queryHandle, uint32 days);
-		bool setReturnAdditionalPreviews(uint64_t queryHandle, bool returnAdditionalPreviews);
-		bool setReturnChildren(uint64_t queryHandle, bool returnChildren);
-		bool setReturnKeyValueTags(uint64_t queryHandle, bool returnKeyValueTags);
-		bool setReturnLongDescription(uint64_t queryHandle, bool returnLongDescription);
-		bool setReturnMetadata(uint64_t queryHandle, bool returnMetadata);
-		bool setReturnOnlyIDs(uint64_t queryHandle, bool returnOnlyIDs);
-		bool setReturnPlaytimeStats(uint64_t queryHandle, uint32 days);
-		bool setReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly);
-		bool setSearchText(uint64_t queryHandle, const String& searchText);
-		void setUserItemVote(uint64_t publishedFileID, bool voteUp);
-		uint64_t startItemUpdate(uint32_t appID, uint64_t fileId);
-		void startPlaytimeTracking(Array publishedFileIDs);
-		void stopPlaytimeTracking(Array publishedFileIDs);
+		void getUserItemVote(uint64_t published_file_id);
+		bool releaseQueryUGCRequest(uint64_t query_handle);
+		void removeAppDependency(uint64_t published_file_id, uint32_t app_id);
+		void removeDependency(uint64_t published_file_id, uint64_t child_published_file_id);
+		void removeItemFromFavorites(uint32_t app_id, uint64_t published_file_id);
+		bool removeItemKeyValueTags(uint64_t update_handle, const String& key);
+		bool removeItemPreview(uint64_t update_handle, uint32 index);
+		void sendQueryUGCRequest(uint64_t update_handle);
+		bool setAllowCachedResponse(uint64_t update_handle, uint32 max_age_seconds);
+		bool setCloudFileNameFilter(uint64_t update_handle, const String& match_cloud_filename);
+		bool setItemContent(uint64_t update_handle, const String& content_folder);
+		bool setItemDescription(uint64_t update_handle, const String& description);
+		bool setItemMetadata(uint64_t update_handle, const String& metadata);
+		bool setItemPreview(uint64_t update_handle, const String& preview_file);
+		bool setItemTags(uint64_t update_handle, Array tag_array);
+		bool setItemTitle(uint64_t update_handle, const String& title);
+		bool setItemUpdateLanguage(uint64_t update_handle, const String& language);
+		bool setItemVisibility(uint64_t update_handle, int visibility);
+		bool setLanguage(uint64_t query_handle, const String& language);
+		bool setMatchAnyTag(uint64_t query_handle, bool match_any_tag);
+		bool setRankedByTrendDays(uint64_t query_handle, uint32 days);
+		bool setReturnAdditionalPreviews(uint64_t query_handle, bool return_additional_previews);
+		bool setReturnChildren(uint64_t query_handle, bool return_children);
+		bool setReturnKeyValueTags(uint64_t query_handle, bool return_key_value_tags);
+		bool setReturnLongDescription(uint64_t query_handle, bool return_long_description);
+		bool setReturnMetadata(uint64_t query_handle, bool return_metadata);
+		bool setReturnOnlyIDs(uint64_t query_handle, bool return_only_ids);
+		bool setReturnPlaytimeStats(uint64_t query_handle, uint32 days);
+		bool setReturnTotalOnly(uint64_t query_handle, bool return_total_only);
+		bool setSearchText(uint64_t query_handle, const String& search_text);
+		void setUserItemVote(uint64_t published_file_id, bool vote_up);
+		uint64_t startItemUpdate(uint32_t app_id, uint64_t file_id);
+		void startPlaytimeTracking(Array published_file_ids);
+		void stopPlaytimeTracking(Array published_file_ids);
 		void stopPlaytimeTrackingForAllItems();
-		void getAppDependencies(uint64_t publishedFileID);
-		void submitItemUpdate(uint64_t updateHandle, const String& changeNote);
-		void subscribeItem(uint64_t publishedFileID);
+		void getAppDependencies(uint64_t published_file_id);
+		void submitItemUpdate(uint64_t update_handle, const String& change_note);
+		void subscribeItem(uint64_t published_file_id);
 		void suspendDownloads(bool suspend);
-		void unsubscribeItem(uint64_t publishedFileID);
-		bool updateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile);
-		bool updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID);
+		void unsubscribeItem(uint64_t published_file_id);
+		bool updateItemPreviewFile(uint64_t update_handle, uint32 index, const String& preview_file);
+		bool updateItemPreviewVideo(uint64_t update_handle, uint32 index, const String& video_id);
+		bool showWorkshopEULA();
+		void getWorkshopEULAStatus();
 
 		// Utils ////////////////////////////////
-		String filterText(int context, uint64_t steamID, const String& message);
+		String filterText(int context, uint64_t steam_id, const String& message);
 		String getAPICallFailureReason();
 		int getAppID();
 		int getCurrentBatteryPower();
-		Dictionary getImageRGBA(int iImage);
-		Dictionary getImageSize(int iImage);
+		Dictionary getImageRGBA(int image);
+		Dictionary getImageSize(int image);
 		uint32 getIPCCallCount();
 		String getIPCountry();
 		int getSecondsSinceAppActive();
@@ -466,7 +469,7 @@ class SteamServer: public Object {
 		void setOverlayNotificationInset(int horizontal, int vertical);
 		void setOverlayNotificationPosition(int pos);
 		void setVRHeadsetStreamingEnabled(bool enabled);
-		bool showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText);
+		bool showGamepadTextInput(int input_mode, int line_input_mode, const String& description, uint32 max_text, const String& preset_text);
 		void startVRDashboard();
 
 	protected:
@@ -475,22 +478,22 @@ class SteamServer: public Object {
 
 	private:
 		// Main
-		bool isInitSuccess;
+		bool is_init_success;
 
 		// Apps
-		uint64 currentAppID;
+		uint64 current_app_id;
 
 		// HTTP
-		uint32 cookieHandle;
-		uint32 requestHandle;
+		uint32 cookie_handle;
+		uint32 request_handle;
 
 		// Inventory
-		SteamInventoryUpdateHandle_t inventoryUpdateHandle;
-		SteamInventoryResult_t inventoryHandle;
-		SteamItemDetails_t inventoryDetails;
+		SteamInventoryUpdateHandle_t inventory_update_handle;
+		SteamInventoryResult_t inventory_handle;
+		SteamItemDetails_t inventoy_details;
 
 		// Utils
-		uint64_t apiHandle = 0;
+		uint64_t api_handle = 0;
 
 		/////////////////////////////////////////
 		// STRUCTS //////////////////////////////
@@ -498,9 +501,9 @@ class SteamServer: public Object {
 		//
 		// UGC item details /////////////////////
 		struct UGCDetails {
-			uint64_t publishedFileID;
+			uint64_t published_file_id;
 			int result;
-			int fileType;
+			int file_type;
 			int creatorAppID;
 			int consumerAppID;
 			char title[128];
@@ -515,7 +518,7 @@ class SteamServer: public Object {
 			bool tagsTruncated;
 			char tags[256];
 			int file;
-			int previewFile;
+			int preview_file;
 			char filename[128];
 			int32 fileSize;
 			int32 previewFileSize;
@@ -529,7 +532,7 @@ class SteamServer: public Object {
 
 		// Item Details /////////////////////////
 		struct SteamItemDetails {
-			SteamItemInstanceID_t itemID;
+			SteamItemInstanceID_t item_id;
 			SteamItemDef_t definition;
 			uint16 quantity;
 			uint16 flags;
@@ -549,8 +552,11 @@ class SteamServer: public Object {
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _dlc_installed, DlcInstalled_t, callbackDLCInstalled);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _file_details_result, FileDetailsResult_t, callbackFileDetailsResult);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _new_launch_url_parameters, NewUrlLaunchParameters_t, callbackNewLaunchURLParameters);
-//		STEAM_GAMESERVER_CALLBACK(Steam, _new_launch_query_parameters, NewLaunchQueryParameters_t, callbackNewLaunchQueryParameters);  Seems not to be found?
-		
+//		STEAM_GAMESERVER_CALLBACK(SteamServer, _new_launch_query_parameters, NewLaunchQueryParameters_t, callbackNewLaunchQueryParameters);	<------ In documentation but not in actual SDK?
+		STEAM_GAMESERVER_CALLBACK(SteamServer, _register_activation_code_response, RegisterActivationCodeResponse_t, callbackRegisterActivationCodeResponse);
+		STEAM_GAMESERVER_CALLBACK(SteamServer, _app_proof_of_purchase_key_response, AppProofOfPurchaseKeyResponse_t, callbackAppProofOfPurchaseKeyResponse);
+		STEAM_GAMESERVER_CALLBACK(SteamServer, _timed_trial_status, TimedTrialStatus_t, callbackTimedTrialStatus);
+
 		// HTTP callbacks ///////////////////////
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _http_request_completed, HTTPRequestCompleted_t, callbackHTTPRequestCompleted);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _http_request_data_received, HTTPRequestDataReceived_t, callbackHTTPRequestDataReceived);
@@ -584,6 +590,7 @@ class SteamServer: public Object {
 		// UGC callbacks ////////////////////////
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _item_downloaded, DownloadItemResult_t, callbackItemDownloaded);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _item_installed, ItemInstalled_t, callbackItemInstalled);
+		STEAM_GAMESERVER_CALLBACK(SteamServer, _user_subscribed_items_list_changed, UserSubscribedItemsListChanged_t, callbackUserSubscribedItemsListChanged);
 
 		// Utility callbacks ////////////////////
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _gamepad_text_input_dismissed, GamepadTextInputDismissed_t, callbackGamepadTextInputDismissed);
@@ -591,6 +598,8 @@ class SteamServer: public Object {
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _low_power, LowBatteryPower_t, callbackLowPower);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _steam_api_call_completed, SteamAPICallCompleted_t, callbackSteamAPICallCompleted);
 		STEAM_GAMESERVER_CALLBACK(SteamServer, _steam_shutdown, SteamShutdown_t, callbackSteamShutdown);
+		STEAM_GAMESERVER_CALLBACK(SteamServer, _app_resuming_from_suspend, AppResumingFromSuspend_t, callbackAppResumingFromSuspend);
+		STEAM_GAMESERVER_CALLBACK(SteamServer, _floating_gamepad_text_input_dismissed, FloatingGamepadTextInputDismissed_t, callbackFloatingGamepadTextInputDismissed);
 
 		/////////////////////////////////////////
 		// STEAM CALL RESULTS ///////////////////
@@ -639,6 +648,8 @@ class SteamServer: public Object {
 		void _item_updated(SubmitItemUpdateResult_t *callData, bool ioFailure);
 		CCallResult<SteamServer, UserFavoriteItemsListChanged_t> callResultFavoriteItemListChanged;
 		void _user_favorite_items_list_changed(UserFavoriteItemsListChanged_t *callData, bool ioFailure);
+		CCallResult<SteamServer, WorkshopEULAStatus_t> callResultWorkshopEULAStatus;
+		void _workshop_eula_status(WorkshopEULAStatus_t *call_data, bool io_failure);
 
 		// Server Stats call results ////////////
 		CCallResult<SteamServer, GSStatsReceived_t> callResultStatReceived;

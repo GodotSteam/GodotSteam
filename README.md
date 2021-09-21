@@ -16,7 +16,16 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v1.2.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v1.2.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 1.2.3 Changes**
+- Added: missing functions to Apps class
+- Added: new functions and callbacks to UGC class
+- Changed: EnableHeartbeats was renamed to SetAdvertiseServerActive in SDK
+- Changed: various internal variable names
+- Fixed: some memory allocation issues
+- Removed: setHeartbeatInterval and forceHeartbeat; was removed from SDK
+
 
 **Version 1.2.2 Changes**
 - Added: Added: ability to provide different locations for custom modules, thanks to dsnopek

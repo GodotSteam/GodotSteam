@@ -74,6 +74,9 @@ SteamServer::SteamServer():
 	callbackFileDetailsResult(this, &SteamServer::_file_details_result),
 	callbackNewLaunchURLParameters(this, &SteamServer::_new_launch_url_parameters),
 //	callbackNewLaunchQueryParameters(this, &SteamServer::_new_launch_query_parameters),  Seems not to be found?
+	callbackRegisterActivationCodeResponse(this, &SteamServer::_register_activation_code_response),
+	callbackAppProofOfPurchaseKeyResponse(this, &SteamServer::_app_proof_of_purchase_key_response),
+	callbackTimedTrialStatus(this, &SteamServer::_timed_trial_status),
 
 	// HTTP callbacks ///////////////////////////
 	callbackHTTPRequestCompleted(this, &SteamServer::_http_request_completed),
@@ -108,17 +111,20 @@ SteamServer::SteamServer():
 	// UGC callbacks ////////////////////////////
 	callbackItemDownloaded(this, &SteamServer::_item_downloaded),
 	callbackItemInstalled(this, &SteamServer::_item_installed),
+	callbackUserSubscribedItemsListChanged(this, &SteamServer::_user_subscribed_items_list_changed),
 
 	// Utility callbacks ////////////////////////
 	callbackGamepadTextInputDismissed(this, &SteamServer::_gamepad_text_input_dismissed),
 	callbackIPCountry(this, &SteamServer::_ip_country),
 	callbackLowPower(this, &SteamServer::_low_power),
 	callbackSteamAPICallCompleted(this, &SteamServer::_steam_api_call_completed),
-	callbackSteamShutdown(this, &SteamServer::_steam_shutdown)
+	callbackSteamShutdown(this, &SteamServer::_steam_shutdown),
+	callbackAppResumingFromSuspend(this, &SteamServer::_app_resuming_from_suspend),
+	callbackFloatingGamepadTextInputDismissed(this, &SteamServer::_floating_gamepad_text_input_dismissed)
 {
-	isInitSuccess = false;
+	is_init_success = false;
 	singleton = this;
-	currentAppID = 0;
+	current_app_id = 0;
 }
 
 
@@ -132,12 +138,12 @@ SteamServer* SteamServer::get_singleton(){
 }
 
 // Creating a Steam ID for internal use
-CSteamID SteamServer::createSteamID(uint64_t steamID, int accountType){
+CSteamID SteamServer::createSteamID(uint64_t steam_id, int account_type){
 	CSteamID cSteamID;
-	if(accountType < 0 || accountType >= k_EAccountTypeMax){
-		accountType = 1;
+	if(account_type < 0 || account_type >= k_EAccountTypeMax){
+		account_type = 1;
 	}
-	cSteamID.Set(steamID, EUniverse(k_EUniversePublic), EAccountType(accountType));
+	cSteamID.Set(steam_id, EUniverse(k_EUniversePublic), EAccountType(account_type));
 	return cSteamID;
 }
 
@@ -147,18 +153,18 @@ CSteamID SteamServer::createSteamID(uint64_t steamID, int accountType){
 /////////////////////////////////////////////////
 //
 // Initialize the server to Steam.
-bool SteamServer::serverInit(Dictionary connectData, int serverMode, const String& versionString){
+bool SteamServer::serverInit(Dictionary connect_data, int server_mode, const String& version_string){
 	// Pass the dictionary data back as solitary variables
-	const String& ip = connectData["ip"];
-	uint16 steamPort = connectData["steam_port"];
-	uint16 gamePort = connectData["game_port"];
-	uint16 queryPort = connectData["query_port"];
+	const String& ip = connect_data["ip"];
+	uint16 steamPort = connect_data["steam_port"];
+	uint16 gamePort = connect_data["game_port"];
+	uint16 queryPort = connect_data["query_port"];
 	// Convert the server mode back
 	EServerMode mode;
-	if(serverMode == 1){
+	if(server_mode == 1){
 		mode = eServerModeNoAuthentication;
 	}
-	else if(serverMode == 2){
+	else if(server_mode == 2){
 		mode = eServerModeAuthentication;
 	}
 	else{
@@ -184,7 +190,7 @@ bool SteamServer::serverInit(Dictionary connectData, int serverMode, const Strin
 		ip4_p[i] = ip4_p[3-i];
 		ip4_p[3-i] = temp;
 	}
-	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, versionString.utf8().get_data())){
+	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, version_string.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -213,13 +219,13 @@ Array SteamServer::getDLCDataByIndex(){
 	int count = SteamApps()->GetDLCCount();
 	Array dlcData;
 	for(int i = 0; i < count; i++){
-		AppId_t appID = 0;
+		AppId_t app_id = 0;
 		bool available = false;
 		char name[128];
-		bool success = SteamApps()->BGetDLCDataByIndex(i, &appID, &available, name, 128);
+		bool success = SteamApps()->BGetDLCDataByIndex(i, &app_id, &available, name, 128);
 		if(success){
 			Dictionary dlc;
-			dlc["id"] = appID;
+			dlc["id"] = app_id;
 			dlc["available"] = available;
 			dlc["name"] = name;
 			dlcData.append(dlc);
@@ -276,8 +282,8 @@ bool SteamServer::isSubscribedApp(int value){
 	return SteamApps()->BIsSubscribedApp((AppId_t)value);
 }
 
-//Checks if the active user is accessing the current appID via a temporary Family Shared license owned by another user.
-//If you need to determine the steamID of the permanent owner of the license, use getAppOwner.
+//Checks if the active user is accessing the current app_id via a temporary Family Shared license owned by another user.
+//If you need to determine the steam_id of the permanent owner of the license, use getAppOwner.
 bool SteamServer::isSubscribedFromFamilySharing(){
 	if(SteamApps() == NULL){
 		return false;
@@ -326,13 +332,13 @@ int SteamServer::getAppBuildId(){
 }
 
 // Gets the install folder for a specific AppID.
-String SteamServer::getAppInstallDir(AppId_t appID){
+String SteamServer::getAppInstallDir(AppId_t app_id){
 	if(SteamApps() == NULL){
 		return "";
 	}
 	const uint32 folderBuffer = 256;
 	char *buffer = new char[folderBuffer];
-	SteamApps()->GetAppInstallDir(appID, (char*)buffer, folderBuffer);
+	SteamApps()->GetAppInstallDir(app_id, (char*)buffer, folderBuffer);
 	String appDir = buffer;
 	delete[] buffer;
 	return appDir;
@@ -384,7 +390,7 @@ int SteamServer::getDLCCount(){
 }
 
 // Gets the download progress for optional DLC.
-Dictionary SteamServer::getDLCDownloadProgress(uint32_t appID){
+Dictionary SteamServer::getDLCDownloadProgress(uint32_t app_id){
 	Dictionary progress;
 	if(SteamApps() == NULL){
 		progress["ret"] = false;
@@ -393,7 +399,7 @@ Dictionary SteamServer::getDLCDownloadProgress(uint32_t appID){
 		uint64 downloaded = 0;
 		uint64 total = 0;
 		// Get the progress
-		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)appID, &downloaded, &total);
+		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)app_id, &downloaded, &total);
 		if(progress["ret"]){
 			progress["downloaded"] = uint64_t(downloaded);
 			progress["total"] = uint64_t(total);
@@ -418,13 +424,13 @@ void SteamServer::getFileDetails(const String& filename){
 }
 
 // Gets a list of all installed depots for a given App ID in mount order.
-Array SteamServer::getInstalledDepots(uint32_t appID){
+Array SteamServer::getInstalledDepots(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return Array();
 	}
 	Array installedDepots;
 	DepotId_t *depots = new DepotId_t[32];
-	int installed = SteamApps()->GetInstalledDepots((AppId_t)appID, depots, 32);
+	int installed = SteamApps()->GetInstalledDepots((AppId_t)app_id, depots, 32);
 	for(int i = 0; i < installed; i++){
 		installedDepots.append(depots[i]);
 	}
@@ -460,11 +466,11 @@ void SteamServer::installDLC(int value){
 }
 
 // Allows you to force verify game content on next launch.
-bool SteamServer::markContentCorrupt(bool missingFilesOnly){
+bool SteamServer::markContentCorrupt(bool missing_files_only){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->MarkContentCorrupt(missingFilesOnly);
+	return SteamApps()->MarkContentCorrupt(missing_files_only);
 }
 
 // Allows you to uninstall an optional DLC.
@@ -474,22 +480,38 @@ void SteamServer::uninstallDLC(int value){
 	}
 }
 
+// Request all proof of purchase keys for the calling appid and asociated DLC.
+// A series of AppProofOfPurchaseKeyResponse_t callbacks will be sent with appropriate appid values, ending with a final callback where the m_nAppId member is k_uAppIdInvalid (zero).
+void SteamServer::requestAllProofOfPurchaseKeys(){
+	if(SteamApps() != NULL){
+		SteamApps()->RequestAllProofOfPurchaseKeys();
+	}
+}
+
+// Request legacy cd-key for yourself or owned DLC. If you are interested in this data then make sure you provide us with a list of valid keys to be distributed to users when they purchase the game, before the game ships.
+// You'll receive an AppProofOfPurchaseKeyResponse_t callback when the key is available (which may be immediately).
+void SteamServer::requestAppProofOfPurchaseKey(AppId_t app_id){
+	if(SteamApps() != NULL){
+		SteamApps()->RequestAppProofOfPurchaseKey((AppId_t)app_id);
+	}
+}
+
 
 /////////////////////////////////////////////////
 ///// HTTP
 /////////////////////////////////////////////////
 //
 //Creates a cookie container to store cookies during the lifetime of the process. This API is just for during process lifetime, after steam restarts no cookies are persisted and you have no way to access the cookie container across repeat executions of your process.
-void SteamServer::createCookieContainer(bool allowResponsesToModify){
+void SteamServer::createCookieContainer(bool allow_responses_to_modify){
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->CreateCookieContainer(allowResponsesToModify);
+		SteamHTTP()->CreateCookieContainer(allow_responses_to_modify);
 	}
 }
 
 // Initializes a new HTTP request.
-void SteamServer::createHTTPRequest(int requestMethod, const String& absoluteURL){
+void SteamServer::createHTTPRequest(int request_method, const String& absolute_url){
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->CreateHTTPRequest((EHTTPMethod)requestMethod, absoluteURL.utf8().get_data());
+		SteamHTTP()->CreateHTTPRequest((EHTTPMethod)request_method, absolute_url.utf8().get_data());
 	}
 }
 
@@ -520,10 +542,10 @@ bool SteamServer::getHTTPRequestWasTimedOut(uint32 request){
 }
 
 // Gets the body data from an HTTP response.
-uint8 SteamServer::getHTTPResponseBodyData(uint32 request, uint32 bufferSize){
+uint8 SteamServer::getHTTPResponseBodyData(uint32 request, uint32 buffer_size){
 	uint8 bodyData = 0; 
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseBodyData(request, &bodyData, bufferSize);
+		SteamHTTP()->GetHTTPResponseBodyData(request, &bodyData, buffer_size);
 	}
 	return bodyData;
 }
@@ -538,28 +560,28 @@ uint32 SteamServer::getHTTPResponseBodySize(uint32 request){
 }
 
 // Checks if a header is present in an HTTP response and returns its size.
-uint32 SteamServer::getHTTPResponseHeaderSize(uint32 request, const String& headerName){
+uint32 SteamServer::getHTTPResponseHeaderSize(uint32 request, const String& header_name){
 	uint32 responseHeaderSize = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseHeaderSize(request, headerName.utf8().get_data(), &responseHeaderSize);
+		SteamHTTP()->GetHTTPResponseHeaderSize(request, header_name.utf8().get_data(), &responseHeaderSize);
 	}
 	return responseHeaderSize;
 }
 
 // Gets a header value from an HTTP response.
-uint8 SteamServer::getHTTPResponseHeaderValue(uint32 request, const String& headerName, uint32 bufferSize){
+uint8 SteamServer::getHTTPResponseHeaderValue(uint32 request, const String& header_name, uint32 buffer_size){
 	uint8 valueBuffer = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPResponseHeaderValue(request, headerName.utf8().get_data(), &valueBuffer, bufferSize);
+		SteamHTTP()->GetHTTPResponseHeaderValue(request, header_name.utf8().get_data(), &valueBuffer, buffer_size);
 	}
 	return valueBuffer;
 }
 
 // Gets the body data from a streaming HTTP response.
-uint8 SteamServer::getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 bufferSize){
+uint8 SteamServer::getHTTPStreamingResponseBodyData(uint32 request, uint32 offset, uint32 buffer_size){
 	uint8 bodyDataBuffer = 0;
 	if(SteamHTTP() != NULL){
-		SteamHTTP()->GetHTTPStreamingResponseBodyData(request, offset, &bodyDataBuffer, bufferSize);
+		SteamHTTP()->GetHTTPStreamingResponseBodyData(request, offset, &bodyDataBuffer, buffer_size);
 	}
 	return bodyDataBuffer;
 }
@@ -577,7 +599,7 @@ bool SteamServer::releaseCookieContainer(){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->ReleaseCookieContainer(cookieHandle);
+	return SteamHTTP()->ReleaseCookieContainer(cookie_handle);
 }
 
 // Releases an HTTP request handle, freeing the memory allocated within Steam.
@@ -611,7 +633,7 @@ bool SteamServer::setHTTPCookie(const String& host, const String& url, const Str
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetCookie(cookieHandle, host.utf8().get_data(), url.utf8().get_data(), cookie.utf8().get_data());
+	return SteamHTTP()->SetCookie(cookie_handle, host.utf8().get_data(), url.utf8().get_data(), cookie.utf8().get_data());
 }
 
 // Set an absolute timeout in milliseconds for the HTTP request. This is the total time timeout which is different than the network activity timeout which is set with SetHTTPRequestNetworkActivityTimeout which can bump everytime we get more data.
@@ -623,11 +645,11 @@ bool SteamServer::setHTTPRequestAbsoluteTimeoutMS(uint32 request, uint32 millise
 }
 
 // Set a context value for the request, which will be returned in the HTTPRequestCompleted_t callback after sending the request. This is just so the caller can easily keep track of which callbacks go with which request data. Must be called before sending the request.
-bool SteamServer::setHTTPRequestContextValue(uint32 request, uint64_t contextValue){
+bool SteamServer::setHTTPRequestContextValue(uint32 request, uint64_t context_value){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestContextValue(request, contextValue);
+	return SteamHTTP()->SetHTTPRequestContextValue(request, context_value);
 }
 
 // Associates a cookie container to use for an HTTP request.
@@ -635,7 +657,7 @@ bool SteamServer::setHTTPRequestCookieContainer(uint32 request){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestCookieContainer(request, cookieHandle);
+	return SteamHTTP()->SetHTTPRequestCookieContainer(request, cookie_handle);
 }
 
 // Set a GET or POST parameter value on the HTTP request. Must be called prior to sending the request.
@@ -647,44 +669,44 @@ bool SteamServer::setHTTPRequestGetOrPostParameter(uint32 request, const String&
 }
 
 // Set a request header value for the HTTP request. Must be called before sending the request.
-bool SteamServer::setHTTPRequestHeaderValue(uint32 request, const String& headerName, const String& headerValue){
+bool SteamServer::setHTTPRequestHeaderValue(uint32 request, const String& header_name, const String& header_value){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestHeaderValue(request, headerName.utf8().get_data(), headerValue.utf8().get_data());
+	return SteamHTTP()->SetHTTPRequestHeaderValue(request, header_name.utf8().get_data(), header_value.utf8().get_data());
 }
 
 // Set the timeout in seconds for the HTTP request.
-bool SteamServer::setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeoutSeconds){
+bool SteamServer::setHTTPRequestNetworkActivityTimeout(uint32 request, uint32 timeout_seconds){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestNetworkActivityTimeout(request, timeoutSeconds);
+	return SteamHTTP()->SetHTTPRequestNetworkActivityTimeout(request, timeout_seconds);
 }
 
 // Sets the body for an HTTP Post request.
-uint8 SteamServer::setHTTPRequestRawPostBody(uint32 request, const String& contentType, uint32 bodyLen){
+uint8 SteamServer::setHTTPRequestRawPostBody(uint32 request, const String& content_type, uint32 body_length){
 	uint8 body = 0;
 	if(SteamHTTP()){
-		SteamHTTP()->SetHTTPRequestRawPostBody(request, contentType.utf8().get_data(), &body, bodyLen);
+		SteamHTTP()->SetHTTPRequestRawPostBody(request, content_type.utf8().get_data(), &body, body_length);
 	}
 	return body;
 }
 
 // Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only works Windows and macOS.
-bool SteamServer::setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool requireVerifiedCertificate){
+bool SteamServer::setHTTPRequestRequiresVerifiedCertificate(uint32 request, bool require_verified_certificate){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestRequiresVerifiedCertificate(request, requireVerifiedCertificate);
+	return SteamHTTP()->SetHTTPRequestRequiresVerifiedCertificate(request, require_verified_certificate);
 }
 
 // Set additional user agent info for a request.
-bool SteamServer::setHTTPRequestUserAgentInfo(uint32 request, const String& userAgentInfo){
+bool SteamServer::setHTTPRequestUserAgentInfo(uint32 request, const String& user_agent_info){
 	if(SteamHTTP() == NULL){
 		return false;
 	}
-	return SteamHTTP()->SetHTTPRequestUserAgentInfo(request, userAgentInfo.utf8().get_data());
+	return SteamHTTP()->SetHTTPRequestUserAgentInfo(request, user_agent_info.utf8().get_data());
 }
 
 
@@ -700,37 +722,39 @@ bool SteamServer::addPromoItem(uint32 item){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->AddPromoItem(&inventoryHandle, item);
+	return SteamInventory()->AddPromoItem(&inventory_handle, item);
 }
 
 // Grant a specific one-time promotional items to the current user.
 bool SteamServer::addPromoItems(const PoolIntArray items){
-	if(SteamInventory() == NULL){
-		return false;
+	bool promo_items_added = false;
+	if(SteamInventory() != NULL){
+		int count = items.size();
+		SteamItemDef_t *new_items = new SteamItemDef_t[items.size()];
+		for(int i = 0; i < count; i++){
+			new_items[i] = items[i];
+		}
+		promo_items_added = SteamInventory()->AddPromoItems(&inventory_handle, new_items, count);
+		delete[] new_items;
 	}
-	int count = items.size();
-	SteamItemDef_t *newItems = new SteamItemDef_t[items.size()];
-	for(int i = 0; i < count; i++){
-		newItems[i] = items[i];
-	}
-	return SteamInventory()->AddPromoItems(&inventoryHandle, newItems, count);
+	return promo_items_added;
 }
 
 // Checks whether an inventory result handle belongs to the specified Steam ID.
-bool SteamServer::checkResultSteamID(uint64_t steamIDExpected){
+bool SteamServer::checkResultSteamID(uint64_t steam_id_expected){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	CSteamID steamID = (uint64)steamIDExpected;
-	return SteamInventory()->CheckResultSteamID((SteamInventoryResult_t)inventoryHandle, steamID);
+	CSteamID steam_id = (uint64)steam_id_expected;
+	return SteamInventory()->CheckResultSteamID((SteamInventoryResult_t)inventory_handle, steam_id);
 }
 
 // Consumes items from a user's inventory. If the quantity of the given item goes to zero, it is permanently removed.
-bool SteamServer::consumeItem(uint64_t itemConsume, uint32 quantity){
+bool SteamServer::consumeItem(uint64_t item_consume, uint32 quantity){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->ConsumeItem(&inventoryHandle, (SteamItemInstanceID_t)itemConsume, quantity);
+	return SteamInventory()->ConsumeItem(&inventory_handle, (SteamItemInstanceID_t)item_consume, quantity);
 }
 
 // Deserializes a result set and verifies the signature bytes.
@@ -739,22 +763,22 @@ bool SteamServer::deserializeResult(){
 		return false;
 	}
 	const int buffer = 1024;
-	return SteamInventory()->DeserializeResult(&inventoryHandle, &buffer, 1024, false);
+	return SteamInventory()->DeserializeResult(&inventory_handle, &buffer, 1024, false);
 }
 
 // Destroys a result handle and frees all associated memory.
 void SteamServer::destroyResult(){
 	if(SteamInventory() != NULL){
-		SteamInventory()->DestroyResult(inventoryHandle);
+		SteamInventory()->DestroyResult(inventory_handle);
 	}
 }
 
 // Grant one item in exchange for a set of other items.
-bool SteamServer::exchangeItems(const PoolIntArray outputItems, const uint32 outputQuantity, const uint64_t inputItems, const uint32 inputQuantity){
+bool SteamServer::exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->ExchangeItems(&inventoryHandle, outputItems.read().ptr(), &outputQuantity, 1, (const uint64 *)inputItems, &inputQuantity, 1);
+	return SteamInventory()->ExchangeItems(&inventory_handle, output_items.read().ptr(), &output_quantity, 1, (const uint64 *)input_items, &input_quantity, 1);
 }
 
 // Grants specific items to the current user, for developers only.
@@ -762,7 +786,7 @@ bool SteamServer::generateItems(const PoolIntArray items, const uint32 quantity)
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->GenerateItems(&inventoryHandle, items.read().ptr(), &quantity, items.size());
+	return SteamInventory()->GenerateItems(&inventory_handle, items.read().ptr(), &quantity, items.size());
 }
 
 // Start retrieving all items in the current users inventory.
@@ -770,7 +794,7 @@ bool SteamServer::getAllItems(){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->GetAllItems(&inventoryHandle);
+	return SteamInventory()->GetAllItems(&inventory_handle);
 }
 
 // Gets a string property from the specified item definition.  Gets a property value for a specific item definition.
@@ -778,20 +802,20 @@ String SteamServer::getItemDefinitionProperty(uint32 definition, const String& n
 	if(SteamInventory() == NULL){
 		return "";
 	}
-	uint32 bufferSize = 256;
-	char *value = new char[bufferSize];
-	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), value, &bufferSize);
+	uint32 buffer_size = 256;
+	char *value = new char[buffer_size];
+	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), value, &buffer_size);
 	String property = value;
 	delete[] value;
 	return property;
 }
 
 // Gets the state of a subset of the current user's inventory.
-bool SteamServer::getItemsByID(const uint64_t idArray, uint32 count){
+bool SteamServer::getItemsByID(const uint64_t id_array, uint32 count){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->GetItemsByID(&inventoryHandle, (const uint64 *)idArray, count);
+	return SteamInventory()->GetItemsByID(&inventory_handle, (const uint64 *)id_array, count);
 }
 
 // After a successful call to RequestPrices, you can call this method to get the pricing for a specific item definition.
@@ -815,18 +839,22 @@ Array SteamServer::getItemsWithPrices(uint32 length){
 	// Create a temporary array
 	SteamItemDef_t *ids = new SteamItemDef_t[length];
 	uint64 *prices = new uint64[length];
-	uint64 *basePrices = new uint64[length];
-	if(SteamInventory()->GetItemsWithPrices(ids, prices, basePrices, length)){
+	uint64 *base_prices = new uint64[length];
+	if(SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, length)){
 		for(uint32 i = 0; i < length; i++){
 			Dictionary priceGroup;
 			priceGroup["item"] = ids[i];
 			priceGroup["price"] = (uint64_t)prices[i];
-			priceGroup["base_prices"] = (uint64_t)basePrices[i];
+			priceGroup["base_prices"] = (uint64_t)base_prices[i];
 			priceArray.append(priceGroup);
 		}
 	}
+	delete[] ids;
+	delete[] prices;
+	delete[] base_prices;
 	return priceArray;
 }
+
 // After a successful call to RequestPrices, this will return the number of item definitions with valid pricing.
 uint32 SteamServer::getNumItemsWithPrices(){
 	if(SteamInventory() == NULL){
@@ -839,9 +867,9 @@ uint32 SteamServer::getNumItemsWithPrices(){
 String SteamServer::getResultItemProperty(uint32 index, const String& name){
 	if(SteamInventory() != NULL){
 		// Set up variables to fill
-		uint32 bufferSize = 256;
-		char *value = new char[bufferSize];
-		SteamInventory()->GetResultItemProperty(inventoryHandle, index, name.utf8().get_data(), (char*)value, &bufferSize);
+		uint32 buffer_size = 256;
+		char *value = new char[buffer_size];
+		SteamInventory()->GetResultItemProperty(inventory_handle, index, name.utf8().get_data(), (char*)value, &buffer_size);
 		String property = value;
 		delete[] value;
 		return property;
@@ -857,10 +885,10 @@ Array SteamServer::getResultItems(){
 	// Set up return array
 	Array items;
 	uint32 size = 0;
-	if(SteamInventory()->GetResultItems(inventoryHandle, NULL, &size)){
+	if(SteamInventory()->GetResultItems(inventory_handle, NULL, &size)){
 		itemDetails.resize(size);
 		std::vector<SteamItemDetails_t> itemArray;
-		if(SteamInventory()->GetResultItems(inventoryHandle, itemArray.data(), &size)){
+		if(SteamInventory()->GetResultItems(inventory_handle, itemArray.data(), &size)){
 			for(uint32 i = 0; i < size; i++){
 				items.push_back((uint64_t)itemArray[i].m_itemId);
 			}
@@ -874,7 +902,7 @@ String SteamServer::getResultStatus(){
 	if(SteamInventory() == NULL){
 		return "";
 	}
-	int result = SteamInventory()->GetResultStatus(inventoryHandle);
+	int result = SteamInventory()->GetResultStatus(inventory_handle);
 	// Parse result
 	if(result == k_EResultPending){
 		return "Still in progress.";
@@ -904,7 +932,7 @@ uint32 SteamServer::getResultTimestamp(){
 	if(SteamInventory() == NULL){
 		return 0;
 	}
-	return SteamInventory()->GetResultTimestamp(inventoryHandle);
+	return SteamInventory()->GetResultTimestamp(inventory_handle);
 }
 
 // Grant all potential one-time promotional items to the current user.
@@ -912,7 +940,7 @@ bool SteamServer::grantPromoItems(){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->GrantPromoItems(&inventoryHandle);
+	return SteamInventory()->GrantPromoItems(&inventory_handle);
 }
 
 // Triggers an asynchronous load and refresh of item definitions.
@@ -924,53 +952,54 @@ bool SteamServer::loadItemDefinitions(){
 }
 
 // Request the list of "eligible" promo items that can be manually granted to the given user.
-void SteamServer::requestEligiblePromoItemDefinitionsIDs(uint64_t steamID){
+void SteamServer::requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id){
 	if(SteamInventory() != NULL){
-		CSteamID userID = (uint64)steamID;
-		SteamAPICall_t apiCall = SteamInventory()->RequestEligiblePromoItemDefinitionsIDs(userID);
-		callResultEligiblePromoItemDefIDs.Set(apiCall, this, &SteamServer::_inventory_eligible_promo_item);
+		CSteamID userID = (uint64)steam_id;
+		SteamAPICall_t api_call = SteamInventory()->RequestEligiblePromoItemDefinitionsIDs(userID);
+		callResultEligiblePromoItemDefIDs.Set(api_call, this, &SteamServer::_inventory_eligible_promo_item);
 	}
 }
 // Request prices for all item definitions that can be purchased in the user's local currency. A SteamInventoryRequestPricesResult_t call result will be returned with the user's local currency code. After that, you can call GetNumItemsWithPrices and GetItemsWithPrices to get prices for all the known item definitions, or GetItemPrice for a specific item definition.
 void SteamServer::requestPrices(){
 	if(SteamInventory() != NULL){
-		SteamAPICall_t apiCall = SteamInventory()->RequestPrices();
-		callResultRequestPrices.Set(apiCall, this, &SteamServer::_inventory_request_prices_result);
+		SteamAPICall_t api_call = SteamInventory()->RequestPrices();
+		callResultRequestPrices.Set(api_call, this, &SteamServer::_inventory_request_prices_result);
 	}
 }
 
 // Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.
 bool SteamServer::serializeResult(){
-	if(SteamInventory() == NULL){
-		return false;
+	bool result_serialized = false;
+	if(SteamInventory() != NULL){
+		// Set up return array
+		static uint32 buffer_size = 0;
+		if(SteamInventory()->SerializeResult(inventory_handle, NULL, &buffer_size)){
+			char *buffer = new char[buffer_size];
+			result_serialized = SteamInventory()->SerializeResult(inventory_handle, &buffer, &buffer_size);
+			delete[] buffer;
+		}
 	}
-	// Set up return array
-	static uint32 bufferSize = 0;
-	if(SteamInventory()->SerializeResult(inventoryHandle, NULL, &bufferSize)){
-		char *buffer = new char[bufferSize];
-		return SteamInventory()->SerializeResult(inventoryHandle, &buffer, &bufferSize);
-	}
-	return false;
+	return result_serialized;
 }
 
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 void SteamServer::startPurchase(const PoolIntArray items, const uint32 quantity){
 	if(SteamInventory() != NULL){
-		SteamAPICall_t apiCall = SteamInventory()->StartPurchase(items.read().ptr(), &quantity, items.size());
-		callResultStartPurchase.Set(apiCall, this, &SteamServer::_inventory_start_purchase_result);
+		SteamAPICall_t api_call = SteamInventory()->StartPurchase(items.read().ptr(), &quantity, items.size());
+		callResultStartPurchase.Set(api_call, this, &SteamServer::_inventory_start_purchase_result);
 	}
 }
 
 // Transfer items between stacks within a user's inventory.
-bool SteamServer::transferItemQuantity(uint64_t itemID, uint32 quantity, uint64_t itemDestination, bool split){
+bool SteamServer::transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split){
 	if(SteamInventory() == NULL){
 		return false;
 	}
 	if(split){
-		return SteamInventory()->TransferItemQuantity(&inventoryHandle, (SteamItemInstanceID_t)itemID, quantity, k_SteamItemInstanceIDInvalid); 
+		return SteamInventory()->TransferItemQuantity(&inventory_handle, (SteamItemInstanceID_t)item_id, quantity, k_SteamItemInstanceIDInvalid); 
 	}
 	else{
-		return SteamInventory()->TransferItemQuantity(&inventoryHandle, (SteamItemInstanceID_t)itemID, quantity, (SteamItemInstanceID_t)itemDestination);
+		return SteamInventory()->TransferItemQuantity(&inventory_handle, (SteamItemInstanceID_t)item_id, quantity, (SteamItemInstanceID_t)item_destination);
 	}
 }
 
@@ -979,13 +1008,13 @@ bool SteamServer::triggerItemDrop(uint32 definition){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->TriggerItemDrop(&inventoryHandle, (SteamItemDef_t)definition);
+	return SteamInventory()->TriggerItemDrop(&inventory_handle, (SteamItemDef_t)definition);
 }
 
 // Starts a transaction request to update dynamic properties on items for the current user. This call is rate-limited by user, so property modifications should be batched as much as possible (e.g. at the end of a map or game session). After calling SetProperty or RemoveProperty for all the items that you want to modify, you will need to call SubmitUpdateProperties to send the request to the Steam servers. A SteamInventoryResultReady_t callback will be fired with the results of the operation.
 void SteamServer::startUpdateProperties(){
 	if(SteamInventory() != NULL){
-		inventoryUpdateHandle = SteamInventory()->StartUpdateProperties();
+		inventory_update_handle = SteamInventory()->StartUpdateProperties();
 	}
 }
 
@@ -994,47 +1023,47 @@ bool SteamServer::submitUpdateProperties(){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->SubmitUpdateProperties(inventoryUpdateHandle, &inventoryHandle);
+	return SteamInventory()->SubmitUpdateProperties(inventory_update_handle, &inventory_handle);
 }
 
 // Removes a dynamic property for the given item.
-bool SteamServer::removeProperty(uint64_t itemID, const String& name){
+bool SteamServer::removeProperty(uint64_t item_id, const String& name){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->RemoveProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data());
+	return SteamInventory()->RemoveProperty(inventory_update_handle, (SteamItemInstanceID_t)item_id, name.utf8().get_data());
 }
 
 // Sets a dynamic property for the given item. Supported value types are strings.
-bool SteamServer::setPropertyString(uint64_t itemID, const String& name, const String& value){
+bool SteamServer::setPropertyString(uint64_t item_id, const String& name, const String& value){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), value.utf8().get_data());
+	return SteamInventory()->SetProperty(inventory_update_handle, (SteamItemInstanceID_t)item_id, name.utf8().get_data(), value.utf8().get_data());
 }
 
 // Sets a dynamic property for the given item. Supported value types are boolean.
-bool SteamServer::setPropertyBool(uint64_t itemID, const String& name, bool value){
+bool SteamServer::setPropertyBool(uint64_t item_id, const String& name, bool value){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), value);
+	return SteamInventory()->SetProperty(inventory_update_handle, (SteamItemInstanceID_t)item_id, name.utf8().get_data(), value);
 }
 
 // Sets a dynamic property for the given item. Supported value types are 64 bit integers.
-bool SteamServer::setPropertyInt(uint64_t itemID, const String& name, uint64_t value){
+bool SteamServer::setPropertyInt(uint64_t item_id, const String& name, uint64_t value){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), (int64)value);
+	return SteamInventory()->SetProperty(inventory_update_handle, (SteamItemInstanceID_t)item_id, name.utf8().get_data(), (int64)value);
 }
 
 // Sets a dynamic property for the given item. Supported value types are 32 bit floats.
-bool SteamServer::setPropertyFloat(uint64_t itemID, const String& name, float value){
+bool SteamServer::setPropertyFloat(uint64_t item_id, const String& name, float value){
 	if(SteamInventory() == NULL){
 		return false;
 	}
-	return SteamInventory()->SetProperty(inventoryUpdateHandle, (SteamItemInstanceID_t)itemID, name.utf8().get_data(), value);
+	return SteamInventory()->SetProperty(inventory_update_handle, (SteamItemInstanceID_t)item_id, name.utf8().get_data(), value);
 }
 
 
@@ -1043,12 +1072,12 @@ bool SteamServer::setPropertyFloat(uint64_t itemID, const String& name, float va
 /////////////////////////////////////////////////
 //
 // This allows the game to specify accept an incoming packet.
-bool SteamServer::acceptP2PSessionWithUser(uint64_t steamIDRemote) {
+bool SteamServer::acceptP2PSessionWithUser(uint64_t steam_id_remote) {
 	if (SteamNetworking() == NULL) {
 		return false;
 	}
-	CSteamID steamID = createSteamID(steamIDRemote);
-	return SteamNetworking()->AcceptP2PSessionWithUser(steamID);
+	CSteamID steam_id = createSteamID(steam_id_remote);
+	return SteamNetworking()->AcceptP2PSessionWithUser(steam_id);
 }
 
 // Allow or disallow P2P connections to fall back to being relayed through the Steam servers if a direct connection or NAT-traversal cannot be established.
@@ -1060,32 +1089,32 @@ bool SteamServer::allowP2PPacketRelay(bool allow) {
 }
 
 // Closes a P2P channel when you're done talking to a user on the specific channel.
-bool SteamServer::closeP2PChannelWithUser(uint64_t steamIDRemote, int channel) {
+bool SteamServer::closeP2PChannelWithUser(uint64_t steam_id_remote, int channel) {
 	if (SteamNetworking() == NULL) {
 		return false;
 	}
-	CSteamID steamID = createSteamID(steamIDRemote);
-	return SteamNetworking()->CloseP2PChannelWithUser(steamID, channel);
+	CSteamID steam_id = createSteamID(steam_id_remote);
+	return SteamNetworking()->CloseP2PChannelWithUser(steam_id, channel);
 }
 
 // This should be called when you're done communicating with a user, as this will free up all of the resources allocated for the connection under-the-hood.
-bool SteamServer::closeP2PSessionWithUser(uint64_t steamIDRemote) {
+bool SteamServer::closeP2PSessionWithUser(uint64_t steam_id_remote) {
 	if (SteamNetworking() == NULL) {
 		return false;
 	}
-	CSteamID steamID = createSteamID(steamIDRemote);
-	return SteamNetworking()->CloseP2PSessionWithUser(steamID);
+	CSteamID steam_id = createSteamID(steam_id_remote);
+	return SteamNetworking()->CloseP2PSessionWithUser(steam_id);
 }
 
 // Fills out a P2PSessionState_t structure with details about the connection like whether or not there is an active connection.
-Dictionary SteamServer::getP2PSessionState(uint64_t steamIDRemote) {
+Dictionary SteamServer::getP2PSessionState(uint64_t steam_id_remote) {
 	Dictionary result;
 	if (SteamNetworking() == NULL) {
 		return result;
 	}
-	CSteamID steamID = createSteamID(steamIDRemote);
+	CSteamID steam_id = createSteamID(steam_id_remote);
 	P2PSessionState_t p2pSessionState;
-	bool success = SteamNetworking()->GetP2PSessionState(steamID, &p2pSessionState);
+	bool success = SteamNetworking()->GetP2PSessionState(steam_id, &p2pSessionState);
 	if (!success) {
 		return result;
 	}
@@ -1117,13 +1146,13 @@ Dictionary SteamServer::readP2PPacket(uint32_t packet, int channel) {
 	}
 	PoolByteArray data;
 	data.resize(packet);
-	CSteamID steamID;
+	CSteamID steam_id;
 	uint32_t bytesRead = 0;
-	if (SteamNetworking()->ReadP2PPacket(data.write().ptr(), packet, &bytesRead, &steamID, channel)) {
+	if (SteamNetworking()->ReadP2PPacket(data.write().ptr(), packet, &bytesRead, &steam_id, channel)) {
 		data.resize(bytesRead);
-		uint64_t steamIDRemote = steamID.ConvertToUint64();
+		uint64_t steam_id_remote = steam_id.ConvertToUint64();
 		result["data"] = data;
-		result["steamIDRemote"] = steamIDRemote;
+		result["steam_id_remote"] = steam_id_remote;
 	}
 	else {
 		data.resize(0);
@@ -1132,12 +1161,12 @@ Dictionary SteamServer::readP2PPacket(uint32_t packet, int channel) {
 }
 
 // Sends a P2P packet to the specified user.
-bool SteamServer::sendP2PPacket(uint64_t steamIDRemote, PoolByteArray data, int sendType, int channel) {
+bool SteamServer::sendP2PPacket(uint64_t steam_id_remote, PoolByteArray data, int send_type, int channel) {
 	if (SteamNetworking() == NULL) {
 		return false;
 	}
-	CSteamID steamID = createSteamID(steamIDRemote);
-	return SteamNetworking()->SendP2PPacket(steamID, data.read().ptr(), data.size(), EP2PSend(sendType), channel);
+	CSteamID steam_id = createSteamID(steam_id_remote);
+	return SteamNetworking()->SendP2PPacket(steam_id, data.read().ptr(), data.size(), EP2PSend(send_type), channel);
 }
 
 
@@ -1148,21 +1177,21 @@ bool SteamServer::sendP2PPacket(uint64_t steamIDRemote, PoolByteArray data, int 
 // NOTE: The following, if set, must be set before calling LogOn; they may not be changed after.
 //
 // This is called by SteamGameServer_Init and will usually not need to be called directly.
-bool SteamServer::initGameServer(Dictionary connectData, int serverMode, const String& versionString){
+bool SteamServer::initGameServer(Dictionary connect_data, int server_mode, const String& version_string){
 	if(SteamGameServer() == NULL){
 		return false;
 	}
 	// Pass the dictionary data to solitary variables
-	const String& ip = connectData["ip"];
-	uint16 steamPort = connectData["steam_port"];
-	uint16 gamePort = connectData["game_port"];
-	uint16 queryPort = connectData["query_port"];
+	const String& ip = connect_data["ip"];
+	uint16 steamPort = connect_data["steam_port"];
+	uint16 gamePort = connect_data["game_port"];
+	uint16 queryPort = connect_data["query_port"];
 	// Convert the server mode back
 	EServerMode mode;
-	if(serverMode == 1){
+	if(server_mode == 1){
 		mode = eServerModeNoAuthentication;
 	}
-	else if(serverMode == 2){
+	else if(server_mode == 2){
 		mode = eServerModeAuthentication;
 	}
 	else{
@@ -1188,7 +1217,7 @@ bool SteamServer::initGameServer(Dictionary connectData, int serverMode, const S
 		ip4_p[i] = ip4_p[3-i];
 		ip4_p[3-i] = temp;
 	}
-	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, versionString.utf8().get_data())){
+	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, version_string.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -1211,11 +1240,11 @@ void SteamServer::setGameDescription(const String& description){
 }
 
 // If your game is a mod, pass the string that identifies it. Default is empty meaning the app is the original game.
-void SteamServer::setModDir(const String& modDir){
+void SteamServer::setModDir(const String& mod_directory){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->SetModDir(modDir.utf8().get_data());
+	SteamGameServer()->SetModDir(mod_directory.utf8().get_data());
 }
 
 // Is this a dedicated server? Default is false.
@@ -1386,61 +1415,61 @@ void SteamServer::setRegion(const String& region){
 // Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).
 Dictionary SteamServer::getAuthSessionTicket(){
 	// Create the dictionary to use
-	Dictionary authTicket;
+	Dictionary auth_ticket;
 	if(SteamGameServer() != NULL){
-		uint32_t ticketSize = 1024;
+		uint32_t ticket_size = 1024;
 		PoolByteArray buffer;
-		buffer.resize(ticketSize);
-		uint32_t id = SteamGameServer()->GetAuthSessionTicket(buffer.write().ptr(), ticketSize, &ticketSize);
+		buffer.resize(ticket_size);
+		uint32_t id = SteamGameServer()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
 		// Add this data to the dictionary
-		authTicket["id"] = id;
-		authTicket["buffer"] = buffer;
-		authTicket["size"] = ticketSize;
+		auth_ticket["id"] = id;
+		auth_ticket["buffer"] = buffer;
+		auth_ticket["size"] = ticket_size;
 	}
-	return authTicket;
+	return auth_ticket;
 }
 
 // Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.
-int SteamServer::beginAuthSession(PoolByteArray ticket, int ticketSize, uint64_t steamID){
+int SteamServer::beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id){
 	if(SteamGameServer() == NULL){
 		return -1;
 	}
-	CSteamID authSteamID = createSteamID(steamID);
-	return SteamGameServer()->BeginAuthSession(ticket.read().ptr(), ticketSize, authSteamID);
+	CSteamID authSteamID = createSteamID(steam_id);
+	return SteamGameServer()->BeginAuthSession(ticket.read().ptr(), ticket_size, authSteamID);
 }
 
 // Stop tracking started by beginAuthSession; called when no longer playing game with this entity;
-void SteamServer::endAuthSession(uint64_t steamID){
+void SteamServer::endAuthSession(uint64_t steam_id){
 	if(SteamGameServer() != NULL){
-		CSteamID authSteamID = createSteamID(steamID);
+		CSteamID authSteamID = createSteamID(steam_id);
 		SteamGameServer()->EndAuthSession(authSteamID);
 	}
 }
 
 // Cancel auth ticket from getAuthSessionTicket; called when no longer playing game with the entity you gave the ticket to.
-void SteamServer::cancelAuthTicket(uint32_t authTicket){
+void SteamServer::cancelAuthTicket(uint32_t auth_ticket){
 	if(SteamGameServer() != NULL){
-		SteamGameServer()->CancelAuthTicket(authTicket);
+		SteamGameServer()->CancelAuthTicket(auth_ticket);
 	}
 }
 
 // After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC
-int SteamServer::userHasLicenceForApp(uint64_t steamID, AppId_t appID){
+int SteamServer::userHasLicenceForApp(uint64_t steam_id, AppId_t app_id){
 	if(SteamGameServer() == NULL){
 		return 0;
 	}
-	CSteamID userID = (uint64)steamID;
-	return SteamGameServer()->UserHasLicenseForApp(userID, appID);
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServer()->UserHasLicenseForApp(userID, app_id);
 }
 
 // Ask if user is in specified group; results returned by GSUserGroupStatus_t.
-bool SteamServer::requestUserGroupStatus(uint64_t steamID, int groupID){
+bool SteamServer::requestUserGroupStatus(uint64_t steam_id, int group_id){
 	if(SteamGameServer() == NULL){
 		return false;
 	}
-	CSteamID userID = (uint64)steamID;
-	CSteamID clanID = (uint64)groupID;
-	return SteamGameServer()->RequestUserGroupStatus(userID, clanID);
+	CSteamID userID = (uint64)steam_id;
+	CSteamID clan_id = (uint64)group_id;
+	return SteamGameServer()->RequestUserGroupStatus(userID, clan_id);
 }
 
 // NOTE: These are in GameSocketShare mode, where instead of ISteamGameServer creating sockets to talk to master server, it lets the game use its socket to forward messages back and forth.
@@ -1502,44 +1531,28 @@ Dictionary SteamServer::getNextOutgoingPacket(){
 // NOTE: These are heartbeat/advertisement functions.
 //
 // Call this as often as you like to tell the master server updater whether or not you want it to be active (default: off).
-void SteamServer::enableHeartbeats(bool active){
+void SteamServer::setAdvertiseServerActive(bool active){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	SteamGameServer()->EnableHeartbeats(active);
-}
-
-// You usually don't need to modify this. Pass -1 to use the default value for iHeartbeatInterval. Some mods change this.
-void SteamServer::setHeartbeatInterval(int interval){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetHeartbeatInterval(interval);
-}
-
-// Force a heartbeat to Steam at next opportunity.
-void SteamServer::forceHeartbeat(){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->ForceHeartbeat();
+	SteamGameServer()->SetAdvertiseServerActive(active);
 }
 
 // Associate this game server with this clan for the purposes of computing player compatibility.
-void SteamServer::associateWithClan(uint64_t clanID){
+void SteamServer::associateWithClan(uint64_t clan_id){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	CSteamID groupID = (uint64)clanID;
-	SteamGameServer()->AssociateWithClan(groupID);
+	CSteamID group_id = (uint64)clan_id;
+	SteamGameServer()->AssociateWithClan(group_id);
 }
 
 // Ask if any of the current players dont want to play with this new player - or vice versa.
-void SteamServer::computeNewPlayerCompatibility(uint64_t steamID){
+void SteamServer::computeNewPlayerCompatibility(uint64_t steam_id){
 	if(SteamGameServer() == NULL){
 		return;
 	}
-	CSteamID userID = (uint64)steamID;
+	CSteamID userID = (uint64)steam_id;
 	SteamGameServer()->ComputeNewPlayerCompatibility(userID);
 }
 
@@ -1549,36 +1562,36 @@ void SteamServer::computeNewPlayerCompatibility(uint64_t steamID){
 /////////////////////////////////////////////////
 //
 // Resets the unlock status of an achievement for the specified user.
-bool SteamServer::clearUserAchievement(uint64_t steamID, const String& name){
+bool SteamServer::clearUserAchievement(uint64_t steam_id, const String& name){
 	if(SteamGameServerStats() == NULL){
 		return false;
 	}
-	CSteamID userID = (uint64)steamID;
+	CSteamID userID = (uint64)steam_id;
 	return SteamGameServerStats()->ClearUserAchievement(userID, name.utf8().get_data());
 }
 
 // Gets the unlock status of the Achievement.
-Dictionary SteamServer::getUserAchievement(uint64_t steamID, const String& name){
+Dictionary SteamServer::getUserAchievement(uint64_t steam_id, const String& name){
 	// Set dictionary to fill in
 	Dictionary achievement;
 	if(SteamGameServerStats() == NULL){
 		return achievement;
 	}
-	CSteamID userID = (uint64)steamID;
+	CSteamID userID = (uint64)steam_id;
 	bool unlocked = false;
 	bool result = SteamGameServerStats()->GetUserAchievement(userID, name.utf8().get_data(), &unlocked);
 	// Populate the dictionary
 	achievement["result"] = result;
-	achievement["user"] = steamID;
+	achievement["user"] = steam_id;
 	achievement["name"] = name;
 	achievement["unlocked"] = unlocked;
 	return achievement;
 }
 
 // Gets the current value of the a stat for the specified user.
-uint32_t SteamServer::getUserStatInt(uint64_t steamID, const String& name){
+uint32_t SteamServer::getUserStatInt(uint64_t steam_id, const String& name){
 	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steamID;
+		CSteamID userID = (uint64)steam_id;
 		int32 value = 0;
 		if(SteamGameServerStats()->GetUserStat(userID, name.utf8().get_data(), &value)){
 			return value;
@@ -1588,9 +1601,9 @@ uint32_t SteamServer::getUserStatInt(uint64_t steamID, const String& name){
 }
 
 // Gets the current value of the a stat for the specified user.
-float SteamServer::getUserStatFloat(uint64_t steamID, const String& name){
+float SteamServer::getUserStatFloat(uint64_t steam_id, const String& name){
 	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steamID;
+		CSteamID userID = (uint64)steam_id;
 		float value = 0.0;
 		if(SteamGameServerStats()->GetUserStat(userID, name.utf8().get_data(), &value)){
 			return value;
@@ -1600,56 +1613,56 @@ float SteamServer::getUserStatFloat(uint64_t steamID, const String& name){
 }
 
 // Asynchronously downloads stats and achievements for the specified user from the server.
-void SteamServer::requestUserStats(uint64_t steamID){
+void SteamServer::requestUserStats(uint64_t steam_id){
 	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steamID;
-		SteamAPICall_t apiCall = SteamGameServerStats()->RequestUserStats(userID);
-		callResultStatReceived.Set(apiCall, this, &SteamServer::_stat_received);
+		CSteamID userID = (uint64)steam_id;
+		SteamAPICall_t api_call = SteamGameServerStats()->RequestUserStats(userID);
+		callResultStatReceived.Set(api_call, this, &SteamServer::_stat_received);
 	}
 }
 
 // Unlocks an achievement for the specified user.
-bool SteamServer::setUserAchievement(uint64_t steamID, const String& name){
+bool SteamServer::setUserAchievement(uint64_t steam_id, const String& name){
 	if(SteamGameServerStats() == NULL){
 		return false;
 	}
-	CSteamID userID = (uint64)steamID;
+	CSteamID userID = (uint64)steam_id;
 	return SteamGameServerStats()->SetUserAchievement(userID, name.utf8().get_data());
 }
 
 // Sets / updates the value of a given stat for the specified user.
-bool SteamServer::setUserStatInt(uint64_t steamID, const String& name, int32 stat){
+bool SteamServer::setUserStatInt(uint64_t steam_id, const String& name, int32 stat){
 	if(SteamGameServerStats() == NULL){
 		return false;
 	}
-	CSteamID userID = (uint64)steamID;
+	CSteamID userID = (uint64)steam_id;
 	return SteamGameServerStats()->SetUserStat(userID, name.utf8().get_data(), stat);
 }
 
 // Sets / updates the value of a given stat for the specified user.
-bool SteamServer::setUserStatFloat(uint64_t steamID, const String& name, float stat){
+bool SteamServer::setUserStatFloat(uint64_t steam_id, const String& name, float stat){
 	if(SteamGameServerStats() == NULL){
 		return false;
 	}
-	CSteamID userID = (uint64)steamID;
+	CSteamID userID = (uint64)steam_id;
 	return SteamGameServerStats()->SetUserStat(userID, name.utf8().get_data(), stat);
 }
 
 // Send the changed stats and achievements data to the server for permanent storage for the specified user.
-void SteamServer::storeUserStats(uint64_t steamID){
+void SteamServer::storeUserStats(uint64_t steam_id){
 	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steamID;
+		CSteamID userID = (uint64)steam_id;
 		SteamGameServerStats()->StoreUserStats(userID);
 	}
 }
 
 // Updates an AVGRATE stat with new values for the specified user.
-bool SteamServer::updateUserAvgRateStat(uint64_t steamID, const String& name, float thisSession, double sessionLength){
+bool SteamServer::updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length){
 	if(SteamGameServerStats() == NULL){
 		return false;
 	}
-	CSteamID userID = (uint64)steamID;
-	return SteamGameServerStats()->UpdateUserAvgRateStat(userID, name.utf8().get_data(), thisSession, sessionLength);
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServerStats()->UpdateUserAvgRateStat(userID, name.utf8().get_data(), this_session, session_length);
 }
 
 
@@ -1659,51 +1672,51 @@ bool SteamServer::updateUserAvgRateStat(uint64_t steamID, const String& name, fl
 //
 // Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
 // This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.
-void SteamServer::addAppDependency(uint64_t publishedFileID, uint32_t appID){
+void SteamServer::addAppDependency(uint64_t published_file_id, uint32_t app_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		AppId_t app = (uint32_t)appID;
-		SteamAPICall_t apiCall = SteamUGC()->AddAppDependency(fileID, app);
-		callResultAddAppDependency.Set(apiCall, this, &SteamServer::_add_app_dependency_result);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		AppId_t app = (uint32_t)app_id;
+		SteamAPICall_t api_call = SteamUGC()->AddAppDependency(fileID, app);
+		callResultAddAppDependency.Set(api_call, this, &SteamServer::_add_app_dependency_result);
 	}
 }
 
 // Adds a workshop item as a dependency to the specified item. If the nParentPublishedFileID item is of type k_EWorkshopFileTypeCollection, than the nChildPublishedFileID is simply added to that collection.
 // Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the m_unNumChildren member variable of the SteamUGCDetails_t struct and GetQueryUGCChildren.
-void SteamServer::addDependency(uint64_t publishedFileID, uint64_t childPublishedFileID){
+void SteamServer::addDependency(uint64_t published_file_id, uint64_t child_published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t parent = (uint64_t)publishedFileID;
-		PublishedFileId_t child = (uint64_t)childPublishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->AddDependency(parent, child);
-		callResultAddUGCDependency.Set(apiCall, this, &SteamServer::_add_ugc_dependency_result);
+		PublishedFileId_t parent = (uint64_t)published_file_id;
+		PublishedFileId_t child = (uint64_t)child_published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->AddDependency(parent, child);
+		callResultAddUGCDependency.Set(api_call, this, &SteamServer::_add_ugc_dependency_result);
 	}
 }
 
 // Adds a excluded tag to a pending UGC Query. This will only return UGC without the specified tag.
-bool SteamServer::addExcludedTag(uint64_t queryHandle, const String& tagName){
+bool SteamServer::addExcludedTag(uint64_t query_handle, const String& tag_name){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->AddExcludedTag(handle, tagName.utf8().get_data());
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->AddExcludedTag(handle, tag_name.utf8().get_data());
 }
 
 // Adds a key-value tag pair to an item. Keys can map to multiple different values (1-to-many relationship).
-bool SteamServer::addItemKeyValueTag(uint64_t updateHandle, const String& key, const String& value){
+bool SteamServer::addItemKeyValueTag(uint64_t update_handle, const String& key, const String& value){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
+	UGCUpdateHandle_t handle = (uint64_t)update_handle;
 	return SteamUGC()->AddItemKeyValueTag(handle, key.utf8().get_data(), value.utf8().get_data());
 }
 
 // Adds an additional preview file for the item.
-bool SteamServer::addItemPreviewFile(uint64_t queryHandle, const String& previewFile, int type){
+bool SteamServer::addItemPreviewFile(uint64_t query_handle, const String& preview_file, int type){
 	if(SteamUGC() == NULL){
 		return false;
 	}
 	EItemPreviewType previewType;
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	if(type == 0){
 		previewType = k_EItemPreviewType_Image;
 	}
@@ -1722,339 +1735,344 @@ bool SteamServer::addItemPreviewFile(uint64_t queryHandle, const String& preview
 	else{
 		previewType = k_EItemPreviewType_ReservedMax;
 	}
-	return SteamUGC()->AddItemPreviewFile(handle, previewFile.utf8().get_data(), previewType);
+	return SteamUGC()->AddItemPreviewFile(handle, preview_file.utf8().get_data(), previewType);
 }
 
 // Adds an additional video preview from YouTube for the item.
-bool SteamServer::addItemPreviewVideo(uint64_t queryHandle, const String& videoID){
+bool SteamServer::addItemPreviewVideo(uint64_t query_handle, const String& video_id){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->AddItemPreviewVideo(handle, videoID.utf8().get_data());
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->AddItemPreviewVideo(handle, video_id.utf8().get_data());
 }
 
 // Adds a workshop item to the users favorites list.
-void SteamServer::addItemToFavorite(uint32_t appID, uint64_t publishedFileID){
+void SteamServer::addItemToFavorite(uint32_t app_id, uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		AppId_t app = (uint32_t)appID;
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->AddItemToFavorites(app, fileID);
-		callResultFavoriteItemListChanged.Set(apiCall, this, &SteamServer::_user_favorite_items_list_changed);
+		AppId_t app = (uint32_t)app_id;
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->AddItemToFavorites(app, fileID);
+		callResultFavoriteItemListChanged.Set(api_call, this, &SteamServer::_user_favorite_items_list_changed);
 	}
 }
 
 // Adds a required key-value tag to a pending UGC Query. This will only return workshop items that have a key = pKey and a value = pValue.
-bool SteamServer::addRequiredKeyValueTag(uint64_t queryHandle, const String& key, const String& value){
+bool SteamServer::addRequiredKeyValueTag(uint64_t query_handle, const String& key, const String& value){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->AddRequiredKeyValueTag(handle, key.utf8().get_data(), value.utf8().get_data());
 }
 
 // Adds a required tag to a pending UGC Query. This will only return UGC with the specified tag.
-bool SteamServer::addRequiredTag(uint64_t queryHandle, const String& tagName){
+bool SteamServer::addRequiredTag(uint64_t query_handle, const String& tag_name){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->AddRequiredTag(handle, tagName.utf8().get_data());
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->AddRequiredTag(handle, tag_name.utf8().get_data());
 }
 
 // Adds the requirement that the returned items from the pending UGC Query have at least one of the tags in the given set (logical "or"). For each tag group that is added, at least one tag from each group is required to be on the matching items.
-bool SteamServer::addRequiredTagGroup(uint64_t queryHandle, Array tagArray){
-	if(SteamUGC() == NULL){
-		return false;
+bool SteamServer::addRequiredTagGroup(uint64_t query_handle, Array tag_array){
+	bool added_tag_group = false;
+	if(SteamUGC() != NULL){
+		UGCQueryHandle_t handle = uint64(query_handle);
+		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
+		tags->m_ppStrings = new const char*[tag_array.size()];
+		uint32 strCount = tag_array.size();
+		for (uint32 i=0; i < strCount; i++) {
+			String str = (String)tag_array[i];
+			tags->m_ppStrings[i] = str.utf8().get_data();
+		}
+		tags->m_nNumStrings = tag_array.size();
+		added_tag_group = SteamUGC()->AddRequiredTagGroup(handle, tags);
+		delete[] tags;
 	}
-	UGCQueryHandle_t handle = uint64(queryHandle);
-	SteamParamStringArray_t *pTags = new SteamParamStringArray_t();
-	pTags->m_ppStrings = new const char*[tagArray.size()];
-	uint32 strCount = tagArray.size();
-	for (uint32 i=0; i < strCount; i++) {
-		String str = (String)tagArray[i];
-		pTags->m_ppStrings[i] = str.utf8().get_data();
-	}
-	pTags->m_nNumStrings = tagArray.size();
-	return SteamUGC()->AddRequiredTagGroup(handle, pTags);
+	return added_tag_group;
 }
 
 // Lets game servers set a specific workshop folder before issuing any UGC commands.
-bool SteamServer::initWorkshopForGameServer(uint32_t workshopDepotID){
-	if(SteamUGC() == NULL){
-		return false;
+bool SteamServer::initWorkshopForGameServer(uint32_t workshop_depot_id){
+	bool initialized_workshop = false;
+	if(SteamUGC() != NULL){
+		DepotId_t workshop = (uint32_t)workshop_depot_id;
+		const char *folder = new char[256];
+		initialized_workshop = SteamUGC()->BInitWorkshopForGameServer(workshop, (char*)folder);
+		delete[] folder;
 	}
-	DepotId_t workshop = (uint32_t)workshopDepotID;
-	const char *folder = new char[256];
-	return SteamUGC()->BInitWorkshopForGameServer(workshop, (char*)folder);
+	return initialized_workshop;
 }
 
 // Creates a new workshop item with no content attached yet.
-void SteamServer::createItem(AppId_t appID, int fileType){
+void SteamServer::createItem(AppId_t app_id, int file_type){
 	if(SteamUGC() != NULL){
-		SteamAPICall_t apiCall = SteamUGC()->CreateItem(appID, (EWorkshopFileType)fileType);
-		callResultItemCreate.Set(apiCall, this, &SteamServer::_item_created);
+		SteamAPICall_t api_call = SteamUGC()->CreateItem(app_id, (EWorkshopFileType)file_type);
+		callResultItemCreate.Set(api_call, this, &SteamServer::_item_created);
 	}
 }
 
 // Query for all matching UGC. You can use this to list all of the available UGC for your app.
-uint64_t SteamServer::createQueryAllUGCRequest(int queryType, int matchingType, uint32_t creatorID, uint32_t consumerID, uint32 page){
+uint64_t SteamServer::createQueryAllUGCRequest(int query_type, int matching_type, uint32_t creator_id, uint32_t consume_id, uint32 page){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
 	EUGCQuery query;
-	if(queryType == 0){
+	if(query_type == 0){
 		query = k_EUGCQuery_RankedByVote;
 	}
-	else if(queryType == 1){
+	else if(query_type == 1){
 		query = k_EUGCQuery_RankedByPublicationDate;
 	}
-	else if(queryType == 2){
+	else if(query_type == 2){
 		query = k_EUGCQuery_AcceptedForGameRankedByAcceptanceDate;
 	}
-	else if(queryType == 3){
+	else if(query_type == 3){
 		query = k_EUGCQuery_RankedByTrend;
 	}
-	else if(queryType == 4){
+	else if(query_type == 4){
 		query = k_EUGCQuery_FavoritedByFriendsRankedByPublicationDate;
 	}
-	else if(queryType == 5){
+	else if(query_type == 5){
 		query = k_EUGCQuery_CreatedByFriendsRankedByPublicationDate;
 	}
-	else if(queryType == 6){
+	else if(query_type == 6){
 		query = k_EUGCQuery_RankedByNumTimesReported;
 	}
-	else if(queryType == 7){
+	else if(query_type == 7){
 		query = k_EUGCQuery_CreatedByFollowedUsersRankedByPublicationDate;
 	}
-	else if(queryType == 8){
+	else if(query_type == 8){
 		query = k_EUGCQuery_NotYetRated;
 	}
-	else if(queryType == 9){
+	else if(query_type == 9){
 		query = k_EUGCQuery_RankedByTotalVotesAsc;
 	}
-	else if(queryType == 10){
+	else if(query_type == 10){
 		query = k_EUGCQuery_RankedByVotesUp;
 	}
-	else if(queryType == 11){
+	else if(query_type == 11){
 		query = k_EUGCQuery_RankedByTextSearch;
 	}
-	else if(queryType == 12){
+	else if(query_type == 12){
 		query = k_EUGCQuery_RankedByTotalUniqueSubscriptions;
 	}
-	else if(queryType == 13){
+	else if(query_type == 13){
 		query = k_EUGCQuery_RankedByPlaytimeTrend;
 	}
-	else if(queryType == 14){
+	else if(query_type == 14){
 		query = k_EUGCQuery_RankedByTotalPlaytime;
 	}
-	else if(queryType == 15){
+	else if(query_type == 15){
 		query = k_EUGCQuery_RankedByAveragePlaytimeTrend;
 	}
-	else if(queryType == 16){
+	else if(query_type == 16){
 		query = k_EUGCQuery_RankedByLifetimeAveragePlaytime;
 	}
-	else if(queryType == 17){
+	else if(query_type == 17){
 		query = k_EUGCQuery_RankedByPlaytimeSessionsTrend;
 	}
 	else{
 		query = k_EUGCQuery_RankedByLifetimePlaytimeSessions;
 	}
 	EUGCMatchingUGCType match;
-	if(matchingType == 0){
+	if(matching_type == 0){
 		match = k_EUGCMatchingUGCType_All;
 	}
-	else if(matchingType == 1){
+	else if(matching_type == 1){
 		match = k_EUGCMatchingUGCType_Items_Mtx;
 	}
-	else if(matchingType == 2){
+	else if(matching_type == 2){
 		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
 	}
-	else if(matchingType == 3){
+	else if(matching_type == 3){
 		match = k_EUGCMatchingUGCType_Collections;
 	}
-	else if(matchingType == 4){
+	else if(matching_type == 4){
 		match = k_EUGCMatchingUGCType_Artwork;
 	}
-	else if(matchingType == 5){
+	else if(matching_type == 5){
 		match = k_EUGCMatchingUGCType_Videos;
 	}
-	else if(matchingType == 6){
+	else if(matching_type == 6){
 		match = k_EUGCMatchingUGCType_Screenshots;
 	}
-	else if(matchingType == 7){
+	else if(matching_type == 7){
 		match = k_EUGCMatchingUGCType_AllGuides;
 	}
-	else if(matchingType == 8){
+	else if(matching_type == 8){
 		match = k_EUGCMatchingUGCType_WebGuides;
 	}
-	else if(matchingType == 9){
+	else if(matching_type == 9){
 		match = k_EUGCMatchingUGCType_IntegratedGuides;
 	}
-	else if(matchingType == 10){
+	else if(matching_type == 10){
 		match = k_EUGCMatchingUGCType_UsableInGame;
 	}
-	else if(matchingType == 11){
+	else if(matching_type == 11){
 		match = k_EUGCMatchingUGCType_ControllerBindings;
 	}
 	else{
 		match = k_EUGCMatchingUGCType_GameManagedItems;
 	}
-	AppId_t creator = (uint32_t)creatorID;
-	AppId_t consumer = (uint32_t)consumerID;
+	AppId_t creator = (uint32_t)creator_id;
+	AppId_t consumer = (uint32_t)consume_id;
 	UGCQueryHandle_t handle = SteamUGC()->CreateQueryAllUGCRequest(query, match, creator, consumer, page);
 	return (uint64_t)handle;
 }
 
 // Query for the details of specific workshop items.
-uint64_t SteamServer::createQueryUGCDetailsRequest(Array publishedFileIDs){
-	if(SteamUGC() == NULL){
-		return 0;
+uint64_t SteamServer::createQueryUGCDetailsRequest(Array published_file_ids){
+	uint64_t this_handle = 0;
+	if(SteamUGC() != NULL){
+		uint32 fileCount = published_file_ids.size();
+		if(fileCount != 0){
+			PublishedFileId_t *file_ids = new PublishedFileId_t[fileCount];
+			for(uint32 i = 0; i < fileCount; i++){
+				file_ids[i] = (uint64_t)published_file_ids[i];
+			}
+			UGCQueryHandle_t handle = SteamUGC()->CreateQueryUGCDetailsRequest(file_ids, fileCount);
+			delete[] file_ids;
+			this_handle = (uint64_t)handle;
+		}
 	}
-	uint32 fileCount = publishedFileIDs.size();
-	if(fileCount == 0){
-		return 0;
-	}
-	PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
-	for(uint32 i = 0; i < fileCount; i++){
-		fileIDs[i] = (uint64_t)publishedFileIDs[i];
-	}
-	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUGCDetailsRequest(fileIDs, fileCount);
-	return (uint64_t)handle;
+	return this_handle;
 }
 
 // Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.
-uint64_t SteamServer::createQueryUserUGCRequest(int accountID, int listType, int matchingUGCType, int sortOrder, int creatorID, int consumerID, uint32 page){
+uint64_t SteamServer::createQueryUserUGCRequest(int account_id, int list_type, int matching_ugc_type, int sort_order, int creator_id, int consume_id, uint32 page){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
 	// Get tue universe ID from the Steam ID
-	CSteamID userID = (uint64)accountID;
+	CSteamID userID = (uint64)account_id;
 	AccountID_t account = userID.GetAccountID();
 	EUserUGCList list;
-	if(listType == 0){
+	if(list_type == 0){
 		list = k_EUserUGCList_Published;
 	}
-	else if(listType == 1){
+	else if(list_type == 1){
 		list = k_EUserUGCList_VotedOn;
 	}
-	else if(listType == 2){
+	else if(list_type == 2){
 		list = k_EUserUGCList_VotedUp;
 	}
-	else if(listType == 3){
+	else if(list_type == 3){
 		list = k_EUserUGCList_VotedDown;
 	}
-	else if(listType == 4){
+	else if(list_type == 4){
 		list = k_EUserUGCList_WillVoteLater;
 	}
-	else if(listType == 5){
+	else if(list_type == 5){
 		list = k_EUserUGCList_Favorited;
 	}
-	else if(listType == 6){
+	else if(list_type == 6){
 		list = k_EUserUGCList_Subscribed;
 	}
-	else if(listType == 7){
+	else if(list_type == 7){
 		list = k_EUserUGCList_UsedOrPlayed;
 	}
 	else{
 		list = k_EUserUGCList_Followed;
 	}
 	EUGCMatchingUGCType match;
-	if(matchingUGCType == 0){
+	if(matching_ugc_type == 0){
 		match = k_EUGCMatchingUGCType_All;
 	}
-	else if(matchingUGCType == 1){
+	else if(matching_ugc_type == 1){
 		match = k_EUGCMatchingUGCType_Items_Mtx;
 	}
-	else if(matchingUGCType == 2){
+	else if(matching_ugc_type == 2){
 		match = k_EUGCMatchingUGCType_Items_ReadyToUse;
 	}
-	else if(matchingUGCType == 3){
+	else if(matching_ugc_type == 3){
 		match = k_EUGCMatchingUGCType_Collections;
 	}
-	else if(matchingUGCType == 4){
+	else if(matching_ugc_type == 4){
 		match = k_EUGCMatchingUGCType_Artwork;
 	}
-	else if(matchingUGCType == 5){
+	else if(matching_ugc_type == 5){
 		match = k_EUGCMatchingUGCType_Videos;
 	}
-	else if(matchingUGCType == 6){
+	else if(matching_ugc_type == 6){
 		match = k_EUGCMatchingUGCType_Screenshots;
 	}
-	else if(matchingUGCType == 7){
+	else if(matching_ugc_type == 7){
 		match = k_EUGCMatchingUGCType_AllGuides;
 	}
-	else if(matchingUGCType == 8){
+	else if(matching_ugc_type == 8){
 		match = k_EUGCMatchingUGCType_WebGuides;
 	}
-	else if(matchingUGCType == 9){
+	else if(matching_ugc_type == 9){
 		match = k_EUGCMatchingUGCType_IntegratedGuides;
 	}
-	else if(matchingUGCType == 10){
+	else if(matching_ugc_type == 10){
 		match = k_EUGCMatchingUGCType_UsableInGame;
 	}
-	else if(matchingUGCType == 11){
+	else if(matching_ugc_type == 11){
 		match = k_EUGCMatchingUGCType_ControllerBindings;
 	}
 	else{
 		match = k_EUGCMatchingUGCType_GameManagedItems;
 	}
 	EUserUGCListSortOrder sort;
-	if(sortOrder == 0){
+	if(sort_order == 0){
 		sort = k_EUserUGCListSortOrder_CreationOrderDesc;
 	}
-	else if(sortOrder == 1){
+	else if(sort_order == 1){
 		sort = k_EUserUGCListSortOrder_CreationOrderAsc;
 	}
-	else if(sortOrder == 2){
+	else if(sort_order == 2){
 		sort = k_EUserUGCListSortOrder_TitleAsc;
 	}
-	else if(sortOrder == 3){
+	else if(sort_order == 3){
 		sort = k_EUserUGCListSortOrder_LastUpdatedDesc;
 	}
-	else if(sortOrder == 4){
+	else if(sort_order == 4){
 		sort = k_EUserUGCListSortOrder_SubscriptionDateDesc;
 	}
-	else if(sortOrder == 5){
+	else if(sort_order == 5){
 		sort = k_EUserUGCListSortOrder_VoteScoreDesc;
 	}
 	else{
 		sort = k_EUserUGCListSortOrder_ForModeration;
 	}
-	AppId_t creator = (int)creatorID;
-	AppId_t consumer = (int)consumerID;
+	AppId_t creator = (int)creator_id;
+	AppId_t consumer = (int)consume_id;
 	UGCQueryHandle_t handle = SteamUGC()->CreateQueryUserUGCRequest(account, list, match, sort, creator, consumer, page);
 	return (uint64_t)handle;
 }
 
 // Deletes the item without prompting the user.
-void SteamServer::deleteItem(uint64_t publishedFileID){
+void SteamServer::deleteItem(uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->DeleteItem(fileID);
-		callResultDeleteItem.Set(apiCall, this, &SteamServer::_item_deleted);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->DeleteItem(fileID);
+		callResultDeleteItem.Set(api_call, this, &SteamServer::_item_deleted);
 	}
 }
 
 // Download new or update already installed item. If returns true, wait for DownloadItemResult_t. If item is already installed, then files on disk should not be used until callback received.
 // If item is not subscribed to, it will be cached for some time. If bHighPriority is set, any other item download will be suspended and this item downloaded ASAP.
-bool SteamServer::downloadItem(uint64_t publishedFileID, bool highPriority){
+bool SteamServer::downloadItem(uint64_t published_file_id, bool high_priority){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	PublishedFileId_t fileID = (uint64_t)publishedFileID;
-	return SteamUGC()->DownloadItem(fileID, highPriority);
+	PublishedFileId_t fileID = (uint64_t)published_file_id;
+	return SteamUGC()->DownloadItem(fileID, high_priority);
 }
 
 // Get info about a pending download of a workshop item that has k_EItemStateNeedsUpdate set.
-Dictionary SteamServer::getItemDownloadInfo(uint64_t publishedFileID){
+Dictionary SteamServer::getItemDownloadInfo(uint64_t published_file_id){
 	Dictionary info;
 	if(SteamUGC() == NULL){
 		return info;
 	}
 	uint64 downloaded = 0;
 	uint64 total = 0;
-	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)publishedFileID, &downloaded, &total);
+	info["ret"] = SteamUGC()->GetItemDownloadInfo((PublishedFileId_t)published_file_id, &downloaded, &total);
 	if(info["ret"]){
 		info["downloaded"] = uint64_t(downloaded);
 		info["total"] = uint64_t(total);
@@ -2063,13 +2081,13 @@ Dictionary SteamServer::getItemDownloadInfo(uint64_t publishedFileID){
 }
 
 // Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled set.
-Dictionary SteamServer::getItemInstallInfo(uint64_t publishedFileID){
+Dictionary SteamServer::getItemInstallInfo(uint64_t published_file_id){
 	Dictionary info;
 	if(SteamUGC() == NULL){
 		info["ret"] = false;
 		return info;
 	}
-	PublishedFileId_t fileID = (uint64_t)publishedFileID;
+	PublishedFileId_t fileID = (uint64_t)published_file_id;
 	uint64 sizeOnDisk;
 	char folder[1024] = { 0 };
 	uint32 timeStamp;
@@ -2084,21 +2102,21 @@ Dictionary SteamServer::getItemInstallInfo(uint64_t publishedFileID){
 }
 
 // Gets the current state of a workshop item on this client.
-int SteamServer::getItemState(uint64_t publishedFileID){
+int SteamServer::getItemState(uint64_t published_file_id){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
-	PublishedFileId_t fileID = (uint64_t)publishedFileID;
+	PublishedFileId_t fileID = (uint64_t)published_file_id;
 	return SteamUGC()->GetItemState(fileID);
 }
 
 // Gets the progress of an item update.
-Dictionary SteamServer::getItemUpdateProgress(uint64_t updateHandle){
+Dictionary SteamServer::getItemUpdateProgress(uint64_t update_handle){
 	Dictionary updateProgress;
 	if(SteamUGC() == NULL){
 		return updateProgress;
 	}
-	UGCUpdateHandle_t handle = (uint64_t)updateHandle;
+	UGCUpdateHandle_t handle = (uint64_t)update_handle;
 	uint64 processed = 0;
 	uint64 total = 0;
 	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress(handle, &processed, &total);
@@ -2117,35 +2135,37 @@ uint32 SteamServer::getNumSubscribedItems(){
 }
 
 // Retrieve the details of an additional preview associated with an individual workshop item after receiving a querying UGC call result.
-Dictionary SteamServer::getQueryUGCAdditionalPreview(uint64_t queryHandle, uint32 index, uint32 previewIndex){
+Dictionary SteamServer::getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 index, uint32 preview_index){
 	Dictionary preview;
 	if(SteamUGC() == NULL){
 		return preview;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	char *urlOrVideoID = new char[256];
-	char *originalFilename = new char[256];
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	char *url_or_video_id = new char[256];
+	char *original_filename = new char[256];
 	EItemPreviewType previewType;
-	bool success = SteamUGC()->GetQueryUGCAdditionalPreview(handle, index, previewIndex, (char*)urlOrVideoID, 256, (char*)originalFilename, 256, &previewType);
+	bool success = SteamUGC()->GetQueryUGCAdditionalPreview(handle, index, preview_index, (char*)url_or_video_id, 256, (char*)original_filename, 256, &previewType);
 	if(success){
 		preview["success"] = success;
 		preview["handle"] = (uint64_t)handle;
 		preview["index"] = index;
-		preview["preview"] = previewIndex;
-		preview["urlOrVideo"] = urlOrVideoID;
-		preview["filename"] = originalFilename;
+		preview["preview"] = preview_index;
+		preview["urlOrVideo"] = url_or_video_id;
+		preview["filename"] = original_filename;
 		preview["type"] = previewType;
 	}
+	delete[] url_or_video_id;
+	delete[] original_filename;
 	return preview;
 }
 
 // Retrieve the ids of any child items of an individual workshop item after receiving a querying UGC call result. These items can either be a part of a collection or some other dependency (see AddDependency).
-Dictionary SteamServer::getQueryUGCChildren(uint64_t queryHandle, uint32 index){
+Dictionary SteamServer::getQueryUGCChildren(uint64_t query_handle, uint32 index){
 	Dictionary children;
 	if(SteamUGC() == NULL){
 		return children;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	PublishedFileId_t *child = new PublishedFileId_t[100];
 	bool success = SteamUGC()->GetQueryUGCChildren(handle, index, (PublishedFileId_t*)child, 100);
 	if(success){
@@ -2154,100 +2174,103 @@ Dictionary SteamServer::getQueryUGCChildren(uint64_t queryHandle, uint32 index){
 		children["index"] = index;
 		children["children"] = child;
 	}
+	delete[] child;
 	return children;
 }
 
 // Retrieve the details of a key-value tag associated with an individual workshop item after receiving a querying UGC call result.
-Dictionary SteamServer::getQueryUGCKeyValueTag(uint64_t queryHandle, uint32 index, uint32 keyValueTagIndex){
+Dictionary SteamServer::getQueryUGCKeyValueTag(uint64_t query_handle, uint32 index, uint32 key_value_tag_index){
 	Dictionary tag;
 	if(SteamUGC() == NULL){
 		return tag;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	char *key = new char[256];
 	char *value = new char[256];
-	bool success = SteamUGC()->GetQueryUGCKeyValueTag(handle, index, keyValueTagIndex, (char*)key, 256, (char*)value, 256);
+	bool success = SteamUGC()->GetQueryUGCKeyValueTag(handle, index, key_value_tag_index, (char*)key, 256, (char*)value, 256);
 	if(success){
 		tag["success"] = success;
 		tag["handle"] = (uint64_t)handle;
 		tag["index"] = index;
-		tag["tag"] = keyValueTagIndex;
+		tag["tag"] = key_value_tag_index;
 		tag["key"] = key;
 		tag["value"] = value;
 	}
+	delete[] key;
+	delete[] value;
 	return tag;
 }
 
 // Retrieve the developer set metadata of an individual workshop item after receiving a querying UGC call result.
-String SteamServer::getQueryUGCMetadata(uint64_t queryHandle, uint32 index){
-	if(SteamUGC() == NULL){
-		return "";
+String SteamServer::getQueryUGCMetadata(uint64_t query_handle, uint32 index){
+	String query_ugc_metadata = "";
+	if(SteamUGC() != NULL){
+		UGCQueryHandle_t handle = (uint64_t)query_handle;
+		char *metadata = new char[5000];
+		bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)metadata, 5000);
+		if(success){
+			query_ugc_metadata = metadata;
+		}
+		delete[] metadata;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	char *metadata = new char[256];
-	bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)metadata, 256);
-	if(success){
-		String ugcMetadata = metadata;
-		return ugcMetadata;
-	}
-	return "";
+	return query_ugc_metadata;
 }
 
 // Retrieve the number of additional previews of an individual workshop item after receiving a querying UGC call result.
-uint32 SteamServer::getQueryUGCNumAdditionalPreviews(uint64_t queryHandle, uint32 index){
+uint32 SteamServer::getQueryUGCNumAdditionalPreviews(uint64_t query_handle, uint32 index){
 	if(SteamUser() == NULL){
 		return 0;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->GetQueryUGCNumAdditionalPreviews(handle, index);
 }
 
 // Retrieve the number of key-value tags of an individual workshop item after receiving a querying UGC call result.
-uint32 SteamServer::getQueryUGCNumKeyValueTags(uint64_t queryHandle, uint32 index){
+uint32 SteamServer::getQueryUGCNumKeyValueTags(uint64_t query_handle, uint32 index){
 	if(SteamUser() == NULL){
 		return 0;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->GetQueryUGCNumKeyValueTags(handle, index);
 }
 
 // Retrieve the number of tags for an individual workshop item after receiving a querying UGC call result. You should call this in a loop to get the details of all the workshop items returned.
-uint32 SteamServer::getQueryUGCNumTags(uint64_t queryHandle, uint32 index){
+uint32 SteamServer::getQueryUGCNumTags(uint64_t query_handle, uint32 index){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->GetQueryUGCNumTags(handle, index);
 }
 
 // Retrieve the URL to the preview image of an individual workshop item after receiving a querying UGC call result.
-String SteamServer::getQueryUGCPreviewURL(uint64_t queryHandle, uint32 index){
-	if(SteamUGC() == NULL){
-		return "";
+String SteamServer::getQueryUGCPreviewURL(uint64_t query_handle, uint32 index){
+	String query_ugc_preview_url = "";
+	if(SteamUGC() != NULL){
+		UGCQueryHandle_t handle = (uint64_t)query_handle;
+		char *url = new char[256];
+		bool success = SteamUGC()->GetQueryUGCPreviewURL(handle, index, (char*)url, 256);
+		if(success){
+			query_ugc_preview_url = url;
+		}
+		delete[] url;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	char *url = new char[256];
-	bool success = SteamUGC()->GetQueryUGCPreviewURL(handle, index, (char*)url, 256);
-	if(success){
-		String previewURL = url;
-		return previewURL;
-	}
-	return "";
+	return query_ugc_preview_url;
 }
 
 // Retrieve the details of an individual workshop item after receiving a querying UGC call result.
-Dictionary SteamServer::getQueryUGCResult(uint64_t queryHandle, uint32 index){
+Dictionary SteamServer::getQueryUGCResult(uint64_t query_handle, uint32 index){
 	Dictionary ugcResult;
 	if(SteamUGC() == NULL){
 		return ugcResult;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	SteamUGCDetails_t pDetails;
 	bool success = SteamUGC()->GetQueryUGCResult(handle, index, &pDetails);
 	if(success){
 		ugcResult["result"] = (uint64_t)pDetails.m_eResult;
 		ugcResult["fileID"] = (uint64_t)pDetails.m_nPublishedFileId;
-		ugcResult["fileType"] = (uint64_t)pDetails.m_eFileType;
+		ugcResult["file_type"] = (uint64_t)pDetails.m_eFileType;
 		ugcResult["creatorAppID"] = (uint64_t)pDetails.m_nCreatorAppID;
 		ugcResult["consumerAppID"] = (uint64_t)pDetails.m_nConsumerAppID;
 		ugcResult["title"] = String::utf8(pDetails.m_rgchTitle);
@@ -2275,47 +2298,47 @@ Dictionary SteamServer::getQueryUGCResult(uint64_t queryHandle, uint32 index){
 	return ugcResult;
 }
 // Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
-Dictionary SteamServer::getQueryUGCStatistic(uint64_t queryHandle, uint32 index, int statType){
+Dictionary SteamServer::getQueryUGCStatistic(uint64_t query_handle, uint32 index, int stat_type){
 	Dictionary ugcStat;
 	if(SteamUGC() == NULL){
 		return ugcStat;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	EItemStatistic type;
-		if(statType == 0){
+		if(stat_type == 0){
 		type = k_EItemStatistic_NumSubscriptions;
 	}
-	else if(statType == 1){
+	else if(stat_type == 1){
 		type = k_EItemStatistic_NumFavorites;
 	}
-	else if(statType == 2){
+	else if(stat_type == 2){
 		type = k_EItemStatistic_NumFollowers;
 	}
-	else if(statType == 3){
+	else if(stat_type == 3){
 		type = k_EItemStatistic_NumUniqueSubscriptions;
 	}
-	else if(statType == 4){
+	else if(stat_type == 4){
 		type = k_EItemStatistic_NumUniqueFavorites;
 	}
-	else if(statType == 5){
+	else if(stat_type == 5){
 		type = k_EItemStatistic_NumUniqueFollowers;
 	}
-	else if(statType == 6){
+	else if(stat_type == 6){
 		type = k_EItemStatistic_NumUniqueWebsiteViews;
 	}
-	else if(statType == 7){
+	else if(stat_type == 7){
 		type = k_EItemStatistic_ReportScore;
 	}
-	else if(statType == 8){
+	else if(stat_type == 8){
 		type = k_EItemStatistic_NumSecondsPlayed;
 	}
-	else if(statType == 9){
+	else if(stat_type == 9){
 		type = k_EItemStatistic_NumPlaytimeSessions;
 	}
-	else if(statType == 10){
+	else if(stat_type == 10){
 		type = k_EItemStatistic_NumComments;
 	}
-	else if(statType == 11){
+	else if(stat_type == 11){
 		type = k_EItemStatistic_NumSecondsPlayedDuringTimePeriod;
 	}
 	else{
@@ -2335,27 +2358,29 @@ Dictionary SteamServer::getQueryUGCStatistic(uint64_t queryHandle, uint32 index,
 
 // Retrieve the "nth" tag associated with an individual workshop item after receiving a querying UGC call result.
 // You should call this in a loop to get the details of all the workshop items returned.
-String SteamServer::getQueryUGCTag(uint64_t queryHandle, uint32 index, uint32 tagIndex){
+String SteamServer::getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index){
 	// Set a default tag to return
 	char *tag = new char[64];
 	if(SteamUGC() != NULL){
-		UGCQueryHandle_t handle = (uint64_t)queryHandle;
-		SteamUGC()->GetQueryUGCTag(handle, index, tagIndex, tag, 64);
+		UGCQueryHandle_t handle = (uint64_t)query_handle;
+		SteamUGC()->GetQueryUGCTag(handle, index, tag_index, tag, 64);
 	}
-	String tagName = tag;
-	return tagName;
+	String tag_name = tag;
+	delete[] tag;
+	return tag_name;
 }
 
 // Retrieve the "nth" display string (usually localized) for a tag, which is associated with an individual workshop item after receiving a querying UGC call result.
 // You should call this in a loop to get the details of all the workshop items returned.
-String SteamServer::getQueryUGCTagDisplayName(uint64_t queryHandle, uint32 index, uint32 tagIndex){
+String SteamServer::getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index){
 	// Set a default tag name to return
 	char *tag = new char[256];
 	if(SteamUGC() != NULL){
-		UGCQueryHandle_t handle = (uint64_t)queryHandle;
-		SteamUGC()->GetQueryUGCTagDisplayName(handle, index, tagIndex, tag, 256);
+		UGCQueryHandle_t handle = (uint64_t)query_handle;
+		SteamUGC()->GetQueryUGCTagDisplayName(handle, index, tag_index, tag, 256);
 	}
 	String tagDisplay = tag;
+	delete[] tag;
 	return tagDisplay;
 }
 
@@ -2376,109 +2401,109 @@ Array SteamServer::getSubscribedItems(){
 }
 
 // Gets the users vote status on a workshop item.
-void SteamServer::getUserItemVote(uint64_t publishedFileID){
+void SteamServer::getUserItemVote(uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->GetUserItemVote(fileID);
-		callResultGetUserItemVote.Set(apiCall, this, &SteamServer::_get_item_vote_result);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->GetUserItemVote(fileID);
+		callResultGetUserItemVote.Set(api_call, this, &SteamServer::_get_item_vote_result);
 	}
 }
 
 // Releases a UGC query handle when you are done with it to free up memory.
-bool SteamServer::releaseQueryUGCRequest(uint64_t queryHandle){
+bool SteamServer::releaseQueryUGCRequest(uint64_t query_handle){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->ReleaseQueryUGCRequest(handle);
 }
 
 // Removes the dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies.
-void SteamServer::removeAppDependency(uint64_t publishedFileID, uint32_t appID){
+void SteamServer::removeAppDependency(uint64_t published_file_id, uint32_t app_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		AppId_t app = (uint32_t)appID;
-		SteamAPICall_t apiCall = SteamUGC()->RemoveAppDependency(fileID, app);
-		callResultRemoveAppDependency.Set(apiCall, this, &SteamServer::_remove_app_dependency_result);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		AppId_t app = (uint32_t)app_id;
+		SteamAPICall_t api_call = SteamUGC()->RemoveAppDependency(fileID, app);
+		callResultRemoveAppDependency.Set(api_call, this, &SteamServer::_remove_app_dependency_result);
 	}
 }
 
 // Removes a workshop item as a dependency from the specified item.
-void SteamServer::removeDependency(uint64_t publishedFileID, uint64_t childPublishedFileID){
+void SteamServer::removeDependency(uint64_t published_file_id, uint64_t child_published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		PublishedFileId_t childID = (uint64_t)childPublishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->RemoveDependency(fileID, childID);
-		callResultRemoveUGCDependency.Set(apiCall, this, &SteamServer::_remove_ugc_dependency_result);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		PublishedFileId_t childID = (uint64_t)child_published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->RemoveDependency(fileID, childID);
+		callResultRemoveUGCDependency.Set(api_call, this, &SteamServer::_remove_ugc_dependency_result);
 	}
 }
 
 // Removes a workshop item from the users favorites list.
-void SteamServer::removeItemFromFavorites(uint32_t appID, uint64_t publishedFileID){
+void SteamServer::removeItemFromFavorites(uint32_t app_id, uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		AppId_t app = (uint32_t)appID;
-		SteamAPICall_t apiCall = SteamUGC()->RemoveItemFromFavorites(app, fileID);
-		callResultFavoriteItemListChanged.Set(apiCall, this, &SteamServer::_user_favorite_items_list_changed);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		AppId_t app = (uint32_t)app_id;
+		SteamAPICall_t api_call = SteamUGC()->RemoveItemFromFavorites(app, fileID);
+		callResultFavoriteItemListChanged.Set(api_call, this, &SteamServer::_user_favorite_items_list_changed);
 	}
 }
 
 // Removes an existing key value tag from an item.
-bool SteamServer::removeItemKeyValueTags(uint64_t updateHandle, const String& key){
+bool SteamServer::removeItemKeyValueTags(uint64_t update_handle, const String& key){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->RemoveItemKeyValueTags(handle, key.utf8().get_data());
 }
 
 // Removes an existing preview from an item.
-bool SteamServer::removeItemPreview(uint64_t updateHandle, uint32 index){
+bool SteamServer::removeItemPreview(uint64_t update_handle, uint32 index){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->RemoveItemPreview(handle, index);
 }
 
 // Send a UGC query to Steam.
-void SteamServer::sendQueryUGCRequest(uint64_t updateHandle){
+void SteamServer::sendQueryUGCRequest(uint64_t update_handle){
 	if(SteamUGC() != NULL){
-		UGCUpdateHandle_t handle = uint64(updateHandle);
-		SteamAPICall_t apiCall = SteamUGC()->SendQueryUGCRequest(handle);
-		callResultUGCQueryCompleted.Set(apiCall, this, &SteamServer::_ugc_query_completed);
+		UGCUpdateHandle_t handle = uint64(update_handle);
+		SteamAPICall_t api_call = SteamUGC()->SendQueryUGCRequest(handle);
+		callResultUGCQueryCompleted.Set(api_call, this, &SteamServer::_ugc_query_completed);
 	}
 }
 
 // Sets whether results will be returned from the cache for the specific period of time on a pending UGC Query.
-bool SteamServer::setAllowCachedResponse(uint64_t updateHandle, uint32 maxAgeSeconds){
+bool SteamServer::setAllowCachedResponse(uint64_t update_handle, uint32 max_age_seconds){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetAllowCachedResponse(handle, maxAgeSeconds);
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->SetAllowCachedResponse(handle, max_age_seconds);
 }
 
 // Sets to only return items that have a specific filename on a pending UGC Query.
-bool SteamServer::setCloudFileNameFilter(uint64_t updateHandle, const String& matchCloudFilename){
+bool SteamServer::setCloudFileNameFilter(uint64_t update_handle, const String& match_cloud_filename){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetCloudFileNameFilter(handle, matchCloudFilename.utf8().get_data());
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->SetCloudFileNameFilter(handle, match_cloud_filename.utf8().get_data());
 }
 
 // Sets the folder that will be stored as the content for an item.
-bool SteamServer::setItemContent(uint64_t updateHandle, const String& contentFolder){
+bool SteamServer::setItemContent(uint64_t update_handle, const String& content_folder){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemContent(handle, contentFolder.utf8().get_data());
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->SetItemContent(handle, content_folder.utf8().get_data());
 }
 
 // Sets a new description for an item.
-bool SteamServer::setItemDescription(uint64_t updateHandle, const String& description){
+bool SteamServer::setItemDescription(uint64_t update_handle, const String& description){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -2486,50 +2511,52 @@ bool SteamServer::setItemDescription(uint64_t updateHandle, const String& descri
 		printf("Description cannot have more than %d ASCII characters. Description not set.", 255);
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->SetItemDescription(handle, description.utf8().get_data());
 }
 
 // Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.
-bool SteamServer::setItemMetadata(uint64_t updateHandle, const String& metadata){
+bool SteamServer::setItemMetadata(uint64_t update_handle, const String& metadata){
 	if(SteamUGC() == NULL){
 		return false;
 	}
 	if (metadata.length() > 5000){
 		printf("Metadata cannot have more than %d ASCII characters. Metadata not set.", 5000);
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->SetItemMetadata(handle, metadata.utf8().get_data());
 }
 
 // Sets the primary preview image for the item.
-bool SteamServer::setItemPreview(uint64_t updateHandle, const String& previewFile){
+bool SteamServer::setItemPreview(uint64_t update_handle, const String& preview_file){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->SetItemPreview(handle, previewFile.utf8().get_data());
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->SetItemPreview(handle, preview_file.utf8().get_data());
 }
 
 // Sets arbitrary developer specified tags on an item.
-bool SteamServer::setItemTags(uint64_t updateHandle, Array tagArray){
-	if(SteamUGC() == NULL){
-		return false;
+bool SteamServer::setItemTags(uint64_t update_handle, Array tag_array){
+	bool tags_set = false;
+	if(SteamUGC() != NULL){
+		UGCUpdateHandle_t handle = uint64(update_handle);
+		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
+		tags->m_ppStrings = new const char*[tag_array.size()];
+		uint32 strCount = tag_array.size();
+		for (uint32 i=0; i < strCount; i++) {
+			String str = (String)tag_array[i];
+			tags->m_ppStrings[i] = str.utf8().get_data();
+		}
+		tags->m_nNumStrings = tag_array.size();
+		tags_set = SteamUGC()->SetItemTags(handle, tags);
+		delete[] tags;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	SteamParamStringArray_t *pTags = new SteamParamStringArray_t();
-	pTags->m_ppStrings = new const char*[tagArray.size()];
-	uint32 strCount = tagArray.size();
-	for (uint32 i=0; i < strCount; i++) {
-		String str = (String)tagArray[i];
-		pTags->m_ppStrings[i] = str.utf8().get_data();
-	}
-	pTags->m_nNumStrings = tagArray.size();
-	return SteamUGC()->SetItemTags(handle, pTags);
+	return tags_set;
 }
 
 // Sets a new title for an item.
-bool SteamServer::setItemTitle(uint64_t updateHandle, const String& title){
+bool SteamServer::setItemTitle(uint64_t update_handle, const String& title){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -2537,182 +2564,184 @@ bool SteamServer::setItemTitle(uint64_t updateHandle, const String& title){
 		printf("Title cannot have more than %d ASCII characters. Title not set.", 255);
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->SetItemTitle(handle, title.utf8().get_data());
 }
 
 // Sets the language of the title and description that will be set in this item update.
-bool SteamServer::setItemUpdateLanguage(uint64_t updateHandle, const String& language){
+bool SteamServer::setItemUpdateLanguage(uint64_t update_handle, const String& language){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->SetItemUpdateLanguage(handle, language.utf8().get_data());
 }
 
 // Sets the visibility of an item.
-bool SteamServer::setItemVisibility(uint64_t updateHandle, int visibility){
+bool SteamServer::setItemVisibility(uint64_t update_handle, int visibility){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
+	UGCUpdateHandle_t handle = uint64(update_handle);
 	return SteamUGC()->SetItemVisibility(handle, (ERemoteStoragePublishedFileVisibility)visibility);
 }
 
 // Sets the language to return the title and description in for the items on a pending UGC Query.
-bool SteamServer::setLanguage(uint64_t queryHandle, const String& language){
+bool SteamServer::setLanguage(uint64_t query_handle, const String& language){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->SetLanguage(handle, language.utf8().get_data());
 }
 
 // Sets whether workshop items will be returned if they have one or more matching tag, or if all tags need to match on a pending UGC Query.
-bool SteamServer::setMatchAnyTag(uint64_t queryHandle, bool matchAnyTag){
+bool SteamServer::setMatchAnyTag(uint64_t query_handle, bool match_any_tag){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetMatchAnyTag(handle, matchAnyTag);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetMatchAnyTag(handle, match_any_tag);
 }
 
 // Sets whether the order of the results will be updated based on the rank of items over a number of days on a pending UGC Query.
-bool SteamServer::setRankedByTrendDays(uint64_t queryHandle, uint32 days){
+bool SteamServer::setRankedByTrendDays(uint64_t query_handle, uint32 days){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->SetRankedByTrendDays(handle, days);
 }
 
 // Sets whether to return any additional images/videos attached to the items on a pending UGC Query.
-bool SteamServer::setReturnAdditionalPreviews(uint64_t queryHandle, bool returnAdditionalPreviews){
+bool SteamServer::setReturnAdditionalPreviews(uint64_t query_handle, bool return_additional_previews){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnAdditionalPreviews(handle, returnAdditionalPreviews);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnAdditionalPreviews(handle, return_additional_previews);
 }
 
 // Sets whether to return the IDs of the child items of the items on a pending UGC Query.
-bool SteamServer::setReturnChildren(uint64_t queryHandle, bool returnChildren){
+bool SteamServer::setReturnChildren(uint64_t query_handle, bool return_children){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnChildren(handle, returnChildren);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnChildren(handle, return_children);
 }
 
 // Sets whether to return any key-value tags for the items on a pending UGC Query.
-bool SteamServer::setReturnKeyValueTags(uint64_t queryHandle, bool returnKeyValueTags){
+bool SteamServer::setReturnKeyValueTags(uint64_t query_handle, bool return_key_value_tags){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnKeyValueTags(handle, returnKeyValueTags);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnKeyValueTags(handle, return_key_value_tags);
 }
 
 // Sets whether to return the full description for the items on a pending UGC Query.
-bool SteamServer::setReturnLongDescription(uint64_t queryHandle, bool returnLongDescription){
+bool SteamServer::setReturnLongDescription(uint64_t query_handle, bool return_long_description){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnLongDescription(handle, returnLongDescription);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnLongDescription(handle, return_long_description);
 }
 
 // Sets whether to return the developer specified metadata for the items on a pending UGC Query.
-bool SteamServer::setReturnMetadata(uint64_t queryHandle, bool returnMetadata){
+bool SteamServer::setReturnMetadata(uint64_t query_handle, bool return_metadata){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnMetadata(handle, returnMetadata);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnMetadata(handle, return_metadata);
 }
 
 // Sets whether to only return IDs instead of all the details on a pending UGC Query.
-bool SteamServer::setReturnOnlyIDs(uint64_t queryHandle, bool returnOnlyIDs){
+bool SteamServer::setReturnOnlyIDs(uint64_t query_handle, bool return_only_ids){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnOnlyIDs(handle, returnOnlyIDs);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnOnlyIDs(handle, return_only_ids);
 }
 
 // Sets whether to return the the playtime stats on a pending UGC Query.
-bool SteamServer::setReturnPlaytimeStats(uint64_t queryHandle, uint32 days){
+bool SteamServer::setReturnPlaytimeStats(uint64_t query_handle, uint32 days){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	return SteamUGC()->SetReturnPlaytimeStats(handle, days);
 }
 
 // Sets whether to only return the the total number of matching items on a pending UGC Query.
-bool SteamServer::setReturnTotalOnly(uint64_t queryHandle, bool returnTotalOnly){
+bool SteamServer::setReturnTotalOnly(uint64_t query_handle, bool return_total_only){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetReturnTotalOnly(handle, returnTotalOnly);
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetReturnTotalOnly(handle, return_total_only);
 }
 
 // Sets a string to that items need to match in either the title or the description on a pending UGC Query.
-bool SteamServer::setSearchText(uint64_t queryHandle, const String& searchText){
+bool SteamServer::setSearchText(uint64_t query_handle, const String& search_text){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCQueryHandle_t handle = (uint64_t)queryHandle;
-	return SteamUGC()->SetSearchText(handle, searchText.utf8().get_data());
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	return SteamUGC()->SetSearchText(handle, search_text.utf8().get_data());
 }
 
 // Allows the user to rate a workshop item up or down.
-void SteamServer::setUserItemVote(uint64_t publishedFileID, bool voteUp){
+void SteamServer::setUserItemVote(uint64_t published_file_id, bool vote_up){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->SetUserItemVote(fileID, voteUp);
-		callResultSetUserItemVote.Set(apiCall, this, &SteamServer::_set_user_item_vote);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->SetUserItemVote(fileID, vote_up);
+		callResultSetUserItemVote.Set(api_call, this, &SteamServer::_set_user_item_vote);
 	}
 }
 
 // Starts the item update process.
-uint64_t SteamServer::startItemUpdate(uint32_t appID, uint64_t publishedFileID){
+uint64_t SteamServer::startItemUpdate(uint32_t app_id, uint64_t published_file_id){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
-	AppId_t app = (uint32_t)appID;
-	PublishedFileId_t fileID = (uint64_t)publishedFileID;
+	AppId_t app = (uint32_t)app_id;
+	PublishedFileId_t fileID = (uint64_t)published_file_id;
 	return SteamUGC()->StartItemUpdate(app, fileID);
 }
 
 // Start tracking playtime on a set of workshop items.
-void SteamServer::startPlaytimeTracking(Array publishedFileIDs){
+void SteamServer::startPlaytimeTracking(Array published_file_ids){
 	if(SteamUGC() != NULL){
-		uint32 fileCount = publishedFileIDs.size();
+		uint32 fileCount = published_file_ids.size();
 		if(fileCount > 0){
-			PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
+			PublishedFileId_t *file_ids = new PublishedFileId_t[fileCount];
 			for(uint32 i = 0; i < fileCount; i++){
-				fileIDs[i] = (uint64_t)publishedFileIDs[i];
+				file_ids[i] = (uint64_t)published_file_ids[i];
 			}
-			SteamAPICall_t apiCall = SteamUGC()->StartPlaytimeTracking(fileIDs, fileCount);
-			callResultStartPlaytimeTracking.Set(apiCall, this, &SteamServer::_start_playtime_tracking);
+			SteamAPICall_t api_call = SteamUGC()->StartPlaytimeTracking(file_ids, fileCount);
+			callResultStartPlaytimeTracking.Set(api_call, this, &SteamServer::_start_playtime_tracking);
+			delete[] file_ids;
 		}
 	}
 }
 
 // Stop tracking playtime on a set of workshop items.
-void SteamServer::stopPlaytimeTracking(Array publishedFileIDs){
+void SteamServer::stopPlaytimeTracking(Array published_file_ids){
 	if(SteamUGC() != NULL){
-		uint32 fileCount = publishedFileIDs.size();
+		uint32 fileCount = published_file_ids.size();
 		if(fileCount > 0){
-			PublishedFileId_t *fileIDs = new PublishedFileId_t[fileCount];
+			PublishedFileId_t *file_ids = new PublishedFileId_t[fileCount];
 			Array files;
 			for(uint32 i = 0; i < fileCount; i++){
-				fileIDs[i] = (uint64_t)publishedFileIDs[i];
+				file_ids[i] = (uint64_t)published_file_ids[i];
 			}
-			SteamAPICall_t apiCall = SteamUGC()->StopPlaytimeTracking(fileIDs, fileCount);
-			callResultStopPlaytimeTracking.Set(apiCall, this, &SteamServer::_stop_playtime_tracking);
+			SteamAPICall_t api_call = SteamUGC()->StopPlaytimeTracking(file_ids, fileCount);
+			callResultStopPlaytimeTracking.Set(api_call, this, &SteamServer::_stop_playtime_tracking);
+			delete[] file_ids;
 		}
 	}
 }
@@ -2720,35 +2749,35 @@ void SteamServer::stopPlaytimeTracking(Array publishedFileIDs){
 // Stop tracking playtime of all workshop items.
 void SteamServer::stopPlaytimeTrackingForAllItems(){
 	if(SteamUGC() != NULL){
-		SteamAPICall_t apiCall = SteamUGC()->StopPlaytimeTrackingForAllItems();
-		callResultStopPlaytimeTracking.Set(apiCall, this, &SteamServer::_stop_playtime_tracking);
+		SteamAPICall_t api_call = SteamUGC()->StopPlaytimeTrackingForAllItems();
+		callResultStopPlaytimeTracking.Set(api_call, this, &SteamServer::_stop_playtime_tracking);
 	}
 }
 
 // Returns any app dependencies that are associated with the given item.
-void SteamServer::getAppDependencies(uint64_t publishedFileID){
+void SteamServer::getAppDependencies(uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->GetAppDependencies(fileID);
-		callResultGetAppDependencies.Set(apiCall, this, &SteamServer::_get_app_dependencies_result);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->GetAppDependencies(fileID);
+		callResultGetAppDependencies.Set(api_call, this, &SteamServer::_get_app_dependencies_result);
 	}
 }
 
 // Uploads the changes made to an item to the Steam Workshop; to be called after setting your changes.
-void SteamServer::submitItemUpdate(uint64_t updateHandle, const String& changeNote){
+void SteamServer::submitItemUpdate(uint64_t update_handle, const String& change_note){
 	if(SteamUGC() != NULL){
-		UGCUpdateHandle_t handle = uint64(updateHandle);
-		SteamAPICall_t apiCall = SteamUGC()->SubmitItemUpdate(handle, changeNote.utf8().get_data());
-		callResultItemUpdate.Set(apiCall, this, &SteamServer::_item_updated);
+		UGCUpdateHandle_t handle = uint64(update_handle);
+		SteamAPICall_t api_call = SteamUGC()->SubmitItemUpdate(handle, change_note.utf8().get_data());
+		callResultItemUpdate.Set(api_call, this, &SteamServer::_item_updated);
 	}
 }
 
 // Subscribe to a workshop item. It will be downloaded and installed as soon as possible.
-void SteamServer::subscribeItem(uint64_t publishedFileID){
+void SteamServer::subscribeItem(uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->SubscribeItem(fileID);
-		callResultSubscribeItem.Set(apiCall, this, &SteamServer::_subscribe_item);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->SubscribeItem(fileID);
+		callResultSubscribeItem.Set(api_call, this, &SteamServer::_subscribe_item);
 	}
 }
 
@@ -2760,30 +2789,46 @@ void SteamServer::suspendDownloads(bool suspend){
 }
 
 // Unsubscribe from a workshop item. This will result in the item being removed after the game quits.
-void SteamServer::unsubscribeItem(uint64_t publishedFileID){
+void SteamServer::unsubscribeItem(uint64_t published_file_id){
 	if(SteamUGC() != NULL){
-		PublishedFileId_t fileID = (uint64_t)publishedFileID;
-		SteamAPICall_t apiCall = SteamUGC()->UnsubscribeItem(fileID);
-		callResultUnsubscribeItem.Set(apiCall, this, &SteamServer::_unsubscribe_item);
+		PublishedFileId_t fileID = (uint64_t)published_file_id;
+		SteamAPICall_t api_call = SteamUGC()->UnsubscribeItem(fileID);
+		callResultUnsubscribeItem.Set(api_call, this, &SteamServer::_unsubscribe_item);
 	}
 }
 
 // Updates an existing additional preview file for the item.
-bool SteamServer::updateItemPreviewFile(uint64_t updateHandle, uint32 index, const String& previewFile){
+bool SteamServer::updateItemPreviewFile(uint64_t update_handle, uint32 index, const String& preview_file){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->UpdateItemPreviewFile(handle, index, previewFile.utf8().get_data());
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->UpdateItemPreviewFile(handle, index, preview_file.utf8().get_data());
 }
 
 // Updates an additional video preview from YouTube for the item.
-bool SteamServer::updateItemPreviewVideo(uint64_t updateHandle, uint32 index, const String& videoID){
+bool SteamServer::updateItemPreviewVideo(uint64_t update_handle, uint32 index, const String& video_id){
 	if(SteamUGC() == NULL){
 		return false;
 	}
-	UGCUpdateHandle_t handle = uint64(updateHandle);
-	return SteamUGC()->UpdateItemPreviewVideo(handle, index, videoID.utf8().get_data());
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->UpdateItemPreviewVideo(handle, index, video_id.utf8().get_data());
+}
+
+// Show the app's latest Workshop EULA to the user in an overlay window, where they can accept it or not.
+bool SteamServer::showWorkshopEULA(){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	return SteamUGC()->ShowWorkshopEULA();
+}
+
+// Retrieve information related to the user's acceptance or not of the app's specific Workshop EULA.
+void SteamServer::getWorkshopEULAStatus(){
+	if(SteamUGC() != NULL){
+		SteamAPICall_t api_call = SteamUGC()->GetWorkshopEULAStatus();
+		callResultWorkshopEULAStatus.Set(api_call, this, &SteamServer::_workshop_eula_status);
+	}
 }
 
 
@@ -2792,13 +2837,14 @@ bool SteamServer::updateItemPreviewVideo(uint64_t updateHandle, uint32 index, co
 /////////////////////////////////////////////////
 //
 // Filters the provided input message and places the filtered result into pchOutFilteredText.
-String SteamServer::filterText(int context, uint64_t steamID, const String& message){
+String SteamServer::filterText(int context, uint64_t steam_id, const String& message){
 	String new_message = "";
 	if(SteamUtils() != NULL){
 		char *filtered = new char[2048];
-		CSteamID sourceID = (uint64)steamID;
-		SteamUtils()->FilterText((ETextFilteringContext)context, sourceID, message.utf8().get_data(), filtered, strlen(filtered)+1);
+		CSteamID source_id = (uint64)steam_id;
+		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, message.utf8().get_data(), filtered, strlen(filtered)+1);
 		new_message = filtered;
+		delete[] filtered;
 	}
 	return new_message;
 }
@@ -2808,7 +2854,7 @@ String SteamServer::getAPICallFailureReason(){
 	if(SteamUtils() == NULL){
 		return "ERROR: Steam Utils not present.";
 	}
-	int failure = SteamUtils()->GetAPICallFailureReason(apiHandle);
+	int failure = SteamUtils()->GetAPICallFailureReason(api_handle);
 	// Parse the failure
 	if(failure == k_ESteamAPICallFailureSteamGone){
 		return "The local Steam process has stopped responding, it may have been forcefully closed or is frozen.";
@@ -2940,7 +2986,7 @@ Dictionary SteamServer::isAPICallCompleted(){
 	Dictionary completed;
 	if(SteamUtils() != NULL){
 		bool failed = false;
-		bool valid = SteamUtils()->IsAPICallCompleted(apiHandle, &failed);
+		bool valid = SteamUtils()->IsAPICallCompleted(api_handle, &failed);
 		// Populate the dictionary
 		completed["completed"] = valid;
 		completed["failed"] = failed;
@@ -3016,26 +3062,26 @@ void SteamServer::setVRHeadsetStreamingEnabled(bool enabled){
 	}
 }
 // Activates the Big Picture text input dialog which only supports gamepad input.
-bool SteamServer::showGamepadTextInput(int inputMode, int lineInputMode, const String& description, uint32 maxText, const String& presetText){
+bool SteamServer::showGamepadTextInput(int input_mode, int line_input_mode, const String& description, uint32 max_text, const String& preset_text){
 	if(SteamUtils() == NULL){
 		return false;
 	}
 	// Convert modes
 	EGamepadTextInputMode mode;
-	if(inputMode == 0){
+	if(input_mode == 0){
 		mode = k_EGamepadTextInputModeNormal;
 	}
 	else{
 		mode = k_EGamepadTextInputModePassword;
 	}
 	EGamepadTextInputLineMode lineMode;
-	if(lineInputMode == 0){
+	if(line_input_mode == 0){
 		lineMode = k_EGamepadTextInputLineModeSingleLine;
 	}
 	else{
 		lineMode = k_EGamepadTextInputLineModeMultipleLines;
 	}
-	return SteamUtils()->ShowGamepadTextInput(mode, lineMode, description.utf8().get_data(), maxText, presetText.utf8().get_data());
+	return SteamUtils()->ShowGamepadTextInput(mode, lineMode, description.utf8().get_data(), max_text, preset_text.utf8().get_data());
 }
 
 // Ask SteamUI to create and render its OpenVR dashboard.
@@ -3050,12 +3096,22 @@ void SteamServer::startVRDashboard(){
 ///// SIGNALS / CALLBACKS
 /////////////////////////////////////////////////
 //
+// STEAMWORKS ERROR SIGNAL //////////////////////
+//
+// Intended to serve as generic error messaging for failed call results
+void SteamServer::steamworksError(const String& failed_signal){
+	// Print the error message showing the failed signal
+	printf("[STEAM] IO Failure for call result: ");
+	// Emit the signal to inform the user of the failure
+	emit_signal("steamworks_error", failed_signal, "io failure");
+}
+
 // APPS CALLBACKS ///////////////////////////////
 //
 // Triggered after the current user gains ownership of DLC and that DLC is installed.
 void SteamServer::_dlc_installed(DlcInstalled_t* callData){
-	uint32_t appID = (AppId_t)callData->m_nAppID;
-	emit_signal("dlc_installed", appID);
+	uint32_t app_id = (AppId_t)callData->m_nAppID;
+	emit_signal("dlc_installed", app_id);
 }
 
 // Called after requesting the details of a specific file.
@@ -3083,32 +3139,57 @@ void SteamServer::_new_launch_url_parameters(NewUrlLaunchParameters_t* callData)
 //	emit_signal("new_launch_query_parameters");
 //}
 
+// Purpose: response to RegisterActivationCode()
+void SteamServer::_register_activation_code_response(RegisterActivationCodeResponse_t* call_data){
+	int result = call_data->m_eResult;
+	uint32 package_registered = call_data->m_unPackageRegistered;
+	emit_signal("register_activation_code_response", result, package_registered);
+}
+
+// Purpose: response to RequestAppProofOfPurchaseKey/RequestAllProofOfPurchaseKeys for supporting third-party CD keys, or other proof-of-purchase systems.
+void SteamServer::_app_proof_of_purchase_key_response(AppProofOfPurchaseKeyResponse_t* call_data){
+	int result = call_data->m_eResult;
+	uint32 app_id = call_data->m_nAppID;
+	uint32 key_length = call_data->m_cchKeyLength;
+	char key = call_data->m_rgchKey[k_cubAppProofOfPurchaseKeyMax];
+	emit_signal("app_proof_of_purchase_key_response", result, app_id, key_length, key);
+}
+
+// Purpose: called for games in Timed Trial mode
+void SteamServer::_timed_trial_status(TimedTrialStatus_t* call_data){
+	int app_id = call_data->m_unAppID;
+	bool is_offline = call_data->m_bIsOffline;
+	uint32 seconds_allowed = call_data->m_unSecondsAllowed;
+	uint32 seconds_played = call_data->m_unSecondsPlayed;
+	emit_signal("timed_trial_status", app_id, is_offline, seconds_allowed, seconds_played);
+}
+
 // HTTP CALLBACKS ///////////////////////////////
 //
 // Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.
 void SteamServer::_http_request_completed(HTTPRequestCompleted_t* callData){
-	cookieHandle = callData->m_hRequest;
-	uint64_t contextValue = callData->m_ulContextValue;
+	cookie_handle = callData->m_hRequest;
+	uint64_t context_value = callData->m_ulContextValue;
 	bool requestSuccess = callData->m_bRequestSuccessful;
 	int statusCode = callData->m_eStatusCode;
 	uint32 bodySize = callData->m_unBodySize;
-	emit_signal("http_request_completed", contextValue, requestSuccess, statusCode, bodySize);
+	emit_signal("http_request_completed", context_value, requestSuccess, statusCode, bodySize);
 }
 
 // Triggered when a chunk of data is received from a streaming HTTP request.
 void SteamServer::_http_request_data_received(HTTPRequestDataReceived_t* callData){
-	cookieHandle = callData->m_hRequest;
-	uint64_t contextValue = callData->m_ulContextValue;
+	cookie_handle = callData->m_hRequest;
+	uint64_t context_value = callData->m_ulContextValue;
 	uint32 offset = callData->m_cOffset;
 	uint32 bytesReceived = callData->m_cBytesReceived;
-	emit_signal("http_request_data_received", contextValue, offset, bytesReceived);
+	emit_signal("http_request_data_received", context_value, offset, bytesReceived);
 }
 
 // Triggered when HTTP headers are received from a streaming HTTP request.
 void SteamServer::_http_request_headers_received(HTTPRequestHeadersReceived_t* callData){
-	cookieHandle = callData->m_hRequest;
-	uint64_t contextValue = callData->m_ulContextValue;
-	emit_signal("http_request_headers_received", contextValue);
+	cookie_handle = callData->m_hRequest;
+	uint64_t context_value = callData->m_ulContextValue;
+	emit_signal("http_request_headers_received", context_value);
 }
 
 // INVENTORY CALLBACKS //////////////////////////
@@ -3121,15 +3202,15 @@ void SteamServer::_inventory_definition_update(SteamInventoryDefinitionUpdate_t 
 	uint32 size = 0;
 	// Get the item defition IDs
 	if(SteamInventory()->GetItemDefinitionIDs(NULL, &size)){
-		SteamItemDef_t *idArray = new SteamItemDef_t[size];
-		if(SteamInventory()->GetItemDefinitionIDs(idArray, &size)){
+		SteamItemDef_t *id_array = new SteamItemDef_t[size];
+		if(SteamInventory()->GetItemDefinitionIDs(id_array, &size)){
 			// Loop through the temporary array and populate the return array
 			for(uint32 i = 0; i < size; i++){
-				definitions.append(idArray[i]);
+				definitions.append(id_array[i]);
 			}
 		}
 		// Delete the temporary array
-		delete[] idArray;
+		delete[] id_array;
 	}
 	// Return the item array as a signal
 	emit_signal("inventory_defintion_update", definitions);
@@ -3138,25 +3219,25 @@ void SteamServer::_inventory_definition_update(SteamInventoryDefinitionUpdate_t 
 // Returned when you have requested the list of "eligible" promo items that can be manually granted to the given user. These are promo items of type "manual" that won't be granted automatically.
 void SteamServer::_inventory_eligible_promo_item(SteamInventoryEligiblePromoItemDefIDs_t *callData, bool ioFailure){
 	// Clean up call data
-	CSteamID steamID = callData->m_steamID;
+	CSteamID steam_id = callData->m_steamID;
 	int result = callData->m_result;
 	int eligible = callData->m_numEligiblePromoItemDefs;
 	bool cached = callData->m_bCachedData;
 	// Create the return array
 	Array definitions;
 	// Create the temporary ID array
-	SteamItemDef_t *idArray = new SteamItemDef_t[eligible];
+	SteamItemDef_t *id_array = new SteamItemDef_t[eligible];
 	// Convert eligible size
 	uint32 arraySize = (int)eligible;
 	// Get the list
-	if(SteamInventory()->GetEligiblePromoItemDefinitionIDs(steamID, idArray, &arraySize)){
+	if(SteamInventory()->GetEligiblePromoItemDefinitionIDs(steam_id, id_array, &arraySize)){
 		// Loop through the temporary array and populate the return array
 		for(int i = 0; i < eligible; i++){
-			definitions.append(idArray[i]);
+			definitions.append(id_array[i]);
 		}
 	}
 	// Delete the temporary array
-	delete[] idArray;
+	delete[] id_array;
 	// Return the item array as a signal
 	emit_signal("inventory_eligible_promo_Item", result, cached, definitions);
 }
@@ -3165,7 +3246,7 @@ void SteamServer::_inventory_eligible_promo_item(SteamInventoryEligiblePromoItem
 // The regular SteamInventoryResultReady_t callback will still be triggered immediately afterwards; this is an additional notification for your convenience.
 void SteamServer::_inventory_full_update(SteamInventoryFullUpdate_t *callData){
 	// Set the handle
-	inventoryHandle = callData->m_handle;
+	inventory_handle = callData->m_handle;
 	// Send the handle back to the user
 	emit_signal("inventory_full_update", callData->m_handle);
 }
@@ -3198,15 +3279,15 @@ void SteamServer::_inventory_request_prices_result(SteamInventoryRequestPricesRe
 //
 // Called when packets can't get through to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will retry making the connection (but will be dropped if we fail again).
 void SteamServer::_p2p_session_connect_fail(P2PSessionConnectFail_t* callData) {
-	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
+	uint64_t steam_id_remote = callData->m_steamIDRemote.ConvertToUint64();
 	uint8_t sessionError = callData->m_eP2PSessionError;
-	emit_signal("p2p_session_connect_fail", steamIDRemote, sessionError);
+	emit_signal("p2p_session_connect_fail", steam_id_remote, sessionError);
 }
 
 // A user wants to communicate with us over the P2P channel via the sendP2PPacket. In response, a call to acceptP2PSessionWithUser needs to be made, if you want to open the network channel with them.
 void SteamServer::_p2p_session_request(P2PSessionRequest_t* callData){
-	uint64_t steamIDRemote = callData->m_steamIDRemote.ConvertToUint64();
-	emit_signal("p2p_session_request", steamIDRemote);
+	uint64_t steam_id_remote = callData->m_steamIDRemote.ConvertToUint64();
+	emit_signal("p2p_session_request", steam_id_remote);
 }
 
 // REMOTE STORAGE CALLBACKS /////////////////////
@@ -3247,14 +3328,14 @@ void SteamServer::_server_Disconnected(SteamServersDisconnected_t* serverData){
 
 // Client has been approved to connect to this game server.
 void SteamServer::_client_Approved(GSClientApprove_t* clientData){
-	uint64_t steamID = clientData->m_SteamID.ConvertToUint64();
+	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
 	uint64_t ownerID = clientData->m_OwnerSteamID.ConvertToUint64();
-	emit_signal("client_approved", steamID, ownerID);
+	emit_signal("client_approved", steam_id, ownerID);
 }
 
 // Client has been denied to connection to this game server.
 void SteamServer::_client_Denied(GSClientDeny_t* clientData){
-	uint64_t steamID = clientData->m_SteamID.ConvertToUint64();
+	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
 	int reason;
 	// Convert reason.
 	if(clientData->m_eDenyReason == k_EDenyInvalid){
@@ -3305,12 +3386,12 @@ void SteamServer::_client_Denied(GSClientDeny_t* clientData){
 	else{
 		reason = DENY_STEAM_OWNER_LEFT_GUEST_USER;
 	}
-	emit_signal("client_denied", steamID, reason);
+	emit_signal("client_denied", steam_id, reason);
 }
 
 // Request the game server should kick the user.
 void SteamServer::_client_Kick(GSClientKick_t* clientData){
-	uint64_t steamID = clientData->m_SteamID.ConvertToUint64();
+	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
 	int reason;
 	// Convert reason.
 	if(clientData->m_eDenyReason == k_EDenyInvalid){
@@ -3361,7 +3442,7 @@ void SteamServer::_client_Kick(GSClientKick_t* clientData){
 	else{
 		reason = DENY_STEAM_OWNER_LEFT_GUEST_USER;
 	}
-	emit_signal("client_kick", steamID, reason);
+	emit_signal("client_kick", steam_id, reason);
 }
 
 // Received when the game server requests to be displayed as secure (VAC protected).
@@ -3373,11 +3454,11 @@ void SteamServer::_policy_Response(GSPolicyResponse_t* policyData){
 
 // Sent as a reply to RequestUserGroupStatus().
 void SteamServer::_client_Group_Status(GSClientGroupStatus_t* clientData){
-	uint64_t steamID = clientData->m_SteamIDUser.ConvertToUint64();
-	uint64_t groupID = clientData->m_SteamIDGroup.ConvertToUint64();
+	uint64_t steam_id = clientData->m_SteamIDUser.ConvertToUint64();
+	uint64_t group_id = clientData->m_SteamIDGroup.ConvertToUint64();
 	bool member = clientData->m_bMember;
 	bool officer = clientData->m_bOfficer;
-	emit_signal("group_status", steamID, groupID, member, officer);
+	emit_signal("group_status", steam_id, group_id, member, officer);
 }
 
 // Sent as a reply to AssociateWithClan().
@@ -3410,8 +3491,8 @@ void SteamServer::_player_Compat(ComputeNewPlayerCompatibilityResult_t* playerDa
 	int playersDontLikeCandidate = playerData->m_cPlayersThatDontLikeCandidate;
 	int playersCandidateDoesntLike = playerData->m_cPlayersThatCandidateDoesntLike;
 	int clanPlayersDontLikeCandidate = playerData->m_cClanPlayersThatDontLikeCandidate;
-	uint64_t steamID = playerData->m_SteamIDCandidate.ConvertToUint64();
-	emit_signal("player_compatibility", result, playersDontLikeCandidate, playersCandidateDoesntLike, clanPlayersDontLikeCandidate, steamID);
+	uint64_t steam_id = playerData->m_SteamIDCandidate.ConvertToUint64();
+	emit_signal("player_compatibility", result, playersDontLikeCandidate, playersCandidateDoesntLike, clanPlayersDontLikeCandidate, steam_id);
 }
 
 // SERVER STATS CALLBACKS ///////////////////////
@@ -3419,21 +3500,21 @@ void SteamServer::_player_Compat(ComputeNewPlayerCompatibilityResult_t* playerDa
 // Result when getting the latests stats and achievements for a user from the server.
 void SteamServer::_stat_received(GSStatsReceived_t* callData, bool bioFailure){
 	EResult result = callData->m_eResult;
-	uint64_t steamID = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("stat_received", result, steamID);
+	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("stat_received", result, steam_id);
 }
 
 // Result of a request to store the user stats.
 void SteamServer::_stats_stored(GSStatsStored_t* callData){
 	EResult result = callData->m_eResult;
-	uint64_t steamID = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("stats_stored", result, steamID);
+	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("stats_stored", result, steam_id);
 }
 
 // Callback indicating that a user's stats have been unloaded.
 void SteamServer::_stats_unloaded(GSStatsUnloaded_t* callData){
-	uint64_t steamID = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("stats_unloaded", steamID);
+	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("stats_unloaded", steam_id);
 }
 
 // UGC CALLBACKS ////////////////////////////////
@@ -3442,8 +3523,8 @@ void SteamServer::_stats_unloaded(GSStatsUnloaded_t* callData){
 void SteamServer::_add_app_dependency_result(AddAppDependencyResult_t* callData, bool ioFailure){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	AppId_t appID = callData->m_nAppID;
-	emit_signal("add_app_dependency_result", result, (uint64_t)fileID, (uint32_t)appID);
+	AppId_t app_id = callData->m_nAppID;
+	emit_signal("add_app_dependency_result", result, (uint64_t)fileID, (uint32_t)app_id);
 }
 
 // The result of a call to AddDependency.
@@ -3466,18 +3547,18 @@ void SteamServer::_item_created(CreateItemResult_t *callData, bool ioFailure){
 void SteamServer::_item_downloaded(DownloadItemResult_t* callData){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	AppId_t appID = callData->m_unAppID;
-	emit_signal("item_downloaded", result, (uint64_t)fileID, (uint32_t)appID);
+	AppId_t app_id = callData->m_unAppID;
+	emit_signal("item_downloaded", result, (uint64_t)fileID, (uint32_t)app_id);
 }
 
 // Called when getting the app dependencies for an item.
 void SteamServer::_get_app_dependencies_result(GetAppDependenciesResult_t* callData, bool ioFailure){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-//	AppId_t appID = callData->m_rgAppIDs;
+//	AppId_t app_id = callData->m_rgAppIDs;
 	uint32 appDependencies = callData->m_nNumAppDependencies;
 	uint32 totalAppDependencies = callData->m_nTotalNumAppDependencies;
-//	emit_signal("get_app_dependencies_result", result, (uint64_t)fileID, appID, appDependencies, totalAppDependencies);
+//	emit_signal("get_app_dependencies_result", result, (uint64_t)fileID, app_id, appDependencies, totalAppDependencies);
 	emit_signal("get_app_dependencies_result", result, (uint64_t)fileID, appDependencies, totalAppDependencies);
 }
 
@@ -3492,25 +3573,25 @@ void SteamServer::_item_deleted(DeleteItemResult_t* callData, bool ioFailure){
 void SteamServer::_get_item_vote_result(GetUserItemVoteResult_t* callData, bool ioFailure){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	bool voteUp = callData->m_bVotedUp;
+	bool vote_up = callData->m_bVotedUp;
 	bool voteDown = callData->m_bVotedDown;
 	bool voteSkipped = callData->m_bVoteSkipped;
-	emit_signal("get_item_vote_result", result, (uint64_t)fileID, voteUp, voteDown, voteSkipped);
+	emit_signal("get_item_vote_result", result, (uint64_t)fileID, vote_up, voteDown, voteSkipped);
 }
 
 // Called when a workshop item has been installed or updated.
 void SteamServer::_item_installed(ItemInstalled_t* callData){
-	AppId_t appID = callData->m_unAppID;
+	AppId_t app_id = callData->m_unAppID;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	emit_signal("item_installed", appID, (uint64_t)fileID);
+	emit_signal("item_installed", app_id, (uint64_t)fileID);
 }
 
 // Purpose: The result of a call to RemoveAppDependency.
 void SteamServer::_remove_app_dependency_result(RemoveAppDependencyResult_t* callData, bool ioFailure){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	AppId_t appID = callData->m_nAppID;
-	emit_signal("remove_app_dependency_result", result, (uint64_t)fileID, (uint32_t)appID);
+	AppId_t app_id = callData->m_nAppID;
+	emit_signal("remove_app_dependency_result", result, (uint64_t)fileID, (uint32_t)app_id);
 }
 
 // Purpose: The result of a call to RemoveDependency.
@@ -3525,8 +3606,8 @@ void SteamServer::_remove_ugc_dependency_result(RemoveUGCDependencyResult_t* cal
 void SteamServer::_set_user_item_vote(SetUserItemVoteResult_t* callData, bool ioFailure){
 	EResult result = callData->m_eResult;
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
-	bool voteUp = callData->m_bVoteUp;
-	emit_signal("set_user_item_vote", result, (uint64_t)fileID, voteUp);
+	bool vote_up = callData->m_bVoteUp;
+	emit_signal("set_user_item_vote", result, (uint64_t)fileID, vote_up);
 }
 
 // Called when workshop item playtime tracking has started.
@@ -3564,6 +3645,30 @@ void SteamServer::_user_favorite_items_list_changed(UserFavoriteItemsListChanged
 	PublishedFileId_t fileID = callData->m_nPublishedFileId;
 	bool wasAddRequest = callData->m_bWasAddRequest;
 	emit_signal("user_favorite_items_list_changed", result, (uint64_t)fileID, wasAddRequest);
+}
+
+// Purpose: Status of the user's acceptable/rejection of the app's specific Workshop EULA.
+void SteamServer::_workshop_eula_status(WorkshopEULAStatus_t* call_data, bool io_failure){
+	if(io_failure){
+		steamworksError("workshop_eula_status");
+	}
+	else{
+		int result = call_data->m_eResult;
+		int app_id = call_data->m_nAppID;
+		// Slim down signal arguments since Godot seems to limit them to six max
+		Dictionary eula_data;
+		eula_data["version"] = call_data->m_unVersion;			// int
+		eula_data["action"] = call_data->m_rtAction;			// int
+		eula_data["accepted"] = call_data->m_bAccepted;			// bool
+		eula_data["needs_action"] = call_data->m_bNeedsAction;	// bool
+		emit_signal("workshop_eula_status", result, app_id, eula_data);
+	}
+}
+
+// Purpose: signal that the list of subscribed items changed.
+void SteamServer::_user_subscribed_items_list_changed(UserSubscribedItemsListChanged_t* call_data){
+	int app_id = call_data->m_nAppID;
+	emit_signal("user_subscribed_items_list_changed", app_id);
 }
 
 // UTILITY CALLBACKS ////////////////////////////
@@ -3627,6 +3732,16 @@ void SteamServer::_steam_shutdown(SteamShutdown_t* callData){
 	emit_signal("steam_shutdown");
 }
 
+// Sent after the device returns from sleep/suspend mode.
+void SteamServer::_app_resuming_from_suspend(AppResumingFromSuspend_t *call_data) {
+	emit_signal("app_resuming_from_suspend");
+}
+
+// Sent after the device returns from sleep/suspend mode.
+void SteamServer::_floating_gamepad_text_input_dismissed(FloatingGamepadTextInputDismissed_t *call_data) {
+	emit_signal("floating_gamepad_text_input_dismissed");
+}
+
 
 /////////////////////////////////////////////////
 ///// BIND METHODS //////////////////////////////
@@ -3670,6 +3785,8 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("installDLC", &SteamServer::installDLC);
 	ClassDB::bind_method("markContentCorrupt", &SteamServer::markContentCorrupt);
 	ClassDB::bind_method("uninstallDLC", &SteamServer::uninstallDLC);
+	ClassDB::bind_method("requestAllProofOfPurchaseKeys", &SteamServer::requestAllProofOfPurchaseKeys);
+	ClassDB::bind_method("requestAppProofOfPurchaseKey", &SteamServer::requestAppProofOfPurchaseKey);
 
 	// HTTP BIND METHODS ////////////////////////
 	ClassDB::bind_method("createCookieContainer", &SteamServer::createCookieContainer);
@@ -3776,9 +3893,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("requestUserGroupStatus", &SteamServer::requestUserGroupStatus);
 	ClassDB::bind_method("handleIncomingPacket", &SteamServer::handleIncomingPacket);
 	ClassDB::bind_method("getNextOutgoingPacket", &SteamServer::getNextOutgoingPacket);
-	ClassDB::bind_method("enableHeartbeats", &SteamServer::enableHeartbeats);
-	ClassDB::bind_method("setHeartbeatInterval", &SteamServer::setHeartbeatInterval);
-	ClassDB::bind_method("forceHeartbeat", &SteamServer::forceHeartbeat);
+	ClassDB::bind_method("setAdvertiseServerActive", &SteamServer::setAdvertiseServerActive);
 	ClassDB::bind_method("associateWithClan", &SteamServer::associateWithClan);
 	ClassDB::bind_method("computeNewPlayerCompatibility", &SteamServer::computeNewPlayerCompatibility);
 
@@ -3872,6 +3987,8 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("unsubscribeItem", &SteamServer::unsubscribeItem);
 	ClassDB::bind_method("updateItemPreviewFile", &SteamServer::updateItemPreviewFile);
 	ClassDB::bind_method("updateItemPreviewVideo", &SteamServer::updateItemPreviewVideo);
+	ClassDB::bind_method("showWorkshopEULA", &SteamServer::showWorkshopEULA);
+	ClassDB::bind_method("getWorkshopEULAStatus", &SteamServer::getWorkshopEULAStatus);
 
 	// UTILS BIND METHODS ///////////////////////
 	ClassDB::bind_method("filterText", &SteamServer::filterText);
@@ -3904,11 +4021,17 @@ void SteamServer::_bind_methods(){
 	// CALLBACK SIGNAL BINDS ////////////////////
 	/////////////////////////////////////////////
 	//
+	// STEAMWORKS SIGNALS ///////////////////////
+	ADD_SIGNAL(MethodInfo("steamworks_error"));
+
 	// APPS SIGNALS /////////////////////////////
 	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("new_launch_url_parameters"));
 //	ADD_SIGNAL(MethodInfo("new_launch_query_parameters"));
+	ADD_SIGNAL(MethodInfo("register_activation_code_response"));
+	ADD_SIGNAL(MethodInfo("app_proof_of_purchase_key_response"));
+	ADD_SIGNAL(MethodInfo("timed_trial_status"));
 
 	// HTTP SIGNALS /////////////////////////////
 	ADD_SIGNAL(MethodInfo("http_request_completed"));
@@ -3935,14 +4058,14 @@ void SteamServer::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("server_failure", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
 	ADD_SIGNAL(MethodInfo("server_connected"));
 	ADD_SIGNAL(MethodInfo("server_disconnected", PropertyInfo(Variant::INT, "result")));
-	ADD_SIGNAL(MethodInfo("client_approved", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "ownerID")));
-	ADD_SIGNAL(MethodInfo("client_denied", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "reason")));
-	ADD_SIGNAL(MethodInfo("client_kick", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "reason")));
+	ADD_SIGNAL(MethodInfo("client_approved", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "ownerID")));
+	ADD_SIGNAL(MethodInfo("client_denied", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
+	ADD_SIGNAL(MethodInfo("client_kick", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
 	ADD_SIGNAL(MethodInfo("server_secure", PropertyInfo(Variant::INT, "secure")));
 	ADD_SIGNAL(MethodInfo("gameplay_stats", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "rank"), PropertyInfo(Variant::INT, "totalConnects"), PropertyInfo(Variant::INT, "totalMinutesPlayed")));
-	ADD_SIGNAL(MethodInfo("group_status", PropertyInfo(Variant::INT, "steamID"), PropertyInfo(Variant::INT, "groupID"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
+	ADD_SIGNAL(MethodInfo("group_status", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "group_id"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
 	ADD_SIGNAL(MethodInfo("clan_associate", PropertyInfo(Variant::INT, "result")));
-	ADD_SIGNAL(MethodInfo("player_compatibility", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steamID")));
+	ADD_SIGNAL(MethodInfo("player_compatibility", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steam_id")));
 
 	// SERVER STATS SIGNALS /////////////////////
 	ADD_SIGNAL(MethodInfo("stat_received"));
@@ -3966,6 +4089,8 @@ void SteamServer::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("stop_playtime_tracking"));
 	ADD_SIGNAL(MethodInfo("item_updated"));
 	ADD_SIGNAL(MethodInfo("user_favorite_items_list_changed"));
+	ADD_SIGNAL(MethodInfo("workshop_eula_status"));
+	ADD_SIGNAL(MethodInfo("user_subscribed_items_list_changed"));
 
 	// UTILITY SIGNALS //////////////////////////
 	ADD_SIGNAL(MethodInfo("check_file_signature"));
@@ -3974,6 +4099,8 @@ void SteamServer::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
 	ADD_SIGNAL(MethodInfo("steam_api_call_completed"));
 	ADD_SIGNAL(MethodInfo("steam_shutdown"));
+	ADD_SIGNAL(MethodInfo("app_resuming_from_suspend"));
+	ADD_SIGNAL(MethodInfo("floating_gamepad_text_input_dismissed"));
 
 	/////////////////////////////////////////////
 	// CONSTANT BINDS ///////////////////////////
@@ -4551,11 +4678,11 @@ void SteamServer::_bind_methods(){
 }
 
 SteamServer::~SteamServer(){
-	if(isInitSuccess){
+	if(is_init_success){
 		SteamGameServer_Shutdown();
 	}
 
 	// Clear app ID, and singleton variables ////
 	singleton = NULL;
-	currentAppID = 0;
+	current_app_id = 0;
 }
