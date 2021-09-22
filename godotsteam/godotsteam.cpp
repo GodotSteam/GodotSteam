@@ -726,7 +726,7 @@ uint32 Steam::getNumInstalledApps(){
 Array Steam::getInstalledApps(uint32 max_app_ids){
 	Array installed_apps;
 	if(SteamAppList() != NULL){
-		uint32 *app_ids;
+		uint32 *app_ids = nullptr;
 		uint32 these_apps = SteamAppList()->GetInstalledApps(app_ids, max_app_ids);
 		// Which is greater?
 		if(these_apps < max_app_ids){
@@ -1295,7 +1295,7 @@ void Steam::getPlayerAvatar(int size, uint64_t steam_id){
 		avatar_data->m_iWide = size;
 		avatar_data->m_iTall = size;
 		_avatar_loaded(avatar_data);
-		delete[] avatar_data;
+		delete avatar_data;
 	}
 }
 
@@ -3440,7 +3440,7 @@ Dictionary Steam::getServerDetails(uint64_t server_list_request, int server){
 		game_server["last_played"] = server_item->m_ulTimeLastPlayed;
 		game_server["server_version"] = server_item->m_nServerVersion;
 		// Clean up
-		delete[] server_item;
+		delete server_item;
 	}
 	// Return the dictionary
 	return game_server;
@@ -3536,7 +3536,7 @@ void Steam::requestFavoritesServerList(int app_id, Array filters){
 			// Append this to the array
 			filters_array[i] = *filter_array;
 			// Free up the memory
-			delete[] filter_array;
+			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3568,7 +3568,7 @@ void Steam::requestFriendsServerList(int app_id, Array filters){
 			// Append this to the array
 			filters_array[i] = *filter_array;
 			// Free up the memory
-			delete[] filter_array;
+			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3600,7 +3600,7 @@ void Steam::requestHistoryServerList(int app_id, Array filters){
 			// Append this to the array
 			filters_array[i] = *filter_array;
 			// Free up the memory
-			delete[] filter_array;
+			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3632,7 +3632,7 @@ void Steam::requestInternetServerList(int app_id, Array filters){
 			// Append this to the array
 			filters_array[i] = *filter_array;
 			// Free up the memory
-			delete[] filter_array;
+			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3671,7 +3671,7 @@ void Steam::requestSpectatorServerList(int app_id, Array filters){
 			// Append this to the array
 			filters_array[i] = *filter_array;
 			// Free up the memory
-			delete[] filter_array;
+			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -4598,7 +4598,7 @@ int Steam::getGameCoordinatorServerLogin(const String& app_data){
 		int signed_blob = k_cbMaxSteamDatagramGameCoordinatorServerLoginSerialized;
 		routing_blob.resize(signed_blob);
 		result = SteamNetworkingSockets()->GetGameCoordinatorServerLogin(server_login, &signed_blob, routing_blob.write().ptr());
-		delete[] server_login;
+		delete server_login;
 	}
 	return result;
 }
@@ -4930,7 +4930,7 @@ void Steam::createBeacon(uint32 open_slots, uint64_t location, int type, const S
 		beacon_data->m_ulLocationID = location;
 		SteamAPICall_t api_call = SteamParties()->CreateBeacon(open_slots, beacon_data, connect_string.utf8().get_data(), metadata.utf8().get_data());
 		callResultCreateBeacon.Set(api_call, this, &Steam::_create_beacon);
-		delete[] beacon_data;
+		delete beacon_data;
 	}
 }
 
@@ -5021,7 +5021,7 @@ String Steam::getBeaconLocationData(uint64_t location_id, int location_type, int
 			beacon_location_data = beacon_data;
 		}
 		delete[] beacon_data;
-		delete[] beacon;
+		delete beacon;
 	}
 	return beacon_location_data;
 }
@@ -5614,7 +5614,7 @@ bool Steam::addRequiredTagGroup(uint64_t query_handle, Array tag_array){
 		}
 		tags->m_nNumStrings = tag_array.size();
 		added_tag_group = SteamUGC()->AddRequiredTagGroup(handle, tags);
-		delete[] tags;
+		delete tags;
 	}
 	return added_tag_group;
 }
@@ -6376,7 +6376,7 @@ bool Steam::setItemTags(uint64_t update_handle, Array tag_array){
 		}
 		tags->m_nNumStrings = tag_array.size();
 		tags_set = SteamUGC()->SetItemTags(handle, tags);
-		delete[] tags;
+		delete tags;
 	}
 	return tags_set;
 }
