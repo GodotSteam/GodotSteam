@@ -1789,7 +1789,7 @@ bool SteamServer::addRequiredTagGroup(uint64_t query_handle, Array tag_array){
 		}
 		tags->m_nNumStrings = tag_array.size();
 		added_tag_group = SteamUGC()->AddRequiredTagGroup(handle, tags);
-		delete[] tags;
+		delete tags;
 	}
 	return added_tag_group;
 }
@@ -2550,7 +2550,7 @@ bool SteamServer::setItemTags(uint64_t update_handle, Array tag_array){
 		}
 		tags->m_nNumStrings = tag_array.size();
 		tags_set = SteamUGC()->SetItemTags(handle, tags);
-		delete[] tags;
+		delete tags;
 	}
 	return tags_set;
 }
