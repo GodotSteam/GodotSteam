@@ -21,7 +21,6 @@
 
 // Include Steamworks API header
 #include "steam/steam_api.h"
-#include "steam/steamdatagram_tickets.h"
 
 // Include Godot headers
 #include "core/object.h"
@@ -876,14 +875,14 @@ class Steam: public Object {
 		bool getIdentity();
 		int initAuthentication();
 		int getAuthenticationStatus();
-		Dictionary receivedRelayAuthTicket();
-		int findRelayAuthTicketForServer(int port);
+//		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
+//		int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
 		uint32 connectToHostedDedicatedServer(int port, int options);
 		uint16 getHostedDedicatedServerPort();
 		uint32 getHostedDedicatedServerPOPId();
-		int getHostedDedicatedServerAddress();
+//		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 		uint32 createHostedDedicatedServerListenSocket(int port, int options);
-		int getGameCoordinatorServerLogin(const String& app_data);
+//		int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
 
 		// Networking Utils /////////////////////
 		void initRelayNetworkAccess();
@@ -1234,9 +1233,9 @@ class Steam: public Object {
 		uint64_t networking_microseconds;
 		SteamNetworkingIdentity networking_identity;
 		SteamNetworkingIdentity game_server;
-		SteamDatagramHostedAddress hosted_address;
+//		SteamDatagramHostedAddress hosted_address;
 		PoolByteArray routing_blob;
-		SteamDatagramRelayAuthTicket relay_auth_ticket;
+//		SteamDatagramRelayAuthTicket relay_auth_ticket;
 
 		// Parties
 		uint64 party_beacon_id;

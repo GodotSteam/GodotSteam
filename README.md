@@ -16,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.10)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.10.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.10.1 Changes**
+- Changed: various compilation errors for OSX, _thanks to SapphireMH_
+- Removed: receiveRelayAuthTicket, findRelayAuthTicketForServer, getHostedDedicatedServerAddress, and getGameCoordinatorServerLogin as they rely on datagram header that was removed from base SDK
 
 **Version 3.10 Changes**
 - Added: various Steam Deck specific functions, _thanks to EIREXE_

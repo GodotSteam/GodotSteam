@@ -4513,39 +4513,39 @@ int Steam::getAuthenticationStatus(){
 }
 
 // Call this when you receive a ticket from your backend / matchmaking system. Puts the ticket into a persistent cache, and optionally returns the parsed ticket.
-Dictionary Steam::receivedRelayAuthTicket(){
-	Dictionary ticket;
-	if(SteamNetworkingSockets() != NULL){
-		SteamDatagramRelayAuthTicket parsed_ticket;
-		PoolByteArray incoming_ticket;
-		incoming_ticket.resize(512);		
-		if(SteamNetworkingSockets()->ReceivedRelayAuthTicket(incoming_ticket.write().ptr(), 512, &parsed_ticket)){
-			char game_server;
-			parsed_ticket.m_identityGameserver.ToString(&game_server, 128);
-			ticket["game_server"] = game_server;
-			char authorized_client;
-			parsed_ticket.m_identityAuthorizedClient.ToString(&authorized_client, 128);
-			ticket["authorized_client"] = authorized_client;
-			ticket["public_ip"] = parsed_ticket.m_unPublicIP;		// uint32
-			ticket["expiry"] = parsed_ticket.m_rtimeTicketExpiry;	// RTime32
-			ticket["routing"] = parsed_ticket.m_routing.GetPopID();			// SteamDatagramHostAddress
-			ticket["app_id"] = parsed_ticket.m_nAppID;				// uint32
-			ticket["restrict_to_v_port"] = parsed_ticket.m_nRestrictToVirtualPort;	// int
-			ticket["number_of_extras"] = parsed_ticket.m_nExtraFields;		// int
-			ticket["extra_fields"] = parsed_ticket.m_vecExtraFields;		// ExtraField
-		}
-	}
-	return ticket;
-}
+//Dictionary Steam::receivedRelayAuthTicket(){
+//	Dictionary ticket;
+//	if(SteamNetworkingSockets() != NULL){
+//		SteamDatagramRelayAuthTicket parsed_ticket;
+//		PoolByteArray incoming_ticket;
+//		incoming_ticket.resize(512);		
+//		if(SteamNetworkingSockets()->ReceivedRelayAuthTicket(incoming_ticket.write().ptr(), 512, &parsed_ticket)){
+//			char game_server;
+//			parsed_ticket.m_identityGameserver.ToString(&game_server, 128);
+//			ticket["game_server"] = game_server;
+//			char authorized_client;
+//			parsed_ticket.m_identityAuthorizedClient.ToString(&authorized_client, 128);
+//			ticket["authorized_client"] = authorized_client;
+//			ticket["public_ip"] = parsed_ticket.m_unPublicIP;		// uint32
+//			ticket["expiry"] = parsed_ticket.m_rtimeTicketExpiry;	// RTime32
+//			ticket["routing"] = parsed_ticket.m_routing.GetPopID();			// SteamDatagramHostAddress
+//			ticket["app_id"] = parsed_ticket.m_nAppID;				// uint32
+//			ticket["restrict_to_v_port"] = parsed_ticket.m_nRestrictToVirtualPort;	// int
+//			ticket["number_of_extras"] = parsed_ticket.m_nExtraFields;		// int
+//			ticket["extra_fields"] = parsed_ticket.m_vecExtraFields;		// ExtraField
+//		}
+//	}
+//	return ticket;
+//}
 
 // Search cache for a ticket to talk to the server on the specified virtual port. If found, returns the number of seconds until the ticket expires, and optionally the complete cracked ticket. Returns 0 if we don't have a ticket.
-int Steam::findRelayAuthTicketForServer(int port){
-	int expires_in_seconds = 0;
-	if(SteamNetworkingSockets() != NULL){
-		expires_in_seconds = SteamNetworkingSockets()->FindRelayAuthTicketForServer(game_server, port, &relay_auth_ticket);
-	}
-	return expires_in_seconds;
-}
+//int Steam::findRelayAuthTicketForServer(int port){
+//	int expires_in_seconds = 0;
+//	if(SteamNetworkingSockets() != NULL){
+//		expires_in_seconds = SteamNetworkingSockets()->FindRelayAuthTicketForServer(game_server, port, &relay_auth_ticket);
+//	}
+//	return expires_in_seconds;
+//}
 
 // Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
 uint32 Steam::connectToHostedDedicatedServer(int port, int options){
@@ -4572,13 +4572,13 @@ uint32 Steam::getHostedDedicatedServerPOPId(){
 }
 
 // Return info about the hosted server. This contains the PoPID of the server, and opaque routing information that can be used by the relays to send traffic to your server.
-int Steam::getHostedDedicatedServerAddress(){
-	int result = 2;
-	if(SteamNetworkingSockets() != NULL){
-		result = SteamNetworkingSockets()->GetHostedDedicatedServerAddress(&hosted_address);
-	}
-	return result;
-}
+//int Steam::getHostedDedicatedServerAddress(){
+//	int result = 2;
+//	if(SteamNetworkingSockets() != NULL){
+//		result = SteamNetworkingSockets()->GetHostedDedicatedServerAddress(&hosted_address);
+//	}
+//	return result;
+//}
 
 // Create a listen socket on the specified virtual port. The physical UDP port to use will be determined by the SDR_LISTEN_PORT environment variable. If a UDP port is not configured, this call will fail.
 uint32 Steam::createHostedDedicatedServerListenSocket(int port, int options){
@@ -4589,19 +4589,19 @@ uint32 Steam::createHostedDedicatedServerListenSocket(int port, int options){
 }
 
 // Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)
-int Steam::getGameCoordinatorServerLogin(const String& app_data){
-	int result = 2;
-	if(SteamNetworkingSockets() != NULL){	
-		SteamDatagramGameCoordinatorServerLogin *server_login = new SteamDatagramGameCoordinatorServerLogin;
-		server_login->m_cbAppData = app_data.size();
-		strcpy(server_login->m_appData, app_data.utf8().get_data());
-		int signed_blob = k_cbMaxSteamDatagramGameCoordinatorServerLoginSerialized;
-		routing_blob.resize(signed_blob);
-		result = SteamNetworkingSockets()->GetGameCoordinatorServerLogin(server_login, &signed_blob, routing_blob.write().ptr());
-		delete server_login;
-	}
-	return result;
-}
+//int Steam::getGameCoordinatorServerLogin(const String& app_data){
+//	int result = 2;
+//	if(SteamNetworkingSockets() != NULL){	
+//		SteamDatagramGameCoordinatorServerLogin *server_login = new SteamDatagramGameCoordinatorServerLogin;
+//		server_login->m_cbAppData = app_data.size();
+//		strcpy(server_login->m_appData, app_data.utf8().get_data());
+//		int signed_blob = k_cbMaxSteamDatagramGameCoordinatorServerLoginSerialized;
+//		routing_blob.resize(signed_blob);
+//		result = SteamNetworkingSockets()->GetGameCoordinatorServerLogin(server_login, &signed_blob, routing_blob.write().ptr());
+//		delete server_login;
+//	}
+//	return result;
+//}
 
 
 /////////////////////////////////////////////////
@@ -10268,14 +10268,14 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getIdentity", &Steam::getIdentity);
 	ClassDB::bind_method("initAuthentication", &Steam::initAuthentication);
 	ClassDB::bind_method("getAuthenticationStatus", &Steam::getAuthenticationStatus);
-	ClassDB::bind_method("receivedRelayAuthTicket", &Steam::receivedRelayAuthTicket);
-	ClassDB::bind_method("findRelayAuthTicketForServer", &Steam::findRelayAuthTicketForServer);
+//	ClassDB::bind_method("receivedRelayAuthTicket", &Steam::receivedRelayAuthTicket);	<------ Uses datagram relay structs which were removed from base SDK
+//	ClassDB::bind_method("findRelayAuthTicketForServer", &Steam::findRelayAuthTicketForServer);	<------ Uses datagram relay structs which were removed from base SDK
 	ClassDB::bind_method("connectToHostedDedicatedServer", &Steam::connectToHostedDedicatedServer);
 	ClassDB::bind_method("getHostedDedicatedServerPort", &Steam::getHostedDedicatedServerPort);
 	ClassDB::bind_method("getHostedDedicatedServerPOPId", &Steam::getHostedDedicatedServerPOPId);
-	ClassDB::bind_method("getHostedDedicatedServerAddress", &Steam::getHostedDedicatedServerAddress);
+//	ClassDB::bind_method("getHostedDedicatedServerAddress", &Steam::getHostedDedicatedServerAddress);	<------ Uses datagram relay structs which were removed from base SDK
 	ClassDB::bind_method("createHostedDedicatedServerListenSocket", &Steam::createHostedDedicatedServerListenSocket);
-	ClassDB::bind_method("getGameCoordinatorServerLogin", &Steam::getGameCoordinatorServerLogin);
+//	ClassDB::bind_method("getGameCoordinatorServerLogin", &Steam::getGameCoordinatorServerLogin);	<------ Uses datagram relay structs which were removed from base SDK
 
 	// NETWORKING UTILS BIND METHODS ////////////
 	ClassDB::bind_method("initRelayNetworkAccess", &Steam::initRelayNetworkAccess);
