@@ -6,7 +6,14 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
-**Updated 9/20/21:**]
+**Updated 9/24/21:**
+- Added: new game to game list
+
+**Updated 9/21/21:**
+- Added: changelog for GodotSteam 3.10
+- Added: changelog for GodotSteam Server 1.2.3
+
+**Updated 9/20/21:**
 - Added: new game to game list
 
 **Updated 9/18/21:**
