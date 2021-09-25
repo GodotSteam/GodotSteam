@@ -16,7 +16,25 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.0.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.1 Changes**
+- Added: various Steam Deck specific functions, _thanks to EIREXE_
+- Added: new AppLists class of functions and callbacks
+- Added: new or missing App functions, callbacks, and enums
+- Added: OverlayToWebPageMode enum and unread_chat_messages_changed callback for Friends class
+- Added: new Input functions and callbacks
+- Added: new Parental Settings fuctions, callback, and enums
+- Added: new Remote Storage functions, callback, and enums
+- Added: new UGC functions, callbacks, and enum
+- Added: memory allocation corrections
+- Changed: updated various Input class functions
+- Changed: lots of argument names internally, has no effect on usage
+- Fixed: some enum names
+- Fixed: various server list filter functions in Matchmaking Servers class
+- Fixed: getGameCoordinatorServerLogin in Networking Sockets class
+- Removed: receiveRelayAuthTicket, findRelayAuthTicketForServer, getHostedDedicatedServerAddress, and getGameCoordinatorServerLogin as they rely on datagram header that was removed from base SDK
+- Removed: second call for steam_api.h in godotsteam.cpp
 
 **Version 3.0.1 Changes**
 - Fixed: two issues with godotsteam.cpp that causes compiling error on Linux
@@ -102,13 +120,13 @@ Quick How-To
 	- Now build the solution.
 	- **Alternatively,** you can also run the following in the VS Command Prompt:
 	````
-		scons platform=windows target=release
+		scons platform=windows production=yes target=release
 	````
 - **Linux and Mac users**, follow these steps:
 	- **Note:** Linux users must use platform=linux or you'll get errors
 	- Simply CD into the root of the **GDNative** folder and run:
 	````
-		scons platform=<your platform> target=release
+		scons platform=<your platform> production=yes target=release
 	````
 - Copy the resulting file from your **/bin/win64 or /bin/linuxbsd or /bin/osx** folder and copy the matching Steam API file into an **/addons/godotsteam** folder inside your **game's project folder**. For example:
 	- For Windows: /addons/godotsteam/win64/, you want **godotsteam.dll** and **steam_api64.dll**.
