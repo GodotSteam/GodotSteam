@@ -30,6 +30,25 @@
 							<h1>Change Log | GDNative</h1>
 						</header>
 						<p>The change log for the gdnative repository.</p>
+						<h3>Version 3.1</h3>
+						<ul>
+							<li>Added: various Steam Deck specific functions, thanks to EIREXE</li>
+							<li>Added: new AppLists class of functions and callbacks</li>
+							<li>Added: new or missing App functions, callbacks, and enums</li>
+							<li>Added: OverlayToWebPageMode enum and unread_chat_messages_changed callback for Friends class</li>
+							<li>Added: new Input functions and callbacks</li>
+							<li>Added: new Parental Settings fuctions, callback, and enums</li>
+							<li>Added: new Remote Storage functions, callback, and enums</li>
+							<li>Added: new UGC functions, callbacks, and enum</li>
+							<li>Added: memory allocation corrections</li>
+							<li>Changed: updated various Input class functions</li>
+							<li>Changed: lots of argument names internally, has no effect on usage</li>
+							<li>Fixed: some enum names</li>
+							<li>Fixed: various server list filter functions in Matchmaking Servers class</li>
+							<li>Fixed: getGameCoordinatorServerLogin in Networking Sockets class</li>
+							<li>Removed: receiveRelayAuthTicket, findRelayAuthTicketForServer, getHostedDedicatedServerAddress, and getGameCoordinatorServerLogin as they rely on datagram header that was removed from base SDK</li>
+							<li>Removed: second call for steam_api.h in godotsteam.cpp</li>
+						</ul>
 						<h3>Version 3.0.1</h3>
 						<ul>
 							<li>Fixed: two issues with godotsteam.cpp that causes compiling error on Linux</li>
