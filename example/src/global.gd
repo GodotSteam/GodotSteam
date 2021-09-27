@@ -8,6 +8,7 @@ var IS_ONLINE: bool = false
 var STEAM_ID: int = 0
 var STEAM_USERNAME: String
 
+
 func _ready() -> void:
 	# Start Steamworks
 	_initialize_Steam()

@@ -30,7 +30,7 @@ func _ready() -> void:
 	_check_Command_Line()
 
 
-func _process(_delta) -> void:
+func _process(_delta: float) -> void:
 	# Get packets
 	_read_P2P_Packet()
 
@@ -47,10 +47,10 @@ func _create_Lobby() -> void:
 
 
 # A lobby has been successfully created
-func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
+func _on_Lobby_Created(connect: int, lobby_id: int) -> void:
 	if connect == 1:
 		# Set the lobby ID
-		STEAM_LOBBY_ID = lobbyID
+		STEAM_LOBBY_ID = lobby_id
 		$Output.append_bbcode("[STEAM] Created a lobby: "+str(STEAM_LOBBY_ID)+"\n")
 		# Set lobby joinable as a test
 		var SET_JOINABLE: bool = Steam.setLobbyJoinable(STEAM_LOBBY_ID, true)
@@ -59,38 +59,43 @@ func _on_Lobby_Created(connect: int, lobbyID: int) -> void:
 		$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
 		# Set some lobby data
 		var SET_LOBBY_DATA: bool = false
-		SET_LOBBY_DATA = Steam.setLobbyData(lobbyID, "name", str(global.STEAM_USERNAME)+"'s Lobby")
+		SET_LOBBY_DATA = Steam.setLobbyData(lobby_id, "name", str(global.STEAM_USERNAME)+"'s Lobby")
 		print("[STEAM] Setting lobby name data successful: "+str(SET_LOBBY_DATA))
-		SET_LOBBY_DATA = Steam.setLobbyData(lobbyID, "mode", "GodotSteam test")
+		SET_LOBBY_DATA = Steam.setLobbyData(lobby_id, "mode", "GodotSteam test")
 		print("[STEAM] Setting lobby mode data successful: "+str(SET_LOBBY_DATA))
 		# Allow P2P connections to fallback to being relayed through Steam if needed
 		var IS_RELAY: bool = Steam.allowP2PPacketRelay(true)
-		$Output.append_bbcode("[STEAM] Allowing Steam to be relay backup: "+str(IS_RELAY)+"\n\n")
+		$Output.append_bbcode("[STEAM] Allowing Steam to be relay backup: "+str(IS_RELAY)+"\n")
 		# Enable the leave lobby button and all testing buttons
 		_change_Button_Controls(false)
 
 
+# When getting a lobby invitation
+func _on_Lobby_Invite(inviter: int, lobby_id: int, game_id: int) -> void:
+	$Output.append_bbcode("[STEAM] You have received an invite from "+str(Steam.getFriendPersonaName(inviter))+" to join lobby "+str(lobby_id)+" / game "+str(game_id)+"\n")
+
+
 # When the player is joining a lobby
-func _join_Lobby(lobbyID: int) -> void:
-	$Output.append_bbcode("[STEAM] Attempting to join lobby "+str(lobbyID)+"...\n")
+func _join_Lobby(lobby_id: int) -> void:
+	$Output.append_bbcode("[STEAM] Attempting to join lobby "+str(lobby_id)+"...\n")
 	# Close lobby panel if open
 	_on_Close_Lobbies_pressed()
 	# Clear any previous lobby lists
 	LOBBY_MEMBERS.clear()
 	# Make the lobby join request to Steam
-	Steam.joinLobby(lobbyID)
+	Steam.joinLobby(lobby_id)
 
 
 # When a lobby is joined
-func _on_Lobby_Joined(lobbyID: int, _permissions: int, _locked: bool, response: int) -> void:
+func _on_Lobby_Joined(lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
 	# If joining succeed, this will be 1
 	if response == 1:
 		# Set this lobby ID as your lobby ID
-		STEAM_LOBBY_ID = lobbyID
+		STEAM_LOBBY_ID = lobby_id
 		# Print the lobby ID to a label
 		$Lobby.set_text("Lobby ID: "+str(STEAM_LOBBY_ID))
 		# Append to output
-		$Output.append_bbcode("[STEAM] Joined lobby "+str(STEAM_LOBBY_ID)+".\n\n")
+		$Output.append_bbcode("[STEAM] Joined lobby "+str(STEAM_LOBBY_ID)+".\n")
 		# Get the lobby members
 		_get_Lobby_Members()
 		# Enable all necessary buttons
@@ -99,23 +104,36 @@ func _on_Lobby_Joined(lobbyID: int, _permissions: int, _locked: bool, response: 
 		_make_P2P_Handshake()
 	# Else it failed for some reason
 	else:
-		$Output.append_bbcode("[STEAM] Failed joining lobby "+str(lobbyID))
+		# Get the failure reason
+		var FAIL_REASON: String
+		match response:
+			2:	FAIL_REASON = "This lobby no longer exists."
+			3:	FAIL_REASON = "You don't have permission to join this lobby."
+			4:	FAIL_REASON = "The lobby is now full."
+			5:	FAIL_REASON = "Uh... something unexpected happened!"
+			6:	FAIL_REASON = "You are banned from this lobby."
+			7:	FAIL_REASON = "You cannot join due to having a limited account."
+			8:	FAIL_REASON = "This lobby is locked or disabled."
+			9:	FAIL_REASON = "This lobby is community locked."
+			10:	FAIL_REASON = "A user in the lobby has blocked you from joining."
+			11:	FAIL_REASON = "A user you have blocked is in the lobby."
+		$Output.append_bbcode("[STEAM] Failed joining lobby "+str(lobby_id)+": "+str(FAIL_REASON)+"\n")
 		# Reopen the server list
 		_on_Open_Lobby_List_pressed()
 
 
 # When accepting an invite
-func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
+func _on_Lobby_Join_Requested(lobby_id: int, friendID: int) -> void:
 	# Get the lobby owner's name
 	var OWNER_NAME = Steam.getFriendPersonaName(friendID)
-	$Output.append_bbcode("[STEAM] Joining "+str(OWNER_NAME)+"'s lobby...\n\n")
+	$Output.append_bbcode("[STEAM] Joining "+str(OWNER_NAME)+"'s lobby...\n")
 	# Attempt to join the lobby
-	_join_Lobby(lobbyID)
+	_join_Lobby(lobby_id)
 
 
 # Whan lobby metadata has changed
-func _on_Lobby_Data_Update(success: bool, lobbyID: int, memberID: int, key: int) -> void:
-	$Output.append_bbcode("[STEAM] Success: "+str(success)+", Lobby ID: "+str(lobbyID)+", Member ID: "+str(memberID)+", Key: "+str(key)+"\n\n")
+func _on_Lobby_Data_Update(success: bool, lobby_id: int, memberID: int, key: int) -> void:
+	print("[STEAM] Success: "+str(success)+", Lobby ID: "+str(lobby_id)+", Member ID: "+str(memberID)+", Key: "+str(key)+"\n\n")
 
 
 # When the player leaves a lobby for whatever reason
@@ -123,7 +141,7 @@ func _leave_Lobby() -> void:
 	# If in a lobby, leave it
 	if STEAM_LOBBY_ID != 0:
 		# Append a new message
-		$Output.append_bbcode("[STEAM] Leaving lobby "+str(STEAM_LOBBY_ID)+".\n\n")
+		$Output.append_bbcode("[STEAM] Leaving lobby "+str(STEAM_LOBBY_ID)+".\n")
 		# Send leave request to Steam
 		Steam.leaveLobby(STEAM_LOBBY_ID)
 		# Wipe the Steam lobby ID then display the default lobby ID and player list title
@@ -153,20 +171,21 @@ func _read_P2P_Packet() -> void:
 	var PACKET_SIZE: int = Steam.getAvailableP2PPacketSize(0)
 	# There is a packet
 	if PACKET_SIZE > 0:
-		$Output.append_bbcode("[STEAM] There is a packet available.\n")
+		print("[STEAM] There is a packet available.")
 		# Get the packet
 		var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, 0)
 		# If it is empty, set a warning
 		if PACKET.empty():
-			$Output.append_bbcode("[WARNING] Read an empty packet with non-zero size!\n")
+			print("[WARNING] Read an empty packet with non-zero size!")
 		# Get the remote user's ID
-		var _PACKET_ID: String = str(PACKET.steamIDRemote)
-		var _PACKET_CODE: String = str(PACKET.data[0])
+		var _PACKET_ID: String = str(PACKET.steam_id_remote)
 		# Make the packet data readable
 		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
 		# Print the packet to output
-		$Output.append_bbcode("[STEAM] Packet: "+str(READABLE)+"\n\n")
+		$Output.append_bbcode("[STEAM] Packet: "+str(READABLE)+"\n")
 		# Append logic here to deal with packet data
+		if READABLE['message'] == "start":
+			$Output.append_bbcode("[STEAM] Starting P2P game...\n")
 
 
 # Send a Steam P2P packet
@@ -176,7 +195,6 @@ func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 	var CHANNEL: int = 0
 	# Create a data array to send the data through
 	var PACKET_DATA: PoolByteArray = []
-	PACKET_DATA.append(256)
 	PACKET_DATA.append_array(var2bytes(packet_data))
 	# If sending a packet to everyone
 	var SEND_RESPONSE: bool
@@ -192,18 +210,18 @@ func _send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
 		# Send this packet
 		SEND_RESPONSE = Steam.sendP2PPacket(int(target), PACKET_DATA, SEND_TYPE, CHANNEL)
 	# The packets send response is...?
-	print("[STEAM] P2P packet sent successfully? "+str(SEND_RESPONSE))
+	$Output.append_bbcode("[STEAM] P2P packet sent successfully? "+str(SEND_RESPONSE)+"\n")
 
 
 # Make a Steam P2P handshake
 func _make_P2P_Handshake() -> void:
-	$Output.append_bbcode("[STEAM] Sending P2P handshake to the lobby...\n\n")
+	$Output.append_bbcode("[STEAM] Sending P2P handshake to the lobby...\n")
 	_send_P2P_Packet("all", {"message":"handshake", "from":global.STEAM_ID})
 
 
 # Send test packet information
 func _send_Test_Info() -> void:
-	$Output.append_bbcode("[STEAM] Sending test packet data...\n\n")
+	$Output.append_bbcode("[STEAM] Sending test packet data...\n")
 	var TEST_DATA: Dictionary = {"title":"This is a test packet", "player_id":global.STEAM_ID, "player_hp":"5", "player_coord":"56,40"}
 	_send_P2P_Packet("all", TEST_DATA)
 
@@ -213,38 +231,38 @@ func _on_P2P_Session_Request(remoteID: int) -> void:
 	# Get the requester's name
 	var REQUESTER: String = Steam.getFriendPersonaName(remoteID)
 	# Print the debug message to output
-	$Output.append_bbcode("[STEAM] P2P session request from "+str(REQUESTER)+"\n\n")
+	$Output.append_bbcode("[STEAM] P2P session request from "+str(REQUESTER)+"\n")
 	# Accept the P2P session; can apply logic to deny this request if needed
 	var SESSION_ACCEPTED: bool = Steam.acceptP2PSessionWithUser(remoteID)
-	print("[STEAM] P2P session was connected: "+str(SESSION_ACCEPTED))
+	$Output.append_bbcode("[STEAM] P2P session was connected: "+str(SESSION_ACCEPTED)+"\n")
 	# Make the initial handshake
 	_make_P2P_Handshake()
 
 
 # P2P connection failure
-func _on_P2P_Session_Connect_Fail(lobbyID: int, session_error: int) -> void:
+func _on_P2P_Session_Connect_Fail(lobby_id: int, session_error: int) -> void:
 	# Note the session errors are: 0 - none, 1 - target user not running the same game, 2 - local user doesn't own app, 3 - target user isn't connected to Steam, 4 - connection timed out, 5 - unused
 	# If no error was given
 	if session_error == 0:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [no error given].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [no error given].")
 	# Else if target user was not running the same game
 	elif session_error == 1:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [target user not running the same game].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [target user not running the same game].")
 	# Else if local user doesn't own app / game
 	elif session_error == 2:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [local user doesn't own app / game].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [local user doesn't own app / game].")
 	# Else if target user isn't connected to Steam
 	elif session_error == 3:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [target user isn't connected to Steam].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [target user isn't connected to Steam].")
 	# Else if connection timed out
 	elif session_error == 4:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [connection timed out].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [connection timed out].")
 	# Else if unused
 	elif session_error == 5:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [unused].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [unused].")
 	# Else no known error
 	else:
-		$Output.append_bbcode("[WARNING] Session failure with "+str(lobbyID)+" [unknown error "+str(session_error)+"].\n\n")
+		print("[WARNING] Session failure with "+str(lobby_id)+" [unknown error "+str(session_error)+"].")
 
 
 #################################################
@@ -285,7 +303,7 @@ func _add_Player_List(steam_id: int, steam_name: String) -> void:
 	THIS_MEMBER._set_Member(steam_id, steam_name)
 	# Connect the kick signal
 	var THIS_SIGNAL: int = THIS_MEMBER.connect("kick_player", self, "_on_Lobby_Kick")
-	print("Connecting kick_player signal to _on_Lobby_Kick for "+str(steam_name)+" ["+str(steam_id)+"]: "+str(THIS_SIGNAL))
+	print("[STEAM] Connecting kick_player signal to _on_Lobby_Kick for "+str(steam_name)+" ["+str(steam_id)+"]: "+str(THIS_SIGNAL))
 	# Add the child node
 	$Players.add_child(THIS_MEMBER)
 	# If you are the host, enable the kick button
@@ -334,17 +352,12 @@ func _on_Get_Lobby_Data_pressed() -> void:
 	DATA = Steam.getLobbyData(STEAM_LOBBY_ID, "name")
 	$Output.append_bbcode("[STEAM] Lobby data, name: "+str(DATA)+"\n")
 	DATA = Steam.getLobbyData(STEAM_LOBBY_ID, "mode")
-	$Output.append_bbcode("[STEAM] Lobby data, mode: "+str(DATA)+"\n\n")
+	$Output.append_bbcode("[STEAM] Lobby data, mode: "+str(DATA)+"\n")
 
 
 # Sending a test packet out to the players
 func _on_Send_Packet_pressed() -> void:
 	_send_Test_Info()
-
-
-# Start the game match
-func _on_Start_Match_pressed() -> void:
-	pass # Replace with function body.
 
 
 #################################################
@@ -356,7 +369,7 @@ func _on_Open_Lobby_List_pressed() -> void:
 	# Set distance to worldwide
 	Steam.addRequestLobbyListDistanceFilter(3)
 	# Request the list
-	$Output.append_bbcode("[STEAM] Requesting a lobby list...\n\n")
+	$Output.append_bbcode("[STEAM] Requesting a lobby list...\n")
 	Steam.requestLobbyList()
 
 
@@ -376,7 +389,7 @@ func _on_Lobby_Match_List(lobbies: Array) -> void:
 		LOBBY_BUTTON.set_text_align(0)
 		LOBBY_BUTTON.set_theme(BUTTON_THEME)
 		var LOBBY_SIGNAL: int = LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
-		print("Connecting pressed to function _join_Lobby for "+str(LOBBY)+" successfully: "+str(LOBBY_SIGNAL))
+		print("[STEAM] Connecting pressed to function _join_Lobby for "+str(LOBBY)+" successfully: "+str(LOBBY_SIGNAL))
 		# Add the new lobby to the list
 		$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
 	# Enable the refresh button
@@ -414,7 +427,7 @@ func _on_Send_Chat_pressed() -> void:
 		var IS_SENT: bool = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, MESSAGE)
 		# Was it sent successfully?
 		if not IS_SENT:
-			$Output.append_bbcode("[ERROR] Chat message failed to send.\n\n")
+			$Output.append_bbcode("[ERROR] Chat message '"+str(MESSAGE)+"' failed to send.\n")
 		# Clear the chat input
 		$Chat.clear()
 
@@ -457,26 +470,26 @@ func _on_Lobby_Message(_result: int, user: int, message: String, type: int) -> v
 
 
 # When a lobby chat is updated
-func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, chatState: int) -> void:
+func _on_Lobby_Chat_Update(lobby_id: int, changed_id: int, making_change_id: int, chat_state: int) -> void:
 	# Note that chat state changes is: 1 - entered, 2 - left, 4 - user disconnected before leaving, 8 - user was kicked, 16 - user was banned
-	$Output.append_bbcode("[STEAM] Lobby ID: "+str(lobbyID)+", Changed ID: "+str(changedID)+", Making Change: "+str(makingChangeID)+", Chat State: "+str(chatState)+"\n")
+	print("[STEAM] Lobby ID: "+str(lobby_id)+", Changed ID: "+str(changed_id)+", Making Change: "+str(making_change_id)+", Chat State: "+str(chat_state))
 	# Get the user who has made the lobby change
-	var CHANGER = Steam.getFriendPersonaName(makingChangeID)
+	var CHANGER = Steam.getFriendPersonaName(changed_id)
 	# If a player has joined the lobby
-	if chatState == 1:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has joined the lobby.\n\n")
+	if chat_state == 1:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has joined the lobby.\n")
 	# Else if a player has left the lobby
-	elif chatState == 2:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has left the lobby.\n\n")
+	elif chat_state == 2:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has left the lobby.\n")
 	# Else if a player has been kicked
-	elif chatState == 8:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been kicked from the lobby.\n\n")
+	elif chat_state == 8:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been kicked from the lobby.\n")
 	# Else if a player has been banned
-	elif chatState == 16:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been banned from the lobby.\n\n")
+	elif chat_state == 16:
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" has been banned from the lobby.\n")
 	# Else there was some unknown change
 	else:
-		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" did... something.\n\n")
+		$Output.append_bbcode("[STEAM] "+str(CHANGER)+" did... something.\n")
 	# Update the lobby now that a change has occurred
 	_get_Lobby_Members()
 
@@ -486,7 +499,7 @@ func _on_Lobby_Kick(kick_id: int) -> void:
 	var IS_SENT: bool = Steam.sendLobbyChatMsg(STEAM_LOBBY_ID, "/kick:"+str(kick_id))
 	# Was it send successfully?
 	if not IS_SENT:
-		$Output.append_bbcode("[ERROR] Kick command failed to send.\n\n")
+		print("[ERROR] Kick command failed to send.\n")
 
 
 # Send the message by pressing enter
@@ -520,4 +533,8 @@ func _check_Command_Line():
 #################################################
 # Emit a signal to the main node letting it know the user is done
 func _on_Back_pressed() -> void:
+	# Leave the lobby if in one
+	if STEAM_LOBBY_ID > 0:
+		_leave_Lobby()
+	# Head back to the main menu
 	emit_signal("back_to_main")

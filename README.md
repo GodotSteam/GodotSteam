@@ -19,6 +19,7 @@ This version covers:
 - Authentication
 
 Updates:
+- New stuff for the lobby example
 - Brand-new interface and overall theme
 - Main menu to swap between examples instead of having to open each scene
 - Many buttons are now renamed to the Steam functions they call.
