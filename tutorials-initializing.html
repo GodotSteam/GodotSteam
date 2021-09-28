@@ -41,6 +41,7 @@ func _ready() -> void:
 
 func _initialize_Steam() -> void:
 	var INIT: Dictionary = Steam.steamInit()
+	print("Did Steam initialize?: "+str(INIT))
 </code></pre>
 						<p>By default, <strong>Steam.steamInit()</strong> will query Steamworks for the local user's current statistics and send this data back as a callback (signal).  You can pass a boolean (false) to the function to prevent this behavior:</p>
 <pre><code>
@@ -49,6 +50,7 @@ func _ready() -> void:
 
 func _initialize_Steam() -> void:
 	var INIT: Dictionary = Steam.steamInit(false)
+	print("Did Steam initialize?: "+str(INIT))
 </code></pre>
 						<p><strong>Steam.steamInit()</strong> will always send back a dictionary with two keys / values:
 							<ul>
@@ -68,7 +70,7 @@ func _initialize_Steam() -> void:
 						<header class="major">
 							<h3>Checking For Errors</h3>
 						</header>
-						<p>Next we will check if Steamworks was actually initialized and the user can connect to Steam:</p>
+						<p>The returned dictionary from <strong>Steam.steamInit()</strong> can be printed and ignored. However, there are certain conditions where you might not know why the game crashed at boot or does something unexpected; especially in development. For these cases we will check if Steamworks was actually initialized and the user can connect to Steam. To stop the game if anything is amiss or the client is offline, we do this:</p>
 <pre><code>
 func _ready() -> void:
 	_initialize_Steam()
@@ -82,14 +84,33 @@ func _initialize_Steam() -> void:
 		get_tree().quit()
 </code></pre>
 						
-						<p>This code will obviously shut down the game if Steam does not initialize and returns a status of anything except 1.  It will also print the verbal reason for shutting down so you know exactly why the error occurred.</p>
+						<p>This code will obviously shut down the game if Steam does not initialize and returns a status of anything except 1.  This includes the user being offline, which may not be optimal. If you don't mine users being offline, then you can do this instead:</p>
+<pre><code>
+var IS_ONLINE: bool = true
+
+func _ready() -> void:
+	_initialize_Steam()
+
+func _initialize_Steam() -> void:
+	var INIT: Dictionary = Steam.steamInit()
+	print("Did Steam initialize?: "+str(INIT))
+
+	if INIT['status'] != 1:
+		# If the user is offline
+		if INIT['status'] == 21:
+			IS_ONLINE = false
+		# All other conditions should probably close the game
+		else:
+			print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
+			get_tree().quit()
+</code></pre>
+						In both cases, it will also print the verbal reason for shutting down so you know exactly why the error occurred.</p>
 						<hr/>
 						<header class="major">
 							<h3>Getting More Data</h3>
 						</header>
 						<p>You can check for a few additional things at boot like:</p>
 <pre><code>
-var IS_ONLINE: bool = Steam.loggedOn()
 var STEAM_ID: int = Steam.getSteamID()
 var IS_OWNED: bool = Steam.isSubscribed()
 </code></pre>
@@ -99,6 +120,7 @@ if IS_OWNED == false:
 	print("User does not own this game")
 	get_tree().quit()
 </code></pre>
+						<p>Please note that this behavior might cause problems from people using Family Share, Free Weekends, or other methods of trying the game out. There are other functions to check for those conditions which you might want to consider.</p>
 						<p>There are other things you may want to do during a boot-up process after Steamworks is initialized, like getting current achievements or statistics, but we'll cover that in another tutorial.</p>
 						<hr/>
 						<header class="major">
@@ -134,10 +156,14 @@ func _initialize_Steam() -> void:
 	print("Did Steam initialize?: "+str(INIT))
 	
 	if INIT['status'] != 1:
-		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
-		get_tree().quit()
+		# If the user is offline
+		if INIT['status'] == 21:
+			IS_ONLINE = false
+		# All other conditions should probably close the game
+		else:
+			print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
+			get_tree().quit()
 	
-	IS_ONLINE = Steam.loggedOn()
 	STEAM_ID = Steam.getSteamID()
 	IS_OWNED = Steam.isSubscribed()
 	
