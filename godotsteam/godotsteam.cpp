@@ -394,11 +394,6 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 		status = RESULT_UNEXPECTED_ERROR;
 		verbal = "Invalid app ID or app not installed.";
 	}
-	// The user is not logged into Steam or there is no active connection to Steam
-	else if(!loggedOn()){
-		status = RESULT_NOT_LOGGED_ON;
-		verbal = "Not logged on / no connection to Steam.";
-	}
 	// Steam is connected and active, so load the stats and achievements if requested
 	if(status == RESULT_OK && SteamUserStats() != NULL && retrieve_stats){
 		requestCurrentStats();
@@ -693,7 +688,7 @@ void Steam::uninstallDLC(int value){
 
 // Request all proof of purchase keys for the calling appid and asociated DLC.
 // A series of AppProofOfPurchaseKeyResponse_t callbacks will be sent with appropriate appid values, ending with a final callback where the m_nAppId member is k_uAppIdInvalid (zero).
-void requestAllProofOfPurchaseKeys(){
+void Steam::requestAllProofOfPurchaseKeys(){
 	if(SteamApps() != NULL){
 		SteamApps()->RequestAllProofOfPurchaseKeys();
 	}
@@ -701,7 +696,7 @@ void requestAllProofOfPurchaseKeys(){
 
 // Request legacy cd-key for yourself or owned DLC. If you are interested in this data then make sure you provide us with a list of valid keys to be distributed to users when they purchase the game, before the game ships.
 // You'll receive an AppProofOfPurchaseKeyResponse_t callback when the key is available (which may be immediately).
-void requestAppProofOfPurchaseKey(AppId_t app_id){
+void Steam::requestAppProofOfPurchaseKey(AppId_t app_id){
 	if(SteamApps() != NULL){
 		SteamApps()->RequestAppProofOfPurchaseKey((AppId_t)app_id);
 	}
@@ -2837,7 +2832,7 @@ Array Steam::getResultItems(){
 	Array items;
 	uint32 size = 0;
 	if(SteamInventory()->GetResultItems(inventory_handle, NULL, &size)){
-		itemDetails.resize(size);
+		items.resize(size);
 		std::vector<SteamItemDetails_t> itemArray;
 		if(SteamInventory()->GetResultItems(inventory_handle, itemArray.data(), &size)){
 			for(uint32 i = 0; i < size; i++){
@@ -9888,6 +9883,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
 	ClassDB::bind_method("getFileDetails", &Steam::getFileDetails);
 	ClassDB::bind_method("isTimedTrial", &Steam::isTimedTrial);
+	ClassDB::bind_method("requestAllProofOfPurchaseKeys", &Steam::requestAllProofOfPurchaseKeys);
+	ClassDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
 	
 	// APP LIST BIND METHODS ////////////////////
 	ClassDB::bind_method("getNumInstalledApps", &Steam::getNumInstalledApps);

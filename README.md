@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.10.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.10.2 Changes**
+- Removed: not logged in as error condition in steamInit function
+
 **Version 3.10.1 Changes**
 - Changed: various compilation errors for OSX, _thanks to SapphireMH_
 - Removed: receiveRelayAuthTicket, findRelayAuthTicketForServer, getHostedDedicatedServerAddress, and getGameCoordinatorServerLogin as they rely on datagram header that was removed from base SDK
