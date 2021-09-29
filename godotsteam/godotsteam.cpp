@@ -382,11 +382,6 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 		status = RESULT_UNEXPECTED_ERROR;
 		verbal = "Invalid app ID or app not installed.";
 	}
-	// The user is not logged into Steam or there is no active connection to Steam
-	else if(!loggedOn()){
-		status = RESULT_NOT_LOGGED_ON;
-		verbal = "Not logged on / no connection to Steam.";
-	}
 	// Steam is connected and active, so load the stats and achievements if requested
 	if(status == RESULT_OK && SteamUserStats() != NULL && retrieve_stats){
 		requestCurrentStats();

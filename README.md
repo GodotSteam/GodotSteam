@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.1.1 Changes**
+- Removed: not logged in as a failure condition for steamInit
+
 **Version 3.1 Changes**
 - Added: various Steam Deck specific functions, _thanks to EIREXE_
 - Added: new AppLists class of functions and callbacks
