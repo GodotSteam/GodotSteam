@@ -60,7 +60,6 @@ func _initialize_Steam() -> void:
 										<li>1 - Successfully initialized</li>
 										<li>2 - Failed to initialize (default error)</li>
 										<li>20 - Steam is not running</li>
-										<li>21 - User is not logged in or has no connection to Steam</li>
 										<li>79 - Invalid app ID or app not installed</li>
 									</ul>
 								</li>
@@ -70,7 +69,7 @@ func _initialize_Steam() -> void:
 						<header class="major">
 							<h3>Checking For Errors</h3>
 						</header>
-						<p>The returned dictionary from <strong>Steam.steamInit()</strong> can be printed and ignored. However, there are certain conditions where you might not know why the game crashed at boot or does something unexpected; especially in development. For these cases we will check if Steamworks was actually initialized and the user can connect to Steam. To stop the game if anything is amiss or the client is offline, we do this:</p>
+						<p>The returned dictionary from <strong>Steam.steamInit()</strong> can be printed and ignored. However, there are certain conditions where you might not know why the game crashed at boot or does something unexpected; especially in development. For these cases we will check if Steamworks was actually initialized and to stop the game if anything is amiss, we do this:</p>
 <pre><code>
 func _ready() -> void:
 	_initialize_Steam()
@@ -84,33 +83,14 @@ func _initialize_Steam() -> void:
 		get_tree().quit()
 </code></pre>
 						
-						<p>This code will obviously shut down the game if Steam does not initialize and returns a status of anything except 1.  This includes the user being offline, which may not be optimal. If you don't mine users being offline, then you can do this instead:</p>
-<pre><code>
-var IS_ONLINE: bool = true
-
-func _ready() -> void:
-	_initialize_Steam()
-
-func _initialize_Steam() -> void:
-	var INIT: Dictionary = Steam.steamInit()
-	print("Did Steam initialize?: "+str(INIT))
-
-	if INIT['status'] != 1:
-		# If the user is offline
-		if INIT['status'] == 21:
-			IS_ONLINE = false
-		# All other conditions should probably close the game
-		else:
-			print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
-			get_tree().quit()
-</code></pre>
-						In both cases, it will also print the verbal reason for shutting down so you know exactly why the error occurred.</p>
+						<p>This code will obviously shut down the game if Steam does not initialize and returns a status of anything except 1.  Most times, in development, getting a failure will probably be caused by a missing API file (steam_api.dll, libsteam_api.so, libsteam_api.dylib) or the missing steam_appid.txt file (which is not needed when shipping your game).</p>
 						<hr/>
 						<header class="major">
 							<h3>Getting More Data</h3>
 						</header>
 						<p>You can check for a few additional things at boot like:</p>
 <pre><code>
+var IS_ONLINE: bool = Steam.loggedOn()
 var STEAM_ID: int = Steam.getSteamID()
 var IS_OWNED: bool = Steam.isSubscribed()
 </code></pre>
@@ -156,14 +136,10 @@ func _initialize_Steam() -> void:
 	print("Did Steam initialize?: "+str(INIT))
 	
 	if INIT['status'] != 1:
-		# If the user is offline
-		if INIT['status'] == 21:
-			IS_ONLINE = false
-		# All other conditions should probably close the game
-		else:
-			print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
-			get_tree().quit()
+		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
+		get_tree().quit()
 	
+	IS_ONLINE = Steam.loggedOn()
 	STEAM_ID = Steam.getSteamID()
 	IS_OWNED = Steam.isSubscribed()
 	

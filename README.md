@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 9/29/21:**
+- Changed: various information in initialization tutorial
+
 **Updated 9/28/21:**
 - Changed: various information in initialization tutorial
 
