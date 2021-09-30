@@ -24,6 +24,7 @@ func _ready() -> void:
 	_connect_Steam_Signals("lobby_data_update", "_on_Lobby_Data_Update")
 	_connect_Steam_Signals("lobby_invite", "_on_Lobby_Invite")
 	_connect_Steam_Signals("join_requested", "_on_Lobby_Join_Requested")
+	_connect_Steam_Signals("persona_state_change", "_on_Persona_Change")
 	_connect_Steam_Signals("p2p_session_request", "_on_P2P_Session_Request")
 	_connect_Steam_Signals("p2p_session_connect_fail", "_on_P2P_Session_Connect_Fail")
 	# Check for command line arguments
@@ -269,7 +270,7 @@ func _on_P2P_Session_Connect_Fail(lobby_id: int, session_error: int) -> void:
 # HELPER FUNCTIONS
 #################################################
 # Get the lobby members from Steam
-func _get_Lobby_Members():
+func _get_Lobby_Members() -> void:
 	# Clear your previous lobby list
 	LOBBY_MEMBERS.clear()
 	# Clear the original player list
@@ -322,6 +323,13 @@ func _change_Button_Controls(toggle: bool) -> void:
 		$Chat.set_editable(false)
 	else:
 		$Chat.set_editable(true)
+
+
+# A user's information has changed
+func _on_Persona_Change(steam_id: int, _flag: int) -> void:
+	print("[STEAM] A user ("+str(steam_id)+") had information change, update the lobby list")
+	# Update the player list
+	_get_Lobby_Members()
 
 
 # Connect a Steam signal and show the success code
