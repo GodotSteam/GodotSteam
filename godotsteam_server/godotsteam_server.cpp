@@ -17,9 +17,6 @@
 // Include GodotSteam Server header
 #include "godotsteam_server.h"
 
-// Include Steamworks Server API header
-#include "steam/steam_gameserver.h"
-
 // Include some Godot headers
 #include "core/io/ip_address.h"
 #include "core/io/ip.h"

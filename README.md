@@ -1,5 +1,5 @@
 # GodotSteam Server for Godot 3.x
-Steam Server API for the Godot game engine (versions 3.0 to 3.3.3). For the Windows, Linux, and Mac platforms.
+Steam Server API for the Godot game engine (versions 3.x). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
@@ -62,7 +62,7 @@ Quick How-To
 ----------
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
-- Download and unpack the [Godot source 3.3.3](https://github.com/godotengine/godot).
+- Download and unpack the [Godot source 3.x](https://github.com/godotengine/godot).
 - Move the following to godotsteam_server/sdk/:
 ````
     sdk/public/
