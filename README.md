@@ -1,5 +1,5 @@
 # GodotSteam for GDNative
-Steam API for the Godot game engine (version 3.3.3). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
 **WARNING**: This GDNative branch is still in active development! While functional, I do not suggest using it for production code for your game; testing only.  Please use one of the GodotSteam modules instead.
 
