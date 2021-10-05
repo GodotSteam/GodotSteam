@@ -51,15 +51,15 @@ if env['platform'] == '':
 if env['platform'] == "osx":
     env['target_path'] += 'osx/'
     cpp_library += '.osx'
-    env.Append(CCFLAGS=['-arch', 'x86_64'])
-    env.Append(CXXFLAGS=['-std=c++17'])
-    env.Append(LINKFLAGS=['-arch', 'x86_64'])
     if env['target'] in ('debug', 'd'):
-        env.Append(CCFLAGS=['-g', '-O2'])
+        env.Append(CCFLAGS=['-g', '-O2', '-arch', 'x86_64', '-std=c++17'])
+        env.Append(LINKFLAGS=['-arch', 'x86_64'])
     else:
-        env.Append(CCFLAGS=['-g', '-O3'])
+        env.Append(CCFLAGS=['-g', '-O3', '-arch', 'x86_64', '-std=c++17'])
+        env.Append(LINKFLAGS=['-arch', 'x86_64'])
     # Set the correct Steam library
-    steam_lib_path += "/osx32"
+    steam_lib_path += "/osx"
+    steamworks_library = 'libsteam_api.dylib'
 
 
 elif env['platform'] in ('linuxbsd', 'linux'):
@@ -73,6 +73,7 @@ elif env['platform'] in ('linuxbsd', 'linux'):
         env.Append(CCFLAGS=['-g', '-O3'])
     # Set correct Steam library
     steam_lib_path += "/linux64"
+    steamworks_library = 'libsteam_api.so'
 
 elif env['platform'] == "windows":
     env['target_path'] += 'win64/'
@@ -93,6 +94,7 @@ elif env['platform'] == "windows":
         env.Append(CCFLAGS=['-O2', '-EHsc', '-MD'])
     # Set correct Steam library
     steam_lib_path += "/win64"
+    steamworks_library = 'steam_api64.lib'
     steam_lib = "steam_api64.lib"
     if env["CC"] == "cl":
         env.Append(LINKFLAGS=[ steam_lib ])
@@ -107,7 +109,7 @@ cpp_library += '.' + str(bits)
 # make sure our binding library is properly includes
 env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/', cpp_bindings_path + 'include/core/', cpp_bindings_path + 'include/gen/', 'godotsteam/sdk/public'])
 env.Append(LIBPATH=[cpp_bindings_path + 'bin/', steam_lib_path])
-env.Append(LIBS=[cpp_library])
+env.Append(LIBS=[cpp_library, steamworks_library])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=['godotsteam/'])
