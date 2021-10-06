@@ -3,6 +3,7 @@ Steam API for the Godot game engine (versions 2 to 2.1.6). For the Windows, Linu
 
 Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
