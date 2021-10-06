@@ -3505,7 +3505,7 @@ void Steam::requestFavoritesServerList(int app_id, Array filters){
 			// Get the key/value pair
 			Array pair = filters[i];
 			// Get the key from the filter pair
-			String key = (String)pair[0];
+			String key = pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
 			filter_array->m_szKey[i] = *this_key;
@@ -3537,7 +3537,7 @@ void Steam::requestFriendsServerList(int app_id, Array filters){
 			// Get the key/value pair
 			Array pair = filters[i];
 			// Get the key from the filter pair
-			String key = (String)pair[0];
+			String key = pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
 			filter_array->m_szKey[i] = *this_key;
@@ -3569,7 +3569,7 @@ void Steam::requestHistoryServerList(int app_id, Array filters){
 			// Get the key/value pair
 			Array pair = filters[i];
 			// Get the key from the filter pair
-			String key = (String)pair[0];
+			String key = pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
 			filter_array->m_szKey[i] = *this_key;
@@ -3601,7 +3601,7 @@ void Steam::requestInternetServerList(int app_id, Array filters){
 			// Get the key/value pair
 			Array pair = filters[i];
 			// Get the key from the filter pair
-			String key = (String)pair[0];
+			String key = pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
 			filter_array->m_szKey[i] = *this_key;
@@ -3640,7 +3640,7 @@ void Steam::requestSpectatorServerList(int app_id, Array filters){
 			// Get the key/value pair
 			Array pair = filters[i];
 			// Get the key from the filter pair
-			String key = (String)pair[0];
+			String key = pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
 			filter_array->m_szKey[i] = *this_key;
@@ -5592,7 +5592,7 @@ bool Steam::addRequiredTagGroup(uint64_t query_handle, Array tag_array){
 		tags->m_ppStrings = new const char*[tag_array.size()];
 		uint32 strCount = tag_array.size();
 		for (uint32 i=0; i < strCount; i++) {
-			String str = (String)tag_array[i];
+			String str = tag_array[i];
 			tags->m_ppStrings[i] = str.utf8().get_data();
 		}
 		tags->m_nNumStrings = tag_array.size();
@@ -6354,7 +6354,7 @@ bool Steam::setItemTags(uint64_t update_handle, Array tag_array){
 		tags->m_ppStrings = new const char*[tag_array.size()];
 		uint32 strCount = tag_array.size();
 		for (uint32 i=0; i < strCount; i++) {
-			String str = (String)tag_array[i];
+			String str = tag_array[i];
 			tags->m_ppStrings[i] = str.utf8().get_data();
 		}
 		tags->m_nNumStrings = tag_array.size();
@@ -9723,7 +9723,7 @@ void Steam::_leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_d
 				}
 				message = "Leaderboard entries successfully retrieved";
 			}
-			delete[] entry;
+			delete entry;
 		} else {
 			message = "There was an IO failure";
 		}
