@@ -6,6 +6,11 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 10/6/21:**
+- Added: added new changelog link for Godot 4 version
+- Added: new links in introduction for godot4 and gdnative-plugin branches
+- Changed: how-to module link to include godot4
+
 **Updated 9/29/21:**
 - Changed: various information in initialization tutorial
 
