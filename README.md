@@ -4,8 +4,9 @@ Steam API for the Godot game engine (version 3.x). For the Windows, Linux, and M
 **WARNING**: This GDNative branch is still in active development! While functional, I do not suggest using it for production code for your game; testing only.  Please use one of the GodotSteam modules instead.
 
 Additional flavors include:
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
+- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
 
 Documentation
