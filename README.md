@@ -19,6 +19,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.10.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.10.3 Changes**
+- Changed: various internal variable / arguments names for clarity, will affect signal-returned dictionaries
+
 **Version 3.10.2 Changes**
 - Removed: not logged in as error condition in steamInit function
 

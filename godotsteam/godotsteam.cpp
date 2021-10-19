@@ -7491,12 +7491,12 @@ void Steam::uploadLeaderboardScore(int score, bool keep_best, PoolIntArray detai
 		}
 		ELeaderboardUploadScoreMethod method = keep_best ? k_ELeaderboardUploadScoreMethodKeepBest : k_ELeaderboardUploadScoreMethodForceUpdate;
 		int detailsSize = details.size();
-		const int32 *detailsPointer = NULL;
+		const int32 *details_pointer = NULL;
 		if(detailsSize > 0){
 			PoolIntArray::Read r = details.read();
-			detailsPointer = r.ptr();
+			details_pointer = r.ptr();
 		}
-		SteamAPICall_t api_call = SteamUserStats()->UploadLeaderboardScore((SteamLeaderboard_t)this_leaderboard, method, (int32)score, detailsPointer, detailsSize);
+		SteamAPICall_t api_call = SteamUserStats()->UploadLeaderboardScore((SteamLeaderboard_t)this_leaderboard, method, (int32)score, details_pointer, detailsSize);
 		callResultUploadScore.Set(api_call, this, &Steam::_leaderboard_score_uploaded);
 	}
 }
@@ -7858,15 +7858,15 @@ void Steam::_dlc_installed(DlcInstalled_t* call_data){
 //! Called after requesting the details of a specific file.
 void Steam::_file_details_result(FileDetailsResult_t* file_data){
 	uint32_t result = file_data->m_eResult;
-	uint64_t fileSize = file_data->m_ulFileSize;
+	uint64_t file_size = file_data->m_ulFileSize;
 	uint32_t flags = file_data->m_unFlags;
-	PoolByteArray fileHash;
-	fileHash.resize(20);
-	PoolByteArray::Write w = fileHash.write();
+	PoolByteArray file_hash;
+	file_hash.resize(20);
+	PoolByteArray::Write w = file_hash.write();
 	for (int i=0; i<20; i++){
 		w[i] = file_data->m_FileSHA[i];
 	}
-	emit_signal("file_details_result", result, fileSize, fileHash, flags);
+	emit_signal("file_details_result", result, file_size, file_hash, flags);
 }
 
 //! Posted after the user executes a steam url with command line or query parameters such as steam://run/<appid>//?param1=value1;param2=value2;param3=value3; while the game is already running. The new params can be queried with getLaunchCommandLine and getLaunchQueryParam.
@@ -7950,12 +7950,12 @@ void Steam::_clan_activity_downloaded(DownloadClanActivityCountsResult_t* call_d
 	Dictionary activity;
 	if(success){
 		int online = 0;
-		int inGame = 0;
+		int in_game = 0;
 		int chatting = 0;
-		activity["ret"] = SteamFriends()->GetClanActivityCounts(clan_activity, &online, &inGame, &chatting);
+		activity["ret"] = SteamFriends()->GetClanActivityCounts(clan_activity, &online, &in_game, &chatting);
 		if(activity["ret"]){
 			activity["online"] = online;
-			activity["ingame"] = inGame;
+			activity["ingame"] = in_game;
 			activity["chatting"] = chatting;
 		}
 	}
@@ -8061,9 +8061,9 @@ void Steam::_persona_state_change(PersonaStateChange_t* call_data){
 //! Reports the result of an attempt to change the user's persona name.
 void Steam::_name_changed(SetPersonaNameResponse_t* call_data){
 	bool success = call_data->m_bSuccess;
-	bool localSuccess = call_data->m_bLocalSuccess;
+	bool local_success = call_data->m_bLocalSuccess;
 	EResult result = call_data->m_result;
-	emit_signal("name_changed", success, localSuccess, result);
+	emit_signal("name_changed", success, local_success, result);
 }
 
 //! Dispatched when an overlay browser instance is navigated to a protocol/scheme registered by RegisterProtocolInOverlayBrowser().
@@ -8082,66 +8082,66 @@ void Steam::_unread_chat_messages_changed(UnreadChatMessagesChanged_t* call_data
 //! There are no notes about this in Valve's header files or documentation.
 void Steam::_search_for_game_progress(SearchForGameProgressCallback_t* call_data){
 	EResult result = call_data->m_eResult;
-	uint64_t searchID = call_data->m_ullSearchID;
+	uint64_t search_id = call_data->m_ullSearchID;
 	uint64_t lobby_id = call_data->m_lobbyID.ConvertToUint64();
 	uint64_t steamIDEndedSearch = call_data->m_steamIDEndedSearch.ConvertToUint64();
 	// Create a dictionary for search progress
-	Dictionary searchProgress;
-	searchProgress["lobby_id"] = lobby_id;
-	searchProgress["ended_search_id"] = steamIDEndedSearch;
-	searchProgress["seconds_remaining_estimate"] = call_data->m_nSecondsRemainingEstimate;
-	searchProgress["players_searching"] = call_data->m_cPlayersSearching;
-	emit_signal("search_for_game_progress", result, searchID, searchProgress);
+	Dictionary search_progress;
+	search_progress["lobby_id"] = lobby_id;
+	search_progress["ended_search_id"] = steamIDEndedSearch;
+	search_progress["seconds_remaining_estimate"] = call_data->m_nSecondsRemainingEstimate;
+	search_progress["players_searching"] = call_data->m_cPlayersSearching;
+	emit_signal("search_for_game_progress", result, search_id, search_progress);
 }
 
 //! Notification to all players searching that a game has been found.
 void Steam::_search_for_game_result(SearchForGameResultCallback_t* call_data){
 	EResult result = call_data->m_eResult;
-	uint64_t searchID = call_data->m_ullSearchID;
+	uint64_t search_id = call_data->m_ullSearchID;
 	uint64_t host_id = call_data->m_steamIDHost.ConvertToUint64();
 	// Create a dictionary for search results
-	Dictionary searchResult;
-	searchResult["count_players_ingame"] = call_data->m_nCountPlayersInGame;
-	searchResult["count_accepted_game"] = call_data->m_nCountAcceptedGame;
-	searchResult["host_id"] = host_id;
-	searchResult["final_callback"] = call_data->m_bFinalCallback;
-	emit_signal("search_for_game_result", result, searchID, searchResult);
+	Dictionary search_result;
+	search_result["count_players_ingame"] = call_data->m_nCountPlayersInGame;
+	search_result["count_accepted_game"] = call_data->m_nCountAcceptedGame;
+	search_result["host_id"] = host_id;
+	search_result["final_callback"] = call_data->m_bFinalCallback;
+	emit_signal("search_for_game_result", result, search_id, search_result);
 }
 
 //! Callback from RequestPlayersForGame when the matchmaking service has started or ended search; callback will also follow a call from CancelRequestPlayersForGame - m_bSearchInProgress will be false.
 void Steam::_request_players_for_game_progress(RequestPlayersForGameProgressCallback_t* call_data){
 	EResult result = call_data->m_eResult;
-	uint64_t searchID = call_data->m_ullSearchID;
-	emit_signal("request_players_for_game_progress", result, searchID);
+	uint64_t search_id = call_data->m_ullSearchID;
+	emit_signal("request_players_for_game_progress", result, search_id);
 }
 
 //! Callback from RequestPlayersForGame, one of these will be sent per player followed by additional callbacks when players accept or decline the game.
 void Steam::_request_players_for_game_result(RequestPlayersForGameResultCallback_t* call_data){
 	EResult result = call_data->m_eResult;
-	uint64_t searchID = call_data->m_ullSearchID;
+	uint64_t search_id = call_data->m_ullSearchID;
 	uint64_t player_id = call_data->m_SteamIDPlayerFound.ConvertToUint64();
 	uint64_t lobby_id = call_data->m_SteamIDLobby.ConvertToUint64();
-	uint64_t uniqueGameID = call_data->m_ullUniqueGameID;
+	uint64_t unique_game_id = call_data->m_ullUniqueGameID;
 	// Create a dictionary for the player data
-	Dictionary playerData;
-	playerData["player_id"] = player_id;
-	playerData["lobby_id"] = lobby_id;
-	playerData["player_accept_state"] = call_data->m_ePlayerAcceptState;
-	playerData["player_index"] = call_data->m_nPlayerIndex;
-	playerData["total_players"] = call_data->m_nTotalPlayersFound;
-	playerData["total_players_accepted_game"] = call_data->m_nTotalPlayersAcceptedGame;
-	playerData["suggested_team_index"] = call_data->m_nSuggestedTeamIndex;
-	playerData["unique_game_id"] = uniqueGameID;
+	Dictionary player_data;
+	player_data["player_id"] = player_id;
+	player_data["lobby_id"] = lobby_id;
+	player_data["player_accept_state"] = call_data->m_ePlayerAcceptState;
+	player_data["player_index"] = call_data->m_nPlayerIndex;
+	player_data["total_players"] = call_data->m_nTotalPlayersFound;
+	player_data["total_players_accepted_game"] = call_data->m_nTotalPlayersAcceptedGame;
+	player_data["suggested_team_index"] = call_data->m_nSuggestedTeamIndex;
+	player_data["unique_game_id"] = unique_game_id;
 	// Send the data back via signal
-	emit_signal("request_players_for_game_result", result, searchID, playerData);
+	emit_signal("request_players_for_game_result", result, search_id, player_data);
 }
 
 //! There are no notes about this in Valve's header files or documentation.
 void Steam::_request_players_for_game_final_result(RequestPlayersForGameFinalResultCallback_t* call_data){
 	EResult result = call_data->m_eResult;
-	uint64_t searchID = call_data->m_ullSearchID;
+	uint64_t search_id = call_data->m_ullSearchID;
 	uint64_t game_id = call_data->m_ullUniqueGameID;
-	emit_signal("request_players_for_game_final", result, searchID, game_id);
+	emit_signal("request_players_for_game_final", result, search_id, game_id);
 }
 
 //! This callback confirms that results were received by the matchmaking service for this player.
@@ -8170,9 +8170,9 @@ void Steam::_html_browser_ready(HTML_BrowserReady_t* call_data){
 //! Called when page history status has changed the ability to go backwards and forward.
 void Steam::_html_can_go_backandforward(HTML_CanGoBackAndForward_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
-	bool goBack = call_data->bCanGoBack;
-	bool goForward = call_data->bCanGoForward;
-	emit_signal("html_can_go_backandforward", goBack, goForward);
+	bool go_back = call_data->bCanGoBack;
+	bool go_forward = call_data->bCanGoForward;
+	emit_signal("html_can_go_backandforward", go_back, go_forward);
 }
 
 //! Called when the current page in a browser gets a new title.
@@ -8192,12 +8192,12 @@ void Steam::_html_close_browser(HTML_CloseBrowser_t* call_data){
 void Steam::_html_file_open_dialog(HTML_FileOpenDialog_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& title = call_data->pchTitle;
-	const String& initialFile = call_data->pchInitialFile;
+	const String& initial_file = call_data->pchInitialFile;
 	// Allows you to react to a page wanting to open a file load dialog. NOTE: You MUST call this in response to a HTML_FileOpenDialog_t callback.
 	// So it is added here unless there is a case to use it separately.
 	SteamHTMLSurface()->FileLoadDialogResponse(browser_handle, &call_data->pchInitialFile);
 	// Send the signal back to the user
-	emit_signal("html_file_open_dialog", title, initialFile);
+	emit_signal("html_file_open_dialog", title, initial_file);
 }
 
 //! Called when a browser has finished loading a page.
@@ -8218,13 +8218,13 @@ void Steam::_html_hide_tooltip(HTML_HideToolTip_t* call_data){
 void Steam::_html_horizontal_scroll(HTML_HorizontalScroll_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	// Create dictionary to bypass argument limit in Godot
-	Dictionary scrollData;
-	scrollData["scrollMax"] = call_data->unScrollMax;
-	scrollData["scrollCurrent"] = call_data->unScrollCurrent;
-	scrollData["pageScale"] = call_data->flPageScale;
-	scrollData["visible"] = call_data->bVisible;
-	scrollData["pageSize"] = call_data->unPageSize;
-	emit_signal("html_horizontal_scroll", scrollData);
+	Dictionary scroll_data;
+	scroll_data["scroll_max"] = call_data->unScrollMax;
+	scroll_data["scroll_current"] = call_data->unScrollCurrent;
+	scroll_data["page_scale"] = call_data->flPageScale;
+	scroll_data["visible"] = call_data->bVisible;
+	scroll_data["page_size"] = call_data->unPageSize;
+	emit_signal("html_horizontal_scroll", scroll_data);
 }
 
 //! Called when the browser wants to display a Javascript alert dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
@@ -8245,46 +8245,46 @@ void Steam::_html_js_confirm(HTML_JSConfirm_t* call_data){
 void Steam::_html_link_at_position(HTML_LinkAtPosition_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	// Create dictionary to bypass Godot argument limit
-	Dictionary linkData;
-	linkData["x"] = call_data->x;
-	linkData["y"] = call_data->y;
-	linkData["url"] = call_data->pchURL;
-	linkData["input"] = call_data->bInput;
-	linkData["liveLink"] = call_data->bLiveLink;
-	emit_signal("html_link_at_position", linkData);
+	Dictionary link_data;
+	link_data["x"] = call_data->x;
+	link_data["y"] = call_data->y;
+	link_data["url"] = call_data->pchURL;
+	link_data["input"] = call_data->bInput;
+	link_data["live_link"] = call_data->bLiveLink;
+	emit_signal("html_link_at_position", link_data);
 }
 
 //! Called when a browser surface has a pending paint. This is where you get the actual image data to render to the screen.
 void Steam::_html_needs_paint(HTML_NeedsPaint_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	// Create dictionary to bypass Godot argument limit
-	Dictionary pageData;
-	pageData["bgra"] = call_data->pBGRA;
-	pageData["wide"] = call_data->unWide;
-	pageData["tall"] = call_data->unTall;
-	pageData["updateX"] = call_data->unUpdateX;
-	pageData["updateY"] = call_data->unUpdateY;
-	pageData["updateWide"] = call_data->unUpdateWide;
-	pageData["updateTall"] = call_data->unUpdateTall;
-	pageData["scrollX"] = call_data->unScrollX;
-	pageData["scrollY"] = call_data->unScrollY;
-	pageData["pageScale"] = call_data->flPageScale;
-	pageData["pageSerial"] = call_data->unPageSerial;
-	emit_signal("html_needs_paint", pageData);
+	Dictionary page_data;
+	page_data["bgra"] = call_data->pBGRA;
+	page_data["wide"] = call_data->unWide;
+	page_data["tall"] = call_data->unTall;
+	page_data["update_x"] = call_data->unUpdateX;
+	page_data["update_y"] = call_data->unUpdateY;
+	page_data["update_wide"] = call_data->unUpdateWide;
+	page_data["update_tall"] = call_data->unUpdateTall;
+	page_data["scroll_x"] = call_data->unScrollX;
+	page_data["scroll_y"] = call_data->unScrollY;
+	page_data["page_scale"] = call_data->flPageScale;
+	page_data["page_serial"] = call_data->unPageSerial;
+	emit_signal("html_needs_paint", page_data);
 }
 
 //! A browser has created a new HTML window.
 void Steam::_html_new_window(HTML_NewWindow_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	// Create a dictionary to bypass Godot argument limit
-	Dictionary windowData;
-	windowData["url"] = call_data->pchURL;
-	windowData["x"] = call_data->unX;
-	windowData["y"] = call_data->unY;
-	windowData["wide"] = call_data->unWide;
-	windowData["tall"] = call_data->unTall;
-	windowData["newHandle"] = call_data->unNewWindow_BrowserHandle_IGNORE;
-	emit_signal("html_new_window", windowData);
+	Dictionary window_data;
+	window_data["url"] = call_data->pchURL;
+	window_data["x"] = call_data->unX;
+	window_data["y"] = call_data->unY;
+	window_data["wide"] = call_data->unWide;
+	window_data["tall"] = call_data->unTall;
+	window_data["new_handle"] = call_data->unNewWindow_BrowserHandle_IGNORE;
+	emit_signal("html_new_window", window_data);
 }
 
 //! The browser has requested to load a url in a new tab.
@@ -8298,15 +8298,15 @@ void Steam::_html_open_link_in_new_tab(HTML_OpenLinkInNewTab_t* call_data){
 void Steam::_html_search_results(HTML_SearchResults_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	uint32 results = call_data->unResults;
-	uint32 currentMatch = call_data->unCurrentMatch;
-	emit_signal("html_search_results", results, currentMatch);
+	uint32 current_match = call_data->unCurrentMatch;
+	emit_signal("html_search_results", results, current_match);
 }
 
 //! Called when a browser wants to change the mouse cursor.
 void Steam::_html_set_cursor(HTML_SetCursor_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
-	uint32 mouseCursor = call_data->eMouseCursor;
-	emit_signal("html_set_cursor", mouseCursor);
+	uint32 mouse_cursor = call_data->eMouseCursor;
+	emit_signal("html_set_cursor", mouse_cursor);
 }
 
 //! Called when a browser wants to display a tooltip.
@@ -8344,26 +8344,26 @@ void Steam::_html_update_tooltip(HTML_UpdateToolTip_t* call_data){
 void Steam::_html_url_changed(HTML_URLChanged_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	// Create a dictionary to bypass Godot argument limit
-	Dictionary urlData;
-	urlData["url"] = call_data->pchURL;
-	urlData["post_data"] = call_data->pchPostData;
-	urlData["redirect"] = call_data->bIsRedirect;
-	urlData["title"] = call_data->pchPageTitle;
-	urlData["newNavigation"] = call_data->bNewNavigation;
-	emit_signal("html_url_changed", urlData);
+	Dictionary url_data;
+	url_data["url"] = call_data->pchURL;
+	url_data["post_data"] = call_data->pchPostData;
+	url_data["redirect"] = call_data->bIsRedirect;
+	url_data["title"] = call_data->pchPageTitle;
+	url_data["new_navigation"] = call_data->bNewNavigation;
+	emit_signal("html_url_changed", url_data);
 }
 
 //! Provides details on the visibility and size of the vertical scrollbar.
 void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	// Create dictionary to bypass argument limit in Godot
-	Dictionary scrollData;
-	scrollData["scrollMax"] = call_data->unScrollMax;
-	scrollData["scrollCurrent"] = call_data->unScrollCurrent;
-	scrollData["pageScale"] = call_data->flPageScale;
-	scrollData["visible"] = call_data->bVisible;
-	scrollData["pageSize"] = call_data->unPageSize;
-	emit_signal("html_vertical_scroll", scrollData);
+	Dictionary scroll_data;
+	scroll_data["scroll_max"] = call_data->unScrollMax;
+	scroll_data["scroll_current"] = call_data->unScrollCurrent;
+	scroll_data["page_scale"] = call_data->flPageScale;
+	scroll_data["visible"] = call_data->bVisible;
+	scroll_data["page_size"] = call_data->unPageSize;
+	emit_signal("html_vertical_scroll", scroll_data);
 }
 
 // HTTP CALLBACKS ///////////////////////////////
@@ -8372,10 +8372,10 @@ void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* call_data){
 void Steam::_http_request_completed(HTTPRequestCompleted_t* call_data){
 	uint32 cookie_handle = call_data->m_hRequest;
 	uint64_t context_value = call_data->m_ulContextValue;
-	bool requestSuccess = call_data->m_bRequestSuccessful;
-	int statusCode = call_data->m_eStatusCode;
+	bool request_success = call_data->m_bRequestSuccessful;
+	int status_code = call_data->m_eStatusCode;
 	uint32 body_size = call_data->m_unBodySize;
-	emit_signal("http_request_completed", cookie_handle, context_value, requestSuccess, statusCode, body_size);
+	emit_signal("http_request_completed", cookie_handle, context_value, request_success, status_code, body_size);
 }
 
 //! Triggered when a chunk of data is received from a streaming HTTP request.
@@ -8383,8 +8383,8 @@ void Steam::_http_request_data_received(HTTPRequestDataReceived_t* call_data){
 	uint32 cookie_handle = call_data->m_hRequest;
 	uint64_t context_value = call_data->m_ulContextValue;
 	uint32 offset = call_data->m_cOffset;
-	uint32 bytesReceived = call_data->m_cBytesReceived;
-	emit_signal("http_request_data_received", cookie_handle, context_value, offset, bytesReceived);
+	uint32 bytes_received = call_data->m_cBytesReceived;
+	emit_signal("http_request_data_received", cookie_handle, context_value, offset, bytes_received);
 }
 
 //! Triggered when HTTP headers are received from a streaming HTTP request.
@@ -8494,7 +8494,7 @@ void Steam::_favorites_list_changed(FavoritesListChanged_t* call_data){
 	sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
 	favorite["ip"] = favoriteIP; 
 	favorite["query_port"] = call_data->m_nQueryPort;
-	favorite["connPort"] = call_data->m_nConnPort;
+	favorite["connection_port"] = call_data->m_nConnPort;
 	favorite["app_id"] = call_data->m_nAppID;
 	favorite["flags"] = call_data->m_nFlags;
 	favorite["add"] = call_data->m_bAdd;
@@ -8505,56 +8505,56 @@ void Steam::_favorites_list_changed(FavoritesListChanged_t* call_data){
 //! Signal when a lobby chat message is received
 void Steam::_lobby_message(LobbyChatMsg_t* call_data){
 	CSteamID user_id = call_data->m_ulSteamIDUser;
-	uint8 chatType = call_data->m_eChatEntryType;
+	uint8 chat_type = call_data->m_eChatEntryType;
 	// Convert the chat type over
-	EChatEntryType type = (EChatEntryType)chatType;
+	EChatEntryType type = (EChatEntryType)chat_type;
 	// Get the chat message data
 	char buffer[4096];
 	int result = SteamMatchmaking()->GetLobbyChatEntry(call_data->m_ulSteamIDLobby, call_data->m_iChatID, &user_id, &buffer, 4096, &type);
 	uint64_t user = user_id.ConvertToUint64();
-	emit_signal("lobby_message", result, user, String::utf8(buffer), chatType);
+	emit_signal("lobby_message", result, user, String::utf8(buffer), chat_type);
 }
 
 //! A lobby chat room state has changed, this is usually sent when a user has joined or left the lobby.
 void Steam::_lobby_chat_update(LobbyChatUpdate_t* call_data){
 	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
-	uint64_t changedID = call_data->m_ulSteamIDUserChanged;
-	uint64_t makingChangeID = call_data->m_ulSteamIDMakingChange;
-	uint32 chatState = call_data->m_rgfChatMemberStateChange;
-	emit_signal("lobby_chat_update", lobby_id, changedID, makingChangeID, chatState);
+	uint64_t changed_id = call_data->m_ulSteamIDUserChanged;
+	uint64_t making_change_id = call_data->m_ulSteamIDMakingChange;
+	uint32 chat_state = call_data->m_rgfChatMemberStateChange;
+	emit_signal("lobby_chat_update", lobby_id, changed_id, making_change_id, chat_state);
 }
 
 //! The lobby metadata has changed.
 void Steam::_lobby_data_update(LobbyDataUpdate_t* call_data){
-	uint64_t memberID = call_data->m_ulSteamIDMember;
+	uint64_t member_id = call_data->m_ulSteamIDMember;
 	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
 	uint8 success = call_data->m_bSuccess;
 	char key = '\0';
 	// Is the lobby
-	if(memberID == lobby_id){
+	if(member_id == lobby_id){
 		SteamMatchmaking()->GetLobbyData(call_data->m_ulSteamIDLobby, &key);
 	}
 	// Is a user in the lobby
 	else{
 		SteamMatchmaking()->GetLobbyMemberData(call_data->m_ulSteamIDLobby, call_data->m_ulSteamIDMember, &key);
 	}
-	emit_signal("lobby_data_update", success, lobby_id, memberID, key);
+	emit_signal("lobby_data_update", success, lobby_id, member_id, key);
 }
 
 //! Posted if a user is forcefully removed from a lobby; can occur if a user loses connection to Steam.
 void Steam::_lobby_kicked(LobbyKicked_t* call_data){
-	CSteamID steamLobbyID = call_data->m_ulSteamIDLobby;
-	uint64_t lobby_id = steamLobbyID.ConvertToUint64();
-	CSteamID steamAdminID = call_data->m_ulSteamIDAdmin;
-	uint64_t adminID = steamAdminID.ConvertToUint64();
+	CSteamID steam_lobby_id = call_data->m_ulSteamIDLobby;
+	uint64_t lobby_id = steam_lobby_id.ConvertToUint64();
+	CSteamID steam_admin_id = call_data->m_ulSteamIDAdmin;
+	uint64_t admin_id = steam_admin_id.ConvertToUint64();
 	uint8 due_to_disconnect = call_data->m_bKickedDueToDisconnect;
-	emit_signal("lobby_kicked", lobby_id, adminID, due_to_disconnect);
+	emit_signal("lobby_kicked", lobby_id, admin_id, due_to_disconnect);
 }
 
 //! Received upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this.
 void Steam::_lobby_joined(LobbyEnter_t* lobbyData){
-	CSteamID steamLobbyID = lobbyData->m_ulSteamIDLobby;
-	uint64_t lobby_id = steamLobbyID.ConvertToUint64();
+	CSteamID steam_lobby_id = lobbyData->m_ulSteamIDLobby;
+	uint64_t lobby_id = steam_lobby_id.ConvertToUint64();
 	uint32_t permissions = lobbyData->m_rgfChatPermissions;
 	bool locked = lobbyData->m_bLocked;
 	uint32_t response = lobbyData->m_EChatRoomEnterResponse;
@@ -8580,8 +8580,8 @@ void Steam::_lobby_game_created(LobbyGameCreated_t* call_data){
 
 //! Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a '<user> has invited you to the lobby, join?' notification and message. If the user outside a game chooses to join, your game will be launched with the parameter +connect_lobby <64-bit lobby id>, or with the callback GameLobbyJoinRequested_t if they're already in-game.
 void Steam::_lobby_invite(LobbyInvite_t* lobbyData){
-	CSteamID inviterID = lobbyData->m_ulSteamIDUser;
-	uint64_t inviter = inviterID.ConvertToUint64();
+	CSteamID inviter_id = lobbyData->m_ulSteamIDUser;
+	uint64_t inviter = inviter_id.ConvertToUint64();
 	CSteamID lobby_id = lobbyData->m_ulSteamIDLobby;
 	uint64_t lobby = lobby_id.ConvertToUint64();
 	CSteamID game_id = lobbyData->m_ulGameID;
@@ -8646,8 +8646,8 @@ void Steam::_music_player_will_quit(MusicPlayerWillQuit_t* call_data){
 //! Called when packets can't get through to the specified user. All queued packets unsent at this point will be dropped, further attempts to send will retry making the connection (but will be dropped if we fail again).
 void Steam::_p2p_session_connect_fail(P2PSessionConnectFail_t* call_data) {
 	uint64_t steam_id_remote = call_data->m_steamIDRemote.ConvertToUint64();
-	uint8_t sessionError = call_data->m_eP2PSessionError;
-	emit_signal("p2p_session_connect_fail", steam_id_remote, sessionError);
+	uint8_t session_error = call_data->m_eP2PSessionError;
+	emit_signal("p2p_session_connect_fail", steam_id_remote, session_error);
 }
 
 //! A user wants to communicate with us over the P2P channel via the sendP2PPacket. In response, a call to acceptP2PSessionWithUser needs to be made, if you want to open the network channel with them.
@@ -8681,23 +8681,23 @@ void Steam::_network_connection_status_changed(SteamNetConnectionStatusChangedCa
 	// Connection handle.
 	uint64_t connect_handle = call_data->m_hConn;
 	// Full connection info.
-	SteamNetConnectionInfo_t connectionInfo = call_data->m_info;
+	SteamNetConnectionInfo_t connection_info = call_data->m_info;
 	// Move connection info into a dictionary
 	Dictionary connection;
 	char identity;
-	connectionInfo.m_identityRemote.ToString(&identity, 128);
+	connection_info.m_identityRemote.ToString(&identity, 128);
 	connection["identity"] = identity;
-	connection["user_data"] = (uint64_t)connectionInfo.m_nUserData;
-	connection["listen_socket"] = connectionInfo.m_hListenSocket;
+	connection["user_data"] = (uint64_t)connection_info.m_nUserData;
+	connection["listen_socket"] = connection_info.m_hListenSocket;
 	char ip_address;
-	connectionInfo.m_addrRemote.ToString(&ip_address, 128, true);
+	connection_info.m_addrRemote.ToString(&ip_address, 128, true);
 	connection["remote_address"] = ip_address;
-	connection["remote_pop"] = connectionInfo.m_idPOPRemote;
-	connection["pop_relay"] = connectionInfo.m_idPOPRelay;
-	connection["connection_state"] = connectionInfo.m_eState;
-	connection["end_reason"] = connectionInfo.m_eEndReason;
-	connection["end_debug"] = connectionInfo.m_szEndDebug;
-	connection["debug_description"] = connectionInfo.m_szConnectionDescription;
+	connection["remote_pop"] = connection_info.m_idPOPRemote;
+	connection["pop_relay"] = connection_info.m_idPOPRelay;
+	connection["connection_state"] = connection_info.m_eState;
+	connection["end_reason"] = connection_info.m_eEndReason;
+	connection["end_debug"] = connection_info.m_szEndDebug;
+	connection["debug_description"] = connection_info.m_szConnectionDescription;
 	// Previous state (current state is in m_info.m_eState).
 	int old_state = call_data->m_eOldState;
 	// Send the data back via signal
@@ -8721,12 +8721,12 @@ void Steam::_network_authentication_status(SteamNetAuthenticationStatus_t* call_
 //! A struct used to describe our readiness to use the relay network.
 void Steam::_relay_network_status(SteamRelayNetworkStatus_t* call_data){
 	int available = call_data->m_eAvail;
-	int pingMeasurement = call_data->m_bPingMeasurementInProgress;
-	int availableConfig = call_data->m_eAvailNetworkConfig;
-	int availableRelay = call_data->m_eAvailAnyRelay;
+	int ping_measurement = call_data->m_bPingMeasurementInProgress;
+	int available_config = call_data->m_eAvailNetworkConfig;
+	int available_relay = call_data->m_eAvailAnyRelay;
 	char *debug_message = new char[256];
 	debug_message = call_data->m_debugMsg;
-	emit_signal("relay_network_status", available, pingMeasurement, availableConfig, availableRelay, debug_message);
+	emit_signal("relay_network_status", available, ping_measurement, available_config, available_relay, debug_message);
 	delete[] debug_message;
 }
 
@@ -8741,9 +8741,9 @@ void Steam::_parental_setting_changed(SteamParentalSettingsChanged_t* call_data)
 //
 //! After creating a beacon, when a user "follows" that beacon Steam will send you this callback to know that you should be prepared for the user to join your game. When they do join, be sure to call ISteamParties::OnReservationCompleted to let Steam know.
 void Steam::_reservation_notification(ReservationNotificationCallback_t* call_data){
-	uint64_t beaconID = call_data->m_ulBeaconID;
+	uint64_t beacon_id = call_data->m_ulBeaconID;
 	uint64_t steam_id = call_data->m_steamIDJoiner.ConvertToUint64();
-	emit_signal("reservation_notifications", beaconID, steam_id);
+	emit_signal("reservation_notifications", beacon_id, steam_id);
 }
 
 //! Notification that the list of available locations for posting a beacon has been updated. 
@@ -8897,11 +8897,11 @@ void Steam::_validate_auth_ticket_response(ValidateAuthTicketResponse_t* call_da
 void Steam::_user_achievement_stored(UserAchievementStored_t* call_data){
 	CSteamID game_id = call_data->m_nGameID;
 	uint64_t game = game_id.ConvertToUint64();
-	bool groupAchieve = call_data->m_bGroupAchievement;
+	bool group_achieve = call_data->m_bGroupAchievement;
 	String name = call_data->m_rgchAchievementName;
 	uint32_t current_progress = call_data->m_nCurProgress;
 	uint32_t max_progress = call_data->m_nMaxProgress;
-	emit_signal("user_achievement_stored", game, groupAchieve, name, current_progress, max_progress);
+	emit_signal("user_achievement_stored", game, group_achieve, name, current_progress, max_progress);
 }
 
 //! Called when the latest stats and achievements for the local user have been received from the server.
@@ -8957,10 +8957,10 @@ void Steam::_low_power(LowBatteryPower_t* timeLeft){
 
 //! Called when a SteamAPICall_t has completed (or failed)
 void Steam::_steam_api_call_completed(SteamAPICallCompleted_t* call_data){
-	uint64_t asyncCall = call_data->m_hAsyncCall;
+	uint64_t async_call = call_data->m_hAsyncCall;
 	int callback = call_data->m_iCallback;
 	uint32 parameter = call_data->m_cubParam;
-	emit_signal("steam_api_call_completed", asyncCall, callback, parameter);
+	emit_signal("steam_api_call_completed", async_call, callback, parameter);
 }
 
 //! Called when Steam wants to shutdown.
@@ -8994,16 +8994,16 @@ void Steam::_floating_gamepad_text_input_dismissed(FloatingGamepadTextInputDismi
 //! Triggered when the OPF Details for 360 video playback are retrieved. After receiving this you can use GetOPFStringForApp to access the OPF details.
 void Steam::_get_opf_settings_result(GetOPFSettingsResult_t* call_data){
 	int result = call_data->m_eResult;
-	int appid = call_data->m_unVideoAppID;
-	emit_signal("broadcast_upload_stop", result, appid);
+	int app_id = call_data->m_unVideoAppID;
+	emit_signal("broadcast_upload_stop", result, app_id);
 }
 
 //! Provides the result of a call to GetVideoURL.
 void Steam::_get_video_result(GetVideoURLResult_t* call_data){
 	int result = call_data->m_eResult;
-	int appid = call_data->m_unVideoAppID;
+	int app_id = call_data->m_unVideoAppID;
 	String url = call_data->m_rgchURL;
-	emit_signal("get_video_result", result, appid, url);
+	emit_signal("get_video_result", result, app_id, url);
 }
 
 
@@ -9029,7 +9029,7 @@ void Steam::_request_clan_officer_list(ClanOfficerListResponse_t *call_data, boo
 		steamworksError("request_clan_officer_list");
 	}
 	else{
-		Array officersList;
+		Array officers_list;
 		String message;
 		if(!call_data->m_bSuccess || io_failure){
 			message = "Clan officer list response failed.";
@@ -9044,10 +9044,10 @@ void Steam::_request_clan_officer_list(ClanOfficerListResponse_t *call_data, boo
 				int id = officerSteamID.ConvertToUint64();
 				officer["id"] = id;
 				officer["name"] = String::utf8(SteamFriends()->GetFriendPersonaName(officerSteamID));
-				officersList.append(officer);
+				officers_list.append(officer);
 			}
 		}
-		emit_signal("request_clan_officer_list", message, officersList);
+		emit_signal("request_clan_officer_list", message, officers_list);
 	}
 }
 
@@ -9129,9 +9129,9 @@ void Steam::_inventory_eligible_promo_item(SteamInventoryEligiblePromoItemDefIDs
 		// Create the temporary ID array
 		SteamItemDef_t *id_array = new SteamItemDef_t[eligible];
 		// Convert eligible size
-		uint32 arraySize = (int)eligible;
+		uint32 array_size = (int)eligible;
 		// Get the list
-		if(SteamInventory()->GetEligiblePromoItemDefinitionIDs(steam_id, id_array, &arraySize)){
+		if(SteamInventory()->GetEligiblePromoItemDefinitionIDs(steam_id, id_array, &array_size)){
 			// Loop through the temporary array and populate the return array
 			for(int i = 0; i < eligible; i++){
 				definitions.append(id_array[i]);
@@ -9194,9 +9194,9 @@ void Steam::_lobby_match_list(LobbyMatchList_t *call_data, bool io_failure){
 		steamworksError("lobby_match_list");
 	}
 	else{
-		int lobbyCount = call_data->m_nLobbiesMatching;
+		int lobby_count = call_data->m_nLobbiesMatching;
 		Array lobbies;
-		for(int i = 0; i < lobbyCount; i++){
+		for(int i = 0; i < lobby_count; i++){
 			CSteamID lobby_id = SteamMatchmaking()->GetLobbyByIndex(i);
 			uint64_t lobby = lobby_id.ConvertToUint64();
 			lobbies.append(lobby);
@@ -9225,10 +9225,10 @@ void Steam::_join_party(JoinPartyCallback_t* call_data, bool io_failure){
 	}
 	else{
 		int result = call_data->m_eResult;
-		uint64_t beaconID = call_data->m_ulBeaconID;
+		uint64_t beacon_id = call_data->m_ulBeaconID;
 		uint64_t steam_id = call_data->m_SteamIDBeaconOwner.ConvertToUint64();
 		String connect_string = call_data->m_rgchConnectString;
-		emit_signal("join_party", result, beaconID, steam_id, connect_string);
+		emit_signal("join_party", result, beacon_id, steam_id, connect_string);
 	}
 }
 
@@ -9239,8 +9239,8 @@ void Steam::_create_beacon(CreateBeaconCallback_t* call_data, bool io_failure){
 	}
 	else{
 		int result = call_data->m_eResult;
-		uint64_t beaconID = call_data->m_ulBeaconID;
-		emit_signal("create_beacon", result, beaconID);
+		uint64_t beacon_id = call_data->m_ulBeaconID;
+		emit_signal("create_beacon", result, beacon_id);
 	}
 }
 
@@ -9369,8 +9369,8 @@ void Steam::_add_ugc_dependency_result(AddUGCDependencyResult_t* call_data, bool
 	else{
 		EResult result = call_data->m_eResult;
 		PublishedFileId_t file_id = call_data->m_nPublishedFileId;
-		PublishedFileId_t childID = call_data->m_nChildPublishedFileId;
-		emit_signal("add_ugc_dependency_result", result, (uint64_t)file_id, (uint64_t)childID);
+		PublishedFileId_t child_id = call_data->m_nChildPublishedFileId;
+		emit_signal("add_ugc_dependency_result", result, (uint64_t)file_id, (uint64_t)child_id);
 	}
 }
 
@@ -9382,8 +9382,8 @@ void Steam::_item_created(CreateItemResult_t *call_data, bool io_failure){
 	else{
 		EResult result = call_data->m_eResult;
 		PublishedFileId_t file_id = call_data->m_nPublishedFileId;
-		bool acceptTOS = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-		emit_signal("item_created", result, (uint64_t)file_id, acceptTOS);
+		bool accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+		emit_signal("item_created", result, (uint64_t)file_id, accept_tos);
 	}
 }
 
@@ -9396,10 +9396,10 @@ void Steam::_get_app_dependencies_result(GetAppDependenciesResult_t* call_data, 
 		EResult result = call_data->m_eResult;
 		PublishedFileId_t file_id = call_data->m_nPublishedFileId;
 //		AppId_t app_id = call_data->m_rgAppIDs;
-		uint32 appDependencies = call_data->m_nNumAppDependencies;
-		uint32 totalAppDependencies = call_data->m_nTotalNumAppDependencies;
+		uint32 app_dependencies = call_data->m_nNumAppDependencies;
+		uint32 total_app_dependencies = call_data->m_nTotalNumAppDependencies;
 //		emit_signal("get_app_dependencies_result", result, (uint64_t)file_id, app_id, appDependencies, totalAppDependencies);
-		emit_signal("get_app_dependencies_result", result, (uint64_t)file_id, appDependencies, totalAppDependencies);
+		emit_signal("get_app_dependencies_result", result, (uint64_t)file_id, app_dependencies, total_app_dependencies);
 	}
 }
 
@@ -9424,9 +9424,9 @@ void Steam::_get_item_vote_result(GetUserItemVoteResult_t* call_data, bool io_fa
 		EResult result = call_data->m_eResult;
 		PublishedFileId_t file_id = call_data->m_nPublishedFileId;
 		bool vote_up = call_data->m_bVotedUp;
-		bool voteDown = call_data->m_bVotedDown;
-		bool voteSkipped = call_data->m_bVoteSkipped;
-		emit_signal("get_item_vote_result", result, (uint64_t)file_id, vote_up, voteDown, voteSkipped);
+		bool vote_down = call_data->m_bVotedDown;
+		bool vote_skipped = call_data->m_bVoteSkipped;
+		emit_signal("get_item_vote_result", result, (uint64_t)file_id, vote_up, vote_down, vote_skipped);
 	}
 }
 
@@ -9451,8 +9451,8 @@ void Steam::_remove_ugc_dependency_result(RemoveUGCDependencyResult_t* call_data
 	else{
 		EResult result = call_data->m_eResult;
 		PublishedFileId_t file_id = call_data->m_nPublishedFileId;
-		PublishedFileId_t childID = call_data->m_nChildPublishedFileId;
-		emit_signal("remove_ugc_dependency_result", result, (uint64_t)file_id, (uint64_t)childID);
+		PublishedFileId_t child_id = call_data->m_nChildPublishedFileId;
+		emit_signal("remove_ugc_dependency_result", result, (uint64_t)file_id, (uint64_t)child_id);
 	}
 }
 
@@ -9488,10 +9488,10 @@ void Steam::_ugc_query_completed(SteamUGCQueryCompleted_t* call_data, bool io_fa
 	else{
 		UGCQueryHandle_t handle = call_data->m_handle;
 		EResult result = call_data->m_eResult;
-		uint32 resultsReturned = call_data->m_unNumResultsReturned;
-		uint32 totalMatching = call_data->m_unTotalMatchingResults;
+		uint32 results_returned = call_data->m_unNumResultsReturned;
+		uint32 total_matching = call_data->m_unTotalMatchingResults;
 		bool cached = call_data->m_bCachedData;
-		emit_signal("ugc_query_completed", (uint64_t)handle, result, resultsReturned, totalMatching, cached);
+		emit_signal("ugc_query_completed", (uint64_t)handle, result, results_returned, total_matching, cached);
 	}
 }
 
@@ -9513,8 +9513,8 @@ void Steam::_item_updated(SubmitItemUpdateResult_t *call_data, bool io_failure){
 	}
 	else{
 		EResult result = call_data->m_eResult;
-		bool acceptTOS = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-		emit_signal("item_updated", result, acceptTOS);
+		bool accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+		emit_signal("item_updated", result, accept_tos);
 	}
 }
 
@@ -9526,8 +9526,8 @@ void Steam::_user_favorite_items_list_changed(UserFavoriteItemsListChanged_t* ca
 	else{
 		EResult result = call_data->m_eResult;
 		PublishedFileId_t file_id = call_data->m_nPublishedFileId;
-		bool wasAddRequest = call_data->m_bWasAddRequest;
-		emit_signal("user_favorite_items_list_changed", result, (uint64_t)file_id, wasAddRequest);
+		bool was_add_request = call_data->m_bWasAddRequest;
+		emit_signal("user_favorite_items_list_changed", result, (uint64_t)file_id, was_add_request);
 	}
 }
 
@@ -9558,9 +9558,9 @@ void Steam::_duration_control(DurationControl_t* call_data, bool io_failure){
 	}
 	else{
 		int result = call_data->m_eResult;
-		int appid = call_data->m_appid;
+		int app_id = call_data->m_appid;
 		bool applicable = call_data->m_bApplicable;
-		int32 secsLast = call_data->m_csecsLast5h;
+		int32 seconds_last = call_data->m_csecsLast5h;
 		int progress = call_data->m_progress;
 		int notification = call_data->m_notification;
 		String verbal = "";
@@ -9582,9 +9582,9 @@ void Steam::_duration_control(DurationControl_t* call_data, bool io_failure){
 		}
 		// Create dictionary due to "too many arguments" issue
 		Dictionary duration;
-		duration["app_id"] = appid;
+		duration["app_id"] = app_id;
 		duration["applicable"] = applicable;
-		duration["seconds_last_5hrs"] = secsLast;
+		duration["seconds_last_5hrs"] = seconds_last;
 		duration["progress"] = progress;
 		duration["notification"] = notification;
 		duration["notification_verbal"] = verbal;
@@ -9704,19 +9704,19 @@ void Steam::_leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_d
 			// Create the entry pointer and details array
 			LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
 			PoolIntArray details;
-			int32 *detailsPointer = NULL;
+			int32 *details_pointer = NULL;
 			// Resize array
 			if(leaderboard_details_max > 0){
 				details.resize(leaderboard_details_max);
 				PoolIntArray::Write w = details.write();
-				detailsPointer = w.ptr();
+				details_pointer = w.ptr();
 				for(int i = 0; i < leaderboard_details_max; i++){
-					detailsPointer[i] = 0;
+					details_pointer[i] = 0;
 				}
 			}
 			// Loop through the entries and add them as dictionaries to the array
 			for(int i = 0; i < call_data->m_cEntryCount; i++){
-				if(SteamUserStats()->GetDownloadedLeaderboardEntry(call_data->m_hSteamLeaderboardEntries, i, entry, detailsPointer, leaderboard_details_max)){
+				if(SteamUserStats()->GetDownloadedLeaderboardEntry(call_data->m_hSteamLeaderboardEntries, i, entry, details_pointer, leaderboard_details_max)){
 					Dictionary entryDict;
 					entryDict["score"] = entry->m_nScore;
 					entryDict["steam_id"] = uint64_t(entry->m_steamIDUser.ConvertToUint64());
@@ -9728,7 +9728,7 @@ void Steam::_leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_d
 						PoolIntArray::Write w = array.write();
 						int32_t *ptr = w.ptr();
 						for(int j = 0; j < leaderboard_details_max; j++){
-							ptr[j] = detailsPointer[j];
+							ptr[j] = details_pointer[j];
 						}
 						entryDict["details"] = array;
 					}
