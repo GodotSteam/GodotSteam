@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 10/31/21:**
+- Changed: tutorial links title to Godot 3.x Tutorials as Godot 4.x tutorials will need made
+
 **Updated 10/30/21:**
 - Changed: new contributor
 
