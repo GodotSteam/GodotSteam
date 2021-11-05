@@ -672,7 +672,7 @@ class Steam: public Object {
 		Dictionary getMotionData(uint64_t input_handle);
 		int getRemotePlaySessionID(uint64_t input_handle);
 		String getStringForActionOrigin(int origin);
-		bool inputInit(bool explicitly_call_run_frame=0);
+		bool inputInit(bool explicitly_call_run_frame=false);
 		bool inputShutdown();
 		void runFrame(bool reserved_value=true);
 		void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);

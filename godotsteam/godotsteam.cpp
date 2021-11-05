@@ -10063,7 +10063,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getMotionData", &Steam::getMotionData);
 	ClassDB::bind_method("getRemotePlaySessionID", &Steam::getRemotePlaySessionID);
 	ClassDB::bind_method("getStringForActionOrigin", &Steam::getStringForActionOrigin);
-	ClassDB::bind_method("inputInit", &Steam::inputInit, DEFVAL(0));
+	ClassDB::bind_method("inputInit", &Steam::inputInit, DEFVAL(false));
 	ClassDB::bind_method("inputShutdown", &Steam::inputShutdown);
 	ClassDB::bind_method("runFrame", &Steam::runFrame, DEFVAL(true));
 	ClassDB::bind_method("setLEDColor", &Steam::setLEDColor);
