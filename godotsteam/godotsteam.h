@@ -29,12 +29,15 @@
 #include "core/dictionary.h"
 #include "core/method_bind_ext.gen.inc"
 
+// Include some system headers
+#include "map"
+
 class Steam: public Object {
 	GDCLASS(Steam, Object);
 
 	public:
 		/////////////////////////////////////////
-		// Steamworks API enums /////////////////
+		// STEAMWORKS API ENUMS
 		/////////////////////////////////////////
 		//
 		enum AccountType {
@@ -439,7 +442,7 @@ class Steam: public Object {
 		~Steam();
 
 		/////////////////////////////////////////
-		// STEAMWORKS FUNCTIONS /////////////////
+		// STEAMWORKS FUNCTIONS
 		/////////////////////////////////////////
 		//
 		CSteamID createSteamID(uint32_t steam_id, int account_type=-1);
@@ -672,7 +675,7 @@ class Steam: public Object {
 		Dictionary getMotionData(uint64_t input_handle);
 		int getRemotePlaySessionID(uint64_t input_handle);
 		String getStringForActionOrigin(int origin);
-		bool inputInit(bool explicitly_call_run_frame=false);
+		bool inputInit(bool explicitly_call_runframe = false);
 		bool inputShutdown();
 		void runFrame(bool reserved_value=true);
 		void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);
@@ -850,8 +853,8 @@ class Steam: public Object {
 
 		// Networking Sockets ///////////////////
 		uint32 createListenSocketIP(const int options);
-		uint32 connectByIPAddress(uint32 ip, uint16 port, Array options);
-		uint32 createListenSocketP2P(int port, int option_size);
+		uint32 connectByIPAddress(uint32 ip, uint16 port, Array options = Array());
+		uint32 createListenSocketP2P(int port, Array options = Array());
 		uint32 connectP2P(int port, int number_of_options);
 		int acceptConnection(uint32 connection);
 		bool closeConnection(uint32 peer, int reason, bool linger);
@@ -883,6 +886,16 @@ class Steam: public Object {
 //		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 		uint32 createHostedDedicatedServerListenSocket(int port, int options);
 //		int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
+
+		// Networking Types /////////////////////
+		bool addIdentity(const String& name);
+		Array getIdentities();
+		void clearIdentity(const String& name);
+		bool isIdentityInvalid(const String& name);
+		void setIdentitySteamID(const String& name, uint32 steam_id);
+		uint32 getIdentitySteamID(const String& name);
+		void setIdentitySteamID64(const String& name, uint64_t steam_id);
+		uint64_t getIdentitySteamID64(const String& name);
 
 		// Networking Utils /////////////////////
 		void initRelayNetworkAccess();
@@ -1236,6 +1249,7 @@ class Steam: public Object {
 //		SteamDatagramHostedAddress hosted_address;
 		PoolByteArray routing_blob;
 //		SteamDatagramRelayAuthTicket relay_auth_ticket;
+		std::map<String, SteamNetworkingIdentity> identities;
 
 		// Parties
 		uint64 party_beacon_id;
@@ -1256,16 +1270,9 @@ class Steam: public Object {
 
 
 		/////////////////////////////////////////
-		// STRUCTS //////////////////////////////
+		// STRUCTS
 		/////////////////////////////////////////
 		//
-		// Friend session state info ////////////
-		struct FriendSessionStateInfo {
-			uint32 online_session_instance;
-			uint8 published_to_friends_session_instance;
-		};
-		Vector<FriendSessionStateInfo> sessionInfo;
-
 		// Achievement data /////////////////////
 		struct AchievementData {
 			int achievement_id;
@@ -1331,7 +1338,7 @@ class Steam: public Object {
 
 
 		/////////////////////////////////////////
-		// STEAM CALLBACKS //////////////////////
+		// STEAM CALLBACKS
 		/////////////////////////////////////////
 		//
 		// Apps callbacks ///////////////////////
@@ -1514,7 +1521,7 @@ class Steam: public Object {
 
 
 		/////////////////////////////////////////
-		// STEAM CALL RESULTS ///////////////////
+		// STEAM CALL RESULTS
 		/////////////////////////////////////////
 		//
 		// Friends call results /////////////////

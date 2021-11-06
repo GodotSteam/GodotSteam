@@ -2468,9 +2468,9 @@ String Steam::getStringForActionOrigin(int origin){
 }
 
 //! Start SteamInputs interface.
-bool Steam::inputInit(bool explicitly_call_run_frame){
+bool Steam::inputInit(bool explicitly_call_runframe){
 	if(SteamInput() != NULL){
-		return SteamInput()->Init(false);
+		return SteamInput()->Init(explicitly_call_runframe);
 	}
 	return false;
 }
@@ -4222,11 +4222,18 @@ uint32 Steam::connectByIPAddress(uint32 ip, uint16 port, Array options){
 }
 
 //! Like CreateListenSocketIP, but clients will connect using ConnectP2P. The connection will be relayed through the Valve network.
-uint32 Steam::createListenSocketP2P(int port, int option_size){
+uint32 Steam::createListenSocketP2P(int port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->CreateListenSocketP2P(port, option_size, &networkingConfigValue);
+	if(options.size() == 0){
+		return SteamNetworkingSockets()->CreateListenSocketP2P(port, 0, nullptr);
+	}
+	else{
+		// Get the options and process them quickly
+		int number_of_options = options.size();
+		return SteamNetworkingSockets()->CreateListenSocketP2P(port, number_of_options, nullptr);
+	}
 }
 
 //! Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
@@ -4599,6 +4606,64 @@ uint32 Steam::createHostedDedicatedServerListenSocket(int port, int options){
 //	}
 //	return result;
 //}
+
+
+/////////////////////////////////////////////////
+///// NETWORKING TYPES
+/////////////////////////////////////////////////
+//
+// Create a new network identity and store it for use
+bool Steam::addIdentity(const String& name){
+	identities[name.utf8().get_data()] = SteamNetworkingIdentity();
+	if(identities.count(name.utf8().get_data()) > 0){
+		return true;
+	}
+	return false;
+}
+
+// Get a list of all known network identities
+Array Steam::getIdentities(){
+	Array these_identities;
+	// Loop through the map
+	for(auto& identity : identities){
+		Dictionary this_identity;
+		this_identity["name"] = identity.first;
+		this_identity["steam_id"] = (uint64_t)getIdentitySteamID64(identity.first);
+		these_identities.append(this_identity);
+	}
+	return these_identities;
+}
+
+// Clear a network identity's data
+void Steam::clearIdentity(const String& name){
+	identities[name.utf8().get_data()].Clear();
+}
+
+// Return true if we are the invalid type.  Does not make any other validity checks (e.g. is SteamID actually valid)
+bool Steam::isIdentityInvalid(const String& name){
+	return identities[name.utf8().get_data()].IsInvalid();
+}
+
+// Set a 32-bit Steam ID
+void Steam::setIdentitySteamID(const String& name, uint32 steam_id){
+	identities[name.utf8().get_data()].SetSteamID(createSteamID(steam_id));
+}
+
+// Return black CSteamID (!IsValid()) if identity is not a SteamID
+uint32 Steam::getIdentitySteamID(const String& name){
+	CSteamID steam_id = identities[name.utf8().get_data()].GetSteamID();
+	return steam_id.GetAccountID();
+}
+
+// Takes SteamID as raw 64-bit number
+void Steam::setIdentitySteamID64(const String& name, uint64_t steam_id){
+	identities[name.utf8().get_data()].SetSteamID64(steam_id);
+}
+
+// Returns 0 if identity is not SteamID
+uint64_t Steam::getIdentitySteamID64(const String& name){
+	return identities[name.utf8().get_data()].GetSteamID64();
+}
 
 
 /////////////////////////////////////////////////
@@ -9845,12 +9910,12 @@ void Steam::_check_file_signature(CheckFileSignature_t *call_data, bool io_failu
 
 
 /////////////////////////////////////////////////
-///// BIND METHODS //////////////////////////////
+///// BIND METHODS
 /////////////////////////////////////////////////
 //
 void Steam::_bind_methods(){
 	/////////////////////////////////////////////
-	// FUNCTION BINDS ///////////////////////////
+	// FUNCTION BINDS
 	/////////////////////////////////////////////
 	//
 	// STEAM MAIN BIND METHODS //////////////////
@@ -10231,7 +10296,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("readP2PPacket", "packetSize", "channel"), &Steam::readP2PPacket);
 	ClassDB::bind_method(D_METHOD("sendP2PPacket", "steam_id", "data", "send_type", "channel"), &Steam::sendP2PPacket);
 	
-	
 	// NETWORKING MESSAGES BIND METHODS /////////
 	ClassDB::bind_method("sendMessageToUser", &Steam::sendMessageToUser);
 	ClassDB::bind_method("receiveMessagesOnChannel", &Steam::receiveMessagesOnChannel);
@@ -10275,6 +10339,16 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method("getHostedDedicatedServerAddress", &Steam::getHostedDedicatedServerAddress);	<------ Uses datagram relay structs which were removed from base SDK
 	ClassDB::bind_method("createHostedDedicatedServerListenSocket", &Steam::createHostedDedicatedServerListenSocket);
 //	ClassDB::bind_method("getGameCoordinatorServerLogin", &Steam::getGameCoordinatorServerLogin);	<------ Uses datagram relay structs which were removed from base SDK
+
+	// NETWORKING TYPES BIND METHODS ////////////
+	ClassDB::bind_method("addIdentity", &Steam::addIdentity);
+	ClassDB::bind_method("getIdentities", &Steam::getIdentities);
+	ClassDB::bind_method("clearIdentity", &Steam::clearIdentity);
+	ClassDB::bind_method("isIdentityInvalid", &Steam::isIdentityInvalid);
+	ClassDB::bind_method("setIdentitySteamID", &Steam::setIdentitySteamID);
+	ClassDB::bind_method("getIdentitySteamID", &Steam::getIdentitySteamID);
+	ClassDB::bind_method("setIdentitySteamID64", &Steam::setIdentitySteamID64);
+	ClassDB::bind_method("getIdentitySteamID64", &Steam::getIdentitySteamID64);
 
 	// NETWORKING UTILS BIND METHODS ////////////
 	ClassDB::bind_method("initRelayNetworkAccess", &Steam::initRelayNetworkAccess);
@@ -10559,7 +10633,7 @@ void Steam::_bind_methods(){
 
 
 	/////////////////////////////////////////////
-	// CALLBACK SIGNAL BINDS ////////////////////
+	// CALLBACK SIGNAL BINDS
 	/////////////////////////////////////////////
 	//
 	// STEAMWORKS SIGNALS ///////////////////////
@@ -10791,7 +10865,7 @@ void Steam::_bind_methods(){
 
 
 	/////////////////////////////////////////////
-	// CONSTANT BINDS ///////////////////////////
+	// CONSTANT BINDS
 	/////////////////////////////////////////////
 	//
 	// STEAM API CONSTANTS //////////////////////
