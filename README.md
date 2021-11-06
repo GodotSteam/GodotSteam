@@ -17,7 +17,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.10.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.10.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 3.10.4 Changes**
 - Added: new helper functions for newer networking classes, translations for steamnetworkingtypes
