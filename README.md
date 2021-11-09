@@ -19,6 +19,14 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.2 Changes**
+- Added: new helper functions for newer networking classes, translations for steamnetworkingtypes
+- Changed: now works in Godot 3.4
+- Fixed: various compiler warnings
+
+**Version 3.1.1 Changes**
+- Removed: not logged in as a failure condition for steamInit
+
 **Version 3.1 Changes**
 - Added: various Steam Deck specific functions, _thanks to EIREXE_
 - Added: new AppLists class of functions and callbacks
