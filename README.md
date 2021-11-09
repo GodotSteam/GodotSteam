@@ -17,7 +17,12 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.1.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.2 Changes**
+- Added: new helper functions for newer networking classes, translations for steamnetworkingtypes
+- Changed: now works in Godot 3.4
+- Fixed: various compiler warnings
 
 **Version 3.1.1 Changes**
 - Removed: not logged in as a failure condition for steamInit
@@ -59,14 +64,11 @@ Quick How-To
 - Download this repository and unpack it into the **GDNative** folder.
 - Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
 	- Unpack the Steamworks SDK then copy the **public** and **redistributable_bin** to the **/godotsteam/sdk** folder in the unpacked repo folder.
-- Download the [Godot 3.3.3 binary](https://godotengine.org/download) if you do not have it already.
-	- _Preferably you use the **Godot 3.3.3 binary**, at this time of writing._
-	- Unpack it and place it in the root of the **GDNative** folder.
-- Download the [Godot cpp](https://github.com/godotengine/godot-cpp), the 3.3 branch.
+- Download the [Godot cpp](https://github.com/godotengine/godot-cpp), the 3.4 branch.
 	- Unpack the **godot_cpp** into the **GDNative** folder.
 	- **Alternatively**, you can just use these commands inside the **GDNative** folder to clone them:
 	````
-		git clone --recursive -b 3.3 https://github.com/godotengine/godot-cpp
+		git clone --recursive -b 3.4 https://github.com/godotengine/godot-cpp
 	````
 - CD into the **godot-cpp** folder and compile the bindings (make sure your slashes are OS appropriate):
 ````
@@ -74,7 +76,6 @@ Quick How-To
 ````
 - You should end up with a **GDNative** folder that looks something like this:
 ````
-	Godot_v3.3.3-stable_x11.64 (or whatever your binary is for your platform)
 	godot-cpp/
 	--- bin/*
 	--- godot-headers/*
