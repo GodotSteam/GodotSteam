@@ -3148,8 +3148,10 @@ void SteamServer::_app_proof_of_purchase_key_response(AppProofOfPurchaseKeyRespo
 	int result = call_data->m_eResult;
 	uint32 app_id = call_data->m_nAppID;
 	uint32 key_length = call_data->m_cchKeyLength;
-	char key = call_data->m_rgchKey[k_cubAppProofOfPurchaseKeyMax];
+	char *key = new char[k_cubAppProofOfPurchaseKeyMax];
+	sprintf(key, "%s", call_data->m_rgchKey);
 	emit_signal("app_proof_of_purchase_key_response", result, app_id, key_length, key);
+	delete[] key;
 }
 
 // Purpose: called for games in Timed Trial mode

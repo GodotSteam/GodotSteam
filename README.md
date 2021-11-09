@@ -19,6 +19,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v1.2.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 1.2.4 Changes**
+- Fixed: lots of compiler warnings on Linux, _thanks to gregcsokas_
+
 **Version 1.2.3 Changes**
 - Added: missing functions to Apps class
 - Added: new functions and callbacks to UGC class
