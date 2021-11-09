@@ -896,6 +896,28 @@ class Steam: public Object {
 		uint32 getIdentitySteamID(const String& name);
 		void setIdentitySteamID64(const String& name, uint64_t steam_id);
 		uint64_t getIdentitySteamID64(const String& name);
+		bool setIdentityIPAddr(const String& name, const String& ip_address_name);
+		uint32 getIdentityIPAddr(const String& name);
+		void setIdentityLocalHost(const String& name);
+		bool isIdentityLocalHost(const String& name);
+		bool setGenericString(const String& name, const String& this_string);
+		String getGenericString(const String& name);
+		bool setGenericBytes(const String& name, uint8 data);
+		uint8 getGenericBytes(const String& name);
+		void toIdentityString(const String& name, const String& buffer);
+		String parseIdentityString(const String& name);
+		bool addIPAddress(const String& name);
+		Array getIPAddresses();
+		void clearIPAddress(const String& name);
+		bool isIPv6AllZeros(const String& name);
+		void setIPv6(const String& name, uint8 ipv6, uint16 port);
+		void setIPv4(const String& name, uint32 ip, uint16 port);
+		bool isIPv4(const String& name);
+		uint32 getIPv4(const String& name);
+		void setIPv6LocalHost(const String& name, uint16 port = 0);
+		bool isAddressLocalHost(const String& name);
+		void toIPAddressString(const String& name, const String& buffer, bool with_port);
+		String parseIPAddressString(const String& name);
 
 		// Networking Utils /////////////////////
 		void initRelayNetworkAccess();
@@ -1250,6 +1272,7 @@ class Steam: public Object {
 		PoolByteArray routing_blob;
 //		SteamDatagramRelayAuthTicket relay_auth_ticket;
 		std::map<String, SteamNetworkingIdentity> identities;
+		std::map<String, SteamNetworkingIPAddr> ip_addresses;
 
 		// Parties
 		uint64 party_beacon_id;

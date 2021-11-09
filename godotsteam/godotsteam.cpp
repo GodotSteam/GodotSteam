@@ -3425,9 +3425,9 @@ Dictionary Steam::getServerDetails(uint64_t server_list_request, int server){
 		game_server["ping"] = server_item->m_nPing;
 		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
 		game_server["no_refresh"] = server_item->m_bDoNotRefresh;
-		game_server["game_dir"] = server_item->m_szGameDir[k_cbMaxGameServerGameDir];
-		game_server["map"] = server_item->m_szMap[k_cbMaxGameServerMapName];
-		game_server["description"] = server_item->m_szGameDescription[k_cbMaxGameServerGameDescription];
+		game_server["game_dir"] = server_item->m_szGameDir;
+		game_server["map"] = server_item->m_szMap;
+		game_server["description"] = server_item->m_szGameDescription;
 		game_server["app_id"] = server_item->m_nAppID;
 		game_server["players"] = server_item->m_nPlayers;
 		game_server["max_players"] = server_item->m_nMaxPlayers;
@@ -4275,18 +4275,16 @@ Dictionary Steam::createSocketPair(bool loopback, const String& identity1, const
 	Dictionary connection_pair;
 	if(SteamNetworkingSockets() != NULL){
 		// Turn the strings back to structs - Should be a check for failure to parse from string
-		SteamNetworkingIdentity identity_struct1;
-		SteamNetworkingIdentity identity_struct2;
-		identity_struct1.ParseString(identity1.utf8().get_data());
-		identity_struct2.ParseString(identity2.utf8().get_data());
+		const SteamNetworkingIdentity identity_struct1 = identities[identity1.utf8().get_data()];
+		const SteamNetworkingIdentity identity_struct2 = identities[identity2.utf8().get_data()];
 		// Get connections
 		uint32 connection1 = 0;
 		uint32 connection2 = 0;
 		bool success = SteamNetworkingSockets()->CreateSocketPair(&connection1, &connection2, loopback, &identity_struct1, &identity_struct2);
 		// Populate the dictionary
 		connection_pair["success"] = success;
-		connection_pair["connection1"] = connection1;
-		connection_pair["connection2"] = connection2;
+		connection_pair[identity1.utf8().get_data()] = connection1;
+		connection_pair[identity2.utf8().get_data()] = connection2;
 	}
 	return connection_pair;
 }
@@ -4629,6 +4627,7 @@ Array Steam::getIdentities(){
 		Dictionary this_identity;
 		this_identity["name"] = identity.first;
 		this_identity["steam_id"] = (uint64_t)getIdentitySteamID64(identity.first);
+		this_identity["type"] = identities[identity.first].m_eType;
 		these_identities.append(this_identity);
 	}
 	return these_identities;
@@ -4663,6 +4662,161 @@ void Steam::setIdentitySteamID64(const String& name, uint64_t steam_id){
 // Returns 0 if identity is not SteamID
 uint64_t Steam::getIdentitySteamID64(const String& name){
 	return identities[name.utf8().get_data()].GetSteamID64();
+}
+
+// Set to specified IP:port.
+bool Steam::setIdentityIPAddr(const String& name, const String& ip_address_name){
+	if(ip_addresses.count(ip_address_name.utf8().get_data()) > 0){
+		const SteamNetworkingIPAddr this_address = ip_addresses[ip_address_name.utf8().get_data()];
+		identities[name.utf8().get_data()].SetIPAddr(this_address);
+		return true;
+	}
+	return false;
+}
+
+// Returns null if we are not an IP address.
+uint32 Steam::getIdentityIPAddr(const String& name){
+	const SteamNetworkingIPAddr* this_address = identities[name.utf8().get_data()].GetIPAddr();
+	return this_address->GetIPv4();
+}
+
+// Set to localhost. (We always use IPv6 ::1 for this, not 127.0.0.1).
+void Steam::setIdentityLocalHost(const String& name){
+	identities[name.utf8().get_data()].SetLocalHost();
+}
+
+// Return true if this identity is localhost.
+bool Steam::isIdentityLocalHost(const String& name){
+	return identities[name.utf8().get_data()].IsLocalHost();
+}
+
+// Returns false if invalid length.
+bool Steam::setGenericString(const String& name, const String& this_string){
+	return identities[name.utf8().get_data()].SetGenericString(this_string.utf8().get_data());
+}
+
+// Returns nullptr if not generic string type
+String Steam::getGenericString(const String& name){
+	return identities[name.utf8().get_data()].GetGenericString();
+}
+
+// Returns false if invalid size.
+bool Steam::setGenericBytes(const String& name, uint8 data){
+	const void *this_data = &data;
+	return identities[name.utf8().get_data()].SetGenericBytes(this_data, sizeof(data));
+}
+
+// Returns null if not generic bytes type.
+uint8 Steam::getGenericBytes(const String& name){
+	int length = 0;
+	uint8 these_bytes = 0;
+	const uint8* generic_bytes = identities[name.utf8().get_data()].GetGenericBytes(length);
+	return these_bytes = *generic_bytes;
+}
+
+// Print to a human-readable string.  This is suitable for debug messages or any other time you need to encode the identity as a string.
+// It has a URL-like format (type:<type-data>). Your buffer should be at least k_cchMaxString bytes big to avoid truncation.
+void Steam::toIdentityString(const String& name, const String& buffer){
+	char *this_buffer = new char[buffer.size()];
+	strcpy(this_buffer, buffer.utf8().get_data());
+	identities[name.utf8().get_data()].ToString(this_buffer, sizeof(this_buffer));
+	delete[] this_buffer;
+}
+
+// Parse back a string that was generated using ToString. If we don't understand the string, but it looks "reasonable" (it matches the pattern type:<type-data> and doesn't have any funky characters, etc), then we will return true, and the type is set to k_ESteamNetworkingIdentityType_UnknownType.
+// false will only be returned if the string looks invalid.
+String Steam::parseIdentityString(const String& name){
+	String identity_string = "";
+	char *this_string = new char[128];
+	if(identities[name.utf8().get_data()].ParseString(this_string)){
+		identity_string = String(this_string);
+	}
+	delete[] this_string;
+	return identity_string;
+}
+
+// Add a new IP address struct
+bool Steam::addIPAddress(const String& name){
+	ip_addresses[name.utf8().get_data()] = SteamNetworkingIPAddr();
+	if(ip_addresses.count(name.utf8().get_data()) > 0){
+		return true;
+	}
+	return false;
+}
+
+// Get a list of all IP address structs and their names
+Array Steam::getIPAddresses(){
+	Array these_addresses;
+	// Loop through the map
+	for(auto& address : ip_addresses){
+		Dictionary this_address;
+		this_address["name"] = address.first;
+		this_address["localhost"] = Steam::isAddressLocalHost(address.first);
+		this_address["ip_address"] = Steam::getIPv4(address.first);
+		these_addresses.append(this_address);
+	}
+	return these_addresses;
+}
+
+// IP Address - Set everything to zero. E.g. [::]:0
+void Steam::clearIPAddress(const String& name){
+	ip_addresses[name.utf8().get_data()].Clear();
+}
+
+// Return true if the IP is ::0. (Doesn't check port.)
+bool Steam::isIPv6AllZeros(const String& name){
+	return ip_addresses[name.utf8().get_data()].IsIPv6AllZeros();
+}
+
+// Set IPv6 address. IP is interpreted as bytes, so there are no endian issues. (Same as inaddr_in6.) The IP can be a mapped IPv4 address.
+void Steam::setIPv6(const String& name, uint8 ipv6, uint16 port){
+	const uint8 *this_ipv6 = &ipv6;
+	ip_addresses[name.utf8().get_data()].SetIPv6(this_ipv6, port);
+}
+
+// Sets to IPv4 mapped address. IP and port are in host byte order.
+void Steam::setIPv4(const String& name, uint32 ip, uint16 port){
+	ip_addresses[name.utf8().get_data()].SetIPv4(ip, port);
+}
+
+// Return true if IP is mapped IPv4.
+bool Steam::isIPv4(const String& name){
+	return ip_addresses[name.utf8().get_data()].IsIPv4();
+}
+
+// Returns IP in host byte order (e.g. aa.bb.cc.dd as 0xaabbccdd). Returns 0 if IP is not mapped IPv4.
+uint32 Steam::getIPv4(const String& name){
+	return ip_addresses[name.utf8().get_data()].GetIPv4();
+}
+
+// Set to the IPv6 localhost address ::1, and the specified port.
+void Steam::setIPv6LocalHost(const String& name, uint16 port){
+	ip_addresses[name.utf8().get_data()].SetIPv6LocalHost(port);
+}
+
+// Return true if this identity is localhost. (Either IPv6 ::1, or IPv4 127.0.0.1).
+bool Steam::isAddressLocalHost(const String& name){
+	return ip_addresses[name.utf8().get_data()].IsLocalHost();
+}
+
+// Print to a string, with or without the port. Mapped IPv4 addresses are printed as dotted decimal (12.34.56.78), otherwise this will print the canonical form according to RFC5952.
+// If you include the port, IPv6 will be surrounded by brackets, e.g. [::1:2]:80. Your buffer should be at least k_cchMaxString bytes to avoid truncation.
+void Steam::toIPAddressString(const String& name, const String& buffer, bool with_port){
+	char *this_buffer = new char[buffer.size()];
+	strcpy(this_buffer, buffer.utf8().get_data());
+	ip_addresses[name.utf8().get_data()].ToString(this_buffer, sizeof(this_buffer), with_port);
+	delete[] this_buffer;
+}
+
+// Parse an IP address and optional port.  If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).
+String Steam::parseIPAddressString(const String& name){
+	String ip_address_string = "";
+	char *this_string = new char[48];
+	if(ip_addresses[name.utf8().get_data()].ParseString(this_string)){
+		ip_address_string = String(this_string);
+	}
+	delete[] this_string;
+	return ip_address_string;
 }
 
 
@@ -7957,8 +8111,10 @@ void Steam::_app_proof_of_purchase_key_response(AppProofOfPurchaseKeyResponse_t*
 	int result = call_data->m_eResult;
 	uint32 app_id = call_data->m_nAppID;
 	uint32 key_length = call_data->m_cchKeyLength;
-	char key = call_data->m_rgchKey[k_cubAppProofOfPurchaseKeyMax];
+	char *key = new char[k_cubAppProofOfPurchaseKeyMax];
+	sprintf(key, "%s", call_data->m_rgchKey);
 	emit_signal("app_proof_of_purchase_key_response", result, app_id, key_length, key);
+	delete[] key;
 }
 
 //! Purpose: called for games in Timed Trial mode
@@ -8773,9 +8929,9 @@ void Steam::_network_connection_status_changed(SteamNetConnectionStatusChangedCa
 void Steam::_network_authentication_status(SteamNetAuthenticationStatus_t* call_data){
 	// Status.
 	int available = call_data->m_eAvail;
-	// Non-localized English language status. For diagnostic / debugging purpsoes only.
+	// Non-localized English language status. For diagnostic / debugging purposes only.
 	char *debug_message = new char[256];
-	debug_message = call_data->m_debugMsg;
+	sprintf(debug_message, "%s", call_data->m_debugMsg);
 	// Send the data back via signal
 	emit_signal("network_authentication_status", available, debug_message);
 	delete[] debug_message;
@@ -8790,7 +8946,8 @@ void Steam::_relay_network_status(SteamRelayNetworkStatus_t* call_data){
 	int available_config = call_data->m_eAvailNetworkConfig;
 	int available_relay = call_data->m_eAvailAnyRelay;
 	char *debug_message = new char[256];
-	debug_message = call_data->m_debugMsg;
+	sprintf(debug_message, "%s", call_data->m_debugMsg);
+//	debug_message = call_data->m_debugMsg;
 	emit_signal("relay_network_status", available, ping_measurement, available_config, available_relay, debug_message);
 	delete[] debug_message;
 }
@@ -9348,7 +9505,8 @@ void Steam::_file_share_result(RemoteStorageFileShareResult_t* call_data, bool i
 	else{
 		int result = call_data->m_eResult;
 		uint64_t handle = call_data->m_hFile;
-		char name = call_data->m_rgchFilename[k_cchFilenameMax];
+		char name[k_cchFilenameMax];
+		strcpy(name, call_data->m_rgchFilename);
 		emit_signal("file_share_result", result, handle, name);
 	}
 }
@@ -9374,7 +9532,8 @@ void Steam::_download_ugc_result(RemoteStorageDownloadUGCResult_t* call_data, bo
 		uint64_t handle = call_data->m_hFile;
 		uint32_t app_id = call_data->m_nAppID;
 		int32 size = call_data->m_nSizeInBytes;
-		char filename = call_data->m_pchFileName[k_cchFilenameMax];
+		char filename[k_cchFilenameMax];
+		strcpy(filename, call_data->m_pchFileName);
 		uint64_t owner_id = call_data->m_ulSteamIDOwner;
 		// Pass some variable to download dictionary to bypass argument limit
 		Dictionary download_data;
@@ -10349,6 +10508,28 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getIdentitySteamID", &Steam::getIdentitySteamID);
 	ClassDB::bind_method("setIdentitySteamID64", &Steam::setIdentitySteamID64);
 	ClassDB::bind_method("getIdentitySteamID64", &Steam::getIdentitySteamID64);
+	ClassDB::bind_method("setIdentityIPAddr", &Steam::setIdentityIPAddr);
+	ClassDB::bind_method("getIdentityIPAddr", &Steam::getIdentityIPAddr);
+	ClassDB::bind_method("setIdentityLocalHost", &Steam::setIdentityLocalHost);
+	ClassDB::bind_method("isIdentityLocalHost", &Steam::isIdentityLocalHost);
+	ClassDB::bind_method("setGenericString", &Steam::setGenericString);
+	ClassDB::bind_method("getGenericString", &Steam::getGenericString);
+	ClassDB::bind_method("setGenericBytes", &Steam::setGenericBytes);
+	ClassDB::bind_method("getGenericBytes", &Steam::getGenericBytes);
+	ClassDB::bind_method("toIdentityString", &Steam::toIdentityString);
+	ClassDB::bind_method("parseIdentityString", &Steam::parseIdentityString);
+	ClassDB::bind_method("addIPAddress", &Steam::addIPAddress);
+	ClassDB::bind_method("getIPAddresses", &Steam::getIPAddresses);
+	ClassDB::bind_method("clearIPAddress", &Steam::clearIPAddress);
+	ClassDB::bind_method("isIPv6AllZeros", &Steam::isIPv6AllZeros);
+	ClassDB::bind_method("seIPv6", &Steam::setIPv6);
+	ClassDB::bind_method("setIPv4", &Steam::setIPv4);
+	ClassDB::bind_method("isIPv4", &Steam::isIPv4);
+	ClassDB::bind_method("getIPv4", &Steam::getIPv4);
+	ClassDB::bind_method("setIPv6LocalHost", &Steam::setIPv6LocalHost);
+	ClassDB::bind_method("isAddressLocalHost", &Steam::isAddressLocalHost);
+	ClassDB::bind_method("toIPAddressString", &Steam::toIPAddressString);
+	ClassDB::bind_method("parseIPAddressString", &Steam::parseIPAddressString);
 
 	// NETWORKING UTILS BIND METHODS ////////////
 	ClassDB::bind_method("initRelayNetworkAccess", &Steam::initRelayNetworkAccess);

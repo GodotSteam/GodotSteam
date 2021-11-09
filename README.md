@@ -19,6 +19,10 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.10.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.10.5 Changes**:
+- Added: more helper functions for newer networking classes, translations for steamnetworkingtypes
+- Fixed: lots of compiler warnings on Linux, _thanks to gregcsokas_
+
 **Version 3.10.4 Changes**
 - Added: new helper functions for newer networking classes, translations for steamnetworkingtypes
 - Fixed: default argument inputInit function, _thanks to hhyyrylainen_
