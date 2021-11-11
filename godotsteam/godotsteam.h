@@ -19,8 +19,9 @@
 // Include INT types header
 #include <inttypes.h>
 
-// Include Steamworks API header
+// Include Steamworks API headers
 #include "steam/steam_api.h"
+#include "steam/steam_gameserver.h"
 
 // Include Godot headers
 #include "core/object.h"
@@ -445,12 +446,15 @@ class Steam: public Object {
 		// STEAMWORKS FUNCTIONS
 		/////////////////////////////////////////
 		//
-		CSteamID createSteamID(uint32_t steam_id, int account_type=-1);
+		CSteamID createSteamID(uint64_t steam_id, int account_type=-1);
 
 		// Main /////////////////////////////////
 		bool restartAppIfNecessary(int value);
 		Dictionary steamInit(bool retrieve_stats=true);
 		bool isSteamRunning();
+		bool serverInit(Dictionary connect_data, int server_mode, const String& version_string);
+		void serverReleaseCurrentThreadMemory();
+		void serverShutdown();
 		void steamworksError(const String& failed_signal);
 
 		// Apps /////////////////////////////////
@@ -1013,6 +1017,55 @@ class Steam: public Object {
 		uint32_t getLocalFileChangeCount();
 		Dictionary getLocalFileChange(int file);
 
+		// Server ///////////////////////////////
+		bool initGameServer(Dictionary connect_data, int server_mode, const String& version_string);
+		void setProduct(const String& product);
+		void setGameDescription(const String& description);
+		void setModDir(const String& mod_directory);
+		void setDedicatedServer(bool dedicated);
+		void logOn(const String& token);
+		void logOnAnonymous();
+		void logOff();
+		bool serverLoggedOn();
+		bool secure();
+		uint64_t getServerSteamID();
+		bool wasRestartRequested();
+		void setMaxPlayerCount(int max);
+		void setBotPlayerCount(int bots);
+		void setServerName(const String& name);
+		void setMapName(const String& map);
+		void setPasswordProtected(bool password);
+		void setSpectatorPort(uint16 port);
+		void setSpectatorServerName(const String& name);
+		void clearAllKeyValues();
+		void setKeyValue(const String& key, const String& value);
+		void setGameTags(const String& tags);
+		void setGameData(const String& data);
+		void setRegion(const String& region);
+		Dictionary getServerAuthSessionTicket();
+		int beginServerAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
+		void endServerAuthSession(uint64_t steam_id);
+		void cancelServerAuthTicket(uint32_t auth_ticket);
+		int userHasLicenceForApp(uint64_t steam_id, AppId_t app_id);
+		bool requestUserGroupStatus(uint64_t steam_id, int group_id);
+		Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
+		Dictionary getNextOutgoingPacket();
+		void setAdvertiseServerActive(bool active);
+		void associateWithClan(uint64_t clan_id);
+		void computeNewPlayerCompatibility(uint64_t steam_id);
+
+		// Server Stats /////////////////////////
+		bool clearUserAchievement(uint64_t steam_id, const String& name);
+		Dictionary serverGetUserAchievement(uint64_t steam_id, const String& name);
+		uint32_t serverGetUserStatInt(uint64_t steam_id, const String& name);
+		float serverGetUserStatFloat(uint64_t steam_id, const String& name);
+		void serverRequestUserStats(uint64_t steam_id);
+		bool setUserAchievement(uint64_t steam_id, const String& name);
+		bool setUserStatInt(uint64_t steam_id, const String& name, int32 stat);
+		bool setUserStatFloat(uint64_t steam_id, const String& name, float stat);
+		void storeUserStats(uint64_t steam_id);
+		bool updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length);
+
 		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnail_filename, int width, int height);
 		uint32_t addVRScreenshotToLibrary(int type, const String& filename, const String& vr_filename);
@@ -1359,6 +1412,10 @@ class Steam: public Object {
 			SteamAPI_RunCallbacks();
 		}
 
+		// Run the Steamworks server API callbacks
+		void run_server_callbacks(){
+			SteamGameServer_RunCallbacks();
+		}
 
 		/////////////////////////////////////////
 		// STEAM CALLBACKS
@@ -1505,6 +1562,22 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _screenshot_ready, ScreenshotReady_t, callbackScreenshotReady);
 		STEAM_CALLBACK(Steam, _screenshot_requested, ScreenshotRequested_t, callbackScreenshotRequested);
 
+		// Server callbacks
+		STEAM_GAMESERVER_CALLBACK(Steam, _server_Connect_Failure, SteamServerConnectFailure_t, callbackServerConnectFailure);
+		STEAM_GAMESERVER_CALLBACK(Steam, _server_Connected, SteamServersConnected_t, callbackServerConnected);
+		STEAM_GAMESERVER_CALLBACK(Steam, _server_Disconnected, SteamServersDisconnected_t, callbackServerDisconnected);
+		STEAM_GAMESERVER_CALLBACK(Steam, _client_Approved, GSClientApprove_t, callbackClientApproved);
+		STEAM_GAMESERVER_CALLBACK(Steam, _client_Denied, GSClientDeny_t, callbackClientDenied);
+		STEAM_GAMESERVER_CALLBACK(Steam, _client_Kick, GSClientKick_t, callbackClientKicked);
+		STEAM_GAMESERVER_CALLBACK(Steam, _policy_Response, GSPolicyResponse_t, callbackPolicyResponse);
+		STEAM_GAMESERVER_CALLBACK(Steam, _client_Group_Status, GSClientGroupStatus_t, callbackClientGroupStatus);
+		STEAM_GAMESERVER_CALLBACK(Steam, _associate_Clan, AssociateWithClanResult_t, callbackAssociateClan);
+		STEAM_GAMESERVER_CALLBACK(Steam, _player_Compat, ComputeNewPlayerCompatibilityResult_t, callbackPlayerCompat);
+
+		// Server Stat callbacks
+		STEAM_GAMESERVER_CALLBACK(Steam, _stats_stored, GSStatsStored_t, callbackStatsStored);
+		STEAM_GAMESERVER_CALLBACK(Steam, _stats_unloaded, GSStatsUnloaded_t, callbackStatsUnloaded);
+
 		// UGC callbacks ////////////////////////
 		STEAM_CALLBACK(Steam, _item_downloaded, DownloadItemResult_t, callbackItemDownloaded);
 		STEAM_CALLBACK(Steam, _item_installed, ItemInstalled_t, callbackItemInstalled);
@@ -1596,6 +1669,10 @@ class Steam: public Object {
 		void _unsubscribe_item(RemoteStorageUnsubscribePublishedFileResult_t *call_data, bool io_failure);
 		CCallResult<Steam, RemoteStorageSubscribePublishedFileResult_t> callResultSubscribeItem;
 		void _subscribe_item(RemoteStorageSubscribePublishedFileResult_t *call_data, bool io_failure);
+
+		// Server Stats call results ////////////
+		CCallResult<Steam, GSStatsReceived_t> callResultStatReceived;
+		void _stat_received(GSStatsReceived_t *callData, bool ioFailure);
 
 		// UGC call results /////////////////////
 		CCallResult<Steam, AddAppDependencyResult_t> callResultAddAppDependency;
