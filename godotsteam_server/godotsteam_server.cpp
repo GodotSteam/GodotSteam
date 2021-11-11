@@ -3820,7 +3820,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("checkResultSteamID", &SteamServer::checkResultSteamID);
 	ClassDB::bind_method("consumeItem", &SteamServer::consumeItem);
 	ClassDB::bind_method("deserializeResult", &SteamServer::deserializeResult);
-	ClassDB::bind_method("destroyResult", &SteamServer::exchangeItems);
+	ClassDB::bind_method("destroyResult", &SteamServer::destroyResult);
 	ClassDB::bind_method("exchangeItems", &SteamServer::exchangeItems);
 	ClassDB::bind_method("generateItems", &SteamServer::generateItems);
 	ClassDB::bind_method("getAllItems", &SteamServer::getAllItems);
@@ -3829,7 +3829,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("getItemPrice", &SteamServer::getItemPrice);
 	ClassDB::bind_method("getItemsWithPrices", &SteamServer::getItemsWithPrices);
 	ClassDB::bind_method("getNumItemsWithPrices", &SteamServer::getNumItemsWithPrices);
-	ClassDB::bind_method("getResultItemProperty", &SteamServer::getResultItems);
+	ClassDB::bind_method("getResultItemProperty", &SteamServer::getResultItemProperty);
 	ClassDB::bind_method("getResultItems", &SteamServer::getResultItems);
 	ClassDB::bind_method("getResultStatus", &SteamServer::getResultStatus);
 	ClassDB::bind_method("getResultTimestamp", &SteamServer::getResultTimestamp);
@@ -3915,7 +3915,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method("addItemKeyValueTag", &SteamServer::addItemKeyValueTag);
 	ClassDB::bind_method("addItemPreviewFile", &SteamServer::addItemPreviewFile);
 	ClassDB::bind_method("addItemPreviewVideo", &SteamServer::addItemPreviewVideo);
-	ClassDB::bind_method("addItemToFavorite", &SteamServer::addItemToFavorite);
+	ClassDB::bind_method("addItemToFavorites", &SteamServer::addItemToFavorites);
 	ClassDB::bind_method("addRequiredKeyValueTag", &SteamServer::addRequiredKeyValueTag);
 	ClassDB::bind_method("addRequiredTag", &SteamServer::addRequiredTag);
 	ClassDB::bind_method("addRequiredTagGroup", &SteamServer::addRequiredTagGroup);
