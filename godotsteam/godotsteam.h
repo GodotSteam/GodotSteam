@@ -442,15 +442,16 @@ class Steam: public Object {
 		Steam();
 		~Steam();
 
+
 		/////////////////////////////////////////
 		// STEAMWORKS FUNCTIONS
 		/////////////////////////////////////////
 		//
-		CSteamID createSteamID(uint64_t steam_id, int account_type=-1);
+		CSteamID createSteamID(uint64_t steam_id, int account_type = -1);
 
 		// Main /////////////////////////////////
 		bool restartAppIfNecessary(int value);
-		Dictionary steamInit(bool retrieve_stats=true);
+		Dictionary steamInit(bool retrieve_stats = true);
 		bool isSteamRunning();
 		bool serverInit(Dictionary connect_data, int server_mode, const String& version_string);
 		void serverReleaseCurrentThreadMemory();
@@ -499,7 +500,7 @@ class Steam: public Object {
 		void activateGameOverlay(const String& type);
 		void activateGameOverlayInviteDialog(uint64_t steam_id);
 		void activateGameOverlayInviteDialogConnectString(const String& connect_string);
-		void activateGameOverlayToStore(uint32_t app_id=0);
+		void activateGameOverlayToStore(uint32_t app_id = 0);
 		void activateGameOverlayToUser(const String& type, uint64_t steam_id);
 		void activateGameOverlayToWebPage(const String& url);
 		void clearRichPresence();
@@ -545,7 +546,7 @@ class Steam: public Object {
 		int getMediumFriendAvatar(uint64_t steam_id);
 		String getPersonaName();
 		int getPersonaState();
-		void getPlayerAvatar(int size=2, uint64_t steam_id=0);
+		void getPlayerAvatar(int size=2, uint64_t steam_id = 0);
 		String getPlayerNickname(uint64_t steam_id);
 		Array getRecentPlayers();
 		int getSmallFriendAvatar(uint64_t steam_id);
@@ -681,7 +682,7 @@ class Steam: public Object {
 		String getStringForActionOrigin(int origin);
 		bool inputInit(bool explicitly_call_runframe = false);
 		bool inputShutdown();
-		void runFrame(bool reserved_value=true);
+		void runFrame(bool reserved_value = true);
 		void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);
 		bool showBindingPanel(uint64_t input_handle);
 		void stopAnalogActionMomentum(uint64_t input_handle, uint64_t action);
@@ -1189,10 +1190,10 @@ class Steam: public Object {
 		int userHasLicenseForApp(uint64_t steam_id, uint32_t app_id);
 
 		// User Stats ///////////////////////////
-		void attachLeaderboardUGC(uint64_t ugcHandle, uint64_t this_leaderboard=0);
+		void attachLeaderboardUGC(uint64_t ugcHandle, uint64_t this_leaderboard = 0);
 		bool clearAchievement(const String& name);
-		void downloadLeaderboardEntries(int start, int end, int type=k_ELeaderboardDataRequestGlobal, uint64_t this_leaderboard=0);
-		void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard=0);
+		void downloadLeaderboardEntries(int start, int end, int type=k_ELeaderboardDataRequestGlobal, uint64_t this_leaderboard = 0);
+		void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard = 0);
 		void findLeaderboard(const String& name);
 		void findOrCreateLeaderboard(const String& name, int sort_method, int display_type);
 		Dictionary getAchievement(const String& name);
@@ -1207,10 +1208,10 @@ class Steam: public Object {
 		double getGlobalStatFloat(const String& name);
 		uint64_t getGlobalStatIntHistory(const String& name);
 		double getGlobalStatFloatHistory(const String& name);
-		Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard=0);
-		int getLeaderboardEntryCount(uint64_t this_leaderboard=0);
-		String getLeaderboardName(uint64_t this_leaderboard=0);
-		Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard=0);
+		Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
+		int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
+		String getLeaderboardName(uint64_t this_leaderboard = 0);
+		Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard = 0);
 		Dictionary getMostAchievedAchievementInfo();
 		Dictionary getNextMostAchievedAchievementInfo(int iterator);
 		uint32_t getNumAchievements();
@@ -1226,14 +1227,14 @@ class Steam: public Object {
 		void requestGlobalAchievementPercentages();
 		void requestGlobalStats(int history_days);
 		void requestUserStats(uint64_t steam_id);
-		bool resetAllStats(bool achievements_too=true);
+		bool resetAllStats(bool achievements_too = true);
 		bool setAchievement(const String& name);
 		int setLeaderboardDetailsMax(int max);
 		bool setStatFloat(const String& name, float value);
 		bool setStatInt(const String& name, int value);
 		bool storeStats();
 		bool updateAvgRateStat(const String& name, float this_session, double session_length);
-		void uploadLeaderboardScore(int score, bool keep_best=false, PoolIntArray details=PoolIntArray(), uint64_t this_leaderboard=0);
+		void uploadLeaderboardScore(int score, bool keep_best = false, PoolIntArray details = PoolIntArray(), uint64_t this_leaderboard = 0);
 		Array getLeaderboardEntries();
 
 		// Utils ////////////////////////////////
@@ -1412,10 +1413,6 @@ class Steam: public Object {
 			SteamAPI_RunCallbacks();
 		}
 
-		// Run the Steamworks server API callbacks
-		void run_server_callbacks(){
-			SteamGameServer_RunCallbacks();
-		}
 
 		/////////////////////////////////////////
 		// STEAM CALLBACKS
@@ -1563,20 +1560,20 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, _screenshot_requested, ScreenshotRequested_t, callbackScreenshotRequested);
 
 		// Server callbacks
-		STEAM_GAMESERVER_CALLBACK(Steam, _server_Connect_Failure, SteamServerConnectFailure_t, callbackServerConnectFailure);
-		STEAM_GAMESERVER_CALLBACK(Steam, _server_Connected, SteamServersConnected_t, callbackServerConnected);
-		STEAM_GAMESERVER_CALLBACK(Steam, _server_Disconnected, SteamServersDisconnected_t, callbackServerDisconnected);
-		STEAM_GAMESERVER_CALLBACK(Steam, _client_Approved, GSClientApprove_t, callbackClientApproved);
-		STEAM_GAMESERVER_CALLBACK(Steam, _client_Denied, GSClientDeny_t, callbackClientDenied);
-		STEAM_GAMESERVER_CALLBACK(Steam, _client_Kick, GSClientKick_t, callbackClientKicked);
-		STEAM_GAMESERVER_CALLBACK(Steam, _policy_Response, GSPolicyResponse_t, callbackPolicyResponse);
-		STEAM_GAMESERVER_CALLBACK(Steam, _client_Group_Status, GSClientGroupStatus_t, callbackClientGroupStatus);
-		STEAM_GAMESERVER_CALLBACK(Steam, _associate_Clan, AssociateWithClanResult_t, callbackAssociateClan);
-		STEAM_GAMESERVER_CALLBACK(Steam, _player_Compat, ComputeNewPlayerCompatibilityResult_t, callbackPlayerCompat);
+		STEAM_CALLBACK(Steam, _server_Connect_Failure, SteamServerConnectFailure_t, callbackServerConnectFailure);
+		STEAM_CALLBACK(Steam, _server_Connected, SteamServersConnected_t, callbackServerConnected);
+		STEAM_CALLBACK(Steam, _server_Disconnected, SteamServersDisconnected_t, callbackServerDisconnected);
+		STEAM_CALLBACK(Steam, _client_Approved, GSClientApprove_t, callbackClientApproved);
+		STEAM_CALLBACK(Steam, _client_Denied, GSClientDeny_t, callbackClientDenied);
+		STEAM_CALLBACK(Steam, _client_Kick, GSClientKick_t, callbackClientKicked);
+		STEAM_CALLBACK(Steam, _policy_Response, GSPolicyResponse_t, callbackPolicyResponse);
+		STEAM_CALLBACK(Steam, _client_Group_Status, GSClientGroupStatus_t, callbackClientGroupStatus);
+		STEAM_CALLBACK(Steam, _associate_Clan, AssociateWithClanResult_t, callbackAssociateClan);
+		STEAM_CALLBACK(Steam, _player_Compat, ComputeNewPlayerCompatibilityResult_t, callbackPlayerCompat);
 
 		// Server Stat callbacks
-		STEAM_GAMESERVER_CALLBACK(Steam, _stats_stored, GSStatsStored_t, callbackStatsStored);
-		STEAM_GAMESERVER_CALLBACK(Steam, _stats_unloaded, GSStatsUnloaded_t, callbackStatsUnloaded);
+		STEAM_CALLBACK(Steam, _stats_stored, GSStatsStored_t, callbackStatsStored);
+		STEAM_CALLBACK(Steam, _stats_unloaded, GSStatsUnloaded_t, callbackStatsUnloaded);
 
 		// UGC callbacks ////////////////////////
 		STEAM_CALLBACK(Steam, _item_downloaded, DownloadItemResult_t, callbackItemDownloaded);

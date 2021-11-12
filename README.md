@@ -19,6 +19,12 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.10.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.11 Changes**
+- Added: server branch merged into master
+- Changed: spacing in default arguments in godotsteam.h
+- Changed: renamed STEAM_GAMESERVER_CALLBACK as STEAM_CALLBACK
+- Removed: SteamGameServer_RunCallbacks function
+
 **Version 3.10.5 Changes**:
 - Added: more helper functions for newer networking classes, translations for steamnetworkingtypes
 - Fixed: lots of compiler warnings on Linux, _thanks to gregcsokas_
