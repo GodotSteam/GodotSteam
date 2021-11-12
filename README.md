@@ -6,6 +6,14 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 11/11/21:**
+- Added: new tutorial for auto-matchmaking
+- Added: new networkingtype helper functions to module functions page
+- Changed: moved server functions to module functions page
+- Changed: moved server signals to module signals page
+- Changed: updated changelogs for Godot 3 and GDNative
+- Removed: server fuctions, signals, and changelog since it has been merged in
+
 **Updated 10/31/21:**
 - Changed: tutorial links title to Godot 3.x Tutorials as Godot 4.x tutorials will need made
 

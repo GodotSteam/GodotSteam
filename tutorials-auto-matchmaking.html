@@ -27,77 +27,100 @@
 					<!-- Section -->
 					<section>
 						<header class="main">
-							<h1>Change Log | Server</h1>
+							<h1>Tutorials - Lobby Auto-Matchmaking</h1>
 						</header>
-						<p>The change log for the server repository.</p>
-						<h3>Version 1.2.3 Changes</h3>
-						<ul>
-							<li>Added: missing functions to Apps class</li>
-							<li>Added: new functions and callbacks to UGC class</li>
-							<li>Changed: EnableHeartbeats was renamed to SetAdvertiseServerActive in SDK</li>
-							<li>Changed: various internal variable names</li>
-							<li>Fixed: some memory allocation issues</li>
-							<li>Removed: setHeartbeatInterval and forceHeartbeat; was removed from SDK</li>
-						</ul>
-						<h3>Version 1.2.2 Changes</h3>
-						<ul>
-							<li>Added: Added: ability to provide different locations for custom modules, thanks to dsnopek</li>
-						</ul>
-						<h3>Version 1.2.1 Changes</h3>
-						<ul>
-							<li>Fixed: getNumSubscribedItems was mislabeled as getSubscribedItems</li>
-						</ul>
-						<h3>Version 1.2 Changes</h3>
-						<ul>
-							<li>Added: various notations and spacing</li>
-							<li>Added: addRequiredTagGroup, getQueryUGCTag, getQueryUGCTagDisplayName, and getQueryUGCNumTags functions from UGC</li>
-							<li>Changed: setCookie to setHTTPCookie</li>
-							<li>Fixed: various delete statements</li>
-							<li>Fixed: converting user ID in createQueryUserUGCRequest</li>
-							<li>Fixed: metadata length in setItemMetadata</li>
-							<li>Fixed: library paths in config.py</li>
-							<li>Removed: compiling flag in config.py for OSX</li>
-							<li>Removed: ticket struct as it causes craches</li>
-						</ul>
-						<h3>Version 1.1.1 Changes</h3>
-						<ul>
-							<li>Changed: includes Godot header file to allow more than 5 arguments in a function</li>
-							<li>Fixed: filterText for Steamworks SDK 1.50</li>
-						</ul>
-						<h3>Version 1.1.0 Changes</h3>
-						<ul>
-							<li>Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes</li>
-							<li>Added: related callbacks, call results, constants, and enums</li>
-							<li>Added: headless server platform for linux</li>
-							<li>Fixed: OSX compiling config rules</li>
-						</ul>
-						<h3>Version 1.0.0</h3>
-						<ul>
-							<li>Added: missing server functions</li>
-							<li>Fixed: missing argument in config.py</li>
-							<li>Fixed: missing Godot include that allows more than 5 arguments per function</li>
-							<li>Fixed: a lot of different functions</li>
-							<li>Fixed: issue with include in register_types.cpp</li>
-							<li>Removed: remaining depreciated functions</li>
-							<li>Removed: functions not compatible with new networking functions</li>
-						</ul>
-						<h3>Version 0.0.3</h3>
-						<ul>
-							<li>Removed: depreciated signal _client_Achieve_Status</li>
-							<li>Removed: depreciated signal _gameplay_Stats</li>
-							<li>Removed: depreciated signal _reputation</li>
-						</ul>
-						<h3>Version 0.0.2</h3>
-						<ul>
-							<li>Added: all of the result enums</li>
-							<li>Added: missing signals</li>
-							<li>Changed: module folder name</li>
-							<li>Removed: depreciated functions</li>
-						</ul>
-						<h3>Version 0.0.1</h3>
-						<ul>
-							<li>Added: Added: basically everything in Steam server main</li>
-						</ul>
+						<p>A quick, requested tutorial is auto-matchmaking lobbies. While this example does not show how to match specific criteria, it will be noted where you can place such matches. This tutorial is basically an extention of the <a href="https://gramps.github.io/GodotSteam/tutorials-lobbies-p2p.html" target="_blank">lobbies / P2P tutorial</a>. Because of that we'll focus only on what's different; please refer to the lobby tutorial for additional information and layouts.</p>
+						<header class="major">
+							<h3>Set Up</h3>
+						</header>
+						<p>First let's set up some variables to fill in later:</p>
+<pre><code>
+var STEAM_LOBBY_ID: int = 0
+var LOBBY_MEMBERS: Array = []
+var MATCHMAKING_PHASE: int = 0
+var LOBBY_MAX_PLAYERS: int = 2
+</code></pre>
+						<p>Carried over from the lobby tutorial is <strong>STEAM_LOBBY_ID</strong>, which obviously houses the lobby's ID, and <strong>LOBBY_MEMBERS</strong>, which will be an array of dictionaries of lobby members and their Steam ID 64's.</p>
+						<p>New to this tutorial is <strong>MATCHMAKING_PHASE</strong> which keeps track of which iteration of the matchmaking search our code does.  Also new is <strong>LOBBY_MAX_PLAYERS</strong> which is used to check if the lobby has space for our player.</p>
+						<p>All of the _ready function callback connections will be the same.</p>
+						<hr/>
+						<header class="major">
+							<h3>Finding A Lobby</h3>
+						</header>
+						<p>For our purposes, we will create a button named "Auto Matchmake" and connect a _on_pressed signal to it called _on_Auto_Matchmake_pressed().  Here is the function that triggers when that button is pressed:</p>
+<pre><code>
+# Start the auto matchmaking process.
+func _on_Auto_Matchmake_pressed() -> void:
+	# Set the matchmaking process over
+	MATCHMAKE_PHASE = 0
+	# Start the loop!
+	_matchmaking_Loop()
+</code></pre>			
+						<p>This, obviously, starts the main loop that looks for a matching lobby for your player to join:</p>
+<pre><code>
+# Iteration for trying different distances
+func _matchmaking_Loop() -> void:
+	
+	# If this matchmake_phase is 3 or less, keep going
+	if MATCHMAKE_PHASE < 4:
+		###
+		# Add other filters for things like game modes, etc.
+		# Since this is an example, we cannot set game mode or text match features.
+		# However you could use addRequestLobbyListStringFilter to look for specific text in lobby metadata to match different criteria.
+		
+		###
+		# Set the distance filter
+		Steam.addRequestLobbyListDistanceFilter(MATCHMAKE_PHASE)
+		
+		# Request a list
+		Steam.requestLobbyList()
+	
+	else:
+		print("[STEAM] Failed to automatically match you with a lobby. Please try again.\n")
+</code></pre>
+						<p>As it notes in the code above, you could have a list of different filters the player can pick from before searching for a lobby. These can be applied to terms that <strong>addRequestLobbyListStringFilter</strong> looks for ahead of time. Things like game modes, maps, difficulties, etc.</p>
+						<p>Very important is our <strong>addRequestLobbyListDistanceFilter</strong> and <strong>MATCHMAKE_PHASE</strong> variable. We are starting with "close" / 0 and ending with "worldwide" 3; hence at 4 it fails to find anything and prompts the user to try again.</p>
+						<p>This loop function will trigger a callback once it finds some lobbies to check through. Sorting through our matches should look like this:</p>
+<pre><code>
+# A lobby list was created, find a possible lobby
+func _on_Lobby_Match_List(lobbies: Array) -> void:
+	
+	# Set attempting_join to false
+	var ATTEMPTING_JOIN: bool = false
+	
+	# Show the list 
+	for LOBBY in lobbies:
+		
+		# Pull lobby data from Steam
+		var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
+		var LOBBY_NUMS: int = Steam.getNumLobbyMembers(LOBBY)
+		
+		###
+		# Add other filters for things like game modes, etc.
+		# Since this is an example, we cannot set game mode or text match features.
+		# However, much like lobby_name, you can use Steam.getLobbyData to get other preset lobby defining data to append to the next if statement.
+		###
+		
+		# Attempt to join the first lobby that fits the criteria
+		if LOBBY_NUMS < LOBBY_MAX_PLAYERS and not ATTEMPTING_JOIN:
+			
+			# Turn on attempting_join
+			ATTEMPTING_JOIN = true
+			print("Attempting to join lobby...\n")
+			Steam.joinLobby(LOBBY)
+	
+	# No lobbies that matched were found, go onto the next phase
+	if not ATTEMPTING_JOIN:
+		
+		# Increment the matchmake_phase
+		MATCHMAKE_PHASE += 1
+		_matchmaking_Loop()
+</code></pre>
+						<p>This will go through every lobby returned and, if none of them match, it will iterate the <strong>MATCHMAKE_PHASE</strong> variable and start the loop again but moving one step further in the distance filter.</p>
+						<p>Much like the previous additional filters, you can sort by other lobby data in the manner the <strong>LOBBY_NAME</strong> data is acquired. These bits of information can be added to a lobby when it is created, making this process easier.</p>
+						<p>The first lobby that matches your criteria and has space for the user, triggers the <strong>joinLobby</strong> function to fire and the player should soon join their automatically found lobby.</p>
+						<hr/>
+						<p><a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">To see this tutorial in action, check out the exaple branch on the GodotSteam Github repo.</a> There you can get a full view of the code used which can serve as a starting point for you to branch out from.</p>
 					</section>
 				</div>
 			</div>
@@ -116,7 +139,6 @@
 								<ul>
 									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
 									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
 							</li>
 							<li>
@@ -142,6 +164,8 @@
 									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
 									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
 									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#server">Server</a></li>
+									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
 									<li><a href="functions-module.html#ugc">UGC</a></li>
 									<li><a href="functions-module.html#users">Users</a></li>
 									<li><a href="functions-module.html#user-stats">User Stats</a></li>
@@ -149,28 +173,7 @@
 									<li><a href="functions-module.html#video">Video</a></li>
 								</ul>
 							</li>
-							<li>
-								<span class="opener">Functions (Server)</span>
-								<ul>
-									<li><a href="functions-server.html">All</a></li>
-									<li><a href="functions-server.html#core">Core</a></li>
-									<li><a href="functions-server.html#apps">Apps</a></li>
-									<li><a href="functions-server.html#http">HTTP</a></li>
-									<li><a href="functions-server.html#inventory">Inventory</a></li>
-									<li><a href="functions-server.html#networking">Networking</a></li>
-									<li><a href="functions-server.html#server">Server</a></li>
-									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-server.html#ugc">UGC</a></li>
-									<li><a href="functions-server.html#utils">Utils</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Signals</span>
-								<ul>
-									<li><a href="signals-modules.html">Signals (Module)</a></li>
-									<li><a href="signals-server.html">Signals (Server)</a></li>
-								</ul>
-							</li>
+							<li><a href="signals-modules.html">Signals</a></li>
 							<li>
 								<span class="opener">Godot 3.x Tutorials</span>
 								<ul>
@@ -182,6 +185,7 @@
 									<li><a href="tutorials-authentication.html">Authentication</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
 									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
@@ -196,7 +200,6 @@
 									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 									<li><a href="changelog-gdnative.html">GDNative</a></li>
-									<li><a href="changelog-server.html">Server</a></li>
 								</ul>
 							</li>
 							<li><a href="contributors.html">Contributors</a></li>

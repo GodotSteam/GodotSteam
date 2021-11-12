@@ -1497,7 +1497,7 @@
 						</ul>
 						<h4>setPropertyBool( <sup>int</sup> itemID, <sup>string</sup> name, <sup>bool</sup> value )</h4>
 						<ul>
-							<li>Sets a dynamic property for the given item. Supported value types are boolean.
+							<li>Sets a dynamic property for the given item. Supported value types are boolean.</li>
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
 						<h4>setPropertyInt( <sup>int</sup> itemID, <sup>string</sup> name, <sup>int64</sup> value )</h4>
@@ -2111,7 +2111,7 @@
 						<h4>receiveMessagesOnChannel( <sup>int</sup> channel, <sup>int</sup> max_messages )</h4>
 						<ul>
 							<li>Reads the next message that has been sent from another user via SendMessageToUser() on the given channel. Returns number of messages returned into your list.  (0 if no message are available on that channel.)</li>
-							<li><strong>Currently not enabled.</strong>
+							<li><strong>Currently not enabled.</strong></li>
 							<li>Returns an <strong>array</strong> of:
 								<ul>
 									<li> messages (dictionary)
@@ -2281,7 +2281,7 @@
 						</ul>							
 						<h4>getConnectionInfo( <sup>int</sup> connection )</h4>
 						<ul>
-							<li>Returns basic information about the high-level state of the connection. Returns false if the connection handle is invalid.
+							<li>Returns basic information about the high-level state of the connection. Returns false if the connection handle is invalid.</li>
 							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
 						<h4>getQuickConnectionStatus( <sup>int</sup> connection )</h4>
@@ -2377,6 +2377,181 @@
 							<li>Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)</li>
 							<li><strong>Currently not enabled.</strong></li>
 							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Networking Types</h3>
+						</header>
+						<a id="networking-types"></a>
+						<h4>addIdentity( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Create a new network identity and store it for use.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>getIdentities()</h4>
+						<ul>
+							<li>Get a list of all known network identities</li>
+							<li>Returns an <strong>array</strong of:
+								<ul>
+									<li>this_identity (dictionary)
+										<ul>
+											<li>name (string)</li>
+											<li>steam_id (int)</li>
+											<li>type (int)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>clearIdentity( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Clear a network identity's data.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>isIdentityInvalid( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return true if we are the invalid type.  Does not make any other validity checks (e.g. is SteamID actually valid).</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setIdentitySteamID( <sup>string</sup> name, <sup>int</sup> steam_id )</h4>
+						<ul>
+							<li>Set a 64-bit Steam ID.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>getIdentitySteamID( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return black CSteamID (!IsValid()) if identity is not a SteamID.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>setIdentitySteamID64( <sup>string</sup> name, <sup>int</sup> steam_id ) </h4>
+						<ul>
+							<li>Takes SteamID as raw 64-bit number.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>getIdentitySteamID64( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns 0 if identity is not SteamID.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>setIdentityIPAddr( <sup>string</sup> name, <sup>string</sup> ip_address_name )</h4>
+						<ul>
+							<li>Set to specified IP:port.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>getIdentityIPAddr( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns null if we are not an IP address.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul> 
+						<h4>setIdentityLocalHost( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Set to localhost. (We always use IPv6 ::1 for this, not 127.0.0.1).</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>isIdentityLocalHost( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return true if this identity is localhost.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setGenericString( <sup>string</sup> name, <sup>string</sup> this_string )</h4>
+						<ul>
+							<li>Returns false if invalid length.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul> 
+						<h4>getGenericString( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns nullptr if not generic string type.</li>
+							<li>Returns a <strong>string</strong>.</li>
+						</ul>
+						<h4>setGenericBytes( <sup>string</sup> name, <sup>int</sup> data )</h4>
+						<ul>
+							<li>Returns false if invalid size.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>getGenericBytes( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns null if not generic bytes type.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>toIdentityString( <sup>string</sup> name, <sup>string</sup> buffer )</h4>
+						<ul>
+							<li>Print to a human-readable string.  This is suitable for debug messages or any other time you need to encode the identity as a string. It has a URL-like format (type:<type-data>). Your buffer should be at least k_cchMaxString bytes big to avoid truncation.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>parseIdentityString( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Parse back a string that was generated using ToString. If we don't understand the string, but it looks "reasonable" (it matches the pattern type:<type-data> and doesn't have any funky characters, etc), then we will return true, and the type is set to k_ESteamNetworkingIdentityType_UnknownType. False will only be returned if the string looks invalid.</li>
+							<li>Returns a <strong>string</strong>.</li>
+						</ul>
+						<h4>addIPAddress( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Add a new IP address struct.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>getIPAddresses()</h4>
+						<ul>
+							<li>Get a list of all IP address structs and their names.</li>
+							<li>Returns an <strong>array</strong of:
+								<ul>
+									<li>this_address (dictionary)
+										<ul>
+											<li>name (string)</li>
+											<li>localhost (bool)</li>
+											<li>ip_address (int)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>clearIPAddress( <sup>string</sup> name )</h4>
+						<ul>
+							<li>IP Address - Set everything to zero. E.g. [::]:0.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>isIPv6AllZeros( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return true if the IP is ::0. (Doesn't check port.).</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setIPv6( <sup>string</sup> name, <sup>int</sup> ipv6, <sup>int</sup> port )</h4>
+						<ul>
+							<li>Set IPv6 address. IP is interpreted as bytes, so there are no endian issues. (Same as inaddr_in6.) The IP can be a mapped IPv4 address.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul> 
+						<h4>setIPv4( <sup>string</sup> name, <sup>int</sup> ip, <sup>int</sup> port )</h4>
+						<ul>
+							<li>Sets to IPv4 mapped address. IP and port are in host byte order.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>isIPv4( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return true if IP is mapped IPv4.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>getIPv4( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Returns IP in host byte order (e.g. aa.bb.cc.dd as 0xaabbccdd). Returns 0 if IP is not mapped IPv4.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>setIPv6LocalHost( <sup>string</sup> name, <sup>int</sup> port )</h4>
+						<ul>
+							<li>Set to the IPv6 localhost address ::1, and the specified port.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>isAddressLocalHost( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Return true if this identity is localhost. (Either IPv6 ::1, or IPv4 127.0.0.1).</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>toIPAddressString( <sup>string</sup> name, <sup>string</sup> buffer, <sup>bool</sup> with_port) </h4>
+						<ul>
+							<li>Print to a string, with or without the port. Mapped IPv4 addresses are printed as dotted decimal (12.34.56.78), otherwise this will print the canonical form according to RFC5952. If you include the port, IPv6 will be surrounded by brackets, e.g. [::1:2]:80. Your buffer should be at least k_cchMaxString bytes to avoid truncation.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>parseIPAddressString( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Parse an IP address and optional port.  If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).</li>
+							<li>Returns a <strong>string</strong>.</li>
 						</ul>
 						<hr/>
 						<header class="major">
@@ -2534,17 +2709,17 @@
 						<a id="parties"></a>
 						<h4>getAvailableBeaconLocations( <sup>int</sup> max )</h4>
 						<ul>
-						<li>Get the list of locations in which you can post a party beacon.</li>
-						<li>Returns an <strong>array</strong> of:
-							<ul>
-								<li>beaconData (dictionary)
-									<ul>
-										<li>type (int)</li>
-										<li>locationID (int)</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
+							<li>Get the list of locations in which you can post a party beacon.</li>
+							<li>Returns an <strong>array</strong> of:
+								<ul>
+									<li>beaconData (dictionary)
+										<ul>
+											<li>type (int)</li>
+											<li>locationID (int)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 						</ul>
 						<h4>createBeacon( <sup>int</sup> openSlots, <sup>int</sup> location, <sup>int</sup> type, <sup>string</sup> connectString, <sup>string</sup> metadata )</h4>
 						<ul>
@@ -2863,6 +3038,254 @@
 							<li>Writes a screenshot to the user's Steam screenshot library.</li>
 							<li>Triggers a <strong>_screenshot_ready</strong> callback.</li>
 							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Server</h3>
+						</header>
+						<a id="server"></a>
+						<h4>initGameServer( <sup>dictionary</sup> connectData, <sup>int</sup> serverMode, <sup>string</sup> versionString )</h4>
+						<ul>
+							<li>NOTE: The following, if set, must be set before calling LogOn; they may not be changed after.</li>
+							<li>This is called by <strong>SteamGameServer_Init</strong> and will usually not need to be called directly.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setGameDescription( <sup>string</sup> description )</h4>
+						<ul>
+							<li>Description of the game; required field and is displayed in the Steam server browser.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setModDir( <sup>string</sup> modDir )</h4>
+						<ul>
+							<li>If your game is a mod, pass the string that identifies it. Default is empty meaning the app is the original game.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setDedicatedServer( <sup>bool</sup> dedicated )</h4>
+						<ul>
+							<li>Is this a dedicated server? Default is false.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>logOn( <sup>string</sup> token )</h4>
+						<ul>
+							<li>Begin process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.</li>
+							<li>Triggers <strong>_server_connect_failure</strong>, <strong>_server_connected</strong>, and <strong>_server_disconnected</strong> callbacks.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>logOnAnonymous()</h4>
+						<ul>
+							<li>Login to a generic, anonymous account.</li>
+							<li>Triggers <strong>_server_connect_failure</strong>, <strong>_server_connected</strong>, and <strong>_server_disconnected</strong> callbacks.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>logOff()</h4>
+						<ul>
+							<li>Begin process of logging game server out of Steam.</li>
+							<li>Triggers <strong>_server_connect_failure</strong>, <strong>_server_connected</strong>, and <strong>_server_disconnected</strong> callbacks.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>serverLoggedOn()</h4>
+						<ul>
+							<li>Status functions.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>secure()</h4>
+						<ul>
+							<li>Checks whether the game server is in "Secure" mode.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>getServerSteamID()</h4>
+						<ul>
+							<li>Gets the Steam ID of the game server.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>wasRestartRequested()</h4>
+						<ul>
+							<li>Returns true if the master server has requested a restart. Only returns true once per request.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<p><strong><em>NOTE: These are server state functions and can be changed at any time.</em></strong></p>
+						<h4>setMaxPlayerCount( <sup>int</sup> max )</h4>
+						<ul>
+							<li>Max player count that will be reported to server browser and client queries.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setBotPlayerCount( <sup>int</sup> bots )</h4>
+						<ul>
+							<li>Number of bots. Default is zero.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setServerName( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Set the naem of the server as it will appear in the server browser.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setMapName( <sup>string</sup> map )</h4>
+						<ul>
+							<li>Set name of map to report in server browser.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setPasswordProtected( <sup>bool</sup> password )</h4>
+						<ul>
+							<li>Let people know if your server requires a password.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setSpectatorPort( <sup>int</sup> port )</h4>
+						<ul>
+							<li>Spectator server. Default is zero, meaning it is now used.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setSpectatorServerName( <sup>string</sup> name )</h4>
+						<ul>
+							<li>Name of spectator server. Only used if spectator port is non-zero.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>clearAllKeyValues()</h4>
+						<ul>
+							<li>Call this to clear the whole list of key/values that are sent in rule queries.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setKeyValue( <sup>string</sup> key, <sup>string</sup> value )</h4>
+						<ul>
+							<li>Call this to add/update a key/value pair.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setGameTags( <sup>string</sup> tags )</h4>
+						<ul>
+							<li>Set a string defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setGameData( <sup>string</sup> data )</h4>
+						<ul>
+							<li>Set a string defining game data for this server; optional. Allows users to filter in matchmaking/server browser.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setRegion( <sup>string</sup> region )</h4>
+						<ul>
+							<li>Region identifier; optional. Default is empty meaning 'world'.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<p><strong><em>NOTE: These functions are player list management / authentication.</em></strong></p>
+						<h4>getServerAuthSessionTicket()</h4>
+						<ul>
+							<li>Retrieve ticket to be sent to the entity who wishes to authenticate you (using <strong>BeginAuthSession</strong> API).</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>beginServerAuthSession( <sup>int</sup> authTicket, <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>endServerAuthSession( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Stop tracking started by <strong>beginAuthSession</strong>; called when no longer playing game with this entity.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>cancelServerAuthTicket( <sup>int</sup> authTicket )</h4>
+						<ul>
+							<li>Cancel auth ticket from <strong>getAuthSessionTicket</strong>; called when no longer playing game with the entity you gave the ticket to.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>userHasLicenceForApp( <sup>int</sup> steamID, <sup>int</sup> appID )</h4>
+						<ul>
+							<li>After receiving a user's authentication data, and passing it to <strong>sendUserConnectAndAuthenticate</strong>, use to determine if user owns DLC</li>
+							<li>Returns an <strong>int</strong>.</li>
+						</ul>
+						<h4>requestUserGroupStatus( <sup>int</sup> steamID, <sup>int</sup> groupID )</h4>
+						<ul>
+							<li>Ask if user is in specified group; results returned by <strong><em>GSUserGroupStatus_t</em></strong>.</li>
+							<li>Triggers <strong>_client_Group_Status</strong> callback.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<p><strong><em>NOTE: These are in GameSocketShare mode, where instead of ISteamGameServer creating sockets to talk to master server, it lets the game use its socket to forward messages back and forth.</em></strong></p>
+						<h4>handleIncomingPacket( <sup>int</sup> packet, <sup>string</sup> ip, <sup>int</sup> port )</h4>
+						<ul>
+							<li>These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.</li>
+							<li>Returns a <strong>dictionary</strong>:
+								<ul>
+									<li>data (PoolByteArray)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>setHeartbeatInterval( <sup>int</sup> interval )</h4>
+						<ul>
+							<li>You usually don't need to modify this. Pass -1 to use the default value for <strong>iHeartbeatInterval</strong>. Some mods change this.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>forceHeartbeat()</h4>
+						<ul>
+							<li>Force a heartbeat to Steam at next opportunity.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>associateWithClan( <sup>int</sup> clanID )</h4>
+						<ul>
+							<li>Associate this game server with this clan for the purposes of computing player compatibility.</li>
+							<li>Triggers <strong>_associate_Clan</strong> callback.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>computeNewPlayerCompatibility( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Ask if any of the current players dont want to play with this new player - or vice versa.</li>
+							<li>Triggers <strong>_player_Compat</strong> callback.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Server Stats</h3>
+						</header>
+						<a id="server-stats"></a>
+						<h4>clearUserAchievement( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Resets the unlock status of an achievement for the specified user.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>serverGetUserAchievement( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the unlock status of the achievement.</li>
+							<li>Returns a <strong>dictionary</strong>:
+								<ul>
+									<li>result (bool)</li>
+									<li>user (int)</li>
+									<li>name (string)</li>
+									<li>unlocked (bool</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>serverGetUserStatFloat( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Gets the current value of the a stat for the specified user.</li>
+							<li>Returns a <strong>float</strong>.</li>
+						</ul>
+						<h4>requestServerUserStats( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Asynchronously downloads stats and achievements for the specified user from the server.</li>
+							<li>Triggers <strong>_stat_received</strong> call result.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>setUserAchievement( <sup>int</sup> steamID, <sup>string</sup> name )</h4>
+						<ul>
+							<li>Unlocks an achievement for the specified user.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setUserStatInt( <sup>int</sup> steamID, <sup>string</sup> name, <sup>int</sup> stat )</h4>
+						<ul>
+							<li>Sets / updates the value of a given stat for the specified user.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>setUserStatFloat( <sup>int</sup> steamID, <sup>string</sup> name, <sup>float</sup> stat )</h4>
+						<ul>
+							<li>Sets / updates the value of a given stat for the specified user.</li>
+							<li>Returns a <strong>bool</strong>.</li>
+						</ul>
+						<h4>storeUserStats( <sup>int</sup> steamID )</h4>
+						<ul>
+							<li>Send the changed stats and achievements data to the server for permanent storage for the specified user.</li>
+							<li>Triggers <strong>_stats_stored</strong> callback.</li>
+							<li>Returns nothing; <strong>void</strong>.</li>
+						</ul>
+						<h4>updateUserAvgRateStat( <sup>int</sup> steamID, <sup>string</sup> name, <sup>float</sup> thisSession, <sup>double</sup> sessionLength )</h4>
+						<ul>
+							<li>Updates an AVGRATE stat with new values for the specified user.</li>
+							<li>Returns a <strong>bool</strong>.</li>
 						</ul>
 						<hr/>
 						<header class="major">
@@ -3812,7 +4235,7 @@
 						<h4>setLeaderboardDetailsMax( <sub>int</sub> max )</h4>
 						<ul>
 							<li>Set the maximum number of details to return for leaderboard entries.</li>
-							<li>Returns a <strong>int</strong> which is the current leaderboard details max value.</li>
+							<li>Returns an <strong>int</strong> which is the current leaderboard details max value.</li>
 						</ul>
 						<h4>setStatFloat( <sup>string</sup> name, <sup>float</sup> value )</h4>
 						<ul>
@@ -4047,7 +4470,6 @@
 								<ul>
 									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
 									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
 							</li>
 							<li>
@@ -4073,6 +4495,8 @@
 									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
 									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
 									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#server">Server</a></li>
+									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
 									<li><a href="functions-module.html#ugc">UGC</a></li>
 									<li><a href="functions-module.html#users">Users</a></li>
 									<li><a href="functions-module.html#user-stats">User Stats</a></li>
@@ -4080,28 +4504,7 @@
 									<li><a href="functions-module.html#video">Video</a></li>
 								</ul>
 							</li>
-							<li>
-								<span class="opener">Functions (Server)</span>
-								<ul>
-									<li><a href="functions-server.html">All</a></li>
-									<li><a href="functions-server.html#core">Core</a></li>
-									<li><a href="functions-server.html#apps">Apps</a></li>
-									<li><a href="functions-server.html#http">HTTP</a></li>
-									<li><a href="functions-server.html#inventory">Inventory</a></li>
-									<li><a href="functions-server.html#networking">Networking</a></li>
-									<li><a href="functions-server.html#server">Server</a></li>
-									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-server.html#ugc">UGC</a></li>
-									<li><a href="functions-server.html#utils">Utils</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Signals</span>
-								<ul>
-									<li><a href="signals-modules.html">Signals (Module)</a></li>
-									<li><a href="signals-server.html">Signals (Server)</a></li>
-								</ul>
-							</li>
+							<li><a href="signals-modules.html">Signals</a></li>
 							<li>
 								<span class="opener">Godot 3.x Tutorials</span>
 								<ul>
@@ -4113,6 +4516,7 @@
 									<li><a href="tutorials-authentication.html">Authentication</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
 									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
@@ -4127,7 +4531,6 @@
 									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 									<li><a href="changelog-gdnative.html">GDNative</a></li>
-									<li><a href="changelog-server.html">Server</a></li>
 								</ul>
 							</li>
 							<li><a href="contributors.html">Contributors</a></li>

@@ -61,7 +61,7 @@ var LOBBY_INVITE_ARG: bool = false
 						<header class="major">
 							<h3>The _ready() Function</h3>
 						</header>
-						<p>Next we'll want to set up the signal connections for Steamwork and a command line checker like so:</p>
+						<p>Next we'll want to set up the signal connections for Steamworks and a command line checker like so:</p>
 <pre><code>
 func _ready() -> void:
 
@@ -73,6 +73,7 @@ func _ready() -> void:
 	Steam.connect("lobby_data_update", self, "_on_Lobby_Data_Update")
 	Steam.connect("lobby_invite", self, "_on_Lobby_Invite")
 	Steam.connect("join_requested", self, "_on_Lobby_Join_Requested")
+	Steam.connect("persona_state_change", self, "_on_Persona_Change")
 	Steam.connect("p2p_session_request", self, "_on_P2P_Session_Request")
 	Steam.connect("p2p_session_connect_fail", self, "_on_P2P_Session_Connect_Fail")
 	# Check for command line arguments
@@ -331,6 +332,20 @@ func _get_Lobby_Members() -> void:
 							<p>This will get the lobby members from Steam then loop through and get their names and Steam ID's then append them to our <strong>LOBBY_MEMBERS</strong> array for later use.  You can then display this list in your lobby room.</p>
 							<hr />
 							<header class="major">
+								<h3>Persona Changes / Avatars / Names</h3>
+							</header>
+							<p>Sometimes you will see that a user's name and avatar, sometimes one or the other, won't immediately show up correctly. This is because our local user only really knows about friends and players they have played with; whatever is stored in local cache. A bit after a lobby is joined, this data will be sent by Steam which triggers a <strong>persona_state_change</strong> callback. You will want to update your player list to reflect this and get the correct name and avatar for unknown players.  Our connect <strong>_on_Persona_Change</strong> function will do that:</p>
+<pre><code>
+# A user's information has changed
+func _on_Persona_Change(steam_id: int, _flag: int) -> void:
+	print("[STEAM] A user ("+str(steam_id)+") had information change, update the lobby list")
+	
+	# Update the player list
+	_get_Lobby_Members()
+</code></pre>
+							<p>All this really does is refresh our lobby list information to get the avatar and name right by re-calling <strong>_get_Lobby_Members()</strong> again.</p>
+							<hr />
+							<header class="major">
 								<h3>P2P Handshakes</h3>
 							</header>
 							<p>You'll also note in the joining lobbies part we fire the initial P2P handshake; this just opens and checks our P2P session:
@@ -573,7 +588,6 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 								<ul>
 									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
 									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
 							</li>
 							<li>
@@ -599,6 +613,8 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
 									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
 									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#server">Server</a></li>
+									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
 									<li><a href="functions-module.html#ugc">UGC</a></li>
 									<li><a href="functions-module.html#users">Users</a></li>
 									<li><a href="functions-module.html#user-stats">User Stats</a></li>
@@ -606,28 +622,7 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 									<li><a href="functions-module.html#video">Video</a></li>
 								</ul>
 							</li>
-							<li>
-								<span class="opener">Functions (Server)</span>
-								<ul>
-									<li><a href="functions-server.html">All</a></li>
-									<li><a href="functions-server.html#core">Core</a></li>
-									<li><a href="functions-server.html#apps">Apps</a></li>
-									<li><a href="functions-server.html#http">HTTP</a></li>
-									<li><a href="functions-server.html#inventory">Inventory</a></li>
-									<li><a href="functions-server.html#networking">Networking</a></li>
-									<li><a href="functions-server.html#server">Server</a></li>
-									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-server.html#ugc">UGC</a></li>
-									<li><a href="functions-server.html#utils">Utils</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Signals</span>
-								<ul>
-									<li><a href="signals-modules.html">Signals (Module)</a></li>
-									<li><a href="signals-server.html">Signals (Server)</a></li>
-								</ul>
-							</li>
+							<li><a href="signals-modules.html">Signals</a></li>
 							<li>
 								<span class="opener">Godot 3.x Tutorials</span>
 								<ul>
@@ -639,6 +634,7 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 									<li><a href="tutorials-authentication.html">Authentication</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
 									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
@@ -653,7 +649,6 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 									<li><a href="changelog-gdnative.html">GDNative</a></li>
-									<li><a href="changelog-server.html">Server</a></li>
 								</ul>
 							</li>
 							<li><a href="contributors.html">Contributors</a></li>

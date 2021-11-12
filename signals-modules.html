@@ -85,6 +85,17 @@
 							<li>Emits signal <strong><em>new_launch_query_parameters</em></strong> in response to function <strong>getLaunchQueryParam</strong>.</li>
 							<li>Sends back no data.</li>
 						</ul>
+						<h4>_register_activation_code_response</h4>
+						<ul>
+							<li>Response to RegisterActivationCode().</li>
+							<li>Emits signal <strong><em>register_activation_code_response</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>package_registered (int)</li>
+								</ul>
+							</li>
+						</ul>
 						<h4>_app_proof_of_purchase_key_response</h4>
 						<ul>
 							<li>Response to RequestAppProofOfPurchaseKey/RequestAllProofOfPurchaseKeys for supporting third-party CD keys, or other proof-of-purchase systems.</li>
@@ -821,7 +832,7 @@
 							</li>
 						</ul>
 						<hr/>
-						<header class="majpr">
+						<header class="major">
 							<h3>Input</h3>
 						</header>
 						<h4>_input_action_event</h4>
@@ -1529,6 +1540,155 @@
 						</ul>
 						<hr/>
 						<header class="major">
+							<h3>Server</h3>
+						</header>
+						<a id="server"></a>
+						<h4>_server_Connect_Failure</h4>
+						<ul>
+							<li>Logging the game server onto Steam.</li>
+							<li>Emits signal <strong><em>server_Connect_Failure</em></strong> in response to functions <strong>LogOff</strong>, <strong>LogOn</strong>, or <strong>LogOnAnonymous</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>retrying (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_server_Connected</h4>
+						<ul>
+							<li>Server has connected to the Steam back-end.</li>
+							<li>Emits signal <strong><em>server_Connected</em></strong> in response to functions <strong>LogOff</strong>, <strong>LogOn</strong>, or <strong>LogOnAnonymous</strong>.</li>
+							<li>Sends back no data.</li>
+						</ul>
+						<h4>_server_Disconnected</h4>
+						<ul>
+							<li>Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching <strong><em>SteamServersConnected_t</em></strong> has been posted.</li>
+							<li>Emits signal <strong><em>server_Disconnected</em></strong> in response to functions <strong>LogOff</strong>, <strong>LogOn</strong>, or <strong>LogOnAnonymous</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_client_Approved</h4>
+						<ul>
+							<li>Client has been approved to connect to this game server.</li>
+							<li>Emits signal <strong><em>client_Approved</em></strong> in response to function <strong>SendUserConnectAndAuthenticate</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>ownerID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_client_Denied</h4>
+						<ul>
+							<li>Client has been denied to connection to this game server.</li>
+							<li>Emits signal <strong><em>client_Denied</em></strong> in response to function <strong>SendUserConnectAndAuthenticate</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>reason (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_client_Kick</h4>
+						<ul>
+							<li>Request the game server should kick the user.</li>
+							<li>Emits signal <strong><em>client_Kick</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>reason (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_policy_Response</h4>
+						<ul>
+							<li>Received when the game server requests to be displayed as secure (VAC protected). <strong><em>m_bSecure</em></strong> is true if the game server should display itself as secure to users, false otherwise.</li>
+							<li>Emits signal <strong><em>policy_Response</em></strong> in response to function <strong>Secure</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>secure (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_client_Group_Status</h4>
+						<ul>
+							<li>Sent as a reply to <strong>RequestUserGroupStatus</strong>.</li>
+							<li>Emits signal <strong><em>client_Group_Status</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+									<li>groupID (int)</li>
+									<li>member (bool)</li>
+									<li>officer (bool)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_associate_Clan</h4>
+						<ul>
+							<li>Sent as a reply to <strong>AssociateWithClan</strong>.</li>
+							<li>Emits signal <strong><em>associate_Clan</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_player_Compat</h4>
+						<ul>
+							<li>Sent as a reply to <strong>ComputeNewPlayerCompatibility</strong>.</li>
+							<li>Emits signal <strong><em>player_Compat</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>playersDontLikeCandidate (int)</li>
+									<li>playersCandidateDoesntLike (int)</li>
+									<li>clanPlayersDontLikeCandidate (int)</li>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
+							<h3>Server Stats</h3>
+						</header>
+						<a id="server-stats"></a>
+						<h4>_stat_received</h4>
+						<ul>
+							<li>Result when getting the latests stats and achievements for a user from the server.</li>
+							<li>Emits signal <strong><em>stat_received</em></strong> in response to function <strong>RequestUserStats</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_stats_stored</h4>
+						<ul>
+							<li>Result of a request to store the user stats.</li>
+							<li>Emits signal <strong><em>stats_stored</em></strong> in response to function <strong>StoreUserStats</strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>result (int)</li>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4>_stats_unloaded</h4>
+						<ul>
+							<li>Callback indicating that a user's stats have been unloaded.</li>
+							<li>Emits signal <strong><em>stats_unloaded</em></strong>.</li>
+							<li>Sends back the following data:
+								<ul>
+									<li>steamID (int)</li>
+								</ul>
+							</li>
+						</ul>
+						<hr/>
+						<header class="major">
 							<h3>UGC Signals</h3>
 						</header>
 						<h4>_add_app_dependency_result</h4>
@@ -2161,7 +2321,6 @@
 								<ul>
 									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
 									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-									<li><a href="howto-server.html">How-To Server</a></li>
 								</ul>
 							</li>
 							<li>
@@ -2187,6 +2346,8 @@
 									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
 									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
 									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
+									<li><a href="functions-module.html#server">Server</a></li>
+									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
 									<li><a href="functions-module.html#ugc">UGC</a></li>
 									<li><a href="functions-module.html#users">Users</a></li>
 									<li><a href="functions-module.html#user-stats">User Stats</a></li>
@@ -2194,28 +2355,7 @@
 									<li><a href="functions-module.html#video">Video</a></li>
 								</ul>
 							</li>
-							<li>
-								<span class="opener">Functions (Server)</span>
-								<ul>
-									<li><a href="functions-server.html">All</a></li>
-									<li><a href="functions-server.html#core">Core</a></li>
-									<li><a href="functions-server.html#apps">Apps</a></li>
-									<li><a href="functions-server.html#http">HTTP</a></li>
-									<li><a href="functions-server.html#inventory">Inventory</a></li>
-									<li><a href="functions-server.html#networking">Networking</a></li>
-									<li><a href="functions-server.html#server">Server</a></li>
-									<li><a href="functions-server.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-server.html#ugc">UGC</a></li>
-									<li><a href="functions-server.html#utils">Utils</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Signals</span>
-								<ul>
-									<li><a href="signals-modules.html">Signals (Module)</a></li>
-									<li><a href="signals-server.html">Signals (Server)</a></li>
-								</ul>
-							</li>
+							<li><a href="signals-modules.html">Signals</a></li>
 							<li>
 								<span class="opener">Godot 3.x Tutorials</span>
 								<ul>
@@ -2227,6 +2367,7 @@
 									<li><a href="tutorials-authentication.html">Authentication</a></li>
 									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
 									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
 									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
@@ -2241,7 +2382,6 @@
 									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 									<li><a href="changelog-gdnative.html">GDNative</a></li>
-									<li><a href="changelog-server.html">Server</a></li>
 								</ul>
 							</li>
 							<li><a href="contributors.html">Contributors</a></li>
