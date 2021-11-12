@@ -19,7 +19,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v1.2.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v1.2.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 1.2.4 Changes**
 - Fixed: lots of compiler warnings on Linux, _thanks to gregcsokas_
