@@ -7,6 +7,8 @@ Additional flavors include:
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
+Notice: GodotSteam Server is now retired; it has been merged into the master branch. This branch still works fine but will not receive any further updates.
+
 Documentation
 ----------
 [Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
