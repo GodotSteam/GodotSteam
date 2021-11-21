@@ -1,0 +1,55 @@
+name: 🐧 Linux test build
+on: 
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * */2'
+
+jobs:
+  linux-sanitizer:
+    runs-on: "ubuntu-20.04"
+    name: Linux build
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure dependencies
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/*
+          sudo cp -f misc/sources.list /etc/apt/sources.list
+          sudo apt-get update
+          sudo apt-get install build-essential pkg-config libx11-dev libxcursor-dev \
+            libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev libxrandr-dev yasm \
+            xvfb wget2 unzip python scons git
+
+      - name: Download and unzip Godot 
+        run: |
+          wget2 https://github.com/godotengine/godot/archive/refs/heads/3.x.zip -O godot.zip
+          unzip godot.zip
+          rm godot.zip
+          mv godot-3.x godot
+          
+      - name: Download and unzip Steamworks 
+        run: |
+          wget2 https://partner.steamgames.com/downloads/steamworks_sdk_152.zip
+          unzip steamworks_sdk_152.zip
+          rm steamworks_sdk_152.zip
+          mv sdk/public/ godotsteam/sdk/
+          mv sdk/redistributable_bin/ godotsteam/sdk/
+          rm sdk -r
+
+      - name: Compile Godot
+        run: |
+          cd godot
+          scons -j6 custom_modules=../godotsteam/
+          cd ..
+          
+      - name: Add libsteam api to folder with Godot editor
+        run: |
+          cp godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so godot/bin/
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}
+          path: godot/bin
+          retention-days: 14

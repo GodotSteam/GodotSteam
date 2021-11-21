@@ -1,0 +1,7 @@
+use_parent_methods: true
+add_to_tree: true
+delay_removing_added_nodes_to_next_frame: true
+test_one_class_multiple_times: true
+
+custom_classes:
+Steam

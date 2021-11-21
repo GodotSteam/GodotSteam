@@ -1,0 +1,99 @@
+name: 🐺️ Fuzzer
+on: 
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * */2'
+
+jobs:
+  linux-sanitizer:
+    runs-on: "ubuntu-20.04"
+    name: Fuzzer build
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure dependencies
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/*
+          sudo cp -f misc/sources.list /etc/apt/sources.list
+          sudo apt-get update
+          sudo apt-get install build-essential pkg-config libx11-dev libxcursor-dev \
+            libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev libxrandr-dev yasm \
+            xvfb wget2 unzip python scons git
+
+      - name: Download and unzip Fuzzer 
+        run: |
+          git clone https://github.com/qarmin/Qarminer.git
+          mv Qarminer fuzzer
+          cd fuzzer
+          git checkout 3.x
+          cd ..
+          mv misc/fuzzer_settings.txt fuzzer/settings.txt
+
+      - name: Download and unzip Godot 
+        run: |
+          wget2 https://github.com/godotengine/godot/archive/refs/heads/3.x.zip -O godot.zip
+          unzip godot.zip
+          rm godot.zip
+          mv godot-3.x godot
+          
+      - name: Download and unzip Steamworks 
+        run: |
+          wget2 https://github.com/qarmin/SteamworksSDK/raw/main/steamworks_sdk_152.zip
+          unzip steamworks_sdk_152.zip
+          rm steamworks_sdk_152.zip
+          mv sdk/public/ godotsteam/sdk/
+          mv sdk/redistributable_bin/ godotsteam/sdk/
+          rm sdk -r
+
+      - name: Compile Godot
+        run: |
+          cd godot
+          scons -j6 custom_modules=../godotsteam/ use_ubsan=yes use_asan=yes
+          cd ..
+
+      - name: Add libsteam api to folder with Godot editor
+        run: |
+          cp godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so godot/bin/
+
+      - name: Run fuzzer
+        run: |
+          cd godot/bin
+          DRI_PRIME=0 xvfb-run godot/bin/godot.x11.tools.64s FunctionExecutor.tscn 600 --audio-driver Dummy --video-driver GLES3 --path fuzzer 2>&1 | tee sanitizers_log.txt || true
+          tail -n 300 sanitizers_log.txt > project_results.txt
+          cd ../..
+
+      - name: Store project results
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-results
+          path: godot/bin/project_results.txt
+
+      - name: Store test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: last-run-results
+          path: fuzzer/results.txt
+
+      - name: Store time results
+        uses: actions/upload-artifact@v2
+        with:
+          name: timer
+          path: fuzzer/timer.txt
+
+      - name: Store memory usage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: memory_usage
+          path: fuzzer/memory_usage.txt
+
+      - name: Check Log
+        run: |
+          misc/check_ci_log.py sanitizers_log.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}
+          path: godot/bin
+          retention-days: 14
