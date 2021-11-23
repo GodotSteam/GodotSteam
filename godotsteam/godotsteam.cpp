@@ -2453,7 +2453,7 @@ int Steam::getGamepadIndexForController(uint64_t input_handle){
 
 //! Get a local path to art for on-screen glyph for a particular origin.
 String Steam::getGlyphForActionOrigin(int origin){
-	if(SteamInput() != NULL){
+	if(SteamInput() == NULL){
 		return "";
 	}
 	return SteamInput()->GetGlyphForActionOrigin_Legacy((EInputActionOrigin)origin);
@@ -3377,6 +3377,9 @@ void Steam::setLobbyGameServer(uint64_t steam_lobby_id, const String& server_ip,
 //! Returns the details of a game server set in a lobby - returns false if there is no game server set, or that lobby doesn't exist.
 Dictionary Steam::getLobbyGameServer(uint64_t steam_lobby_id){
 	Dictionary game_server;
+	if(SteamMatchmaking() == NULL){
+		return game_server;
+	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
 	uint32 server_ip = 0;
 	uint16 server_port = 0;
@@ -4756,6 +4759,9 @@ bool Steam::setIdentityIPAddr(const String& name, const String& ip_address_name)
 // Returns null if we are not an IP address.
 uint32 Steam::getIdentityIPAddr(const String& name){
 	const SteamNetworkingIPAddr* this_address = identities[name.utf8().get_data()].GetIPAddr();
+	if (this_address == NULL){
+		return 0;
+	}
 	return this_address->GetIPv4();
 }
 
@@ -4790,12 +4796,18 @@ uint8 Steam::getGenericBytes(const String& name){
 	int length = 0;
 	uint8 these_bytes = 0;
 	const uint8* generic_bytes = identities[name.utf8().get_data()].GetGenericBytes(length);
+	if (generic_bytes == NULL){
+		return 0;
+	}
 	return these_bytes = *generic_bytes;
 }
 
 // Print to a human-readable string.  This is suitable for debug messages or any other time you need to encode the identity as a string.
 // It has a URL-like format (type:<type-data>). Your buffer should be at least k_cchMaxString bytes big to avoid truncation.
 void Steam::toIdentityString(const String& name, const String& buffer){
+	if (SteamNetworkingUtils() == NULL){
+		return;
+	}
 	char *this_buffer = new char[buffer.size()];
 	strcpy(this_buffer, buffer.utf8().get_data());
 	identities[name.utf8().get_data()].ToString(this_buffer, sizeof(this_buffer));
@@ -4805,6 +4817,9 @@ void Steam::toIdentityString(const String& name, const String& buffer){
 // Parse back a string that was generated using ToString. If we don't understand the string, but it looks "reasonable" (it matches the pattern type:<type-data> and doesn't have any funky characters, etc), then we will return true, and the type is set to k_ESteamNetworkingIdentityType_UnknownType.
 // false will only be returned if the string looks invalid.
 String Steam::parseIdentityString(const String& name){
+	if (SteamNetworkingUtils() == NULL){
+		return String();
+	}
 	String identity_string = "";
 	char *this_string = new char[128];
 	if(identities[name.utf8().get_data()].ParseString(this_string)){
@@ -4881,6 +4896,9 @@ bool Steam::isAddressLocalHost(const String& name){
 // Print to a string, with or without the port. Mapped IPv4 addresses are printed as dotted decimal (12.34.56.78), otherwise this will print the canonical form according to RFC5952.
 // If you include the port, IPv6 will be surrounded by brackets, e.g. [::1:2]:80. Your buffer should be at least k_cchMaxString bytes to avoid truncation.
 void Steam::toIPAddressString(const String& name, const String& buffer, bool with_port){
+	if (SteamNetworkingUtils() == NULL){ // ToString use SteamNetworkingUtils internally
+		return;
+	}
 	char *this_buffer = new char[buffer.size()];
 	strcpy(this_buffer, buffer.utf8().get_data());
 	ip_addresses[name.utf8().get_data()].ToString(this_buffer, sizeof(this_buffer), with_port);
@@ -4889,6 +4907,9 @@ void Steam::toIPAddressString(const String& name, const String& buffer, bool wit
 
 // Parse an IP address and optional port.  If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).
 String Steam::parseIPAddressString(const String& name){
+	if (SteamNetworkingUtils() == NULL){ // ParseString use SteamNetworkingUtils internally
+		return String();
+	}
 	String ip_address_string = "";
 	char *this_string = new char[48];
 	if(ip_addresses[name.utf8().get_data()].ParseString(this_string)){
@@ -6982,6 +7003,7 @@ String Steam::getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_ind
 		UGCQueryHandle_t handle = (uint64_t)query_handle;
 		SteamUGC()->GetQueryUGCTag(handle, index, tag_index, tag, 64);
 	}
+	tag[63] = '\0';
 	String tag_name = tag;
 	delete[] tag;
 	return tag_name;
@@ -6996,6 +7018,7 @@ String Steam::getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uin
 		UGCQueryHandle_t handle = (uint64_t)query_handle;
 		SteamUGC()->GetQueryUGCTagDisplayName(handle, index, tag_index, tag, 256);
 	}
+	tag[255] = '\0';
 	String tagDisplay = tag;
 	delete[] tag;
 	return tagDisplay;
@@ -8224,13 +8247,16 @@ void Steam::requestUserStats(uint64_t steam_id){
 
 //! Reset all Steam statistics; optional to reset achievements.
 bool Steam::resetAllStats(bool achievements_too){
+	if(SteamUserStats() == NULL){
+		return false;
+	}
 	return SteamUserStats()->ResetAllStats(achievements_too);
 }
 
 //! Set a given achievement.
 bool Steam::setAchievement(const String& name){
 	if(SteamUserStats() == NULL){
-		return 0;
+		return false;
 	}
 	return SteamUserStats()->SetAchievement(name.utf8().get_data());
 }
@@ -8252,11 +8278,17 @@ int Steam::setLeaderboardDetailsMax(int max){
 
 //! Set a float statistic.
 bool Steam::setStatFloat(const String& name, float value){
+	if(SteamUserStats() == NULL){
+		return false;
+	}
 	return SteamUserStats()->SetStat(name.utf8().get_data(), value);
 }
 
 //! Set an integer statistic.
 bool Steam::setStatInt(const String& name, int value){
+	if(SteamUserStats() == NULL){
+		return false;
+	}
 	return SteamUserStats()->SetStat(name.utf8().get_data(), value);
 }
 
@@ -8722,6 +8754,9 @@ void Steam::_app_uninstalled(SteamAppUninstalled_t* call_data){
 //
 //! Called when a large avatar is loaded if you have tried requesting it when it was unavailable.
 void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
+	if (SteamUtils() == NULL){
+		return;
+	}
 	uint32 width, height;
 	bool success = SteamUtils()->GetImageSize(avatarData->m_iImage, &width, &height);
 	if(!success){
