@@ -46,13 +46,13 @@
 #define QUERY_PORT_NOT_INITIALIZED 0xFFFF
 
 // Define Steam Server API constants
-#define FLAG_ACTIVE = 0x01
-#define FLAG_DEDICATED = 0x04
-#define FLAG_LINUX = 0x08
-#define FLAG_NONE = 0x00
-#define FLAG_PASSWORDED = 0x10
-#define FLAG_PRIVATE = 0x20
-#define FLAG_SECURE = 0x02
+#define FLAG_ACTIVE 0x01
+#define FLAG_DEDICATED 0x04
+#define FLAG_LINUX 0x08
+#define FLAG_NONE 0x00
+#define FLAG_PASSWORDED 0x10
+#define FLAG_PRIVATE 0x20
+#define FLAG_SECURE 0x02
 
 // Define Friends constants
 #define CHAT_METADATA_MAX 8192
@@ -171,7 +171,6 @@ Steam::Steam():
 	callbackDLCInstalled(this, &Steam::_dlc_installed),
 	callbackFileDetailsResult(this, &Steam::_file_details_result),
 	callbackNewLaunchURLParameters(this, &Steam::_new_launch_url_parameters),
-//	callbackNewLaunchQueryParameters(this, &Steam::_new_launch_query_parameters),  Seems not to be found?
 	callbackRegisterActivationCodeResponse(this, &Steam::_register_activation_code_response),
 	callbackAppProofOfPurchaseKeyResponse(this, &Steam::_app_proof_of_purchase_key_response),
 	callbackTimedTrialStatus(this, &Steam::_timed_trial_status),
@@ -207,6 +206,22 @@ Steam::Steam():
 	callbackSubmitPlayerResult(this, &Steam::_submit_player_result),
 	callbackEndGameResult(this, &Steam::_end_game_result),
 
+	// Game Server callbacks ////////////////////
+	callbackServerConnectFailure(this, &Steam::_server_Connect_Failure),
+	callbackServerConnected(this, &Steam::_server_Connected),
+	callbackServerDisconnected(this, &Steam::_server_Disconnected),
+	callbackClientApproved(this, &Steam::_client_Approved),
+	callbackClientDenied(this, &Steam::_client_Denied),
+	callbackClientKicked(this, &Steam::_client_Kick),
+	callbackPolicyResponse(this, &Steam::_policy_Response),
+	callbackClientGroupStatus(this, &Steam::_client_Group_Status),
+	callbackAssociateClan(this, &Steam::_associate_Clan),
+	callbackPlayerCompat(this, &Steam::_player_Compat),
+
+	// Game Server Stat callbacks ///////////////
+	callbackStatsStored(this, &Steam::_stats_stored),
+	callbackStatsUnloaded(this, &Steam::_stats_unloaded),
+
 	// HTML Surface callbacks ///////////////////
 	callbackHTMLBrowserReady(this, &Steam::_html_browser_ready),
 	callbackHTMLCanGoBackandforward(this, &Steam::_html_can_go_backandforward),
@@ -237,7 +252,6 @@ Steam::Steam():
 	callbackHTTPRequestHeadersReceived(this, &Steam::_http_request_headers_received),
 
 	// Input callbacks //////////////////////////
-//	callbackInputActionEvent(this, &Steam::_input_action_event),
 	callbackInputDeviceConnected(this, &Steam::_input_device_connected),
 	callbackInputDeviceDisconnected(this, &Steam::_input_device_disconnected),
 	callbackInputConfigurationLoaded(this, &Steam::_input_configuration_loaded),
@@ -285,6 +299,7 @@ Steam::Steam():
 	// Networking Sockets callbacks /////////////
 	callbackNetworkConnectionStatusChanged(this, &Steam::_network_connection_status_changed),
 	callbackNetworkAuthenticationStatus(this, &Steam::_network_authentication_status),
+	callbackNetworkingFakeIPResult(this, &Steam::_fake_ip_result),
 
 	// Networking Utils callbacks ///////////////
 	callbackRelayNetworkStatus(this, &Steam::_relay_network_status),
@@ -307,22 +322,6 @@ Steam::Steam():
 	// Screenshot callbacks /////////////////////
 	callbackScreenshotReady(this, &Steam::_screenshot_ready),
 	callbackScreenshotRequested(this, &Steam::_screenshot_requested),
-
-	// Server callbacks /////////////////////////
-	callbackServerConnectFailure(this, &Steam::_server_Connect_Failure),
-	callbackServerConnected(this, &Steam::_server_Connected),
-	callbackServerDisconnected(this, &Steam::_server_Disconnected),
-	callbackClientApproved(this, &Steam::_client_Approved),
-	callbackClientDenied(this, &Steam::_client_Denied),
-	callbackClientKicked(this, &Steam::_client_Kick),
-	callbackPolicyResponse(this, &Steam::_policy_Response),
-	callbackClientGroupStatus(this, &Steam::_client_Group_Status),
-	callbackAssociateClan(this, &Steam::_associate_Clan),
-	callbackPlayerCompat(this, &Steam::_player_Compat),
-
-	// Server Stat callbacks
-	callbackStatsStored(this, &Steam::_stats_stored),
-	callbackStatsUnloaded(this, &Steam::_stats_unloaded),
 
 	// UGC callbacks ////////////////////////////
 	callbackItemDownloaded(this, &Steam::_item_downloaded),
@@ -356,14 +355,11 @@ Steam::Steam():
 	callbackFloatingGamepadTextInputDismissed(this, &Steam::_floating_gamepad_text_input_dismissed),
 
 	// Video callbacks //////////////////////////
-//	callbackBroadcastUploadStart(this, &Steam::_broadcast_upload_start),	// In documentation but not in actual SDK?
-//	callbackBroadcastUploadStop(this, &Steam::_broadcast_upload_stop),		// In documentation but not in actual SDK?
 	callbackGetOPFSettingsResult(this, &Steam::_get_opf_settings_result),
 	callbackGetVideoResult(this, &Steam::_get_video_result)
 {
 	is_init_success = false;
 	singleton = this;
-	current_app_id = 0;
 }
 
 
@@ -392,8 +388,8 @@ CSteamID Steam::createSteamID(uint64_t steam_id, int account_type){
 /////////////////////////////////////////////////
 //
 //! Checks if your executable was launched through Steam and relaunches it through Steam if it wasn't.
-bool Steam::restartAppIfNecessary(int value){
-	return SteamAPI_RestartAppIfNecessary((AppId_t)value);
+bool Steam::restartAppIfNecessary(uint32 app_id){
+	return SteamAPI_RestartAppIfNecessary((AppId_t)app_id);
 }
 
 //! Initialize Steamworks
@@ -501,7 +497,7 @@ Array Steam::getDLCDataByIndex(){
 	if(SteamApps() == NULL){
 		return Array();
 	}
-	int count = SteamApps()->GetDLCCount();
+	int32 count = SteamApps()->GetDLCCount();
 	Array dlcData;
 	for(int i = 0; i < count; i++){
 		AppId_t app_id = 0;
@@ -520,11 +516,11 @@ Array Steam::getDLCDataByIndex(){
 }
 
 //! Check if given application/game is installed, not necessarily owned.
-bool Steam::isAppInstalled(int value){
+bool Steam::isAppInstalled(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsAppInstalled((AppId_t)value);
+	return SteamApps()->BIsAppInstalled((AppId_t)app_id);
 }
 
 //! Checks whether the current App ID is for Cyber Cafes.
@@ -536,11 +532,11 @@ bool Steam::isCybercafe(){
 }
 
 //! Checks if the user owns a specific DLC and if the DLC is installed
-bool Steam::isDLCInstalled(int value){
+bool Steam::isDLCInstalled(uint32_t dlc_id){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsDlcInstalled(value);
+	return SteamApps()->BIsDlcInstalled((AppId_t)dlc_id);
 }
 
 //! Checks if the license owned by the user provides low violence depots.
@@ -560,11 +556,11 @@ bool Steam::isSubscribed(){
 }
 
 //! Checks if the active user is subscribed to a specified AppId.
-bool Steam::isSubscribedApp(int value){
+bool Steam::isSubscribedApp(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return false;
 	}
-	return SteamApps()->BIsSubscribedApp((AppId_t)value);
+	return SteamApps()->BIsSubscribedApp((AppId_t)app_id);
 }
 
 //! Checks if the active user is accessing the current app_id via a temporary Family Shared license owned by another user.
@@ -617,13 +613,13 @@ int Steam::getAppBuildId(){
 }
 
 //! Gets the install folder for a specific AppID.
-String Steam::getAppInstallDir(AppId_t app_id){
+String Steam::getAppInstallDir(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return "";
 	}
 	const uint32 folder_buffer = 256;
 	char *buffer = new char[folder_buffer];
-	SteamApps()->GetAppInstallDir(app_id, (char*)buffer, folder_buffer);
+	SteamApps()->GetAppInstallDir((AppId_t)app_id, (char*)buffer, folder_buffer);
 	String app_dir = buffer;
 	delete[] buffer;
 	return app_dir;
@@ -675,7 +671,7 @@ int Steam::getDLCCount(){
 }
 
 //! Gets the download progress for optional DLC.
-Dictionary Steam::getDLCDownloadProgress(uint32_t app_id){
+Dictionary Steam::getDLCDownloadProgress(uint32_t dlc_id){
 	Dictionary progress;
 	if(SteamApps() == NULL){
 		progress["ret"] = false;
@@ -684,7 +680,7 @@ Dictionary Steam::getDLCDownloadProgress(uint32_t app_id){
 		uint64 downloaded = 0;
 		uint64 total = 0;
 		// Get the progress
-		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)app_id, &downloaded, &total);
+		progress["ret"] = SteamApps()->GetDlcDownloadProgress((AppId_t)dlc_id, &downloaded, &total);
 		if(progress["ret"]){
 			progress["downloaded"] = uint64_t(downloaded);
 			progress["total"] = uint64_t(total);
@@ -694,11 +690,11 @@ Dictionary Steam::getDLCDownloadProgress(uint32_t app_id){
 }
 
 //! Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).
-int Steam::getEarliestPurchaseUnixTime(int value){
+uint32_t Steam::getEarliestPurchaseUnixTime(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return 0;
 	}
-	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)value);
+	return SteamApps()->GetEarliestPurchaseUnixTime((AppId_t)app_id);
 }
 
 //! Asynchronously retrieves metadata details about a specific file in the depot manifest.
@@ -717,8 +713,8 @@ Array Steam::getInstalledDepots(uint32_t app_id){
 	}
 	Array installed_depots;
 	DepotId_t *depots = new DepotId_t[32];
-	int installed = SteamApps()->GetInstalledDepots((AppId_t)app_id, depots, 32);
-	for(int i = 0; i < installed; i++){
+	uint32 installed = SteamApps()->GetInstalledDepots((AppId_t)app_id, depots, 32);
+	for(uint32 i = 0; i < installed; i++){
 		installed_depots.append(depots[i]);
 	}
 	delete[] depots;
@@ -746,9 +742,9 @@ String Steam::getLaunchQueryParam(const String& key){
 }
 
 //! Allows you to install an optional DLC.
-void Steam::installDLC(int value){
+void Steam::installDLC(uint32_t dlc_id){
 	if(SteamApps() != NULL){
-		SteamApps()->InstallDLC((AppId_t)value);
+		SteamApps()->InstallDLC((AppId_t)dlc_id);
 	}
 }
 
@@ -761,9 +757,9 @@ bool Steam::markContentCorrupt(bool missing_files_only){
 }
 
 //! Allows you to uninstall an optional DLC.
-void Steam::uninstallDLC(int value){
+void Steam::uninstallDLC(uint32_t dlc_id){
 	if(SteamApps() != NULL){
-		SteamApps()->UninstallDLC((AppId_t)value);
+		SteamApps()->UninstallDLC((AppId_t)dlc_id);
 	}
 }
 
@@ -777,7 +773,7 @@ void Steam::requestAllProofOfPurchaseKeys(){
 
 //! Request legacy cd-key for yourself or owned DLC. If you are interested in this data then make sure you provide us with a list of valid keys to be distributed to users when they purchase the game, before the game ships.
 //! You'll receive an AppProofOfPurchaseKeyResponse_t callback when the key is available (which may be immediately).
-void Steam::requestAppProofOfPurchaseKey(AppId_t app_id){
+void Steam::requestAppProofOfPurchaseKey(uint32_t app_id){
 	if(SteamApps() != NULL){
 		SteamApps()->RequestAppProofOfPurchaseKey((AppId_t)app_id);
 	}
@@ -817,7 +813,7 @@ Array Steam::getInstalledApps(uint32 max_app_ids){
 }
 
 //! Get a given app ID's name.
-String Steam::getAppName(AppId_t app_id, int name_max){
+String Steam::getAppName(uint32 app_id, int name_max){
 	String app_name = "";
 	if(SteamAppList() != NULL){
 		char app;
@@ -830,7 +826,7 @@ String Steam::getAppName(AppId_t app_id, int name_max){
 }
 
 //! Get a given app ID's install directory.
-String Steam::getAppListInstallDir(AppId_t app_id, int name_max){
+String Steam::getAppListInstallDir(uint32 app_id, int name_max){
 	String dir_name = "";
 	if(SteamAppList() != NULL){
 		char directory;
@@ -843,7 +839,7 @@ String Steam::getAppListInstallDir(AppId_t app_id, int name_max){
 }
 
 //! Get a given app ID's build.
-int Steam::getAppListBuildId(AppId_t app_id){
+int Steam::getAppListBuildId(uint32 app_id){
 	if(SteamAppList() == NULL){
 		return 0;
 	}
@@ -980,7 +976,7 @@ int Steam::getClanChatMemberCount(uint64_t clan_id){
 }
 
 //!  Gets the data from a Steam group chat room message.  This should only ever be called in response to a GameConnectedClanChatMsg_t callback.
-Dictionary getClanChatMessage(uint64_t chat_id, int message){
+Dictionary Steam::getClanChatMessage(uint64_t chat_id, int message){
 	Dictionary chat_message;
 	if(SteamFriends() == NULL){
 		return chat_message;
@@ -1088,7 +1084,7 @@ uint64_t Steam::getFriendByIndex(int friend_number, int friend_flags){
 }
 
 //! Gets the app ID of the game that user played with someone on their recently-played-with list.
-int Steam::getFriendCoplayGame(uint64_t friend_id){
+uint32 Steam::getFriendCoplayGame(uint64_t friend_id){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
@@ -1114,12 +1110,12 @@ int Steam::getFriendCount(){
 }
 
 //! Iterators for getting users in a chat room, lobby, game server or clan.
-int Steam::getFriendCountFromSource(uint64_t clan_id){
+int Steam::getFriendCountFromSource(uint64_t source_id){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	clan_activity = (uint64)clan_id;
-	return SteamFriends()->GetFriendCountFromSource(clan_activity);
+	CSteamID source = (uint64)source_id;
+	return SteamFriends()->GetFriendCountFromSource(source);
 }
 
 //! Gets the Steam ID at the given index from a source (Steam group, chat room, lobby, or game server).
@@ -1258,7 +1254,7 @@ int Steam::getFriendsGroupCount(){
 }
 
 //! Gets the friends group ID for the given index.
-int Steam::getFriendsGroupIDByIndex(int friend_group){
+int16 Steam::getFriendsGroupIDByIndex(int16 friend_group){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
@@ -1266,7 +1262,7 @@ int Steam::getFriendsGroupIDByIndex(int friend_group){
 }
 
 //! Gets the number of friends in a given friends group.  This should be called before getting the list of friends with GetFriendsGroupMembersList.
-int Steam::getFriendsGroupMembersCount(int friend_group){
+int Steam::getFriendsGroupMembersCount(int16 friend_group){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
@@ -1274,7 +1270,7 @@ int Steam::getFriendsGroupMembersCount(int friend_group){
 }
 
 //! Gets the number of friends in the given friends group.  If fewer friends exist than requested those positions' Steam IDs will be invalid.  You must call GetFriendsGroupMembersCount before calling this to set up the pOutSteamIDMembers array with an appropriate size!
-Array Steam::getFriendsGroupMembersList(int friend_group, int member_count){
+Array Steam::getFriendsGroupMembersList(int16 friend_group, int member_count){
 	Array member_list;
 	if(SteamFriends() == NULL){
 		return member_list;
@@ -1287,7 +1283,7 @@ Array Steam::getFriendsGroupMembersList(int friend_group, int member_count){
 }
 
 //! Gets the name for the given friends group.
-String Steam::getFriendsGroupName(int friend_group){
+String Steam::getFriendsGroupName(int16 friend_group){
 	if(SteamFriends() == NULL){
 		return "";
 	}
@@ -1343,7 +1339,7 @@ void Steam::getPlayerAvatar(int size, uint64_t steam_id){
 	if(steam_id == 0){
 		steam_id = getSteamID();
 	}
-	if(SteamFriends() != NULL || size > 0 || size < 4){
+	if(SteamFriends() != NULL && size > 0 && size < 4){
 		int handle = -2;
 		switch(size){
 			case 1:{
@@ -1801,6 +1797,502 @@ int Steam::endGame(uint64_t game_id){
 		return 9;
 	}
 	return SteamGameSearch()->EndGame(game_id);
+}
+
+
+/////////////////////////////////////////////////
+///// GAME SERVER FUNCTIONS
+/////////////////////////////////////////////////
+//
+// NOTE: The following, if set, must be set before calling LogOn; they may not be changed after.
+//
+// This is called by SteamGameServer_Init and will usually not need to be called directly.
+bool Steam::initGameServer(Dictionary connect_data, uint32 server_mode, const String& version_string){
+	if(SteamGameServer() == NULL){
+		return false;
+	}
+	// Pass the dictionary data to solitary variables
+	const String& ip = connect_data["ip"];
+	uint16 steamPort = connect_data["steam_port"];
+	uint16 gamePort = connect_data["game_port"];
+	uint16 queryPort = connect_data["query_port"];
+	// Convert the server mode back
+	EServerMode mode;
+	if(server_mode == 1){
+		mode = eServerModeNoAuthentication;
+	}
+	else if(server_mode == 2){
+		mode = eServerModeAuthentication;
+	}
+	else{
+		mode = eServerModeAuthenticationAndSecure;
+	}
+	// Resolve address and convert it from IP_Address string to uint32_t
+	IP_Address address;
+	if(ip.is_valid_ip_address()){
+		address = ip;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed - Godot 3.0 has is_invalid() to check this
+	if(address == IP_Address()){
+		return false;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, version_string.utf8().get_data())){
+		return false;
+	}
+	return true;
+}
+
+// Game product identifier; currently used by the master server for version checking purposes.
+void Steam::setProduct(const String& product){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetProduct(product.utf8().get_data());
+}
+
+// Description of the game; required field and is displayed in the Steam server browser.
+void Steam::setGameDescription(const String& description){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetGameDescription(description.utf8().get_data());
+}
+
+// If your game is a mod, pass the string that identifies it. Default is empty meaning the app is the original game.
+void Steam::setModDir(const String& mod_directory){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetModDir(mod_directory.utf8().get_data());
+}
+
+// Is this a dedicated server? Default is false.
+void Steam::setDedicatedServer(bool dedicated){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetDedicatedServer(dedicated);
+}
+
+// NOTE: The following are login functions.
+//
+// Begin process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.
+void Steam::logOn(const String& token){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->LogOn(token.utf8().get_data());
+}
+
+// Login to a generic, anonymous account.
+void Steam::logOnAnonymous(){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->LogOnAnonymous();
+}
+
+// Begin process of logging game server out of Steam.
+void Steam::logOff(){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->LogOff();
+}
+
+// Status functions.
+bool Steam::serverLoggedOn(){
+	if(SteamGameServer() == NULL){
+		return false;
+	}
+	return SteamGameServer()->BLoggedOn();
+}
+
+bool Steam::secure(){
+	if(SteamGameServer() == NULL){
+		return false;
+	}
+	return SteamGameServer()->BSecure();
+}
+
+uint64_t Steam::getServerSteamID(){
+	if(SteamGameServer() == NULL){
+		return 0;
+	}
+	CSteamID serverID = SteamGameServer()->GetSteamID();
+	return serverID.ConvertToUint64();
+}
+
+// Returns true if the master server has requested a restart. Only returns true once per request.
+bool Steam::wasRestartRequested(){
+	if(SteamGameServer() == NULL){
+		return false;
+	}
+	return SteamGameServer()->WasRestartRequested();
+}
+
+// NOTE: These are server state functions and can be changed at any time.
+//
+// Max player count that will be reported to server browser and client queries.
+void Steam::setMaxPlayerCount(int max){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetMaxPlayerCount(max);
+}
+
+// Number of bots. Default is zero.
+void Steam::setBotPlayerCount(int bots){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetBotPlayerCount(bots);
+}
+
+// Set the naem of the server as it will appear in the server browser.
+void Steam::setServerName(const String& name){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetServerName(name.utf8().get_data());
+}
+
+// Set name of map to report in server browser.
+void Steam::setMapName(const String& map){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetMapName(map.utf8().get_data());
+}
+
+// Let people know if your server requires a password.
+void Steam::setPasswordProtected(bool password){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetPasswordProtected(password);
+}
+
+// Spectator server. Default is zero, meaning it is now used.
+void Steam::setSpectatorPort(uint16 port){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetSpectatorPort(port);
+}
+
+// Name of spectator server. Only used if spectator port is non-zero.
+void Steam::setSpectatorServerName(const String& name){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetSpectatorServerName(name.utf8().get_data());
+}
+
+// Call this to clear the whole list of key/values that are sent in rule queries.
+void Steam::clearAllKeyValues(){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->ClearAllKeyValues();
+}
+
+// Call this to add/update a key/value pair.
+void Steam::setKeyValue(const String& key, const String& value){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetKeyValue(key.utf8().get_data(), value.utf8().get_data());
+}
+
+// Set a string defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.
+void Steam::setGameTags(const String& tags){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetGameTags(tags.utf8().get_data());
+}
+
+// Set a string defining game data for this server; optional. Allows users to filter in matchmaking/server browser.
+void Steam::setGameData(const String& data){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetGameData(data.utf8().get_data());
+}
+
+// Region identifier; optional. Default is empty meaning 'world'.
+void Steam::setRegion(const String& region){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetRegion(region.utf8().get_data());
+}
+
+// NOTE: These functions are player list management / authentication.
+//
+// Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).
+Dictionary Steam::getServerAuthSessionTicket(){
+	// Create the dictionary to use
+	Dictionary auth_ticket;
+	if(SteamGameServer() != NULL){
+		uint32_t ticket_size = 1024;
+		PoolByteArray buffer;
+		buffer.resize(ticket_size);
+		uint32_t id = SteamGameServer()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
+		// Add this data to the dictionary
+		auth_ticket["id"] = id;
+		auth_ticket["buffer"] = buffer;
+		auth_ticket["size"] = ticket_size;
+	}
+	return auth_ticket;
+}
+
+// Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.
+uint32 Steam::beginServerAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id){
+	if(SteamGameServer() == NULL){
+		return -1;
+	}
+	CSteamID authSteamID = createSteamID(steam_id);
+	return SteamGameServer()->BeginAuthSession(ticket.read().ptr(), ticket_size, authSteamID);
+}
+
+// Stop tracking started by beginAuthSession; called when no longer playing game with this entity;
+void Steam::endServerAuthSession(uint64_t steam_id){
+	if(SteamGameServer() != NULL){
+		CSteamID authSteamID = createSteamID(steam_id);
+		SteamGameServer()->EndAuthSession(authSteamID);
+	}
+}
+
+// Cancel auth ticket from getAuthSessionTicket; called when no longer playing game with the entity you gave the ticket to.
+void Steam::cancelServerAuthTicket(uint32_t auth_ticket){
+	if(SteamGameServer() != NULL){
+		SteamGameServer()->CancelAuthTicket(auth_ticket);
+	}
+}
+
+// After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC
+int Steam::userHasLicenceForApp(uint64_t steam_id, uint32 app_id){
+	if(SteamGameServer() == NULL){
+		return 0;
+	}
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServer()->UserHasLicenseForApp(userID, (AppId_t)app_id);
+}
+
+// Ask if user is in specified group; results returned by GSUserGroupStatus_t.
+bool Steam::requestUserGroupStatus(uint64_t steam_id, int group_id){
+	if(SteamGameServer() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steam_id;
+	CSteamID clan_id = (uint64)group_id;
+	return SteamGameServer()->RequestUserGroupStatus(userID, clan_id);
+}
+
+// NOTE: These are in GameSocketShare mode, where instead of ISteamGameServer creating sockets to talk to master server, it lets the game use its socket to forward messages back and forth.
+//
+// These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.
+Dictionary Steam::handleIncomingPacket(int packet, const String& ip, uint16 port){
+	Dictionary result;
+	if(SteamGameServer() == NULL){
+		return result;
+	}
+	PoolByteArray data;
+	data.resize(packet);
+	// Resolve address and convert it from IP_Address string to uint32_t
+	IP_Address address;
+	if(ip.is_valid_ip_address()){
+		address = ip;
+	}
+	else{
+		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
+	}
+	// Resolution failed
+	if(!address.is_valid()){
+		return result;
+	}
+	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
+	// Swap the bytes
+	uint8_t *ip4_p = (uint8_t *)&ip4;
+	for(int i = 0; i < 2; i++){
+		uint8_t temp = ip4_p[i];
+		ip4_p[i] = ip4_p[3-i];
+		ip4_p[3-i] = temp;
+	}
+	if(SteamGameServer()->HandleIncomingPacket(data.write().ptr(), packet, *((uint32_t *)ip4_p), port)){
+		result["data"] = data;
+	}
+	return result;
+}
+
+// AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP. Returns 0 if there are no more packets.
+Dictionary Steam::getNextOutgoingPacket(){
+	Dictionary packet;
+	if(SteamGameServer() == NULL){
+		return packet;
+	}
+	PoolByteArray out;
+	int maxOut = 16 * 1024;
+	uint32 address;
+	uint16 port;
+	// Retrieve the packet information
+	int length = SteamGameServer()->GetNextOutgoingPacket(&out, maxOut, &address, &port);
+	// Place packet information in dictionary and return it
+	packet["length"] = length;
+	packet["out"] = out;
+	packet["address"] = address;
+	packet["port"] = port;
+	return packet;
+}
+
+// NOTE: These are heartbeat/advertisement functions.
+//
+// Call this as often as you like to tell the master server updater whether or not you want it to be active (default: off).
+void Steam::setAdvertiseServerActive(bool active){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	SteamGameServer()->SetAdvertiseServerActive(active);
+}
+
+// Associate this game server with this clan for the purposes of computing player compatibility.
+void Steam::associateWithClan(uint64_t clan_id){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	CSteamID group_id = (uint64)clan_id;
+	SteamGameServer()->AssociateWithClan(group_id);
+}
+
+// Ask if any of the current players dont want to play with this new player - or vice versa.
+void Steam::computeNewPlayerCompatibility(uint64_t steam_id){
+	if(SteamGameServer() == NULL){
+		return;
+	}
+	CSteamID userID = (uint64)steam_id;
+	SteamGameServer()->ComputeNewPlayerCompatibility(userID);
+}
+
+
+/////////////////////////////////////////////////
+///// GAME SERVER STATS
+/////////////////////////////////////////////////
+//
+// Resets the unlock status of an achievement for the specified user.
+bool Steam::clearUserAchievement(uint64_t steam_id, const String& name){
+	if(SteamGameServerStats() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServerStats()->ClearUserAchievement(userID, name.utf8().get_data());
+}
+
+// Gets the unlock status of the Achievement.
+Dictionary Steam::serverGetUserAchievement(uint64_t steam_id, const String& name){
+	// Set dictionary to fill in
+	Dictionary achievement;
+	if(SteamGameServerStats() == NULL){
+		return achievement;
+	}
+	CSteamID userID = (uint64)steam_id;
+	bool unlocked = false;
+	bool result = SteamGameServerStats()->GetUserAchievement(userID, name.utf8().get_data(), &unlocked);
+	// Populate the dictionary
+	achievement["result"] = result;
+	achievement["user"] = steam_id;
+	achievement["name"] = name;
+	achievement["unlocked"] = unlocked;
+	return achievement;
+}
+
+// Gets the current value of the a stat for the specified user.
+uint32_t Steam::serverGetUserStatInt(uint64_t steam_id, const String& name){
+	if(SteamGameServerStats() != NULL){
+		CSteamID userID = (uint64)steam_id;
+		int32 value = 0;
+		if(SteamGameServerStats()->GetUserStat(userID, name.utf8().get_data(), &value)){
+			return value;
+		}
+	}
+	return 0;
+}
+
+// Gets the current value of the a stat for the specified user.
+float Steam::serverGetUserStatFloat(uint64_t steam_id, const String& name){
+	if(SteamGameServerStats() != NULL){
+		CSteamID userID = (uint64)steam_id;
+		float value = 0.0;
+		if(SteamGameServerStats()->GetUserStat(userID, name.utf8().get_data(), &value)){
+			return value;
+		}
+	}
+	return 0.0;
+}
+
+// Asynchronously downloads stats and achievements for the specified user from the server.
+void Steam::serverRequestUserStats(uint64_t steam_id){
+	if(SteamGameServerStats() != NULL){
+		CSteamID userID = (uint64)steam_id;
+		SteamAPICall_t api_call = SteamGameServerStats()->RequestUserStats(userID);
+		callResultStatReceived.Set(api_call, this, &Steam::_stat_received);
+	}
+}
+
+// Unlocks an achievement for the specified user.
+bool Steam::setUserAchievement(uint64_t steam_id, const String& name){
+	if(SteamGameServerStats() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServerStats()->SetUserAchievement(userID, name.utf8().get_data());
+}
+
+// Sets / updates the value of a given stat for the specified user.
+bool Steam::setUserStatInt(uint64_t steam_id, const String& name, int32 stat){
+	if(SteamGameServerStats() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServerStats()->SetUserStat(userID, name.utf8().get_data(), stat);
+}
+
+// Sets / updates the value of a given stat for the specified user.
+bool Steam::setUserStatFloat(uint64_t steam_id, const String& name, float stat){
+	if(SteamGameServerStats() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServerStats()->SetUserStat(userID, name.utf8().get_data(), stat);
+}
+
+// Send the changed stats and achievements data to the server for permanent storage for the specified user.
+void Steam::storeUserStats(uint64_t steam_id){
+	if(SteamGameServerStats() != NULL){
+		CSteamID userID = (uint64)steam_id;
+		SteamGameServerStats()->StoreUserStats(userID);
+	}
+}
+
+// Updates an AVGRATE stat with new values for the specified user.
+bool Steam::updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length){
+	if(SteamGameServerStats() == NULL){
+		return false;
+	}
+	CSteamID userID = (uint64)steam_id;
+	return SteamGameServerStats()->UpdateUserAvgRateStat(userID, name.utf8().get_data(), this_session, session_length);
 }
 
 
@@ -2453,7 +2945,7 @@ int Steam::getGamepadIndexForController(uint64_t input_handle){
 
 //! Get a local path to art for on-screen glyph for a particular origin.
 String Steam::getGlyphForActionOrigin(int origin){
-	if(SteamInput() == NULL){
+	if(SteamInput() == NULL || origin < 0 || origin > k_EInputActionOrigin_MaximumPossibleValue){
 		return "";
 	}
 	return SteamInput()->GetGlyphForActionOrigin_Legacy((EInputActionOrigin)origin);
@@ -2511,22 +3003,22 @@ String Steam::getInputTypeForHandle(uint64_t input_handle){
 
 //! Returns raw motion data for the specified controller.
 Dictionary Steam::getMotionData(uint64_t input_handle){
-	ControllerMotionData_t data;
 	Dictionary d;
-	memset(&data, 0, sizeof(data));
 	if(SteamInput() != NULL){
+		ControllerMotionData_t data;
+		memset(&data, 0, sizeof(data));
 		data = SteamInput()->GetMotionData((InputHandle_t)input_handle);
+		d["rotQuatX"] = data.rotQuatX;
+		d["rotQuatY"] = data.rotQuatY;
+		d["rotQuatZ"] = data.rotQuatZ;
+		d["rotQuatW"] = data.rotQuatW;
+		d["posAccelX"] = data.posAccelX;
+		d["posAccelY"] = data.posAccelY;
+		d["posAccelZ"] = data.posAccelZ;
+		d["rotVelX"] = data.rotVelX;
+		d["rotVelY"] = data.rotVelY;
+		d["rotVelZ"] = data.rotVelZ;
 	}
-	d["rotQuatX"] = data.rotQuatX;
-	d["rotQuatY"] = data.rotQuatY;
-	d["rotQuatZ"] = data.rotQuatZ;
-	d["rotQuatW"] = data.rotQuatW;
-	d["posAccelX"] = data.posAccelX;
-	d["posAccelY"] = data.posAccelY;
-	d["posAccelZ"] = data.posAccelZ;
-	d["rotVelX"] = data.rotVelX;
-	d["rotVelY"] = data.rotVelY;
-	d["rotVelZ"] = data.rotVelZ;
 	return d;
 }
 
@@ -2652,11 +3144,12 @@ void Steam::enableDeviceCallbacks(){
 }
 
 // Enable SteamInputActionEvent_t callbacks. Directly calls your callback function for lower latency than standard Steam callbacks. Supports one callback at a time. Note: this is called within either SteamInput()->RunFrame or by SteamAPI_RunCallbacks
-//void Steam::enableActionEventCallbacks(SteamInputActionEventCallbackPointer call_back){
-//	if(SteamInput() != NULL){
-//		SteamInput()->EnableActionEventCallbacks(call_back);
-//	}
-//}
+void Steam::enableActionEventCallbacks(){
+	if(SteamInput() != NULL){
+		SteamInputActionEventCallbackPointer call_back;
+		SteamInput()->EnableActionEventCallbacks(call_back);
+	}
+}
 
 //! Get a local path to a PNG file for the provided origin's glyph. 
 String Steam::getGlyphPNGForActionOrigin(int origin, int size, uint32 flags){
@@ -2753,7 +3246,7 @@ bool Steam::addPromoItem(uint32 item){
 }
 
 //! Grant a specific one-time promotional items to the current user.
-bool Steam::addPromoItems(const PoolIntArray items){
+bool Steam::addPromoItems(PoolIntArray items){
 	bool promo_items_added = false;
 	if(SteamInventory() != NULL){
 		int count = items.size();
@@ -3145,11 +3638,11 @@ int Steam::addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 fla
 }
 
 //! Removes the game server from the local storage; returns true if one was removed.
-bool Steam::removeFavoriteGame(AppId_t app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags){
+bool Steam::removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
-	return SteamMatchmaking()->RemoveFavoriteGame(app_id, ip, port, query_port, flags);
+	return SteamMatchmaking()->RemoveFavoriteGame((AppId_t)app_id, ip, port, query_port, flags);
 }
 
 //! Get a list of relevant lobbies.
@@ -3377,28 +3870,27 @@ void Steam::setLobbyGameServer(uint64_t steam_lobby_id, const String& server_ip,
 //! Returns the details of a game server set in a lobby - returns false if there is no game server set, or that lobby doesn't exist.
 Dictionary Steam::getLobbyGameServer(uint64_t steam_lobby_id){
 	Dictionary game_server;
-	if(SteamMatchmaking() == NULL){
-		return game_server;
-	}
-	CSteamID lobby_id = (uint64)steam_lobby_id;
-	uint32 server_ip = 0;
-	uint16 server_port = 0;
-	CSteamID server_id;
-	game_server["ret"] = SteamMatchmaking()->GetLobbyGameServer(lobby_id, &server_ip, &server_port, &server_id);
-	if(game_server["ret"]){
-		// Convert the IP address back to a string
-		const int NBYTES = 4;
-		uint8 octet[NBYTES];
-		char ip[16];
-		for(int i = 0; i < NBYTES; i++){
-			octet[i] = server_ip >> (i * 8);
+	if(SteamMatchmaking() != NULL){
+		CSteamID lobby_id = (uint64)steam_lobby_id;
+		uint32 server_ip = 0;
+		uint16 server_port = 0;
+		CSteamID server_id;
+		game_server["ret"] = SteamMatchmaking()->GetLobbyGameServer(lobby_id, &server_ip, &server_port, &server_id);
+		if(game_server["ret"]){
+			// Convert the IP address back to a string
+			const int NBYTES = 4;
+			uint8 octet[NBYTES];
+			char ip[16];
+			for(int i = 0; i < NBYTES; i++){
+				octet[i] = server_ip >> (i * 8);
+			}
+			sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			game_server["ip"] = ip;
+			game_server["port"] = server_port;
+			// Convert the server ID
+			int server = server_id.ConvertToUint64();
+			game_server["id"] = server;
 		}
-		sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
-		game_server["ip"] = ip;
-		game_server["port"] = server_port;
-		// Convert the server ID
-		int server = server_id.ConvertToUint64();
-		game_server["id"] = server;
 	}
 	return game_server;
 }
@@ -3591,7 +4083,7 @@ void Steam::releaseRequest(uint64_t server_list_request){
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestFavoritesServerList(int app_id, Array filters){
+void Steam::requestFavoritesServerList(uint32 app_id, Array filters){
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3623,7 +4115,7 @@ void Steam::requestFavoritesServerList(int app_id, Array filters){
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestFriendsServerList(int app_id, Array filters){
+void Steam::requestFriendsServerList(uint32 app_id, Array filters){
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3655,7 +4147,7 @@ void Steam::requestFriendsServerList(int app_id, Array filters){
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestHistoryServerList(int app_id, Array filters){
+void Steam::requestHistoryServerList(uint32 app_id, Array filters){
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3687,7 +4179,7 @@ void Steam::requestHistoryServerList(int app_id, Array filters){
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestInternetServerList(int app_id, Array filters){
+void Steam::requestInternetServerList(uint32 app_id, Array filters){
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3719,14 +4211,14 @@ void Steam::requestInternetServerList(int app_id, Array filters){
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestLANServerList(int app_id){
+void Steam::requestLANServerList(uint32 app_id){
 	if(SteamMatchmakingServers() != NULL){
 		server_list_request = SteamMatchmakingServers()->RequestLANServerList((AppId_t)app_id, server_list_response);
 	}
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestSpectatorServerList(int app_id, Array filters){
+void Steam::requestSpectatorServerList(uint32 app_id, Array filters){
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3823,9 +4315,9 @@ void Steam::musicPlayPrev(){
 }
 
 //! Set the volume of Steam music.
-void Steam::musicSetVolume(float value){
+void Steam::musicSetVolume(float volume){
 	if(SteamMusic() != NULL){
-		SteamMusic()->SetVolume(value);
+		SteamMusic()->SetVolume(volume);
 	}
 }
 
@@ -3837,11 +4329,11 @@ void Steam::musicSetVolume(float value){
 // These functions do not have any offical notes or comments.  All descriptions are assumed.
 //
 //! If remote access was successfully activated.
-bool Steam::activationSuccess(bool value){
+bool Steam::activationSuccess(bool activate){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->BActivationSuccess(value);
+	return SteamMusicRemote()->BActivationSuccess(activate);
 }
 
 //! Is a remote music client / host connected?
@@ -3885,51 +4377,51 @@ bool Steam::deregisterSteamMusicRemote(){
 }
 
 //! Enable track loop on client.
-bool Steam::enableLooped(bool value){
+bool Steam::enableLooped(bool loop){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->EnableLooped(value);
+	return SteamMusicRemote()->EnableLooped(loop);
 }
 
 //! Enable playlists on client.
-bool Steam::enablePlaylists(bool value){
+bool Steam::enablePlaylists(bool playlists){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->EnablePlaylists(value);
+	return SteamMusicRemote()->EnablePlaylists(playlists);
 }
 
 //! Play the next track on client.
-bool Steam::enablePlayNext(bool value){
+bool Steam::enablePlayNext(bool next){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->EnablePlayNext(value);
+	return SteamMusicRemote()->EnablePlayNext(next);
 }
 
 //! Play previous track on client.
-bool Steam::enablePlayPrevious(bool value){
+bool Steam::enablePlayPrevious(bool previous){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->EnablePlayPrevious(value);
+	return SteamMusicRemote()->EnablePlayPrevious(previous);
 }
 
 //! Enable the music queue on the client.
-bool Steam::enableQueue(bool value){
+bool Steam::enableQueue(bool queue){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->EnableQueue(value);
+	return SteamMusicRemote()->EnableQueue(queue);
 }
 
 //! Enable shuffle on the client.
-bool Steam::enableShuffled(bool value){
+bool Steam::enableShuffled(bool shuffle){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->EnableShuffled(value);
+	return SteamMusicRemote()->EnableShuffled(shuffle);
 }
 
 //! Has the playlist changed?
@@ -4021,12 +4513,13 @@ bool Steam::setPlaylistEntry(int id, int position, const String& entry_text){
 }
 
 // Set a PNG icon for a song? A playlist?
-//bool Steam::setPNGIcon64x64(const PoolByteArray& icon){
-//	if(SteamMusicRemote() == NULL){
-//		return false;
-//	}
-//	return SteamMusicRemote()->SetPNGIcon_64x64(icon.read().ptr(), icon.size());
-//}
+bool Steam::setPNGIcon64x64(PoolByteArray icon){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	uint32 icon_size = icon.size();
+	return SteamMusicRemote()->SetPNGIcon_64x64((void*)icon.read().ptr(), icon_size);
+}
 
 //! Set a new queue entry.
 bool Steam::setQueueEntry(int id, int position, const String& entry_text){
@@ -4037,19 +4530,20 @@ bool Steam::setQueueEntry(int id, int position, const String& entry_text){
 }
 
 // Update the current song entry's cover art.
-//bool Steam::updateCurrentEntryCoverArt(const PoolByteArray& art){
-//	if(SteamMusicRemote() == NULL){
-//		return false;
-//	}
-//	return SteamMusicRemote()->UpdateCurrentEntryCoverArt(art.read().ptr(), art.size());
-//}
-
-//! Update the current seconds that have elapsed for an entry.
-bool Steam::updateCurrentEntryElapsedSeconds(int value){
+bool Steam::updateCurrentEntryCoverArt(PoolByteArray art){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->UpdateCurrentEntryElapsedSeconds(value);
+	uint32 art_size = art.size();
+	return SteamMusicRemote()->UpdateCurrentEntryCoverArt((void*)art.read().ptr(), art_size);
+}
+
+//! Update the current seconds that have elapsed for an entry.
+bool Steam::updateCurrentEntryElapsedSeconds(int seconds){
+	if(SteamMusicRemote() == NULL){
+		return false;
+	}
+	return SteamMusicRemote()->UpdateCurrentEntryElapsedSeconds(seconds);
 }
 
 //! Update the current song entry's text?
@@ -4061,11 +4555,11 @@ bool Steam::updateCurrentEntryText(const String& text){
 }
 
 //! Update looped or not.
-bool Steam::updateLooped(bool value){
+bool Steam::updateLooped(bool looped){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->UpdateLooped(value);
+	return SteamMusicRemote()->UpdateLooped(looped);
 }
 
 //! Update the current playback status; 0 - undefined, 1 - playing, 2 - paused, 3 - idle.
@@ -4077,19 +4571,19 @@ bool Steam::updatePlaybackStatus(int status){
 }
 
 //! Update whether to shuffle or not.
-bool Steam::updateShuffled(bool value){
+bool Steam::updateShuffled(bool shuffle){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->UpdateShuffled(value);
+	return SteamMusicRemote()->UpdateShuffled(shuffle);
 }
 
 //! Volume is between 0.0 and 1.0.
-bool Steam::updateVolume(float value){
+bool Steam::updateVolume(float volume){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
-	return SteamMusicRemote()->UpdateVolume(value);
+	return SteamMusicRemote()->UpdateVolume(volume);
 }
 
 
@@ -4275,7 +4769,7 @@ int Steam::getSessionConnectionInfo(){
 		return 0;
 	}
 	SteamNetConnectionInfo_t info;
-	SteamNetworkingQuickConnectionStatus status;
+	SteamNetConnectionRealTimeStatus_t status;
 	return SteamNetworkingMessages()->GetSessionConnectionInfo(networkingIdentity, &info, &status);
 }
 
@@ -4511,15 +5005,6 @@ bool Steam::getConnectionInfo(uint32 connection){
 	return SteamNetworkingSockets()->GetConnectionInfo((HSteamNetConnection)connection, &info);	
 }
 
-//! Returns a small set of information about the real-time state of the connection. Returns false if the connection handle is invalid, or the connection has ended.
-bool Steam::getQuickConnectionStatus(uint32 connection){
-	if(SteamNetworkingSockets() == NULL){
-		return false;
-	}
-	SteamNetworkingQuickConnectionStatus stats;
-	return SteamNetworkingSockets()->GetQuickConnectionStatus((HSteamNetConnection)connection, &stats);
-}
-
 //! Returns very detailed connection stats in diagnostic text format. Useful for dumping to a log, etc. The format of this information is subject to change.
 Dictionary Steam::getDetailedConnectionStatus(uint32 connection){
 	Dictionary connectionStatus;
@@ -4687,6 +5172,284 @@ uint32 Steam::createHostedDedicatedServerListenSocket(int port, int options){
 //	return result;
 //}
 
+// Returns a small set of information about the real-time state of the connection and the queue status of each lane.
+Dictionary Steam::getConnectionRealTimeStatus(uint32 connection, int lanes, bool get_status){
+	// Create the dictionary for returning
+	Dictionary real_time_status;
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetConnectionRealTimeStatus_t this_status;
+		SteamNetConnectionRealTimeLaneStatus_t *lanes_array = new SteamNetConnectionRealTimeLaneStatus_t[lanes];
+		int result = SteamNetworkingSockets()->GetConnectionRealTimeStatus((HSteamNetConnection)connection, &this_status, lanes, lanes_array);
+		// Append the status
+		real_time_status["response"] = result;
+		// If the result is good, get more data
+		if(result == 0){
+			// Get the connection status if requested
+			Dictionary connection_status;
+			if(get_status){
+				connection_status["state"] = this_status.m_eState;
+				connection_status["ping"] = this_status.m_nPing;
+				connection_status["local_quality"] = this_status.m_flConnectionQualityLocal;
+				connection_status["remote_quality"] = this_status.m_flConnectionQualityRemote;
+				connection_status["packets_out_per_second"] = this_status.m_flOutPacketsPerSec;
+				connection_status["bytes_out_per_second"] = this_status.m_flOutBytesPerSec;
+				connection_status["packets_in_per_second"] = this_status.m_flInPacketsPerSec;
+				connection_status["bytes_in_per_second"] = this_status.m_flInBytesPerSec;
+				connection_status["send_rate"] = this_status.m_nSendRateBytesPerSecond;
+				connection_status["pending_unreliable"] = this_status.m_cbPendingUnreliable;
+				connection_status["pending_reliable"] = this_status.m_cbPendingReliable;
+				connection_status["sent_unacknowledged_reliable"] = this_status.m_cbSentUnackedReliable;
+				connection_status["queue_time"] = (uint64_t)this_status.m_usecQueueTime;
+			}
+			real_time_status["connection_status"] = connection_status;
+			// Get the lane information
+			Array lanes_status;
+			for(int i = 0; i < lanes; i++){
+				Dictionary lane_status;
+				lane_status["pending_unreliable"] = lanes_array[i].m_cbPendingUnreliable;
+				lane_status["pending_reliable"] = lanes_array[i].m_cbPendingReliable;
+				lane_status["sent_unacknowledged_reliable"] = lanes_array[i].m_cbSentUnackedReliable;
+				lane_status["queue_time"] = (uint64_t)lanes_array[i].m_usecQueueTime;
+				lanes_status.append(lane_status);
+			}
+			delete[] lanes_array;
+			real_time_status["lanes_status"] = lanes_status;
+		}
+	}
+	return real_time_status;
+}
+
+// Configure multiple outbound messages streams ("lanes") on a connection, and control head-of-line blocking between them.
+// Messages within a given lane are always sent in the order they are queued, but messages from different lanes may be sent out of order.
+// Each lane has its own message number sequence.  The first message sent on each lane will be assigned the number 1.
+//int Steam::configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights) {
+//	if(SteamNetworkingSockets() == NULL){
+//		return 0;
+//	}
+//	return SteamNetworkingSockets()->ConfigureConnectionLanes((HSteamNetConnection)connection, lanes, lane_priorities, weights);
+//}
+
+//
+//uint32 Steam::connectP2PCustomSignaling(){
+//	if(SteamNetworkingSockets() == NULL){
+//		return 0;
+//	}
+//}
+
+// Called when custom signaling has received a message.  When your signaling channel receives a message, it should save off whatever routing information was in the envelope into the context object, and then pass the payload to this function.
+//bool Steam::receivedP2PCustomSignal(){
+//	if(SteamNetworkingSockets() == NULL){
+//		return false;
+//	}
+//}
+
+// Certificate provision by the application. On Steam, we normally handle all this automatically and you will not need to use these advanced functions.
+//Dictionary Steam::getCertificateRequest(){
+//	Dictionary cert_information;
+//	if(SteamNetworkingSockets() != NULL){
+//		int blob_size = 0;
+//
+//		String error_message;
+//		if(GetCertificateRequest(&blob_size, &certificate &error_message)){
+//
+//		}
+//	}
+//}
+
+// Set the certificate. The certificate blob should be the output of SteamDatagram_CreateCert.
+Dictionary Steam::setCertificate(const PoolByteArray& certificate){
+	Dictionary certificate_data;
+	if(SteamNetworkingSockets() != NULL){
+		bool success = false;
+		SteamNetworkingErrMsg error_message;
+		success = SteamNetworkingSockets()->SetCertificate((void*)certificate.read().ptr(), certificate.size(), error_message);
+		if(success){
+			certificate_data["response"] = success;
+			certificate_data["error"] = error_message;
+		}
+	}
+	return certificate_data;
+}
+
+// Reset the identity associated with this instance. Any open connections are closed.  Any previous certificates, etc are discarded.
+// You can pass a specific identity that you want to use, or you can pass NULL, in which case the identity will be invalid until you set it using SetCertificate.
+// NOTE: This function is not actually supported on Steam!  It is included for use on other platforms where the active user can sign out and a new user can sign in.
+void Steam::resetIdentity(const String& this_identity){
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingIdentity resetting_identity = identities[this_identity.utf8().get_data()];
+		SteamNetworkingSockets()->ResetIdentity(&resetting_identity);
+	}
+}
+
+// Invoke all callback functions queued for this interface. See k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, etc.
+// You don't need to call this if you are using Steam's callback dispatch mechanism (SteamAPI_RunCallbacks and SteamGameserver_RunCallbacks).
+void Steam::runNetworkingCallbacks(){
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingSockets()->RunCallbacks();		
+	}
+}
+
+// Begin asynchronous process of allocating a fake IPv4 address that other peers can use to contact us via P2P.
+// IP addresses returned by this function are globally unique for a given appid.
+// Returns false if a request was already in progress, true if a new request was started.
+// A SteamNetworkingFakeIPResult_t will be posted when the request completes.
+bool Steam::beginAsyncRequestFakeIP(int num_ports){
+	if(SteamNetworkingSockets() == NULL){
+		return false;
+	}
+	return SteamNetworkingSockets()->BeginAsyncRequestFakeIP(num_ports);
+}
+
+// Return info about the FakeIP and port(s) that we have been assigned, if any.
+// idxFirstPort is currently reserved and must be zero. Make sure and check SteamNetworkingFakeIPResult_t::m_eResult
+Dictionary Steam::getFakeIP(int first_port){
+	// Create the return dictionary
+	Dictionary fake_ip;
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingFakeIPResult_t fake_ip_result;
+		SteamNetworkingSockets()->GetFakeIP(first_port, &fake_ip_result);
+		// Populate the dictionary
+		fake_ip["result"] = fake_ip_result.m_eResult;
+		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
+		fake_ip["ip"] = fake_ip_result.m_unIP;
+		fake_ip["ports"] = fake_ip_result.m_unPorts;
+	}
+	return fake_ip;
+}
+
+// Create a listen socket that will listen for P2P connections sent to our FakeIP.
+// A peer can initiate connections to this listen socket by calling ConnectByIPAddress.
+uint32 Steam::createListenSocketP2PFakeIP(int fake_port_index, Array options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	// No options were passed.
+	if(sizeof(options) == 0){
+		return SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port_index, 0, NULL);
+	}
+	// Else options were passed, so deal with them.
+	else{
+		// Get the number of option arrays in the array.
+		int options_size = sizeof(options);
+		// Create the array for options.
+		SteamNetworkingConfigValue_t *option_array = new SteamNetworkingConfigValue_t[options_size];
+		for(int i = 0; i < options_size; i++){
+			SteamNetworkingConfigValue_t this_option;
+			Array sent_option = options[i];
+			// Get the configuration value.
+			// This is a convoluted way of doing it but can't seem to cast the value as an enum so here we are.
+			ESteamNetworkingConfigValue this_value;
+			switch((int)sent_option[0]){
+				case 2: this_value = k_ESteamNetworkingConfig_FakePacketLoss_Send; break;
+				case 3: this_value = k_ESteamNetworkingConfig_FakePacketLoss_Recv; break;
+				case 4: this_value = k_ESteamNetworkingConfig_FakePacketLag_Send; break;
+				case 5: this_value = k_ESteamNetworkingConfig_FakePacketLag_Recv; break;
+				case 6: this_value = k_ESteamNetworkingConfig_FakePacketReorder_Send; break;
+				case 7: this_value = k_ESteamNetworkingConfig_FakePacketReorder_Recv; break;
+				case 8: this_value = k_ESteamNetworkingConfig_FakePacketReorder_Time; break;
+				case 9: this_value = k_ESteamNetworkingConfig_SendBufferSize; break;
+				case 10: this_value = k_ESteamNetworkingConfig_SendRateMin; break;
+				case 11: this_value = k_ESteamNetworkingConfig_SendRateMax; break;
+				case 12: this_value = k_ESteamNetworkingConfig_NagleTime; break;
+				case 13: this_value = k_ESteamNetworkingConfig_LogLevel_AckRTT; break;
+				case 14: this_value = k_ESteamNetworkingConfig_LogLevel_PacketDecode; break;
+				case 15: this_value = k_ESteamNetworkingConfig_LogLevel_Message; break;
+				case 16: this_value = k_ESteamNetworkingConfig_LogLevel_PacketGaps; break;
+				case 17: this_value = k_ESteamNetworkingConfig_LogLevel_P2PRendezvous; break;
+				case 18: this_value = k_ESteamNetworkingConfig_LogLevel_SDRRelayPings; break;
+				case 19: this_value = k_ESteamNetworkingConfig_SDRClient_ConsecutitivePingTimeoutsFailInitial; break;
+				case 20: this_value = k_ESteamNetworkingConfig_SDRClient_ConsecutitivePingTimeoutsFail; break;
+				case 21: this_value = k_ESteamNetworkingConfig_SDRClient_MinPingsBeforePingAccurate; break;
+				case 22: this_value = k_ESteamNetworkingConfig_SDRClient_SingleSocket; break;
+				case 23: this_value = k_ESteamNetworkingConfig_IP_AllowWithoutAuth; break;
+				case 24: this_value = k_ESteamNetworkingConfig_TimeoutInitial; break;
+				case 25: this_value = k_ESteamNetworkingConfig_TimeoutConnected; break;
+				case 26: this_value = k_ESteamNetworkingConfig_FakePacketDup_Send; break;
+				case 27: this_value = k_ESteamNetworkingConfig_FakePacketDup_Recv; break;
+				case 28: this_value = k_ESteamNetworkingConfig_FakePacketDup_TimeMax; break;
+				case 29: this_value = k_ESteamNetworkingConfig_SDRClient_ForceRelayCluster; break;
+				case 30: this_value = k_ESteamNetworkingConfig_SDRClient_DebugTicketAddress; break;
+				case 31: this_value = k_ESteamNetworkingConfig_SDRClient_ForceProxyAddr; break;
+				case 32: this_value = k_ESteamNetworkingConfig_MTU_PacketSize; break;
+				case 33: this_value = k_ESteamNetworkingConfig_MTU_DataSize; break;
+				case 34: this_value = k_ESteamNetworkingConfig_Unencrypted; break;
+				case 36: this_value = k_ESteamNetworkingConfig_SDRClient_FakeClusterPing; break;
+				case 37: this_value = k_ESteamNetworkingConfig_SymmetricConnect; break;
+				case 38: this_value = k_ESteamNetworkingConfig_LocalVirtualPort; break;
+				case 39: this_value = k_ESteamNetworkingConfig_DualWifi_Enable; break;
+				case 40: this_value = k_ESteamNetworkingConfig_ConnectionUserData; break;
+				case 41: this_value = k_ESteamNetworkingConfig_PacketTraceMaxBytes; break;
+				case 42: this_value = k_ESteamNetworkingConfig_FakeRateLimit_Send_Rate; break;
+				case 43: this_value = k_ESteamNetworkingConfig_FakeRateLimit_Send_Burst; break;
+				case 44: this_value = k_ESteamNetworkingConfig_FakeRateLimit_Recv_Rate; break;
+				case 45: this_value = k_ESteamNetworkingConfig_FakeRateLimit_Recv_Burst; break;
+				case 46: this_value = k_ESteamNetworkingConfig_EnableDiagnosticsUI; break;
+				case 103: this_value = k_ESteamNetworkingConfig_P2P_STUN_ServerList; break;
+				case 104: this_value = k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable; break;
+				case 105: this_value = k_ESteamNetworkingConfig_P2P_Transport_ICE_Penalty; break;
+				case 106: this_value = k_ESteamNetworkingConfig_P2P_Transport_SDR_Penalty; break;
+				case 201: this_value = k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged; break;
+				case 202: this_value = k_ESteamNetworkingConfig_Callback_AuthStatusChanged; break;
+				case 203: this_value = k_ESteamNetworkingConfig_Callback_RelayNetworkStatusChanged; break;
+				case 204: this_value = k_ESteamNetworkingConfig_Callback_MessagesSessionRequest; break;
+				case 205: this_value = k_ESteamNetworkingConfig_Callback_MessagesSessionFailed; break;
+				case 206: this_value = k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling; break;
+				case 207: this_value = k_ESteamNetworkingConfig_Callback_FakeIPResult; break;				
+				default: this_value = k_ESteamNetworkingConfig_Invalid;
+			}
+			if((int)sent_option[1] == 1){
+				this_option.SetInt32(this_value, sent_option[2]);
+			}
+			else if((int)sent_option[1] == 2){
+				this_option.SetInt64(this_value, sent_option[2]);
+			}
+			else if((int)sent_option[1] == 3){
+				this_option.SetFloat(this_value, sent_option[2]);
+			}
+			else if((int)sent_option[1] == 4){
+				char *this_string = "";
+				String passed_string = sent_option[2];
+				strcpy(this_string, passed_string.utf8().get_data());
+				this_option.SetString(this_value, this_string);
+			}
+			else{
+				Object *this_pointer;
+				this_pointer = sent_option[2];
+				this_option.SetPtr(this_value, this_pointer);
+			}
+			option_array[i] = this_option;
+		}
+		return SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port_index, options_size, option_array);
+	}
+}
+
+// If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
+// Otherwise, a FakeIP that is unique locally will be allocated from the local FakeIP address space, and that will be returned.
+Dictionary Steam::getRemoteFakeIPForConnection(uint32 connection){
+	// Create the return dictionary
+	Dictionary this_fake_address;
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingIPAddr fake_address;
+		int result = SteamNetworkingSockets()->GetRemoteFakeIPForConnection((HSteamNetConnection)connection, &fake_address);
+		// Send back the data
+		this_fake_address["result"] = result;
+		this_fake_address["port"] = fake_address.m_port;
+		this_fake_address["ip_type"] = fake_address.GetFakeIPType();
+	//	ip_addresses["fake_ip_address"] = fake_address;
+		}
+
+	return this_fake_address;
+}
+
+// Get an interface that can be used like a UDP port to send/receive datagrams to a FakeIP address.
+// This is intended to make it easy to port existing UDP-based code to take advantage of SDR.
+// To create a "client" port (e.g. the equivalent of an ephemeral UDP port) pass -1.
+void Steam::createFakeUDPPort(int fake_server_port_index){
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingSockets()->CreateFakeUDPPort(fake_server_port_index);
+	}
+}
+
 
 /////////////////////////////////////////////////
 ///// NETWORKING TYPES
@@ -4793,21 +5556,18 @@ bool Steam::setGenericBytes(const String& name, uint8 data){
 
 // Returns null if not generic bytes type.
 uint8 Steam::getGenericBytes(const String& name){
-	int length = 0;
 	uint8 these_bytes = 0;
-	const uint8* generic_bytes = identities[name.utf8().get_data()].GetGenericBytes(length);
-	if (generic_bytes == NULL){
-		return 0;
+	if(!name.empty()){
+		int length = 0;
+		const uint8* generic_bytes = identities[name.utf8().get_data()].GetGenericBytes(length);
+		these_bytes = *generic_bytes;
 	}
-	return these_bytes = *generic_bytes;
+	return these_bytes;
 }
 
 // Print to a human-readable string.  This is suitable for debug messages or any other time you need to encode the identity as a string.
 // It has a URL-like format (type:<type-data>). Your buffer should be at least k_cchMaxString bytes big to avoid truncation.
 void Steam::toIdentityString(const String& name, const String& buffer){
-	if (SteamNetworkingUtils() == NULL){
-		return;
-	}
 	char *this_buffer = new char[buffer.size()];
 	strcpy(this_buffer, buffer.utf8().get_data());
 	identities[name.utf8().get_data()].ToString(this_buffer, sizeof(this_buffer));
@@ -4817,9 +5577,6 @@ void Steam::toIdentityString(const String& name, const String& buffer){
 // Parse back a string that was generated using ToString. If we don't understand the string, but it looks "reasonable" (it matches the pattern type:<type-data> and doesn't have any funky characters, etc), then we will return true, and the type is set to k_ESteamNetworkingIdentityType_UnknownType.
 // false will only be returned if the string looks invalid.
 String Steam::parseIdentityString(const String& name){
-	if (SteamNetworkingUtils() == NULL){
-		return String();
-	}
 	String identity_string = "";
 	char *this_string = new char[128];
 	if(identities[name.utf8().get_data()].ParseString(this_string)){
@@ -4845,8 +5602,8 @@ Array Steam::getIPAddresses(){
 	for(auto& address : ip_addresses){
 		Dictionary this_address;
 		this_address["name"] = address.first;
-		this_address["localhost"] = Steam::isAddressLocalHost(address.first);
-		this_address["ip_address"] = Steam::getIPv4(address.first);
+		this_address["localhost"] = isAddressLocalHost(address.first);
+		this_address["ip_address"] = getIPv4(address.first);
 		these_addresses.append(this_address);
 	}
 	return these_addresses;
@@ -4896,9 +5653,6 @@ bool Steam::isAddressLocalHost(const String& name){
 // Print to a string, with or without the port. Mapped IPv4 addresses are printed as dotted decimal (12.34.56.78), otherwise this will print the canonical form according to RFC5952.
 // If you include the port, IPv6 will be surrounded by brackets, e.g. [::1:2]:80. Your buffer should be at least k_cchMaxString bytes to avoid truncation.
 void Steam::toIPAddressString(const String& name, const String& buffer, bool with_port){
-	if (SteamNetworkingUtils() == NULL){ // ToString use SteamNetworkingUtils internally
-		return;
-	}
 	char *this_buffer = new char[buffer.size()];
 	strcpy(this_buffer, buffer.utf8().get_data());
 	ip_addresses[name.utf8().get_data()].ToString(this_buffer, sizeof(this_buffer), with_port);
@@ -4907,15 +5661,14 @@ void Steam::toIPAddressString(const String& name, const String& buffer, bool wit
 
 // Parse an IP address and optional port.  If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).
 String Steam::parseIPAddressString(const String& name){
-	if (SteamNetworkingUtils() == NULL){ // ParseString use SteamNetworkingUtils internally
-		return String();
-	}
 	String ip_address_string = "";
-	char *this_string = new char[48];
-	if(ip_addresses[name.utf8().get_data()].ParseString(this_string)){
-		ip_address_string = String(this_string);
+	if(!name.empty()){
+		char *this_string = new char[48];
+		if(ip_addresses[name.utf8().get_data()].ParseString(this_string)){
+			ip_address_string = String(this_string);
+		}
+		delete[] this_string;
 	}
-	delete[] this_string;
 	return ip_address_string;
 }
 
@@ -5074,27 +5827,15 @@ int Steam::getPOPList(){
 Dictionary Steam::getConfigValueInfo(int value){
 	Dictionary config_info;
 	if(SteamNetworkingUtils() != NULL){
-		const char *name;
 		ESteamNetworkingConfigDataType data_type;
 		ESteamNetworkingConfigScope scope;
-		ESteamNetworkingConfigValue next_value;
-		if(SteamNetworkingUtils()->GetConfigValueInfo((ESteamNetworkingConfigValue)value, &name, &data_type, &scope, &next_value)){
+		if(SteamNetworkingUtils()->GetConfigValueInfo((ESteamNetworkingConfigValue)value, &data_type, &scope)){
 			// Populate the dictionary
-			config_info["value"] = name;
 			config_info["type"] = data_type;
 			config_info["scope"] = scope;
-			config_info["next_value"] = next_value;
 		}
 	}
 	return config_info;
-}
-
-//! Returns info about a configuration value.  Returns false if the value does not exist.
-int Steam::getFirstConfigValue(){
-	if(SteamNetworkingUtils() == NULL){
-		return 0;
-	}
-	return SteamNetworkingUtils()->GetFirstConfigValue();
 }
 
 // The following functions are handy shortcuts for common use cases.
@@ -5128,18 +5869,12 @@ bool Steam::setConnectionConfigValueFloat(uint32 connection, int config, float v
 	}
 	return SteamNetworkingUtils()->SetConnectionConfigValueFloat(connection, (ESteamNetworkingConfigValue)config, value);
 }
+
 bool Steam::setConnectionConfigValueString(uint32 connection, int config, const String& value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
 	return SteamNetworkingUtils()->SetConnectionConfigValueString(connection, (ESteamNetworkingConfigValue)config, value.utf8().get_data());
-}
-
-//! Allocate and initialize a message object. Usually the reason you call this is to pass it to ISteamNetworkingSockets::SendMessages. The returned object will have all of the relevant fields cleared to zero.
-void Steam::allocateMessage(int buffer){
-	if(SteamNetworkingUtils() != NULL){
-		network_messages = SteamNetworkingUtils()->AllocateMessage(buffer);
-	}
 }
 
 //! A general purpose high resolution local timer with the following properties: Monotonicity is guaranteed. The initial value will be at least 24*3600*30*1e6, i.e. about 30 days worth of microseconds. In this way, the timestamp value of 0 will always be at least "30 days ago". Also, negative numbers will never be returned. Wraparound / overflow is not a practical concern.
@@ -5149,13 +5884,6 @@ uint32 Steam::getLocalTimestamp(){
 	}
 	return SteamNetworkingUtils()->GetLocalTimestamp();
 }
-
-// Set a function to receive network-related information that is useful for debugging.
-//void Steam::setDebugOutputFunction(int detail_level, String& function){
-//	if(SteamNetworkingUtils() != NULL){
-//		SteamNetworkingUtils()->SetDebugOutputFunction((ESteamNetworkingSocketsDebugOutputType)detail_level, function.utf8().get_data());
-//	}
-//}
 
 
 /////////////////////////////////////////////////
@@ -5177,18 +5905,18 @@ bool Steam::isParentalLockLocked(){
 	return SteamParentalSettings()->BIsParentalLockLocked();
 }
 
-bool Steam::isAppBlocked(AppId_t app_id){
+bool Steam::isAppBlocked(uint32 app_id){
 	if(SteamParentalSettings() == NULL){
 		return false;
 	}
-	return SteamParentalSettings()->BIsAppBlocked(app_id);
+	return SteamParentalSettings()->BIsAppBlocked((AppId_t)app_id);
 }
 
-bool Steam::isAppInBlockList(AppId_t app_id){
+bool Steam::isAppInBlockList(uint32 app_id){
 	if(SteamParentalSettings() == NULL){
 		return false;
 	}
-	return SteamParentalSettings()->BIsAppInBlockList(app_id);
+	return SteamParentalSettings()->BIsAppInBlockList((AppId_t)app_id);
 }
 
 bool Steam::isFeatureBlocked(int feature){
@@ -5522,7 +6250,7 @@ uint64_t Steam::fileWriteStreamOpen(const String& file){
 }
 
 //! Writes a blob of data to the file write stream.
-bool Steam::fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray& data, int32_t data_size){
+bool Steam::fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray data, int32_t data_size){
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
@@ -5630,6 +6358,41 @@ Dictionary Steam::getSyncPlatforms(const String& file){
 	}
 	// Return the dictionary
 	return platforms;
+}
+
+// Gets metadata for a file after it has been downloaded. This is the same metadata given in the RemoteStorageDownloadUGCResult_t call result.
+Dictionary Steam::getUGCDetails(uint64_t content){
+	// Create the return dictionary
+	Dictionary ugc_details;
+	if(SteamRemoteStorage() != NULL){
+		AppId_t app_id;
+		char *filename;
+		int32 file_size;
+		CSteamID steam_owner_id;
+		if(SteamRemoteStorage()->GetUGCDetails((UGCHandle_t)content, &app_id, &filename, &file_size, &steam_owner_id)){
+			ugc_details["handle"] = content;
+			ugc_details["app_id"] = app_id;
+			ugc_details["size"] = file_size;
+			ugc_details["filename"] = filename;
+			ugc_details["owner_id"] = (uint64_t)steam_owner_id.ConvertToUint64();
+		}
+	}
+	return ugc_details;
+}
+
+// Gets the amount of data downloaded so far for a piece of content. pnBytesExpected can be 0 if function returns false or if the transfer hasn't started yet, so be careful to check for that before dividing to get a percentage.
+Dictionary Steam::getUGCDownloadProgress(uint64_t content){
+	// Create the return dictionary
+	Dictionary ugc_download_progress;
+	if(SteamRemoteStorage() != NULL){
+		int32 bytes_downloaded;
+		int32 bytes_expected;
+		if(SteamRemoteStorage()->GetUGCDownloadProgress((UGCHandle_t)content, &bytes_downloaded, &bytes_expected)){
+			ugc_download_progress["bytes_downloaded"] = bytes_downloaded;
+			ugc_download_progress["bytes_expected"] = bytes_expected;
+		}
+	}
+	return ugc_download_progress;
 }
 
 //! Is Steam Cloud enabled on the user's account?
@@ -5808,502 +6571,6 @@ uint32_t Steam::writeScreenshot(const PoolByteArray& rgb, int width, int height)
 
 
 /////////////////////////////////////////////////
-///// SERVER FUNCTIONS
-/////////////////////////////////////////////////
-//
-// NOTE: The following, if set, must be set before calling LogOn; they may not be changed after.
-//
-// This is called by SteamGameServer_Init and will usually not need to be called directly.
-bool Steam::initGameServer(Dictionary connect_data, int server_mode, const String& version_string){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	// Pass the dictionary data to solitary variables
-	const String& ip = connect_data["ip"];
-	uint16 steamPort = connect_data["steam_port"];
-	uint16 gamePort = connect_data["game_port"];
-	uint16 queryPort = connect_data["query_port"];
-	// Convert the server mode back
-	EServerMode mode;
-	if(server_mode == 1){
-		mode = eServerModeNoAuthentication;
-	}
-	else if(server_mode == 2){
-		mode = eServerModeAuthentication;
-	}
-	else{
-		mode = eServerModeAuthenticationAndSecure;
-	}
-	// Resolve address and convert it from IP_Address string to uint32_t
-	IP_Address address;
-	if(ip.is_valid_ip_address()){
-		address = ip;
-	}
-	else{
-		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
-	}
-	// Resolution failed - Godot 3.0 has is_invalid() to check this
-	if(address == IP_Address()){
-		return false;
-	}
-	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
-	// Swap the bytes
-	uint8_t *ip4_p = (uint8_t *)&ip4;
-	for(int i = 0; i < 2; i++){
-		uint8_t temp = ip4_p[i];
-		ip4_p[i] = ip4_p[3-i];
-		ip4_p[3-i] = temp;
-	}
-	if(!SteamInternal_GameServer_Init(*((uint32_t *)ip4_p), steamPort, gamePort, queryPort, mode, version_string.utf8().get_data())){
-		return false;
-	}
-	return true;
-}
-
-// Game product identifier; currently used by the master server for version checking purposes.
-void Steam::setProduct(const String& product){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetProduct(product.utf8().get_data());
-}
-
-// Description of the game; required field and is displayed in the Steam server browser.
-void Steam::setGameDescription(const String& description){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetGameDescription(description.utf8().get_data());
-}
-
-// If your game is a mod, pass the string that identifies it. Default is empty meaning the app is the original game.
-void Steam::setModDir(const String& mod_directory){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetModDir(mod_directory.utf8().get_data());
-}
-
-// Is this a dedicated server? Default is false.
-void Steam::setDedicatedServer(bool dedicated){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetDedicatedServer(dedicated);
-}
-
-// NOTE: The following are login functions.
-//
-// Begin process to login to a persistent game server account. You need to register for callbacks to determine the result of this operation.
-void Steam::logOn(const String& token){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->LogOn(token.utf8().get_data());
-}
-
-// Login to a generic, anonymous account.
-void Steam::logOnAnonymous(){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->LogOnAnonymous();
-}
-
-// Begin process of logging game server out of Steam.
-void Steam::logOff(){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->LogOff();
-}
-
-// Status functions.
-bool Steam::serverLoggedOn(){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	return SteamGameServer()->BLoggedOn();
-}
-
-bool Steam::secure(){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	return SteamGameServer()->BSecure();
-}
-
-uint64_t Steam::getServerSteamID(){
-	if(SteamGameServer() == NULL){
-		return 0;
-	}
-	CSteamID serverID = SteamGameServer()->GetSteamID();
-	return serverID.ConvertToUint64();
-}
-
-// Returns true if the master server has requested a restart. Only returns true once per request.
-bool Steam::wasRestartRequested(){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	return SteamGameServer()->WasRestartRequested();
-}
-
-// NOTE: These are server state functions and can be changed at any time.
-//
-// Max player count that will be reported to server browser and client queries.
-void Steam::setMaxPlayerCount(int max){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetMaxPlayerCount(max);
-}
-
-// Number of bots. Default is zero.
-void Steam::setBotPlayerCount(int bots){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetBotPlayerCount(bots);
-}
-
-// Set the naem of the server as it will appear in the server browser.
-void Steam::setServerName(const String& name){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetServerName(name.utf8().get_data());
-}
-
-// Set name of map to report in server browser.
-void Steam::setMapName(const String& map){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetMapName(map.utf8().get_data());
-}
-
-// Let people know if your server requires a password.
-void Steam::setPasswordProtected(bool password){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetPasswordProtected(password);
-}
-
-// Spectator server. Default is zero, meaning it is now used.
-void Steam::setSpectatorPort(uint16 port){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetSpectatorPort(port);
-}
-
-// Name of spectator server. Only used if spectator port is non-zero.
-void Steam::setSpectatorServerName(const String& name){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetSpectatorServerName(name.utf8().get_data());
-}
-
-// Call this to clear the whole list of key/values that are sent in rule queries.
-void Steam::clearAllKeyValues(){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->ClearAllKeyValues();
-}
-
-// Call this to add/update a key/value pair.
-void Steam::setKeyValue(const String& key, const String& value){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetKeyValue(key.utf8().get_data(), value.utf8().get_data());
-}
-
-// Set a string defining game tags for this server; optional. Allows users to filter in matchmaking/server browser.
-void Steam::setGameTags(const String& tags){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetGameTags(tags.utf8().get_data());
-}
-
-// Set a string defining game data for this server; optional. Allows users to filter in matchmaking/server browser.
-void Steam::setGameData(const String& data){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetGameData(data.utf8().get_data());
-}
-
-// Region identifier; optional. Default is empty meaning 'world'.
-void Steam::setRegion(const String& region){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetRegion(region.utf8().get_data());
-}
-
-// NOTE: These functions are player list management / authentication.
-//
-// Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).
-Dictionary Steam::getServerAuthSessionTicket(){
-	// Create the dictionary to use
-	Dictionary auth_ticket;
-	if(SteamGameServer() != NULL){
-		uint32_t ticket_size = 1024;
-		PoolByteArray buffer;
-		buffer.resize(ticket_size);
-		uint32_t id = SteamGameServer()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
-		// Add this data to the dictionary
-		auth_ticket["id"] = id;
-		auth_ticket["buffer"] = buffer;
-		auth_ticket["size"] = ticket_size;
-	}
-	return auth_ticket;
-}
-
-// Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.
-int Steam::beginServerAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id){
-	if(SteamGameServer() == NULL){
-		return -1;
-	}
-	CSteamID authSteamID = createSteamID(steam_id);
-	return SteamGameServer()->BeginAuthSession(ticket.read().ptr(), ticket_size, authSteamID);
-}
-
-// Stop tracking started by beginAuthSession; called when no longer playing game with this entity;
-void Steam::endServerAuthSession(uint64_t steam_id){
-	if(SteamGameServer() != NULL){
-		CSteamID authSteamID = createSteamID(steam_id);
-		SteamGameServer()->EndAuthSession(authSteamID);
-	}
-}
-
-// Cancel auth ticket from getAuthSessionTicket; called when no longer playing game with the entity you gave the ticket to.
-void Steam::cancelServerAuthTicket(uint32_t auth_ticket){
-	if(SteamGameServer() != NULL){
-		SteamGameServer()->CancelAuthTicket(auth_ticket);
-	}
-}
-
-// After receiving a user's authentication data, and passing it to sendUserConnectAndAuthenticate, use to determine if user owns DLC
-int Steam::userHasLicenceForApp(uint64_t steam_id, AppId_t app_id){
-	if(SteamGameServer() == NULL){
-		return 0;
-	}
-	CSteamID userID = (uint64)steam_id;
-	return SteamGameServer()->UserHasLicenseForApp(userID, app_id);
-}
-
-// Ask if user is in specified group; results returned by GSUserGroupStatus_t.
-bool Steam::requestUserGroupStatus(uint64_t steam_id, int group_id){
-	if(SteamGameServer() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steam_id;
-	CSteamID clan_id = (uint64)group_id;
-	return SteamGameServer()->RequestUserGroupStatus(userID, clan_id);
-}
-
-// NOTE: These are in GameSocketShare mode, where instead of ISteamGameServer creating sockets to talk to master server, it lets the game use its socket to forward messages back and forth.
-//
-// These are used when you've elected to multiplex the game server's UDP socket rather than having the master server updater use its own sockets.
-Dictionary Steam::handleIncomingPacket(int packet, const String& ip, uint16 port){
-	Dictionary result;
-	if(SteamGameServer() == NULL){
-		return result;
-	}
-	PoolByteArray data;
-	data.resize(packet);
-	// Resolve address and convert it from IP_Address string to uint32_t
-	IP_Address address;
-	if(ip.is_valid_ip_address()){
-		address = ip;
-	}
-	else{
-		address = IP::get_singleton()->resolve_hostname(ip, IP::TYPE_IPV4);
-	}
-	// Resolution failed
-	if(!address.is_valid()){
-		return result;
-	}
-	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
-	// Swap the bytes
-	uint8_t *ip4_p = (uint8_t *)&ip4;
-	for(int i = 0; i < 2; i++){
-		uint8_t temp = ip4_p[i];
-		ip4_p[i] = ip4_p[3-i];
-		ip4_p[3-i] = temp;
-	}
-	if(SteamGameServer()->HandleIncomingPacket(data.write().ptr(), packet, *((uint32_t *)ip4_p), port)){
-		result["data"] = data;
-	}
-	return result;
-}
-
-// AFTER calling HandleIncomingPacket for any packets that came in that frame, call this. This gets a packet that the master server updater needs to send out on UDP. Returns 0 if there are no more packets.
-Dictionary Steam::getNextOutgoingPacket(){
-	Dictionary packet;
-	if(SteamGameServer() == NULL){
-		return packet;
-	}
-	PoolByteArray out;
-	int maxOut = 16 * 1024;
-	uint32 address;
-	uint16 port;
-	// Retrieve the packet information
-	int length = SteamGameServer()->GetNextOutgoingPacket(&out, maxOut, &address, &port);
-	// Place packet information in dictionary and return it
-	packet["length"] = length;
-	packet["out"] = out;
-	packet["address"] = address;
-	packet["port"] = port;
-	return packet;
-}
-
-// NOTE: These are heartbeat/advertisement functions.
-//
-// Call this as often as you like to tell the master server updater whether or not you want it to be active (default: off).
-void Steam::setAdvertiseServerActive(bool active){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	SteamGameServer()->SetAdvertiseServerActive(active);
-}
-
-// Associate this game server with this clan for the purposes of computing player compatibility.
-void Steam::associateWithClan(uint64_t clan_id){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	CSteamID group_id = (uint64)clan_id;
-	SteamGameServer()->AssociateWithClan(group_id);
-}
-
-// Ask if any of the current players dont want to play with this new player - or vice versa.
-void Steam::computeNewPlayerCompatibility(uint64_t steam_id){
-	if(SteamGameServer() == NULL){
-		return;
-	}
-	CSteamID userID = (uint64)steam_id;
-	SteamGameServer()->ComputeNewPlayerCompatibility(userID);
-}
-
-
-/////////////////////////////////////////////////
-// SERVER STATS
-/////////////////////////////////////////////////
-//
-// Resets the unlock status of an achievement for the specified user.
-bool Steam::clearUserAchievement(uint64_t steam_id, const String& name){
-	if(SteamGameServerStats() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steam_id;
-	return SteamGameServerStats()->ClearUserAchievement(userID, name.utf8().get_data());
-}
-
-// Gets the unlock status of the Achievement.
-Dictionary Steam::serverGetUserAchievement(uint64_t steam_id, const String& name){
-	// Set dictionary to fill in
-	Dictionary achievement;
-	if(SteamGameServerStats() == NULL){
-		return achievement;
-	}
-	CSteamID userID = (uint64)steam_id;
-	bool unlocked = false;
-	bool result = SteamGameServerStats()->GetUserAchievement(userID, name.utf8().get_data(), &unlocked);
-	// Populate the dictionary
-	achievement["result"] = result;
-	achievement["user"] = steam_id;
-	achievement["name"] = name;
-	achievement["unlocked"] = unlocked;
-	return achievement;
-}
-
-// Gets the current value of the a stat for the specified user.
-uint32_t Steam::serverGetUserStatInt(uint64_t steam_id, const String& name){
-	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steam_id;
-		int32 value = 0;
-		if(SteamGameServerStats()->GetUserStat(userID, name.utf8().get_data(), &value)){
-			return value;
-		}
-	}
-	return 0;
-}
-
-// Gets the current value of the a stat for the specified user.
-float Steam::serverGetUserStatFloat(uint64_t steam_id, const String& name){
-	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steam_id;
-		float value = 0.0;
-		if(SteamGameServerStats()->GetUserStat(userID, name.utf8().get_data(), &value)){
-			return value;
-		}
-	}
-	return 0.0;
-}
-
-// Asynchronously downloads stats and achievements for the specified user from the server.
-void Steam::serverRequestUserStats(uint64_t steam_id){
-	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steam_id;
-		SteamAPICall_t api_call = SteamGameServerStats()->RequestUserStats(userID);
-		callResultStatReceived.Set(api_call, this, &Steam::_stat_received);
-	}
-}
-
-// Unlocks an achievement for the specified user.
-bool Steam::setUserAchievement(uint64_t steam_id, const String& name){
-	if(SteamGameServerStats() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steam_id;
-	return SteamGameServerStats()->SetUserAchievement(userID, name.utf8().get_data());
-}
-
-// Sets / updates the value of a given stat for the specified user.
-bool Steam::setUserStatInt(uint64_t steam_id, const String& name, int32 stat){
-	if(SteamGameServerStats() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steam_id;
-	return SteamGameServerStats()->SetUserStat(userID, name.utf8().get_data(), stat);
-}
-
-// Sets / updates the value of a given stat for the specified user.
-bool Steam::setUserStatFloat(uint64_t steam_id, const String& name, float stat){
-	if(SteamGameServerStats() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steam_id;
-	return SteamGameServerStats()->SetUserStat(userID, name.utf8().get_data(), stat);
-}
-
-// Send the changed stats and achievements data to the server for permanent storage for the specified user.
-void Steam::storeUserStats(uint64_t steam_id){
-	if(SteamGameServerStats() != NULL){
-		CSteamID userID = (uint64)steam_id;
-		SteamGameServerStats()->StoreUserStats(userID);
-	}
-}
-
-// Updates an AVGRATE stat with new values for the specified user.
-bool Steam::updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length){
-	if(SteamGameServerStats() == NULL){
-		return false;
-	}
-	CSteamID userID = (uint64)steam_id;
-	return SteamGameServerStats()->UpdateUserAvgRateStat(userID, name.utf8().get_data(), this_session, session_length);
-}
-
-
-/////////////////////////////////////////////////
 ///// UGC
 /////////////////////////////////////////////////
 //
@@ -6444,9 +6711,9 @@ bool Steam::initWorkshopForGameServer(uint32_t workshop_depot_id){
 }
 
 //! Creates a new workshop item with no content attached yet.
-void Steam::createItem(AppId_t app_id, int file_type){
+void Steam::createItem(uint32 app_id, int file_type){
 	if(SteamUGC() != NULL){
-		SteamAPICall_t api_call = SteamUGC()->CreateItem(app_id, (EWorkshopFileType)file_type);
+		SteamAPICall_t api_call = SteamUGC()->CreateItem((AppId_t)app_id, (EWorkshopFileType)file_type);
 		callResultItemCreate.Set(api_call, this, &Steam::_item_created);
 	}
 }
@@ -6997,12 +7264,13 @@ Dictionary Steam::getQueryUGCStatistic(uint64_t query_handle, uint32 index, int 
 //! Retrieve the "nth" tag associated with an individual workshop item after receiving a querying UGC call result.
 //! You should call this in a loop to get the details of all the workshop items returned.
 String Steam::getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index){
+	if(SteamUGC() == NULL){
+		return "";
+	}
 	// Set a default tag to return
 	char *tag = new char[64];
-	if(SteamUGC() != NULL){
-		UGCQueryHandle_t handle = (uint64_t)query_handle;
-		SteamUGC()->GetQueryUGCTag(handle, index, tag_index, tag, 64);
-	}
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	SteamUGC()->GetQueryUGCTag(handle, index, tag_index, tag, 64);
 	tag[63] = '\0';
 	String tag_name = tag;
 	delete[] tag;
@@ -7012,12 +7280,13 @@ String Steam::getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_ind
 //! Retrieve the "nth" display string (usually localized) for a tag, which is associated with an individual workshop item after receiving a querying UGC call result.
 //! You should call this in a loop to get the details of all the workshop items returned.
 String Steam::getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index){
+	if(SteamUGC() == NULL){
+		return "";
+	}
 	// Set a default tag name to return
 	char *tag = new char[256];
-	if(SteamUGC() != NULL){
-		UGCQueryHandle_t handle = (uint64_t)query_handle;
-		SteamUGC()->GetQueryUGCTagDisplayName(handle, index, tag_index, tag, 256);
-	}
+	UGCQueryHandle_t handle = (uint64_t)query_handle;
+	SteamUGC()->GetQueryUGCTagDisplayName(handle, index, tag_index, tag, 256);
 	tag[255] = '\0';
 	String tagDisplay = tag;
 	delete[] tag;
@@ -7030,10 +7299,10 @@ Array Steam::getSubscribedItems(){
 		return Array();
 	}
 	Array subscribed;
-	int numItems = SteamUGC()->GetNumSubscribedItems();
-	PublishedFileId_t *items = new PublishedFileId_t[numItems];
-	int itemList = SteamUGC()->GetSubscribedItems(items, numItems);
-	for(int i = 0; i < itemList; i++){
+	uint32 num_items = SteamUGC()->GetNumSubscribedItems();
+	PublishedFileId_t *items = new PublishedFileId_t[num_items];
+	uint32 item_list = SteamUGC()->GetSubscribedItems(items, num_items);
+	for(uint32 i = 0; i < item_list; i++){
 		subscribed.append((uint64_t)items[i]);
 	}
 	delete[] items;
@@ -7469,6 +7738,24 @@ void Steam::getWorkshopEULAStatus(){
 		SteamAPICall_t api_call = SteamUGC()->GetWorkshopEULAStatus();
 		callResultWorkshopEULAStatus.Set(api_call, this, &Steam::_workshop_eula_status);
 	}
+}
+
+// Set the time range this item was created.
+bool Steam::setTimeCreatedDateRange(uint64_t update_handle, uint32 start, uint32 end){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->SetTimeCreatedDateRange(handle, start, end);
+}
+
+// Set the time range this item was updated.
+bool Steam::setTimeUpdatedDateRange(uint64_t update_handle, uint32 start, uint32 end){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	UGCUpdateHandle_t handle = uint64(update_handle);
+	return SteamUGC()->SetTimeUpdatedDateRange(handle, start, end);
 }
 
 
@@ -8160,7 +8447,7 @@ Dictionary Steam::getUserAchievement(uint64_t steam_id, const String& name){
 //! Gets the achievement status, and the time it was unlocked if unlocked.
 Dictionary Steam::getUserAchievementAndUnlockTime(uint64_t steam_id, const String& name){
 	Dictionary achieve;
-		if(SteamUserStats() == NULL){
+	if(SteamUserStats() == NULL){
 		return achieve;
 	}
 	bool achieved = false;
@@ -8622,6 +8909,14 @@ void Steam::startVRDashboard(){
 	}
 }
 
+// Dismisses the floating keyboard.
+bool Steam::dismissFloatingGamepadTextInput(){
+	if(SteamUtils() == NULL){
+		return false;
+	}
+	return SteamUtils()->DismissFloatingGamepadTextInput();
+}
+
 
 /////////////////////////////////////////////////
 ///// VIDEO
@@ -8686,13 +8981,10 @@ void Steam::_file_details_result(FileDetailsResult_t* file_data){
 	uint32_t result = file_data->m_eResult;
 	uint64_t file_size = file_data->m_ulFileSize;
 	uint32_t flags = file_data->m_unFlags;
-	PoolByteArray file_hash;
-	file_hash.resize(20);
-	PoolByteArray::Write w = file_hash.write();
-	for (int i=0; i<20; i++){
-		w[i] = file_data->m_FileSHA[i];
-	}
+	uint8 *file_hash = new uint8[20];
+	file_hash = file_data->m_FileSHA;
 	emit_signal("file_details_result", result, file_size, file_hash, flags);
+	delete[] file_hash;
 }
 
 //! Posted after the user executes a steam url with command line or query parameters such as steam://run/<appid>//?param1=value1;param2=value2;param3=value3; while the game is already running. The new params can be queried with getLaunchCommandLine and getLaunchQueryParam.
@@ -8726,13 +9018,12 @@ void Steam::_app_proof_of_purchase_key_response(AppProofOfPurchaseKeyResponse_t*
 
 //! Purpose: called for games in Timed Trial mode
 void Steam::_timed_trial_status(TimedTrialStatus_t* call_data){
-	int app_id = call_data->m_unAppID;
+	uint32 app_id = call_data->m_unAppID;
 	bool is_offline = call_data->m_bIsOffline;
 	uint32 seconds_allowed = call_data->m_unSecondsAllowed;
 	uint32 seconds_played = call_data->m_unSecondsPlayed;
 	emit_signal("timed_trial_status", app_id, is_offline, seconds_allowed, seconds_played);
 }
-
 
 // APP LIST CALLBACKS ///////////////////////////
 //
@@ -8754,9 +9045,6 @@ void Steam::_app_uninstalled(SteamAppUninstalled_t* call_data){
 //
 //! Called when a large avatar is loaded if you have tried requesting it when it was unavailable.
 void Steam::_avatar_loaded(AvatarImageLoaded_t* avatarData){
-	if (SteamUtils() == NULL){
-		return;
-	}
 	uint32 width, height;
 	bool success = SteamUtils()->GetImageSize(avatarData->m_iImage, &width, &height);
 	if(!success){
@@ -8991,6 +9279,217 @@ void Steam::_end_game_result(EndGameResultCallback_t* call_data){
 	emit_signal("end_game_result", result, game_id);
 }
 
+// GAME SERVER CALLBACKS ////////////////////////
+//
+// Logging the game server onto Steam
+void Steam::_server_Connect_Failure(SteamServerConnectFailure_t* serverData){
+	int result = serverData->m_eResult;
+	bool retrying = serverData->m_bStillRetrying;
+	emit_signal("server_failure", result, retrying);
+}
+
+// Server has connected to the Steam back-end; serverData has no fields.
+void Steam::_server_Connected(SteamServersConnected_t* serverData){
+	emit_signal("server_connected");
+}
+
+// Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching SteamServersConnected_t has been posted.
+void Steam::_server_Disconnected(SteamServersDisconnected_t* serverData){
+	int result = serverData->m_eResult;
+	emit_signal("server_disconnected", result);
+}
+
+// Client has been approved to connect to this game server.
+void Steam::_client_Approved(GSClientApprove_t* clientData){
+	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
+	uint64_t ownerID = clientData->m_OwnerSteamID.ConvertToUint64();
+	emit_signal("client_approved", steam_id, ownerID);
+}
+
+// Client has been denied to connection to this game server.
+void Steam::_client_Denied(GSClientDeny_t* clientData){
+	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
+	int reason;
+	// Convert reason.
+	if(clientData->m_eDenyReason == k_EDenyInvalid){
+		reason = DENY_INVALID;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyInvalidVersion){
+		reason = DENY_INVALID_VERSION;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyGeneric){
+		reason = DENY_GENERIC;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyNotLoggedOn){
+		reason = DENY_NOT_LOGGED_ON;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyNoLicense){
+		reason = DENY_NO_LICENSE;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyCheater){
+		reason = DENY_CHEATER;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyLoggedInElseWhere){
+		reason = DENY_LOGGED_IN_ELSEWHERE;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyUnknownText){
+		reason = DENY_UNKNOWN_TEXT;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyIncompatibleAnticheat){
+		reason = DENY_INCOMPATIBLE_ANTI_CHEAT;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyMemoryCorruption){
+		reason = DENY_MEMORY_CORRUPTION;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyIncompatibleSoftware){
+		reason = DENY_INCOMPATIBLE_SOFTWARE;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamConnectionLost){
+		reason = DENY_STEAM_CONNECTION_LOST;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamConnectionError){
+		reason = DENY_STEAM_CONNECTION_ERROR;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamResponseTimedOut){
+		reason = DENY_STEAM_RESPONSE_TIMED_OUT;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamValidationStalled){
+		reason = DENY_STEAM_VALIDATION_STALLED;
+	}
+	else{
+		reason = DENY_STEAM_OWNER_LEFT_GUEST_USER;
+	}
+	emit_signal("client_denied", steam_id, reason);
+}
+
+// Request the game server should kick the user.
+void Steam::_client_Kick(GSClientKick_t* clientData){
+	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
+	int reason;
+	// Convert reason.
+	if(clientData->m_eDenyReason == k_EDenyInvalid){
+		reason = DENY_INVALID;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyInvalidVersion){
+		reason = DENY_INVALID_VERSION;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyGeneric){
+		reason = DENY_GENERIC;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyNotLoggedOn){
+		reason = DENY_NOT_LOGGED_ON;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyNoLicense){
+		reason = DENY_NO_LICENSE;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyCheater){
+		reason = DENY_CHEATER;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyLoggedInElseWhere){
+		reason = DENY_LOGGED_IN_ELSEWHERE;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyUnknownText){
+		reason = DENY_UNKNOWN_TEXT;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyIncompatibleAnticheat){
+		reason = DENY_INCOMPATIBLE_ANTI_CHEAT;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyMemoryCorruption){
+		reason = DENY_MEMORY_CORRUPTION;
+	}
+	else if(clientData->m_eDenyReason == k_EDenyIncompatibleSoftware){
+		reason = DENY_INCOMPATIBLE_SOFTWARE;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamConnectionLost){
+		reason = DENY_STEAM_CONNECTION_LOST;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamConnectionError){
+		reason = DENY_STEAM_CONNECTION_ERROR;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamResponseTimedOut){
+		reason = DENY_STEAM_RESPONSE_TIMED_OUT;
+	}
+	else if(clientData->m_eDenyReason == k_EDenySteamValidationStalled){
+		reason = DENY_STEAM_VALIDATION_STALLED;
+	}
+	else{
+		reason = DENY_STEAM_OWNER_LEFT_GUEST_USER;
+	}
+	emit_signal("client_kick", steam_id, reason);
+}
+
+// Received when the game server requests to be displayed as secure (VAC protected).
+// m_bSecure is true if the game server should display itself as secure to users, false otherwise.
+void Steam::_policy_Response(GSPolicyResponse_t* policyData){
+	uint8 secure = policyData->m_bSecure;
+	emit_signal("server_secure", secure);
+}
+
+// Sent as a reply to RequestUserGroupStatus().
+void Steam::_client_Group_Status(GSClientGroupStatus_t* clientData){
+	uint64_t steam_id = clientData->m_SteamIDUser.ConvertToUint64();
+	uint64_t group_id = clientData->m_SteamIDGroup.ConvertToUint64();
+	bool member = clientData->m_bMember;
+	bool officer = clientData->m_bOfficer;
+	emit_signal("group_status", steam_id, group_id, member, officer);
+}
+
+// Sent as a reply to AssociateWithClan().
+void Steam::_associate_Clan(AssociateWithClanResult_t* clanData){
+	int result;
+	if(clanData->m_eResult == k_EResultOK){
+		result = RESULT_OK;
+	}
+	else{
+		result = RESULT_FAIL;
+	}
+	emit_signal("clan_associate", result);
+}
+
+// Sent as a reply to ComputeNewPlayerCompatibility().
+void Steam::_player_Compat(ComputeNewPlayerCompatibilityResult_t* playerData){
+	int result;
+	if(playerData->m_eResult == k_EResultNoConnection){
+		result = RESULT_NO_CONNECTION;
+	}
+	else if(playerData->m_eResult == k_EResultTimeout){
+		result = RESULT_TIMEOUT;
+	}
+	else if(playerData->m_eResult == k_EResultFail){
+		result = RESULT_FAIL;
+	}
+	else{
+		result = RESULT_OK;
+	}
+	int playersDontLikeCandidate = playerData->m_cPlayersThatDontLikeCandidate;
+	int playersCandidateDoesntLike = playerData->m_cPlayersThatCandidateDoesntLike;
+	int clanPlayersDontLikeCandidate = playerData->m_cClanPlayersThatDontLikeCandidate;
+	uint64_t steam_id = playerData->m_SteamIDCandidate.ConvertToUint64();
+	emit_signal("player_compatibility", result, playersDontLikeCandidate, playersCandidateDoesntLike, clanPlayersDontLikeCandidate, steam_id);
+}
+
+// GAME SERVER STATS CALLBACKS //////////////////
+//
+// Result when getting the latests stats and achievements for a user from the server.
+void Steam::_stat_received(GSStatsReceived_t* callData, bool bioFailure){
+	EResult result = callData->m_eResult;
+	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("stat_received", result, steam_id);
+}
+
+// Result of a request to store the user stats.
+void Steam::_stats_stored(GSStatsStored_t* callData){
+	EResult result = callData->m_eResult;
+	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("stats_stored", result, steam_id);
+}
+
+// Callback indicating that a user's stats have been unloaded.
+void Steam::_stats_unloaded(GSStatsUnloaded_t* callData){
+	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
+	emit_signal("stats_unloaded", steam_id);
+}
+
 // HTML SURFACE CALLBACKS ///////////////////////
 // 
 //! A new browser was created and is ready for use.
@@ -9198,7 +9697,6 @@ void Steam::_html_vertical_scroll(HTML_VerticalScroll_t* call_data){
 	emit_signal("html_vertical_scroll", scroll_data);
 }
 
-
 // HTTP CALLBACKS ///////////////////////////////
 //
 //! Result when an HTTP request completes. If you're using GetHTTPStreamingResponseBodyData then you should be using the HTTPRequestHeadersReceived_t or HTTPRequestDataReceived_t.
@@ -9227,15 +9725,31 @@ void Steam::_http_request_headers_received(HTTPRequestHeadersReceived_t* call_da
 	emit_signal("http_request_headers_received", cookie_handle, context_value);
 }
 
-
 // INPUT CALLBACKS //////////////////////////////
 //
 // Purpose: when callbacks are enabled this fires each time a controller action state changes
 //void Steam::_input_action_event(SteamInputActionEvent_t* call_data){
 //	uint64_t input_handle = call_data->controllerHandle;
 //	int event_type = call_data->eEventType;
-//	// Needs analogAction and digitalAction structs
-//	emit_signal("input_action_event", input_handle, event_type);
+//	uint64_t analog_handle = call_data->analogAction.actionHandle;
+//	uint64_t digital_handle = call_data->digitalAction.actionHandle;
+//	// Get the digital action data
+//	Dictionary digital_action;
+//	digital_action["state"] = call_data->digitalAction.digitalActionData.bState;
+//	digital_action["active"] = call_data->digitalAction.digitalActionData.bActive;
+//	// Get the analog action data
+//	Dictionary analog_action;
+//	analog_action["mode"] = call_data->analogAction.analogActionData.eMode;
+//	analog_action["x"] = call_data->analogAction.analogActionData.x;
+//	analog_action["y"] = call_data->analogAction.analogActionData.y;
+//	analog_action["active"] = call_data->analogAction.analogActionData.bActive;
+//	// Split into a dictionary since Godot won't allow more than 6 arguments sent back
+//	Dictionary action_information;
+//	action_information["analog_action_handle"] = analog_handle;
+//	action_information["analog_action_data"] = analog_action;
+//	action_information["digital_action_handle"] = digital_handle;
+//	action_information["digital_action_data"] = digital_action;
+//	emit_signal("input_action_event", input_handle, event_type, action_information);
 //}
 
 //! Purpose: called when a new controller has been connected, will fire once per controller if multiple new controllers connect in the same frame
@@ -9254,7 +9768,7 @@ void Steam::_input_device_disconnected(SteamInputDeviceDisconnected_t* call_data
 void Steam::_input_configuration_loaded(SteamInputConfigurationLoaded_t* call_data){
 	uint32_t app_id = call_data->m_unAppID;
 	uint64_t device_handle = call_data->m_ulDeviceHandle;
-	// Split into a dictionary since Godot won't allow more than 6 arguments
+	// Split into a dictionary since Godot won't allow more than 6 arguments sent back
 	Dictionary config_data;
 	uint64_t mapping_creator = call_data->m_ulMappingCreator.ConvertToUint64();
 	config_data["mapping_creator"] = mapping_creator;
@@ -9264,7 +9778,6 @@ void Steam::_input_configuration_loaded(SteamInputConfigurationLoaded_t* call_da
 	config_data["uses_gamepad_api"] = call_data->m_bUsesGamepadAPI;						// bool
 	emit_signal("input_configuration_loaded", app_id, device_handle, config_data);
 }
-
 
 // INVENTORY CALLBACKS //////////////////////////
 //
@@ -9307,7 +9820,6 @@ void Steam::_inventory_result_ready(SteamInventoryResultReady_t *call_data){
 	inventory_handle = call_data->m_handle;
 	emit_signal("inventory_result_ready", result, inventory_handle);
 }
-
 
 // MATCHMAKING CALLBACKS ////////////////////////
 //
@@ -9365,16 +9877,7 @@ void Steam::_lobby_data_update(LobbyDataUpdate_t* call_data){
 	uint64_t member_id = call_data->m_ulSteamIDMember;
 	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
 	uint8 success = call_data->m_bSuccess;
-	char key = '\0';
-	// Is the lobby
-	if(member_id == lobby_id){
-		SteamMatchmaking()->GetLobbyData(call_data->m_ulSteamIDLobby, &key);
-	}
-	// Is a user in the lobby
-	else{
-		SteamMatchmaking()->GetLobbyMemberData(call_data->m_ulSteamIDLobby, call_data->m_ulSteamIDMember, &key);
-	}
-	emit_signal("lobby_data_update", success, lobby_id, member_id, key);
+	emit_signal("lobby_data_update", success, lobby_id, member_id);
 }
 
 //! Posted if a user is forcefully removed from a lobby; can occur if a user loses connection to Steam.
@@ -9552,6 +10055,17 @@ void Steam::_network_authentication_status(SteamNetAuthenticationStatus_t* call_
 	delete[] debug_message;
 }
 
+// A struct used to describe a "fake IP" we have been assigned to use as an identifier.
+// This callback is posted when ISteamNetworkingSoockets::BeginAsyncRequestFakeIP completes.
+void Steam::_fake_ip_result(SteamNetworkingFakeIPResult_t* call_data){
+	int result = call_data->m_eResult;
+	// Pass this new networking identity to the map
+	identities["fake_ip_identity"] = call_data->m_identity;
+	uint32 ip = call_data->m_unIP;
+	uint16 ports = call_data->m_unPorts[8];
+	emit_signal("fake_ip_result", result, "fake_ip_identity", ip, ports);
+}
+
 // NETWORKING UTILS CALLBACKS ///////////////////
 //
 //! A struct used to describe our readiness to use the relay network.
@@ -9629,217 +10143,6 @@ void Steam::_screenshot_requested(ScreenshotRequested_t* call_data){
 	emit_signal("screenshot_requested");
 }
 
-// SERVER CALLBACKS /////////////////////////////
-//
-// Logging the game server onto Steam
-void Steam::_server_Connect_Failure(SteamServerConnectFailure_t* serverData){
-	int result = serverData->m_eResult;
-	bool retrying = serverData->m_bStillRetrying;
-	emit_signal("server_failure", result, retrying);
-}
-
-// Server has connected to the Steam back-end; serverData has no fields.
-void Steam::_server_Connected(SteamServersConnected_t* serverData){
-	emit_signal("server_connected");
-}
-
-// Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching SteamServersConnected_t has been posted.
-void Steam::_server_Disconnected(SteamServersDisconnected_t* serverData){
-	int result = serverData->m_eResult;
-	emit_signal("server_disconnected", result);
-}
-
-// Client has been approved to connect to this game server.
-void Steam::_client_Approved(GSClientApprove_t* clientData){
-	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
-	uint64_t ownerID = clientData->m_OwnerSteamID.ConvertToUint64();
-	emit_signal("client_approved", steam_id, ownerID);
-}
-
-// Client has been denied to connection to this game server.
-void Steam::_client_Denied(GSClientDeny_t* clientData){
-	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
-	int reason;
-	// Convert reason.
-	if(clientData->m_eDenyReason == k_EDenyInvalid){
-		reason = DENY_INVALID;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyInvalidVersion){
-		reason = DENY_INVALID_VERSION;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyGeneric){
-		reason = DENY_GENERIC;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyNotLoggedOn){
-		reason = DENY_NOT_LOGGED_ON;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyNoLicense){
-		reason = DENY_NO_LICENSE;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyCheater){
-		reason = DENY_CHEATER;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyLoggedInElseWhere){
-		reason = DENY_LOGGED_IN_ELSEWHERE;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyUnknownText){
-		reason = DENY_UNKNOWN_TEXT;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyIncompatibleAnticheat){
-		reason = DENY_INCOMPATIBLE_ANTI_CHEAT;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyMemoryCorruption){
-		reason = DENY_MEMORY_CORRUPTION;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyIncompatibleSoftware){
-		reason = DENY_INCOMPATIBLE_SOFTWARE;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamConnectionLost){
-		reason = DENY_STEAM_CONNECTION_LOST;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamConnectionError){
-		reason = DENY_STEAM_CONNECTION_ERROR;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamResponseTimedOut){
-		reason = DENY_STEAM_RESPONSE_TIMED_OUT;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamValidationStalled){
-		reason = DENY_STEAM_VALIDATION_STALLED;
-	}
-	else{
-		reason = DENY_STEAM_OWNER_LEFT_GUEST_USER;
-	}
-	emit_signal("client_denied", steam_id, reason);
-}
-
-// Request the game server should kick the user.
-void Steam::_client_Kick(GSClientKick_t* clientData){
-	uint64_t steam_id = clientData->m_SteamID.ConvertToUint64();
-	int reason;
-	// Convert reason.
-	if(clientData->m_eDenyReason == k_EDenyInvalid){
-		reason = DENY_INVALID;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyInvalidVersion){
-		reason = DENY_INVALID_VERSION;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyGeneric){
-		reason = DENY_GENERIC;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyNotLoggedOn){
-		reason = DENY_NOT_LOGGED_ON;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyNoLicense){
-		reason = DENY_NO_LICENSE;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyCheater){
-		reason = DENY_CHEATER;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyLoggedInElseWhere){
-		reason = DENY_LOGGED_IN_ELSEWHERE;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyUnknownText){
-		reason = DENY_UNKNOWN_TEXT;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyIncompatibleAnticheat){
-		reason = DENY_INCOMPATIBLE_ANTI_CHEAT;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyMemoryCorruption){
-		reason = DENY_MEMORY_CORRUPTION;
-	}
-	else if(clientData->m_eDenyReason == k_EDenyIncompatibleSoftware){
-		reason = DENY_INCOMPATIBLE_SOFTWARE;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamConnectionLost){
-		reason = DENY_STEAM_CONNECTION_LOST;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamConnectionError){
-		reason = DENY_STEAM_CONNECTION_ERROR;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamResponseTimedOut){
-		reason = DENY_STEAM_RESPONSE_TIMED_OUT;
-	}
-	else if(clientData->m_eDenyReason == k_EDenySteamValidationStalled){
-		reason = DENY_STEAM_VALIDATION_STALLED;
-	}
-	else{
-		reason = DENY_STEAM_OWNER_LEFT_GUEST_USER;
-	}
-	emit_signal("client_kick", steam_id, reason);
-}
-
-// Received when the game server requests to be displayed as secure (VAC protected).
-// m_bSecure is true if the game server should display itself as secure to users, false otherwise.
-void Steam::_policy_Response(GSPolicyResponse_t* policyData){
-	uint8 secure = policyData->m_bSecure;
-	emit_signal("server_secure", secure);
-}
-
-// Sent as a reply to RequestUserGroupStatus().
-void Steam::_client_Group_Status(GSClientGroupStatus_t* clientData){
-	uint64_t steam_id = clientData->m_SteamIDUser.ConvertToUint64();
-	uint64_t group_id = clientData->m_SteamIDGroup.ConvertToUint64();
-	bool member = clientData->m_bMember;
-	bool officer = clientData->m_bOfficer;
-	emit_signal("group_status", steam_id, group_id, member, officer);
-}
-
-// Sent as a reply to AssociateWithClan().
-void Steam::_associate_Clan(AssociateWithClanResult_t* clanData){
-	int result;
-	if(clanData->m_eResult == k_EResultOK){
-		result = RESULT_OK;
-	}
-	else{
-		result = RESULT_FAIL;
-	}
-	emit_signal("clan_associate", result);
-}
-
-// Sent as a reply to ComputeNewPlayerCompatibility().
-void Steam::_player_Compat(ComputeNewPlayerCompatibilityResult_t* playerData){
-	int result;
-	if(playerData->m_eResult == k_EResultNoConnection){
-		result = RESULT_NO_CONNECTION;
-	}
-	else if(playerData->m_eResult == k_EResultTimeout){
-		result = RESULT_TIMEOUT;
-	}
-	else if(playerData->m_eResult == k_EResultFail){
-		result = RESULT_FAIL;
-	}
-	else{
-		result = RESULT_OK;
-	}
-	int playersDontLikeCandidate = playerData->m_cPlayersThatDontLikeCandidate;
-	int playersCandidateDoesntLike = playerData->m_cPlayersThatCandidateDoesntLike;
-	int clanPlayersDontLikeCandidate = playerData->m_cClanPlayersThatDontLikeCandidate;
-	uint64_t steam_id = playerData->m_SteamIDCandidate.ConvertToUint64();
-	emit_signal("player_compatibility", result, playersDontLikeCandidate, playersCandidateDoesntLike, clanPlayersDontLikeCandidate, steam_id);
-}
-
-// SERVER STATS CALLBACKS ///////////////////////
-//
-// Result when getting the latests stats and achievements for a user from the server.
-void Steam::_stat_received(GSStatsReceived_t* callData, bool bioFailure){
-	EResult result = callData->m_eResult;
-	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("stat_received", result, steam_id);
-}
-
-// Result of a request to store the user stats.
-void Steam::_stats_stored(GSStatsStored_t* callData){
-	EResult result = callData->m_eResult;
-	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("stats_stored", result, steam_id);
-}
-
-// Callback indicating that a user's stats have been unloaded.
-void Steam::_stats_unloaded(GSStatsUnloaded_t* callData){
-	uint64_t steam_id = callData->m_steamIDUser.ConvertToUint64();
-	emit_signal("stats_unloaded", steam_id);
-}
-
 // UGC CALLBACKS ////////////////////////////////
 //
 //! Called when a workshop item has been downloaded.
@@ -9859,7 +10162,7 @@ void Steam::_item_installed(ItemInstalled_t* call_data){
 
 //! Purpose: signal that the list of subscribed items changed.
 void Steam::_user_subscribed_items_list_changed(UserSubscribedItemsListChanged_t* call_data){
-	int app_id = call_data->m_nAppID;
+	uint32 app_id = call_data->m_nAppID;
 	emit_signal("user_subscribed_items_list_changed", app_id);
 }
 
@@ -9977,7 +10280,6 @@ void Steam::_user_stats_unloaded(UserStatsUnloaded_t* call_data){
 	emit_signal("user_stats_unloaded", user);
 }
 
-
 // UTILITY CALLBACKS ////////////////////////////
 //
 //! Called when the big picture gamepad text input has been closed.
@@ -10027,31 +10329,19 @@ void Steam::_floating_gamepad_text_input_dismissed(FloatingGamepadTextInputDismi
 	emit_signal("floating_gamepad_text_input_dismissed");
 }
 
-
 // VIDEO CALLBACKS //////////////////////////////
 //
-// Automatically called whenever the user starts broadcasting.	// In documentation but not in actual SDK?
-//void Steam::_broadcast_upload_start(BroadcastUploadStart_t* call_data){
-//	emit_signal("broadcast_upload_start");
-//}
-
-// Automatically called whenever the user stops broadcasting.	// In documentation but not in actual SDK?
-//void Steam::_broadcast_upload_stop(BroadcastUploadStop_t* call_data){
-//	int result = call_data->m_eResult;
-//	emit_signal("broadcast_upload_stop", result);
-//}
-
 //! Triggered when the OPF Details for 360 video playback are retrieved. After receiving this you can use GetOPFStringForApp to access the OPF details.
 void Steam::_get_opf_settings_result(GetOPFSettingsResult_t* call_data){
 	int result = call_data->m_eResult;
-	int app_id = call_data->m_unVideoAppID;
+	uint32 app_id = call_data->m_unVideoAppID;
 	emit_signal("broadcast_upload_stop", result, app_id);
 }
 
 //! Provides the result of a call to GetVideoURL.
 void Steam::_get_video_result(GetVideoURLResult_t* call_data){
 	int result = call_data->m_eResult;
-	int app_id = call_data->m_unVideoAppID;
+	uint32 app_id = call_data->m_unVideoAppID;
 	String url = call_data->m_rgchURL;
 	emit_signal("get_video_result", result, app_id, url);
 }
@@ -10071,7 +10361,6 @@ void Steam::steamworksError(const String& failed_signal){
 	emit_signal("steamworks_error", failed_signal, "io failure");
 }
 
-
 // FRIENDS CALL RESULTS /////////////////////////
 //
 //! Marks the return of a request officer list call.
@@ -10082,7 +10371,7 @@ void Steam::_request_clan_officer_list(ClanOfficerListResponse_t *call_data, boo
 	else{
 		Array officers_list;
 		String message;
-		if(!call_data->m_bSuccess || io_failure){
+		if(!call_data->m_bSuccess){
 			message = "Clan officer list response failed.";
 		}
 		else{
@@ -10110,11 +10399,11 @@ void Steam::_enumerate_following_list(FriendsEnumerateFollowingList_t *call_data
 	else{
 		Array following;
 		String message;
-		int followersParsed = 0;
-		if(call_data->m_eResult != k_EResultOK || io_failure){
+		if(call_data->m_eResult != k_EResultOK){
 			message = "Failed to acquire list.";
 		}
 		else{
+			int followers_parsed = 0;
 			message = "Retrieved " + itos(call_data->m_nResultsReturned) + " of " + itos(call_data->m_nTotalResultCount) + " people followed.";
 			int32 count = call_data->m_nTotalResultCount;
 			for(int i = 0; i < count; i++){
@@ -10125,9 +10414,9 @@ void Steam::_enumerate_following_list(FriendsEnumerateFollowingList_t *call_data
 				follow["id"] = id;
 				following.append(follow);
 			}
-			followersParsed += call_data->m_nResultsReturned;
+			followers_parsed += call_data->m_nResultsReturned;
 			// There are more followers so make another callback.
-			if(followersParsed < count){
+			if(followers_parsed < count){
 				SteamAPICall_t api_call = SteamFriends()->EnumerateFollowingList(call_data->m_nResultsReturned);
 				callResultEnumerateFollowingList.Set(api_call, this, &Steam::_enumerate_following_list);
 			}
@@ -10161,7 +10450,6 @@ void Steam::_is_following(FriendsIsFollowing_t *call_data, bool io_failure){
 		emit_signal("is_following", result, steam_id, following);
 	}
 }
-
 
 // INVENTORY CALL RESULTS ///////////////////////
 //
@@ -10224,7 +10512,6 @@ void Steam::_inventory_request_prices_result(SteamInventoryRequestPricesResult_t
 		emit_signal("inventory_request_prices_result", result, currency);
 	}
 }
-
 
 // MATCHMAKING CALL RESULTS /////////////////////
 //
@@ -10593,7 +10880,7 @@ void Steam::_workshop_eula_status(WorkshopEULAStatus_t* call_data, bool io_failu
 	}
 	else{
 		int result = call_data->m_eResult;
-		int app_id = call_data->m_nAppID;
+		uint32 app_id = call_data->m_nAppID;
 		// Slim down signal arguments since Godot seems to limit them to six max
 		Dictionary eula_data;
 		eula_data["version"] = call_data->m_unVersion;			// int
@@ -10604,7 +10891,6 @@ void Steam::_workshop_eula_status(WorkshopEULAStatus_t* call_data, bool io_failu
 	}
 }
 
-
 // USERS CALL RESULTS ///////////////////////////
 //
 //! Sent for games with enabled anti indulgence / duration control, for enabled users. Lets the game know whether persistent rewards or XP should be granted at normal rate, half rate, or zero rate.
@@ -10614,7 +10900,7 @@ void Steam::_duration_control(DurationControl_t* call_data, bool io_failure){
 	}
 	else{
 		int result = call_data->m_eResult;
-		int app_id = call_data->m_appid;
+		uint32 app_id = call_data->m_appid;
 		bool applicable = call_data->m_bApplicable;
 		int32 seconds_last = call_data->m_csecsLast5h;
 		int progress = call_data->m_progress;
@@ -10754,48 +11040,44 @@ void Steam::_leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_d
 		if(call_data->m_hSteamLeaderboard != leaderboard_handle){
 			message = "Leaderboard handle was incorrect";
 		}
-		if(!io_failure){
-			// Clear previous leaderboard entries
-			leaderboard_entries_array.clear();
-			// Create the entry pointer and details array
-			LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
-			PoolIntArray details;
-			int32 *details_pointer = NULL;
-			// Resize array
-			if(leaderboard_details_max > 0){
-				details.resize(leaderboard_details_max);
-				PoolIntArray::Write w = details.write();
-				details_pointer = w.ptr();
-				for(int i = 0; i < leaderboard_details_max; i++){
-					details_pointer[i] = 0;
-				}
+		// Clear previous leaderboard entries
+		leaderboard_entries_array.clear();
+		// Create the entry pointer and details array
+		LeaderboardEntry_t *entry = memnew(LeaderboardEntry_t);
+		PoolIntArray details;
+		int32 *details_pointer = NULL;
+		// Resize array
+		if(leaderboard_details_max > 0){
+			details.resize(leaderboard_details_max);
+			PoolIntArray::Write w = details.write();
+			details_pointer = w.ptr();
+			for(int i = 0; i < leaderboard_details_max; i++){
+				details_pointer[i] = 0;
 			}
-			// Loop through the entries and add them as dictionaries to the array
-			for(int i = 0; i < call_data->m_cEntryCount; i++){
-				if(SteamUserStats()->GetDownloadedLeaderboardEntry(call_data->m_hSteamLeaderboardEntries, i, entry, details_pointer, leaderboard_details_max)){
-					Dictionary entryDict;
-					entryDict["score"] = entry->m_nScore;
-					entryDict["steam_id"] = uint64_t(entry->m_steamIDUser.ConvertToUint64());
-					entryDict["global_rank"] = entry->m_nGlobalRank;
-					entryDict["ugc_handle"] = uint64_t(entry->m_hUGC);
-					if(leaderboard_details_max > 0){
-						PoolIntArray array;
-						array.resize(leaderboard_details_max);
-						PoolIntArray::Write w = array.write();
-						int32_t *ptr = w.ptr();
-						for(int j = 0; j < leaderboard_details_max; j++){
-							ptr[j] = details_pointer[j];
-						}
-						entryDict["details"] = array;
-					}
-					leaderboard_entries_array.append(entryDict);
-				}
-				message = "Leaderboard entries successfully retrieved";
-			}
-			memdelete(entry);
-		} else {
-			message = "There was an IO failure";
 		}
+		// Loop through the entries and add them as dictionaries to the array
+		for(int i = 0; i < call_data->m_cEntryCount; i++){
+			if(SteamUserStats()->GetDownloadedLeaderboardEntry(call_data->m_hSteamLeaderboardEntries, i, entry, details_pointer, leaderboard_details_max)){
+				Dictionary entryDict;
+				entryDict["score"] = entry->m_nScore;
+				entryDict["steam_id"] = uint64_t(entry->m_steamIDUser.ConvertToUint64());
+				entryDict["global_rank"] = entry->m_nGlobalRank;
+				entryDict["ugc_handle"] = uint64_t(entry->m_hUGC);
+				if(leaderboard_details_max > 0){
+					PoolIntArray array;
+					array.resize(leaderboard_details_max);
+					PoolIntArray::Write w = array.write();
+					int32_t *ptr = w.ptr();
+					for(int j = 0; j < leaderboard_details_max; j++){
+						ptr[j] = details_pointer[j];
+					}
+					entryDict["details"] = array;
+				}
+				leaderboard_entries_array.append(entryDict);
+			}
+			message = "Leaderboard entries successfully retrieved";
+		}
+		memdelete(entry);
 		// Emit the signal, with array, back
 		emit_signal("leaderboard_scores_downloaded", message, leaderboard_entries_array);
 	}
@@ -10911,331 +11193,396 @@ void Steam::_bind_methods(){
 	//
 	// STEAM MAIN BIND METHODS //////////////////
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
-	ClassDB::bind_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
+	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
 	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
 	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
-	ClassDB::bind_method("serverInit", &Steam::serverInit);
+	ClassDB::bind_method(D_METHOD("serverInit", "connect_data", "server_mode", "version_string"), &Steam::serverInit);
 	ClassDB::bind_method("serverReleaseCurrentThreadMemory", &Steam::serverReleaseCurrentThreadMemory);
 	ClassDB::bind_method("serverShutdown", &Steam::serverShutdown);
 
 	// APPS BIND METHODS ////////////////////////
 	ClassDB::bind_method("getAppBuildId", &Steam::getAppBuildId);
-	ClassDB::bind_method("getAppInstallDir", &Steam::getAppInstallDir);
+	ClassDB::bind_method(D_METHOD("getAppInstallDir", "app_id"), &Steam::getAppInstallDir);
 	ClassDB::bind_method("getAppOwner", &Steam::getAppOwner);
 	ClassDB::bind_method("getAvailableGameLanguages", &Steam::getAvailableGameLanguages);
 	ClassDB::bind_method("getCurrentBetaName", &Steam::getCurrentBetaName);
 	ClassDB::bind_method("getCurrentGameLanguage", &Steam::getCurrentGameLanguage);
 	ClassDB::bind_method("getDLCCount", &Steam::getDLCCount);
 	ClassDB::bind_method("getDLCDataByIndex", &Steam::getDLCDataByIndex);
-	ClassDB::bind_method("getDLCDownloadProgress", &Steam::getDLCDownloadProgress);
-	ClassDB::bind_method("getEarliestPurchaseUnixTime", &Steam::getEarliestPurchaseUnixTime);
-	ClassDB::bind_method("getFileDetails", &Steam::getFileDetails);
-	ClassDB::bind_method("getInstalledDepots", &Steam::getInstalledDepots);
-	ClassDB::bind_method("getLaunchQueryParam", &Steam::getLaunchQueryParam);
-	ClassDB::bind_method("installDLC", &Steam::installDLC);
-	ClassDB::bind_method("isAppInstalled", &Steam::isAppInstalled);
+	ClassDB::bind_method(D_METHOD("getDLCDownloadProgress", "dlc_id"), &Steam::getDLCDownloadProgress);
+	ClassDB::bind_method(D_METHOD("getEarliestPurchaseUnixTime", "app_id"), &Steam::getEarliestPurchaseUnixTime);
+	ClassDB::bind_method(D_METHOD("getFileDetails", "filename"), &Steam::getFileDetails);
+	ClassDB::bind_method(D_METHOD("getInstalledDepots", "app_id"), &Steam::getInstalledDepots);
+	ClassDB::bind_method(D_METHOD("getLaunchQueryParam", "key"), &Steam::getLaunchQueryParam);
+	ClassDB::bind_method(D_METHOD("installDLC", "dlc_id"), &Steam::installDLC);
+	ClassDB::bind_method(D_METHOD("isAppInstalled", "app_id"), &Steam::isAppInstalled);
 	ClassDB::bind_method("isCybercafe", &Steam::isCybercafe);
-	ClassDB::bind_method("isDLCInstalled", &Steam::isDLCInstalled);
+	ClassDB::bind_method(D_METHOD("isDLCInstalled", "dlc_id"), &Steam::isDLCInstalled);
 	ClassDB::bind_method("isLowViolence", &Steam::isLowViolence);
 	ClassDB::bind_method("isSubscribed", &Steam::isSubscribed);
-	ClassDB::bind_method("isSubscribedApp", &Steam::isSubscribedApp);
+	ClassDB::bind_method(D_METHOD("isSubscribedApp", "app_id"), &Steam::isSubscribedApp);
 	ClassDB::bind_method("isSubscribedFromFamilySharing", &Steam::isSubscribedFromFamilySharing);
 	ClassDB::bind_method("isSubscribedFromFreeWeekend", &Steam::isSubscribedFromFreeWeekend);
 	ClassDB::bind_method("isTimedTrial", &Steam::isTimedTrial);
 	ClassDB::bind_method("isVACBanned", &Steam::isVACBanned);
-	ClassDB::bind_method("markContentCorrupt", &Steam::markContentCorrupt);
+	ClassDB::bind_method(D_METHOD("markContentCorrupt", "missing_files_only"), &Steam::markContentCorrupt);
 	ClassDB::bind_method("requestAllProofOfPurchaseKeys", &Steam::requestAllProofOfPurchaseKeys);
-	ClassDB::bind_method("requestAppProofOfPurchaseKey", &Steam::requestAppProofOfPurchaseKey);
-	ClassDB::bind_method("uninstallDLC", &Steam::uninstallDLC);
+	ClassDB::bind_method(D_METHOD("requestAppProofOfPurchaseKey", "app_id"), &Steam::requestAppProofOfPurchaseKey);
+	ClassDB::bind_method(D_METHOD("uninstallDLC", "dlc_id"), &Steam::uninstallDLC);
 
 	// APP LIST BIND METHODS ////////////////////
 	ClassDB::bind_method("getNumInstalledApps", &Steam::getNumInstalledApps);
-	ClassDB::bind_method("getInstalledApps", &Steam::getInstalledApps);
-	ClassDB::bind_method("getAppName", &Steam::getAppName);
-	ClassDB::bind_method("getAppListInstallDir", &Steam::getAppInstallDir);
-	ClassDB::bind_method("getAppListBuildId", &Steam::getAppBuildId);
+	ClassDB::bind_method(D_METHOD("getInstalledApps", "max_app_ids"), &Steam::getInstalledApps);
+	ClassDB::bind_method(D_METHOD("getAppName", "app_id", "name_max"), &Steam::getAppName);
+	ClassDB::bind_method(D_METHOD("getAppListInstallDir", "app_id", "name_max"), &Steam::getAppListInstallDir);
+	ClassDB::bind_method(D_METHOD("getAppListBuildId", "app_id"), &Steam::getAppListInstallDir);
 
 	// FRIENDS BIND METHODS /////////////////////
-	ClassDB::bind_method("getPersonaName", &Steam::getPersonaName);
-	ClassDB::bind_method("setPersonaName", &Steam::setPersonaName);
-	ClassDB::bind_method("getPersonaState", &Steam::getPersonaState);
-	ClassDB::bind_method("getFriendCount", &Steam::getFriendCount);
-	ClassDB::bind_method("getFriendByIndex", &Steam::getFriendByIndex);
-	ClassDB::bind_method("getFriendRelationship", &Steam::getFriendRelationship);
-	ClassDB::bind_method("getFriendPersonaState", &Steam::getFriendPersonaState);
-	ClassDB::bind_method("getFriendPersonaName", &Steam::getFriendPersonaName);
-	ClassDB::bind_method("getFriendGamePlayed", &Steam::getFriendGamePlayed);
-	ClassDB::bind_method("getFriendPersonaNameHistory", &Steam::getFriendPersonaNameHistory);
-	ClassDB::bind_method("getFriendSteamLevel", &Steam::getFriendSteamLevel);
-	ClassDB::bind_method("getPlayerNickname", &Steam::getPlayerNickname);
-	ClassDB::bind_method("hasFriend", &Steam::hasFriend);
-	ClassDB::bind_method("downloadClanActivityCounts", &Steam::downloadClanActivityCounts);
-	ClassDB::bind_method("getFriendCountFromSource", &Steam::getFriendCountFromSource);
-	ClassDB::bind_method("getFriendFromSourceByIndex", &Steam::getFriendFromSourceByIndex);
-	ClassDB::bind_method("isUserInSource", &Steam::isUserInSource);
-	ClassDB::bind_method("setInGameVoiceSpeaking", &Steam::setInGameVoiceSpeaking);
 	ClassDB::bind_method(D_METHOD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
+	ClassDB::bind_method(D_METHOD("activateGameOverlayInviteDialogConnectString", "connect_string"), &Steam::activateGameOverlayInviteDialogConnectString);
+	ClassDB::bind_method(D_METHOD("activateGameOverlayToStore", "app_id"), &Steam::activateGameOverlayToStore, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("activateGameOverlayToUser", "type", "steam_id"), &Steam::activateGameOverlayToUser, DEFVAL(""), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("activateGameOverlayToWebPage", "url"), &Steam::activateGameOverlayToWebPage);
-	ClassDB::bind_method(D_METHOD("activateGameOverlayToStore", "app_id"), &Steam::activateGameOverlayToStore, DEFVAL(0));
-	ClassDB::bind_method(D_METHOD("setPlayedWith", "steam_id"), &Steam::setPlayedWith);
-	ClassDB::bind_method(D_METHOD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
-	ClassDB::bind_method("activateGameOverlayInviteDialogConnectString", &Steam::activateGameOverlayInviteDialogConnectString);
-	ClassDB::bind_method("getSmallFriendAvatar", &Steam::getSmallFriendAvatar);
-	ClassDB::bind_method("getMediumFriendAvatar", &Steam::getMediumFriendAvatar);
-	ClassDB::bind_method("getLargeFriendAvatar", &Steam::getLargeFriendAvatar);
-	ClassDB::bind_method("requestUserInformation", &Steam::requestUserInformation);
-	ClassDB::bind_method("requestClanOfficerList", &Steam::requestClanOfficerList);
-	ClassDB::bind_method("getClanOwner", &Steam::getClanOwner);
-	ClassDB::bind_method("getClanOfficerCount", &Steam::getClanOfficerCount);
-	ClassDB::bind_method("getClanOfficerByIndex", &Steam::getClanOfficerByIndex);
-	ClassDB::bind_method("getUserRestrictions", &Steam::getUserRestrictions);
-	ClassDB::bind_method("setRichPresence", &Steam::setRichPresence);
 	ClassDB::bind_method("clearRichPresence", &Steam::clearRichPresence);
-	ClassDB::bind_method("getFriendRichPresence", &Steam::getFriendRichPresence);
-	ClassDB::bind_method("getFriendRichPresenceKeyCount", &Steam::getFriendRichPresenceKeyCount);
-	ClassDB::bind_method("getFriendRichPresenceKeyByIndex", &Steam::getFriendRichPresenceKeyByIndex);
-	ClassDB::bind_method("requestFriendRichPresence", &Steam::requestFriendRichPresence);
-	ClassDB::bind_method("inviteUserToGame", &Steam::inviteUserToGame);
-	ClassDB::bind_method("joinClanChatRoom", &Steam::joinClanChatRoom);
-	ClassDB::bind_method("leaveClanChatRoom", &Steam::leaveClanChatRoom);
-	ClassDB::bind_method("getClanChatMemberCount", &Steam::getClanChatMemberCount);
-	ClassDB::bind_method("getChatMemberByIndex", &Steam::getChatMemberByIndex);
-	ClassDB::bind_method("sendClanChatMessage", &Steam::sendClanChatMessage);
-	ClassDB::bind_method("isClanChatAdmin", &Steam::isClanChatAdmin);
-	ClassDB::bind_method("isClanChatWindowOpenInSteam", &Steam::isClanChatWindowOpenInSteam);
-	ClassDB::bind_method("openClanChatWindowInSteam", &Steam::openClanChatWindowInSteam);
-	ClassDB::bind_method("closeClanChatWindowInSteam", &Steam::closeClanChatWindowInSteam);
-	ClassDB::bind_method("setListenForFriendsMessages", &Steam::setListenForFriendsMessages);
-	ClassDB::bind_method("replyToFriendMessage", &Steam::replyToFriendMessage);
-	ClassDB::bind_method("getFollowerCount", &Steam::getFollowerCount);
-	ClassDB::bind_method("isFollowing", &Steam::isFollowing);
-	ClassDB::bind_method("enumerateFollowingList", &Steam::enumerateFollowingList);
-	ClassDB::bind_method("isClanPublic", &Steam::isClanPublic);
-	ClassDB::bind_method("isClanOfficialGameGroup", &Steam::isClanOfficialGameGroup);
-	ClassDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
+	ClassDB::bind_method(D_METHOD("closeClanChatWindowInSteam", "chat_id"), &Steam::closeClanChatWindowInSteam);
+	ClassDB::bind_method(D_METHOD("downloadClanActivityCounts", "chat_id", "clans_to_request"), &Steam::downloadClanActivityCounts);
+	ClassDB::bind_method(D_METHOD("enumerateFollowingList", "start_index"), &Steam::enumerateFollowingList);
+	ClassDB::bind_method(D_METHOD("getChatMemberByIndex", "clan_id", "user"), &Steam::getChatMemberByIndex);
+	ClassDB::bind_method(D_METHOD("getClanActivityCounts", "clan_id"), &Steam::getClanActivityCounts);
+	ClassDB::bind_method(D_METHOD("getClanByIndex", "clan"), &Steam::getClanByIndex);
+	ClassDB::bind_method(D_METHOD("getClanChatMemberCount", "clan_id"), &Steam::getClanChatMemberCount);
+	ClassDB::bind_method(D_METHOD("getClanChatMessage", "chat_id", "message"), &Steam::getClanChatMessage);
+	ClassDB::bind_method("getClanCount", &Steam::getClanCount);
+	ClassDB::bind_method(D_METHOD("getClanName", "clan_id"), &Steam::getClanName);
+	ClassDB::bind_method(D_METHOD("getClanOfficerByIndex", "clan_id", "officer"), &Steam::getClanOfficerByIndex);
+	ClassDB::bind_method(D_METHOD("getClanOfficerCount", "clan_id"), &Steam::getClanOfficerCount);
+	ClassDB::bind_method(D_METHOD("getClanOwner", "clan_id"), &Steam::getClanOwner);
+	ClassDB::bind_method(D_METHOD("getClanTag", "clan_id"), &Steam::getClanTag);
+	ClassDB::bind_method(D_METHOD("getCoplayFriend", "friend_number"), &Steam::getCoplayFriend);
+	ClassDB::bind_method("getCoplayFriendCount", &Steam::getCoplayFriendCount);
+	ClassDB::bind_method(D_METHOD("getFollowerCount", "steam_id"), &Steam::getFollowerCount);
+	ClassDB::bind_method(D_METHOD("getFriendByIndex", "friend_number", "friend_flags"), &Steam::getFriendByIndex);
+	ClassDB::bind_method(D_METHOD("getFriendCoplayGame", "friend_id"), &Steam::getFriendCoplayGame);
+	ClassDB::bind_method(D_METHOD("getFriendCoplayTime", "friend_id"), &Steam::getFriendCoplayTime);
+	ClassDB::bind_method("getFriendCount", &Steam::getFriendCount);
+	ClassDB::bind_method(D_METHOD("getFriendCountFromSource", "source_id"), &Steam::getFriendCountFromSource);
+	ClassDB::bind_method(D_METHOD("getFriendFromSourceByIndex", "source_id", "friend_number"), &Steam::getFriendFromSourceByIndex);
+	ClassDB::bind_method(D_METHOD("getFriendGamePlayed", "steam_id"), &Steam::getFriendGamePlayed);
+	ClassDB::bind_method(D_METHOD("getFriendMessage", "friend_id", "message"), &Steam::getFriendMessage);
+	ClassDB::bind_method(D_METHOD("getFriendPersonaName", "steam_id"), &Steam::getFriendPersonaName);	
+	ClassDB::bind_method(D_METHOD("getFriendPersonaNameHistory", "steam_id", "name_history"), &Steam::getFriendPersonaNameHistory);
+	ClassDB::bind_method(D_METHOD("getFriendPersonaState", "steam_id"), &Steam::getFriendPersonaState);
+	ClassDB::bind_method(D_METHOD("getFriendRelationship", "steam_id"), &Steam::getFriendRelationship);
+	ClassDB::bind_method(D_METHOD("getFriendRichPresence", "friend_id", "key"), &Steam::getFriendRichPresence);
+	ClassDB::bind_method(D_METHOD("getFriendRichPresenceKeyCount", "friend_id"), &Steam::getFriendRichPresenceKeyCount);
+	ClassDB::bind_method(D_METHOD("getFriendRichPresenceKeyByIndex", "friend_id", "key"), &Steam::getFriendRichPresenceKeyByIndex);
+	ClassDB::bind_method("getFriendsGroupCount", &Steam::getFriendsGroupCount);
+	ClassDB::bind_method(D_METHOD("getFriendsGroupIDByIndex", "friend_group"), &Steam::getFriendsGroupIDByIndex);
+	ClassDB::bind_method(D_METHOD("getFriendsGroupMembersCount", "friend_group"), &Steam::getFriendsGroupMembersCount);
+	ClassDB::bind_method(D_METHOD("getFriendsGroupMembersList", "friend_group", "member_count"), &Steam::getFriendsGroupMembersList);
+	ClassDB::bind_method(D_METHOD("getFriendsGroupName", "friend_group"), &Steam::getFriendsGroupName);
+	ClassDB::bind_method(D_METHOD("getFriendSteamLevel", "steam_id"), &Steam::getFriendSteamLevel);
+	ClassDB::bind_method(D_METHOD("getLargeFriendAvatar", "steam_id"), &Steam::getLargeFriendAvatar);
+	ClassDB::bind_method(D_METHOD("getMediumFriendAvatar", "steam_id"), &Steam::getMediumFriendAvatar);
+	ClassDB::bind_method("getPersonaName", &Steam::getPersonaName);
+	ClassDB::bind_method("getPersonaState", &Steam::getPersonaState);
 	ClassDB::bind_method(D_METHOD("getPlayerAvatar", "size", "steam_id"), &Steam::getPlayerAvatar, DEFVAL(2), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("getPlayerNickname", "steam_id"), &Steam::getPlayerNickname);
+	ClassDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
+	ClassDB::bind_method(D_METHOD("getSmallFriendAvatar", "steam_id"), &Steam::getSmallFriendAvatar);
 	ClassDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
-	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
+	ClassDB::bind_method("getUserRestrictions", &Steam::getUserRestrictions);
 	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
-	ClassDB::bind_method("registerProtocolInOverlayBrowser", &Steam::registerProtocolInOverlayBrowser);
+	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
+	ClassDB::bind_method(D_METHOD("hasFriend", "steam_id", "friend_flags"), &Steam::hasFriend);
+	ClassDB::bind_method(D_METHOD("inviteUserToGame", "friend_id", "connect_string"), &Steam::inviteUserToGame);
+	ClassDB::bind_method(D_METHOD("isClanChatAdmin", "chat_id", "steam_id"), &Steam::isClanChatAdmin);
+	ClassDB::bind_method(D_METHOD("isClanPublic", "clan_id"), &Steam::isClanPublic);
+	ClassDB::bind_method(D_METHOD("isClanOfficialGameGroup", "clan_id"), &Steam::isClanOfficialGameGroup);
+	ClassDB::bind_method(D_METHOD("isClanChatWindowOpenInSteam", "chat_id"), &Steam::isClanChatWindowOpenInSteam);
+	ClassDB::bind_method(D_METHOD("isFollowing", "steam_id"), &Steam::isFollowing);
+	ClassDB::bind_method(D_METHOD("isUserInSource", "steam_id", "source_id"), &Steam::isUserInSource);
+	ClassDB::bind_method(D_METHOD("joinClanChatRoom", "clan_id"), &Steam::joinClanChatRoom);
+	ClassDB::bind_method(D_METHOD("leaveClanChatRoom", "clan_id"), &Steam::leaveClanChatRoom);
+	ClassDB::bind_method(D_METHOD("openClanChatWindowInSteam", "chat_id"), &Steam::openClanChatWindowInSteam);
+	ClassDB::bind_method(D_METHOD("registerProtocolInOverlayBrowser", "protocol"), &Steam::registerProtocolInOverlayBrowser);
+	ClassDB::bind_method(D_METHOD("replyToFriendMessage", "steam_id", "message"), &Steam::replyToFriendMessage);
+	ClassDB::bind_method(D_METHOD("requestClanOfficerList", "clan_id"), &Steam::requestClanOfficerList);
+	ClassDB::bind_method(D_METHOD("requestFriendRichPresence", "friend_id"), &Steam::requestFriendRichPresence);
+	ClassDB::bind_method(D_METHOD("requestUserInformation", "steam_id", "require_name_only"), &Steam::requestUserInformation);
+	ClassDB::bind_method(D_METHOD("sendClanChatMessage", "chat_id", "text"), &Steam::sendClanChatMessage);
+	ClassDB::bind_method(D_METHOD("setInGameVoiceSpeaking", "steam_id", "speaking"), &Steam::setInGameVoiceSpeaking);
+	ClassDB::bind_method(D_METHOD("setListenForFriendsMessages", "intercept"), &Steam::setListenForFriendsMessages);
+	ClassDB::bind_method(D_METHOD("setPersonaName", "name"), &Steam::setPersonaName);
+	ClassDB::bind_method(D_METHOD("setPlayedWith", "steam_id"), &Steam::setPlayedWith);	
+	ClassDB::bind_method(D_METHOD("setRichPresence", "key", "value"), &Steam::setRichPresence);
 	
 	// GAME SEARCH BIND METHODS /////////////////
-	ClassDB::bind_method("addGameSearchParams", &Steam::addGameSearchParams);
-	ClassDB::bind_method("searchForGameWithLobby", &Steam::searchForGameWithLobby);
-	ClassDB::bind_method("searchForGameSolo", &Steam::searchForGameSolo);
+	ClassDB::bind_method(D_METHOD("addGameSearchParams", "key", "values"), &Steam::addGameSearchParams);
+	ClassDB::bind_method(D_METHOD("searchForGameWithLobby", "lobby_id", "player_min", "player_max"), &Steam::searchForGameWithLobby);
+	ClassDB::bind_method(D_METHOD("searchForGameSolo", "player_min", "player_max"), &Steam::searchForGameSolo);
 	ClassDB::bind_method("acceptGame", &Steam::acceptGame);
 	ClassDB::bind_method("declineGame", &Steam::declineGame);
-	ClassDB::bind_method("retrieveConnectionDetails", &Steam::retrieveConnectionDetails);
+	ClassDB::bind_method(D_METHOD("retrieveConnectionDetails", "host_id"), &Steam::retrieveConnectionDetails);
 	ClassDB::bind_method("endGameSearch", &Steam::endGameSearch);
-	ClassDB::bind_method("setGameHostParams", &Steam::setGameHostParams);
-	ClassDB::bind_method("setConnectionDetails", &Steam::setConnectionDetails);
-	ClassDB::bind_method("requestPlayersForGame", &Steam::requestPlayersForGame);
-	ClassDB::bind_method("hostConfirmGameStart", &Steam::hostConfirmGameStart);
+	ClassDB::bind_method(D_METHOD("setGameHostParams", "key", "value"), &Steam::setGameHostParams);
+	ClassDB::bind_method(D_METHOD("setConnectionDetails", "details", "connection_details"), &Steam::setConnectionDetails);
+	ClassDB::bind_method(D_METHOD("requestPlayersForGame", "player_min", "player_max", "max_team_size"), &Steam::requestPlayersForGame);
+	ClassDB::bind_method(D_METHOD("hostConfirmGameStart", "game_id"), &Steam::hostConfirmGameStart);
 	ClassDB::bind_method("cancelRequestPlayersForGame", &Steam::cancelRequestPlayersForGame);
-	ClassDB::bind_method("submitPlayerResult", &Steam::submitPlayerResult);
-	ClassDB::bind_method("endGame", &Steam::endGame);
+	ClassDB::bind_method(D_METHOD("submitPlayerResult", "game_id", "player_id", "player_result"), &Steam::submitPlayerResult);
+	ClassDB::bind_method(D_METHOD("endGame", "game_id"), &Steam::endGame);
+
+	// GAME SERVER BIND METHODS /////////////////
+	ClassDB::bind_method(D_METHOD("initGameServer", "connect_data", "server_mode", "version_string"), &Steam::initGameServer);
+	ClassDB::bind_method(D_METHOD("setProduct", "product"), &Steam::setProduct);
+	ClassDB::bind_method(D_METHOD("setGameDescription", "description"), &Steam::setGameDescription);
+	ClassDB::bind_method(D_METHOD("setModDir", "mod_directory"), &Steam::setModDir);
+	ClassDB::bind_method(D_METHOD("setDedicatedServer", "dedicated"), &Steam::setDedicatedServer);
+	ClassDB::bind_method(D_METHOD("logOn", "token"), &Steam::logOn);
+	ClassDB::bind_method("logOnAnonymous", &Steam::logOnAnonymous);
+	ClassDB::bind_method("logOff", &Steam::logOff);
+	ClassDB::bind_method("serverLoggedOn", &Steam::serverLoggedOn);
+	ClassDB::bind_method("secure", &Steam::secure);
+	ClassDB::bind_method("getServerSteamID", &Steam::getServerSteamID);
+	ClassDB::bind_method("wasRestartRequested", &Steam::wasRestartRequested);
+	ClassDB::bind_method(D_METHOD("setMaxPlayerCount", "max"), &Steam::setMaxPlayerCount);
+	ClassDB::bind_method(D_METHOD("setBotPlayerCount", "bots"), &Steam::setBotPlayerCount);
+	ClassDB::bind_method(D_METHOD("setServerName", "name"), &Steam::setServerName);
+	ClassDB::bind_method(D_METHOD("setMapName", "map"), &Steam::setMapName);
+	ClassDB::bind_method(D_METHOD("setPasswordProtected", "password"), &Steam::setPasswordProtected);
+	ClassDB::bind_method(D_METHOD("setSpectatorPort", "port"), &Steam::setSpectatorPort);
+	ClassDB::bind_method(D_METHOD("setSpectatorServerName", "name"), &Steam::setSpectatorServerName);
+	ClassDB::bind_method("clearAllKeyValues", &Steam::clearAllKeyValues);
+	ClassDB::bind_method(D_METHOD("setKeyValue", "key", "value"), &Steam::setKeyValue);
+	ClassDB::bind_method(D_METHOD("setGameTags", "tags"), &Steam::setGameTags);
+	ClassDB::bind_method(D_METHOD("setGameData", "data"), &Steam::setGameData);
+	ClassDB::bind_method(D_METHOD("setRegion", "region"), &Steam::setRegion);
+	ClassDB::bind_method("getServerAuthSessionTicket", &Steam::getServerAuthSessionTicket);
+	ClassDB::bind_method(D_METHOD("beginServerAuthSession", "ticket", "ticket_size", "steam_id"), &Steam::beginServerAuthSession);
+	ClassDB::bind_method(D_METHOD("endServerAuthSession", "steam_id"), &Steam::endServerAuthSession);
+	ClassDB::bind_method(D_METHOD("cancelServerAuthTicket", "auth_ticket"), &Steam::cancelServerAuthTicket);
+	ClassDB::bind_method(D_METHOD("userHasLicenceForApp", "steam_id", "app_id"), &Steam::userHasLicenceForApp);
+	ClassDB::bind_method(D_METHOD("requestUserGroupStatus", "steam_id", "group_id"), &Steam::requestUserGroupStatus);
+	ClassDB::bind_method(D_METHOD("handleIncomingPacket", "packet", "ip", "port"), &Steam::handleIncomingPacket);
+	ClassDB::bind_method("getNextOutgoingPacket", &Steam::getNextOutgoingPacket);
+	ClassDB::bind_method(D_METHOD("setAdvertiseServerActive", "active"), &Steam::setAdvertiseServerActive);
+	ClassDB::bind_method(D_METHOD("associateWithClan", "clan_id"), &Steam::associateWithClan);
+	ClassDB::bind_method(D_METHOD("computeNewPlayerCompatibility", "steam_id"), &Steam::computeNewPlayerCompatibility);
+
+	// GAME SERVER STATS BIND METHODS ///////////
+	ClassDB::bind_method(D_METHOD("clearUserAchievement", "steam_id", "name"), &Steam::clearUserAchievement);
+	ClassDB::bind_method(D_METHOD("serverGetUserAchievement", "steam_id", "name"), &Steam::serverGetUserAchievement);
+	ClassDB::bind_method(D_METHOD("serverGetUserStatInt", "steam_id", "name"), &Steam::serverGetUserStatInt);
+	ClassDB::bind_method(D_METHOD("serverGetUserStatFloat", "steam_id", "name"), &Steam::serverGetUserStatFloat);
+	ClassDB::bind_method(D_METHOD("serverRequestUserStats", "steam_id"), &Steam::serverRequestUserStats);
+	ClassDB::bind_method(D_METHOD("setUserAchievement", "steam_id", "name"), &Steam::setUserAchievement);
+	ClassDB::bind_method(D_METHOD("setUserStatInt", "steam_id", "name", "stat"), &Steam::setUserStatInt);
+	ClassDB::bind_method(D_METHOD("setUserStatFloat", "steam_id", "name", "stat"), &Steam::setUserStatFloat);
+	ClassDB::bind_method(D_METHOD("storeUserStats", "steam_id"), &Steam::storeUserStats);
+	ClassDB::bind_method(D_METHOD("updateUserAvgRateStat", "steam_id", "name", "this_session", "session_length"), &Steam::updateUserAvgRateStat);
 
 	// HTML SURFACE BIND METHODS ////////////////
-	ClassDB::bind_method("addHeader", &Steam::addHeader);
-	ClassDB::bind_method("allowStartRequest", &Steam::allowStartRequest);
+	ClassDB::bind_method(D_METHOD("addHeader", "key", "value"), &Steam::addHeader);
+	ClassDB::bind_method(D_METHOD("allowStartRequest", "allowed"), &Steam::allowStartRequest);
 	ClassDB::bind_method("copyToClipboard", &Steam::copyToClipboard);
-	ClassDB::bind_method("createBrowser", &Steam::createBrowser);
-	ClassDB::bind_method("executeJavascript", &Steam::executeJavascript);
-	ClassDB::bind_method("find", &Steam::find);
-	ClassDB::bind_method("getLinkAtPosition", &Steam::getLinkAtPosition);
+	ClassDB::bind_method(D_METHOD("createBrowser", "user_agent", "user_css"), &Steam::createBrowser);
+	ClassDB::bind_method(D_METHOD("executeJavascript", "script"), &Steam::executeJavascript);
+	ClassDB::bind_method(D_METHOD("find", "search", "currently_in_find", "reverse"), &Steam::find);
+	ClassDB::bind_method(D_METHOD("getLinkAtPosition", "x", "y"), &Steam::getLinkAtPosition);
 	ClassDB::bind_method("goBack", &Steam::goBack);
 	ClassDB::bind_method("goForward", &Steam::goForward);
 	ClassDB::bind_method("htmlInit", &Steam::htmlInit);
-	ClassDB::bind_method("jsDialogResponse", &Steam::jsDialogResponse);
-	ClassDB::bind_method("keyChar", &Steam::keyChar);
-	ClassDB::bind_method("keyDown", &Steam::keyDown);
-	ClassDB::bind_method("keyUp", &Steam::keyUp);
-	ClassDB::bind_method("loadURL", &Steam::loadURL);
-	ClassDB::bind_method("mouseDoubleClick", &Steam::mouseDoubleClick);
-	ClassDB::bind_method("mouseDown", &Steam::mouseDown);
-	ClassDB::bind_method("mouseMove", &Steam::mouseMove);
-	ClassDB::bind_method("mouseUp", &Steam::mouseUp);
-	ClassDB::bind_method("mouseWheel", &Steam::mouseWheel);
+	ClassDB::bind_method(D_METHOD("jsDialogResponse", "result"), &Steam::jsDialogResponse);
+	ClassDB::bind_method(D_METHOD("keyChar", "unicode_char", "key_modifiers"), &Steam::keyChar);
+	ClassDB::bind_method(D_METHOD("keyDown", "native_key_code", "key_modifiers"), &Steam::keyDown);
+	ClassDB::bind_method(D_METHOD("keyUp", "native_key_code", "key_modifiers"), &Steam::keyUp);
+	ClassDB::bind_method(D_METHOD("loadURL", "url", "post_data"), &Steam::loadURL);
+	ClassDB::bind_method(D_METHOD("mouseDoubleClick", "mouse_button"), &Steam::mouseDoubleClick);
+	ClassDB::bind_method(D_METHOD("mouseDown", "mouse_button"), &Steam::mouseDown);
+	ClassDB::bind_method(D_METHOD("mouseMove", "x", "y"), &Steam::mouseMove);
+	ClassDB::bind_method(D_METHOD("mouseUp", "mouse_button"), &Steam::mouseUp);
+	ClassDB::bind_method(D_METHOD("mouseWheel", "delta"), &Steam::mouseWheel);
 	ClassDB::bind_method("pasteFromClipboard", &Steam::pasteFromClipboard);
 	ClassDB::bind_method("reload", &Steam::reload);
 	ClassDB::bind_method("removeBrowser", &Steam::removeBrowser);
-	ClassDB::bind_method("setBackgroundMode", &Steam::setBackgroundMode);
-	ClassDB::bind_method("setCookie", &Steam::setCookie);
-	ClassDB::bind_method("setHorizontalScroll", &Steam::setHorizontalScroll);
-	ClassDB::bind_method("setKeyFocus", &Steam::setKeyFocus);
-	ClassDB::bind_method("setPageScaleFactor", &Steam::setPageScaleFactor);
-	ClassDB::bind_method("setSize", &Steam::setSize);
-	ClassDB::bind_method("setVerticalScroll", &Steam::setVerticalScroll);
+	ClassDB::bind_method(D_METHOD("setBackgroundMode", "background_mode"), &Steam::setBackgroundMode);
+	ClassDB::bind_method(D_METHOD("setCookie", "hostname", "key", "value", "path", "expires", "secure", "http_only"), &Steam::setCookie);
+	ClassDB::bind_method(D_METHOD("setHorizontalScroll", "absolute_pixel_scroll"), &Steam::setHorizontalScroll);
+	ClassDB::bind_method(D_METHOD("setKeyFocus", "has_key_focus"), &Steam::setKeyFocus);
+	ClassDB::bind_method(D_METHOD("setPageScaleFactor", "zoom", "point_x", "point_y"), &Steam::setPageScaleFactor);
+	ClassDB::bind_method(D_METHOD("setSize", "width", "height"), &Steam::setSize);
+	ClassDB::bind_method(D_METHOD("setVerticalScroll", "absolute_pixel_scroll"), &Steam::setVerticalScroll);
 	ClassDB::bind_method("htmlShutdown", &Steam::htmlShutdown);
 	ClassDB::bind_method("stopFind", &Steam::stopFind);
 	ClassDB::bind_method("stopLoad", &Steam::stopLoad);
 	ClassDB::bind_method("viewSource", &Steam::viewSource);
 
 	// HTTP BIND METHODS ////////////////////////
-	ClassDB::bind_method("createCookieContainer", &Steam::createCookieContainer);
-	ClassDB::bind_method("createHTTPRequest", &Steam::createHTTPRequest);
-	ClassDB::bind_method("deferHTTPRequest", &Steam::deferHTTPRequest);
-	ClassDB::bind_method("getHTTPDownloadProgressPct", &Steam::getHTTPDownloadProgressPct);
-	ClassDB::bind_method("getHTTPRequestWasTimedOut", &Steam::getHTTPRequestWasTimedOut);
-	ClassDB::bind_method("getHTTPResponseBodyData", &Steam::getHTTPResponseBodyData);
-	ClassDB::bind_method("getHTTPResponseBodySize", &Steam::getHTTPResponseBodySize);
-	ClassDB::bind_method("getHTTPResponseHeaderSize", &Steam::getHTTPResponseHeaderSize);
-	ClassDB::bind_method("getHTTPResponseHeaderValue", &Steam::getHTTPResponseHeaderValue);
-	ClassDB::bind_method("getHTTPStreamingResponseBodyData", &Steam::getHTTPStreamingResponseBodyData);
-	ClassDB::bind_method("prioritizeHTTPRequest", &Steam::prioritizeHTTPRequest);
-	ClassDB::bind_method("releaseCookieContainer", &Steam::releaseCookieContainer);
-	ClassDB::bind_method("releaseHTTPRequest", &Steam::releaseHTTPRequest);
-	ClassDB::bind_method("sendHTTPRequest", &Steam::sendHTTPRequest);
-	ClassDB::bind_method("sendHTTPRequestAndStreamResponse", &Steam::sendHTTPRequestAndStreamResponse);
-	ClassDB::bind_method("setHTTPCookie", &Steam::setHTTPCookie);
-	ClassDB::bind_method("setHTTPRequestAbsoluteTimeoutMS", &Steam::setHTTPRequestAbsoluteTimeoutMS);
-	ClassDB::bind_method("setHTTPRequestContextValue", &Steam::setHTTPRequestContextValue);
-	ClassDB::bind_method("setHTTPRequestCookieContainer", &Steam::setHTTPRequestCookieContainer);
-	ClassDB::bind_method("setHTTPRequestGetOrPostParameter", &Steam::setHTTPRequestGetOrPostParameter);
-	ClassDB::bind_method("setHTTPRequestHeaderValue", &Steam::setHTTPRequestHeaderValue);
-	ClassDB::bind_method("setHTTPRequestNetworkActivityTimeout", &Steam::setHTTPRequestNetworkActivityTimeout);
-	ClassDB::bind_method("setHTTPRequestRawPostBody", &Steam::setHTTPRequestRawPostBody);
-	ClassDB::bind_method("setHTTPRequestRequiresVerifiedCertificate", &Steam::setHTTPRequestRequiresVerifiedCertificate);
-	ClassDB::bind_method("setHTTPRequestUserAgentInfo", &Steam::setHTTPRequestUserAgentInfo);
+	ClassDB::bind_method(D_METHOD("createCookieContainer", "allow_response_to_modify"), &Steam::createCookieContainer);
+	ClassDB::bind_method(D_METHOD("createHTTPRequest", "request_method", "absolute_url"), &Steam::createHTTPRequest);
+	ClassDB::bind_method(D_METHOD("deferHTTPRequest", "request_handle"), &Steam::deferHTTPRequest);
+	ClassDB::bind_method(D_METHOD("getHTTPDownloadProgressPct", "request_handle"), &Steam::getHTTPDownloadProgressPct);
+	ClassDB::bind_method(D_METHOD("getHTTPRequestWasTimedOut", "request_handle"), &Steam::getHTTPRequestWasTimedOut);
+	ClassDB::bind_method(D_METHOD("getHTTPResponseBodyData", "request_handle", "buffer_size"), &Steam::getHTTPResponseBodyData);
+	ClassDB::bind_method(D_METHOD("getHTTPResponseBodySize", "request_handle"), &Steam::getHTTPResponseBodySize);
+	ClassDB::bind_method(D_METHOD("getHTTPResponseHeaderSize", "request_handle", "header_name"), &Steam::getHTTPResponseHeaderSize);
+	ClassDB::bind_method(D_METHOD("getHTTPResponseHeaderValue","request_handle", "header_name", "buffer_size"), &Steam::getHTTPResponseHeaderValue);
+	ClassDB::bind_method(D_METHOD("getHTTPStreamingResponseBodyData", "request_handle", "offset", "buffer_size"), &Steam::getHTTPStreamingResponseBodyData);
+	ClassDB::bind_method(D_METHOD("prioritizeHTTPRequest", "request_handle"), &Steam::prioritizeHTTPRequest);
+	ClassDB::bind_method(D_METHOD("releaseCookieContainer", "cookie_handle"), &Steam::releaseCookieContainer);
+	ClassDB::bind_method(D_METHOD("releaseHTTPRequest", "request_handle"), &Steam::releaseHTTPRequest);
+	ClassDB::bind_method(D_METHOD("sendHTTPRequest", "request_handle"), &Steam::sendHTTPRequest);
+	ClassDB::bind_method(D_METHOD("sendHTTPRequestAndStreamResponse", "request_handle"), &Steam::sendHTTPRequestAndStreamResponse);
+	ClassDB::bind_method(D_METHOD("setHTTPCookie", "cookie_handle", "host", "url", "cookie"), &Steam::setHTTPCookie);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestAbsoluteTimeoutMS", "request_handle", "milliseconds"), &Steam::setHTTPRequestAbsoluteTimeoutMS);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestContextValue", "request_handle", "context_value"), &Steam::setHTTPRequestContextValue);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestCookieContainer", "request_handle", "cookie_handle"), &Steam::setHTTPRequestCookieContainer);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestGetOrPostParameter", "request_handle", "name", "value"), &Steam::setHTTPRequestGetOrPostParameter);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestHeaderValue", "request_handle", "header_name", "header_value"), &Steam::setHTTPRequestHeaderValue);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestNetworkActivityTimeout", "request_handle", "timeout_seconds"), &Steam::setHTTPRequestNetworkActivityTimeout);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestRawPostBody", "request_handle", "content_type", "body_length"), &Steam::setHTTPRequestRawPostBody);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestRequiresVerifiedCertificate", "request_handle", "require_verified_certificate"), &Steam::setHTTPRequestRequiresVerifiedCertificate);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestUserAgentInfo", "request_handle", "user_agent_info"), &Steam::setHTTPRequestUserAgentInfo);
 
 	// INPUT BIND METHODS /////////////////
-	ClassDB::bind_method("activateActionSet", &Steam::activateActionSet);
-	ClassDB::bind_method("activateActionSetLayer", &Steam::activateActionSetLayer);
-	ClassDB::bind_method("deactivateActionSetLayer", &Steam::deactivateActionSetLayer);
-	ClassDB::bind_method("deactivateAllActionSetLayers", &Steam::deactivateAllActionSetLayers);
-	ClassDB::bind_method("getActionSetHandle", &Steam::getActionSetHandle);
-	ClassDB::bind_method("getActionOriginFromXboxOrigin", &Steam::getActionOriginFromXboxOrigin);
-	ClassDB::bind_method("getActiveActionSetLayers", &Steam::getActiveActionSetLayers);
-	ClassDB::bind_method("getAnalogActionData", &Steam::getAnalogActionData);
-	ClassDB::bind_method("getAnalogActionHandle", &Steam::getAnalogActionHandle);
-	ClassDB::bind_method("getAnalogActionOrigins", &Steam::getAnalogActionOrigins);
+	ClassDB::bind_method(D_METHOD("activateActionSet", "input_handle", "action_set_handle"), &Steam::activateActionSet);
+	ClassDB::bind_method(D_METHOD("activateActionSetLayer", "input_handle", "action_set_layer_handle"), &Steam::activateActionSetLayer);
+	ClassDB::bind_method(D_METHOD("deactivateActionSetLayer", "input_handle", "action_set_handle"), &Steam::deactivateActionSetLayer);
+	ClassDB::bind_method(D_METHOD("deactivateAllActionSetLayers", "input_handle"), &Steam::deactivateAllActionSetLayers);
+	ClassDB::bind_method(D_METHOD("getActionSetHandle", "action_set_name"), &Steam::getActionSetHandle);
+	ClassDB::bind_method(D_METHOD("getActionOriginFromXboxOrigin","input_handle", "origin"), &Steam::getActionOriginFromXboxOrigin);
+	ClassDB::bind_method(D_METHOD("getActiveActionSetLayers", "input_handle"), &Steam::getActiveActionSetLayers);
+	ClassDB::bind_method(D_METHOD("getAnalogActionData", "input_handle", "analog_action_handle"), &Steam::getAnalogActionData);
+	ClassDB::bind_method(D_METHOD("getAnalogActionHandle", "action_name"), &Steam::getAnalogActionHandle);
+	ClassDB::bind_method(D_METHOD("getAnalogActionOrigins", "input_handle", "action_set_handle", "analog_action_handle"), &Steam::getAnalogActionOrigins);
 	ClassDB::bind_method("getConnectedControllers", &Steam::getConnectedControllers);
-	ClassDB::bind_method("getControllerForGamepadIndex", &Steam::getControllerForGamepadIndex);
-	ClassDB::bind_method("getCurrentActionSet", &Steam::getCurrentActionSet);
-	ClassDB::bind_method("getDeviceBindingRevision", &Steam::getDeviceBindingRevision);
-	ClassDB::bind_method("getDigitalActionData", &Steam::getDigitalActionData);
-	ClassDB::bind_method("getDigitalActionHandle", &Steam::getDigitalActionHandle);
-	ClassDB::bind_method("getDigitalActionOrigins", &Steam::getDigitalActionOrigins);
-	ClassDB::bind_method("getGamepadIndexForController", &Steam::getGamepadIndexForController);
-	ClassDB::bind_method("getGlyphForActionOrigin", &Steam::getGlyphForActionOrigin);
-	ClassDB::bind_method("getInputTypeForHandle", &Steam::getInputTypeForHandle);
-	ClassDB::bind_method("getMotionData", &Steam::getMotionData);
-	ClassDB::bind_method("getRemotePlaySessionID", &Steam::getRemotePlaySessionID);
-	ClassDB::bind_method("getStringForActionOrigin", &Steam::getStringForActionOrigin);
-	ClassDB::bind_method("inputInit", &Steam::inputInit, DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("getControllerForGamepadIndex", "index"), &Steam::getControllerForGamepadIndex);
+	ClassDB::bind_method(D_METHOD("getCurrentActionSet", "input_handle"), &Steam::getCurrentActionSet);
+	ClassDB::bind_method(D_METHOD("getDeviceBindingRevision", "input_handle"), &Steam::getDeviceBindingRevision);
+	ClassDB::bind_method(D_METHOD("getDigitalActionData", "input_handle", "digital_action_handle"), &Steam::getDigitalActionData);
+	ClassDB::bind_method(D_METHOD("getDigitalActionHandle", "action_name"), &Steam::getDigitalActionHandle);
+	ClassDB::bind_method(D_METHOD("getDigitalActionOrigins", "input_handle", "action_set_handle", "digital_action_handle"), &Steam::getDigitalActionOrigins);
+	ClassDB::bind_method(D_METHOD("getGamepadIndexForController", "input_handle"), &Steam::getGamepadIndexForController);
+	ClassDB::bind_method(D_METHOD("getGlyphForActionOrigin", "origin"), &Steam::getGlyphForActionOrigin);
+	ClassDB::bind_method(D_METHOD("getInputTypeForHandle", "input_handle"), &Steam::getInputTypeForHandle);
+	ClassDB::bind_method(D_METHOD("getMotionData", "input_handle"), &Steam::getMotionData);
+	ClassDB::bind_method(D_METHOD("getRemotePlaySessionID", "input_handle"), &Steam::getRemotePlaySessionID);
+	ClassDB::bind_method(D_METHOD("getStringForActionOrigin", "origin"), &Steam::getStringForActionOrigin);
+	ClassDB::bind_method(D_METHOD("inputInit", "explicitly_call_runframe"), &Steam::inputInit, DEFVAL(false));
 	ClassDB::bind_method("inputShutdown", &Steam::inputShutdown);
-	ClassDB::bind_method("runFrame", &Steam::runFrame, DEFVAL(true));
-	ClassDB::bind_method("setLEDColor", &Steam::setLEDColor);
-	ClassDB::bind_method("showBindingPanel", &Steam::showBindingPanel);
-	ClassDB::bind_method("stopAnalogActionMomentum", &Steam::stopAnalogActionMomentum);
-	ClassDB::bind_method("translateActionOrigin", &Steam::translateActionOrigin);
-	ClassDB::bind_method("triggerHapticPulse", &Steam::triggerHapticPulse);
-	ClassDB::bind_method("triggerRepeatedHapticPulse", &Steam::triggerRepeatedHapticPulse);
-	ClassDB::bind_method("triggerVibration", &Steam::triggerVibration);
-	ClassDB::bind_method("setInputActionManifestFilePath", &Steam::setInputActionManifestFilePath);
-	ClassDB::bind_method("waitForData", &Steam::waitForData);
+	ClassDB::bind_method(D_METHOD("runFrame", "reserved_value"), &Steam::runFrame, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("setLEDColor", "input_handle", "color_r", "color_g", "color_b", "flags"), &Steam::setLEDColor);
+	ClassDB::bind_method(D_METHOD("showBindingPanel", "input_handle"), &Steam::showBindingPanel);
+	ClassDB::bind_method(D_METHOD("stopAnalogActionMomentum", "input_handle", "action"), &Steam::stopAnalogActionMomentum);
+	ClassDB::bind_method(D_METHOD("translateActionOrigin", "destination_input", "source_origin"), &Steam::translateActionOrigin);
+	ClassDB::bind_method(D_METHOD("triggerHapticPulse", "input_handle", "target_pad", "duration"), &Steam::triggerHapticPulse);
+	ClassDB::bind_method(D_METHOD("triggerRepeatedHapticPulse", "input_handle", "target_pad", "duration", "offset", "repeat", "flags"), &Steam::triggerRepeatedHapticPulse);
+	ClassDB::bind_method(D_METHOD("triggerVibration", "input_handle", "left_speed", "right_speed"), &Steam::triggerVibration);
+	ClassDB::bind_method(D_METHOD("setInputActionManifestFilePath", "manifest_path"), &Steam::setInputActionManifestFilePath);
+	ClassDB::bind_method(D_METHOD("waitForData", "wait_forever", "timeout"), &Steam::waitForData);
 	ClassDB::bind_method("newDataAvailable", &Steam::newDataAvailable);
 	ClassDB::bind_method("enableDeviceCallbacks", &Steam::enableDeviceCallbacks);
-//	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
-	ClassDB::bind_method("getGlyphPNGForActionOrigin", &Steam::getGlyphPNGForActionOrigin);
-	ClassDB::bind_method("getGlyphSVGForActionOrigin", &Steam::getGlyphSVGForActionOrigin);
-	ClassDB::bind_method("triggerVibrationExtended", &Steam::triggerVibrationExtended);
-	ClassDB::bind_method("triggerSimpleHapticEvent", &Steam::triggerSimpleHapticEvent);
-	ClassDB::bind_method("getStringForXboxOrigin", &Steam::getStringForXboxOrigin);
-	ClassDB::bind_method("getGlyphForXboxOrigin", &Steam::getGlyphForXboxOrigin);
-	ClassDB::bind_method("getSessionInputConfigurationSettings", &Steam::getSessionInputConfigurationSettings);
-	ClassDB::bind_method("getStringForDigitalActionName", &Steam::getStringForDigitalActionName);
-	ClassDB::bind_method("getStringForAnalogActionName", &Steam::getStringForAnalogActionName);
+	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
+	ClassDB::bind_method(D_METHOD("getGlyphPNGForActionOrigin", "origin", "size", "flags"), &Steam::getGlyphPNGForActionOrigin);
+	ClassDB::bind_method(D_METHOD("getGlyphSVGForActionOrigin", "origin", "flags"), &Steam::getGlyphSVGForActionOrigin);
+	ClassDB::bind_method(D_METHOD("triggerVibrationExtended", "input_handle", "left_speed", "right_speed", "left_trigger_speed", "right_trigger_speed"), &Steam::triggerVibrationExtended);
+	ClassDB::bind_method(D_METHOD("triggerSimpleHapticEvent", "input_handle", "haptic_location", "intensity", "gain_db", "other_intensity", "other_gain_db"), &Steam::triggerSimpleHapticEvent);
+	ClassDB::bind_method(D_METHOD("getStringForXboxOrigin", "origin"), &Steam::getStringForXboxOrigin);
+	ClassDB::bind_method(D_METHOD("getGlyphForXboxOrigin", "origin"), &Steam::getGlyphForXboxOrigin);
+	ClassDB::bind_method("getSessionInputConfigurationSettings",  &Steam::getSessionInputConfigurationSettings);
+	ClassDB::bind_method(D_METHOD("getStringForDigitalActionName", "action_handle"), &Steam::getStringForDigitalActionName);
+	ClassDB::bind_method(D_METHOD("getStringForAnalogActionName", "action_handle"), &Steam::getStringForAnalogActionName);
 
 	// INVENTORY BIND METHODS ///////////////////
-	ClassDB::bind_method("addPromoItem", &Steam::addPromoItem);
-	ClassDB::bind_method("addPromoItems", &Steam::addPromoItems);
-	ClassDB::bind_method("checkResultSteamID", &Steam::checkResultSteamID);
-	ClassDB::bind_method("consumeItem", &Steam::consumeItem);
+	ClassDB::bind_method(D_METHOD("addPromoItem", "item"), &Steam::addPromoItem);
+	ClassDB::bind_method(D_METHOD("addPromoItems", "items"), &Steam::addPromoItems);
+	ClassDB::bind_method(D_METHOD("checkResultSteamID", "steam_id_expected"), &Steam::checkResultSteamID);
+	ClassDB::bind_method(D_METHOD("consumeItem", "item_consume", "quantity"), &Steam::consumeItem);
 	ClassDB::bind_method("deserializeResult", &Steam::deserializeResult);
 	ClassDB::bind_method("destroyResult", &Steam::destroyResult);
-	ClassDB::bind_method("exchangeItems", &Steam::exchangeItems);
-	ClassDB::bind_method("generateItems", &Steam::generateItems);
+	ClassDB::bind_method(D_METHOD("exchangeItems", "output_items", "output_quantity", "input_items", "input_quantity"), &Steam::exchangeItems);
+	ClassDB::bind_method(D_METHOD("generateItems", "items", "quantity"), &Steam::generateItems);
 	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
-	ClassDB::bind_method("getItemDefinitionProperty", &Steam::getItemDefinitionProperty);
-	ClassDB::bind_method("getItemsByID", &Steam::getItemsByID);
-	ClassDB::bind_method("getItemPrice", &Steam::getItemPrice);
-	ClassDB::bind_method("getItemsWithPrices", &Steam::getItemsWithPrices);
+	ClassDB::bind_method(D_METHOD("getItemDefinitionProperty", "definition", "name"), &Steam::getItemDefinitionProperty);
+	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array", "count"), &Steam::getItemsByID);
+	ClassDB::bind_method(D_METHOD("getItemPrice", "definition"), &Steam::getItemPrice);
+	ClassDB::bind_method(D_METHOD("getItemsWithPrices", "length"), &Steam::getItemsWithPrices);
 	ClassDB::bind_method("getNumItemsWithPrices", &Steam::getNumItemsWithPrices);
-	ClassDB::bind_method("getResultItemProperty", &Steam::getResultItemProperty);
+	ClassDB::bind_method(D_METHOD("getResultItemProperty", "index", "name"), &Steam::getResultItemProperty);
 	ClassDB::bind_method("getResultItems", &Steam::getResultItems);
 	ClassDB::bind_method("getResultStatus", &Steam::getResultStatus);
 	ClassDB::bind_method("getResultTimestamp", &Steam::getResultTimestamp);
 	ClassDB::bind_method("grantPromoItems", &Steam::grantPromoItems);
 	ClassDB::bind_method("loadItemDefinitions", &Steam::loadItemDefinitions);
-	ClassDB::bind_method("requestEligiblePromoItemDefinitionsIDs", &Steam::requestEligiblePromoItemDefinitionsIDs);
+	ClassDB::bind_method(D_METHOD("requestEligiblePromoItemDefinitionsIDs", "steam_id"), &Steam::requestEligiblePromoItemDefinitionsIDs);
 	ClassDB::bind_method("requestPrices", &Steam::requestPrices);
 	ClassDB::bind_method("serializeResult", &Steam::serializeResult);
-	ClassDB::bind_method("startPurchase", &Steam::startPurchase);
-	ClassDB::bind_method("transferItemQuantity", &Steam::transferItemQuantity);
-	ClassDB::bind_method("triggerItemDrop", &Steam::triggerItemDrop);
+	ClassDB::bind_method(D_METHOD("startPurchase", "items", "quantity"), &Steam::startPurchase);
+	ClassDB::bind_method(D_METHOD("transferItemQuantity", "item_id", "quantity", "item_destination", "split"), &Steam::transferItemQuantity);
+	ClassDB::bind_method(D_METHOD("triggerItemDrop", "definition"), &Steam::triggerItemDrop);
 	ClassDB::bind_method("startUpdateProperties", &Steam::startUpdateProperties);
 	ClassDB::bind_method("submitUpdateProperties", &Steam::submitUpdateProperties);
-	ClassDB::bind_method("removeProperty", &Steam::removeProperty);
-	ClassDB::bind_method("setPropertyString", &Steam::setPropertyString);
-	ClassDB::bind_method("setPropertyBool", &Steam::setPropertyBool);
-	ClassDB::bind_method("setPropertyInt", &Steam::setPropertyInt);
-	ClassDB::bind_method("setPropertyFloat", &Steam::setPropertyFloat);
+	ClassDB::bind_method(D_METHOD("removeProperty", "item_id", "name"), &Steam::removeProperty);
+	ClassDB::bind_method(D_METHOD("setPropertyString", "item_id", "name", "value"), &Steam::setPropertyString);
+	ClassDB::bind_method(D_METHOD("setPropertyBool", "item_id", "name", "value"), &Steam::setPropertyBool);
+	ClassDB::bind_method(D_METHOD("setPropertyInt", "item_id", "name", "value"), &Steam::setPropertyInt);
+	ClassDB::bind_method(D_METHOD("setPropertyFloat", "item_id", "name", "value"), &Steam::setPropertyFloat);
 
 	// MATCHMAKING BIND METHODS /////////////////
 	ClassDB::bind_method("getFavoriteGames", &Steam::getFavoriteGames);
-	ClassDB::bind_method("addFavoriteGame", &Steam::addFavoriteGame);
-	ClassDB::bind_method("removeFavoriteGame", &Steam::removeFavoriteGame);
+	ClassDB::bind_method(D_METHOD("addFavoriteGame", "ip", "port", "query_port", "flags", "last_played"), &Steam::addFavoriteGame);
+	ClassDB::bind_method(D_METHOD("removeFavoriteGame", "app_id", "ip", "port", "query_port", "flags"), &Steam::removeFavoriteGame);
 	ClassDB::bind_method("requestLobbyList", &Steam::requestLobbyList);
-	ClassDB::bind_method("addRequestLobbyListStringFilter", &Steam::addRequestLobbyListStringFilter);
-	ClassDB::bind_method("addRequestLobbyListNumericalFilter", &Steam::addRequestLobbyListNumericalFilter);
-	ClassDB::bind_method("addRequestLobbyListNearValueFilter", &Steam::addRequestLobbyListNearValueFilter);
-	ClassDB::bind_method("addRequestLobbyListFilterSlotsAvailable", &Steam::addRequestLobbyListFilterSlotsAvailable);
-	ClassDB::bind_method("addRequestLobbyListDistanceFilter", &Steam::addRequestLobbyListDistanceFilter);
-	ClassDB::bind_method("addRequestLobbyListResultCountFilter", &Steam::addRequestLobbyListResultCountFilter);
-	ClassDB::bind_method(D_METHOD("createLobby", "type"), &Steam::createLobby, DEFVAL(2));
-	ClassDB::bind_method("joinLobby", &Steam::joinLobby);
-	ClassDB::bind_method("leaveLobby", &Steam::leaveLobby);
-	ClassDB::bind_method("inviteUserToLobby", &Steam::inviteUserToLobby);
-	ClassDB::bind_method("getNumLobbyMembers", &Steam::getNumLobbyMembers);
-	ClassDB::bind_method("getLobbyMemberByIndex", &Steam::getLobbyMemberByIndex);
-	ClassDB::bind_method("getLobbyData", &Steam::getLobbyData);
-	ClassDB::bind_method("setLobbyData", &Steam::setLobbyData);
-	ClassDB::bind_method("getAllLobbyData", &Steam::getAllLobbyData);
-	ClassDB::bind_method("deleteLobbyData", &Steam::deleteLobbyData);
-	ClassDB::bind_method("getLobbyMemberData", &Steam::getLobbyMemberData);
-	ClassDB::bind_method("setLobbyMemberData", &Steam::setLobbyMemberData);
-	ClassDB::bind_method("sendLobbyChatMsg", &Steam::sendLobbyChatMsg);
-	ClassDB::bind_method("requestLobbyData", &Steam::requestLobbyData);
-	ClassDB::bind_method("setLobbyGameServer", &Steam::setLobbyGameServer);
-	ClassDB::bind_method("getLobbyGameServer", &Steam::getLobbyGameServer);
-	ClassDB::bind_method("setLobbyMemberLimit", &Steam::setLobbyMemberLimit);
-	ClassDB::bind_method("getLobbyMemberLimit", &Steam::getLobbyMemberLimit);
-	ClassDB::bind_method("setLobbyType", &Steam::setLobbyType);
-	ClassDB::bind_method("setLobbyJoinable", &Steam::setLobbyJoinable);
-	ClassDB::bind_method("getLobbyOwner", &Steam::getLobbyOwner);
-	ClassDB::bind_method("setLobbyOwner", &Steam::setLobbyOwner);
-	ClassDB::bind_method("setLinkedLobby", &Steam::setLinkedLobby);
+	ClassDB::bind_method(D_METHOD("addRequestLobbyListStringFilter", "key_to_match", "value_to_match", "comparison_type"), &Steam::addRequestLobbyListStringFilter);
+	ClassDB::bind_method(D_METHOD("addRequestLobbyListNumericalFilter", "key_to_match", "value_to_match", "comparison_type"), &Steam::addRequestLobbyListNumericalFilter);
+	ClassDB::bind_method(D_METHOD("addRequestLobbyListNearValueFilter", "key_to_match", "value_to_be_close_to"), &Steam::addRequestLobbyListNearValueFilter);
+	ClassDB::bind_method(D_METHOD("addRequestLobbyListFilterSlotsAvailable", "slots_available"), &Steam::addRequestLobbyListFilterSlotsAvailable);
+	ClassDB::bind_method(D_METHOD("addRequestLobbyListDistanceFilter", "distance_filter"), &Steam::addRequestLobbyListDistanceFilter);
+	ClassDB::bind_method(D_METHOD("addRequestLobbyListResultCountFilter", "max_results"), &Steam::addRequestLobbyListResultCountFilter);
+	ClassDB::bind_method(D_METHOD("createLobby", "lobby_type", "max_messages"), &Steam::createLobby, DEFVAL(2));
+	ClassDB::bind_method(D_METHOD("joinLobby", "steam_lobby_id"), &Steam::joinLobby);
+	ClassDB::bind_method(D_METHOD("leaveLobby", "steam_lobby_id"), &Steam::leaveLobby);
+	ClassDB::bind_method(D_METHOD("inviteUserToLobby", "steam_lobby_id", "steam_id_invitee"), &Steam::inviteUserToLobby);
+	ClassDB::bind_method(D_METHOD("getNumLobbyMembers", "steam_lobby_id"), &Steam::getNumLobbyMembers);
+	ClassDB::bind_method(D_METHOD("getLobbyMemberByIndex", "steam_lobby_id", "member"), &Steam::getLobbyMemberByIndex);
+	ClassDB::bind_method(D_METHOD("getLobbyData", "steam_lobby_id", "key"), &Steam::getLobbyData);
+	ClassDB::bind_method(D_METHOD("setLobbyData", "steam_lobby_id", "key", "value"), &Steam::setLobbyData);
+	ClassDB::bind_method(D_METHOD("getAllLobbyData", "steam_lobby_id"), &Steam::getAllLobbyData);
+	ClassDB::bind_method(D_METHOD("deleteLobbyData", "steam_lobby_id", "key"), &Steam::deleteLobbyData);
+	ClassDB::bind_method(D_METHOD("getLobbyMemberData", "steam_lobby_id", "steam_id_user", "key"), &Steam::getLobbyMemberData);
+	ClassDB::bind_method(D_METHOD("setLobbyMemberData", "steam_lobby_id", "key", "value"), &Steam::setLobbyMemberData);
+	ClassDB::bind_method(D_METHOD("sendLobbyChatMsg", "steam_lobby_id", "message_body"), &Steam::sendLobbyChatMsg);
+	ClassDB::bind_method(D_METHOD("requestLobbyData", "steam_lobby_id"), &Steam::requestLobbyData);
+	ClassDB::bind_method(D_METHOD("setLobbyGameServer", "steam_lobby_id", "server_ip", "server_port", "steam_id_game_server"), &Steam::setLobbyGameServer);
+	ClassDB::bind_method(D_METHOD("getLobbyGameServer", "steam_lobby_id"), &Steam::getLobbyGameServer);
+	ClassDB::bind_method(D_METHOD("setLobbyMemberLimit", "steam_lobby_id", "max_members"), &Steam::setLobbyMemberLimit);
+	ClassDB::bind_method(D_METHOD("getLobbyMemberLimit", "steam_lobby_id"), &Steam::getLobbyMemberLimit);
+	ClassDB::bind_method(D_METHOD("setLobbyType", "steam_lobby_id", "lobby_type"), &Steam::setLobbyType);
+	ClassDB::bind_method(D_METHOD("setLobbyJoinable", "steam_lobby_id", "joinable"), &Steam::setLobbyJoinable);
+	ClassDB::bind_method(D_METHOD("getLobbyOwner", "steam_lobby_id"), &Steam::getLobbyOwner);
+	ClassDB::bind_method(D_METHOD("setLobbyOwner", "steam_lobby_id", "steam_id_new_owner"), &Steam::setLobbyOwner);
+	ClassDB::bind_method(D_METHOD("setLinkedLobby", "steam_lobby_id", "steam_id_lobby_dependent"), &Steam::setLinkedLobby);
 
 	// MATCHMAKING SERVERS BIND METHODS /////////
-	ClassDB::bind_method("cancelQuery", &Steam::cancelQuery);
-	ClassDB::bind_method("cancelServerQuery", &Steam::cancelServerQuery);
-	ClassDB::bind_method("getServerCount", &Steam::getServerCount);
-	ClassDB::bind_method("getServerDetails", &Steam::getServerDetails);
-	ClassDB::bind_method("isRefreshing", &Steam::isRefreshing);
-	ClassDB::bind_method("pingServer", &Steam::pingServer);
-	ClassDB::bind_method("playerDetails", &Steam::playerDetails);
-	ClassDB::bind_method("refreshQuery", &Steam::refreshQuery);
-	ClassDB::bind_method("refreshServer", &Steam::refreshServer);
-	ClassDB::bind_method("releaseRequest", &Steam::releaseRequest);
-	ClassDB::bind_method("requestFavoritesServerList", &Steam::requestFavoritesServerList);
-	ClassDB::bind_method("requestFriendsServerList", &Steam::requestFriendsServerList);
-	ClassDB::bind_method("requestHistoryServerList", &Steam::requestHistoryServerList);
-	ClassDB::bind_method("requestInternetServerList", &Steam::requestInternetServerList);
-	ClassDB::bind_method("requestLANServerList", &Steam::requestLANServerList);
-	ClassDB::bind_method("requestSpectatorServerList", &Steam::requestSpectatorServerList);
-	ClassDB::bind_method("serverRules", &Steam::serverRules);
+	ClassDB::bind_method(D_METHOD("cancelQuery", "server_list_request"), &Steam::cancelQuery);
+	ClassDB::bind_method(D_METHOD("cancelServerQuery", "server_query"), &Steam::cancelServerQuery);
+	ClassDB::bind_method(D_METHOD("getServerCount", "server_list_request"), &Steam::getServerCount);
+	ClassDB::bind_method(D_METHOD("getServerDetails", "server_list_request", "server"), &Steam::getServerDetails);
+	ClassDB::bind_method(D_METHOD("isRefreshing", "server_list_request"), &Steam::isRefreshing);
+	ClassDB::bind_method(D_METHOD("pingServer", "ip", "port"), &Steam::pingServer);
+	ClassDB::bind_method(D_METHOD("playerDetails", "ip", "port"), &Steam::playerDetails);
+	ClassDB::bind_method(D_METHOD("refreshQuery", "server_list_request"), &Steam::refreshQuery);
+	ClassDB::bind_method(D_METHOD("refreshServer", "server_list_request", "server"), &Steam::refreshServer);
+	ClassDB::bind_method(D_METHOD("releaseRequest", "server_list_request"), &Steam::releaseRequest);
+	ClassDB::bind_method(D_METHOD("requestFavoritesServerList", "app_id", "filters"), &Steam::requestFavoritesServerList);
+	ClassDB::bind_method(D_METHOD("requestFriendsServerList", "app_id", "filters"), &Steam::requestFriendsServerList);
+	ClassDB::bind_method(D_METHOD("requestHistoryServerList", "app_id", "filters"), &Steam::requestHistoryServerList);
+	ClassDB::bind_method(D_METHOD("requestInternetServerList", "app_id", "filters"), &Steam::requestInternetServerList);
+	ClassDB::bind_method(D_METHOD("requestLANServerList", "app_id"), &Steam::requestLANServerList);
+	ClassDB::bind_method(D_METHOD("requestSpectatorServerList", "app_id", "filters"), &Steam::requestSpectatorServerList);
+	ClassDB::bind_method(D_METHOD("serverRules", "ip", "port"), &Steam::serverRules);
 	
 	// MUSIC BIND METHODS ///////////////////////
 	ClassDB::bind_method("musicIsEnabled", &Steam::musicIsEnabled);
@@ -11245,431 +11592,405 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("musicPlay", &Steam::musicPlay);
 	ClassDB::bind_method("musicPlayNext", &Steam::musicPlayNext);
 	ClassDB::bind_method("musicPlayPrev", &Steam::musicPlayPrev);
-	ClassDB::bind_method("musicSetVolume", &Steam::musicSetVolume);
+	ClassDB::bind_method(D_METHOD("musicSetVolume", "volume"), &Steam::musicSetVolume);
 	
 	// MUSIC REMOTE BIND METHODS ////////////////
-	ClassDB::bind_method("activationSuccess", &Steam::activationSuccess);
+	ClassDB::bind_method(D_METHOD("activationSuccess", "activate"), &Steam::activationSuccess);
 	ClassDB::bind_method("isCurrentMusicRemote", &Steam::isCurrentMusicRemote);
 	ClassDB::bind_method("currentEntryDidChange", &Steam::currentEntryDidChange);
-	ClassDB::bind_method("currentEntryIsAvailable", &Steam::currentEntryIsAvailable);
+	ClassDB::bind_method(D_METHOD("currentEntryIsAvailable", "available"), &Steam::currentEntryIsAvailable);
 	ClassDB::bind_method("currentEntryWillChange", &Steam::currentEntryWillChange);
 	ClassDB::bind_method("deregisterSteamMusicRemote", &Steam::deregisterSteamMusicRemote);
-	ClassDB::bind_method("enableLooped", &Steam::enableLooped);
-	ClassDB::bind_method("enablePlaylists", &Steam::enablePlaylists);
-	ClassDB::bind_method("enablePlayNext", &Steam::enablePlayNext);
-	ClassDB::bind_method("enablePlayPrevious", &Steam::enablePlayPrevious);
-	ClassDB::bind_method("enableQueue", &Steam::enableQueue);
-	ClassDB::bind_method("enableShuffled", &Steam::enableShuffled);
+	ClassDB::bind_method(D_METHOD("enableLooped", "loop"), &Steam::enableLooped);
+	ClassDB::bind_method(D_METHOD("enablePlaylists", "playlists"), &Steam::enablePlaylists);
+	ClassDB::bind_method(D_METHOD("enablePlayNext", "next"), &Steam::enablePlayNext);
+	ClassDB::bind_method(D_METHOD("enablePlayPrevious", "previous"), &Steam::enablePlayPrevious);
+	ClassDB::bind_method(D_METHOD("enableQueue", "queue"), &Steam::enableQueue);
+	ClassDB::bind_method(D_METHOD("enableShuffled", "shuffle"), &Steam::enableShuffled);
 	ClassDB::bind_method("playlistDidChange", &Steam::playlistDidChange);
 	ClassDB::bind_method("playlistWillChange", &Steam::playlistWillChange);
 	ClassDB::bind_method("queueDidChange", &Steam::queueDidChange);
 	ClassDB::bind_method("queueWillChange", &Steam::queueWillChange);
-	ClassDB::bind_method("registerSteamMusicRemote", &Steam::registerSteamMusicRemote);
+	ClassDB::bind_method(D_METHOD("registerSteamMusicRemote", "name"), &Steam::registerSteamMusicRemote);
 	ClassDB::bind_method("resetPlaylistEntries", &Steam::resetPlaylistEntries);
 	ClassDB::bind_method("resetQueueEntries", &Steam::resetQueueEntries);
-	ClassDB::bind_method("setCurrentPlaylistEntry", &Steam::setCurrentPlaylistEntry);
-	ClassDB::bind_method("setCurrentQueueEntry", &Steam::setCurrentQueueEntry);
-	ClassDB::bind_method("setDisplayName", &Steam::setDisplayName);
-	ClassDB::bind_method("setPlaylistEntry", &Steam::setPlaylistEntry);
-//	ClassDB::bind_method("setPNGIcon64x64", &Steam::setPNGIcon64x64);
-	ClassDB::bind_method("setQueueEntry", &Steam::setQueueEntry);
-//	ClassDB::bind_method("updateCurrentEntryCoverArt", &Steam::updateCurrentEntryCoverArt);
-	ClassDB::bind_method("updateCurrentEntryElapsedSeconds", &Steam::updateCurrentEntryElapsedSeconds);
-	ClassDB::bind_method("updateCurrentEntryText", &Steam::updateCurrentEntryText);
-	ClassDB::bind_method("updateLooped", &Steam::updateLooped);
-	ClassDB::bind_method("updatePlaybackStatus", &Steam::updatePlaybackStatus);
-	ClassDB::bind_method("updateShuffled", &Steam::updateShuffled);
-	ClassDB::bind_method("updateVolume", &Steam::updateVolume);
+	ClassDB::bind_method(D_METHOD("setCurrentPlaylistEntry", "id"), &Steam::setCurrentPlaylistEntry);
+	ClassDB::bind_method(D_METHOD("setCurrentQueueEntry", "id"), &Steam::setCurrentQueueEntry);
+	ClassDB::bind_method(D_METHOD("setDisplayName", "name"), &Steam::setDisplayName);
+	ClassDB::bind_method(D_METHOD("setPlaylistEntry", "id", "position", "entry_text"), &Steam::setPlaylistEntry);
+	ClassDB::bind_method(D_METHOD("setPNGIcon64x64", "icon"), &Steam::setPNGIcon64x64);
+	ClassDB::bind_method(D_METHOD("setQueueEntry", "id", "position", "entry_text"), &Steam::setQueueEntry);
+//	ClassDB::bind_method(D_METHOD("updateCurrentEntryCoverArt", "art"), &Steam::updateCurrentEntryCoverArt);
+	ClassDB::bind_method(D_METHOD("updateCurrentEntryElapsedSeconds", "seconds"), &Steam::updateCurrentEntryElapsedSeconds);
+	ClassDB::bind_method(D_METHOD("updateCurrentEntryText", "text"), &Steam::updateCurrentEntryText);
+	ClassDB::bind_method(D_METHOD("updateLooped", "looped"), &Steam::updateLooped);
+	ClassDB::bind_method(D_METHOD("updatePlaybackStatus", "status"), &Steam::updatePlaybackStatus);
+	ClassDB::bind_method(D_METHOD("updateShuffled", "shuffle"), &Steam::updateShuffled);
+	ClassDB::bind_method(D_METHOD("updateVolume", "volume"), &Steam::updateVolume);
 
 	// NETWORKING BIND METHODS //////////////////
-	ClassDB::bind_method(D_METHOD("acceptP2PSessionWithUser", "steam_id"), &Steam::acceptP2PSessionWithUser);
+	ClassDB::bind_method(D_METHOD("acceptP2PSessionWithUser", "steam_id_remote"), &Steam::acceptP2PSessionWithUser);
 	ClassDB::bind_method(D_METHOD("allowP2PPacketRelay", "allow"), &Steam::allowP2PPacketRelay);
-	ClassDB::bind_method(D_METHOD("closeP2PChannelWithUser", "steam_id", "channel"), &Steam::closeP2PChannelWithUser);
-	ClassDB::bind_method(D_METHOD("closeP2PSessionWithUser", "steam_id"), &Steam::closeP2PSessionWithUser);
-	ClassDB::bind_method(D_METHOD("getP2PSessionState", "steam_id"), &Steam::getP2PSessionState);
+	ClassDB::bind_method(D_METHOD("closeP2PChannelWithUser", "steam_id_remote", "channel"), &Steam::closeP2PChannelWithUser);
+	ClassDB::bind_method(D_METHOD("closeP2PSessionWithUser", "steam_id_remote"), &Steam::closeP2PSessionWithUser);
+	ClassDB::bind_method(D_METHOD("getP2PSessionState", "steam_id_remote"), &Steam::getP2PSessionState);
 	ClassDB::bind_method(D_METHOD("getAvailableP2PPacketSize", "channel"), &Steam::getAvailableP2PPacketSize);
-	ClassDB::bind_method(D_METHOD("readP2PPacket", "packetSize", "channel"), &Steam::readP2PPacket);
-	ClassDB::bind_method(D_METHOD("sendP2PPacket", "steam_id", "data", "send_type", "channel"), &Steam::sendP2PPacket);
+	ClassDB::bind_method(D_METHOD("readP2PPacket", "packet", "channel"), &Steam::readP2PPacket);
+	ClassDB::bind_method(D_METHOD("sendP2PPacket", "steam_id_remote", "data", "send_type", "channel"), &Steam::sendP2PPacket);
 
 	// NETWORKING MESSAGES BIND METHODS /////////
-	ClassDB::bind_method("sendMessageToUser", &Steam::sendMessageToUser);
-	ClassDB::bind_method("receiveMessagesOnChannel", &Steam::receiveMessagesOnChannel);
+	ClassDB::bind_method(D_METHOD("sendMessageToUser", "message", "flags", "channel"), &Steam::sendMessageToUser);
+	ClassDB::bind_method(D_METHOD("receiveMessagesOnChannel", "channel", "max_messages"), &Steam::receiveMessagesOnChannel);
 	ClassDB::bind_method("acceptSessionWithUser", &Steam::acceptSessionWithUser);
 	ClassDB::bind_method("closeSessionWithUser", &Steam::closeSessionWithUser);
-	ClassDB::bind_method("closeChannelWithUser", &Steam::closeChannelWithUser);
+	ClassDB::bind_method(D_METHOD("closeChannelWithUser", "channel"), &Steam::closeChannelWithUser);
 	ClassDB::bind_method("getSessionConnectionInfo", &Steam::getSessionConnectionInfo);
 
 	// NETWORKING SOCKETS BIND METHODS //////////
-	ClassDB::bind_method("createListenSocketIP", &Steam::createListenSocketIP);
-	ClassDB::bind_method("connectByIPAddress", &Steam::connectByIPAddress);
-	ClassDB::bind_method("createListenSocketP2P", &Steam::createListenSocketP2P);
-	ClassDB::bind_method("connectP2P", &Steam::connectP2P);
-	ClassDB::bind_method("acceptConnection", &Steam::acceptConnection);
-	ClassDB::bind_method("closeConnection", &Steam::closeConnection);
-	ClassDB::bind_method("closeListenSocket", &Steam::closeListenSocket);
-	ClassDB::bind_method("createSocketPair", &Steam::createSocketPair);
-	ClassDB::bind_method("sendMessageToConnection", &Steam::sendMessageToConnection);
-	ClassDB::bind_method("sendMessages", &Steam::sendMessages);
-	ClassDB::bind_method("flushMessagesOnConnection", &Steam::flushMessagesOnConnection);
-	ClassDB::bind_method("receiveMessagesOnConnection", &Steam::receiveMessagesOnConnection);
+	ClassDB::bind_method(D_METHOD("createListenSocketIP", "options"), &Steam::createListenSocketIP);
+	ClassDB::bind_method(D_METHOD("connectByIPAddress", "ip", "port", "options"), &Steam::connectByIPAddress);
+	ClassDB::bind_method(D_METHOD("createListenSocketP2P", "port", "options"), &Steam::createListenSocketP2P);
+	ClassDB::bind_method(D_METHOD("connectP2P", "port", "number_of_options"), &Steam::connectP2P);
+	ClassDB::bind_method(D_METHOD("acceptConnection", "connection"), &Steam::acceptConnection);
+	ClassDB::bind_method(D_METHOD("closeConnection", "peer", "reason", "linger"), &Steam::closeConnection);
+	ClassDB::bind_method(D_METHOD("closeListenSocket", "socket"), &Steam::closeListenSocket);
+	ClassDB::bind_method(D_METHOD("createSocketPair", "loopback", "identity1", "identity2"), &Steam::createSocketPair);
+	ClassDB::bind_method(D_METHOD("sendMessageToConnection", "connection", "message", "flags"), &Steam::sendMessageToConnection);
+	ClassDB::bind_method(D_METHOD("sendMessages", "messages", "message", "connection", "flags"), &Steam::sendMessages);
+	ClassDB::bind_method(D_METHOD("flushMessagesOnConnection", "connection"), &Steam::flushMessagesOnConnection);
+	ClassDB::bind_method(D_METHOD("receiveMessagesOnConnection", "connection", "max_messages"), &Steam::receiveMessagesOnConnection);
 	ClassDB::bind_method("createPollGroup", &Steam::createPollGroup);
-	ClassDB::bind_method("destroyPollGroup", &Steam::destroyPollGroup);
-	ClassDB::bind_method("setConnectionPollGroup", &Steam::setConnectionPollGroup);
-	ClassDB::bind_method("receiveMessagesOnPollGroup", &Steam::receiveMessagesOnPollGroup);
-	ClassDB::bind_method("getConnectionInfo", &Steam::getConnectionInfo);
-	ClassDB::bind_method("getQuickConnectionStatus", &Steam::getQuickConnectionStatus);
-	ClassDB::bind_method("getDetailedConnectionStatus", &Steam::getDetailedConnectionStatus);
-	ClassDB::bind_method("getConnectionUserData", &Steam::getConnectionUserData);
-	ClassDB::bind_method("setConnectionName", &Steam::setConnectionName);
-	ClassDB::bind_method("getConnectionName", &Steam::getConnectionName);
-	ClassDB::bind_method("getListenSocketAddress", &Steam::getListenSocketAddress);
+	ClassDB::bind_method(D_METHOD("destroyPollGroup", "poll_group"), &Steam::destroyPollGroup);
+	ClassDB::bind_method(D_METHOD("setConnectionPollGroup", "connection", "poll_group"), &Steam::setConnectionPollGroup);
+	ClassDB::bind_method(D_METHOD("receiveMessagesOnPollGroup", "poll_group", "max_messages"), &Steam::receiveMessagesOnPollGroup);
+	ClassDB::bind_method(D_METHOD("getConnectionInfo", "connection"), &Steam::getConnectionInfo);
+	ClassDB::bind_method(D_METHOD("getDetailedConnectionStatus", "connection"), &Steam::getDetailedConnectionStatus);
+	ClassDB::bind_method(D_METHOD("getConnectionUserData", "peer"), &Steam::getConnectionUserData);
+	ClassDB::bind_method(D_METHOD("setConnectionName", "peer", "name"), &Steam::setConnectionName);
+	ClassDB::bind_method(D_METHOD("getConnectionName", "peer"), &Steam::getConnectionName);
+	ClassDB::bind_method(D_METHOD("getListenSocketAddress", "socket"), &Steam::getListenSocketAddress);
 	ClassDB::bind_method("getIdentity", &Steam::getIdentity);
 	ClassDB::bind_method("initAuthentication", &Steam::initAuthentication);
 	ClassDB::bind_method("getAuthenticationStatus", &Steam::getAuthenticationStatus);
 //	ClassDB::bind_method("receivedRelayAuthTicket", &Steam::receivedRelayAuthTicket);	<------ Uses datagram relay structs which were removed from base SDK
-//	ClassDB::bind_method("findRelayAuthTicketForServer", &Steam::findRelayAuthTicketForServer);	<------ Uses datagram relay structs which were removed from base SDK
-	ClassDB::bind_method("connectToHostedDedicatedServer", &Steam::connectToHostedDedicatedServer);
+//	ClassDB::bind_method(D_METHOD("findRelayAuthTicketForServer", "port"), &Steam::findRelayAuthTicketForServer);	<------ Uses datagram relay structs which were removed from base SDK
+	ClassDB::bind_method(D_METHOD("connectToHostedDedicatedServer", "port", "options"), &Steam::connectToHostedDedicatedServer);
 	ClassDB::bind_method("getHostedDedicatedServerPort", &Steam::getHostedDedicatedServerPort);
 	ClassDB::bind_method("getHostedDedicatedServerPOPId", &Steam::getHostedDedicatedServerPOPId);
 //	ClassDB::bind_method("getHostedDedicatedServerAddress", &Steam::getHostedDedicatedServerAddress);	<------ Uses datagram relay structs which were removed from base SDK
-	ClassDB::bind_method("createHostedDedicatedServerListenSocket", &Steam::createHostedDedicatedServerListenSocket);
-//	ClassDB::bind_method("getGameCoordinatorServerLogin", &Steam::getGameCoordinatorServerLogin);	<------ Uses datagram relay structs which were removed from base SDK
+	ClassDB::bind_method(D_METHOD("createHostedDedicatedServerListenSocket", "port", "options"), &Steam::createHostedDedicatedServerListenSocket);
+//	ClassDB::bind_method(D_METHOD("getGameCoordinatorServerLogin", "app_data"), &Steam::getGameCoordinatorServerLogin);	<------ Uses datagram relay structs which were removed from base SDK
+	ClassDB::bind_method(D_METHOD("getConnectionRealTimeStatus", "connection", "lanes", "get_status"), &Steam::getConnectionRealTimeStatus, DEFVAL(true));
+//	ClassDB::bind_method(D_METHOD("configureConnectionLanes", "connection", "lanes", "priorities", "weights"), &Steam::configureConnectionLanes);
+//	ClassDB::bind_method("connectP2PCustomSignaling", &Steam::connectP2PCustomSignaling);
+//	ClassDB::bind_method("receivedP2PCustomSignal", &Steam::receivedP2PCustomSignal);
+//	ClassDB::bind_method("getCertificateRequest", &Steam::getCertificateRequest);
+	ClassDB::bind_method(D_METHOD("setCertificate", "certificate"), &Steam::setCertificate);
+	ClassDB::bind_method(D_METHOD("resetIdentity", "this_identity"), &Steam::resetIdentity);
+	ClassDB::bind_method("runNetworkingCallbacks", &Steam::runNetworkingCallbacks);
+	ClassDB::bind_method(D_METHOD("beginAsyncRequestFakeIP", "num_ports"), &Steam::beginAsyncRequestFakeIP);
+	ClassDB::bind_method(D_METHOD("getFakeIP", "first_port"), &Steam::getFakeIP, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("createListenSocketP2PFakeIP", "fake_port", "options"), &Steam::createListenSocketP2PFakeIP);
+	ClassDB::bind_method(D_METHOD("getRemoteFakeIPForConnection", "connection"), &Steam::getRemoteFakeIPForConnection);
+	ClassDB::bind_method(D_METHOD("createFakeUDPPort", "fake_server_port_index"), &Steam::createFakeUDPPort);
 
 	// NETWORKING TYPES BIND METHODS ////////////
-	ClassDB::bind_method("addIdentity", &Steam::addIdentity);
+	ClassDB::bind_method(D_METHOD("addIdentity", "name"), &Steam::addIdentity);
 	ClassDB::bind_method("getIdentities", &Steam::getIdentities);
-	ClassDB::bind_method("clearIdentity", &Steam::clearIdentity);
-	ClassDB::bind_method("isIdentityInvalid", &Steam::isIdentityInvalid);
-	ClassDB::bind_method("setIdentitySteamID", &Steam::setIdentitySteamID);
-	ClassDB::bind_method("getIdentitySteamID", &Steam::getIdentitySteamID);
-	ClassDB::bind_method("setIdentitySteamID64", &Steam::setIdentitySteamID64);
-	ClassDB::bind_method("getIdentitySteamID64", &Steam::getIdentitySteamID64);
-	ClassDB::bind_method("setIdentityIPAddr", &Steam::setIdentityIPAddr);
-	ClassDB::bind_method("getIdentityIPAddr", &Steam::getIdentityIPAddr);
-	ClassDB::bind_method("setIdentityLocalHost", &Steam::setIdentityLocalHost);
-	ClassDB::bind_method("isIdentityLocalHost", &Steam::isIdentityLocalHost);
-	ClassDB::bind_method("setGenericString", &Steam::setGenericString);
-	ClassDB::bind_method("getGenericString", &Steam::getGenericString);
-	ClassDB::bind_method("setGenericBytes", &Steam::setGenericBytes);
-	ClassDB::bind_method("getGenericBytes", &Steam::getGenericBytes);
-	ClassDB::bind_method("toIdentityString", &Steam::toIdentityString);
-	ClassDB::bind_method("parseIdentityString", &Steam::parseIdentityString);
-	ClassDB::bind_method("addIPAddress", &Steam::addIPAddress);
+	ClassDB::bind_method(D_METHOD("clearIdentity", "name"), &Steam::clearIdentity);
+	ClassDB::bind_method(D_METHOD("isIdentityInvalid", "name"), &Steam::isIdentityInvalid);
+	ClassDB::bind_method(D_METHOD("setIdentitySteamID", "name", "steam_id"), &Steam::setIdentitySteamID);
+	ClassDB::bind_method(D_METHOD("getIdentitySteamID", "name"), &Steam::getIdentitySteamID);
+	ClassDB::bind_method(D_METHOD("setIdentitySteamID64", "name", "steam_id"), &Steam::setIdentitySteamID64);
+	ClassDB::bind_method(D_METHOD("getIdentitySteamID64", "name"), &Steam::getIdentitySteamID64);
+	ClassDB::bind_method(D_METHOD("setIdentityIPAddr", "name", "ip_address_name"), &Steam::setIdentityIPAddr);
+	ClassDB::bind_method(D_METHOD("getIdentityIPAddr", "name"), &Steam::getIdentityIPAddr);
+	ClassDB::bind_method(D_METHOD("setIdentityLocalHost", "name"), &Steam::setIdentityLocalHost);
+	ClassDB::bind_method(D_METHOD("isIdentityLocalHost", "name"), &Steam::isIdentityLocalHost);
+	ClassDB::bind_method(D_METHOD("setGenericString", "name", "this_string"), &Steam::setGenericString);
+	ClassDB::bind_method(D_METHOD("getGenericString", "name"), &Steam::getGenericString);
+	ClassDB::bind_method(D_METHOD("setGenericBytes", "name", "data"), &Steam::setGenericBytes);
+	ClassDB::bind_method(D_METHOD("getGenericBytes", "name"), &Steam::getGenericBytes);
+	ClassDB::bind_method(D_METHOD("toIdentityString", "name", "buffer"), &Steam::toIdentityString);
+	ClassDB::bind_method(D_METHOD("parseIdentityString", "name"), &Steam::parseIdentityString);
+	ClassDB::bind_method(D_METHOD("addIPAddress", "name"), &Steam::addIPAddress);
 	ClassDB::bind_method("getIPAddresses", &Steam::getIPAddresses);
-	ClassDB::bind_method("clearIPAddress", &Steam::clearIPAddress);
-	ClassDB::bind_method("isIPv6AllZeros", &Steam::isIPv6AllZeros);
-	ClassDB::bind_method("seIPv6", &Steam::setIPv6);
-	ClassDB::bind_method("setIPv4", &Steam::setIPv4);
-	ClassDB::bind_method("isIPv4", &Steam::isIPv4);
-	ClassDB::bind_method("getIPv4", &Steam::getIPv4);
-	ClassDB::bind_method("setIPv6LocalHost", &Steam::setIPv6LocalHost);
-	ClassDB::bind_method("isAddressLocalHost", &Steam::isAddressLocalHost);
-	ClassDB::bind_method("toIPAddressString", &Steam::toIPAddressString);
-	ClassDB::bind_method("parseIPAddressString", &Steam::parseIPAddressString);
+	ClassDB::bind_method(D_METHOD("clearIPAddress", "name"), &Steam::clearIPAddress);
+	ClassDB::bind_method(D_METHOD("isIPv6AllZeros", "name"), &Steam::isIPv6AllZeros);
+	ClassDB::bind_method(D_METHOD("setIPv6", "name", "ipv6", "port"), &Steam::setIPv6);
+	ClassDB::bind_method(D_METHOD("setIPv4", "name", "ip", "port"), &Steam::setIPv4);
+	ClassDB::bind_method(D_METHOD("isIPv4", "name"), &Steam::isIPv4);
+	ClassDB::bind_method(D_METHOD("getIPv4", "name"), &Steam::getIPv4);
+	ClassDB::bind_method(D_METHOD("setIPv6LocalHost", "name", "port"), &Steam::setIPv6LocalHost);
+	ClassDB::bind_method(D_METHOD("isAddressLocalHost", "name"), &Steam::isAddressLocalHost);
+	ClassDB::bind_method(D_METHOD("toIPAddressString", "name", "buffer", "with_port"), &Steam::toIPAddressString);
+	ClassDB::bind_method(D_METHOD("parseIPAddressString", "name"), &Steam::parseIPAddressString);
 
 	// NETWORKING UTILS BIND METHODS ////////////
 	ClassDB::bind_method("initRelayNetworkAccess", &Steam::initRelayNetworkAccess);
 	ClassDB::bind_method("getRelayNetworkStatus", &Steam::getRelayNetworkStatus);
 	ClassDB::bind_method("getLocalPingLocation", &Steam::getLocalPingLocation);
-	ClassDB::bind_method("estimatePingTimeBetweenTwoLocations", &Steam::estimatePingTimeBetweenTwoLocations);
-	ClassDB::bind_method("estimatePingTimeFromLocalHost", &Steam::estimatePingTimeFromLocalHost);
-	ClassDB::bind_method("convertPingLocationToString", &Steam::convertPingLocationToString);
-	ClassDB::bind_method("parsePingLocationString", &Steam::parsePingLocationString);
-	ClassDB::bind_method("checkPingDataUpToDate", &Steam::checkPingDataUpToDate);
+	ClassDB::bind_method(D_METHOD("estimatePingTimeBetweenTwoLocations", "location1", "location2"), &Steam::estimatePingTimeBetweenTwoLocations);
+	ClassDB::bind_method(D_METHOD("estimatePingTimeFromLocalHost", "location"), &Steam::estimatePingTimeFromLocalHost);
+	ClassDB::bind_method(D_METHOD("convertPingLocationToString", "location"), &Steam::convertPingLocationToString);
+	ClassDB::bind_method(D_METHOD("parsePingLocationString", "string"), &Steam::parsePingLocationString);
+	ClassDB::bind_method(D_METHOD("checkPingDataUpToDate", "max_age_in_seconds"), &Steam::checkPingDataUpToDate);
 //	ClassDB::bind_method("isPingMeasurementInProgress", &Steam::isPingMeasurementInProgress);	<------ In documentation but not in actual SDK?
-	ClassDB::bind_method("getPingToDataCenter", &Steam::getPingToDataCenter);
-	ClassDB::bind_method("getDirectPingToPOP", &Steam::getDirectPingToPOP);
+	ClassDB::bind_method(D_METHOD("getPingToDataCenter", "pop_id", "via_replay_pop"), &Steam::getPingToDataCenter);
+	ClassDB::bind_method(D_METHOD("getDirectPingToPOP", "pop_id"), &Steam::getDirectPingToPOP);
 	ClassDB::bind_method("getPOPCount", &Steam::getPOPCount);
 	ClassDB::bind_method("getPOPList", &Steam::getPOPList);
-//	ClassDB::bind_method("setConfigValue", &Steam::setConfigValue);
-//	ClassDB::bind_method("getConfigValue", &Steam::getConfigValue);
-	ClassDB::bind_method("getConfigValueInfo", &Steam::getConfigValueInfo);
-	ClassDB::bind_method("getFirstConfigValue", &Steam::getFirstConfigValue);
-	ClassDB::bind_method("setGlobalConfigValueInt32", &Steam::setGlobalConfigValueInt32);
-	ClassDB::bind_method("setGlobalConfigValueFloat", &Steam::setGlobalConfigValueFloat);
-	ClassDB::bind_method("setGlobalConfigValueString", &Steam::setGlobalConfigValueString);
-	ClassDB::bind_method("setConnectionConfigValueInt32", &Steam::setConnectionConfigValueInt32);
-	ClassDB::bind_method("setConnectionConfigValueFloat", &Steam::setConnectionConfigValueFloat);
-	ClassDB::bind_method("setConnectionConfigValueString", &Steam::setConnectionConfigValueString);
-	ClassDB::bind_method("allocateMessage", &Steam::allocateMessage);
+//	ClassDB::bind_method(D_METHOD("setConfigValue", "setting", "scope_type", "data_type", "value"), &Steam::setConfigValue);
+//	ClassDB::bind_method(D_METHOD("getConfigValue", "value", "scope_type"), &Steam::getConfigValue);
+	ClassDB::bind_method(D_METHOD("getConfigValueInfo", "value"), &Steam::getConfigValueInfo);
+	ClassDB::bind_method(D_METHOD("setGlobalConfigValueInt32", "config", "value"), &Steam::setGlobalConfigValueInt32);
+	ClassDB::bind_method(D_METHOD("setGlobalConfigValueFloat", "config", "value"), &Steam::setGlobalConfigValueFloat);
+	ClassDB::bind_method(D_METHOD("setGlobalConfigValueString", "config", "value"), &Steam::setGlobalConfigValueString);
+	ClassDB::bind_method(D_METHOD("setConnectionConfigValueInt32", "connection", "config", "value"), &Steam::setConnectionConfigValueInt32);
+	ClassDB::bind_method(D_METHOD("setConnectionConfigValueFloat", "connection", "config", "value"), &Steam::setConnectionConfigValueFloat);
+	ClassDB::bind_method(D_METHOD("setConnectionConfigValueString", "connection", "config", "value"), &Steam::setConnectionConfigValueString);
 	ClassDB::bind_method("getLocalTimestamp", &Steam::getLocalTimestamp);
-//	ClassDB::bind_method("setDebugOutputFunction", &Steam::setDebugOutputFunction);
 
 	// PARENTAL SETTINGS BIND METHODS ///////////
 	ClassDB::bind_method("isParentalLockEnabled", &Steam::isParentalLockEnabled);
 	ClassDB::bind_method("isParentalLockLocked", &Steam::isParentalLockLocked);
-	ClassDB::bind_method("isAppBlocked", &Steam::isAppBlocked);
-	ClassDB::bind_method("isAppInBlockList", &Steam::isAppInBlockList);
-	ClassDB::bind_method("isFeatureBlocked", &Steam::isFeatureBlocked);
-	ClassDB::bind_method("isFeatureInBlockList", &Steam::isFeatureInBlockList);
+	ClassDB::bind_method(D_METHOD("isAppBlocked", "app_id"), &Steam::isAppBlocked);
+	ClassDB::bind_method(D_METHOD("isAppInBlockList", "app_id"), &Steam::isAppInBlockList);
+	ClassDB::bind_method(D_METHOD("isFeatureBlocked", "feature"), &Steam::isFeatureBlocked);
+	ClassDB::bind_method(D_METHOD("isFeatureInBlockList", "feature"), &Steam::isFeatureInBlockList);
 
 	// PARTIES BIND METHODS /////////////////////
-	ClassDB::bind_method("getAvailableBeaconLocations", &Steam::getAvailableBeaconLocations);
-	ClassDB::bind_method("createBeacon", &Steam::createBeacon);
-	ClassDB::bind_method("onReservationCompleted", &Steam::onReservationCompleted);
-	ClassDB::bind_method("changeNumOpenSlots", &Steam::changeNumOpenSlots);
-	ClassDB::bind_method("destroyBeacon", &Steam::destroyBeacon);
+	ClassDB::bind_method(D_METHOD("getAvailableBeaconLocations", "max"), &Steam::getAvailableBeaconLocations);
+	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location", "type", "connect_string", "metadata"), &Steam::createBeacon);
+	ClassDB::bind_method(D_METHOD("onReservationCompleted", "beacon", "steam_id"), &Steam::onReservationCompleted);
+	ClassDB::bind_method(D_METHOD("changeNumOpenSlots", "beacon", "open_slots"), &Steam::changeNumOpenSlots);
+	ClassDB::bind_method(D_METHOD("destroyBeacon", "beacon"), &Steam::destroyBeacon);
 	ClassDB::bind_method("getNumActiveBeacons", &Steam::getNumActiveBeacons);
-	ClassDB::bind_method("getBeaconByIndex", &Steam::getBeaconByIndex);
-	ClassDB::bind_method("getBeaconDetails", &Steam::getBeaconDetails);
-	ClassDB::bind_method("joinParty", &Steam::joinParty);
-	ClassDB::bind_method("getBeaconLocationData", &Steam::getBeaconLocationData);
+	ClassDB::bind_method(D_METHOD("getBeaconByIndex", "index"), &Steam::getBeaconByIndex);
+	ClassDB::bind_method(D_METHOD("getBeaconDetails", "beacon"), &Steam::getBeaconDetails);
+	ClassDB::bind_method(D_METHOD("joinParty", "beacon"), &Steam::joinParty);
+	ClassDB::bind_method(D_METHOD("getBeaconLocationData", "location_id", "location_type", "location_data"), &Steam::getBeaconLocationData);
 
 	// REMOTE PLAY BIND METHODS /////////////////
 	ClassDB::bind_method("getSessionCount", &Steam::getSessionCount);
-	ClassDB::bind_method("getSessionID", &Steam::getSessionID);
-	ClassDB::bind_method("getSessionSteamID", &Steam::getSessionSteamID);
-	ClassDB::bind_method("getSessionClientName", &Steam::getSessionClientName);
-	ClassDB::bind_method("getSessionClientFormFactor", &Steam::getSessionClientFormFactor);
-	ClassDB::bind_method("getSessionClientResolution", &Steam::getSessionClientResolution);
-	ClassDB::bind_method("sendRemotePlayTogetherInvite", &Steam::sendRemotePlayTogetherInvite);
+	ClassDB::bind_method(D_METHOD("getSessionID", "index"), &Steam::getSessionID);
+	ClassDB::bind_method(D_METHOD("getSessionSteamID", "session_id"), &Steam::getSessionSteamID);
+	ClassDB::bind_method(D_METHOD("getSessionClientName", "session_id"), &Steam::getSessionClientName);
+	ClassDB::bind_method(D_METHOD("getSessionClientFormFactor", "session_id"), &Steam::getSessionClientFormFactor);
+	ClassDB::bind_method(D_METHOD("getSessionClientResolution", "session_id"), &Steam::getSessionClientResolution);
+	ClassDB::bind_method(D_METHOD("sendRemotePlayTogetherInvite", "friend_id"), &Steam::sendRemotePlayTogetherInvite);
 
 	// REMOTE STORAGE BIND METHODS //////////////
-	ClassDB::bind_method("fileWrite", &Steam::fileWrite);
-	ClassDB::bind_method("fileRead", &Steam::fileRead);
-	ClassDB::bind_method("fileForget", &Steam::fileForget);
-	ClassDB::bind_method("fileDelete", &Steam::fileDelete);
-	ClassDB::bind_method("fileExists", &Steam::fileExists);
-	ClassDB::bind_method("filePersisted", &Steam::filePersisted);
-	ClassDB::bind_method("getFileSize", &Steam::getFileSize);
-	ClassDB::bind_method("getFileTimestamp", &Steam::getFileTimestamp);
+	ClassDB::bind_method(D_METHOD("fileDelete", "file"), &Steam::fileDelete);
+	ClassDB::bind_method(D_METHOD("fileExists", "file"), &Steam::fileExists);
+	ClassDB::bind_method(D_METHOD("fileForget", "file"), &Steam::fileForget);
+	ClassDB::bind_method(D_METHOD("filePersisted", "file"), &Steam::filePersisted);
+	ClassDB::bind_method(D_METHOD("fileRead", "file", "data_to_read"), &Steam::fileRead);
+	ClassDB::bind_method(D_METHOD("fileReadAsync", "file", "offset", "data_to_read"), &Steam::fileReadAsync);
+	ClassDB::bind_method(D_METHOD("fileShare", "file"), &Steam::fileShare);
+	ClassDB::bind_method(D_METHOD("fileWrite", "file", "data", "data_size"), &Steam::fileWrite);
+	ClassDB::bind_method(D_METHOD("fileWriteAsync", "file", "data", "data_size"), &Steam::fileWriteAsync);
+	ClassDB::bind_method(D_METHOD("fileWriteStreamCancel", "write_handle"), &Steam::fileWriteStreamCancel);
+	ClassDB::bind_method(D_METHOD("fileWriteStreamClose", "write_handle"), &Steam::fileWriteStreamClose);
+	ClassDB::bind_method(D_METHOD("fileWriteStreamOpen", "file"), &Steam::fileWriteStreamOpen);
+	ClassDB::bind_method(D_METHOD("fileWriteStreamWriteChunk", "write_handle", "data", "data_size"), &Steam::fileWriteStreamWriteChunk);
+	ClassDB::bind_method("getCachedUGCCount", &Steam::getCachedUGCCount);
+	ClassDB::bind_method(D_METHOD("getCachedUGCHandle", "content"), &Steam::getCachedUGCHandle);
 	ClassDB::bind_method("getFileCount", &Steam::getFileCount);
-	ClassDB::bind_method("getFileNameAndSize", &Steam::getFileNameAndSize);
+	ClassDB::bind_method(D_METHOD("getFileNameAndSize", "file"), &Steam::getFileNameAndSize);
+	ClassDB::bind_method(D_METHOD("getFileSize", "file"), &Steam::getFileSize);
+	ClassDB::bind_method(D_METHOD("getFileTimestamp", "file"), &Steam::getFileTimestamp);
 	ClassDB::bind_method("getQuota", &Steam::getQuota);
-	ClassDB::bind_method("getSyncPlatforms", &Steam::getSyncPlatforms);
+	ClassDB::bind_method(D_METHOD("getSyncPlatforms", "file"), &Steam::getSyncPlatforms);
+	ClassDB::bind_method(D_METHOD("getUGCDetails", "content"), &Steam::getUGCDetails);
+	ClassDB::bind_method(D_METHOD("getUGCDownloadProgress", "content"), &Steam::getUGCDownloadProgress);
 	ClassDB::bind_method("isCloudEnabledForAccount", &Steam::isCloudEnabledForAccount);
 	ClassDB::bind_method("isCloudEnabledForApp", &Steam::isCloudEnabledForApp);
-	ClassDB::bind_method("setCloudEnabledForApp", &Steam::setCloudEnabledForApp);
-	ClassDB::bind_method("setSyncPlatforms", &Steam::setSyncPlatforms);
-	ClassDB::bind_method("ugcDownload", &Steam::ugcDownload);
-	ClassDB::bind_method("ugcDownloadToLocation", &Steam::ugcDownloadToLocation);
-	ClassDB::bind_method("ugcRead", &Steam::ugcRead);
+	ClassDB::bind_method(D_METHOD("setCloudEnabledForApp", "enabled"), &Steam::setCloudEnabledForApp);
+	ClassDB::bind_method(D_METHOD("setSyncPlatforms", "file", "platform"), &Steam::setSyncPlatforms);
+	ClassDB::bind_method(D_METHOD("ugcDownload", "content", "priority"), &Steam::ugcDownload);
+	ClassDB::bind_method(D_METHOD("ugcDownloadToLocation", "content", "location", "priority"), &Steam::ugcDownloadToLocation);
+	ClassDB::bind_method(D_METHOD("ugcRead", "content", "data_size", "offset", "action"), &Steam::ugcRead);
 	ClassDB::bind_method("beginFileWriteBatch", &Steam::beginFileWriteBatch);
 	ClassDB::bind_method("endFileWriteBatch", &Steam::endFileWriteBatch);
 	ClassDB::bind_method("getLocalFileChangeCount", &Steam::getLocalFileChangeCount);
-	ClassDB::bind_method("getLocalFileChange", &Steam::getLocalFileChange);
+	ClassDB::bind_method(D_METHOD("getLocalFileChange", "file"), &Steam::getLocalFileChange);
 	
 	// SCREENSHOT BIND METHODS //////////////////
-	ClassDB::bind_method("addScreenshotToLibrary", &Steam::addScreenshotToLibrary);
-	ClassDB::bind_method("addVRScreenshotToLibrary", &Steam::addVRScreenshotToLibrary);
-	ClassDB::bind_method("hookScreenshots", &Steam::hookScreenshots);
+	ClassDB::bind_method(D_METHOD("addScreenshotToLibrary", "filename", "thumbnail_filename", "width", "height"), &Steam::addScreenshotToLibrary);
+	ClassDB::bind_method(D_METHOD("addVRScreenshotToLibrary", "type", "filename", "vr_filename"), &Steam::addVRScreenshotToLibrary);
+	ClassDB::bind_method(D_METHOD("hookScreenshots", "hook"), &Steam::hookScreenshots);
 	ClassDB::bind_method("isScreenshotsHooked", &Steam::isScreenshotsHooked);
-	ClassDB::bind_method("setLocation", &Steam::setLocation);
-	ClassDB::bind_method("tagPublishedFile", &Steam::tagPublishedFile);
-	ClassDB::bind_method("taguser", &Steam::tagUser);
+	ClassDB::bind_method(D_METHOD("setLocation", "screenshot", "location"), &Steam::setLocation);
+	ClassDB::bind_method(D_METHOD("tagPublishedFile", "screenshot", "file_id"), &Steam::tagPublishedFile);
+	ClassDB::bind_method(D_METHOD("taguser", "screenshot", "steam_id"), &Steam::tagUser);
 	ClassDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
-	ClassDB::bind_method("writeScreenshot", &Steam::writeScreenshot);
-
-	// SERVER BIND METHODS //////////////////////
-	ClassDB::bind_method("initGameServer", &Steam::initGameServer);
-	ClassDB::bind_method("setProduct", &Steam::setProduct);
-	ClassDB::bind_method("setGameDescription", &Steam::setGameDescription);
-	ClassDB::bind_method("setModDir", &Steam::setModDir);
-	ClassDB::bind_method("setDedicatedServer", &Steam::setDedicatedServer);
-	ClassDB::bind_method("logOn", &Steam::logOn);
-	ClassDB::bind_method("logOnAnonymous", &Steam::logOnAnonymous);
-	ClassDB::bind_method("logOff", &Steam::logOff);
-	ClassDB::bind_method("serverLoggedOn", &Steam::serverLoggedOn);
-	ClassDB::bind_method("secure", &Steam::secure);
-	ClassDB::bind_method("getServerSteamID", &Steam::getServerSteamID);
-	ClassDB::bind_method("wasRestartRequested", &Steam::wasRestartRequested);
-	ClassDB::bind_method("setMaxPlayerCount", &Steam::setMaxPlayerCount);
-	ClassDB::bind_method("setBotPlayerCount", &Steam::setBotPlayerCount);
-	ClassDB::bind_method("setServerName", &Steam::setServerName);
-	ClassDB::bind_method("setMapName", &Steam::setMapName);
-	ClassDB::bind_method("setPasswordProtected", &Steam::setPasswordProtected);
-	ClassDB::bind_method("setSpectatorPort", &Steam::setSpectatorPort);
-	ClassDB::bind_method("setSpectatorServerName", &Steam::setSpectatorServerName);
-	ClassDB::bind_method("clearAllKeyValues", &Steam::clearAllKeyValues);
-	ClassDB::bind_method("setKeyValue", &Steam::setKeyValue);
-	ClassDB::bind_method("setGameTags", &Steam::setGameTags);
-	ClassDB::bind_method("setGameData", &Steam::setGameData);
-	ClassDB::bind_method("setRegion", &Steam::setRegion);
-	ClassDB::bind_method("getServerAuthSessionTicket", &Steam::getServerAuthSessionTicket);
-	ClassDB::bind_method("beginServerAuthSession", &Steam::beginServerAuthSession);
-	ClassDB::bind_method("endServerAuthSession", &Steam::endServerAuthSession);
-	ClassDB::bind_method("cancelServerAuthTicket", &Steam::cancelServerAuthTicket);
-	ClassDB::bind_method("userHasLicenceForApp", &Steam::userHasLicenceForApp);
-	ClassDB::bind_method("requestUserGroupStatus", &Steam::requestUserGroupStatus);
-	ClassDB::bind_method("handleIncomingPacket", &Steam::handleIncomingPacket);
-	ClassDB::bind_method("getNextOutgoingPacket", &Steam::getNextOutgoingPacket);
-	ClassDB::bind_method("setAdvertiseServerActive", &Steam::setAdvertiseServerActive);
-	ClassDB::bind_method("associateWithClan", &Steam::associateWithClan);
-	ClassDB::bind_method("computeNewPlayerCompatibility", &Steam::computeNewPlayerCompatibility);
-
-	// SERVER STATS BIND METHODS ////////////////
-	ClassDB::bind_method("clearUserAchievement", &Steam::clearUserAchievement);
-	ClassDB::bind_method("serverGetUserAchievement", &Steam::serverGetUserAchievement);
-	ClassDB::bind_method("serverGetUserStatInt", &Steam::serverGetUserStatInt);
-	ClassDB::bind_method("serverGetUserStatFloat", &Steam::serverGetUserStatFloat);
-	ClassDB::bind_method("serverRequestUserStats", &Steam::serverRequestUserStats);
-	ClassDB::bind_method("setUserAchievement", &Steam::setUserAchievement);
-	ClassDB::bind_method("setUserStatInt", &Steam::setUserStatInt);
-	ClassDB::bind_method("setUserStatFloat", &Steam::setUserStatFloat);
-	ClassDB::bind_method("storeUserStats", &Steam::storeUserStats);
-	ClassDB::bind_method("updateUserAvgRateStat", &Steam::updateUserAvgRateStat);
+	ClassDB::bind_method(D_METHOD("writeScreenshot", "rgb", "width", "height"), &Steam::writeScreenshot);
 
 	// UGC BIND METHODS ////////////////////
-	ClassDB::bind_method("addAppDependency", &Steam::addAppDependency);
-	ClassDB::bind_method("addDependency", &Steam::addDependency);
-	ClassDB::bind_method("addExcludedTag", &Steam::addExcludedTag);
-	ClassDB::bind_method("addItemKeyValueTag", &Steam::addItemKeyValueTag);
-	ClassDB::bind_method("addItemPreviewFile", &Steam::addItemPreviewFile);
-	ClassDB::bind_method("addItemPreviewVideo", &Steam::addItemPreviewVideo);
-	ClassDB::bind_method("addItemToFavorites", &Steam::addItemToFavorites);
-	ClassDB::bind_method("addRequiredKeyValueTag", &Steam::addRequiredKeyValueTag);
-	ClassDB::bind_method("addRequiredTag", &Steam::addRequiredTag);
-	ClassDB::bind_method("addRequiredTagGroup", &Steam::addRequiredTagGroup);
-	ClassDB::bind_method("createItem", &Steam::createItem);
-	ClassDB::bind_method("createQueryAllUGCRequest", &Steam::createQueryAllUGCRequest);
-	ClassDB::bind_method("createQueryUGCDetailsRequest", &Steam::createQueryUGCDetailsRequest);
-	ClassDB::bind_method("createQueryUserUGCRequest", &Steam::createQueryUserUGCRequest);
-	ClassDB::bind_method("deleteItem", &Steam::deleteItem);
-	ClassDB::bind_method("downloadItem", &Steam::downloadItem);
-	ClassDB::bind_method("getAppDependencies", &Steam::getAppDependencies);
-	ClassDB::bind_method("getItemDownloadInfo", &Steam::getItemDownloadInfo);
-	ClassDB::bind_method("getItemInstallInfo", &Steam::getItemInstallInfo);
-	ClassDB::bind_method("getItemState", &Steam::getItemState);
-	ClassDB::bind_method("getItemUpdateProgress", &Steam::getItemUpdateProgress);
+	ClassDB::bind_method(D_METHOD("addAppDependency", "published_file_id", "app_id"), &Steam::addAppDependency);
+	ClassDB::bind_method(D_METHOD("addDependency", "published_file_id", "child_published_file_id"), &Steam::addDependency);
+	ClassDB::bind_method(D_METHOD("addExcludedTag", "query_handle", "tag_name"), &Steam::addExcludedTag);
+	ClassDB::bind_method(D_METHOD("addItemKeyValueTag", "query_handle", "key", "value"), &Steam::addItemKeyValueTag);
+	ClassDB::bind_method(D_METHOD("addItemPreviewFile", "query_handle", "preview_file", "type"), &Steam::addItemPreviewFile);
+	ClassDB::bind_method(D_METHOD("addItemPreviewVideo", "query_handle", "video_id"), &Steam::addItemPreviewVideo);
+	ClassDB::bind_method(D_METHOD("addItemToFavorites", "app_id", "published_file_id"), &Steam::addItemToFavorites);
+	ClassDB::bind_method(D_METHOD("addRequiredKeyValueTag", "query_handle", "key", "value"), &Steam::addRequiredKeyValueTag);
+	ClassDB::bind_method(D_METHOD("addRequiredTag", "query_handle", "name"), &Steam::addRequiredTag);
+	ClassDB::bind_method(D_METHOD("addRequiredTagGroup", "query_handle", "tag_array"), &Steam::addRequiredTagGroup);
+	ClassDB::bind_method(D_METHOD("initWorkshopForGameServer", "workshop_depot_id"), &Steam::initWorkshopForGameServer);
+	ClassDB::bind_method(D_METHOD("createItem", "app_id", "file_type"), &Steam::createItem);
+	ClassDB::bind_method(D_METHOD("createQueryAllUGCRequest", "query_type", "matching_type", "creator_id", "consumer_id", "page"), &Steam::createQueryAllUGCRequest);
+	ClassDB::bind_method(D_METHOD("createQueryUGCDetailsRequest", "published_file_id"), &Steam::createQueryUGCDetailsRequest);
+	ClassDB::bind_method(D_METHOD("createQueryUserUGCRequest", "account_id", "list_type", "matching_ugc_type", "sort_order", "creator_id", "consumer_id", "page"), &Steam::createQueryUserUGCRequest);
+	ClassDB::bind_method(D_METHOD("deleteItem", "published_file_id"), &Steam::deleteItem);
+	ClassDB::bind_method(D_METHOD("downloadItem", "published_file_id", "high_priority"), &Steam::downloadItem);
+	ClassDB::bind_method(D_METHOD("getItemDownloadInfo", "published_file_id"), &Steam::getItemDownloadInfo);
+	ClassDB::bind_method(D_METHOD("getItemInstallInfo", "published_file_id"), &Steam::getItemInstallInfo);
+	ClassDB::bind_method(D_METHOD("getItemState", "published_file_id"), &Steam::getItemState);
+	ClassDB::bind_method(D_METHOD("getItemUpdateProgress", "update_handle"), &Steam::getItemUpdateProgress);
 	ClassDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
-	ClassDB::bind_method("getQueryUGCAdditionalPreview", &Steam::getQueryUGCAdditionalPreview);
-	ClassDB::bind_method("getQueryUGCChildren", &Steam::getQueryUGCChildren);
-	ClassDB::bind_method("getQueryUGCKeyValueTag", &Steam::getQueryUGCKeyValueTag);
-	ClassDB::bind_method("getQueryUGCMetadata", &Steam::getQueryUGCMetadata);
-	ClassDB::bind_method("getQueryUGCNumAdditionalPreviews", &Steam::getQueryUGCNumAdditionalPreviews);
-	ClassDB::bind_method("getQueryUGCNumKeyValueTags", &Steam::getQueryUGCNumKeyValueTags);
-	ClassDB::bind_method("getQueryUGCNumTags", &Steam::getQueryUGCNumTags);
-	ClassDB::bind_method("getQueryUGCPreviewURL", &Steam::getQueryUGCPreviewURL);
-	ClassDB::bind_method("getQueryUGCResult", &Steam::getQueryUGCResult);
-	ClassDB::bind_method("getQueryUGCStatistic", &Steam::getQueryUGCStatistic);
-	ClassDB::bind_method("getQueryUGCTag", &Steam::getQueryUGCTag);
-	ClassDB::bind_method("getQueryUGCTagDisplayName", &Steam::getQueryUGCTagDisplayName);
+	ClassDB::bind_method(D_METHOD("getQueryUGCAdditionalPreview", "query_handle", "index", "preview_index"), &Steam::getQueryUGCAdditionalPreview);
+	ClassDB::bind_method(D_METHOD("getQueryUGCChildren", "query_handle", "index"), &Steam::getQueryUGCChildren);
+	ClassDB::bind_method(D_METHOD("getQueryUGCKeyValueTag", "query_handle", "index", "key_value_tag_index"), &Steam::getQueryUGCKeyValueTag);
+	ClassDB::bind_method(D_METHOD("getQueryUGCMetadata", "query_handle", "index"), &Steam::getQueryUGCMetadata);
+	ClassDB::bind_method(D_METHOD("getQueryUGCNumAdditionalPreviews", "query_handle", "index"), &Steam::getQueryUGCNumAdditionalPreviews);
+	ClassDB::bind_method(D_METHOD("getQueryUGCNumKeyValueTags", "query_handle", "index"), &Steam::getQueryUGCNumKeyValueTags);
+	ClassDB::bind_method(D_METHOD("getQueryUGCNumTags", "query_handle", "index"), &Steam::getQueryUGCNumTags);
+	ClassDB::bind_method(D_METHOD("getQueryUGCPreviewURL", "query_handle", "index"), &Steam::getQueryUGCPreviewURL);
+	ClassDB::bind_method(D_METHOD("getQueryUGCResult", "query_handle", "index"), &Steam::getQueryUGCResult);
+	ClassDB::bind_method(D_METHOD("getQueryUGCStatistic", "query_handle", "index", "stat_type"), &Steam::getQueryUGCStatistic);
+	ClassDB::bind_method(D_METHOD("getQueryUGCTag", "query_handle", "index", "tag_index"), &Steam::getQueryUGCTag);
+	ClassDB::bind_method(D_METHOD("getQueryUGCTagDisplayName", "query_handle", "index", "tag_index"), &Steam::getQueryUGCTagDisplayName);
 	ClassDB::bind_method("getSubscribedItems", &Steam::getSubscribedItems);
-	ClassDB::bind_method("getUserItemVote", &Steam::getUserItemVote);
-	ClassDB::bind_method("getWorkshopEULAStatus", &Steam::getWorkshopEULAStatus);
-	ClassDB::bind_method("initWorkshopForGameServer", &Steam::initWorkshopForGameServer);
-	ClassDB::bind_method("releaseQueryUGCRequest", &Steam::releaseQueryUGCRequest);
-	ClassDB::bind_method("removeAppDependency", &Steam::removeAppDependency);
-	ClassDB::bind_method("removeDependency", &Steam::removeDependency);
-	ClassDB::bind_method("removeItemFromFavorites", &Steam::removeItemFromFavorites);
-	ClassDB::bind_method("removeItemKeyValueTags", &Steam::removeItemKeyValueTags);
-	ClassDB::bind_method("removeItemPreview", &Steam::removeItemPreview);
-	ClassDB::bind_method("sendQueryUGCRequest", &Steam::sendQueryUGCRequest);
-	ClassDB::bind_method("setAllowCachedResponse", &Steam::setAllowCachedResponse);
-	ClassDB::bind_method("setCloudFileNameFilter", &Steam::setCloudFileNameFilter);
-	ClassDB::bind_method("setItemContent", &Steam::setItemContent);
-	ClassDB::bind_method("setItemDescription", &Steam::setItemDescription);
-	ClassDB::bind_method("setItemMetadata", &Steam::setItemMetadata);
-	ClassDB::bind_method("setItemPreview", &Steam::setItemPreview);
-	ClassDB::bind_method("setItemTags", &Steam::setItemTags);
-	ClassDB::bind_method("setItemTitle", &Steam::setItemTitle);
-	ClassDB::bind_method("setItemUpdateLanguage", &Steam::setItemUpdateLanguage);
-	ClassDB::bind_method("setItemVisibility", &Steam::setItemVisibility);
-	ClassDB::bind_method("setLanguage", &Steam::setLanguage);
-	ClassDB::bind_method("setMatchAnyTag", &Steam::setMatchAnyTag);
-	ClassDB::bind_method("setRankedByTrendDays", &Steam::setRankedByTrendDays);
-	ClassDB::bind_method("setReturnAdditionalPreviews", &Steam::setReturnAdditionalPreviews);
-	ClassDB::bind_method("setReturnChildren", &Steam::setReturnChildren);
-	ClassDB::bind_method("setReturnKeyValueTags", &Steam::setReturnKeyValueTags);
-	ClassDB::bind_method("setReturnLongDescription", &Steam::setReturnLongDescription);
-	ClassDB::bind_method("setReturnMetadata", &Steam::setReturnMetadata);
-	ClassDB::bind_method("setReturnOnlyIDs", &Steam::setReturnOnlyIDs);
-	ClassDB::bind_method("setReturnPlaytimeStats", &Steam::setReturnPlaytimeStats);
-	ClassDB::bind_method("setReturnTotalOnly", &Steam::setReturnTotalOnly);
-	ClassDB::bind_method("setSearchText", &Steam::setSearchText);
-	ClassDB::bind_method("setUserItemVote", &Steam::setUserItemVote);
-	ClassDB::bind_method("showWorkshopEULA", &Steam::showWorkshopEULA);
-	ClassDB::bind_method("startItemUpdate", &Steam::startItemUpdate);
-	ClassDB::bind_method("startPlaytimeTracking", &Steam::startPlaytimeTracking);
-	ClassDB::bind_method("stopPlaytimeTracking", &Steam::stopPlaytimeTracking);
+	ClassDB::bind_method(D_METHOD("getUserItemVote", "published_file_id"), &Steam::getUserItemVote);
+	ClassDB::bind_method(D_METHOD("releaseQueryUGCRequest", "query_handle"), &Steam::releaseQueryUGCRequest);
+	ClassDB::bind_method(D_METHOD("removeAppDependency", "published_file_id", "app_id"), &Steam::removeAppDependency);
+	ClassDB::bind_method(D_METHOD("removeDependency", "published_file_id", "child_published_file_id"), &Steam::removeDependency);
+	ClassDB::bind_method(D_METHOD("removeItemFromFavorites", "app_id", "published_file_id"), &Steam::removeItemFromFavorites);
+	ClassDB::bind_method(D_METHOD("removeItemKeyValueTags", "update_handle", "key"), &Steam::removeItemKeyValueTags);
+	ClassDB::bind_method(D_METHOD("removeItemPreview", "update_handle", "index"), &Steam::removeItemPreview);
+	ClassDB::bind_method(D_METHOD("sendQueryUGCRequest", "update_handle"), &Steam::sendQueryUGCRequest);
+	ClassDB::bind_method(D_METHOD("setAllowCachedResponse", "update_handle", "max_age_seconds"), &Steam::setAllowCachedResponse);
+	ClassDB::bind_method(D_METHOD("setCloudFileNameFilter", "update_handle", "match_cloud_filename"), &Steam::setCloudFileNameFilter);
+	ClassDB::bind_method(D_METHOD("setItemContent", "update_handle", "content_folder"), &Steam::setItemContent);
+	ClassDB::bind_method(D_METHOD("setItemDescription", "update_handle", "description"), &Steam::setItemDescription);
+	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "metadata"), &Steam::setItemMetadata);
+	ClassDB::bind_method(D_METHOD("setItemPreview", "update_handle", "preview_file"), &Steam::setItemPreview);
+	ClassDB::bind_method(D_METHOD("setItemTags", "update_handle", "tag_array"), &Steam::setItemTags);
+	ClassDB::bind_method(D_METHOD("setItemTitle", "update_handle", "title"), &Steam::setItemTitle);
+	ClassDB::bind_method(D_METHOD("setItemUpdateLanguage", "update_handle", "language"), &Steam::setItemUpdateLanguage);
+	ClassDB::bind_method(D_METHOD("setItemVisibility", "update_handle", "visibility"), &Steam::setItemVisibility);
+	ClassDB::bind_method(D_METHOD("setLanguage", "query_handle", "language"), &Steam::setLanguage);
+	ClassDB::bind_method(D_METHOD("setMatchAnyTag", "query_handle", "match_any_tag"), &Steam::setMatchAnyTag);
+	ClassDB::bind_method(D_METHOD("setRankedByTrendDays", "query_handle", "days"), &Steam::setRankedByTrendDays);
+	ClassDB::bind_method(D_METHOD("setReturnAdditionalPreviews", "query_handle", "return_additional_previews"), &Steam::setReturnAdditionalPreviews);
+	ClassDB::bind_method(D_METHOD("setReturnChildren", "query_handle", "return_children"), &Steam::setReturnChildren);
+	ClassDB::bind_method(D_METHOD("setReturnKeyValueTags", "query_handle", "return_key_value_tags"), &Steam::setReturnKeyValueTags);
+	ClassDB::bind_method(D_METHOD("setReturnLongDescription", "query_handle", "return_long_description"), &Steam::setReturnLongDescription);
+	ClassDB::bind_method(D_METHOD("setReturnMetadata", "query_handle", "return_metadata"), &Steam::setReturnMetadata);
+	ClassDB::bind_method(D_METHOD("setReturnOnlyIDs", "query_handle", "return_only_ids"), &Steam::setReturnOnlyIDs);
+	ClassDB::bind_method(D_METHOD("setReturnPlaytimeStats", "query_handle", "days"), &Steam::setReturnPlaytimeStats);
+	ClassDB::bind_method(D_METHOD("setReturnTotalOnly", "query_handle", "return_total_only"), &Steam::setReturnTotalOnly);
+	ClassDB::bind_method(D_METHOD("setSearchText", "query_handle", "search_text"), &Steam::setSearchText);
+	ClassDB::bind_method(D_METHOD("setUserItemVote", "published_file_id", "vote_up"), &Steam::setUserItemVote);
+	ClassDB::bind_method(D_METHOD("startItemUpdate", "app_id", "file_id"), &Steam::startItemUpdate);
+	ClassDB::bind_method(D_METHOD("startPlaytimeTracking", "published_file_ids"), &Steam::startPlaytimeTracking);
+	ClassDB::bind_method(D_METHOD("stopPlaytimeTracking", "published_file_ids"), &Steam::stopPlaytimeTracking);
 	ClassDB::bind_method("stopPlaytimeTrackingForAllItems", &Steam::stopPlaytimeTrackingForAllItems);
-	ClassDB::bind_method("submitItemUpdate", &Steam::submitItemUpdate);
-	ClassDB::bind_method("subscribeItem", &Steam::subscribeItem);
-	ClassDB::bind_method("suspendDownloads", &Steam::suspendDownloads);
-	ClassDB::bind_method("unsubscribeItem", &Steam::unsubscribeItem);
-	ClassDB::bind_method("updateItemPreviewFile", &Steam::updateItemPreviewFile);
-	ClassDB::bind_method("updateItemPreviewVideo", &Steam::updateItemPreviewVideo);
+	ClassDB::bind_method(D_METHOD("getAppDependencies", "published_file_id"), &Steam::getAppDependencies);
+	ClassDB::bind_method(D_METHOD("submitItemUpdate", "update_handle", "change_note"), &Steam::submitItemUpdate);
+	ClassDB::bind_method(D_METHOD("subscribeItem", "published_file_id"), &Steam::subscribeItem);
+	ClassDB::bind_method(D_METHOD("suspendDownloads", "suspend"), &Steam::suspendDownloads);
+	ClassDB::bind_method(D_METHOD("unsubscribeItem", "published_file_id"), &Steam::unsubscribeItem);
+	ClassDB::bind_method(D_METHOD("updateItemPreviewFile", "update_handle", "index", "preview_file"), &Steam::updateItemPreviewFile);
+	ClassDB::bind_method(D_METHOD("updateItemPreviewVideo", "update_handle", "index", "video_id"), &Steam::updateItemPreviewVideo);
+	ClassDB::bind_method("showWorkshopEULA", &Steam::showWorkshopEULA);	
+	ClassDB::bind_method("getWorkshopEULAStatus", &Steam::getWorkshopEULAStatus);
+	ClassDB::bind_method(D_METHOD("setTimeCreatedDateRange", "update_handle", "start", "end"), &Steam::setTimeCreatedDateRange);
+	ClassDB::bind_method(D_METHOD("setTimeUpdatedDateRange", "update_handle", "start", "end"), &Steam::setTimeUpdatedDateRange);
 
 	// USER BIND METHODS ////////////////////////
 	ClassDB::bind_method(D_METHOD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
-	ClassDB::bind_method("beginAuthSession", &Steam::beginAuthSession);
-	ClassDB::bind_method("cancelAuthTicket", &Steam::cancelAuthTicket);
-	ClassDB::bind_method("decompressVoice", &Steam::decompressVoice);
-	ClassDB::bind_method("endAuthSession", &Steam::endAuthSession);
+	ClassDB::bind_method(D_METHOD("beginAuthSession", "ticket", "ticket_size", "steam_id"), &Steam::beginAuthSession);
+	ClassDB::bind_method(D_METHOD("cancelAuthTicket", "auth_ticket"), &Steam::cancelAuthTicket);
+	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "voice_size", "sample_rate"), &Steam::decompressVoice);
+	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &Steam::endAuthSession);
 	ClassDB::bind_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
 	ClassDB::bind_method("getAvailableVoice", &Steam::getAvailableVoice);
 	ClassDB::bind_method("getDurationControl", &Steam::getDurationControl);
 	ClassDB::bind_method("getEncryptedAppTicket", &Steam::getEncryptedAppTicket);
-	ClassDB::bind_method("getGameBadgeLevel", &Steam::getGameBadgeLevel);
+	ClassDB::bind_method(D_METHOD("getGameBadgeLevel", "series", "foil"), &Steam::getGameBadgeLevel);
 	ClassDB::bind_method("getPlayerSteamLevel", &Steam::getPlayerSteamLevel);
 	ClassDB::bind_method("getSteamID", &Steam::getSteamID);
 	ClassDB::bind_method("getUserDataFolder", &Steam::getUserDataFolder);
 	ClassDB::bind_method("getVoice", &Steam::getVoice);
 	ClassDB::bind_method("getVoiceOptimalSampleRate", &Steam::getVoiceOptimalSampleRate);
-	ClassDB::bind_method("initiateGameConnection", &Steam::initiateGameConnection);
+	ClassDB::bind_method(D_METHOD("initiateGameConnection", "server_id", "server_ip", "server_port", "secure"), &Steam::initiateGameConnection);
 	ClassDB::bind_method("isBehindNAT", &Steam::isBehindNAT);
 	ClassDB::bind_method("isPhoneIdentifying", &Steam::isPhoneIdentifying);
 	ClassDB::bind_method("isPhoneRequiringVerification", &Steam::isPhoneRequiringVerification);
 	ClassDB::bind_method("isPhoneVerified", &Steam::isPhoneVerified);
 	ClassDB::bind_method("isTwoFactorEnabled", &Steam::isTwoFactorEnabled);
 	ClassDB::bind_method("loggedOn", &Steam::loggedOn);
-	ClassDB::bind_method("requestEncryptedAppTicket", &Steam::requestEncryptedAppTicket);
-	ClassDB::bind_method("requestStoreAuthURL", &Steam::requestStoreAuthURL);
+	ClassDB::bind_method(D_METHOD("requestEncryptedAppTicket", "secret"), &Steam::requestEncryptedAppTicket);
+	ClassDB::bind_method(D_METHOD("requestStoreAuthURL", "redirect"), &Steam::requestStoreAuthURL);
 	ClassDB::bind_method("startVoiceRecording", &Steam::startVoiceRecording);
 	ClassDB::bind_method("stopVoiceRecording", &Steam::stopVoiceRecording);
-	ClassDB::bind_method("terminateGameConnection", &Steam::terminateGameConnection);
-	ClassDB::bind_method("userHasLicenseForApp", &Steam::userHasLicenseForApp);
+	ClassDB::bind_method(D_METHOD("terminateGameConnection", "server_ip", "server_port"), &Steam::terminateGameConnection);
+	ClassDB::bind_method(D_METHOD("userHasLicenseForApp", "steam_id", "app_id"), &Steam::userHasLicenseForApp);
 	
 	// USER STATS BIND METHODS //////////////////
 	ClassDB::bind_method(D_METHOD("attachLeaderboardUGC", "ugcHandle", "this_leaderboard"), &Steam::attachLeaderboardUGC, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("clearAchievement", "achievementName"), &Steam::clearAchievement);
-	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "start", "end", "type"), &Steam::downloadLeaderboardEntries, DEFVAL(0), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntries", "start", "end", "type", "this_leaderboard"), &Steam::downloadLeaderboardEntries, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("downloadLeaderboardEntriesForUsers", "users_id", "this_leaderboard"), &Steam::downloadLeaderboardEntriesForUsers, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("findLeaderboard", "name"), &Steam::findLeaderboard);
-	ClassDB::bind_method("findOrCreateLeaderboard", &Steam::findOrCreateLeaderboard);
-	ClassDB::bind_method(D_METHOD("getAchievement",                 "achievementName"),        &Steam::getAchievement);
-	ClassDB::bind_method(D_METHOD("getAchievementAchievedPercent",  "achievementName"),        &Steam::getAchievementAchievedPercent);
-	ClassDB::bind_method(D_METHOD("getAchievementAndUnlockTime",    "achievementName"),        &Steam::getAchievementAndUnlockTime);
-	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "achievementName", "key"), &Steam::getAchievementDisplayAttribute);
-	ClassDB::bind_method(D_METHOD("getAchievementIcon",             "achievementName"),        &Steam::getAchievementIcon);
-	ClassDB::bind_method(D_METHOD("getAchievementName",             "achievementIndex"),       &Steam::getAchievementName);
-	ClassDB::bind_method("getGlobalStatInt", &Steam::getGlobalStatInt);
-	ClassDB::bind_method("getGlobalStatFloat", &Steam::getGlobalStatFloat);
-	ClassDB::bind_method("getGlobalStatIntHistory", &Steam::getGlobalStatIntHistory);
-	ClassDB::bind_method("getGlobalStatFloatHistory", &Steam::getGlobalStatFloatHistory);
+	ClassDB::bind_method(D_METHOD("findOrCreateLeaderboard", "name", "sort_method", "display_type"), &Steam::findOrCreateLeaderboard);
+	ClassDB::bind_method(D_METHOD("getAchievement", "achievementName"), &Steam::getAchievement);
+	ClassDB::bind_method(D_METHOD("getAchievementAchievedPercent", "name"), &Steam::getAchievementAchievedPercent);
+	ClassDB::bind_method(D_METHOD("getAchievementAndUnlockTime", "name"), &Steam::getAchievementAndUnlockTime);
+	ClassDB::bind_method(D_METHOD("getAchievementDisplayAttribute", "name", "key"), &Steam::getAchievementDisplayAttribute);
+	ClassDB::bind_method(D_METHOD("getAchievementIcon", "name"), &Steam::getAchievementIcon);
+	ClassDB::bind_method(D_METHOD("getAchievementName", "achievement"), &Steam::getAchievementName);
+	ClassDB::bind_method(D_METHOD("getAchievementProgressLimitsInt", "name"), &Steam::getAchievementProgressLimitsInt);
+	ClassDB::bind_method(D_METHOD("getAchievementProgressLimitsFloat", "name"), &Steam::getAchievementProgressLimitsFloat);
+	ClassDB::bind_method(D_METHOD("getGlobalStatInt", "name"), &Steam::getGlobalStatInt);
+	ClassDB::bind_method(D_METHOD("getGlobalStatFloat", "name"), &Steam::getGlobalStatFloat);
+	ClassDB::bind_method(D_METHOD("getGlobalStatIntHistory", "name"), &Steam::getGlobalStatIntHistory);
+	ClassDB::bind_method(D_METHOD("getGlobalStatFloatHistory", "name"), &Steam::getGlobalStatFloatHistory);
 	ClassDB::bind_method(D_METHOD("getLeaderboardDisplayType", "this_leaderboard"), &Steam::getLeaderboardDisplayType, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLeaderboardEntryCount", "this_leaderboard"), &Steam::getLeaderboardEntryCount, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLeaderboardName", "this_leaderboard"), &Steam::getLeaderboardName, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLeaderboardSortMethod", "this_leaderboard"), &Steam::getLeaderboardSortMethod, DEFVAL(0));
 	ClassDB::bind_method("getMostAchievedAchievementInfo", &Steam::getMostAchievedAchievementInfo);
-	ClassDB::bind_method(D_METHOD("getNextMostAchievedAchievementInfo", "index"), &Steam::getNextMostAchievedAchievementInfo);
+	ClassDB::bind_method(D_METHOD("getNextMostAchievedAchievementInfo", "iterator"), &Steam::getNextMostAchievedAchievementInfo);
 	ClassDB::bind_method("getNumAchievements", &Steam::getNumAchievements);
 	ClassDB::bind_method("getNumberOfCurrentPlayers", &Steam::getNumberOfCurrentPlayers);
-	ClassDB::bind_method("getStatFloat", &Steam::getStatFloat);
-	ClassDB::bind_method("getStatInt", &Steam::getStatInt);
-	ClassDB::bind_method(D_METHOD("getUserAchievement",              "user_id", "achievementName"), &Steam::getUserAchievement);
-	ClassDB::bind_method(D_METHOD("getUserAchievementAndUnlockTime", "user_id", "achievementName"), &Steam::getUserAchievementAndUnlockTime);
-	ClassDB::bind_method("getUserStatFloat", &Steam::getUserStatFloat);
-	ClassDB::bind_method("getUserStatInt", &Steam::getUserStatInt);
-	ClassDB::bind_method(D_METHOD("indicateAchievementProgress", "achievementName", "current_progress", "targetProgress"), &Steam::indicateAchievementProgress);
+	ClassDB::bind_method(D_METHOD("getStatFloat", "name"), &Steam::getStatFloat);
+	ClassDB::bind_method(D_METHOD("getStatInt", "name"), &Steam::getStatInt);
+	ClassDB::bind_method(D_METHOD("getUserAchievement", "steam_id", "name"), &Steam::getUserAchievement);
+	ClassDB::bind_method(D_METHOD("getUserAchievementAndUnlockTime", "steam_id", "name"), &Steam::getUserAchievementAndUnlockTime);
+	ClassDB::bind_method(D_METHOD("getUserStatFloat", "steam_id", "name"), &Steam::getUserStatFloat);
+	ClassDB::bind_method(D_METHOD("getUserStatInt", "steam_id", "name"), &Steam::getUserStatInt);
+	ClassDB::bind_method(D_METHOD("indicateAchievementProgress", "name", "current_progress", "max_progress"), &Steam::indicateAchievementProgress);
 	ClassDB::bind_method("requestCurrentStats", &Steam::requestCurrentStats);
 	ClassDB::bind_method("requestGlobalAchievementPercentages", &Steam::requestGlobalAchievementPercentages);
-	ClassDB::bind_method("requestGlobalStats", &Steam::requestGlobalStats);
-	ClassDB::bind_method("requestUserStats", &Steam::requestUserStats);
-	ClassDB::bind_method("resetAllStats", &Steam::resetAllStats);
-	ClassDB::bind_method(D_METHOD("setAchievement", "achievementName"), &Steam::setAchievement);
-	ClassDB::bind_method("setLeaderboardDetailsMax", &Steam::setLeaderboardDetailsMax);
-	ClassDB::bind_method("setStatFloat", &Steam::setStatFloat);
-	ClassDB::bind_method("setStatInt", &Steam::setStatInt);
+	ClassDB::bind_method(D_METHOD("requestGlobalStats", "history_days"), &Steam::requestGlobalStats);
+	ClassDB::bind_method(D_METHOD("requestUserStats", "steam_id"), &Steam::requestUserStats);
+	ClassDB::bind_method(D_METHOD("resetAllStats", "achievements_too"), &Steam::resetAllStats);
+	ClassDB::bind_method(D_METHOD("setAchievement", "name"), &Steam::setAchievement);
+	ClassDB::bind_method(D_METHOD("setLeaderboardDetailsMax", "max"), &Steam::setLeaderboardDetailsMax);
+	ClassDB::bind_method(D_METHOD("setStatFloat", "name", "value"), &Steam::setStatFloat);
+	ClassDB::bind_method(D_METHOD("setStatInt", "name", "value"), &Steam::setStatInt);
 	ClassDB::bind_method("storeStats", &Steam::storeStats);
-	ClassDB::bind_method("updateAvgRateStat", &Steam::updateAvgRateStat);
+	ClassDB::bind_method(D_METHOD("updateAvgRateStat", "name", "this_session", "session_length"), &Steam::updateAvgRateStat);
 	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best", "details", "this_leaderboard"), &Steam::uploadLeaderboardScore, DEFVAL(true), DEFVAL(PoolIntArray()), DEFVAL(0));
 	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
-	ClassDB::bind_method("getAchievementProgressLimitsInt", &Steam::getAchievementProgressLimitsInt);
-	ClassDB::bind_method("getAchievementProgressLimitsFloat", &Steam::getAchievementProgressLimitsFloat);
 
 	// UTILS BIND METHODS ///////////////////////
-	ClassDB::bind_method("overlayNeedsPresent", &Steam::overlayNeedsPresent);
+	ClassDB::bind_method(D_METHOD("filterText", "context", "steam_id", "message"), &Steam::filterText);
+	ClassDB::bind_method("getAPICallFailureReason", &Steam::getAPICallFailureReason);
 	ClassDB::bind_method("getAppID", &Steam::getAppID);
 	ClassDB::bind_method("getCurrentBatteryPower", &Steam::getCurrentBatteryPower);
 	ClassDB::bind_method(D_METHOD("getImageRGBA", "image"), &Steam::getImageRGBA);
@@ -11680,24 +12001,29 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getSecondsSinceComputerActive", &Steam::getSecondsSinceComputerActive);
 	ClassDB::bind_method("getServerRealTime", &Steam::getServerRealTime);
 	ClassDB::bind_method("getSteamUILanguage", &Steam::getSteamUILanguage);
+	ClassDB::bind_method("initFilterText", &Steam::initFilterText);
+	ClassDB::bind_method("isAPICallCompleted", &Steam::isAPICallCompleted);
 	ClassDB::bind_method("isOverlayEnabled", &Steam::isOverlayEnabled);
+	ClassDB::bind_method("isSteamChinaLauncher", &Steam::isSteamChinaLauncher);
 	ClassDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
 	ClassDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
 	ClassDB::bind_method("isVRHeadsetStreamingEnabled", &Steam::isVRHeadsetStreamingEnabled);
-	ClassDB::bind_method("setOverlayNotificationInset", &Steam::setOverlayNotificationInset);
+	ClassDB::bind_method("overlayNeedsPresent", &Steam::overlayNeedsPresent);
+	ClassDB::bind_method(D_METHOD("setOverlayNotificationInset", "horizontal", "vertical"), &Steam::setOverlayNotificationInset);
 	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
-	ClassDB::bind_method("setVRHeadsetStreamingEnabled", &Steam::setVRHeadsetStreamingEnabled);
-	ClassDB::bind_method("showGamepadTextInput", &Steam::showGamepadTextInput);
-	ClassDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
-	ClassDB::bind_method("filterText", &Steam::filterText);
-	ClassDB::bind_method("getAPICallFailureReason", &Steam::getAPICallFailureReason);
-	ClassDB::bind_method("initFilterText", &Steam::initFilterText);
-	ClassDB::bind_method("isAPICallCompleted", &Steam::isAPICallCompleted);
-	ClassDB::bind_method("isSteamChinaLauncher", &Steam::isSteamChinaLauncher);
-	ClassDB::bind_method("isSteamRunningOnSteamDeck", &Steam::isSteamRunningOnSteamDeck);
+	ClassDB::bind_method(D_METHOD("setVRHeadsetStreamingEnabled", "enabled"), &Steam::setVRHeadsetStreamingEnabled);
+	ClassDB::bind_method(D_METHOD("showGamepadTextInput", "input_mode", "line_input_mode", "description", "max_text", "preset_text"), &Steam::showGamepadTextInput);
 	ClassDB::bind_method(D_METHOD("showFloatingGamepadTextInput", "input_mode", "text_field_x_position", "text_field_y_position", "text_field_width", "text_field_height"), &Steam::showFloatingGamepadTextInput);
 	ClassDB::bind_method(D_METHOD("setGameLauncherMode", "mode"), &Steam::setGameLauncherMode);
+	ClassDB::bind_method("startVRDashboard", &Steam::startVRDashboard);	
+	ClassDB::bind_method("isSteamRunningOnSteamDeck", &Steam::isSteamRunningOnSteamDeck);
+	ClassDB::bind_method("dismissFloatingGamepadTextInput", &Steam::dismissFloatingGamepadTextInput);
 
+	// VIDEO BIND METHODS ///////////////////////
+	ClassDB::bind_method(D_METHOD("getOPFSettings", "app_id"), &Steam::getOPFSettings);
+	ClassDB::bind_method(D_METHOD("getOPFStringForApp", "app_id"), &Steam::getOPFStringForApp);
+	ClassDB::bind_method("getVideoURL", &Steam::getVideoURL);
+	ClassDB::bind_method("isBroadcasting", &Steam::isBroadcasting);
 
 	/////////////////////////////////////////////
 	// CALLBACK SIGNAL BINDS
@@ -11730,7 +12056,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("connected_chat_join"));
 	ADD_SIGNAL(MethodInfo("connected_chat_leave"));
 	ADD_SIGNAL(MethodInfo("connected_clan_chat_message"));
-	ADD_SIGNAL(MethodInfo("_connected_friend_chat_message"));
+	ADD_SIGNAL(MethodInfo("connected_friend_chat_message"));
 	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
 	ADD_SIGNAL(MethodInfo("overlay_toggled", PropertyInfo(Variant::BOOL, "active")));
 	ADD_SIGNAL(MethodInfo("join_game_requested"));
@@ -11741,7 +12067,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("overlay_browser_protocol"));
 	ADD_SIGNAL(MethodInfo("unread_chat_messages_changed"));
 
-	// GAME SERVER SIGNALS //////////////////////
+	// GAME SEARCH SIGNALS //////////////////////
 	ADD_SIGNAL(MethodInfo("search_for_game_progress"));
 	ADD_SIGNAL(MethodInfo("search_for_game_result"));
 	ADD_SIGNAL(MethodInfo("request_players_for_game_progress"));
@@ -11749,6 +12075,24 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("request_players_for_game_final_result"));
 	ADD_SIGNAL(MethodInfo("submit_player_result"));
 	ADD_SIGNAL(MethodInfo("end_game_result"));
+
+	// GAME SERVER SIGNALS //////////////////////
+	ADD_SIGNAL(MethodInfo("server_failure", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
+	ADD_SIGNAL(MethodInfo("server_connected"));
+	ADD_SIGNAL(MethodInfo("server_disconnected", PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("client_approved", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "ownerID")));
+	ADD_SIGNAL(MethodInfo("client_denied", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
+	ADD_SIGNAL(MethodInfo("client_kick", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
+	ADD_SIGNAL(MethodInfo("server_secure", PropertyInfo(Variant::INT, "secure")));
+	ADD_SIGNAL(MethodInfo("gameplay_stats", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "rank"), PropertyInfo(Variant::INT, "totalConnects"), PropertyInfo(Variant::INT, "totalMinutesPlayed")));
+	ADD_SIGNAL(MethodInfo("group_status", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "group_id"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
+	ADD_SIGNAL(MethodInfo("clan_associate", PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("player_compatibility", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steam_id")));
+
+	// GAME SERVER STATS SIGNALS ////////////////
+	ADD_SIGNAL(MethodInfo("stat_received"));
+	ADD_SIGNAL(MethodInfo("stats_stored"));
+	ADD_SIGNAL(MethodInfo("stats_unloaded"));
 
 	// HTML SURFACE SIGNALS /////////////////////
 	ADD_SIGNAL(MethodInfo("html_browser_ready"));
@@ -11780,7 +12124,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("http_request_headers_received"));
 
 	// INPUT SIGNALS ////////////////////////////
-//	ADD_SIGNAL(MethodInfo("input_action_event"));
+	ADD_SIGNAL(MethodInfo("input_action_event"));
 	ADD_SIGNAL(MethodInfo("input_device_connected"));
 	ADD_SIGNAL(MethodInfo("input_device_disconnected"));
 	ADD_SIGNAL(MethodInfo("input_configuration_loaded"));
@@ -11833,6 +12177,7 @@ void Steam::_bind_methods(){
 	// NETWORKING SOCKETS SIGNALS ///////////////
 	ADD_SIGNAL(MethodInfo("network_connection_status_changed"));
 	ADD_SIGNAL(MethodInfo("network_authentication_status"));
+	ADD_SIGNAL(MethodInfo("fake_ip_result"));
 
 	// NETWORKING UTILS SIGNALS /////////////////
 	ADD_SIGNAL(MethodInfo("relay_network_status"));
@@ -11864,24 +12209,6 @@ void Steam::_bind_methods(){
 	// SCREENSHOT SIGNALS ///////////////////////
 	ADD_SIGNAL(MethodInfo("screenshot_ready", PropertyInfo(Variant::INT, "screenshot_handle"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("screenshot_requested"));
-	
-	// SERVER SIGNALS ///////////////////////////
-	ADD_SIGNAL(MethodInfo("server_failure", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
-	ADD_SIGNAL(MethodInfo("server_connected"));
-	ADD_SIGNAL(MethodInfo("server_disconnected", PropertyInfo(Variant::INT, "result")));
-	ADD_SIGNAL(MethodInfo("client_approved", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "ownerID")));
-	ADD_SIGNAL(MethodInfo("client_denied", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
-	ADD_SIGNAL(MethodInfo("client_kick", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
-	ADD_SIGNAL(MethodInfo("server_secure", PropertyInfo(Variant::INT, "secure")));
-	ADD_SIGNAL(MethodInfo("gameplay_stats", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "rank"), PropertyInfo(Variant::INT, "totalConnects"), PropertyInfo(Variant::INT, "totalMinutesPlayed")));
-	ADD_SIGNAL(MethodInfo("group_status", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "group_id"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
-	ADD_SIGNAL(MethodInfo("clan_associate", PropertyInfo(Variant::INT, "result")));
-	ADD_SIGNAL(MethodInfo("player_compatibility", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "playersDontLikeCandidate"), PropertyInfo(Variant::INT, "playersCandidateDoesntLike"), PropertyInfo(Variant::INT, "clanPlayersDontLikeCandidate"), PropertyInfo(Variant::INT, "steam_id")));
-
-	// SERVER STATS SIGNALS /////////////////////
-	ADD_SIGNAL(MethodInfo("stat_received"));
-	ADD_SIGNAL(MethodInfo("stats_stored"));
-	ADD_SIGNAL(MethodInfo("stats_unloaded"));
 
 	// UGC SIGNALS //////////////////////////////
 	ADD_SIGNAL(MethodInfo("add_app_dependency_result"));
@@ -11943,8 +12270,6 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("floating_gamepad_text_input_dismissed"));
 
 	// VIDEO SIGNALS ////////////////////////////
-//	ADD_SIGNAL(MethodInfo("broadcast_upload_start"));	<------ In documentation but not in actual SDK?
-//	ADD_SIGNAL(MethodInfo("broadcast_upload_stop"));	<------ In documentation but not in actual SDK?
 	ADD_SIGNAL(MethodInfo("get_opf_settings_result"));
 	ADD_SIGNAL(MethodInfo("get_video_result"));
 
@@ -11967,6 +12292,15 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
 	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
 	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
+
+	// STEAM SERVER API CONSTANTS ///////////////
+	BIND_CONSTANT(FLAG_ACTIVE);															// 0x01
+	BIND_CONSTANT(FLAG_DEDICATED);														// 0x04
+	BIND_CONSTANT(FLAG_LINUX);															// 0x08
+	BIND_CONSTANT(FLAG_NONE);															// 0x00
+	BIND_CONSTANT(FLAG_PASSWORDED);														// 0x10
+	BIND_CONSTANT(FLAG_PRIVATE);														// 0x20
+	BIND_CONSTANT(FLAG_SECURE);															// 0x02
 
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
@@ -12062,7 +12396,7 @@ void Steam::_bind_methods(){
 	// ENUM CONSTANT BINDS //////////////////////
 	/////////////////////////////////////////////
 	//
-	// ACCOUNTTYPE ENUM CONSTANTS ///////////////
+	// ACCOUNT TYPE /////////////////////////////
 	BIND_CONSTANT(ACCOUNT_TYPE_INVALID);												// 0
 	BIND_CONSTANT(ACCOUNT_TYPE_INDIVIDUAL);												// 1
 	BIND_CONSTANT(ACCOUNT_TYPE_MULTISEAT);												// 2
@@ -12076,7 +12410,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ACCOUNT_TYPE_ANON_USER);												// 10
 	BIND_CONSTANT(ACCOUNT_TYPE_MAX);													// 11
 
-	// APPOWNERSHIPFLAGS ENUM CONSTANTS /////////
+	// APP OWNERSHIP FLAGS //////////////////////
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_NONE);											// 0x0000
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_OWNS_LICENSE);									// 0x0001
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_FREE_LICENSE);									// 0x0002
@@ -12098,14 +12432,14 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_RENTAL);											// 0x20000
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_SITE_LICENSE);									// 0x40000
 
-	// APPRELEASESTATE ENUM CONSTANTS ///////////
+	// APP RELEASE STATE ////////////////////////
 	BIND_CONSTANT(APP_RELEASE_STATE_UNKNOWN);											// 0
 	BIND_CONSTANT(APP_RELEASE_STATE_UNAVAILABLE);										// 1
 	BIND_CONSTANT(APP_RELEASE_STATE_PRERELEASE);										// 2
 	BIND_CONSTANT(APP_RELEASE_STATE_PRELOAD_ONLY);										// 3
 	BIND_CONSTANT(APP_RELEASE_STATE_RELEASED);											// 4
 
-	// APPTYPE ENUM CONSTANTS ///////////////////
+	// APP TYPE /////////////////////////////////
 	BIND_CONSTANT(APP_TYPE_INVALID);													// 0x000
 	BIND_CONSTANT(APP_TYPE_GAME);														// 0x001
 	BIND_CONSTANT(APP_TYPE_APPLICATION);												// 0x002
@@ -12125,7 +12459,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(APP_TYPE_SHORTCUT);													// 0x40000000
 	BIND_CONSTANT(APP_TYPE_DEPOT_ONLY);													// 0X80000000
 
-	// AUTHSESSIONRESPONSE ENUM CONSTANTS ///////
+	// AUTH SESSION RESPONSE ////////////////////
 	BIND_CONSTANT(AUTH_SESSION_RESPONSE_OK);											// 0
 	BIND_CONSTANT(AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM);					// 1
 	BIND_CONSTANT(AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED);							// 2
@@ -12137,7 +12471,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID);							// 8
 	BIND_CONSTANT(AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN);							// 9
 
-	// BEGINAUTHSESSIONRESULT ENUM CONSTANTS ////
+	// BEGIN AUTH SESSION RESULT ////////////////
 	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_OK);										// 0
 	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET);							// 1
 	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST);							// 2
@@ -12145,7 +12479,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH);								// 4
 	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET);							// 5
 
-	// BROADCASTUPLOADRESULT ENUM CONSTANTS /////
+	// BROADCAST UPLOAD RESULT //////////////////
 	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_NONE);										// 0
 	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_OK);											// 1
 	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_INIT_FAILED);									// 2
@@ -12161,7 +12495,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND);								// 12
 	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND);							// 13
 
-	// CHATENTRYTYPE ENUM CONSTANTS /////////////
+	// CHAT ENTRY TYPE //////////////////////////
 	BIND_CONSTANT(CHAT_ENTRY_TYPE_INVALID);												// 0
 	BIND_CONSTANT(CHAT_ENTRY_TYPE_CHAT_MSG);											// 1
 	BIND_CONSTANT(CHAT_ENTRY_TYPE_TYPING);												// 2
@@ -12175,7 +12509,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_ENTRY_TYPE_HISTORICAL_CHAT);										// 11
 	BIND_CONSTANT(CHAT_ENTRY_TYPE_LINK_BLOCKED);										// 14
 
-	// CHATROOMENTERRESPONSE ENUM CONSTANTS /////
+	// CHAT ROOM ENTER RESPONSE /////////////////
 	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_SUCCESS);									// 1
 	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST);								// 2
 	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED);								// 3
@@ -12188,13 +12522,13 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU);							// 10
 	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER);							// 11
 
-	// CHATSTEAMIDINSTANCEFLAGS ENUM CONSTANTS //
+	// CHAT STEAM ID INSTANCE FLAGS /////////////
 	BIND_CONSTANT(CHAT_ACCOUNT_INSTANCE_MASK);											// 0X00000FFF
 	BIND_CONSTANT(CHAT_INSTANCE_FLAG_CLAN);												// ((k_unSteamAccountInstanceMask + 1) >> 1)
 	BIND_CONSTANT(CHAT_INSTANCE_FLAG_LOBBY);											// ((k_unSteamAccountInstanceMask + 1) >> 2)
 	BIND_CONSTANT(CHAT_INSTANCE_FLAG_MMS_LOBBY);										// ((k_unSteamAccountInstanceMask + 1) >> 3)
 
-	// DENYREASON ENUM CONSTANTS ////////////////
+	// DENY REASON //////////////////////////////
 	BIND_CONSTANT(DENY_INVALID);														// 0
 	BIND_CONSTANT(DENY_INVALID_VERSION);												// 1
 	BIND_CONSTANT(DENY_GENERIC);														// 2
@@ -12212,13 +12546,13 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(DENY_STEAM_VALIDATION_STALLED);										// 14
 	BIND_CONSTANT(DENY_STEAM_OWNER_LEFT_GUEST_USER);									// 15
 
-	// GAMEIDTYPE ENUM CONSTANTS ////////////////
+	// GAME ID TYPE /////////////////////////////
 	BIND_CONSTANT(GAME_TYPE_APP);														// 0
 	BIND_CONSTANT(GAME_TYPE_GAME_MOD);													// 1
 	BIND_CONSTANT(GAME_TYPE_SHORTCUT);													// 2
 	BIND_CONSTANT(GAME_TYPE_P2P);														// 3
 
-	// LAUNCHOPTIONTYPE ENUM CONSTANTS //////////////
+	// LAUNCH OPTION TYPE ///////////////////////
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_NONE);												// 0
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_DEFAULT);											// 1
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_SAFE_MODE);										// 2
@@ -12237,7 +12571,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OS_VR);											// 15
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_DIALOG);											// 1000
 
-	// MARKETINGMESSAGEFLAGS ENUM CONSTANTS /////////
+	// MARKETING MESSAGE FLAGS //////////////////
 	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_NONE);										// 0
 	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY);								// (1<<0)
 	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS);							// (1<<1)
@@ -12245,13 +12579,13 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX);								// (1<<3)
 	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS);
 
-	// NOTIFICATIONPOSITION ENUM CONSTANTS //////////
+	// NOTIFICATION POSITION ////////////////////
 	BIND_CONSTANT(POSITION_TOP_LEFT);													// 0
 	BIND_CONSTANT(POSITION_TOP_RIGHT);													// 1
 	BIND_CONSTANT(POSITION_BOTTOM_LEFT);												// 2
 	BIND_CONSTANT(POSITION_BOTTOM_RIGHT);												// 3
 
-	// RESULT ENUM CONSTANTS ////////////////////
+	// RESULT ///////////////////////////////////
 	BIND_CONSTANT(RESULT_OK);															// 1
 	BIND_CONSTANT(RESULT_FAIL);															// 2
 	BIND_CONSTANT(RESULT_NO_CONNECTION);												// 3
@@ -12360,16 +12694,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);											// 107
 	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);												// 108
 
-	// STEAMUSERSTATTYPE ENUM CONSTANTS /////////
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_INVALID);										// 0
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_INT);											// 1
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_FLOAT);											// 2
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_AVGRATE);										// 3
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_ACHIEVEMENTS);									// 4
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS);								// 5
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_MAX);											// 6
-
-	// UNIVERSE ENUM CONSTANTS //////////////////
+	// UNIVERSE /////////////////////////////////
 	BIND_CONSTANT(UNIVERSE_INVALID);													// 0
 	BIND_CONSTANT(UNIVERSE_PUBLIC);														// 1
 	BIND_CONSTANT(UNIVERSE_BETA);														// 2
@@ -12377,12 +12702,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UNIVERSE_DEV);														// 4
 	BIND_CONSTANT(UNIVERSE_MAX);														// 5
 
-	// USERHASLICENSEFORAPPRESULT ENUM CONSTANTS
+	// USER HAS LICENSE FOR APP RESULT //////////
 	BIND_CONSTANT(USER_HAS_LICENSE_RESULT_HAS_LICENSE);									// 0
 	BIND_CONSTANT(USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE);						// 1
 	BIND_CONSTANT(USER_HAS_LICENSE_RESULT_NO_AUTH);										// 2
 
-	// VOICE RESULT ENUM CONSTANTS //////////////
+	// VOICE RESULT /////////////////////////////
 	BIND_CONSTANT(VOICE_RESULT_OK);														// 0
 	BIND_CONSTANT(VOICE_RESULT_NOT_INITIALIZED);										// 1
 	BIND_CONSTANT(VOICE_RESULT_NOT_RECORDING);											// 2
@@ -12391,7 +12716,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(VOICE_RESULT_DATA_CORRUPTED);											// 5
 	BIND_CONSTANT(VOICE_RESULT_RESTRICTED);												// 6
 
-	// VR HMD TYPE ENUM CONSTANTS ///////////////
+	// VR HMD TYPE
 	BIND_CONSTANT(VR_HMD_TYPE_NONE);													// -1
 	BIND_CONSTANT(VR_HMD_TYPE_UNKNOWN);													// 0
 	BIND_CONSTANT(VR_HMD_TYPE_HTC_DEV);													// 1
@@ -12403,7 +12728,19 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(VR_HMD_TYPE_OCULUS_RIFT);												// 23
 	BIND_CONSTANT(VR_HMD_TYPE_OCULUS_UNKNOWN);											// 40
 
-	// FRIENDFLAGS ENUM CONSTANTS ///////////////
+	// REGISTER ACTIVATION CODE RESULTS//////////
+	BIND_CONSTANT(ACTIVATION_CODE_RESULT_OK);											// 0
+	BIND_CONSTANT(ACTIVATION_CODE_RESULT_FAIL);											// 1
+	BIND_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_REGISTERED);							// 2
+	BIND_CONSTANT(ACTIVATION_CODE_RESULT_TIMEOUT);										// 3
+	BIND_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_OWNED);								// 4
+
+	// AVATAR ///////////////////////////////////
+	BIND_CONSTANT(AVATAR_SMALL);														// 1
+	BIND_CONSTANT(AVATAR_MEDIUM);														// 2
+	BIND_CONSTANT(AVATAR_LARGE);														// 3
+
+	// FRIEND FLAGS ENUM ////////////////////////
 	BIND_CONSTANT(FRIEND_FLAG_NONE);													// 0X00
 	BIND_CONSTANT(FRIEND_FLAG_BLOCKED);													// 0X01
 	BIND_CONSTANT(FRIEND_FLAG_FRIENDSHIP_REQUESTED);									// 0X02
@@ -12417,7 +12754,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(FRIEND_FLAG_CHAT_MEMBER);												// 0X1000
 	BIND_CONSTANT(FRIEND_FLAG_ALL);														// 0XFFFF
 
-	// FRIENDRELATIONSHIP ENUM CONSTANTS ////////
+	// FRIEND RELATIONSHIP //////////////////////
 	BIND_CONSTANT(FRIEND_RELATION_NONE);												// 0
 	BIND_CONSTANT(FRIEND_RELATION_BLOCKED);												// 1
 	BIND_CONSTANT(FRIEND_RELATION_REQUEST_RECIPIENT);									// 2
@@ -12428,12 +12765,16 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(FRIEND_RELATION_SUGGESTED);											// 7
 	BIND_CONSTANT(FRIEND_RELATION_MAX);													// 8
 
-	// OVERLAYTOSTOREFLAG ENUM CONSTANTS ////////
+	// OVERLAY TO STORE FLAG ////////////////////
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);											// 0
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);									// 1
 	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_AND_TO_CART_AND_SHOW);							// 2
 
-	// PERSONACHANGE ENUM CONSTANTS /////////////
+	// OVERLAY TO WEB PAGE MODE /////////////////
+	BIND_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_DEFAULT);									// 0
+	BIND_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_MODAL);										// 1
+
+	// PERSONA CHANGE ///////////////////////////
 	BIND_CONSTANT(PERSONA_CHANGE_NAME);													// 0X0001
 	BIND_CONSTANT(PERSONA_CHANGE_STATUS);												// 0X0002
 	BIND_CONSTANT(PERSONA_CHANGE_COME_ONLINE);											// 0X0004
@@ -12449,7 +12790,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(PERSONA_CHANGE_NICKNAME);												// 0X1000
 	BIND_CONSTANT(PERSONA_CHANGE_STEAM_LEVEL);											// 0X2000
 
-	// PERSONASTATE ENUM CONSTANTS //////////////
+	// PERSONA STATE ////////////////////////////
 	BIND_CONSTANT(PERSONA_STATE_OFFLINE);												// 0
 	BIND_CONSTANT(PERSONA_STATE_ONLINE);												// 1
 	BIND_CONSTANT(PERSONA_STATE_BUSY);													// 2
@@ -12459,7 +12800,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(PERSONA_STATE_LOOKING_TO_PLAY);										// 6
 	BIND_CONSTANT(PERSONA_STATE_MAX);													// 7
 
-	// USERRESTRICTION ENUM CONSTANTS ///////////
+	// USER RESTRICTION /////////////////////////
 	BIND_CONSTANT(USER_RESTRICTION_NONE);												// 0
 	BIND_CONSTANT(USER_RESTRICTION_UNKNOWN);											// 1
 	BIND_CONSTANT(USER_RESTRICTION_ANY_CHAT);											// 2
@@ -12469,18 +12810,36 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(USER_RESTRICTION_GAME_INVITES);										// 32
 	BIND_CONSTANT(USER_RESTRICTION_TRADING);											// 64
 
-	// HTMLKEYMODIFIERS ENUM CONSTANTS //////////
+	// GAME SEARCH ERROR CODE ///////////////////
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_OK);											// 1
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS);					// 2
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS);						// 3
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER);								// 4
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE);							// 5
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID);						// 6
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_OFFLINE);										// 7
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED);								// 8
+	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR);								// 9
+
+	// GAME SEARCH PLAYER RESULT ////////////////
+	BIND_CONSTANT(PLAYER_RESULT_FAILED_TO_CONNECT);										// 1
+	BIND_CONSTANT(PLAYER_RESULT_ABANDONED);												// 2
+	BIND_CONSTANT(PLAYER_RESULT_KICKED);												// 3
+	BIND_CONSTANT(PLAYER_RESULT_INCOMPLETE);											// 4
+	BIND_CONSTANT(PLAYER_RESULT_COMPLETED);	
+
+	// HTML KEY MODIFIERS ///////////////////////
 	BIND_CONSTANT(HTML_KEY_MODIFIER_NONE);												// 0
 	BIND_CONSTANT(HTML_KEY_MODIFIER_ALT_DOWN);											// (1<<0)
 	BIND_CONSTANT(HTML_KEY_MODIFIER_CTRL_DOWN);											// (1<<1)
 	BIND_CONSTANT(HTML_KEY_MODIFIER_SHIFT_DOWN);										// (1<<2)
 
-	// HTMLMOUSEBUTTON ENUM CONSTANTS ///////////
+	// HTML MOUSE BUTTON ////////////////////////
 	BIND_CONSTANT(HTML_MOUSE_BUTTON_LEFT);												// 0
 	BIND_CONSTANT(HTML_MOUSE_BUTTON_RIGHT);												// 1
 	BIND_CONSTANT(HTML_MOUSE_BUTTON_MIDDLE);											// 2
 
-	// MOUSECURSOR ENUM CONSTANTS ///////////////
+	// MOUSE CURSOR /////////////////////////////
 	BIND_CONSTANT(DC_USER);																// 0
 	BIND_CONSTANT(DC_NONE);																// 1
 	BIND_CONSTANT(DC_ARROW);															// 2
@@ -12524,7 +12883,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(DC_CUSTOM);															// 40
 	BIND_CONSTANT(DC_LAST);																// 41
 
-	// HTTPMETHOD ENUM CONSTANTS ////////////////
+	// HTTP METHOD //////////////////////////////
 	BIND_CONSTANT(HTTP_METHOD_INVALID);													// 0
 	BIND_CONSTANT(HTTP_METHOD_GET);														// 1
 	BIND_CONSTANT(HTTP_METHOD_HEAD);													// 2
@@ -12534,7 +12893,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(HTTP_METHOD_OPTIONS);													// 6
 	BIND_CONSTANT(HTTP_METHOD_PATCH);													// 7
 
-	// HTTPSTATUSCODE ENUM CONSTANTS ////////////
+	// HTTP STATUS CODE /////////////////////////
 	BIND_CONSTANT(HTTP_STATUS_CODE_INVALID);											// 0
 	BIND_CONSTANT(HTTP_STATUS_CODE_100_CONTINUE);										// 100
 	BIND_CONSTANT(HTTP_STATUS_CODE_101_SWITCHING_PROTOCOLS);							// 101
@@ -12580,7 +12939,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED);						// 505
 	BIND_CONSTANT(HTTP_STATUS_CODE_5XX_UNKNOWN);										// 599
 
-	// INPUTACTIONORIGIN ENUM CONSTANTS /////////
+	// INPUT ACTION ORIGIN //////////////////////
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_NONE);											// 0
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_A);												// 1
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_B);												// 2
@@ -12817,22 +13176,203 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED8);								// 233
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED9);								// 234
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED10);								// 235
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_COUNT);											// 258
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_OPTION);										// 242
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CREATE);										// 243
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_MUTE);										// 244
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_TOUCH);								// 245
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_SWIPE);								// 246
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_CLICK);								// 247
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADNORTH);							// 248
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADSOUTH);							// 249
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADWEST);							// 250
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADEAST);							// 251
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_TOUCH);								// 252
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_SWIPE);								// 253
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_CLICK);								// 254
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADNORTH);							// 255
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADSOUTH);							// 256
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADWEST);							// 257
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADEAST);							// 258
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_TOUCH);								// 259
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_SWIPE);								// 260
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_CLICK);								// 261
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADNORTH);							// 262
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADSOUTH);							// 263
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADWEST);							// 264
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADEAST);							// 265
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_PULL);							// 266
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_CLICK);							// 267
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_PULL);							// 268
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_CLICK);							// 269
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_MOVE);								// 270
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_CLICK);								// 271
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADNORTH);							// 272
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADSOUTH);							// 273
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADWEST);							// 274
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADEAST);							// 275
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_MOVE);								// 276
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_CLICK);							// 277
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADNORTH);						// 278
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADSOUTH);						// 279
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADWEST);							// 280
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADEAST);							// 281
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_NORTH);									// 282
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_SOUTH);									// 283
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_WEST);									// 284
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_EAST);									// 285
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_MOVE);									// 286
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_PITCH);									// 287
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_YAW);									// 288
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_ROLL);									// 289
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_MOVE);									// 290
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED1);									// 291
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED2);									// 292
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED3);									// 293
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED4);									// 294
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED5);									// 295
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED6);									// 296
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED7);									// 297
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED8);									// 298
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED9);									// 299
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED10);									// 300
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED11);									// 301
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED12);									// 302
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED13);									// 303
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED14);									// 304
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED15);									// 305
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED16);									// 306
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED17);									// 307
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED18);									// 308
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED19);									// 309
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED20);									// 310
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_A);										// 311
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_B);										// 312
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_X);										// 313
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_Y);										// 314
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L1);									// 315
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R1);									// 316
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_MENU);									// 317
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_VIEW);									// 318
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_TOUCH);							// 319
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_SWIPE);							// 320
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_CLICK);							// 321
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADNORTH);						// 322
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADSOUTH);						// 323
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADWEST);						// 324
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADEAST);						// 325
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_TOUCH);						// 326
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_SWIPE);						// 327
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_CLICK);						// 328
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADNORTH);					// 329
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADSOUTH);					// 330
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADWEST);						// 331
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADEAST);						// 332
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2_SOFTPULL);							// 333
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2);									// 334
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2_SOFTPULL);							// 335
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2);									// 336
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_MOVE);						// 337
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L3);									// 338
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADNORTH);					// 339
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADSOUTH);					// 340
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADWEST);					// 341
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADEAST);					// 342
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_TOUCH);						// 343
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_MOVE);						// 344
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R3);									// 345
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADNORTH);					// 346
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADSOUTH);					// 347
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADWEST);					// 348
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADEAST);					// 349
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_TOUCH);						// 350
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L4);									// 351
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R4);									// 352
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L5);									// 353
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R5);									// 354
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_MOVE);								// 355
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_NORTH);							// 356
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_SOUTH);							// 357
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_WEST);								// 358
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_EAST);								// 359
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_MOVE);								// 360
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_PITCH);							// 361
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_YAW);								// 362
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_ROLL);								// 363
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED1);								// 364
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED2);								// 365
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED3);								// 366
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED4);								// 367
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED5);								// 368
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED6);								// 369
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED7);								// 370
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED8);								// 371
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED9);								// 372
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED10);							// 373
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED11);							// 374
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED12);							// 375
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED13);							// 376
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED14);							// 377
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED15);							// 378
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED16);							// 379
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED17);							// 380
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED18);							// 381
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED19);							// 382
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED20);							// 383
+	BIND_CONSTANT(INPUT_ACTION_ORIGIN_COUNT);											// 384
 	BIND_CONSTANT(INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE);							// 32767
 
-	// STEAMITEMFLAGS ENUM CONSTANTS ////////////
+	// STEAM INPUT TYPE /////////////////////////
+	BIND_CONSTANT(INPUT_TYPE_UNKNOWN);													// 0
+	BIND_CONSTANT(INPUT_TYPE_STEAM_CONTROLLER);											// 1
+	BIND_CONSTANT(INPUT_TYPE_XBOX360_CONTROLLER);										// 2
+	BIND_CONSTANT(INPUT_TYPE_XBOXONE_CONTROLLER);										// 3
+	BIND_CONSTANT(INPUT_TYPE_GENERIC_XINPUT);											// 4
+	BIND_CONSTANT(INPUT_TYPE_PS4_CONTROLLER);											// 5
+	BIND_CONSTANT(INPUT_TYPE_APPLE_MFI_CONTROLLER);										// 6
+	BIND_CONSTANT(INPUT_TYPE_ANDROID_CONTROLLER);										// 7
+	BIND_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_PAIR);										// 8
+	BIND_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_SINGLE);										// 9
+	BIND_CONSTANT(INPUT_TYPE_SWITCH_PRO_CONTROLLER);									// 10
+	BIND_CONSTANT(INPUT_TYPE_MOBILE_TOUCH);												// 11
+	BIND_CONSTANT(INPUT_TYPE_PS3_CONTROLLER);											// 12
+	BIND_CONSTANT(INPUT_TYPE_PS5_CONTROLLER);											// 13
+	BIND_CONSTANT(INPUT_TYPE_STEAM_DECK_CONTROLLER);									// 14
+	BIND_CONSTANT(INPUT_TYPE_COUNT);													// 15
+	BIND_CONSTANT(INPUT_TYPE_MAXIMUM_POSSIBLE_VALUE);									// 255
+
+	// CONFIGURATION ENABLE TYPE ////////////////
+	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_NONE);								// 0x0000
+	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_PLAYSTATION);							// 0x0001
+	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_XBOX);								// 0x0002
+	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_GENERIC);								// 0x0004
+	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH);								// 0x0008
+	
+	// GLYPH SIZE ///////////////////////////////
+	BIND_CONSTANT(INPUT_GLYPH_SIZE_SMALL);												// 0
+	BIND_CONSTANT(INPUT_GLYPH_SIZE_MEDIUM);												// 1
+	BIND_CONSTANT(INPUT_GLYPH_SIZE_LARGE);												// 2
+	BIND_CONSTANT(INPUT_GLYPH_SIZE_COUNT);												// 3
+
+	// GLYPH STYLE //////////////////////////////
+	BIND_CONSTANT(INPUT_GLYPH_STYLE_KNOCKOUT);											// 0x0
+	BIND_CONSTANT(INPUT_GLYPH_STYLE_LIGHT);												// 0x1
+	BIND_CONSTANT(INPUT_GLYPH_STYLE_DARK);												// 0x2
+	BIND_CONSTANT(INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY);								// 0x10
+	BIND_CONSTANT(INPUT_GLYPH_STYLE_SOLID_ABXY);										// 0x20
+
+	// STEAM ITEM FLAGS /////////////////////////
 	BIND_CONSTANT(STEAM_ITEM_NO_TRADE);													// (1<<0)
 	BIND_CONSTANT(STEAM_ITEM_REMOVED);													// (1<<8)
 	BIND_CONSTANT(STEAM_ITEM_CONSUMED);													// (1<<9)
 
-	// CHATMEMBERSTATECHANGE ENUM CONSTANTS /////
+	// CHAT MEMBER STATE CHANGE /////////////////
 	BIND_CONSTANT(CHAT_MEMBER_STATE_CHANGE_ENTERED);									// 0X0001
 	BIND_CONSTANT(CHAT_MEMBER_STATE_CHANGE_LEFT);										// 0X0002
 	BIND_CONSTANT(CHAT_MEMBER_STATE_CHANGE_DISCONNECTED);								// 0X0004
 	BIND_CONSTANT(CHAT_MEMBER_STATE_CHANGE_KICKED);										// 0X0008
 	BIND_CONSTANT(CHAT_MEMBER_STATE_CHANGE_BANNED);										// 0X0010
 
-	// LOBBYCOMPARISON ENUM CONSTANTS ///////////
+	// LOBBY COMPARISON /////////////////////////
 	BIND_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN);								// -2
 	BIND_CONSTANT(LOBBY_COMPARISON_LESS_THAN);											// -1
 	BIND_CONSTANT(LOBBY_COMPARISON_EQUAL);												// 0
@@ -12840,36 +13380,36 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN);								// 2
 	BIND_CONSTANT(LOBBY_COMPARISON_NOT_EQUAL);											// 3
 
-	// LOBBYDISTANCEFILTER ENUM CONSTANTS ///////
+	// LOBBY DISTANCE FILTER ////////////////////
 	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_CLOSE);											// 0
 	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_DEFAULT);										// 1
 	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_FAR);											// 2
 	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_WORLDWIDE);										// 3
 
-	// LOBBYTYPE ENUM CONSTANTS /////////////////
+	// LOBBY TYPE ///////////////////////////////
 	BIND_CONSTANT(LOBBY_TYPE_PRIVATE);													// 0
 	BIND_CONSTANT(LOBBY_TYPE_FRIENDS_ONLY);												// 1
 	BIND_CONSTANT(LOBBY_TYPE_PUBLIC);													// 2
 	BIND_CONSTANT(LOBBY_TYPE_INVISIBLE);												// 3
 
-	// MATCHMAKINGSERVERRESPONSE ENUM CONSTANTS /
+	// MATCHMAKING SERVER RESPONSE //////////////
 	BIND_CONSTANT(SERVER_RESPONDED);													// 0
 	BIND_CONSTANT(SERVER_FAILED_TO_RESPOND);											// 1
 	BIND_CONSTANT(NO_SERVERS_LISTED_ON_MASTER_SERVER);									// 2
 
-	// AudioPlayback_Status enum constants //////
+	// AUDIO PLAYBACK STATUS ////////////////////
 	BIND_CONSTANT(AUDIO_PLAYBACK_UNDEFINED);											// 0
 	BIND_CONSTANT(AUDIO_PLAYBACK_PLAYING);												// 1
 	BIND_CONSTANT(AUDIO_PLAYBACK_PAUSED);												// 2
 	BIND_CONSTANT(AUDIO_PLAYBACK_IDLE);													// 3
 
-	// P2PSEND ENUM CONSTANTS ///////////////////
+	// P2P SEND /////////////////////////////////
 	BIND_CONSTANT(P2P_SEND_UNRELIABLE);													// 0
 	BIND_CONSTANT(P2P_SEND_UNRELIABLE_NO_DELAY);										// 1
 	BIND_CONSTANT(P2P_SEND_RELIABLE);													// 2
 	BIND_CONSTANT(P2P_SEND_RELIABLE_WITH_BUFFERING);									// 3
 
-	// P2PSESSIONERROR ENUM CONSTANTS ///////////
+	// P2P SESSION ERROR ////////////////////////
 	BIND_CONSTANT(P2P_SESSION_ERROR_NONE);												// 0
 	BIND_CONSTANT(P2P_SESSION_ERROR_NOT_RUNNING_APP);									// 1
 	BIND_CONSTANT(P2P_SESSION_ERROR_NO_RIGHTS_TO_APP);									// 2
@@ -12877,12 +13417,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(P2P_SESSION_ERROR_TIMEOUT);											// 4
 	BIND_CONSTANT(P2P_SESSION_ERROR_MAX);												// 5
 
-	// SNETSOCKETCONNECTIONTYPE ENUM CONSTANTS //
+	// SNET SOCKET CONNECTION TYPE //////////////
 	BIND_CONSTANT(NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED);							// 0
 	BIND_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP);										// 1
 	BIND_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP_RELAY);								// 2
 
-	// SNETSOCKETSTATE ENUM CONSTANTS ///////////
+	// SNET SOCKET STATE ////////////////////////
 	BIND_CONSTANT(NET_SOCKET_STATE_INVALID);											// 0
 	BIND_CONSTANT(NET_SOCKET_STATE_CONNECTED);											// 1
 	BIND_CONSTANT(NET_SOCKET_STATE_INITIATED);											// 10
@@ -12895,320 +13435,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NET_SOCKET_STATE_REMOTE_END_DISCONNECTED);							// 24
 	BIND_CONSTANT(NET_SOCKET_STATE_BROKEN);												// 25
 
-	// STEAMPARTYBEACONLOCATIONTYPE ENUM CONSTANTS
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID);								// 0
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP);							// 1
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_TYPE_MAX);
-
-	// STEAMPARTYBEACONLOCATIONDATA ENUM CONSTANTS
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA);									// 0
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_NAME);								// 1
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL);
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM);
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE);
-
-	// REMOTESTORAGEPLATFORM ENUM CONSTANTS /////
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_NONE);										// 0
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_WINDOWS);										// (1<<0)
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_OSX);											// (1<<1)
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_PS3);											// (1<<2)
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_LINUX);										// (1<<3)
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_RESERVED2);									// (1<<4)
-	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);											// 0XFFFFFFFF
-
-	// REMOTESTORAGEPUBLISHEDFILEVISIBILITY ENUM CONSTANTS
-	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PUBLIC);							// 0
-	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_FRIENDS_ONLY);						// 1
-	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PRIVATE);							// 2
-
-	// UGCREADACTION ENUM CONSTANTS /////////////
-	BIND_CONSTANT(UGC_READ_CONTINUE_READING_UNTIL_FINISHED);							// 0
-	BIND_CONSTANT(UGC_READ_CONTINUE_READING);											// 1
-	BIND_CONSTANT(UGC_READ_CLOSE);														// 2
-
-	// WORKSHOPENUMERATIONTYPE ENUM CONSTANTS ///
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE);							// 0
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT);									// 1
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_TRENDING);									// 2
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS);						// 3
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS);							// 4
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS);						// 5
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS);				// 6
-
-	// WORKSHOPFILEACTION ENUM CONSTANTS ////////
-	BIND_CONSTANT(WORKSHOP_FILE_ACTION_PLAYED);											// 0
-	BIND_CONSTANT(WORKSHOP_FILE_ACTION_COMPLETED);										// 1
-
-	// WORKSHOPFILETYPE ENUM CONSTANTS //////////
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_FIRST);											// 0
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_COMMUNITY);										// 0
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MICROTRANSACTION);									// 1
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_COLLECTION);										// 2
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_ART);												// 3
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_VIDEO);											// 4
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_SCREENSHOT);										// 5
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_GAME);												// 6
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_SOFTWARE);											// 7
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_CONCEPT);											// 8
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_WEB_GUIDE);										// 9
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE);									// 10
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MERCH);											// 11
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_CONTROLLER_BINDING);								// 12
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);							// 13
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);										// 14
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);								// 15
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MAX);												// 16
-
-	// WORKSHOPVIDEOPROVIDER ENUM CONSTANTS /////
-	BIND_CONSTANT(WORKSHOP_VIDEO_PROVIDER_NONE);										// 0
-	BIND_CONSTANT(WORKSHOP_VIDEO_PROVIDER_YOUTUBE);										// 1
-
-	// WORKSHOPVOTE ENUM CONSTANTS //////////////
-	BIND_CONSTANT(WORKSHOP_VOTE_UNVOTED);												// 0
-	BIND_CONSTANT(WORKSHOP_VOTE_FOR);													// 1
-	BIND_CONSTANT(WORKSHOP_VOTE_AGAINST);												// 2
-	BIND_CONSTANT(WORKSHOP_VOTE_LATER);													// 3
-
-	// VRSCREENSHOTTYPE ENUM CONSTANTS //////////
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_NONE);												// 0
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO);												// 1
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_STEREO);											// 2
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO_CUBE_MAP);									// 3
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO_PANORAMA);									// 4
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_STEREO_PANORAMA);									// 5
-
-	// ITEMPREVIEWTYPE ENUM CONSTANTS ///////////
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_IMAGE);												// 0
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO);										// 1
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);											// 2
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);					// 3
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);							// 4
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);										// 255
-
-	// ITEMSTATE ENUM CONSTANTS /////////////////
-	BIND_CONSTANT(ITEM_STATE_NONE);														// 0
-	BIND_CONSTANT(ITEM_STATE_SUBSCRIBED);												// 1
-	BIND_CONSTANT(ITEM_STATE_LEGACY_ITEM);												// 2
-	BIND_CONSTANT(ITEM_STATE_INSTALLED);												// 4
-	BIND_CONSTANT(ITEM_STATE_NEEDS_UPDATE);												// 8
-	BIND_CONSTANT(ITEM_STATE_DOWNLOADING);												// 16
-	BIND_CONSTANT(ITEM_STATE_DOWNLOAD_PENDING);											// 32
-
-	// ITEMSTATISTIC ENUM CONSTANTS /////////////
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);									// 0
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);										// 1
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);										// 2
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS);								// 3
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FAVORITES);									// 4
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS);									// 5
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS);								// 6
-	BIND_CONSTANT(ITEM_STATISTIC_REPORT_SCORE);											// 7
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED);									// 8
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS);								// 9
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_COMMENTS);											// 10
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);				// 11
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);				// 12
-
-	// ITEMUPDATESTATUS ENUM CONSTANTS //////////
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_INVALID);											// 0
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);									// 1
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);								// 2
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_CONTENT);								// 3
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);							// 4
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);								// 5
-
-	// UGCMATCHINGUGCTYPE ENUM CONSTANTS ////////
-	BIND_CONSTANT(UGC_MATCHINGUGCTYPE_ITEMS);											// 0
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);										// 1
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);							// 2
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_COLLECTIONS);									// 3
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ARTWORK);										// 4
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_VIDEOS);										// 5
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_SCREENSHOTS);									// 6
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL_GUIDES);									// 7
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_WEB_GUIDES);									// 8
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES);								// 9
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME);								// 10
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS);							// 11
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);							// 12
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);											// ~0
-
-	// UGCQUERY ENUM CONSTANTS //////////////////
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);												// 0
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);								// 1
-	BIND_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);				// 2
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TREND);											// 3
-	BIND_CONSTANT(UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);			// 4
-	BIND_CONSTANT(UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);				// 5
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED);								// 6
-	BIND_CONSTANT(UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE);		// 7
-	BIND_CONSTANT(UGC_QUERY_NOT_YET_RATED);												// 8
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC);									// 9
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTES_UP);										// 10
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TEXT_SEARCH);										// 11
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS);						// 12
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_TREND);									// 13
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME);									// 14
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND);							// 15
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME);						// 16
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);							// 17
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);						// 18
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LAST_UPDATED_DATE);								// 19
-
-	// USERUGCLIST ENUM CONSTANTS ///////////////
-	BIND_CONSTANT(USER_UGC_LIST_PUBLISHED);												// 0
-	BIND_CONSTANT(USER_UGC_LIST_VOTED_ON);												// 1
-	BIND_CONSTANT(USER_UGC_LIST_VOTED_UP);												// 2
-	BIND_CONSTANT(USER_UGC_LIST_VOTED_DOWN);											// 3
-	BIND_CONSTANT(USER_UGC_LIST_FAVORITED);												// 5
-	BIND_CONSTANT(USER_UGC_LIST_SUBSCRIBED);											// 6
-	BIND_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);										// 7
-	BIND_CONSTANT(USER_UGC_LIST_FOLLOWED);												// 8
-
-	// USERUGCLISTSORTORDER ENUM CONSTANTS //////
-	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);								// 0
-	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);								// 1
-	BIND_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);										// 2
-	BIND_CONSTANT(USERUGCLISTSORTORDER_LASTUPDATEDDESC);								// 3
-	BIND_CONSTANT(USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC);							// 4
-	BIND_CONSTANT(USERUGCLISTSORTORDER_VOTESCOREDESC);									// 5
-	BIND_CONSTANT(USERUGCLISTSORTORDER_FORMODERATION);									// 6
-
-	// FAILURETYPE ENUM CONSTANTS ///////////////
-	BIND_CONSTANT(FAILURE_FLUSHED_CALLBACK_QUEUE);										// 0
-	BIND_CONSTANT(FAILURE_PIPE_FAIL);													// 1
-
-	// DURATIONCONTROLPROGRESS ENUM CONSTANTS ///
-	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_FULL);										// 0
-	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_HALF);										// 1
-	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_NONE);										// 2
-
-	// DURATIONCONTROLNOTIFICATION ENUM CONSTANTS
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);									// 0
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_1_HOUR);								// 1
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_3_HOURS);								// 3
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS);							// 3
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_NO_PROGRESS);							// 4
-
-	// LEADERBOARDDATAREQUEST ENUM CONSTANTS ////
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);										// 0
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);							// 1
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);									// 2
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);										// 3
-
-	// LEADERBOARDDISPLAYTYPE ENUM CONSTANTS ////
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NONE);										// 0
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NUMERIC);									// 1
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);								// 2
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);							// 3
-
-	// LEADERBOARDSORTMETHOD ENUM CONSTANTS /////
-	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_NONE);										// 0
-	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_ASCENDING);									// 1
-	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_DESCENDING);									// 2
-
-	// LEADERBOARDUPLOADSCOREMETHOD ENUM CONSTANTS
-	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD);										// 0
-	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST);							// 1
-	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE);						// 2
-
-	// CHECKFILESIGNATURE ENUM CONSTANTS ////////
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_INVALID_SIGNATURE);								// 0
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_VALID_SIGNATURE);								// 1
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_FILE_NOT_FOUND);									// 2
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP);				// 3
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE);				// 4
-
-	// GAMEPADTEXTINPUTLINEMODE ENUM CONSTANTS //
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE);							// 0
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES);							// 1
-
-	// GAMEPADTEXTINPUTMODE ENUM CONSTANTS //////
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);										// 0
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);									// 1
-
-	// FLOATINGGAMEPADTEXTINPUTMODE ENUM CONSTANTS //////
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);						// 0
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);						// 1
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);								// 2
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);							// 3
-
-	// STEAMAPICALLFAILURE ENUM CONSTANTS ///////
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NONE);											// -1
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);									// 0
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);								// 1
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);								// 2
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);							// 3
-
-	// NETWORKING CONNECTION STATE ENUM CONSTANTS
-	BIND_CONSTANT(CONNECTION_STATE_NONE);												// 0
-	BIND_CONSTANT(CONNECTION_STATE_CONNECTING);											// 1
-	BIND_CONSTANT(CONNECTION_STATE_FINDING_ROUTE);										// 2
-	BIND_CONSTANT(CONNECTION_STATE_CONNECTED);											// 3
-	BIND_CONSTANT(CONNECTION_STATE_CLOSED_BY_PEER);										// 4
-	BIND_CONSTANT(CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY);							// 5
-	BIND_CONSTANT(CONNECTION_STATE_FIN_WAIT);											// -1
-	BIND_CONSTANT(CONNECTION_STATE_LINGER);												// -2
-	BIND_CONSTANT(CONNECTION_STATE_DEAD);												// -3
-	BIND_CONSTANT(CONNECTION_STATE_FORCE32BIT);											// 0X7FFFFFFF
-
-	// NETWORKING CONNECTION END ENUM CONSTANTS
-	BIND_CONSTANT(CONNECTION_END_INVALID);												// 0
-	BIND_CONSTANT(CONNECTION_END_APP_MIN);												// 1000
-	BIND_CONSTANT(CONNECTION_END_MAX);													// 1999
-	BIND_CONSTANT(CONNECTION_END_APP_EXCEPTION_MIN);									// 2000
-	BIND_CONSTANT(CONNECTION_END_APP_EXCEPTION_MAX);									// 2999
-	BIND_CONSTANT(CONNECTION_END_LOCAL_MIN);											// 3000
-	BIND_CONSTANT(CONNECTION_END_LOCAL_OFFLINE_MODE);									// 3001
-	BIND_CONSTANT(CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY);						// 3002
-	BIND_CONSTANT(CONNECTION_END_LOCAL_HOSTED_sERVER_PRIMARY_RELAY);					// 3003
-	BIND_CONSTANT(CONNECTION_END_LOCAL_NETWORK_CONFIG);									// 3004
-	BIND_CONSTANT(CONNECTION_END_LOCAL_RIGHTS);											// 3005
-	BIND_CONSTANT(CONNECTION_END_LOCAL_MAX);											// 3999
-	BIND_CONSTANT(CONNECTION_END_REMOVE_MIN);											// 4000
-	BIND_CONSTANT(CONNECTION_END_REMOTE_TIMEOUT);										// 4001
-	BIND_CONSTANT(CONNECTION_END_REMOTE_BAD_CRYPT);										// 4002
-	BIND_CONSTANT(CONNECTION_END_REMOTE_BAD_CERT);										// 4003
-	BIND_CONSTANT(CONNECTION_END_REMOTE_NOT_LOGGED_IN);									// 4004
-	BIND_CONSTANT(CONNECTION_END_REMOTE_NOT_RUNNING_APP);								// 4005
-	BIND_CONSTANT(CONNECTION_END_BAD_PROTOCOL_VERSION);									// 4006
-	BIND_CONSTANT(CONNECTION_END_REMOTE_MAX);											// 4999
-	BIND_CONSTANT(CONNECTION_END_MISC_MIN);												// 5000
-	BIND_CONSTANT(CONNECTION_END_MISC_GENERIC);											// 5001
-	BIND_CONSTANT(CONNECTION_END_MISC_INTERNAL_ERROR);									// 5002
-	BIND_CONSTANT(CONNECTION_END_MISC_TIMEOUT);											// 5003
-	BIND_CONSTANT(CONNECTION_END_MISC_RELAY_CONNECTIVITY);								// 5004
-	BIND_CONSTANT(CONNECTION_END_MISC_STEAM_CONNECTIVITY);								// 5005
-	BIND_CONSTANT(CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT);						// 5006
-	BIND_CONSTANT(CONNECTION_END_MISC_MAX);												// 5999
-
-	// NETWORKING IDENTITY TYPE ENUM CONSTANTS //
-	BIND_CONSTANT(IDENTITY_TYPE_INVALID);												// 0
-	BIND_CONSTANT(IDENTITY_TYPE_STEAMID);												// 16
-	BIND_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);											// 1
-	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);										// 2
-	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);											// 3
-	BIND_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);											// 0X7FFFFFFF
-
-	// GAME SEARCH ERROR CODE ENUM CONSTANTS ////
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_OK);											// 1
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS);					// 2
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS);						// 3
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER);								// 4
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE);							// 5
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID);						// 6
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_OFFLINE);										// 7
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED);								// 8
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR);								// 9
-
-	// GAME SEARCH PLAYER RESULT ENUM CONSTANTS /
-	BIND_CONSTANT(PLAYER_RESULT_FAILED_TO_CONNECT);										// 1
-	BIND_CONSTANT(PLAYER_RESULT_ABANDONED);												// 2
-	BIND_CONSTANT(PLAYER_RESULT_KICKED);												// 3
-	BIND_CONSTANT(PLAYER_RESULT_INCOMPLETE);											// 4
-	BIND_CONSTANT(PLAYER_RESULT_COMPLETED);												// 5
-
-	// NETWORKING CONFIGURATION VALUE ENUM CONSTANTS
+	// NETWORKING CONFIGURATION VALUE ///////////
 	BIND_CONSTANT(NETWORKING_CONFIG_INVALID);											// 0
 	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND);								// 2
 	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV);								// 3
@@ -13241,7 +13468,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_P2P_RENDEZVOUS);							// 17
 	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_SRD_RELAY_PINGS);							// 18
 
-	// NETWORKING GET CONFIGURATION VALUE RESULT ENUM CONSTANTS
+	// NETWORKING GET CONFIGURATION VALUE RESULT
 	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_VALUE);								// -1
 	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_SCOPE_OBJ);							// -2
 	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BUFFER_TOO_SMALL);						// -3
@@ -13249,7 +13476,57 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK_INHERITED);							// 2
 	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_FORCE_32BIT);								// 0X7FFFFFFF
 	
-	// NETWORKING SOCKET DEBUG OUTPUT ENUM CONSTANTS
+	// NETWORKING CONNECTION STATE //////////////
+	BIND_CONSTANT(CONNECTION_STATE_NONE);												// 0
+	BIND_CONSTANT(CONNECTION_STATE_CONNECTING);											// 1
+	BIND_CONSTANT(CONNECTION_STATE_FINDING_ROUTE);										// 2
+	BIND_CONSTANT(CONNECTION_STATE_CONNECTED);											// 3
+	BIND_CONSTANT(CONNECTION_STATE_CLOSED_BY_PEER);										// 4
+	BIND_CONSTANT(CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY);							// 5
+	BIND_CONSTANT(CONNECTION_STATE_FIN_WAIT);											// -1
+	BIND_CONSTANT(CONNECTION_STATE_LINGER);												// -2
+	BIND_CONSTANT(CONNECTION_STATE_DEAD);												// -3
+	BIND_CONSTANT(CONNECTION_STATE_FORCE32BIT);											// 0X7FFFFFFF
+
+	// NETWORKING CONNECTION END ////////////////
+	BIND_CONSTANT(CONNECTION_END_INVALID);												// 0
+	BIND_CONSTANT(CONNECTION_END_APP_MIN);												// 1000
+	BIND_CONSTANT(CONNECTION_END_MAX);													// 1999
+	BIND_CONSTANT(CONNECTION_END_APP_EXCEPTION_MIN);									// 2000
+	BIND_CONSTANT(CONNECTION_END_APP_EXCEPTION_MAX);									// 2999
+	BIND_CONSTANT(CONNECTION_END_LOCAL_MIN);											// 3000
+	BIND_CONSTANT(CONNECTION_END_LOCAL_OFFLINE_MODE);									// 3001
+	BIND_CONSTANT(CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY);						// 3002
+	BIND_CONSTANT(CONNECTION_END_LOCAL_HOSTED_sERVER_PRIMARY_RELAY);					// 3003
+	BIND_CONSTANT(CONNECTION_END_LOCAL_NETWORK_CONFIG);									// 3004
+	BIND_CONSTANT(CONNECTION_END_LOCAL_RIGHTS);											// 3005
+	BIND_CONSTANT(CONNECTION_END_LOCAL_MAX);											// 3999
+	BIND_CONSTANT(CONNECTION_END_REMOVE_MIN);											// 4000
+	BIND_CONSTANT(CONNECTION_END_REMOTE_TIMEOUT);										// 4001
+	BIND_CONSTANT(CONNECTION_END_REMOTE_BAD_CRYPT);										// 4002
+	BIND_CONSTANT(CONNECTION_END_REMOTE_BAD_CERT);										// 4003
+	BIND_CONSTANT(CONNECTION_END_REMOTE_NOT_LOGGED_IN);									// 4004
+	BIND_CONSTANT(CONNECTION_END_REMOTE_NOT_RUNNING_APP);								// 4005
+	BIND_CONSTANT(CONNECTION_END_BAD_PROTOCOL_VERSION);									// 4006
+	BIND_CONSTANT(CONNECTION_END_REMOTE_MAX);											// 4999
+	BIND_CONSTANT(CONNECTION_END_MISC_MIN);												// 5000
+	BIND_CONSTANT(CONNECTION_END_MISC_GENERIC);											// 5001
+	BIND_CONSTANT(CONNECTION_END_MISC_INTERNAL_ERROR);									// 5002
+	BIND_CONSTANT(CONNECTION_END_MISC_TIMEOUT);											// 5003
+	BIND_CONSTANT(CONNECTION_END_MISC_RELAY_CONNECTIVITY);								// 5004
+	BIND_CONSTANT(CONNECTION_END_MISC_STEAM_CONNECTIVITY);								// 5005
+	BIND_CONSTANT(CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT);						// 5006
+	BIND_CONSTANT(CONNECTION_END_MISC_MAX);												// 5999
+
+	// NETWORKING IDENTITY TYPE /////////////////
+	BIND_CONSTANT(IDENTITY_TYPE_INVALID);												// 0
+	BIND_CONSTANT(IDENTITY_TYPE_STEAMID);												// 16
+	BIND_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);											// 1
+	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);										// 2
+	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);											// 3
+	BIND_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);											// 0X7FFFFFFF
+
+	// NETWORKING SOCKET DEBUG OUTPUT ///////////
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE);							// 0
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG);								// 1
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR);							// 2
@@ -13261,7 +13538,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING);						// 8
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT);						// 0X7FFFFFFF
 	
-	// NETWORKING AVAILABILITY ENUM CONSTANTS ///
+	// NETWORKING AVAILABILITY //////////////////
 	BIND_CONSTANT(NETWORKING_AVAILABILITY_CANNOT_TRY);									// -102
 	BIND_CONSTANT(NETWORKING_AVAILABILITY_FAILED);										// -101
 	BIND_CONSTANT(NETWORKING_AVAILABILITY_PREVIOUSLY);									// -100
@@ -13272,14 +13549,14 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_AVAILABILITY_UNKNOWN);										// 0
 	BIND_CONSTANT(NETWORKING_AVAILABILITY_FORCE_32BIT);									// 0X7FFFFFFF
 
-	// NETWORKING CONFIGURATION SCOPE ENUM CONSTANTS
+	// NETWORKING CONFIGURATION SCOPE ///////////
 	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_GLOBAL);										// 1
 	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_SOCKETS_INTERFACE);							// 2
 	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_LISTEN_SOCKET);								// 3
 	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_CONNECTION);									// 4
 	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_FORCE_32BIT);									// 0X7FFFFFFF
 
-	// NETWORKING CONFIGURATION DATA TYPE ENUM CONSTANTS
+	// NETWORKING CONFIGURATION DATA TYPE ///////
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_INT32);										// 1
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_INT64);										// 2
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FLOAT);										// 3
@@ -13287,25 +13564,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FUNCTION_PTR);									// 5
 	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FORCE_32BIT);									// 0x7fffffff
 
-	// TEXT FILTERING CONTEXT ENUM CONSTANTS
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);										// 0
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);									// 1
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);											// 2
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);											// 3
-
-	// AVATAR CONSTANTS	
-	BIND_CONSTANT(AVATAR_SMALL);														// 1
-	BIND_CONSTANT(AVATAR_MEDIUM);														// 2
-	BIND_CONSTANT(AVATAR_LARGE);														// 3
-
-	// ACTIVATION CODE RESULTS
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_OK);											// 0
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_FAIL);											// 1
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_REGISTERED);							// 2
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_TIMEOUT);										// 3
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_OWNED);								// 4
-
-	// PARENTAL SETTINGS
+	// PARENTAL SETTINGS ////////////////////////
 	BIND_CONSTANT(FEATURE_INVALID);														// 0
 	BIND_CONSTANT(FEATURE_STORE);														// 1
 	BIND_CONSTANT(FEATURE_COMMUNITY);													// 2
@@ -13322,15 +13581,275 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(FEATURE_SITE_LICENSE);												// 13
 	BIND_CONSTANT(FEATURE_MAX);
 
-	// REMOTE STORAGE LOCAL FILE CHANGES
+	// STEAM PARTY BEACON LOCATION TYPE /////////
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID);								// 0
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP);							// 1
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_TYPE_MAX);
+
+	// STEAM PARTY BEACON LOCATION DATA /////////
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA);									// 0
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_NAME);								// 1
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL);
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM);
+	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE);
+
+	// REMOTE STORAGE PLATFORM //////////////////
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_NONE);										// 0
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_WINDOWS);										// (1<<0)
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_OSX);											// (1<<1)
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_PS3);											// (1<<2)
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_LINUX);										// (1<<3)
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_RESERVED2);									// (1<<4)
+	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);											// 0XFFFFFFFF
+
+	// REMOTE STORAGE PUBLISHED FILE VISIBILITY /
+	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PUBLIC);							// 0
+	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_FRIENDS_ONLY);						// 1
+	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PRIVATE);							// 2
+
+	// UGC READ ACTION //////////////////////////
+	BIND_CONSTANT(UGC_READ_CONTINUE_READING_UNTIL_FINISHED);							// 0
+	BIND_CONSTANT(UGC_READ_CONTINUE_READING);											// 1
+	BIND_CONSTANT(UGC_READ_CLOSE);														// 2
+
+	// WORKSHOP ENUMERATION TYPE ////////////////
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE);							// 0
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT);									// 1
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_TRENDING);									// 2
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS);						// 3
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS);							// 4
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS);						// 5
+	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS);				// 6
+
+	// WORKSHOP FILE ACTION /////////////////////
+	BIND_CONSTANT(WORKSHOP_FILE_ACTION_PLAYED);											// 0
+	BIND_CONSTANT(WORKSHOP_FILE_ACTION_COMPLETED);										// 1
+
+	// WORKSHOP FILE TYPE ///////////////////////
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_FIRST);											// 0
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_COMMUNITY);										// 0
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MICROTRANSACTION);									// 1
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_COLLECTION);										// 2
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_ART);												// 3
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_VIDEO);											// 4
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_SCREENSHOT);										// 5
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_GAME);												// 6
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_SOFTWARE);											// 7
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_CONCEPT);											// 8
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_WEB_GUIDE);										// 9
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE);									// 10
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MERCH);											// 11
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_CONTROLLER_BINDING);								// 12
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);							// 13
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);										// 14
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);								// 15
+	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MAX);												// 16
+
+	// WORKSHOP VIDEO PROVIDER //////////////////
+	BIND_CONSTANT(WORKSHOP_VIDEO_PROVIDER_NONE);										// 0
+	BIND_CONSTANT(WORKSHOP_VIDEO_PROVIDER_YOUTUBE);										// 1
+
+	// WORKSHOP VOTE ////////////////////////////
+	BIND_CONSTANT(WORKSHOP_VOTE_UNVOTED);												// 0
+	BIND_CONSTANT(WORKSHOP_VOTE_FOR);													// 1
+	BIND_CONSTANT(WORKSHOP_VOTE_AGAINST);												// 2
+	BIND_CONSTANT(WORKSHOP_VOTE_LATER);													// 3
+
+	// LOCAL FILE CHANGES ///////////////////////
 	BIND_CONSTANT(LOCAL_FILE_CHANGE_INVALID);											// 0
 	BIND_CONSTANT(LOCAL_FILE_CHANGE_FILE_UPDATED);										// 1
 	BIND_CONSTANT(LOCAL_FILE_CHANGE_FILE_DELETED);										// 2
 	
-	// REMOTE STORAGE FILE PATH TYPES
+	// FILE PATH TYPES //////////////////////////
 	BIND_CONSTANT(FILE_PATH_TYPE_INVALID);												// 0
 	BIND_CONSTANT(FILE_PATH_TYPE_ABSOLUTE);												// 1
 	BIND_CONSTANT(FILE_PATH_TYPE_API_FILENAME);											// 2
+
+	// VR SCREENSHOT TYPE ///////////////////////
+	BIND_CONSTANT(VR_SCREENSHOT_TYPE_NONE);												// 0
+	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO);												// 1
+	BIND_CONSTANT(VR_SCREENSHOT_TYPE_STEREO);											// 2
+	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO_CUBE_MAP);									// 3
+	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO_PANORAMA);									// 4
+	BIND_CONSTANT(VR_SCREENSHOT_TYPE_STEREO_PANORAMA);									// 5
+
+	// ITEM REVIEW TYPE /////////////////////////
+	BIND_CONSTANT(ITEM_PREVIEW_TYPE_IMAGE);												// 0
+	BIND_CONSTANT(ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO);										// 1
+	BIND_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);											// 2
+	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);					// 3
+	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);							// 4
+	BIND_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);										// 255
+
+	// ITEM STATE ///////////////////////////////
+	BIND_CONSTANT(ITEM_STATE_NONE);														// 0
+	BIND_CONSTANT(ITEM_STATE_SUBSCRIBED);												// 1
+	BIND_CONSTANT(ITEM_STATE_LEGACY_ITEM);												// 2
+	BIND_CONSTANT(ITEM_STATE_INSTALLED);												// 4
+	BIND_CONSTANT(ITEM_STATE_NEEDS_UPDATE);												// 8
+	BIND_CONSTANT(ITEM_STATE_DOWNLOADING);												// 16
+	BIND_CONSTANT(ITEM_STATE_DOWNLOAD_PENDING);											// 32
+
+	// ITEM STATISTIC ///////////////////////////
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);									// 0
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);										// 1
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);										// 2
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS);								// 3
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FAVORITES);									// 4
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS);									// 5
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS);								// 6
+	BIND_CONSTANT(ITEM_STATISTIC_REPORT_SCORE);											// 7
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED);									// 8
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS);								// 9
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_COMMENTS);											// 10
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);				// 11
+	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);				// 12
+
+	// ITEM UPDATE STATUS ///////////////////////
+	BIND_CONSTANT(ITEM_UPDATE_STATUS_INVALID);											// 0
+	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);									// 1
+	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);								// 2
+	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_CONTENT);								// 3
+	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);							// 4
+	BIND_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);								// 5
+
+	// UGC MATCHING UGC TYPE ////////////////////
+	BIND_CONSTANT(UGC_MATCHINGUGCTYPE_ITEMS);											// 0
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);										// 1
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);							// 2
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_COLLECTIONS);									// 3
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ARTWORK);										// 4
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_VIDEOS);										// 5
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_SCREENSHOTS);									// 6
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL_GUIDES);									// 7
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_WEB_GUIDES);									// 8
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES);								// 9
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME);								// 10
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS);							// 11
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);							// 12
+	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);											// ~0
+
+	// UGC QUERY ////////////////////////////////
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);												// 0
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);								// 1
+	BIND_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);				// 2
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TREND);											// 3
+	BIND_CONSTANT(UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);			// 4
+	BIND_CONSTANT(UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);				// 5
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED);								// 6
+	BIND_CONSTANT(UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE);		// 7
+	BIND_CONSTANT(UGC_QUERY_NOT_YET_RATED);												// 8
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC);									// 9
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTES_UP);										// 10
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TEXT_SEARCH);										// 11
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS);						// 12
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_TREND);									// 13
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME);									// 14
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND);							// 15
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME);						// 16
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);							// 17
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);						// 18
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LAST_UPDATED_DATE);								// 19
+
+	// USER UGC LIST ////////////////////////////
+	BIND_CONSTANT(USER_UGC_LIST_PUBLISHED);												// 0
+	BIND_CONSTANT(USER_UGC_LIST_VOTED_ON);												// 1
+	BIND_CONSTANT(USER_UGC_LIST_VOTED_UP);												// 2
+	BIND_CONSTANT(USER_UGC_LIST_VOTED_DOWN);											// 3
+	BIND_CONSTANT(USER_UGC_LIST_FAVORITED);												// 5
+	BIND_CONSTANT(USER_UGC_LIST_SUBSCRIBED);											// 6
+	BIND_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);										// 7
+	BIND_CONSTANT(USER_UGC_LIST_FOLLOWED);												// 8
+
+	// USER UGC LIST ORT ORDER //////////////////
+	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);								// 0
+	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);								// 1
+	BIND_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);										// 2
+	BIND_CONSTANT(USERUGCLISTSORTORDER_LASTUPDATEDDESC);								// 3
+	BIND_CONSTANT(USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC);							// 4
+	BIND_CONSTANT(USERUGCLISTSORTORDER_VOTESCOREDESC);									// 5
+	BIND_CONSTANT(USERUGCLISTSORTORDER_FORMODERATION);									// 6
+
+	// FAILURE TYPE /////////////////////////////
+	BIND_CONSTANT(FAILURE_FLUSHED_CALLBACK_QUEUE);										// 0
+	BIND_CONSTANT(FAILURE_PIPE_FAIL);													// 1
+
+	// DURATION CONTROL PROGRESS ////////////////
+	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_FULL);										// 0
+	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_HALF);										// 1
+	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_NONE);										// 2
+
+	// DURATION CONTROL NOTIFICATION ////////////
+	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);									// 0
+	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_1_HOUR);								// 1
+	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_3_HOURS);								// 3
+	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS);							// 3
+	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_NO_PROGRESS);							// 4
+
+	// LEADERBOARD DATA REQUEST /////////////////
+	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);										// 0
+	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);							// 1
+	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);									// 2
+	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);										// 3
+
+	// LEADERBOARD DISPLAY TYPE /////////////////
+	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NONE);										// 0
+	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NUMERIC);									// 1
+	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);								// 2
+	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);							// 3
+
+	// LEADERBOARD SORT METHOD //////////////////
+	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_NONE);										// 0
+	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_ASCENDING);									// 1
+	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_DESCENDING);									// 2
+
+	// LEADERBOARD UPLOAD SCORE METHOD //////////
+	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD);										// 0
+	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST);							// 1
+	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE);						// 2
+
+	// STEAM USER STAT TYPE /////////////////////
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_INVALID);										// 0
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_INT);											// 1
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_FLOAT);											// 2
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_AVGRATE);										// 3
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_ACHIEVEMENTS);									// 4
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS);								// 5
+	BIND_CONSTANT(STEAM_USER_STAT_TYPE_MAX);
+
+	// CHECK FILE SIGNATURE /////////////////////
+	BIND_CONSTANT(CHECK_FILE_SIGNATURE_INVALID_SIGNATURE);								// 0
+	BIND_CONSTANT(CHECK_FILE_SIGNATURE_VALID_SIGNATURE);								// 1
+	BIND_CONSTANT(CHECK_FILE_SIGNATURE_FILE_NOT_FOUND);									// 2
+	BIND_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP);				// 3
+	BIND_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE);				// 4
+
+	// GAMEPAD TEXT INPUT LINE MODE /////////////
+	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE);							// 0
+	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES);							// 1
+
+	// GAMEPAD TEXT INPUT MODE //////////////////
+	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);										// 0
+	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);									// 1
+
+	// FLOATING GAMEPAD TEXT INPUT MODE /////////
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);						// 0
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);						// 1
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);								// 2
+	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);							// 3
+
+	// STEAM API CALL FAILURE ///////////////////
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NONE);											// -1
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);									// 0
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);								// 1
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);								// 2
+	BIND_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);							// 3
+
+	// TEXT FILTERING CONTEXT ///////////////////
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);										// 0
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);									// 1
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);											// 2
+	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);											// 3
 }
 
 Steam::~Steam(){
