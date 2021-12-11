@@ -68,7 +68,8 @@ Known Issues
 Quick How-To
 ----------
 - Download this repository and unpack it.
-- Download and unpack the [Steamworks SDK 1.52](https://partner.steamgames.com); this requires a Steam developer account.
+- Download and unpack the [Steamworks SDK 1.53](https://partner.steamgames.com); this requires a Steam developer account.
+  - Please see "Known Issues" above about versions.
 - Download and unpack the [Godot source 3.x](https://github.com/godotengine/godot).
 - Move the following to godotsteam/sdk/ folder:
 ````
