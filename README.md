@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 12/10/21:**
+- Changed: updated changelog for Godot 3
+
 **Updated 12/9/21:**
 - Added: new game to game list
 

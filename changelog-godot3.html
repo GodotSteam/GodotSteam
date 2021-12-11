@@ -30,6 +30,41 @@
 							<h1>Change Log | Godot 3.x Module</h1>
 						</header>
 						<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+						<h3>Version 3.12 Changes</h3>
+						<ul>
+							<li>Added: missing D_METHOD to all functions, should show the right argument names in-editor</li>
+							<li>Added: Input origin enums for PS5 and Steam Deck</li>
+							<li>Added: Input Types, Input Glyph Style, Input Glyph Size, and Input Configuration Enable Type enums</li>
+							<li>Added: getConnectionRealTimeStatus, configureConnectionLanes, connectP2PCustomSignaling, receivedP2PCustomSignal, getCertificateRequest, setCertificate, resetIdentity, runNetworkingCallbacks, beginAsyncRequestFakeIP, getFakeIP, createListenScoketP2PFakeIP, getRemoveFakeIPForConnection, and createFakeUDPPort functions and callback to NetworkingSockets class</li>
+							<li>Added: dismissFloatingGamepadTextInput function to Utils class</li>
+							<li>Added: setTimeCreatedDateRange and setTimeUpdatedDateRange to UGC class</li>
+							<li>Added: NetworkingeDebugOutputType enums for NetworkingUtils</li>
+							<li>Added: missing constant binds for Server API, OverlayToWebPageMode</li>
+							<li>Fixed: minor compiler warnings</li>
+							<li>Fixed: empty file hash being returned by file_details_result callback</li>
+							<li>Fixed: a variety of small bugs and possible crashes, thanks to qarmin</li>
+							<li>Fixed: missing binds for getFriendsGroupName, getFriendsGroupMembersList, getFriendsGroupIDByIndex, getFriendsGroupCount, getFriendMessage, getFriendCoplayTime, getFriendCoplayGame, getCoplayFriendCount, getCoplayFriend, getClanTag, getClanName, getClanCount, getClanChatMessage, getClanByIndex, getClanActivityCounts, fileWriteAsync, fileWriteStreamCancel, fileWriteStreamClose, fileWriteStreamOpen, fileWriteStreamWriteChunk, getCachedUGCCount, getUGCDownloadProgress, getUGCDetails, fileReadAsync, getOPFSettings, getOPFStringForApp, getVideoURL, isBroadcasting functions</li>
+							<li>Fixed: setPNGIcon and updateCurrentEntryCoverArt in Music Remote class</li>
+							<li>Fixed: missing getUGCDetails and getUGCDownloadProgress functions</li>
+							<li>Changed: updated doc_class file for in-editor documentation</li>
+							<li>Changed: updated to Steamworks 1.53</li>
+							<li>Changed: lobby_data_update, removed lobby data queries as they should be done manually</li>
+							<li>Changed: minor tweaks under-the-hood</li>
+							<li>Changed: various generic 'int' to their actual types</li>
+							<li>Changed: renamed servers and server stats to game server and game server stats respectively, to match SDK</li>
+							<li>Changed: SteamNetworkingQuickConnectionStatus to SteamNetConnectionRealTimeStatus_t per Steamworks SDK 1.53, causes a break in previous GodotSteam versions</li>
+							<li>Changed: getConfigValueInfo, removed name and next value from return dictionary as they are no longer passed by function in SDK 1.53</li>
+							<li>Changed: rearranged functions in godotsteam.cpp class binds to match godotsteam.h order</li>
+							<li>Changed: enum constant binds to match godotsteam.h enum order</li>
+							<li>Removed: unused callback new_launch_query_parameters, broadcast_upload_start, broadcast_upload_stop</li>
+							<li>Removed: allocateMessage as it shouldn't be used solo</li>
+							<li>Removed: getQuickConnectionStatus and getFirstConfigValue as they were removed from SDK 1.53</li>
+							<li>Removed: setDebugOutputFunction from Networking Utils</li>
+						</ul>
+						<h3>Version 3.11.1 Changes</h3>
+						<ul>
+							<li>Removed: unused structs</li>
+						</ul>
 						<h3>Version 3.11 Changes</h3>
 						<ul>
 							<li>Added: server branch merged into master</li>
