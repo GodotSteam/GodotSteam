@@ -1,8 +1,6 @@
 # GodotSteam for GDNative
 Steam API for the Godot game engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
-**WARNING**: This GDNative branch is still in active development! While functional, I do not suggest using it for production code for your game; testing only.  Please use one of the GodotSteam modules instead.
-
 Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
@@ -17,7 +15,42 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.1.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.3)_ of this repo here as a plug-in](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.3 Changes**
+- Added: missing D_METHOD to all functions, should show the right argument names in-editor
+- Added: Input origin enums for PS5 and Steam Deck
+- Added: Input Types, Input Glyph Style, Input Glyph Size, and Input Configuration Enable Type enums
+- Added: getConnectionRealTimeStatus, configureConnectionLanes, connectP2PCustomSignaling, receivedP2PCustomSignal, getCertificateRequest, setCertificate, resetIdentity, runNetworkingCallbacks, beginAsyncRequestFakeIP, getFakeIP, createListenScoketP2PFakeIP, getRemoveFakeIPForConnection, and createFakeUDPPort functions and callback to NetworkingSockets class
+- Added: dismissFloatingGamepadTextInput function to Utils class
+- Added: setTimeCreatedDateRange and setTimeUpdatedDateRange to UGC class
+- Added: NetworkingeDebugOutputType enums for NetworkingUtils
+- Added: missing constant binds for Server API, OverlayToWebPageMode
+- Added: server branch merged in
+- Fixed: minor compiler warnings
+- Fixed: empty file hash being returned by file_details_result callback
+- Fixed: a variety of small bugs and possible crashes, _thanks to qarmin_
+- Fixed: missing binds for getFriendsGroupName, getFriendsGroupMembersList, getFriendsGroupIDByIndex, getFriendsGroupCount, getFriendMessage, getFriendCoplayTime, getFriendCoplayGame, getCoplayFriendCount, getCoplayFriend, getClanTag, getClanName, getClanCount, getClanChatMessage, getClanByIndex, getClanActivityCounts, fileWriteAsync, fileWriteStreamCancel, fileWriteStreamClose, fileWriteStreamOpen, fileWriteStreamWriteChunk, getCachedUGCCount, getUGCDownloadProgress, getUGCDetails, fileReadAsync, getOPFSettings, getOPFStringForApp, getVideoURL, isBroadcasting functions
+- Fixed: setPNGIcon and updateCurrentEntryCoverArt in Music Remote class
+- Fixed: missing getUGCDetails and getUGCDownloadProgress functions
+- Changed: spacing in default arguments in godotsteam.h
+- Changed: renamed STEAM_GAMESERVER_CALLBACK as STEAM_CALLBACK
+- Changed: updated doc_class file for in-editor documentation
+- Changed: updated to Steamworks 1.53
+- Changed: lobby_data_update, removed lobby data queries as they should be done manually
+- Changed: minor tweaks under-the-hood
+- Changed: various generic 'int' to their actual types
+- Changed: renamed servers and server stats to game server and game server stats respectively, to match SDK
+- Changed: SteamNetworkingQuickConnectionStatus to SteamNetConnectionRealTimeStatus_t per Steamworks SDK 1.53, causes a break in previous GodotSteam versions
+- Changed: getConfigValueInfo, removed name and next value from return dictionary as they are no longer passed by function in SDK 1.53
+- Changed: rearranged functions in godotsteam.cpp class binds to match godotsteam.h order
+- Changed: enum constant binds to match godotsteam.h enum order
+- Removed: unused callback new_launch_query_parameters, broadcast_upload_start, broadcast_upload_stop
+- Removed: allocateMessage as it shouldn't be used solo
+- Removed: getQuickConnectionStatus and getFirstConfigValue as they were removed from SDK 1.53
+- Removed: setDebugOutputFunction from Networking Utils
+- Removed: unused structs
+- Removed: SteamGameServer_RunCallbacks function
 
 **Version 3.2 Changes**
 - Added: new helper functions for newer networking classes, translations for steamnetworkingtypes
@@ -57,6 +90,9 @@ You can [download pre-compiled versions _(currently v3.1.1)_ of this repo here](
 Known Issues
 ----------
 - The GDNative version does not allow for default arguments in functions, thus some functions may have odd behaviors.  If you are using this version of GodotSteam you are required to pass any argument that has a default in the module version. Also, there are no enums in the GDNative version due to how it is structured.
+- As of Steamworks SDK 1.53, you cannot compile with previous version of GodotSteam (3.11.1 or earlier) due to a code change in the SDK.
+  - Using Steamworks SDK 1.53 or newer, you must use GodotSteam 3.12 or newer.
+  - Using Steamworks SDK 1.53 or earlier, you must use GodotSteam 3.11.1 or earlier.
 
 Quick How-To
 ----------

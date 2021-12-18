@@ -19,8 +19,10 @@
 // Include INT types header
 #include <inttypes.h>
 
-// Include Steamworks API header
+// Include Steamworks API headers
 #include "steam/steam_api.h"
+#include "steam/steam_gameserver.h"
+#include "steam/steamnetworkingfakeip.h"
 
 // Include Godot headers
 #include "Godot.hpp"
@@ -88,7 +90,7 @@ namespace godot {
 			enum GameIDType {
 				GAME_TYPE_APP = 0, GAME_TYPE_GAME_MOD = 1, GAME_TYPE_SHORTCUT = 2, GAME_TYPE_P2P = 3
 			};
-			enum LAUNCH_OPTION_Type {
+			enum LaunchOptionType {
 				LAUNCH_OPTION_TYPE_NONE = 0, LAUNCH_OPTION_TYPE_DEFAULT = 1, LAUNCH_OPTION_TYPE_SAFE_MODE = 2, LAUNCH_OPTION_TYPE_MULTIPLAYER = 3, LAUNCH_OPTION_TYPE_CONFIG = 4, LAUNCH_OPTION_TYPE_OPEN_VR = 5, LAUNCH_OPTION_TYPE_SERVER = 6, LAUNCH_OPTION_TYPE_EDITOR = 7, LAUNCH_OPTION_TYPE_MANUAL = 8, LAUNCH_OPTION_TYPE_BENCHMARK = 9, LAUNCH_OPTION_TYPE_OPTION1 = 10,
 				LAUNCH_OPTION_TYPE_OPTION2 = 11, LAUNCH_OPTION_TYPE_OPTION3 = 12, LAUNCH_OPTION_TYPE_OCULUS_VR = 13, LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY = 14, LAUNCH_OPTION_TYPE_OS_VR = 15, LAUNCH_OPTION_TYPE_DIALOG = 1000
 			};
@@ -109,9 +111,6 @@ namespace godot {
 				RESULT_RESTRICTED_DEVICE = 82, RESULT_REGION_LOCKED = 83, RESULT_RATE_LIMIT_EXCEEDED = 84, RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR = 85, RESULT_ITEM_DELETED = 86, RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE = 87, RESULT_TWO_FACTOR_CODE_MISMATCH = 88, RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH = 89, RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS = 90,
 				RESULT_NOT_MODIFIED = 91, RESULT_NO_MOBILE_DEVICE = 92, RESULT_TIME_NOT_SYNCED = 93, RESULT_SMS_CODE_FAILED = 94, RESULT_ACCOUNT_LIMIT_EXCEEDED = 95, RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED = 96, RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED = 97, RESULT_REFUND_TO_WALLET = 98, RESULT_EMAIL_SEND_FAILURE = 99, RESULT_NOT_SETTLED = 100, RESULT_NEED_CAPTCHA = 101,
 				RESULT_GSLT_DENIED = 102, RESULT_GS_OWNER_DENIED = 103, RESULT_INVALID_ITEM_TYPE = 104, RESULT_IP_BANNED = 105, RESULT_GSLT_EXPIRED = 106, RESULT_INSUFFICIENT_FUNDS = 107, RESULT_TOO_MANY_PENDING = 108
-			};
-			enum SteamUserStatType {
-				STEAM_USER_STAT_TYPE_INVALID = 0, STEAM_USER_STAT_TYPE_INT = 1, STEAM_USER_STAT_TYPE_FLOAT = 2, STEAM_USER_STAT_TYPE_AVGRATE = 3, STEAM_USER_STAT_TYPE_ACHIEVEMENTS = 4, STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS = 5, STEAM_USER_STAT_TYPE_MAX = 6
 			};
 			enum Universe {
 				UNIVERSE_INVALID = 0, UNIVERSE_PUBLIC = 1, UNIVERSE_BETA = 2, UNIVERSE_INTERNAL = 3, UNIVERSE_DEV = 4, UNIVERSE_MAX = 5
@@ -228,7 +227,40 @@ namespace godot {
 				INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_CLICK = 212, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_NORTH = 213, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_SOUTH = 214, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_WEST = 215, INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_EAST = 216, INPUT_ACTION_ORIGIN_SWITCH_DPAD_NORTH = 217,
 				INPUT_ACTION_ORIGIN_SWITCH_DPAD_SOUTH = 218, INPUT_ACTION_ORIGIN_SWITCH_DPAD_WEST = 219, INPUT_ACTION_ORIGIN_SWITCH_DPAD_EAST = 220, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_MOVE = 221, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_PITCH = 222, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_YAW = 223, INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_ROLL = 224,
 				INPUT_ACTION_ORIGIN_SWITCH_RESERVED0 = 225, INPUT_ACTION_ORIGIN_SWITCH_RESERVED1 = 226, INPUT_ACTION_ORIGIN_SWITCH_RESERVED2 = 227, INPUT_ACTION_ORIGIN_SWITCH_RESERVED3 = 228, INPUT_ACTION_ORIGIN_SWITCH_RESERVED4 = 229, INPUT_ACTION_ORIGIN_SWITCH_RESERVED5 = 230, INPUT_ACTION_ORIGIN_SWITCH_RESERVED6 = 231, INPUT_ACTION_ORIGIN_SWITCH_RESERVED7 = 232,
-				INPUT_ACTION_ORIGIN_SWITCH_RESERVED8 = 233, INPUT_ACTION_ORIGIN_SWITCH_RESERVED9 = 234, INPUT_ACTION_ORIGIN_SWITCH_RESERVED10 = 235, INPUT_ACTION_ORIGIN_COUNT = 258, INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE = 32767
+				INPUT_ACTION_ORIGIN_SWITCH_RESERVED8 = 233, INPUT_ACTION_ORIGIN_SWITCH_RESERVED9 = 234, INPUT_ACTION_ORIGIN_SWITCH_RESERVED10 = 235, INPUT_ACTION_ORIGIN_PS5_X = 236, INPUT_ACTION_ORIGIN_PS5_CIRCLE = 237, INPUT_ACTION_ORIGIN_PS5_TRIANGLE = 238, INPUT_ACTION_ORIGIN_PS5_SQUARE = 239, INPUT_ACTION_ORIGIN_PS5_LEFTBUMPER = 240, INPUT_ACTION_ORIGIN_PS5_RIGHTBUMPER = 241,
+				INPUT_ACTION_ORIGIN_PS5_OPTION = 242, INPUT_ACTION_ORIGIN_PS5_CREATE = 243, INPUT_ACTION_ORIGIN_PS5_MUTE = 244, INPUT_ACTION_ORIGIN_PS5_LEFTPAD_TOUCH = 245, INPUT_ACTION_ORIGIN_PS5_LEFTPAD_SWIPE = 246, INPUT_ACTION_ORIGIN_PS5_LEFTPAD_CLICK = 247, INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADNORTH = 248, INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADSOUTH = 249,
+				INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADWEST = 250, INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADEAST = 251, INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_TOUCH = 252, INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_SWIPE = 253, INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_CLICK = 254, INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADNORTH = 255, INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADSOUTH = 256,
+				INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADWEST = 257, INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADEAST = 258, INPUT_ACTION_ORIGIN_PS5_CENTERPAD_TOUCH = 259, INPUT_ACTION_ORIGIN_PS5_CENTERPAD_SWIPE = 260, INPUT_ACTION_ORIGIN_PS5_CENTERPAD_CLICK = 261, INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADNORTH = 262, INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADSOUTH = 263,
+				INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADWEST = 264, INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADEAST = 265, INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_PULL = 266, INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_CLICK = 267, INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_PULL = 268, INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_CLICK = 269, INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_MOVE = 270,
+				INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_CLICK = 271, INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADNORTH = 272, INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADSOUTH = 273, INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADWEST = 274, INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADEAST = 275, INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_MOVE = 276, INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_CLICK = 277,
+				INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADNORTH = 278, INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADSOUTH = 279, INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADWEST = 280, INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADEAST = 281, INPUT_ACTION_ORIGIN_PS5_DPAD_NORTH = 282, INPUT_ACTION_ORIGIN_PS5_DPAD_SOUTH = 283, INPUT_ACTION_ORIGIN_PS5_DPAD_WEST = 284,
+				INPUT_ACTION_ORIGIN_PS5_DPAD_EAST = 285, INPUT_ACTION_ORIGIN_PS5_GYRO_MOVE = 286, INPUT_ACTION_ORIGIN_PS5_GYRO_PITCH = 287, INPUT_ACTION_ORIGIN_PS5_GYRO_YAW = 288, INPUT_ACTION_ORIGIN_PS5_GYRO_ROLL = 289, INPUT_ACTION_ORIGIN_PS5_DPAD_MOVE = 290, INPUT_ACTION_ORIGIN_PS5_RESERVED1 = 291, INPUT_ACTION_ORIGIN_PS5_RESERVED2 = 292,
+				INPUT_ACTION_ORIGIN_PS5_RESERVED3 = 293, INPUT_ACTION_ORIGIN_PS5_RESERVED4 = 294, INPUT_ACTION_ORIGIN_PS5_RESERVED5 = 295, INPUT_ACTION_ORIGIN_PS5_RESERVED6 = 296, INPUT_ACTION_ORIGIN_PS5_RESERVED7 = 297, INPUT_ACTION_ORIGIN_PS5_RESERVED8 = 298, INPUT_ACTION_ORIGIN_PS5_RESERVED9 = 299, INPUT_ACTION_ORIGIN_PS5_RESERVED10 = 300,
+				INPUT_ACTION_ORIGIN_PS5_RESERVED11 = 301, INPUT_ACTION_ORIGIN_PS5_RESERVED12 = 302, INPUT_ACTION_ORIGIN_PS5_RESERVED13 = 303, INPUT_ACTION_ORIGIN_PS5_RESERVED14 = 304, INPUT_ACTION_ORIGIN_PS5_RESERVED15 = 305, INPUT_ACTION_ORIGIN_PS5_RESERVED16 = 306, INPUT_ACTION_ORIGIN_PS5_RESERVED17 = 307, INPUT_ACTION_ORIGIN_PS5_RESERVED18 = 308,
+				INPUT_ACTION_ORIGIN_PS5_RESERVED19 = 309, INPUT_ACTION_ORIGIN_PS5_RESERVED20 = 310, INPUT_ACTION_ORIGIN_STEAMDECK_A = 311, INPUT_ACTION_ORIGIN_STEAMDECK_B = 312, INPUT_ACTION_ORIGIN_STEAMDECK_X = 313, INPUT_ACTION_ORIGIN_STEAMDECK_Y = 314, INPUT_ACTION_ORIGIN_STEAMDECK_L1 = 315, INPUT_ACTION_ORIGIN_STEAMDECK_R1 = 316, INPUT_ACTION_ORIGIN_STEAMDECK_MENU = 317,
+				INPUT_ACTION_ORIGIN_STEAMDECK_VIEW = 318, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_TOUCH = 319, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_SWIPE = 320, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_CLICK = 321, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADNORTH = 322, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADSOUTH = 323, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADWEST = 324,
+				INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADEAST = 325, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_TOUCH = 326, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_SWIPE = 327, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_CLICK = 328, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADNORTH = 329, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADSOUTH = 330,
+				INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADWEST = 331, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADEAST = 332, INPUT_ACTION_ORIGIN_STEAMDECK_L2_SOFTPULL = 333, INPUT_ACTION_ORIGIN_STEAMDECK_L2 = 334, INPUT_ACTION_ORIGIN_STEAMDECK_R2_SOFTPULL = 335, INPUT_ACTION_ORIGIN_STEAMDECK_R2 = 336, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_MOVE = 337,
+				INPUT_ACTION_ORIGIN_STEAMDECK_L3 = 338, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADNORTH = 339, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADSOUTH = 340, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADWEST = 341, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADEAST = 342, INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_TOUCH = 343, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_MOVE = 344,
+				INPUT_ACTION_ORIGIN_STEAMDECK_R3 = 345, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADNORTH = 346, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADSOUTH = 347, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADWEST = 348, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADEAST = 349, INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_TOUCH = 350, INPUT_ACTION_ORIGIN_STEAMDECK_L4 = 351,
+				INPUT_ACTION_ORIGIN_STEAMDECK_R4 = 352, INPUT_ACTION_ORIGIN_STEAMDECK_L5 = 353, INPUT_ACTION_ORIGIN_STEAMDECK_R5 = 354, INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_MOVE = 355, INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_NORTH = 356, INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_SOUTH = 357, INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_WEST = 358, INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_EAST = 359,
+				INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_MOVE = 360, INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_PITCH = 361, INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_YAW = 362, INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_ROLL = 363, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED1 = 364, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED2 = 365, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED3 = 366, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED4 = 367,
+				INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED5 = 368, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED6 = 369, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED7 = 370, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED8 = 371, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED9 = 372, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED10 = 373, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED11 = 374,
+				INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED12 = 375, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED13 = 376, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED14 = 377, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED15 = 378, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED16 = 379, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED17 = 380, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED18 = 381,
+				INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED19 = 382, INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED20 = 383, INPUT_ACTION_ORIGIN_COUNT = 384, INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE = 32767
+			};
+			enum SteamInputType {
+				INPUT_TYPE_UNKNOWN = 0, INPUT_TYPE_STEAM_CONTROLLER = 1, INPUT_TYPE_XBOX360_CONTROLLER = 2, INPUT_TYPE_XBOXONE_CONTROLLER = 3, INPUT_TYPE_GENERIC_XINPUT = 4, INPUT_TYPE_PS4_CONTROLLER = 5, INPUT_TYPE_APPLE_MFI_CONTROLLER = 6, INPUT_TYPE_ANDROID_CONTROLLER = 7, INPUT_TYPE_SWITCH_JOYCON_PAIR = 8, INPUT_TYPE_SWITCH_JOYCON_SINGLE = 9,
+				INPUT_TYPE_SWITCH_PRO_CONTROLLER = 10, INPUT_TYPE_MOBILE_TOUCH = 11, INPUT_TYPE_PS3_CONTROLLER = 12, INPUT_TYPE_PS5_CONTROLLER = 13, INPUT_TYPE_STEAM_DECK_CONTROLLER = 14, INPUT_TYPE_COUNT = 15, INPUT_TYPE_MAXIMUM_POSSIBLE_VALUE = 255
+			};
+			enum ConfigurationEnableType {
+				INPUT_CONFIGURATION_ENABLE_TYPE_NONE = 0x0000, INPUT_CONFIGURATION_ENABLE_TYPE_PLAYSTATION = 0x0001, INPUT_CONFIGURATION_ENABLE_TYPE_XBOX = 0x0002, INPUT_CONFIGURATION_ENABLE_TYPE_GENERIC = 0x0004, INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH = 0x0008
+			};
+			enum GlyphSize {
+				INPUT_GLYPH_SIZE_SMALL = 0, INPUT_GLYPH_SIZE_MEDIUM = 1, INPUT_GLYPH_SIZE_LARGE = 2, INPUT_GLYPH_SIZE_COUNT = 3
+			};
+			enum GlyphStyle {
+				INPUT_GLYPH_STYLE_KNOCKOUT = 0x0, INPUT_GLYPH_STYLE_LIGHT = 0x1, INPUT_GLYPH_STYLE_DARK = 0x2, INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY = 0x10, INPUT_GLYPH_STYLE_SOLID_ABXY = 0x20
 			};
 
 			// Inventory enums
@@ -238,7 +270,7 @@ namespace godot {
 
 			// Matchmaking enums
 			enum ChatMemberStateChange {
-				CHAT_MEMBER_STATE_CHANGE_ENTERED = 0X0001, CHAT_MEMBER_STATE_CHANGE_LEFT = 0X0002, CHAT_MEMBER_STATE_CHANGE_DISCONNECTED = 0X0004, CHAT_MEMBER_STATE_CHANGE_KICKED = 0X0008, CHAT_MEMBER_STATE_CHANGE_BANNED = 0X0010
+				CHAT_MEMBER_STATE_CHANGE_ENTERED = 0x0001, CHAT_MEMBER_STATE_CHANGE_LEFT = 0x0002, CHAT_MEMBER_STATE_CHANGE_DISCONNECTED = 0x0004, CHAT_MEMBER_STATE_CHANGE_KICKED = 0x0008, CHAT_MEMBER_STATE_CHANGE_BANNED = 0x0010
 			};
 			enum LobbyComparison {
 				LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN = -2, LOBBY_COMPARISON_LESS_THAN = -1, LOBBY_COMPARISON_EQUAL = 0, LOBBY_COMPARISON_GREATER_THAN = 1, LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN = 2, LOBBY_COMPARISON_NOT_EQUAL = 3
@@ -420,6 +452,9 @@ namespace godot {
 			enum LeaderboardUploadScoreMethod {
 				LEADERBOARD_UPLOAD_SCORE_METHOD = 0, LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST = 1, LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE = 2
 			};
+			enum SteamUserStatType {
+				STEAM_USER_STAT_TYPE_INVALID = 0, STEAM_USER_STAT_TYPE_INT = 1, STEAM_USER_STAT_TYPE_FLOAT = 2, STEAM_USER_STAT_TYPE_AVGRATE = 3, STEAM_USER_STAT_TYPE_ACHIEVEMENTS = 4, STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS = 5, STEAM_USER_STAT_TYPE_MAX = 6
+			};
 
 			// Utils enums
 			enum CheckFileSignature {
@@ -440,7 +475,7 @@ namespace godot {
 			enum TextFilteringContext {
 				TEXT_FILTERING_CONTEXT_UNKNOWN = 0, TEXT_FILTERING_CONTEXT_GAME_CONTENT = 1, TEXT_FILTERING_CONTEXT_CHAT = 2, TEXT_FILTERING_CONTEXT_NAME = 3
 			};
-			
+
 			// Used by Godot for GDNative
 			static void _register_methods();
 			void _init(){ }
@@ -449,61 +484,65 @@ namespace godot {
 			Steam();
 			~Steam();
 
+
 			/////////////////////////////////////////
 			// STEAMWORKS FUNCTIONS
 			/////////////////////////////////////////
 			//
-			CSteamID createSteamID(uint32_t steam_id, int account_type);
+			CSteamID createSteamID(uint64_t steam_id, int account_type = -1);
 
 			// Main /////////////////////////////////
-			bool restartAppIfNecessary(int value);
-			Dictionary steamInit(bool retrieve_stats);
+			bool restartAppIfNecessary(uint32 app_id);
+			Dictionary steamInit(bool retrieve_stats = true);
 			bool isSteamRunning();
+//			bool serverInit(Dictionary connect_data, int server_mode, const String& version_string);
+			void serverReleaseCurrentThreadMemory();
+			void serverShutdown();
 			void steamworksError(const String& failed_signal);
 
 			// Apps /////////////////////////////////
 			Array getDLCDataByIndex();
-			bool isAppInstalled(int value);
+			bool isAppInstalled(uint32_t app_id);
 			bool isCybercafe();
-			bool isDLCInstalled(int value);
+			bool isDLCInstalled(uint32_t dlc_id);
 			bool isLowViolence();
 			bool isSubscribed();
-			bool isSubscribedApp(int value);
+			bool isSubscribedApp(uint32_t app_id);
 			bool isSubscribedFromFamilySharing();
 			bool isSubscribedFromFreeWeekend();
 			Dictionary isTimedTrial();
 			bool isVACBanned();
 			int getAppBuildId();
-			String getAppInstallDir(AppId_t app_id);
+			String getAppInstallDir(uint32_t app_id);
 			uint64_t getAppOwner();
 			String getAvailableGameLanguages();
 			String getCurrentBetaName();
 			String getCurrentGameLanguage();
-			int getDLCCount();
-			Dictionary getDLCDownloadProgress(uint32_t app_id);
-			int getEarliestPurchaseUnixTime(int value);
+			int32 getDLCCount();
+			Dictionary getDLCDownloadProgress(uint32_t dlc_id);
+			uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
 			void getFileDetails(const String& filename);
 			Array getInstalledDepots(uint32_t app_id);
 			String getLaunchCommandLine();
 			String getLaunchQueryParam(const String& key);
-			void installDLC(int value);
+			void installDLC(uint32_t dlc_id);
 			bool markContentCorrupt(bool missing_files_only);
-			void uninstallDLC(int value);
+			void uninstallDLC(uint32_t dlc_id);
 			void requestAllProofOfPurchaseKeys();
-			void requestAppProofOfPurchaseKey(AppId_t app_id);
+			void requestAppProofOfPurchaseKey(uint32_t app_id);
 			
 			// App Lists ////////////////////////////
 			uint32 getNumInstalledApps();
 			Array getInstalledApps(uint32 max_app_ids);
-			String getAppName(AppId_t app_id, int name_max);
-			String getAppListInstallDir(AppId_t app_id, int name_max);
-			int getAppListBuildId(AppId_t app_id);
+			String getAppName(uint32 app_id, int name_max);
+			String getAppListInstallDir(uint32 app_id, int name_max);
+			int getAppListBuildId(uint32 app_id);
 
 			// Friends //////////////////////////////
 			void activateGameOverlay(const String& type);
 			void activateGameOverlayInviteDialog(uint64_t steam_id);
 			void activateGameOverlayInviteDialogConnectString(const String& connect_string);
-			void activateGameOverlayToStore(uint32_t app_id);
+			void activateGameOverlayToStore(uint32_t app_id = 0);
 			void activateGameOverlayToUser(const String& type, uint64_t steam_id);
 			void activateGameOverlayToWebPage(const String& url);
 			void clearRichPresence();
@@ -525,10 +564,10 @@ namespace godot {
 			int getCoplayFriendCount();
 			void getFollowerCount(uint64_t steam_id);
 			uint64_t getFriendByIndex(int friend_number, int friend_flags);
-			int getFriendCoplayGame(uint64_t friend_id);
+			uint32 getFriendCoplayGame(uint64_t friend_id);
 			int getFriendCoplayTime(uint64_t friend_id);
 			int getFriendCount();
-			int getFriendCountFromSource(uint64_t clan_id);
+			int getFriendCountFromSource(uint64_t source_id);
 			uint64_t getFriendFromSourceByIndex(uint64_t source_id, int friend_number);
 			Dictionary getFriendGamePlayed(uint64_t steam_id);
 			Dictionary getFriendMessage(uint64_t friend_id, int message);
@@ -540,16 +579,16 @@ namespace godot {
 			int getFriendRichPresenceKeyCount(uint64_t friend_id);
 			String getFriendRichPresenceKeyByIndex(uint64_t friend_id, int key);		
 			int getFriendsGroupCount();
-			int getFriendsGroupIDByIndex(int friend_group);
-			int getFriendsGroupMembersCount(int friend_group);
-			Array getFriendsGroupMembersList(int friend_group, int member_count);
-			String getFriendsGroupName(int friend_group);
+			int16 getFriendsGroupIDByIndex(int16 friend_group);
+			int getFriendsGroupMembersCount(int16 friend_group);
+			Array getFriendsGroupMembersList(int16 friend_group, int member_count);
+			String getFriendsGroupName(int16 friend_group);
 			int getFriendSteamLevel(uint64_t steam_id);
 			int getLargeFriendAvatar(uint64_t steam_id);
 			int getMediumFriendAvatar(uint64_t steam_id);
 			String getPersonaName();
 			int getPersonaState();
-			void getPlayerAvatar(int size, uint64_t steam_id);
+			void getPlayerAvatar(int size=2, uint64_t steam_id = 0);
 			String getPlayerNickname(uint64_t steam_id);
 			Array getRecentPlayers();
 			int getSmallFriendAvatar(uint64_t steam_id);
@@ -593,8 +632,57 @@ namespace godot {
 			int requestPlayersForGame(int player_min, int player_max, int max_team_size);
 			int hostConfirmGameStart(uint64_t game_id);
 			int cancelRequestPlayersForGame();
-			int submitPlayerResult(uint64_t game_id, uint64_t playerID, int player_result);
+			int submitPlayerResult(uint64_t game_id, uint64_t player_id, int player_result);
 			int endGame(uint64_t game_id);
+
+			// Game Server //////////////////////////
+//			bool initGameServer(Dictionary connect_data, uint32 server_mode, const String& version_string);
+			void setProduct(const String& product);
+			void setGameDescription(const String& description);
+			void setModDir(const String& mod_directory);
+			void setDedicatedServer(bool dedicated);
+			void logOn(const String& token);
+			void logOnAnonymous();
+			void logOff();
+			bool serverLoggedOn();
+			bool secure();
+			uint64_t getServerSteamID();
+			bool wasRestartRequested();
+			void setMaxPlayerCount(int max);
+			void setBotPlayerCount(int bots);
+			void setServerName(const String& name);
+			void setMapName(const String& map);
+			void setPasswordProtected(bool password);
+			void setSpectatorPort(uint16 port);
+			void setSpectatorServerName(const String& name);
+			void clearAllKeyValues();
+			void setKeyValue(const String& key, const String& value);
+			void setGameTags(const String& tags);
+			void setGameData(const String& data);
+			void setRegion(const String& region);
+			Dictionary getServerAuthSessionTicket();
+			uint32 beginServerAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
+			void endServerAuthSession(uint64_t steam_id);
+			void cancelServerAuthTicket(uint32_t auth_ticket);
+			int userHasLicenceForApp(uint64_t steam_id, uint32 app_id);
+			bool requestUserGroupStatus(uint64_t steam_id, int group_id);
+//			Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
+			Dictionary getNextOutgoingPacket();
+			void setAdvertiseServerActive(bool active);
+			void associateWithClan(uint64_t clan_id);
+			void computeNewPlayerCompatibility(uint64_t steam_id);
+
+			// Game Server Stats ////////////////////
+			bool clearUserAchievement(uint64_t steam_id, const String& name);
+			Dictionary serverGetUserAchievement(uint64_t steam_id, const String& name);
+			uint32_t serverGetUserStatInt(uint64_t steam_id, const String& name);
+			float serverGetUserStatFloat(uint64_t steam_id, const String& name);
+			void serverRequestUserStats(uint64_t steam_id);
+			bool setUserAchievement(uint64_t steam_id, const String& name);
+			bool setUserStatInt(uint64_t steam_id, const String& name, int32 stat);
+			bool setUserStatFloat(uint64_t steam_id, const String& name, float stat);
+			void storeUserStats(uint64_t steam_id);
+			bool updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length);
 
 			// HTML Surface /////////////////////////
 			void addHeader(const String& key, const String& value);
@@ -683,9 +771,9 @@ namespace godot {
 			Dictionary getMotionData(uint64_t input_handle);
 			int getRemotePlaySessionID(uint64_t input_handle);
 			String getStringForActionOrigin(int origin);
-			bool inputInit(bool explicitly_call_runframe);
+			bool inputInit(bool explicitly_call_runframe = false);
 			bool inputShutdown();
-			void runFrame(bool reserved_value=true);
+			void runFrame(bool reserved_value = true);
 			void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);
 			bool showBindingPanel(uint64_t input_handle);
 			void stopAnalogActionMomentum(uint64_t input_handle, uint64_t action);
@@ -697,7 +785,7 @@ namespace godot {
 			bool waitForData(bool wait_forever, uint32 timeout);
 			bool newDataAvailable();
 			void enableDeviceCallbacks();
-	//		void enableActionEventCallbacks(SteamInputActionEventCallbackPointer call_back);
+			void enableActionEventCallbacks();
 			String getGlyphPNGForActionOrigin(int origin, int size, uint32 flags);
 			String getGlyphSVGForActionOrigin(int origin, uint32 flags);
 			void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
@@ -710,7 +798,7 @@ namespace godot {
 
 			// Inventory ////////////////////////////
 			bool addPromoItem(uint32 item);
-//			bool addPromoItems(const PoolIntArray items);
+			bool addPromoItems(PoolIntArray items);
 			bool checkResultSteamID(uint64_t steam_id_expected);
 			bool consumeItem(uint64_t item_consume, uint32 quantity);
 			bool deserializeResult();
@@ -719,7 +807,7 @@ namespace godot {
 			bool generateItems(const PoolIntArray items, const uint32 quantity);
 			bool getAllItems();
 			String getItemDefinitionProperty(uint32 definition, const String& name);
-			bool getItemsByID(const uint64_t idArray, uint32 count);
+			bool getItemsByID(const uint64_t id_array, uint32 count);
 			uint64_t getItemPrice(uint32 definition);
 			Array getItemsWithPrices(uint32 length);
 			uint32 getNumItemsWithPrices();
@@ -746,7 +834,7 @@ namespace godot {
 			// Matchmaking //////////////////////////
 			Array getFavoriteGames();
 			int addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
-			bool removeFavoriteGame(AppId_t app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
+			bool removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
 			void requestLobbyList();
 			void addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, int comparison_type);
 			void addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, int comparison_type);
@@ -789,12 +877,12 @@ namespace godot {
 			void refreshQuery(uint64_t server_list_request);
 			void refreshServer(uint64_t server_list_request, int server);
 			void releaseRequest(uint64_t server_list_request);
-			void requestFavoritesServerList(int app_id, Array filters);
-			void requestFriendsServerList(int app_id, Array filters);
-			void requestHistoryServerList(int app_id, Array filters);
-			void requestInternetServerList(int app_id, Array filters);
-			void requestLANServerList(int app_id);
-			void requestSpectatorServerList(int app_id, Array filters);
+			void requestFavoritesServerList(uint32 app_id, Array filters);
+			void requestFriendsServerList(uint32 app_id, Array filters);
+			void requestHistoryServerList(uint32 app_id, Array filters);
+			void requestInternetServerList(uint32 app_id, Array filters);
+			void requestLANServerList(uint32 app_id);
+			void requestSpectatorServerList(uint32 app_id, Array filters);
 			int serverRules(uint32 ip, uint16 port);
 
 			// Music ////////////////////////////////
@@ -805,21 +893,21 @@ namespace godot {
 			void musicPlay();
 			void musicPlayNext();
 			void musicPlayPrev();
-			void musicSetVolume(float value);
+			void musicSetVolume(float volume);
 
 			// Music Remote /////////////////////////
-			bool activationSuccess(bool value);
+			bool activationSuccess(bool activate);
 			bool isCurrentMusicRemote();
 			bool currentEntryDidChange();
 			bool currentEntryIsAvailable(bool available);
 			bool currentEntryWillChange();
 			bool deregisterSteamMusicRemote();
-			bool enableLooped(bool value);
-			bool enablePlaylists(bool value);
-			bool enablePlayNext(bool value);
-			bool enablePlayPrevious(bool value);
-			bool enableQueue(bool value);
-			bool enableShuffled(bool value);
+			bool enableLooped(bool loop);
+			bool enablePlaylists(bool playlists);
+			bool enablePlayNext(bool next);
+			bool enablePlayPrevious(bool previous);
+			bool enableQueue(bool queue);
+			bool enableShuffled(bool shuffle);
 			bool playlistDidChange();
 			bool playlistWillChange();
 			bool queueDidChange();
@@ -831,15 +919,15 @@ namespace godot {
 			bool setCurrentQueueEntry(int id);
 			bool setDisplayName(const String& name);
 			bool setPlaylistEntry(int id, int position, const String& entry_text);
-	//		bool setPNGIcon64x64(const PoolByteArray& icon);
+			bool setPNGIcon64x64(PoolByteArray icon);
 			bool setQueueEntry(int id, int position, const String& entry_text);
-	//		bool updateCurrentEntryCoverArt(const PoolByteArray& art);
-			bool updateCurrentEntryElapsedSeconds(int value);
+			bool updateCurrentEntryCoverArt(PoolByteArray art);
+			bool updateCurrentEntryElapsedSeconds(int seconds);
 			bool updateCurrentEntryText(const String& text);
-			bool updateLooped(bool value);
+			bool updateLooped(bool looped);
 			bool updatePlaybackStatus(int status);
-			bool updateShuffled(bool value);
-			bool updateVolume(float value);
+			bool updateShuffled(bool shuffle);
+			bool updateVolume(float volume);
 
 			// Networking ///////////////////////////
 			bool acceptP2PSessionWithUser(uint64_t steam_id_remote);
@@ -847,9 +935,9 @@ namespace godot {
 			bool closeP2PChannelWithUser(uint64_t steam_id_remote, int channel);
 			bool closeP2PSessionWithUser(uint64_t steam_id_remote);
 			Dictionary getP2PSessionState(uint64_t steam_id_remote);
-			uint32_t getAvailableP2PPacketSize(int channel);
-			Dictionary readP2PPacket(uint32_t packet, int channel);
-			bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, int send_type, int channel);
+			uint32_t getAvailableP2PPacketSize(int channel = 0);
+			Dictionary readP2PPacket(uint32_t packet, int channel = 0);
+			bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, int send_type, int channel = 0);
 
 			// Networking Messages //////////////////
 			int sendMessageToUser(const String& message, int flags, int channel);
@@ -861,8 +949,8 @@ namespace godot {
 
 			// Networking Sockets ///////////////////
 			uint32 createListenSocketIP(const int options);
-			uint32 connectByIPAddress(uint32 ip, uint16 port, Array options);
-			uint32 createListenSocketP2P(int port, Array options);
+			uint32 connectByIPAddress(uint32 ip, uint16 port, Array options = Array());
+			uint32 createListenSocketP2P(int port, Array options = Array());
 			uint32 connectP2P(int port, int number_of_options);
 			int acceptConnection(uint32 connection);
 			bool closeConnection(uint32 peer, int reason, bool linger);
@@ -877,7 +965,6 @@ namespace godot {
 			bool setConnectionPollGroup(uint32 connection, uint32 poll_group);
 			Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
 			bool getConnectionInfo(uint32 connection);
-			bool getQuickConnectionStatus(uint32 connection);
 			Dictionary getDetailedConnectionStatus(uint32 connection);
 			uint64_t getConnectionUserData(uint32 peer);
 			void setConnectionName(uint32 peer, const String& name);
@@ -894,6 +981,19 @@ namespace godot {
 	//		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 			uint32 createHostedDedicatedServerListenSocket(int port, int options);
 	//		int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
+			Dictionary getConnectionRealTimeStatus(uint32 connection, int lanes, bool get_status = true);
+	//		int configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights);
+	//		uint32 connectP2PCustomSignaling();
+	//		bool receivedP2PCustomSignal();
+	//		Dictionary getCertificateRequest();
+			Dictionary setCertificate(const PoolByteArray& certificate);
+			void resetIdentity(const String& this_identity);
+			void runNetworkingCallbacks();
+			bool beginAsyncRequestFakeIP(int num_ports);
+			Dictionary getFakeIP(int first_port = 0);
+			uint32 createListenSocketP2PFakeIP(int fake_port, Array options);
+			Dictionary getRemoteFakeIPForConnection(uint32 connection);
+			void createFakeUDPPort(int fake_server_port_index);
 
 			// Networking Types /////////////////////
 			bool addIdentity(const String& name);
@@ -922,7 +1022,7 @@ namespace godot {
 			void setIPv4(const String& name, uint32 ip, uint16 port);
 			bool isIPv4(const String& name);
 			uint32 getIPv4(const String& name);
-			void setIPv6LocalHost(const String& name, uint16 port);
+			void setIPv6LocalHost(const String& name, uint16 port = 0);
 			bool isAddressLocalHost(const String& name);
 			void toIPAddressString(const String& name, const String& buffer, bool with_port);
 			String parseIPAddressString(const String& name);
@@ -944,22 +1044,19 @@ namespace godot {
 	//		bool setConfigValue(int setting, int scope_type, int data_type, const void* value);
 	//		Dictionary getConfigValue(int value, int scope_type);
 			Dictionary getConfigValueInfo(int value);
-			int getFirstConfigValue();
 			bool setGlobalConfigValueInt32(int config, int32 value);
 			bool setGlobalConfigValueFloat(int config, float value);
 			bool setGlobalConfigValueString(int config, const String& value);
 			bool setConnectionConfigValueInt32(uint32 connection, int config, int32 value);
 			bool setConnectionConfigValueFloat(uint32 connection, int config, float value);
 			bool setConnectionConfigValueString(uint32 connection, int config, const String& value);
-			void allocateMessage(int buffer);
 			uint32 getLocalTimestamp();
-	///		void setDebugOutputFunction(int detail_level, String& function);
 
 			// Parental Settings ////////////////////
 			bool isParentalLockEnabled();
 			bool isParentalLockLocked();
-			bool isAppBlocked(AppId_t app_id);
-			bool isAppInBlockList(AppId_t app_id);
+			bool isAppBlocked(uint32 app_id);
+			bool isAppInBlockList(uint32 app_id);
 			bool isFeatureBlocked(int feature);
 			bool isFeatureInBlockList(int feature);
 
@@ -998,7 +1095,7 @@ namespace godot {
 			bool fileWriteStreamCancel(uint64_t write_handle);
 			bool fileWriteStreamClose(uint64_t write_handle);
 			uint64_t fileWriteStreamOpen(const String& file);
-			bool fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray& data, int32_t data_size);
+			bool fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray data, int32_t data_size);
 			int32 getCachedUGCCount();
 			uint64_t getCachedUGCHandle(int content);
 			int32_t getFileCount();
@@ -1044,7 +1141,7 @@ namespace godot {
 			bool addRequiredTag(uint64_t query_handle, const String& tag_name);
 			bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
 			bool initWorkshopForGameServer(uint32_t workshop_depot_id);
-			void createItem(AppId_t app_id, int file_type);
+			void createItem(uint32 app_id, int file_type);
 			uint64_t createQueryAllUGCRequest(int query_type, int matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 			uint64_t createQueryUGCDetailsRequest(Array published_file_id);
 			uint64_t createQueryUserUGCRequest(int account_id, int list_type, int matching_ugc_type, int sort_order, int creator_id, int consumer_id, uint32 page);
@@ -1112,6 +1209,8 @@ namespace godot {
 			bool updateItemPreviewVideo(uint64_t update_handle, uint32 index, const String& video_id);
 			bool showWorkshopEULA();
 			void getWorkshopEULAStatus();
+			bool setTimeCreatedDateRange(uint64_t update_handle, uint32 start, uint32 end);
+			bool setTimeUpdatedDateRange(uint64_t update_handle, uint32 start, uint32 end);
 
 			// Users ////////////////////////////////
 //			void advertiseGame(const String& server_ip, int port);
@@ -1144,10 +1243,10 @@ namespace godot {
 			int userHasLicenseForApp(uint64_t steam_id, uint32_t app_id);
 
 			// User Stats ///////////////////////////
-			void attachLeaderboardUGC(uint64_t ugcHandle, uint64_t this_leaderboard);
+			void attachLeaderboardUGC(uint64_t ugcHandle, uint64_t this_leaderboard = 0);
 			bool clearAchievement(const String& name);
-			void downloadLeaderboardEntries(int start, int end, int type, uint64_t this_leaderboard);
-			void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard);
+			void downloadLeaderboardEntries(int start, int end, int type=k_ELeaderboardDataRequestGlobal, uint64_t this_leaderboard = 0);
+			void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard = 0);
 			void findLeaderboard(const String& name);
 			void findOrCreateLeaderboard(const String& name, int sort_method, int display_type);
 			Dictionary getAchievement(const String& name);
@@ -1162,10 +1261,10 @@ namespace godot {
 			double getGlobalStatFloat(const String& name);
 			uint64_t getGlobalStatIntHistory(const String& name);
 			double getGlobalStatFloatHistory(const String& name);
-			Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard);
-			int getLeaderboardEntryCount(uint64_t this_leaderboard);
-			String getLeaderboardName(uint64_t this_leaderboard);
-			Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard);
+			Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
+			int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
+			String getLeaderboardName(uint64_t this_leaderboard = 0);
+			Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard = 0);
 			Dictionary getMostAchievedAchievementInfo();
 			Dictionary getNextMostAchievedAchievementInfo(int iterator);
 			uint32_t getNumAchievements();
@@ -1181,14 +1280,14 @@ namespace godot {
 			void requestGlobalAchievementPercentages();
 			void requestGlobalStats(int history_days);
 			void requestUserStats(uint64_t steam_id);
-			bool resetAllStats(bool achievements_too);
+			bool resetAllStats(bool achievements_too = true);
 			bool setAchievement(const String& name);
 			int setLeaderboardDetailsMax(int max);
 			bool setStatFloat(const String& name, float value);
 			bool setStatInt(const String& name, int value);
 			bool storeStats();
 			bool updateAvgRateStat(const String& name, float this_session, double session_length);
-			void uploadLeaderboardScore(int score, bool keep_best, PoolIntArray details, uint64_t this_leaderboard);
+			void uploadLeaderboardScore(int score, bool keep_best = false, PoolIntArray details = PoolIntArray(), uint64_t this_leaderboard = 0);
 			Array getLeaderboardEntries();
 
 			// Utils ////////////////////////////////
@@ -1220,6 +1319,7 @@ namespace godot {
 			void setGameLauncherMode(bool mode);
 			void startVRDashboard();
 			bool isSteamRunningOnSteamDeck();
+			bool dismissFloatingGamepadTextInput();
 
 			// Video ////////////////////////////////
 			void getOPFSettings(uint32_t app_id);
@@ -1229,13 +1329,14 @@ namespace godot {
 
 		protected:
 			static void _bind_methods();
+			static Steam* singleton;
 
 		private:
 			// Main
 			bool is_init_success;
 
 			// Apps
-			uint64 current_app_id;
+			uint64 current_app_id = 0;
 			
 			// Friends
 			CSteamID clan_activity;
@@ -1266,13 +1367,13 @@ namespace godot {
 			ISteamMatchmakingRulesResponse *rules_response;
 
 			// Networking Messages
-			SteamNetworkingMessage_t *network_messages;
+	//		std::map<int, SteamNetworkingMessage_t> network_messages;
 
 			// Networking Sockets
 			uint32 network_connection;
 			uint32 listen_socket;
 			uint32 network_poll_group;
-			uint64_t networking_microseconds;
+			uint64_t networking_microseconds = 0;
 			SteamNetworkingIdentity networking_identity;
 			SteamNetworkingIdentity game_server;
 	//		SteamDatagramHostedAddress hosted_address;
@@ -1288,11 +1389,11 @@ namespace godot {
 			uint32 session_id;
 
 			// Remote Storage
-			uint64_t write_stream_handle;
+			uint64_t write_stream_handle = 0;
 
 			// User stats
-			int number_achievements;
-			bool stats_initialized;
+			int number_achievements = 0;
+			bool stats_initialized = false;
 			uint64 ugc_handle;
 
 			// Utils
@@ -1312,7 +1413,6 @@ namespace godot {
 			STEAM_CALLBACK(Steam, _dlc_installed, DlcInstalled_t, callbackDLCInstalled);
 			STEAM_CALLBACK(Steam, _file_details_result, FileDetailsResult_t, callbackFileDetailsResult);
 			STEAM_CALLBACK(Steam, _new_launch_url_parameters, NewUrlLaunchParameters_t, callbackNewLaunchURLParameters);
-	//		STEAM_CALLBACK(Steam, _new_launch_query_parameters, NewLaunchQueryParameters_t, callbackNewLaunchQueryParameters);	<------ In documentation but not in actual SDK?
 			STEAM_CALLBACK(Steam, _register_activation_code_response, RegisterActivationCodeResponse_t, callbackRegisterActivationCodeResponse);
 			STEAM_CALLBACK(Steam, _app_proof_of_purchase_key_response, AppProofOfPurchaseKeyResponse_t, callbackAppProofOfPurchaseKeyResponse);
 			STEAM_CALLBACK(Steam, _timed_trial_status, TimedTrialStatus_t, callbackTimedTrialStatus);
@@ -1348,6 +1448,22 @@ namespace godot {
 			STEAM_CALLBACK(Steam, _submit_player_result, SubmitPlayerResultResultCallback_t, callbackSubmitPlayerResult);
 			STEAM_CALLBACK(Steam, _end_game_result, EndGameResultCallback_t, callbackEndGameResult);
 
+			// Game Server callbacks ////////////////
+			STEAM_CALLBACK(Steam, _server_Connect_Failure, SteamServerConnectFailure_t, callbackServerConnectFailure);
+			STEAM_CALLBACK(Steam, _server_Connected, SteamServersConnected_t, callbackServerConnected);
+			STEAM_CALLBACK(Steam, _server_Disconnected, SteamServersDisconnected_t, callbackServerDisconnected);
+			STEAM_CALLBACK(Steam, _client_Approved, GSClientApprove_t, callbackClientApproved);
+			STEAM_CALLBACK(Steam, _client_Denied, GSClientDeny_t, callbackClientDenied);
+			STEAM_CALLBACK(Steam, _client_Kick, GSClientKick_t, callbackClientKicked);
+			STEAM_CALLBACK(Steam, _policy_Response, GSPolicyResponse_t, callbackPolicyResponse);
+			STEAM_CALLBACK(Steam, _client_Group_Status, GSClientGroupStatus_t, callbackClientGroupStatus);
+			STEAM_CALLBACK(Steam, _associate_Clan, AssociateWithClanResult_t, callbackAssociateClan);
+			STEAM_CALLBACK(Steam, _player_Compat, ComputeNewPlayerCompatibilityResult_t, callbackPlayerCompat);
+
+			// Game Server Stat callbacks ///////////
+			STEAM_CALLBACK(Steam, _stats_stored, GSStatsStored_t, callbackStatsStored);
+			STEAM_CALLBACK(Steam, _stats_unloaded, GSStatsUnloaded_t, callbackStatsUnloaded);
+
 			// HTML Surface callbacks ///////////////
 			STEAM_CALLBACK(Steam, _html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
 			STEAM_CALLBACK(Steam, _html_can_go_backandforward, HTML_CanGoBackAndForward_t, callbackHTMLCanGoBackandforward);
@@ -1378,7 +1494,6 @@ namespace godot {
 			STEAM_CALLBACK(Steam, _http_request_headers_received, HTTPRequestHeadersReceived_t, callbackHTTPRequestHeadersReceived);
 
 			// Input callbacks //////////////////////
-	//		STEAM_CALLBACK(Steam, _input_action_event, SteamInputActionEvent_t, callbackInputActionEvent);
 			STEAM_CALLBACK(Steam, _input_device_connected, SteamInputDeviceConnected_t, callbackInputDeviceConnected);
 			STEAM_CALLBACK(Steam, _input_device_disconnected, SteamInputDeviceDisconnected_t, callbackInputDeviceDisconnected);
 			STEAM_CALLBACK(Steam, _input_configuration_loaded, SteamInputConfigurationLoaded_t, callbackInputConfigurationLoaded);
@@ -1426,6 +1541,7 @@ namespace godot {
 			// Networking Sockets callbacks /////////
 			STEAM_CALLBACK(Steam, _network_connection_status_changed, SteamNetConnectionStatusChangedCallback_t, callbackNetworkConnectionStatusChanged);
 			STEAM_CALLBACK(Steam, _network_authentication_status, SteamNetAuthenticationStatus_t, callbackNetworkAuthenticationStatus);
+			STEAM_CALLBACK(Steam, _fake_ip_result, SteamNetworkingFakeIPResult_t, callbackNetworkingFakeIPResult);
 
 			// Networking Utils callbacks ///////////
 			STEAM_CALLBACK(Steam, _relay_network_status, SteamRelayNetworkStatus_t, callbackRelayNetworkStatus);
@@ -1481,8 +1597,6 @@ namespace godot {
 			STEAM_CALLBACK(Steam, _floating_gamepad_text_input_dismissed, FloatingGamepadTextInputDismissed_t, callbackFloatingGamepadTextInputDismissed);
 
 			// Video callbacks //////////////////////
-	//		STEAM_CALLBACK(Steam, _broadcast_upload_start, BroadcastUploadStart_t, callbackBroadcastUploadStart);	<------ In documentation but not in actual SDK?
-	//		STEAM_CALLBACK(Steam, _broadcast_upload_stop, BroadcastUploadStop_t, callbackBroadcastUploadStop);		<------ In documentation but not in actual SDK?
 			STEAM_CALLBACK(Steam, _get_opf_settings_result, GetOPFSettingsResult_t, callbackGetOPFSettingsResult);
 			STEAM_CALLBACK(Steam, _get_video_result, GetVideoURLResult_t, callbackGetVideoResult);
 
@@ -1500,6 +1614,10 @@ namespace godot {
 			void _get_follower_count(FriendsGetFollowerCount_t *call_data, bool io_failure);
 			CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 			void _is_following(FriendsIsFollowing_t *call_data, bool io_failure);
+
+			// Game Server Stats call results ///////
+			CCallResult<Steam, GSStatsReceived_t> callResultStatReceived;
+			void _stat_received(GSStatsReceived_t *call_data, bool io_failure);
 
 			// Inventory call results ///////////////
 			CCallResult<Steam, SteamInventoryEligiblePromoItemDefIDs_t> callResultEligiblePromoItemDefIDs;
