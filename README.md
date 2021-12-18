@@ -6,6 +6,9 @@ Alternately, there is the project's Wiki page here: https://github.com/Gramps/Go
 
 What's New
 -------------
+**Updated 12/17/21:**
+- Changed: updated changlog for GDNative
+
 **Updated 12/10/21:**
 - Changed: updated changelog for Godot 3
 
