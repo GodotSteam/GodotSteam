@@ -17,7 +17,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.11.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.12.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.12.1 Changes**
+- Fixed: incorrect case on app_installed and app_uninstalled, thanks to _craftablescience_
 
 **Version 3.12 Changes**
 - Added: missing D_METHOD to all functions, should show the right argument names in-editor
