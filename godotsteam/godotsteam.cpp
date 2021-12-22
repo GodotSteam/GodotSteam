@@ -9029,14 +9029,14 @@ void Steam::_timed_trial_status(TimedTrialStatus_t* call_data){
 //
 //! Sent when a new app is installed.
 void Steam::_app_installed(SteamAppInstalled_t* call_data){
-	uint32_t app_id = (AppId_t)call_data->m_nAppID;
+	uint32_t app_id = (uint32_t)call_data->m_nAppID;
 	uint32_t install_folder_index = call_data->m_iInstallFolderIndex;
 	emit_signal("app_installed", app_id, install_folder_index);
 }
 
 //! Sent when an app is uninstalled.
 void Steam::_app_uninstalled(SteamAppUninstalled_t* call_data){
-	uint32_t app_id = (AppId_t)call_data->m_nAppID;
+	uint32_t app_id = (uint32_t)call_data->m_nAppID;
 	uint32_t install_folder_index = call_data->m_iInstallFolderIndex;
 	emit_signal("app_uninstalled", app_id, install_folder_index);	
 }
