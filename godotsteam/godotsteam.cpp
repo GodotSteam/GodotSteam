@@ -9852,15 +9852,16 @@ void Steam::_favorites_list_changed(FavoritesListChanged_t* call_data){
 
 //! Signal when a lobby chat message is received
 void Steam::_lobby_message(LobbyChatMsg_t* call_data){
-	CSteamID user_id = call_data->m_ulSteamIDUser;
+    uint64_t lobby_id = call_data->m_ulSteamIDLobby;
+    CSteamID user_id = call_data->m_ulSteamIDUser;
 	uint8 chat_type = call_data->m_eChatEntryType;
 	// Convert the chat type over
 	EChatEntryType type = (EChatEntryType)chat_type;
 	// Get the chat message data
 	char buffer[4096];
 	int result = SteamMatchmaking()->GetLobbyChatEntry(call_data->m_ulSteamIDLobby, call_data->m_iChatID, &user_id, &buffer, 4096, &type);
-	uint64_t user = user_id.ConvertToUint64();
-	emit_signal("lobby_message", result, user, String::utf8(buffer), chat_type);
+    uint64_t user = user_id.ConvertToUint64();
+	emit_signal("lobby_message", lobby_id, user, String::utf8(buffer), chat_type);
 }
 
 //! A lobby chat room state has changed, this is usually sent when a user has joined or left the lobby.
@@ -12140,7 +12141,7 @@ void Steam::_bind_methods(){
 	// MATCHMAKING SIGNALS //////////////////////
 	ADD_SIGNAL(MethodInfo("favorites_list_accounts_updated"));
 	ADD_SIGNAL(MethodInfo("favorites_list_changed"));
-	ADD_SIGNAL(MethodInfo("lobby_message"));
+	ADD_SIGNAL(MethodInfo("lobby_message", PropertyInfo(Variant::INT, "lobby_id"), PropertyInfo(Variant::INT, "sender_id"), PropertyInfo(Variant::STRING, "message"), PropertyInfo(Variant::INT, "chat_entry_type")));
 	ADD_SIGNAL(MethodInfo("lobby_chat_update"));
 	ADD_SIGNAL(MethodInfo("lobby_created"));
 	ADD_SIGNAL(MethodInfo("lobby_data_update"));
