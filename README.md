@@ -11,7 +11,7 @@ Additional flavors include:
 
 Documentation
 ----------
-[Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
+[Documentation is available here](https://gramps.github.io/GodotSteam/).
 
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam Server.
 
