@@ -13,7 +13,7 @@ Documentation
 ----------
 [Documentation is available here](https://gramps.github.io/GodotSteam/).
 
-You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam Server.
+You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
 Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
