@@ -1,0 +1,641 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | User</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#AdvertiseGame" target="_blank">
+			<span class="gdscript">
+				advertiseGame( <sup>string</sup> server_ip, <sup>int</sup> port )
+			</span>
+			<span class="c-sharp">
+				advertiseGame( <sup>string</sup> server_ip, <sup>uint16</sup> port )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set the rich presence data for an unsecured game server that the user is playing on. This allows friends to be able to view the game info and join your game.</li>
+		<li>When you are using Steam authentication system this call is never required, the auth system automatically sets the appropriate rich presence.</li>
+		<li><strong>Note:</strong> This is a legacy function.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BeginAuthSession" target="_blank">
+			<span class="gdscript">
+				beginAuthSession( <sup>PoolByteArray</sup> ticket, <sup>int</sup> ticket_size, <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				beginAuthSession( <sup>PoolByteArray</sup> tickets, <sup>int</sup> ticket_size, <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.</li>
+		<li>The ticket is created on the entity with <strong>getAuthSessionTicket</strong> or <strong>serverGetAuthSessionTicket</strong> and then needs to be provided over the network for the other end to validate.</li>
+		<li>This registers for ValidateAuthTicketResponse_t callbacks if the entity goes offline or cancels the ticket. See <a href="https://partner.steamgames.com/doc/api/steam_api#EAuthSessionResponse" target="_blank">EAuthSessionResponse</a> for more information.</li>
+		<li>When the multiplayer session terminates you must call <strong>endAuthSession</strong>.</li>
+		<li>Trigger a <strong><em>validate_auth_ticket_response</em></strong> callback.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#CancelAuthTicket" target="_blank">
+			<span class="gdscript">
+				cancelAuthTicket( <sup>int</sup> auth_ticket )
+			</span>
+			<span class="c-sharp">
+				cancelAuthTicket( <sup>uint32_t</sup> auth_ticket )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Cancels an auth ticket received from <strong>getAuthSessionTicket</strong>. This should be called when no longer playing with the specified entity.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#DecompressVoice" target="_blank">
+			<span class="gdscript">
+				decompressVoice( <sup>PoolByteArray</sup> voice, <sup>int</sup> voice_size, <sup>int</sup> sample_rate )
+			</span>
+			<span class="c-sharp">
+				decompressVoice( <sup>PoolByteArray</sup> voice, <sup>uint32</sup> voice_size, <sup>uint32</sup> sample_rate )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Decodes the compressed voice data returned by <strong>getVoice</strong>.</li>
+		<li>The output data is raw single-channel 16-bit PCM audio. The decoder supports any sample rate from 11025 to 48000. See <strong>getVoiceOptimalSampleRate</strong> for more information.</li>
+		<li>It is recommended that you start with a 20KiB buffer and then reallocate as necessary.</li>
+		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>uncompressed (PoolByteArray)</li>
+					<li>size (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>uncompressed (PoolByteArray)</li>
+					<li>size (uint32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#EndAuthSession" target="_blank">
+			<span class="gdscript">
+				endAuthSession(( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				endAuthSession(( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Ends an auth session that was started with <strong>beginAuthSession</strong>. This should be called when no longer playing with the specified entity.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetAuthSessionTicket" target="_blank">
+			getAuthSessionTicket()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve an authentication ticket to be sent to the entity who wishes to authenticate you.</li>
+		<li>After calling this you can send the ticket to the entity where they can then call <strong>beginAuthSession</strong> or <strong>serverBeginAuthSession</strong> to verify this entities integrity.</li>
+		<li>When creating a ticket for use by the <strong>authenticateUserTicket</strong> Web API, the calling application should wait for the <strong><em>get_auth_session_ticket_response</em></strong> callback generated by the API call before attempting to use the ticket to ensure that the ticket has been communicated to the server. If this callback does not come in a timely fashion (10 - 20 seconds), then your client is not connected to Steam, and the <strong>authenticateUserTicket</strong> call will fail because it can not authenticate the user.</li>
+		<li>Triggers a <strong><em>get_auth_session_ticket_response</em></strong> callback.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>id (int)</li>
+					<li>buffer (PoolByteArray)</li>
+					<li>size (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>id (uint32_t)</li>
+					<li>buffer (PoolByteArray)</li>
+					<li>size (uint32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetAvailableVoice" target="_blank">
+			getAvailableVoice()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks to see if there is captured audio data available from <strong>getVoice</strong>, and gets the size of the data.</li>
+		<li>Most applications will only use compressed data and should ignore the other parameters, which exist primarily for backwards compatibility. See <strong>getVoice</strong> for further explanation of "uncompressed" data.</li>
+		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetDurationControl" target="_blank">
+			getDurationControl()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieves anti indulgence / duration control for current user / game combination.</li>
+		<li>Triggers a <strong><em>duration_control</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetEncryptedAppTicket" target="_blank">
+			getEncryptedAppTicket()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve an encrypted ticket.</li>
+		<li>This should be called after requesting an encrypted app ticket with <strong>requestEncryptedAppTicket</strong> and receiving the <strong><em>encrypted_app_ticket_response</em></strong> call result.</li>
+		<li>You should then pass this encrypted ticket to your secure servers to be decrypted using your secret key using <strong>decryptTicket</strong>.</li>
+		<li><strong>Note:</strong> If you call this without calling <strong>requestEncryptedAppTicket</strong>, the call may succeed but you will likely get a stale ticket.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>buffer (PoolByteArray)</li>
+					<li>size (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>buffer (PoolByteArray)</li>
+					<li>size (uint32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetGameBadgeLevel" target="_blank">
+			getGameBadgeLevel( <sup>int</sup> series, <sup>bool</sup> foil )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the level of the users Steam badge for your game.</li>
+		<li>The user can have two different badges for a series; the regular badge (max level 5) and the foil badge (max level 1).</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetPlayerSteamLevel" target="_blank">
+			getPlayerSteamLevel()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam level of the user, as shown on their Steam community profile.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetSteamID" target="_blank">
+			getSteamID()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam ID (ID64) of the account currently logged into the Steam client. This is commonly called the 'current user', or 'local user'.</li>
+		<li>A Steam ID is a unique identifier for a Steam accounts, Steam groups, Lobbies and Chat rooms, and used to differentiate users in all parts of the Steamworks API.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetUserDataFolder" target="_blank">
+			getUserDataFolder()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the user's Steam installation path.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetVoice" target="_blank">
+			getVoice()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Read captured audio data from the microphone buffer.</li>
+		<li>The compressed data can be transmitted by your application and decoded back into raw audio data using DecompressVoice on the other side. The compressed data provided is in an arbitrary format and is not meant to be played directly.</li>
+		<li>This should be called once per frame, and at worst no more than four times a second to keep the microphone input delay as low as possible. Calling this any less may result in gaps in the returned stream.</li>
+		<li>It is recommended that you pass in an 8 kilobytes or larger destination buffer for compressed audio. Static buffers are recommended for performance reasons. However, if you would like to allocate precisely the right amount of space for a buffer before each call you may use <strong>getAvailableVoice</strong> to find out how much data is available to be read.</li>
+		<li><strong>Note:</strong> "Uncompressed" audio is a deprecated feature and should not be used by most applications. It is raw single-channel 16-bit PCM wave data which may have been run through preprocessing filters and/or had silence removed, so the uncompressed audio could have a shorter duration than you expect. There may be no data at all during long periods of silence. Also, fetching uncompressed audio will cause <strong>getVoice</strong> to discard any leftover compressed audio, so you must fetch both types at once. Finally, <strong>getAvailableVoice</strong> is not precisely accurate when the uncompressed size is requested. So if you really need to use uncompressed audio, you should call <strong>getVoice</strong> frequently with two very large (20KiB+) output buffers instead of trying to allocate perfectly-sized buffers. But most applications should ignore all of these details and simply leave the "uncompressed" parameters as NULL/0.</li>
+		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetVoiceOptimalSampleRate" target="_blank">
+			getVoiceOptimalSampleRate()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the native sample rate of the Steam voice decoder.</li>
+		<li>Using this sample rate for <strong>decompressVoice</strong> will perform the least CPU processing. However, the final audio quality will depend on how well the audio device (and/or your application's audio output SDK) deals with lower sample rates. You may find that you get the best audio output quality when you ignore this function and use the native sample rate of your audio output device, which is usually 48000 or 44100.</li>
+		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#InitiateGameConnection" target="_blank">
+			<span class="gdscript">
+				initiateGameConnection( <sup>int</sup> server_id, <sup>int</sup> server_ip, <sup>int</sup> server_port, <sup>bool</sup> secure )
+			</span>
+			<span class="c-sharp">
+				initiateGameConnection( <sup>uint64_t</sup> server_id, <sup>uint32</sup> server_ip, <sup>uint16</sup> server_port, <sup>bool</sup> secure )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>This starts the state machine for authenticating the game client with the game server.</li>
+		<li>It is the client portion of a three-way handshake between the client, the game server, and the steam servers.</li>
+		<li><strong>Note:</strong> When you're done with the connection you must call <strong>terminateGameConnection</strong>.</li>
+		<li><strong>Note:</strong> This is part of the old user authentication API and should not be mixed with the new API.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>auth_blob (PoolByteArray)</li>
+					<li>server_id (int)</li>
+					<li>server_ip (int)</li>
+					<li>server_port (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>auth_blob (PoolByteArray)</li>
+					<li>server_id (uint64_t)</li>
+					<li>server_ip (uint32)</li>
+					<li>server_port (uint16)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BIsBehindNAT" target="_blank">
+			isBehindNAT()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the current user looks like they are behind a NAT device.</li>
+		<li>This is only valid if the user is connected to the Steam servers and may not catch all forms of NAT.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BIsPhoneIdentifying" target="_blank">
+			isPhoneIdentifying()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks whether the user's phone number is used to uniquely identify them.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BIsPhoneRequiringVerification" target="_blank">
+			isPhoneRequiringVerification()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks whether the current user's phone number is awaiting (re)verification.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BIsPhoneVerified" target="_blank">
+			isPhoneVerified()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks whether the current user has verified their phone number.</li>
+		<li>See the <a href="https://support.steampowered.com/kb_article.php?ref=8625-wrah-9030" target="_blank">Steam Guard Mobile Authenticator</a> page on the customer facing Steam Support site for more information.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BIsTwoFactorEnabled" target="_blank">
+			isTwoFactorEnabled()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks whether the current user has Steam Guard two factor authentication enabled on their account.</li>
+		<li>See the <a href="https://support.steampowered.com/kb_article.php?ref=8625-wrah-9030" target="_blank">Steam Guard Mobile Authenticator</a> page on the customer facing Steam Support site for more information.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BLoggedOn" target="_blank">
+			loggedOn()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the current user's Steam client is connected to the Steam servers.</li>
+		<li>If it's not then no real-time services provided by the Steamworks API will be enabled. The Steam client will automatically be trying to recreate the connection as often as possible. When the connection is restored a <strong><em>steam_server_connected</em></strong> callback will be posted.</li>
+		<li>You usually don't need to check for this yourself. All of the API calls that rely on this will check internally. Forcefully disabling stuff when the player loses access is usually not a very good experience for the player and you could be preventing them from accessing APIs that do not need a live connection to Steam.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#RequestEncryptedAppTicket" target="_blank">
+			requestEncryptedAppTicket( <sup>string</sup> secret )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Requests an application ticket encrypted with the secret "encrypted app ticket key".</li>
+		<li>The encryption key can be obtained from the <a href="https://partner.steamgames.com/apps/sdkauth/" target="_blank">Encrypted App Ticket Key</a> page on the App Admin for your app.</li>
+		<li>There can only be one <strong><em>encrypted_app_ticket_response</em></strong> pending, and this call is subject to a 60 second rate limit.</li>
+		<li>After receiving the response you should call <strong>getEncryptedAppTicket</strong> to get the ticket data, and then you need to send it to a secure server to be decrypted with the <a href="https://partner.steamgames.com/doc/api/SteamEncryptedAppTicket" target="_blank">SteamEncryptedAppTicket</a> functions.</li>
+		<li>Triggers a <strong><em>encrypted_app_ticket_response</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#RequestStoreAuthURL" target="_blank">
+			requestStoreAuthURL( <sup>string</sup> redirect )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Requests a URL which authenticates an in-game browser for store check-out, and then redirects to the specified URL.</li>
+		<li>As long as the in-game browser accepts and handles session cookies, Steam microtransaction checkout pages will automatically recognize the user instead of presenting a login page.</li>
+		<li><strong>Note:</strong>  The URL has a very short lifetime to prevent history-snooping attacks, so you should only call this API when you are about to launch the browser, or else immediately navigate to the result URL using a hidden browser window.</li>
+		<li><strong>Note:</strong> The resulting authorization cookie has an expiration time of one day, so it would be a good idea to request and visit a new auth URL every 12 hours.</li>
+		<li>Triggers a <strong><em>store_auth_url_response</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#BSetDurationControlOnlineState" target="_blank">
+			setDurationControlOnlineState( <sup>int</sup> new_state )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Allows the game to specify the offline/online gameplay state for Steam China duration control.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#StartVoiceRecording" target="_blank">
+			startVoiceRecording()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Starts voice recording.</li>
+		<li>Once started, use <strong>getAvailableVoice</strong> and <strong>getVoice</strong> to get the data, and then call <strong>stopVoiceRecording</strong> when the user has released their push-to-talk hotkey or the game session has completed.</li>
+		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#StopVoiceRecording" target="_blank">
+			stopVoiceRecording()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Stops voice recording.</li>
+		<li>Because people often release push-to-talk keys early, the system will keep recording for a little bit after this function is called. As such, <strong>getVoice</strong> should continue to be called until it returns 2, only then will voice recording be stopped.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#TerminateGameConnection" target="_blank">
+			<span class="gdscript">
+				terminateGameConnection( <sup>int</sup> server_ip, <sup>int</sup> server_port )
+			</span>
+			<span class="c-sharp">
+				terminateGameConnection( <sup>uint32</sup> server_ip, <sup>uint32</sup> server_port )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Notify the game server that we are disconnecting.</li>
+		<li>This needs to occur when the game client leaves the specified game server, needs to match with the <strong>initiateGameConnection</strong> call.</li>
+		<li><strong>Note:</strong> This is part of the old user authentication API and should not be mixed with the new API.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUser#UserHasLicenseForApp" target="_blank">
+			<span class="gdscript">
+				userHasLicenseForApp( <sup>int</sup> steam_id, <sup>int</sup> app_id )
+			</span>
+			<span class="c-sharp">
+				userHasLicenseForApp( <sup>uint64_t</sup> steam_id, <sup>uint32_t</sup> app_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the user owns a specific piece of Downloadable Content (DLC).</li>
+		<li>This can only be called after sending the users auth ticket to <strong>serverBeginAuthSession</strong>.</li>
+		<li>Returns an  <strong>int</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

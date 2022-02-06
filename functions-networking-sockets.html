@@ -1,0 +1,1051 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | Networking Sockets</h1>
+	</header>
+	<p>The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<p>The <strong>identity_reference</strong> arguments refer to identities created with the Networking Type functions.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#AcceptConnection" target="_blank">
+			<span class="gdscript">
+				acceptConnection( <sup>int</sup> connection )
+			</span>
+			<span class="c-sharp">
+				acceptConnection( <sup>uint32</sup> connection_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Accept an incoming connection that has been received on a listen socket.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		beginAsyncRequestFakeIP( <sup>int</sup> num_ports )
+	</h4>
+	<ul>
+		<li>Begin asynchronous process of allocating a fake IPv4 address that other peers can use to contact us via P2P. IP addresses returned by this function are globally unique for a given app ID.</li>
+		<li>Triggers a <strong><em>fake_ip_result</em></strong> callback.</li>
+		<li>Returns a <strong>bool</strong>. <em>False</em> if a request was already in progress, <em>true</em> if a new request was started.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CloseConnection" target="_blank">
+			<span class="gdscript">
+				closeConnection( <sup>int</sup> peer, <sup>int</sup> reason, <sup>string</sup> debug_message, <sup>bool</sup> linger )
+			</span>
+			<span class="c-sharp">
+				closeConnection( <sup>uint32</sup> peer, <sup>int</sup> reason, <sup>string</sup> debug_message, <sup>bool</sup> linger )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Disconnects from the remote host and invalidates the connection handle. Any unread data on the connection is discarded.</li>
+		<li><strong>reason</strong> is an application defined code that will be received on the other end and recorded (when possible) in backend analytics. The value should come from a restricted range. (<a href="https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetConnectionEnd" target="_blank">See ESteamNetConnectionEnd.</a>) If you don't need to communicate any information to the remote host, and do not want analytics to be able to distinguish "normal" connection terminations from "exceptional" ones, you may pass zero, in which case the generic value of <strong>CONNECTION_END_APP_MIN</strong> will be used.</li>
+		<li><strong>debug_message</strong> is an optional human-readable diagnostic string that will be received by the remote host and recorded (when possible) in backend analytics.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>	
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CloseListenSocket" target="_blank">
+			<span class="gdscript">
+				closeListenSocket( <sup>int</sup> socket )
+			</span>
+			<span class="c-sharp">
+				closeListenSocket( <sup>uint32</sup> socket )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Destroy a listen socket. All the connections that were accepted on the listen socket are closed ungracefully.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		configureConnectionLanes()
+	</h4>
+	<ul>
+		<li>Configure multiple outbound messages streams ("lanes") on a connection, and control head-of-line blocking between them.  Messages within a given lane are always sent in the order they are queued, but messages from different lanes may be sent out of order.  Each lane has its own message number sequence.  The first message sent on each lane will be assigned the number 1.</li>
+		<li>Each lane has a "priority".  Lower priority lanes will only be processed when all higher-priority lanes are empty.  The magnitudes of the priority values are not relevant, only their sort order.  Higher numeric values take priority over lower numeric values.</li>
+		<li>Each lane also is assigned a weight, which controls the approximate proportion of the bandwidth that will be consumed by the lane, relative to other lanes of the same priority.  (This is assuming the lane stays busy.  An idle lane does not build up "credits" to be be spent once a message is queued.) This value is only meaningful as a proportion, relative to other lanes with the same priority.  For lanes with different priorities, the strict priority order will prevail, and their weights relative to each other are not relevant. Thus, if a lane has a unique priority value, the weight value for that lane is not relevant.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#ConnectP2P" target="_blank">
+			connectP2P( <sup>string</sup> identity_reference, <sup>int</sup> port, <sup>array</sup> options )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.</li>
+		<li>If you use this, you probably want to call <strong>initRelayNetworkAccess</strong> when your app initializes.</li>
+		<li>If you need to set any initial config options, pass them here. <a href="https://partner.steamgames.com/doc/api/steamnetworkingtypes#SteamNetworkingConfigValue_t" target="_blank">See SteamNetworkingConfigValue_t</a> for more about why this is preferable to setting the options "immediately" after creation.</li>
+		<li>Pass your <strong>options</strong> as an array of arrays; each sub-array containing:
+			<ul class="inner">
+				<li>config value (int)</li>
+				<li>data type (int)</li>
+				<li>data value (int or string)</li>
+			</ul>
+			Alternately you can pass an empty array.
+		</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#ConnectToHostedDedicatedServer" target="_blank">
+			connectToHostedDedicatedServer( <sup>string</sup> identity_reference, <sup>int</sup> virtual_port, <sup>array</sup> options )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!</li>
+		<li>Pass your <strong>options</strong> as an array of arrays; each sub-array containing:
+			<ul class="inner">
+				<li>config value (int)</li>
+				<li>data type (int)</li>
+				<li>data value (int or string)</li>
+			</ul>
+			Alternately you can pass an empty array.
+		</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		createFakeUDPPort( <sup>int</sup> fake_server_port)
+	</h4>
+	<ul>
+		<li>Get an interface that can be used like a UDP port to send/receive datagrams to a FakeIP address.  This is intended to make it easy to port existing UDP-based code to take advantage of SDR.</li>
+		<li><strong>fake_server_port</strong> refers to the *index* of the port allocated using <strong>beginAsyncRequestFakeIP</strong> and is used to create "server" ports.  You may call this before the allocation has completed.  However, any attempts to send packets will fail until the allocation has succeeded.  When the peer receives packets sent from this interface, the from address of the packet will be the globally-unique FakeIP.  If you call this function multiple times and pass the same (nonnegative) fake port index, the same object will be returned, and this object is not reference counted.</li>
+		<li>To create a "client" port (e.g. the equivalent of an ephemeral UDP port) pass -1.  In this case, a distinct object will be returned for each call. When the peer receives packets sent from this interface, the peer will assign a FakeIP from its own locally-controlled namespace.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CreateHostedDedicatedServerListenSocket" target="_blank">
+			createHostedDedicatedServerListenSocket( <sup>int</sup> virtual_port, <sup>array</sup> options )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Create a listen socket on the specified virtual port. The physical UDP port to use will be determined by the SDR_LISTEN_PORT environment variable. If a UDP port is not configured, this call will fail.</li>
+		<li>This function should be used when you are using the ticket generator library to issue your own tickets.  Clients connecting to the server on this virtual port will need a ticket, and they must connect using <strong>connectToHostedDedicatedServer</strong>.</li>
+		<li>Pass your <strong>options</strong> as an array of arrays; each sub-array containing:
+			<ul class="inner">
+				<li>config value (int)</li>
+				<li>data type (int)</li>
+				<li>data value (int or string)</li>
+			</ul>
+			Alternately you can pass an empty array.
+		</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CreateListenSocketIP" target="_blank">
+			createListenSocketIP( <sup>string</sup> ip_reference, <sup>Array</sup> options )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Creates a "server" socket that listens for clients to connect to by calling <strong>connectByIPAddress</strong>, over ordinary UDP (IPv4 or IPv6)</li>
+		<li>Pass your <strong>options</strong> as an array of arrays; each sub-array containing:
+			<ul class="inner">
+				<li>config value (int)</li>
+				<li>data type (int)</li>
+				<li>data value (int or string)</li>
+			</ul>
+			Alternately you can pass an empty array.
+		</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CreateListenSocketP2P" target="_blank">
+			createListenSocketP2P( <sup>int</sup> virtual_port, <sup>array</sup> options )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Like <strong>createListenSocketIP</strong>, but clients will connect using <strong>connectP2P</strong>. The connection will be relayed through the Valve network.</li>
+		<li><strong>virtual_port</strong> specifies how clients can connect to this socket using <strong>connectP2P</strong>. It's very common for applications to only have one listening socket; in that case, use zero. If you need to open multiple listen sockets and have clients be able to connect to one or the other, then nVirtualPort should be a small integer (<1000) unique to each listen socket you create.</li>
+		<li>Pass your <strong>options</strong> as an array of arrays; each sub-array containing:
+			<ul class="inner">
+				<li>config value (int)</li>
+				<li>data type (int)</li>
+				<li>data value (int or string)</li>
+			</ul>
+			Alternately you can pass an empty array.
+		</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		createListenSocketP2PFakeIP( <sup>int</sup> fake_port, <sup>array</sup> options )
+	</h4>
+	<ul>
+		<li>Create a listen socket that will listen for P2P connections sent to our FakeIP.  A peer can initiate connections to this listen socket by calling <strong>connectByIPAddress</strong>.</li>
+		<li><strong>fake_port</strong> refers to the *index* of the fake port requested, not the actual port number.  For example, pass 0 to refer to the first port in the reservation.  You must call this only after calling <strong>beginAsyncRequestFakeIP</strong>.  However, you do not need to wait for the request to complete before creating the listen socket.</li>
+		<li>Pass your <strong>options</strong> as an array of arrays; each sub-array containing:
+			<ul class="inner">
+				<li>config value (int)</li>
+				<li>data type (int)</li>
+				<li>data value (int or string)</li>
+			</ul>
+			Alternately you can pass an empty array.
+		</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CreatePollGroup" target="_blank">
+			createPollGroup()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Create a new poll group.</li>
+		<li>You should destroy the poll group when you are done using <strong>destroyPollGroup</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#CreateSocketPair" target="_blank">
+			createSocketPair( <sup>bool</sup> loopback, <sup>string</sup> identity_reference1, <sup>string</sup> identity_reference2 )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Create a pair of connections that are talking to each other, e.g. a loopback connection. This is very useful for testing, or so that your client/server code can work the same even when you are running a local "server".</li>
+		<li>The two connections will immediately be placed into the connected state, and no callbacks will be posted immediately. After this, if you close either connection, the other connection will receive a callback, exactly as if they were communicating over the network. You must close *both* sides in order to fully clean up the resources!</li>
+		<li>By default, internal buffers are used, completely bypassing the network, the chopping up of messages into packets, encryption, copying the payload, etc. This means that loopback packets, by default, will not simulate lag or loss. Passing true for <strong>loopback</strong> will cause the socket pair to send packets through the local network loopback device (127.0.0.1) on ephemeral ports. Fake lag and loss are supported in this case, and CPU time is expended to encrypt and decrypt.</li>
+		<li>If you wish to assign a specific identity to either connection, you may pass a particular identity. Otherwise, if you pass nullptr, the respective connection will assume a generic "localhost" identity. If you use real network loopback, this might be translated to the actual bound loopback port. Otherwise, the port will be zero.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>success (bool)</li>
+				<li>connection1 (int)</li>
+				<li>connection2 (int)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#DestroyPollGroup" target="_blank">
+			<span class="gdscript">
+				destroyPollGroup( <sup>int</sup> poll_group )
+			</span>
+			<span class="c-sharp">
+				destroyPollGroup( <sup>uint32</sup> poll_group )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Destroy a poll group created with CreatePollGroup.</li>
+		<li>If there are any connections in the poll group, they are removed from the group, and left in a state where they are not part of any poll group. Returns false if passed an invalid poll group handle.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#FindRelayAuthTicketForServer" target="_blank">
+			findRelayAuthTicketForServer( <sup>int</sup> gameServer, <sup>int</sup> port )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Search cache for a ticket to talk to the server on the specified virtual port. If found, returns the number of seconds until the ticket expires, and optionally the complete cracked ticket. Returns 0 if we don't have a ticket.</li>
+		<li><strong>Currently not enabled; requires datagram header.</strong></li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#FlushMessagesOnConnection" target="_blank">
+			<span class="gdscript">
+				flushMessagesOnConnection( <sup>int</sup> connection_handle )
+			</span>
+			<span class="c-sharp">
+				flushMessagesOnConnection( <sup>uint32</sup> connection_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Flush any messages waiting on the Nagle timer and send them at the next transmission opportunity (often that means right now).</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#InitAuthentication" target="_blank">
+			getAuthenticationStatus()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Query our readiness to participate in authenticated communications. A <strong><em>network_authentication_status</em></strong> callback is posted any time this status changes, but you can use this function to query it at any time.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		getCertificateRequest()
+	</h4>
+	<ul>
+		<li>Certificate provision by the application.  On Steam, we normally handle all this automatically and you will not need to use these advanced functions.</li>
+		<li>Get blob that describes a certificate request.  You can send this to your game coordinator. Pass this blob to your game coordinator and call SteamDatagram_CreateCert.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="innner">
+				<li>certificate (int)</li>
+				<li>cert_size (int)</li>
+				<li>error_message (string)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetConnectionInfo" target="_blank">
+			<span class="gdscript">
+				getConnectionInfo( <sup>int</sup> connection_handle )
+			</span>
+			<span class="c-sharp">
+				getConnectionInfo( <sup>uint32</sup> connection_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns basic information about the high-level state of the connection. Returns false if the connection handle is invalid.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>identity (string)</li>
+					<li>user_data (int)</li>
+					<li>listen_socket (int)</li>
+					<li>remote_address (string)</li>
+					<li>remote_pop (int)</li>
+					<li>pop_relay (int)</li>
+					<li>connection_state (int)</li>
+					<li>end_reason (int)</li>
+					<li>end_debug (string)</li>
+					<li>debug_description (string)</li>
+				</span>
+				<span class="c-sharp">
+					<li>identity (string)</li>
+					<li>user_data (uint64)</li>
+					<li>listen_socket (uint32)</li>
+					<li>remote_address (string)</li>
+					<li>remote_pop (uint32)</li>
+					<li>pop_relay (uint32)</li>
+					<li>connection_state (int)</li>
+					<li>end_reason (int)</li>
+					<li>end_debug (string)</li>
+					<li>debug_description (string)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetConnectionName" target="_blank">
+			getConnectionName( <sup>int</sup> peer )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fetch connection name into your buffer, which is at least nMaxLen bytes. Returns false if handle is invalid.</li>
+		<li>Returns a <strong>strong</strong>.</li>
+	</ul>
+	<h4>
+		<span class="gdscript">
+			GetConnectionRealTimeStatus( <sup>int</sup> connection_handle, <sup>int</sup> lanes, <sup>bool</sup> get_status )
+		</span>
+		<span class="c-sharp">
+			GetConnectionRealTimeStatus( <sup>uint32</sup> connection_handle, <sup>int</sup> lanes, <sup>bool</sup> get_status )
+		</span>
+	</h4>
+	<ul>
+		<li>Returns a small set of information about the real-time state of the connection and the queue status of each lane.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>connection_status (dictionary):
+					<ul class="inner">
+						<span class="gdscript">
+							<li>state (int)</li>
+							<li>ping (int)</li>
+							<li>local_quality (float)</li>
+							<li>remote_quality (float)</li>
+							<li>packets_out_per_second (float)</li>
+							<li>bytes_out_per_second (float)</li>
+							<li>packets_in_per_second (float)</li>
+							<li>bytes_in_per_second (float)</li>
+							<li>send_rate (int)</li>
+							<li>pending_unreliable (int)</li>
+							<li>pending_reliable (int)</li>
+							<li>send_unacknowledged_reliable (int)</li>
+							<li>queue_time (int)</li>
+						</span>
+						<span class="c-sharp">
+							<li>state (int)</li>
+							<li>ping (int)</li>
+							<li>local_quality (float)</li>
+							<li>remote_quality (float)</li>
+							<li>packets_out_per_second (float)</li>
+							<li>bytes_out_per_second (float)</li>
+							<li>packets_in_per_second (float)</li>
+							<li>bytes_in_per_second (float)</li>
+							<li>send_rate (int)</li>
+							<li>pending_unreliable (int)</li>
+							<li>pending_reliable (int)</li>
+							<li>send_unacknowledged_reliable (int)</li>
+							<li>queue_time (uint64_t)</li>
+						</span>
+					</ul>
+				</li>
+				<li>lanes_status (array):
+					<ul class="inner">
+						<li>lane_status (dictionary):
+							<ul class="inner">
+								<span class="gdscript">
+									<li>pending_unreliable (int)</li>
+									<li>pending_reliable (int)</li>
+									<li>sent_unacknowledged_reliatble (int)</li>
+									<li>queue_time (int)</li>
+								</span>
+								<span class="c-sharp">
+									<li>pending_unreliable (int)</li>
+									<li>pending_reliable (int)</li>
+									<li>sent_unacknowledged_reliatble (int)</li>
+									<li>queue_time (uint64_t)</li>
+								</span>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetConnectionUserData" target="_blank">
+			<span class="gdscript">
+				getConnectionUserData( <sup>int</sup> peer )
+			</span>
+			<span class="c-sharp">
+				getConnectionUserData( <sup>uint32</sup> peer )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fetch connection user data. Returns -1 if handle is invalid or if you haven't set any userdata on the connection.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetDetailedConnectionStatus" target="_blank">
+			<span class="gdscript">
+				getDetailedConnectionStatus( <sup>int</sup> connection_handle )
+			</span>
+			<span class="c-sharp">
+				getDetailedConnectionStatus( <sup>uint32</sup> connection_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns very detailed connection stats in diagnostic text format. Useful for dumping to a log, etc. The format of this information is subject to change.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>success (int)</li>
+				<li>buffer (string)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		getFakeIP( <sup>int</sup> first_port )
+	</h4>
+	<ul>
+		<li>Return info about the FakeIP and port(s) that we have been assigned, if any.</li>
+		<li><strong>first_port</strong> is currently reserved and must be zero. Make sure and check <strong>result</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>identity_type (int)</li>
+					<li>ip (int)</li>
+					<li>ports (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (int)</li>
+					<li>identity_type (int)</li>
+					<li>ip (uint32)</li>
+					<li>ports (uint16)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetGameCoordinatorServerLogin" target="_blank">
+			getGameCoordinatorServerLogin()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)</li>
+		<li><strong>Currently not enabled.</strong></li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetHostedDedicatedServerAddress" target="_blank">
+			getHostedDedicatedServerAddress()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Return info about the hosted server. This contains the PoPID of the server, and opaque routing information that can be used by the relays to send traffic to your server.</li>
+		<li><strong>Currently not enabled.</strong></li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetHostedDedicatedServerPOPID" target="_blank">
+			getHostedDedicatedServerPOPId()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns 0 if SDR_LISTEN_PORT is not set. Otherwise, returns the data center the server is running in. This will be k_SteamDatagramPOPID_dev in non-production envirionment.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetHostedDedicatedServerPort" target="_blank">
+			getHostedDedicatedServerPort()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the value of the SDR_LISTEN_PORT environment variable. This is the UDP server your server will be listening on. This will configured automatically for you in production environments.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint16</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetListenSocketAddress" target="_blank">
+			<span class="gdscript">
+				getListenSocketAddress( <sup>int</sup> socket )
+			</span>
+			<span class="c-sharp">
+				getListenSocketAddress( <sup>uint32</sup> socket )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.</li>
+		<li><strong>Note:</strong> This is not how you find out your public IP that clients can connect to.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#GetIdentity" target="_blank">
+			getIdentity()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the identity assigned to this interface.</li>
+		<li>E.g. on Steam, this is the user's Steam ID, or for the gameserver interface, the Steam ID assigned to the gameserver. Returns false and sets the result to an invalid identity if we don't know our identity yet. (E.g. GameServer has not logged in. On Steam, the user will know their SteamID even if they are not signed into Steam.)</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<span class="gdscript">
+			getRemoteFakeIPForConnection( <sup>int</sup> connection_handle )
+		</span>
+		<span class="c-sharp">
+			getRemoteFakeIPForConnection( <sup>uint32</sup> connection_handle )
+		</span>
+	</h4>
+	<ul>
+		<li>If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.</li>
+		<li>Otherwise, a FakeIP that is unique locally will be allocated from the local FakeIP address space, and that will be returned.</li>
+		<li>This should also add the returning struct to your <strong>ip_addresses</strong> vector as <strong>fake_ip_address</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>port (int)</li>
+					<li>ip_type (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (int)</li>
+					<li>port (uint16)</li>
+					<li>ip_type (int)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>				
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#InitAuthentication" target="_blank">
+			initAuthentication()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Indicate our desire to be ready participate in authenticated communications. If we are currently not ready, then steps will be taken to obtain the necessary certificates. (This includes a certificate for us, as well as any CA certificates needed to authenticate peers.)</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#ReceiveMessagesOnConnection" target="_blank">
+			<span class="gdscript">
+				receiveMessagesOnConnection( <sup>int</sup> connection_handle, <sup>int</sup> max_messages )
+			</span>
+			<span class="c-sharp">
+				receiveMessagesOnConnection( <sup>uint32</sup> connection_handle, <sup>int</sup> max_messages )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fetch the next available message(s) from the connection, if any. Returns the number of messages returned into your array, up to <strong>max_messages</strong>. If the connection handle is invalid, -1 is returned. If no data is available, 0, is returned.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul class="inner">
+				<li> messages (dictionary):
+					<ul class="inner">
+						<span class="gdscript">
+							<li>payload (string)</li>
+							<li>size (int)</li>
+							<li>connection (int)</li>
+							<li>identity (string)</li>
+							<li>user_data (int)</li>
+							<li>time_received (int)</li>
+							<li>message_number (int)</li>
+							<li>channel (int)</li>
+							<li>flags (int)</li>
+							<li>user_data (int)</li>
+						</span>
+						<span class="c-sharp">
+							<li>payload (string)</li>
+							<li>size (int)</li>
+							<li>connection (int)</li>
+							<li>identity (string)</li>
+							<li>user_data (uint64_t)</li>
+							<li>time_received (uint64_t)</li>
+							<li>message_number (uint64_t)</li>
+							<li>channel (int)</li>
+							<li>flags (int)</li>
+							<li>user_data (uint64_t)</li>
+						</span>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#ReceiveMessagesOnPollGroup" target="_blank">
+			<span class="gdscript">
+				receiveMessagesOnPollGroup( <sup>int</sup> pollGroup, <sup>int</sup> max_messages )
+			</span>
+			<span class="c-sharp">
+				receiveMessagesOnPollGroup( <sup>uint32</sup> pollGroup, <sup>int</sup> max_messages )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Same as <strong>receiveMessagesOnConnection</strong>, but will return the next messages available on any connection in the poll group. Examine <strong>connection</strong> to know which connection. <strong>user_data</strong> might also be useful.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul class="inner">
+				<li> messages (dictionary):
+					<ul class="inner">
+						<span class="gdscript">
+							<li>payload (string)</li>
+							<li>size (int)</li>
+							<li>connection (int)</li>
+							<li>identity (string)</li>
+							<li>user_data (int)</li>
+							<li>time_received (int)</li>
+							<li>message_number (int)</li>
+							<li>channel (int)</li>
+							<li>flags (int)</li>
+							<li>user_data (int)</li>
+						</span>
+						<span class="c-sharp">
+							<li>payload (string)</li>
+							<li>size (int)</li>
+							<li>connection (int)</li>
+							<li>identity (string)</li>
+							<li>user_data (uint64_t)</li>
+							<li>time_received (uint64_t)</li>
+							<li>message_number (uint64_t)</li>
+							<li>channel (int)</li>
+							<li>flags (int)</li>
+							<li>user_data (uint64_t)</li>
+						</span>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#ReceivedRelayAuthTicket" target="_blank">
+			receivedRelayAuthTicket()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Call this when you receive a ticket from your backend / matchmaking system. Puts the ticket into a persistent cache, and optionally returns the parsed ticket.</li>
+		<li><strong>Currently not enabled.</strong></li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>game_server (string)</li>
+					<li>authorized_client (string)</li>
+					<li>public_ip (int)</li>
+					<li>expiry (int)</li>
+					<li>routing (int)</li>
+					<li>app_id (int)</li>
+					<li>restrict_to_v_port (int)</li>
+					<li>number_of_extras (int)</li>
+					<li>extra_fields (vector)</li>
+				</span>
+				<span class="c-sharp">
+					<li>game_server (string)</li>
+					<li>authorized_client (string)</li>
+					<li>public_ip (uint32)</li>
+					<li>expiry (int32)</li>
+					<li>routing (int)</li>
+					<li>app_id (uint32)</li>
+					<li>restrict_to_v_port (int)</li>
+					<li>number_of_extras (int)</li>
+					<li>extra_fields (vector)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		resetIdentity( <sup>string</sup> identity_reference )
+	</h4>
+	<ul>
+		<li>Reset the identity associated with this instance. Any open connections are closed.  Any previous certificates, etc are discarded.</li>
+		<li>You can pass a specific identity that you want to use, or you can pass NULL, in which case the identity will be invalid until you set it using <strong>setCertificate</strong>.</li>
+		<li><strong>Note:</strong> This function is not actually supported on Steam!  It is included for use on other platforms where the active user can sign out and a new user can sign in.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		runNetworkingCallbacks()
+	</h4>
+	<ul>
+		<li>Invoke all callback functions queued for this interface. You don't need to call this if you are using Steam's callback dispatch mechanism <strong>run_callbacks</strong>.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#SendMessages" target="_blank">
+			<span class="gdscript">
+				sendMessages( <sup>int</sup> messages, <sup>PoolyStringArray</sup> message, <sup>int</sup> connection_handle, <sup>int</sup> flags )
+			</span>
+			<span class="c-sharp">
+				sendMessages( <sup>int</sup> messages, <sup>PoolyStringArray</sup> message, <sup>uint32</sup> connection_handle, <sup>int</sup> flags )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Send one or more messages without copying the message payload. This is the most efficient way to send messages.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#SendMessageToConnection" target="_blank">
+			sendMessageToConnection( <sup>int</sup> connection_handle, <sup>string</sup> message, <sup>int</sup> flags )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Send a message to the remote host on the specified connection.</li>
+		<li>Returns an <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>message_number (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (int)</li>
+					<li>message_number (int64)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>				
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#SetConnectionPollGroup" target="_blank">
+			<span class="gdscript">
+				setConnectionPollGroup( <sup>int</sup> connection_handle, <sup>int</sup> pollGroup )
+			</span>
+			<span class="c-sharp">
+				setConnectionPollGroup( <sup>uint32</sup> connection_handle, <sup>uint32</sup> pollGroup )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Assign a connection to a poll group. Note that a connection may only belong to a single poll group. Adding a connection to a poll group implicitly removes it from any other poll group it is in.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingSockets#SetConnectionName" target="_blank">
+			<span class="gdscript">
+				setConnectionName( <sup>int</sup> peer, <sup>string</sup> name )
+			</span>
+			<span class="c-sharp">
+				setConnectionName( <sup>uint32</sup> peer, <sup>string</sup> name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a name for the connection, used mostly for debugging.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

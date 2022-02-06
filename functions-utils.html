@@ -1,0 +1,588 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | Utilities</h1>
+	</header>
+	<p>The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#BOverlayNeedsPresent" target="_blank">
+			overlayNeedsPresent()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the Overlay needs a present. Only required if using event driven render updates.</li>
+		<li>Typically this call is unneeded if your game has a constantly running frame loop that calls the D3D Present API, or OGL SwapBuffers API every frame as is the case in most games. However, if you have a game that only refreshes the screen on an event driven basis then that can break the overlay, as it uses your Present/SwapBuffers calls to drive it's internal frame loop and it may also need to Present() to the screen any time a notification happens or when the overlay is brought up over the game by a user. You can use this API to ask the overlay if it currently need a present in that case, and then you can check for this periodically (roughly 33hz is desirable) and make sure you refresh the screen with Present or SwapBuffers to allow the overlay to do it's work.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetAPICallFailureReason" target="_blank">
+			getAPICallFailureReason()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Used to get the failure reason of a call result.</li>
+		<li>The primary usage for this function is debugging. The failure reasons are typically out of your control and tend to not be very important. Just keep retrying your API Call until it works.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetAppID" target="_blank">
+			getAppID()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the App ID of the current process.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetCurrentBatteryPower" target="_blank">
+			getCurrentBatteryPower()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current amount of battery power on the computer.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetImageRGBA" target="_blank">
+			getImageRGBA( <sup>int</sup> image )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the image bytes from an image handle.</li>
+		<li>Prior to calling this you must get the size of the image by calling <strong>getImageSize</strong> so that you can create your buffer with an appropriate size. You can then allocate your buffer with the width and height as: width * height * 4. The image is provided in RGBA format. This call can be somewhat expensive as it converts from the compressed type (JPG, PNG, TGA) and provides no internal caching of returned buffer, thus it is highly recommended to only call this once per image handle and cache the result. This function is only used for Steam Avatars and Achievement images and those are not expected to change mid game.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>buffer (PoolByteArray)</li>
+				<li>success (bool)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetImageSize" target="_blank">
+			getImageSize ( <sup>int</sup> image )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the size of a Steam image handle.</li>
+		<li>This must be called before calling <strong>getImageRGBA</strong> to create an appropriately sized buffer that will be filled with the raw image data.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<span class="gdscript">
+					<li>width (int)</li>
+					<li>height (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>width (uint32)</li>
+					<li>height (uint32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetIPCCallCount" target="_blank">
+			getIPCCallCount
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the number of IPC calls made since the last time this function was called.</li>
+		<li>Used for perf debugging so you can determine how many IPC (Inter-Process Communication) calls your game makes per frame.</li>
+		<li>Every IPC call is at minimum a thread context switch if not a process one so you want to rate control how often you do them.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetIPCountry" target="_blank">
+			getIPCountry()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the 2 digit ISO 3166-1-alpha-2 format country code which client is running in. e.g "US" or "UK".</li>
+		<li>This is looked up via an IP-to-location database.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetSecondsSinceAppActive" target="_blank">
+			getSecondsSinceAppActive()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the number of seconds since the application was active./li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetSecondsSinceComputerActive" target="_blank">
+			getSecondsSinceComputerActive()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the number of seconds since the user last moved the mouse.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetServerRealTime" target="_blank">
+			getServerRealTime()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the Steam server time in Unix epoch format. (Number of seconds since Jan 1, 1970 UTC).</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#GetSteamUILanguage" target="_blank">
+			getSteamUILanguage()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the language the steam client is running in.</li>
+		<li>You probably want <strong>getCurrentGameLanguage</strong> instead, this should only be used in very special cases.</li>
+		<li>For a full list of languages see <a href="https://partner.steamgames.com/doc/store/localization#supported_languages" target="_blank">Supported Languages</a>.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsAPICallCompleted" target="_blank">
+			isAPICallCompleted()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if an API Call is completed. Provides the backend of the CallResult wrapper.</li>
+		<li>It's generally not recommended that you use this yourself.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>completed (bool)</li>
+				<li>failed (bool)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsOverlayEnabled" target="_blank">
+			isOverlayEnabled()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the Steam Overlay is running & the user can access it.</li>
+		<li>The overlay process could take a few seconds to start & hook the game process, so this function will initially return false while the overlay is loading.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsSteamChinaLauncher" target="_blank">
+			isSteamChinaLauncher()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns whether the current launcher is a Steam China launcher. You can cause the client to behave as the Steam China launcher by adding <code>-dev -steamchina</code> to the command line when running Steam.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#InitFilterText" target="_blank">
+			initFilterText()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Initializes text filtering, loading dictionaries for the language the game is running in.</li>
+		<li>Users can customize the text filter behavior in their Steam Account preferences.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#FilterText" target="_blank">
+			<span class="gdscript">
+				filterText( <sup>int</sup> context, <sup>int</sup> steam_id, <sup>string</sup> message )
+			</span>
+			<span class="c-sharp">
+				filterText( <sup>int</sup> context, <sup>uint64_t</sup> steam_id, <sup>string</sup> message )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Filters the provided input message and returns the filtered result. Legally required filtering is always applied. Additional filtering may occur, based on the context and user settings.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsSteamInBigPictureMode" target="_blank">
+			isSteamInBigPictureMode()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if Steam & the Steam Overlay are running in Big Picture mode.</li>
+		<li>Games must be launched through the Steam client to enable the Big Picture overlay. During development, a game can be added as a non-steam game to the developers library to test this feature.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsSteamRunningInVR" target="_blank">
+			isSteamRunningInVR()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if Steam is running in VR mode.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsVRHeadsetStreamingEnabled" target="_blank">
+			isVRHeadsetStreamingEnabled()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the HMD view will be streamed via Steam In-Home Streaming.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#SetOverlayNotificationInset" target="_blank">
+			setOverlayNotificationInset( <sup>int</sup> horizontal, <sup>int</sup> vertical )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the inset of the overlay notification from the corner specified by SetOverlayNotificationPosition. Integer should be number of pixels.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#SetOverlayNotificationPosition" target="_blank">
+			setOverlayNotificationPosition( <sup>int</sup> pos )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set the position where overlay shows notifications. Accepts the following integer inputs:
+			<ul class="inner">
+				<li>0 - Top Left</li>
+				<li>1 - Top Right</li>
+				<li>2 - Bottom Left</li>
+				<li>3 - Bottom Right</li>
+			</ul>
+		</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsVRHeadsetStreamingEnabled" target="_blank">
+			setVRHeadsetStreamingEnabled()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set whether the HMD content will be streamed via Steam In-Home Streaming.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#IsSteamRunningOnSteamDeck" target="_blank">
+			isSteamRunningOnSteamDeck()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if Steam is running on a Steam Deck device.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#SetOverlayNotificationInset" target="_blank">
+			setOverlayNotificationInset( <sup>int</sup> horizontal, <sup>int</sup> vertical )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the inset of the overlay notification from the corner specified by <strong>setOverlayNotificationPosition</strong>.</li>
+		<li>A value of (0, 0) resets the position into the corner.</li>
+		<li>This position is per-game and is reset each launch.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#SetOverlayNotificationPosition" target="_blank">
+			setOverlayNotificationPosition( <sup>int</sup> pos )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets which corner the Steam overlay notification popup should display itself in.</li>
+		<li>You can also set the distance from the specified corner by using <strong>setOverlayNotificationInset</strong>.</li>
+		<li>This position is per-game and is reset each launch.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#SetVRHeadsetStreamingEnabled" target="_blank">
+			setVRHeadsetStreamingEnabled( <sup>bool</sup> enabled )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set whether the HMD content will be streamed via Steam Remote Play.</li>
+		<li>If this is enabled, then the scene in the HMD headset will be streamed, and remote input will not be allowed. Otherwise if this is disabled, then the application window will be streamed instead, and remote input will be allowed. VR games default to enabled unless "VRHeadsetStreaming" "0" is in the extended appinfo for a game.</li>
+		<li>This is useful for games that have asymmetric multiplayer gameplay.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#ShowGamepadTextInput" target="_blank">
+			<span class="gdscript">
+				showGamepadTextInput( <sup>int</sup> input_mode, <sup>int</sup> line_input_mode, <sup>string</sup> description, <sup>int</sup> max_text, <sup>string</sup> preset_text )
+			</span>
+			<span class="c-sharp">
+				showGamepadTextInput( <sup>int</sup> input_mode, <sup>int</sup> line_input_mode, <sup>string</sup> description, <sup>uint32</sup> max_text, <sup>string</sup> preset_text )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Activates the Big Picture text input dialog which only supports gamepad input.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#ShowFloatingGamepadTextInput" target="_blank">
+			showFloatingGamepadTextInput( <sup>int</sup> input_mode, <sup>int</sup> text_field_x_position, <sup>int</sup> text_field_y_position, <sup>int</sup> text_field_width, <sup>int</sup> text_field_height )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Opens a floating keyboard over the game content and sends OS keyboard keys directly to the game.</li>
+		<li>The text field position is specified in pixels relative the origin of the game window and is used to position the floating keyboard in a way that doesn't cover the text field.</li>
+		<li>Returns a <sup>bool</sup>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#StartVRDashboard" target="_blank">
+			startVRDashboard()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Ask SteamUI to create and render its OpenVR dashboard.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUtils#SetGameLauncherMode" target="_blank">
+			setGameLauncherMode( <sup>bool</sup> mode)
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>In game launchers that don't have controller support you can call this to have Steam Input translate the controller input into mouse/kb to navigate the launcher</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

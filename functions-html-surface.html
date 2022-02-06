@@ -1,0 +1,593 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | HTML Surface</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#AddHeader" target="_blank">
+			addHeader( <sup>string</sup> key, <sup>string</sup> value )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Add a header to any HTTP requests from this browser. A full list of standard request fields are available here on <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields" target="_blank">Wikipedia</a>.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#AllowStartRequest" target="_blank">
+			allowStartRequest( <sup>bool</sup> allowed )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether a pending load is allowed or if it should be canceled. You can use this feature to limit the valid pages allowed in your HTML surface.</li>
+		<li><strong>Note:</strong> You <em>must</em> call this in response to a <strong>html_start_request</strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#CopyToClipboard" target="_blank">
+			copyToClipboard()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Copy the currently selected text from the current page in an HTML surface into the local clipboard.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#CreateBrowser" target="_blank">
+			createBrowser( <sup>string</sup> user_agent, <sup>string</sup> user_css )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Create a browser object for displaying of an HTML page.</li>
+		<li><strong>Note:</strong> You <em>must</em> call <strong>removeBrowser</strong> when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#ExecuteJavascript" target="_blank">
+			executeJavascript( <sup>string</sup> script )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Run a javascript script in the currently loaded page.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#Find" target="_blank">
+			find( <sup>string</sup> search, <sup>bool</sup> currently_in_find, <sup>bool</sup> reverse )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call <strong>stopFind</strong> when the input string has changed or you want to stop searching.</li>
+		<li>Triggers a <strong><em>html_search_results</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#GetLinkAtPosition" target="_blank">
+			getLinkAtPosition( <sup>int</sup> x, <sup>int</sup> y )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieves details about a link at a specific position on the current page in an HTML surface.</li>
+		<li>Triggers a <strong><em>html_link_at_position</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#GoBack" target="_blank">
+			goBack()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Navigate back in the page history.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#GoForward" target="_blank">
+			goForward()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Navigate forward in the page history.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#Init" target="_blank">
+			htmlInit()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Initializes the HTML Surface API. This must be called prior to using any other functions in this interface. You <em>must</em> call <strong>htmlShutdown</strong> when you are done using the interface to free up the resources associated with it. Failing to do so will result in a memory leak.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#JSDialogResponse" target="_blank">
+			jsDialogResponse( <sup>bool</sup> result )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Allows you to react to a page wanting to open a javascript modal dialog notification.</li>
+		<li><strong>Note:</strong> You <em>must</em> call this in response to <strong>html_js_alert</strong> and <strong>html_js_confirm</strong> callbacks.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#KeyChar" target="_blank">
+			<span class="gdscript">
+				keyChar( <sup>int</sup> unicode_char, <sup>int</sup> key_modifiers )
+			</span>
+			<span class="c-sharp">
+				keyChar( <sup>uint32</sup> unicode_char, <sup>int</sup> key_modifiers )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><strong>unicode_char</strong> is the unicode character point for this keypress (and potentially multiple chars per press).</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#KeyDown" target="_blank">
+			<span class="gdscript">
+				keyDown( <sup>int</sup> native_key_code, <sup>int</sup> key_modifiers )
+			</span>
+			<span class="c-sharp">
+				keyDown( <sup>uint32</sup> native_key_code, <sup>int</sup> key_modifiers )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Keyboard interactions, native keycode is the virtual key code value from your OS.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#KeyUp" target="_blank">
+			<span class="gdscript">
+				keyUp( <sup>int</sup> native_key_code, <sup>int</sup> key_modifiers )
+			</span>
+			<span class="c-sharp">
+				keyUp( <sup>uint32</sup> native_key_code, <sup>int</sup> key_modifiers )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Keyboard interactions, native keycode is the virtual key code value from your OS.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#LoadURL" target="_blank">
+			loadURL( <sup>string</sup> url, <sup>string</sup> post_data )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Navigate to a specified URL. If you send POST data with <strong>post_data</strong> then the data should be formatted as: <code>name1=value1&name2=value2</code>. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: <code>http://, https://, ftp://, and file:///</code>. If no scheme is specified then <code>http://</code> is used.</li>
+		<li>Triggers a <strong><em>html_start_request</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#MouseDoubleClick" target="_blank">
+			mouseDoubleClick( <sup>int</sup> mouseButton )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to <strong>mouseMove</strong>.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#MouseDown" target="_blank">
+			mouseDown( <sup>int</sup> mouse_button )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to <strong>mouseMove</strong>.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#MouseMove" target="_blank">
+			mouseMove( <sup>int</sup> x, <sup>int</sup> y )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Tells an HTML surface where the mouse is.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#MouseUp" target="_blank">
+			mouseUp( <sup>int</sup> mouse_button )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to <strong>mouseMove</strong>.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#MouseWheel" target="_blank">
+			<span class="gdscript">
+				mouseWheel( <sup>int</sup> delta )
+			</span>
+			<span class="c-sharp">
+				mouseWheel( <sup>int32</sup> delta )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Tells an HTML surface that the mouse wheel has moved.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#PasteFromClipboard" target="_blank">
+			pasteFromClipboard()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Paste from the local clipboard to the current page in an HTML surface.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#Reload" target="_blank">
+			reload()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Refreshes the current page. The reload will most likely hit the local cache instead of going over the network. This is equivalent to F5 or Ctrl+R in your browser of choice.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#RemoveBrowser" target="_blank">
+			removeBrowser()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>You <em>must</em> call this when you are done with an HTML surface, freeing the resources associated with it. Failing to call this will result in a memory leak.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetBackgroundMode" target="_blank">
+			setBackgroundMode( <sup>bool</sup> background_mode )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Enable/disable low-resource background mode, where javascript and repaint timers are throttled, resources are more aggressively purged from memory, and audio/video elements are paused. When background mode is enabled, all HTML5 video and audio objects will execute ".pause()" and gain the property "._steam_background_paused = 1". When background mode is disabled, any video or audio objects with that property will resume with ".play()".
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetCookie" target="_blank">
+			<span class="gdscript">
+				setCookie( <sup>string</sup> hostname, <sup>string</sup> key, <sup>string</sup> value, <sup>string</sup> path, <sup>int</sup> expires, <sup>bool</sup> secure, <sup>bool</sup> http_only )
+			</span>
+			<span class="gdscript">
+				setCookie( <sup>string</sup> hostname, <sup>string</sup> key, <sup>string</sup> value, <sup>string</sup> path, <sup>uint32</sup> expires, <sup>bool</sup> secure, <sup>bool</sup> http_only )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a webcookie for a specific hostname. You can read more about the specifics of setting cookies here on <a href="https://en.wikipedia.org/wiki/HTTP_cookie#Implementation" target="_blank">Wikipedia</a>.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetHorizontalScroll" target="_blank">
+			<span class="gdscript">
+				setHorizontalScroll( <sup>int</sup> absolute_pixel_scroll )
+			</span>
+			<span class="c-sharp">
+				setHorizontalScroll( <sup>uint32</sup> absolute_pixel_scroll )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Scroll the current page horizontally.</li>
+		<li>Triggers a <strong><em>html_horizontal_scroll</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetKeyFocus" target="_blank">
+			setKeyFocus( <sup>bool</sup> has_key_focus )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Tell a HTML surface if it has key focus currently, controls showing the I-beam cursor in text controls amongst other things.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetPageScaleFactor" target="_blank">
+			setPageScaleFactor( <sup>float</sup> zoom, <sup>int</sup> pointX, <sup>int</sup> pointY )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Zoom the current page in an HTML surface. The current scale factor is available from HTML_NeedsPaint_t.flPageScale, HTML_HorizontalScroll_t.flPageScale, and HTML_VerticalScroll_t.flPageScale.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetSize" target="_blank">
+			<span class="gdscript">
+				setSize( <sup>int</sup> width, <sup>int</sup> height )
+			</span>
+			<span class="c-sharp">
+				setSize( <sup>uint32</sup> width, <sup>uint32</sup> height )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the display size of a surface in pixels.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#SetVerticalScroll" target="_blank">
+			<span class="gdscript">
+				setVerticalScroll( <sup>int</sup> absolute_pixel_scroll )
+			</span>
+			<span class="c-sharp">
+				setVerticalScroll( <sup>uint32</sup> absolute_pixel_scroll )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Scroll the current page vertically.</li>
+		<li>Triggers a <strong><em>html_vertical_scroll</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#Shutdown" target="_blank">
+			htmlShutdown()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Shutdown the ISteamHTMLSurface interface, releasing the memory and handles. You <em>must</em> call this when you are done using this interface to prevent memory and handle leaks. After calling this then all of the functions provided in this interface will fail until you call Init to reinitialize again.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#StopFind" target="_blank">
+			stopFind()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Cancel a currently running find.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#StopLoad" target="_blank">
+			stopLoad()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Stop the load of the current HTML page.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTMLSurface#ViewSource" target="_blank">
+			viewSource()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Open the current pages HTML source code in default local text editor, used for debugging.
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | HTTP</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#CreateCookieContainer" target="_blank">
+			createCookieContainer( <sup>bool</sup> allow_responses_to_modify )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Creates a cookie container to store cookies during the lifetime of the process. This API is just for during process lifetime, after Steam restarts no cookies are persisted and you have no way to access the cookie container across repeat executions of your process.</li>
+		<li>If <strong>allow_responses_to_modify</strong> is true then any response to your requests using this cookie container may add new cookies to the container which may be transmitted with future requests. Otherwise, if it's false then only cookies you explicitly set will be sent.</li>
+		<li>You can associate the cookie container with a http request by using <strong>setHTTPRequestCookieContainer</strong>, and you can set a cookie using <strong>setCookie</strong>. Don't forget to free the container when you're done with it to prevent leaking memory by calling <strong>releaseCookieContainer</strong>!</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#CreateHTTPRequest" target="_blank">
+			createHTTPRequest( <sup>int</sup> request_method, <sup>string</sup> absolute_url )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Initializes a new HTTP request. Requires the method such as GET or POST and the absolute URL for the request. Both http and https are supported, so this string must start with "http://" or "https://" and should look like "http://store.steampowered.com/app/10/" or similar. This call returns a handle that you can use to make further calls to setup and then send the HTTP request with <strong>sendHTTPRequest</strong> or <strong>sendHTTPRequestAndStreamResponse</strong>. Don't forget to free the HTTP request when you're done with it to prevent leaking memory by calling <strong>releaseHTTPRequest</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#DeferHTTPRequest" target="_blank">
+			<span class="gdscript">
+				deferHTTPRequest( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				deferHTTPRequest( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Defers a request which has already been sent by moving it at the back of the queue.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPDownloadProgressPct" target="_blank">
+			<span class="gdscript">
+				getHTTPDownloadProgressPct( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				getHTTPDownloadProgressPct( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets progress on downloading the body for the request. This will be zero unless a response header has already been received which included a content-length field. For responses that contain no content-length it will report zero for the duration of the request as the size is unknown until the connection closes.</li>
+		<li>Returns a <strong>float</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPRequestWasTimedOut" target="_blank">
+			getHTTPRequestWasTimedOut( <sup>int</sup> request_handle )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Check if the reason the request failed was because we timed it out (rather than some harder failure). You'll want to call this within the context of <strong><em>_http_request_completed</em></strong> callback if <strong>request_success</strong> is false.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPResponseBodyData" target="_blank">
+			<span class="gdscript">
+				getHTTPResponseBodyData( <sup>int</sup> request_handle, <sup>int</sup> buffer_size )
+			</span>
+			<span class="c-sharp">
+				getHTTPResponseBodyData( <sup>uint32</sup> request_handle, <sup>uint32</sup> buffer_size )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the body data from an HTTP response. This must be called after the HTTP request has completed and returned the HTTP response via the <strong><em>_http_request_completed</em></strong> call result associated with this request handle. You should first call <strong>getHTTPResponseBodySize</strong> or use the <strong>body_size</strong> variable provided in the call result, you can then allocate a buffer with that size to pass into this function.</li>
+		<li>This is only for HTTP requests which were sent with <strong>sendHTTPRequest</strong>. Use <strong>getHTTPStreamingResponseBodyData</strong> if you're using streaming HTTP requests via <strong>sendHTTPRequestAndStreamResponse</strong>.</li>
+		<li>Returns an <strong>PoolByteArray</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPResponseBodySize" target="_blank">
+			<span class="gdscript">
+				getHTTPResponseBodySize( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				getHTTPResponseBodySize( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the size of the body data from an HTTP response. This must be called after the HTTP request has completed and returned the HTTP response via the <strong><em>_http_request_completed</em></strong> or <strong><em>_http_request_data_received</em></strong> associated with this request handle. If this returns successfully, then you can allocate a buffer with the provided size to fill with the data obtained from <strong>getHTTPResponseBodyData</strong> or <strong>etHTTPStreamingResponseBodyData</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPResponseHeaderSize" target="_blank">
+			<span class="gdscript">
+				getHTTPResponseHeaderSize( <sup>int</sup> request_handle, <sup>string</sup> header_name )
+			</span>
+			<span class="c-sharp">
+				getHTTPResponseHeaderSize( <sup>uint32</sup> request_handle, <sup>string</sup> header_name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if a header is present in an HTTP response and returns its size. This must be called after the HTTP request has completed and returned the HTTP response via the <strong><em>_http_request_completed</em></strong> call result associated with this request handle. If the response header exists in the response, then you can allocate a correctly sized buffer to get the associated value with <strong>getHTTPResponseHeaderValue</strong>. Here is a list of standard response header names on <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Response_fields" target="_blank">Wikipedia</a>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPResponseHeaderValue" target="_blank">
+			<span class="gdscript">
+				getHTTPResponseHeaderValue( <sup>int</sup> request_handle, <sup>string</sup> header_name, <sup>int</sup> buffer_size )
+			</span>
+			<span class="c-sharp">
+				getHTTPResponseHeaderValue( <sup>uint32</sup> request_handle, <sup>string</sup> header_name, <sup>uint32</sup> buffer_size )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a header value from an HTTP response. This must be called after the HTTP request has completed and returned the HTTP response via the <strong><em>_http_request_completed</em></strong> call result associated with this request handle. You should first call <strong>getHTTPResponseHeaderSize</strong> to check for the presence of the header and to get the size. You can then allocate a buffer with that size and pass it into this function. Here is a list of standard response header names on <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Response_fields" target="_blank">Wikipedia</a>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint8</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#GetHTTPStreamingResponseBodyData" target="_blank">
+			<span class="gdscript">
+				getHTTPStreamingResponseBodyData( <sup>int</sup> request_handle, <sup>int</sup> offset, <sup>int</sup> buffer_size )
+			</span>
+			<span class="c-sharp">
+				getHTTPStreamingResponseBodyData( <sup>uint32</sup> request_handle, <sup>uint32</sup> offset, <sup>uint32</sup> buffer_size )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the body data from a streaming HTTP response. This must be called after data is received from a streaming HTTP request via the <strong><em>_http_request_completed</em></strong> callback associated with this request handle. Typically you'll want to allocate a buffer associated with the request handle using the Content-Length HTTP response field to receive the total size of the data when you receive the header via <strong><em>_http_request_headers_received</em></strong>. You can then append data to that buffer as it comes in. This is only for streaming HTTP requests which were sent with <strong>sendHTTPRequestAndStreamResponse</strong>. Use <strong>getHTTPResponseBodyData</strong> if you're using <strong>sendHTTPRequest</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#PrioritizeHTTPRequest" target="_blank">
+			<span class="gdscript">
+				prioritizeHTTPRequest( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				prioritizeHTTPRequest( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Prioritizes a request which has already been sent by moving it at the front of the queue.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#ReleaseCookieContainer" target="_blank">
+			releaseCookieContainer()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Releases a cookie container, freeing the memory allocated within Steam. You <strong>must</strong> call this when you are done using each <strong>HTTPCookieContainerHandle</strong> that you obtained via <strong>createCookieContainer</strong>!</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#ReleaseHTTPRequest" target="_blank">
+			<span class="gdscript">
+				releaseHTTPRequest( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				releaseHTTPRequest( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Releases an HTTP request handle, freeing the memory allocated within Steam. You <strong>must</strong> call this when you are done using each <strong>HTTPRequestHandle</strong> that you obtained via <strong>createHTTPRequest</strong>!</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SendHTTPRequest" target="_blank">
+			<span class="gdscript">
+				sendHTTPRequest( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				sendHTTPRequest( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sends an HTTP request. This call is asynchronous and provides a call result handle which you must use to track the call to its completion. If you have multiple requests in flight at the same time you can use <strong>prioritizeHTTPRequest</strong> or <strong>deferHTTPRequest</strong> to set the priority of the request.</li>
+		<li>If the user is in offline mode in Steam, then this will add an only-if-cached cache-control header and only do a local cache lookup rather than sending any actual remote request.</li>
+		<li>If the data you are expecting is large, you can use <strong>sendHTTPRequestAndStreamResponse</strong> to stream the data in chunks.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SendHTTPRequestAndStreamResponse" target="_blank">
+			<span class="gdscript">
+				sendHTTPRequestAndStreamResponse( <sup>int</sup> request_handle )
+			</span>
+			<span class="c-sharp">
+				sendHTTPRequestAndStreamResponse( <sup>uint32</sup> request_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sends an HTTP request and streams the response back in chunks. This call is asynchronous and provides a call result handle which you must use to track the call to its completion. Typically you'll want to allocate a buffer associated with the request handle using the Content-Length HTTP response field to receive the total size of the data when you receive the header via <strong><em>_http_request_headers_received</em></strong>. You can then append data to that buffer as it comes in.</li>
+		<li>If you have multiple requests in flight at the same time you can use <strong>prioritizeHTTPRequest</strong> or <strong>deferHTTPRequest</strong> to set the priority of the request.</li>
+		<li>If the user is in offline mode in Steam, then this will add an only-if-cached cache-control header and only do a local cache lookup rather than sending any actual remote request.</li>
+		<li>If the data you are expecting is small (on the order of a few megabytes or less) then you'll likely want to use <strong>sendHTTPRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetCookie" target="_blank">
+			setHTTPCookie( <sup>string</sup> host, <sup>string</sup> url, <sup>string</sup> cookie )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a cookie to the specified cookie container that will be used with future requests.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestAbsoluteTimeoutMS" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestAbsoluteTimeoutMS( <sup>int</sup> request_handle, <sup>int</sup> milliseconds )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestAbsoluteTimeoutMS( <sup>uint32</sup> request_handle, <sup>uint32</sup> milliseconds )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set an absolute timeout in milliseconds for the HTTP request.</li>
+		<li>This is the total time timeout which is different than the network activity timeout which is set with <strong>setHTTPRequestNetworkActivityTimeout</strong> which can bump everytime we get more data.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestContextValue" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestContextValue( <sup>int</sup> request_handle, <sup>int</sup> context_value )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestContextValue( <sup>uint32</sup> request_handle, <sup>uint64_t</sup> context_value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a context value for the request, which will be returned in the <strong><em>http_request_completed</em></strong> callback after sending the request.</li>
+		<li>This is just so the caller can easily keep track of which callbacks go with which request data.</li>
+		<li>Must be called before sending the request.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestCookieContainer" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestCookieContainer( <sup>int</sup> request_handle, <sup>int</sup> cookie_handle )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestCookieContainer( <sup>uint32</sup> request_handle, <sup>uint32</sup> cookie_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Associates a cookie container to use for an HTTP request.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestGetOrPostParameter" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestGetOrPostParameter( <sup>int</sup> request_handle, <sup>string</sup> name, <sup>string</sup> value )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestGetOrPostParameter( <sup>uint32</sup> request_handle, <sup>string</sup> name, <sup>string</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a GET or POST parameter value on the HTTP request.</li>
+		<li>Must be called prior to sending the request.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestHeaderValue" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestHeaderValue( <sup>int</sup> request_handle, <sup>string</sup> header_name, <sup>string</sup> header_value )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestHeaderValue( <sup>uint32</sup> request_handle, <sup>string</sup> header_name, <sup>string</sup> header_value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a request header value for the HTTP request.</li>
+		<li>Must be called before sending the request.</li>
+		<li>A full list of standard request fields are available here on <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Request_fields" target="_blank">Wikipedia</a>. The User-Agent field is explicitly disallowed as it gets overwritten when the request is sent.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestNetworkActivityTimeout" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestNetworkActivityTimeout( <sup>int</sup> request_handle, <sup>int</sup> timeout_seconds )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestNetworkActivityTimeout( <sup>uint32</sup> request_handle, <sup>uint32</sup> timeout_seconds )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set the timeout in seconds for the HTTP request.</li>
+		<li>The default timeout is 60 seconds if you don't call this. This can get bumped everytime we get more data. Use <strong>setHTTPRequestAbsoluteTimeoutMS</strong> if you need a strict maximum timeout.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestRawPostBody" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestRawPostBody( <sup>int</sup> request_handle, <sup>string</sup> content_type, <sup>int</sup> body_length )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestRawPostBody( <sup>uint32</sup> request_handle, <sup>string</sup> content_type, <sup>uint32</sup> body_length )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the body for an HTTP Post request.</li>
+		<li>Will fail and return false on a GET request, and will fail if POST params have already been set for the request. Setting this raw body makes it the only contents for the post, the <strong>content_type</strong> parameter will set the "content-type" header for the request to inform the server how to interpret the body.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint8</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestRequiresVerifiedCertificate" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestRequiresVerifiedCertificate( <sup>int</sup> request_handle, <sup>bool</sup> require_verified_certificate )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestRequiresVerifiedCertificate( <sup>uint32</sup> request_handle, <sup>bool</sup> require_verified_certificate )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store.</li>
+		<li>This currently only works Windows and macOS.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamHTTP#SetHTTPRequestUserAgentInfo" target="_blank">
+			<span class="gdscript">
+				setHTTPRequestUserAgentInfo( <sup>int</sup> request_handle, <sup>string</sup> user_agent_info )
+			</span>
+			<span class="c-sharp">
+				setHTTPRequestUserAgentInfo( <sup>uint32</sup> request_handle, <sup>string</sup> user_agent_info )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set additional user agent info for a request.</li>
+		<li>This doesn't clobber the normal user agent, it just adds the extra info on the end. Sending NULL or an empty string resets the user agent info to the default value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

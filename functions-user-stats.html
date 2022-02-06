@@ -1,0 +1,942 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | User Stats</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#AttachLeaderboardUGC" target="_blank">
+			<span class="gdscript">
+				attachLeaderboardUGC( <sup>int</sup> ugc_handle, <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				attachLeaderboardUGC( <sup>uint64_t</sup> ugc_handle, <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Attaches a piece of user generated content the current user's entry on a leaderboard.</li>
+		<li>This content could be a replay of the user achieving the score or a ghost to race against. The attached handle will be available when the entry is retrieved and can be accessed by other users using <strong>getDownloadedLeaderboardEntry</strong>. To create and download user generated content see the documentation for the Steam Workshop.</li>
+		<li>Once attached, the content will be available even if the underlying Cloud file is changed or deleted by the user.</li>
+		<li>You must call <strong>findLeaderboard</strong> or <strong>findOrCreateLeaderboard</strong> to get a leaderboard handle prior to calling this function.</li>
+		<li>Triggers a <strong><em>leaderboard_ugc_set</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#ClearAchievement" target="_blank">
+			clearAchievement( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Resets the unlock status of an achievement.</li>
+		<li>This is primarily only ever used for testing.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call <strong>storeStats</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#DownloadLeaderboardEntries" target="_blank">
+			<span class="gdscript">
+				downloadLeaderboardEntries( <sup>int</sup> start, <sup>int</sup> end, <sup>int</sup> type, <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				downloadLeaderboardEntries( <sup>int</sup> start, <sup>int</sup> end, <sup>int</sup> type, <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Fetches a series of leaderboard entries for a specified leaderboard.</li>
+		<li>You can ask for more entries than exist, then this will return as many as do exist.</li>
+		<li>If you want to download entries for an arbitrary set of users, such as all of the users on a server then you can use <strong>downloadLeaderboardEntriesForUsers</strong> which takes an array of Steam IDs.</li>
+		<li>You must call <strong>findLeaderboard</strong> or <strong>findOrCreateLeaderboard</strong> to get a leaderboard handle prior to calling this function.</li>
+		<li>Triggers a <strong><em>leaderboard_scores_downloaded</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#DownloadLeaderboardEntriesForUsers" target="_blank">
+			<span class="gdscript">
+				downloadLeaderboardEntriesForUsers( <sup>array</sup> users_id, <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				downloadLeaderboardEntriesForUsers( <sup>array</sup> users_id, <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Fetches leaderboard entries for an arbitrary set of users on a specified leaderboard.</li>
+		<li>A maximum of 100 users can be downloaded at a time, with only one outstanding call at a time. If a user doesn't have an entry on the specified leaderboard, they won't be included in the result.</li>
+		<li>If you want to download entries based on their ranking or friends of the current user then you should use <strong>downloadLeaderboardEntries</strong>.</li>
+		<li>You must call <strong>findLeaderboard</strong> or <strong>findOrCreateLeaderboard</strong> to get a leaderboard handle prior to calling this function.</li>
+		<li>Triggers a <strong><em>leaderboard_scores_downloaded</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#FindLeaderboard" target="_blank">
+			findLeaderboard( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a leaderboard by name.</li>
+		<li>You must call either this or <strong>findOrCreateLeaderboard</strong> to obtain the leaderboard handle which is valid for the game session for each leaderboard you wish to access prior to calling any other Leaderboard functions.</li>
+		<li>Triggers a <strong><em>leaderboard_find_result</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#FindOrCreateLeaderboard" target="_blank">
+			findOrCreateLeaderboard( <sup>string</sup> name, <sup>int</sup> sort_method, <sup>int</sup> display_type )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a leaderboard by name, it will create it if it's not yet created.</li>
+		<li>You must call either this or <strong>findLeaderboard</strong> to obtain the leaderboard handle which is valid for the game session for each leaderboard you wish to access prior to calling any other Leaderboard functions.</li>
+		<li>Leaderboards created with this function will not automatically show up in the Steam Community. You must manually set the Community Name field in the App Admin panel of the Steamworks website. As such it's generally recommended to prefer creating the leaderboards in the App Admin panel on the Steamworks website and using <strong>findLeaderboard</strong> unless you're expected to have a large amount of dynamically created leaderboards.</li>
+		<li>You should never pass 0 for <strong>sort_method</strong> or 0 for <strong>display_type</strong> as this is undefined behavior.</li>
+		<li>Triggers a <strong><em>leaderboard_find_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievement" target="_blank">
+			getAchievement( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the unlock status of the Achievement.</li>
+		<li>The equivalent function for other users is <strong>getUserAchievement</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>ret (bool)</li>
+				<li>achieved (bool)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementAchievedPercent" target="_blank">
+			getAchievementAchievedPercent( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the percentage of users who have unlocked the specified achievement.</li>
+		<li>You must have called <strong>requestGlobalAchievementPercentages</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>ret (bool)</li>
+				<li>percent (float)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementAndUnlockTime" target="_blank">
+			getAchievementAndUnlockTime( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the achievement status, and the time it was unlocked if unlocked.</li>
+		<li>If the return value is true, but the unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). The time is provided in Unix epoch format, seconds since January 1, 1970 UTC.</li>
+		<li>The equivalent function for other users is <strong>getUserAchievementAndUnlockTime</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>retrieve (bool)</li>
+					<li>achieved (bool)</li>
+					<li>unlocked (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>retrieve (bool)</li>
+					<li>achieved (bool)</li>
+					<li>unlocked (uint32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementDisplayAttribute" target="_blank">
+			getAchievementDisplayAttribute( <sup>string</sup> name, <sup>string</sup> key )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get general attributes for an achievement. Currently provides: Name, Description, and Hidden status.</li>
+		<li>This receives the value from a dictionary/map keyvalue store, so you must provide one of the following keys:
+			<ul class="inner">
+				<li>name - to retrive the localized achievement name in UTF8</li>
+				<li>desc - to retrive the localized achievement description in UTF8</li>
+				<li>hidden - for retrieving if an achievement is hidden. Returns "0" when not hidden, "1" when hidden</li>
+			</ul>
+		</li>
+		<li>This localization is provided based on the games language if it's set, otherwise it checks if a localization is avilable for the users Steam UI Language. If that fails too, then it falls back to english.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementIcon" target="_blank">
+			getAchievementIcon( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the icon for an achievement.</li>
+		<li>Triggers a <strong><em>user_achievement_icon_fetched</em></strong> callback.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementName" target="_blank">
+			<span class="gdscript">
+				getAchievementName( <sup>int</sup> achievement )
+			</span>
+			<span class="c-sharp">
+				getAchievementName( <sup>uint32_t</sup> achievement )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the 'API name' for an achievement index between 0 and <strong>getNumAchievements</strong>.</li>
+		<li>This function must be used in cojunction with <strong>getNumAchievements</strong> to loop over the list of achievements.</li>
+		<li>In general games should not need these functions as they should have the list of achievements compiled into them.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		getAchievementProgressLimitsInt( <sup>string</sup> name )
+	</h4>
+	<ul>
+		<li>For achievements that have related Progress stats, use this to query what the bounds of that progress are. You may want this info to selectively call <strong>indicateAchievementProgress</strong> when appropriate milestones of progress have been made, to show a progress notification to the user.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>name (string)</li>
+					<li>min (int)</li>
+					<li>max (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>name (string)</li>
+					<li>min (int32)</li>
+					<li>max (int32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		getAchievementProgressLimitsFloat( <sup>string</sup> name )
+	</h4>
+	<ul>
+		<li>For achievements that have related Progress stats, use this to query what the bounds of that progress are. You may want this info to selectively call <strong>indicateAchievementProgress</strong> when appropriate milestones of progress have been made, to show a progress notification to the user.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>name (string)</li>
+				<li>min (float)</li>
+				<li>max (float)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStat" target="_blank">
+			getGlobalStatInt( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the lifetime totals for an aggregated stat.</li>
+		<li>You must have called <strong>requestGlobalStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStat" target="_blank">
+			getGlobalStatFloat( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the lifetime totals for an aggregated stat.</li>
+		<li>You must have called <strong>requestGlobalStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>Returns a <strong>float</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStatHistory" target="_blank">
+			getGlobalStatIntHistory( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the daily history for an aggregated stat.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStatHistory" target="_blank">
+			getGlobalStatFloatHistory( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the daily history for an aggregated stat.</li>
+		<li>Returns a <strong>float</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardDisplayType" target="_blank">
+			<span class="gdscript">
+				getLeaderboardDisplayType( <sup>int</sup> leaderboard_handle )
+			</span>
+			<span class="c-sharp">
+				getLeaderboardDisplayType( <sup>uint64_t</sup> leaderboard_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Get the display type of a leaderboard handle.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>result (int)</li>
+				<li>verbal (string)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		getLeaderboardEntries()
+	</h4>
+	<ul>
+		<li>Get the currently used leaderboard entries.</li>
+		<li><strong>Note:</strong> This is a GodotSteam specific function.</li>
+		<li>Returns an <strong>array</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardEntryCount" target="_blank">
+			<span class="gdscript">
+				getLeaderboardEntryCount( <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				getLeaderboardEntryCount( <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Returns the total number of entries in a leaderboard.</li>
+		<li>This is cached on a per leaderboard basis upon the first call to <strong>findLeaderboard</strong> or <strong>findOrCreateLeaderboard</strong> and is refreshed on each successful call to <strong>downloadLeaderboardEntries</strong>, <strong>downloadLeaderboardEntriesForUsers</strong>, and <strong>uploadLeaderboardScore</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardName" target="_blank">
+			<span class="gdscript">
+				getLeaderboardName( <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				getLeaderboardName( <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Returns the name of a leaderboard handle.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardSortMethod" target="_blank">
+			<span class="gdscript">
+				getLeaderboardSortMethod( <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				getLeaderboardSortMethod( <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Get the sort order of a leaderboard handle. If no thisLeaderboard handle is passed, then the function will use the last stored internal handle.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>result (int)</li>
+				<li>verbal (string)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetMostAchievedAchievementInfo" target="_blank">
+			getMostAchievedAchievementInfo()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the info on the most achieved achievement for the game.</li>
+		<li>You must have called <strong>requestGlobalAchievementPercentages</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul class="inner">
+				<li>entry (dictionary)
+					<ul class="inner">
+						<li>rank (int)</li>
+						<li>name (string)</li>
+						<li>percent (float)</li>
+						<li>achieved (bool)</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetNextMostAchievedAchievementInfo" target="_blank">
+			getNextMostAchievedAchievementInfo( <sup>int</sup> iterator )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the info on the next most achieved achievement for the game.</li>
+		<li>You must have called <strong>requestGlobalAchievementPercentages</strong> and it needs to return successfully via its callback prior to calling this.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetNumAchievements" target="_blank">
+			getNumAchievements()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the number of achievements defined in the App Admin panel of the Steamworks website.</li>
+		<li>This is used for iterating through all of the achievements with <strong>getAchievementName</strong>.</li>
+		<li>In general games should not need these functions because they should have a list of existing achievements compiled into them.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetNumberOfCurrentPlayers" target="_blank">
+			getNumberOfCurrentPlayers()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Asynchronously retrieves the total number of players currently playing the current game. Both online and in offline mode.</li>
+		<li>Triggers a <strong><em>number_of_current_players</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetStat" target="_blank">
+			getStatFloat( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current value of the a stat for the current user.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>To receive stats for other users use <strong>getUserStat</strong>.</li>
+		<li>Returns a <strong>float</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetStat" target="_blank">
+			getStatInt( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current value of the a stat for the current user.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>To receive stats for other users use <strong>getUserStat</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserAchievement" target="_blank">
+			<span class="gdscript">
+				getUserAchievement( <sup>int</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<span class="c-sharp">
+				getUserAchievement( <sup>uint64_t</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the unlock status of the Achievement.</li>
+		<li>The equivalent function for the local user is <strong>getAchievement</strong>, the equivalent function for game servers is <strong>serverGetUserAchievement</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>steam_id (int)</li>
+					<li>retrieved (bool)</li>
+					<li>name (string)</li>
+					<li>achieved (bool)</li>
+				</span>
+				<span class="c-sharp">
+					<li>steam_id (uint64_t)</li>
+					<li>retrieved (bool)</li>
+					<li>name (string)</li>
+					<li>achieved (bool)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserAchievementAndUnlockTime" target="_blank">
+			<span class="gdscript">
+				getUserAchievementAndUnlockTime( <sup>int</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<span class="c-sharp">
+				getUserAchievementAndUnlockTime( <sup>uint64_t</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the achievement status, and the time it was unlocked if unlocked.</li>
+		<li>If the return value is true, but the unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). The time is provided in Unix epoch format, seconds since January 1, 1970 UTC.</li>
+		<li>The equivalent function for the local user is <strong>getAchievementAndUnlockTime</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>retrieved (bool)</li>
+					<li>name (string)</li>
+					<li>achieved (bool)</li>
+					<li>unlocked (int)</li>
+				</span>
+				<span class="gdscript">
+					<li>retrieved (bool)</li>
+					<li>name (string)</li>
+					<li>achieved (bool)</li>
+					<li>unlocked (uint32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserStat" target="_blank">
+			<span class="gdscript">
+				getUserStatFloat( <sup>int</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<span class="c-sharp">
+				getUserStatFloat( <sup>uint64_t</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current value of the a stat for the specified user.</li>
+		<li>You must have called <strong>requestUserStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>The equivalent function for the local user is <strong>getStat</strong>, the equivalent function for game servers is <strong>serverGetUserStat</strong>.</li>
+		<li>Returns a <strong>float</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserStat" target="_blank">
+			<span class="gdscript">
+				getUserStatInt( <sup>int</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<span class="c-sharp">
+				getUserStatInt( <sup>uint64_t</sup> steam_id, <sup>string</sup> name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current value of the a stat for the specified user.</li>
+		<li>You must have called <strong>requestUserStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>The equivalent function for the local user is <strong>getStat</strong>, the equivalent function for game servers is <strong>serverGetUserStat</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#IndicateAchievementProgress" target="_blank">
+			indicateAchievementProgress( <sup>string</sup> name, <sup>int</sup> currentProgress, <sup>int</sup> maxProgress )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Shows the user a pop-up notification with the current progress of an achievement.</li>
+		<li>Calling this function will <strong>not</strong> set the progress or unlock the achievement, the game must do that manually by calling <strong>setStat</strong>.</li>
+		<li>Triggers a <strong><em>user_stats_stored</em></strong> callback.</li>
+		<li>Triggers a <strong><em>user_achievement_stored</em></strong> callback.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestCurrentStats" target="_blank">
+			requestCurrentStats()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Asynchronously request the user's current stats and achievements from the server.</li>
+		<li>You must always call this first to get the initial status of stats and achievements. Only after the resulting callback comes back can you start calling the rest of the stats and achievement functions for the current user.</li>
+		<li>The equivalent function for other users is <strong>requestUserStats</strong>.</li>
+		<li>Triggers a <strong><em>current_stats_received</em></strong> callback.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestGlobalAchievementPercentages" target="_blank">
+			requestGlobalAchievementPercentages()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>Triggers a <strong><em>global_achievement_percentages_ready</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestGlobalStats" target="_blank">
+			requestGlobalStats( <sup>int</sup> history_days )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.</li>
+		<li>The limit is 60.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this.</li>
+		<li>Triggers a <strong><em>global_stats_received</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestUserStats" target="_blank">
+			<span class="gdscript">
+				requestUserStats( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				requestUserStats( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Asynchronously downloads stats and achievements for the specified user from the server.</li>
+		<li>These stats are not automatically updated; you'll need to call this function again to refresh any data that may have change.</li>
+		<li>To keep from using too much memory, an least recently used cache (LRU) is maintained and other user's stats will occasionally be unloaded. When this happens a <strong><em>user_stats_unloaded</em></strong> callback is sent. After receiving this callback the user's stats will be unavailable until this function is called again.</li>
+		<li>The equivalent function for the local user is <strong>requestCurrentStats</strong>, the equivalent function for game servers is <strong>serverRequestUserStats</strong>.</li>
+		<li>Triggers a <strong><em>user_stats_received</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#ResetAllStats" target="_blank">
+			resetAllStats( <sup>bool</sup> achievements_too )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Resets the current users stats and, optionally achievements.</li>
+		<li>This automatically calls <strong>storeStats</strong> to persist the changes to the server. This should typically only be used for testing purposes during development. Ensure that you sync up your stats with the new default values provided by Steam after calling this by calling <strong>requestCurrentStats</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#SetAchievement" target="_blank">
+			setAchievement( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Unlocks an achievement.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this!</li>
+		<li>You can unlock an achievement multiple times so you don't need to worry about only setting achievements that aren't already set. This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call <strong>storeStats</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		setLeaderboardDetailsMax( <sub>int</sub> max )
+	</h4>
+	<ul>
+		<li>Set the maximum number of details to return for leaderboard entries.</li>
+		<li><strong>Note:</strong> This is a GodotSteam specific function.</li>
+		<li>Returns an <strong>int</strong> which is the current leaderboard details max value.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#SetStat" target="_blank">
+			setStatFloat( <sup>string</sup> name, <sup>float</sup> value )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets / updates the float value of a given stat for the current user.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this!</li>
+		<li>This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call <strong>storeStats</strong>.</li>
+		<li>If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#SetStat" target="_blank">
+			<span class="gdscript">
+				setStatInt( <sup>string</sup> name, <sup>int</sup> value )
+			</span>
+			<span class="c-sharp">
+				setStatInt( <sup>string</sup> name, <sup>int32</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets / updates the integer value of a given stat for the current user.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this!</li>
+		<li>This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call <strong>storeStats</strong>.</li>
+		<li>If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#StoreStats" target="_blank">
+			storeStats()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Send the changed stats and achievements data to the server for permanent storage.</li>
+		<li>If this fails then nothing is sent to the server. It's advisable to keep trying until the call is successful.</li>
+		<li>This call can be rate limited. Call frequency should be on the order of minutes, rather than seconds. You should only be calling this during major state changes such as the end of a round, the map changing, or the user leaving a server. This call is required to display the achievement unlock notification dialog though, so if you have called <strong>setAchievement</strong> then it's advisable to call this soon after that.</li>
+		<li>If you have stats or achievements that you have saved locally but haven't uploaded with this function when your application process ends then this function will automatically be called.</li>
+		<li>You can find additional debug information written to the <code>%steam_install%\logs\stats_log.txt</code> file.</li>
+		<li>Triggers a <strong><em>user_stats_stored</em></strong> callback.</li>
+		<li>Triggers a <strong><em>user_achievement_stored</em></strong> callback.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UpdateAvgRateStat" target="_blank">
+			updateAvgRateStat( <sup>string</sup> name, <sup>float</sup> this_session, <sup>double</sup> session_length )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Updates an AVGRATE stat with new values.</li>
+		<li>You must have called <strong>requestCurrentStats</strong> and it needs to return successfully via its callback prior to calling this!</li>
+		<li>This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call <strong>storeStats</strong>.</li>
+		<li>If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UploadLeaderboardScore" target="_blank">
+			<span class="gdscript">
+				uploadLeaderboardScore( <sup>int</sup> score, <sup>bool</sup> keep_best, <sup>array</sup> details, <sup>int</sup> this_leaderboard )
+			</span>
+			<span class="c-sharp">
+				uploadLeaderboardScore( <sup>int32</sup> score, <sup>bool</sup> keep_best, <sup>array</sup> details, <sup>uint64_t</sup> this_leaderboard )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><em>If no <strong>leaderboard_handle</strong> is passed, then the function will use the last internally-stored handle.</em></li>
+		<li>Uploads a user score to a specified leaderboard.</li>
+		<li>Details are optional game-defined information which outlines how the user got that score. For example if it's a racing style time based leaderboard you could store the timestamps when the player hits each checkpoint. If you have collectibles along the way you could use bit fields as booleans to store the items the player picked up in the playthrough.</li>
+		<li>Uploading scores to Steam is rate limited to 10 uploads per 10 minutes and you may only have one outstanding call to this function at a time.</li>
+		<li>Triggers a <strong><em>leaderboard_score_uploaded</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

@@ -5,7 +5,7 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -24,600 +24,636 @@
 					<header id="header">
 						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
 					</header>
-					<!-- Section -->
 					<section>
-						<header class="main">
-							<h1>Change Log | Godot 3.x Module</h1>
-						</header>
-						<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
-						<h3>Version 3.12 Changes</h3>
-						<ul>
-							<li>Added: missing D_METHOD to all functions, should show the right argument names in-editor</li>
-							<li>Added: Input origin enums for PS5 and Steam Deck</li>
-							<li>Added: Input Types, Input Glyph Style, Input Glyph Size, and Input Configuration Enable Type enums</li>
-							<li>Added: getConnectionRealTimeStatus, configureConnectionLanes, connectP2PCustomSignaling, receivedP2PCustomSignal, getCertificateRequest, setCertificate, resetIdentity, runNetworkingCallbacks, beginAsyncRequestFakeIP, getFakeIP, createListenScoketP2PFakeIP, getRemoveFakeIPForConnection, and createFakeUDPPort functions and callback to NetworkingSockets class</li>
-							<li>Added: dismissFloatingGamepadTextInput function to Utils class</li>
-							<li>Added: setTimeCreatedDateRange and setTimeUpdatedDateRange to UGC class</li>
-							<li>Added: NetworkingeDebugOutputType enums for NetworkingUtils</li>
-							<li>Added: missing constant binds for Server API, OverlayToWebPageMode</li>
-							<li>Fixed: minor compiler warnings</li>
-							<li>Fixed: empty file hash being returned by file_details_result callback</li>
-							<li>Fixed: a variety of small bugs and possible crashes, thanks to qarmin</li>
-							<li>Fixed: missing binds for getFriendsGroupName, getFriendsGroupMembersList, getFriendsGroupIDByIndex, getFriendsGroupCount, getFriendMessage, getFriendCoplayTime, getFriendCoplayGame, getCoplayFriendCount, getCoplayFriend, getClanTag, getClanName, getClanCount, getClanChatMessage, getClanByIndex, getClanActivityCounts, fileWriteAsync, fileWriteStreamCancel, fileWriteStreamClose, fileWriteStreamOpen, fileWriteStreamWriteChunk, getCachedUGCCount, getUGCDownloadProgress, getUGCDetails, fileReadAsync, getOPFSettings, getOPFStringForApp, getVideoURL, isBroadcasting functions</li>
-							<li>Fixed: setPNGIcon and updateCurrentEntryCoverArt in Music Remote class</li>
-							<li>Fixed: missing getUGCDetails and getUGCDownloadProgress functions</li>
-							<li>Changed: updated doc_class file for in-editor documentation</li>
-							<li>Changed: updated to Steamworks 1.53</li>
-							<li>Changed: lobby_data_update, removed lobby data queries as they should be done manually</li>
-							<li>Changed: minor tweaks under-the-hood</li>
-							<li>Changed: various generic 'int' to their actual types</li>
-							<li>Changed: renamed servers and server stats to game server and game server stats respectively, to match SDK</li>
-							<li>Changed: SteamNetworkingQuickConnectionStatus to SteamNetConnectionRealTimeStatus_t per Steamworks SDK 1.53, causes a break in previous GodotSteam versions</li>
-							<li>Changed: getConfigValueInfo, removed name and next value from return dictionary as they are no longer passed by function in SDK 1.53</li>
-							<li>Changed: rearranged functions in godotsteam.cpp class binds to match godotsteam.h order</li>
-							<li>Changed: enum constant binds to match godotsteam.h enum order</li>
-							<li>Removed: unused callback new_launch_query_parameters, broadcast_upload_start, broadcast_upload_stop</li>
-							<li>Removed: allocateMessage as it shouldn't be used solo</li>
-							<li>Removed: getQuickConnectionStatus and getFirstConfigValue as they were removed from SDK 1.53</li>
-							<li>Removed: setDebugOutputFunction from Networking Utils</li>
-						</ul>
-						<h3>Version 3.11.1 Changes</h3>
-						<ul>
-							<li>Removed: unused structs</li>
-						</ul>
-						<h3>Version 3.11 Changes</h3>
-						<ul>
-							<li>Added: server branch merged into master</li>
-							<li>Changed: spacing in default arguments in godotsteam.h</li>
-							<li>Changed: renamed STEAM_GAMESERVER_CALLBACK as STEAM_CALLBACK</li>
-							<li>Removed: SteamGameServer_RunCallbacks function</li>
-						</ul>
-						<h3>Version 3.10.5 Changes</h3>
-						<ul>
-							<li>Added: more helper functions for newer networking classes, translations for steamnetworkingtypes</li>
-							<li>Fixed: lots of compiler warnings on Linux, thanks to gregcsokas</li>
-						</ul>
-						<h3>Version 3.10.4 Changes</h3>
-						<ul>
-							<li>Added: new helper functions for newer networking classes, translations for steamnetworkingtypes</li>
-							<li>Fixed: default argument inputInit function, thanks to hhyyrylainen</li>
-						</ul>
-						<h3>Version 3.10.3 Changes</h3>
-						<ul>
-							<li>Changed: various internal variable / arguments names for clarity, will affect signal-returned dictionaries</li>
-						</ul>
-						<h3>Version 3.10.2 Changes</h3>
-						<ul>
-							<li>Removed: not logged in as error condition in steamInit function</li>
-						</ul>
-						<h3>Version 3.10.1 Changes</h3>
-						<ul>
-							<li>Changed: various compilation errors for OSX, thanks to SapphireMH</li>
-							<li>Removed: receiveRelayAuthTicket, findRelayAuthTicketForServer, getHostedDedicatedServerAddress, and getGameCoordinatorServerLogin as they rely on datagram header that was removed from base SDK</li>
-						</ul>
-						<h3>Version 3.10 Changes</h3>
-						<ul>
-							<li>Added: various Steam Deck specific functions, thanks to EIREXE</li>
-							<li>Added: new AppLists class of functions and callbacks</li>
-							<li>Added: new or missing App functions, callbacks, and enums</li>
-							<li>Added: OverlayToWebPageMode enum and unread_chat_messages_changed callback for Friends class</li>
-							<li>Added: new Input functions and callbacks</li>
-							<li>Added: new Parental Settings fuctions, callback, and enums</li>
-							<li>Added: new Remote Storage functions, callback, and enums</li>
-							<li>Added: new UGC functions, callbacks, and enum</li>
-							<li>Added: memory allocation corrections</li>
-							<li>Changed: updated various Input class functions</li>
-							<li>Changed: lots of argument names internally, has no effect on usage</li>
-							<li>Fixed: some enum names</li>
-							<li>Fixed: various server list filter functions in Matchmaking Servers class</li>
-							<li>Fixed: receivedRelayAuthTicket, getGameCoordinatorServerLogin, FindRelayAuthTicketForServer in Networking Sockets class</li>
-							<li>Removed: second call for steam_api.h in godotsteam.cpp</li>
-						</ul>
-						<h3>Version 3.9.7 Changes</h3>
-						<ul>
-							<li>Added: two Matchmaking Server call results</li>
-							<li>Added: requestHandle to various HTTP functions so handle can be passed</li>
-							<li>Added: new internal variables for Matchmaking Servers</li>
-							<li>Added: setSyncPlatforms in Remote Storage, actual function was missing</li>
-							<li>Changed: serverRequest is now serverListRequest</li>
-							<li>Changed: various HTTP callbacks now return cookieHandle as well</li>
-							<li>Fixed: issue where lobby chat messages were truncated for every accented character used</li>
-							<li>Fixed: pingServer, playerDetails, serverRules functions in Matchmaking Servers</li>
-							<li>Fixed: receiveMessagesOnChannel, receiveMessagesOnPollGroup, receiveMessagesOnConnection in Networking Sockets, should now return an array of messages</li>
-							<li>Fixed: connectByIPAddress, createSocketPair in Networking Sockets</li>
-							<li>Fixed: network_messages_session_request callback, now provides identity of remote host</li>
-							<li>Fixed: network_connection_status_changed callback, now provides the full connection information</li>
-							<li>Removed: unnecessary bool from setLeaderboardDetailsMax</li>
-						</ul>
-						<h3>Version 3.9.6 Changes</h3>
-						<ul>
-							<li>Added: ability to provide different locations for custom modules, thanks to dsnopek</li>
-							<li>Changed: gamepad_text_input_dismissed to return submitted boolean and use UTF8 string, thanks to EIREXE</li>
-						</ul>
-						<h3>Version 3.9.5 Changes</h3>
-						<ul>
-							<li>Added: setLeaderboardDetailsMax function back in to set the internal details variable</li>
-							<li>Fixed: leaderboard_scores_downloaded sigal to provide the actual details for leaderboard results</li>
-						</ul>
-						<h3>Version 3.9.4 Changes</h3>
-						<ul>
-							<li>Fixed: conversion issue in getGlobalStatInt and getGlobalStatIntHistory that caused compiling failure on Linux</li>
-						</ul>
-						<h3>Version 3.9.3 Changes</h3>
-						<ul>
-							<li>Changed: restored getGlobalStatInt and getGlobalStatIntHistory functions</li>
-						</ul>
-						<h3>Version 3.9.2 Changes</h3>
-						<ul>
-							<li>Added: getNextMostAchievedAchievementInfo function, moved out of getMostAchievedAchievementInfo</li>
-							<li>Fixed: getMostAchievedAchievementInfo causing a crash</li>
-						</ul>
-						<h3>Version 3.9.1 Changes</h3>
-						<ul>
-							<li>Added: documentation to P2P functions, constants, and signals; thanks to blaze-the-star</li>
-							<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
-							<li>Fixed: incorrect function bind from pull request</li>
-							<li>Removed: unused C++ line from config.py for Mac, which caused compiling issues</li>
-							<li>Removed: storeStats from setAchievement, resetAllStats as it should be called manually after them</li>
-							<li>Removed: requestCurrentStats from storeStats as it should be called manually</li>
-						</ul>
-						<h3>Version 3.9 Changes</h3>
-						<ul>
-							<li>Added: new UGC functions addRequiredTagGroup, getQueryUGCNumTags, getQueryUGCTag, getQueryUGCTagDisplayName</li>
-							<li>Added: new Friends function activateGameOverlayInviteDialogConnectString</li>
-							<li>Added: default values to leaderboard functions, you can now pass handles for specific leaderboards or use the internally-stored, last-called handle</li>
-							<li>Added: multiple controller types from Input function getInputTypeForHandle</li>
-							<li>Changed: minor readability changes to function arguments and defaults</li>
-							<li>Changed: additional spacing and readability to overall module</li>
-							<li>Changed: replaced leaderboardDetailsMax with k_cLeaderboardDetailsMax</li>
-							<li>Changed: applied EIREXE's UTF-16 fix module-wide</li>
-							<li>Changed: minor corrections to comments and added missing comments</li>
-							<li>Changed: some additional code to some call results and callbacks</li>
-							<li>Changed: metadata length for UGC to 5000 from 255, thanks to EIREXE</li>
-							<li>Changed: beginAuthSession to use new auth function arguments</li>
-							<li>Changed: cancelAuthTicket to actually use the Steamworks function</li>
-							<li>Fixed: renamed addItemToFavorite to addItemToFavorites to match SDK</li>
-							<li>Fixed: incorrect class check in some UGC functions</li>
-							<li>Fixed: minor corrections to various functions</li>
-							<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
-							<li>Removed: setLeaderboardDetailsMax as it is unnecessary</li>
-							<li>Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes</li>
-						</ul>
-						<h3>Version 3.8.2 Changes</h3>
-						<ul>
-							<li>Added: different avatar constants</li>
-							<li>Changed: array deletions for Clang, <em>thanks to thisismike97</em></li>
-							<li>Changed: initializing char text, <em>thanks to thisismike97</em></li>
-							<li>Fixed: createQueryUserUGCRequest being commented out accidentally</li>
-							<li>Fixed: logic check for setOverlayNotificationPosition, <em>thanks to thisismike97</em></li>
-							<li>Fixed: UTF8 not being handled correctly in some UGC functions, <em>thanks to EIREXE</em></li>
-						</ul>
-						<h3>Version 3.8.1 Changes</h3>
-						<ul>
-							<li>Added: extra newline beween each class section for readability</li>
-							<li>Added: new signal, steamworks_error, currently used for call results failures</li>
-							<li>Changed: cleared most items from to-do list</li>
-							<li>Changed: getSyncPlatforms now returns a dictionary with the bitwise and full name version of the platform</li>
-							<li>Changed: separated callbacks and call results in the godotsteam.cpp into two categories</li>
-						</ul>
-						<h3>Version 3.8 Changes</h3>
-						<ul>
-							<li>Added: default argument to steamInit to pull all current stats or not, defaults to true so no one has to change anything</li>
-							<li>Added: new SteamNetworkingMessages class; with functions, callbacks, constants, and enums</li>
-							<li>Added: all missing functions due to 5 argument limit in Godot</li>
-							<li>Changed: filterText updated to match new SDK 1.50 function</li>
-							<li>Changed: HTTP class setCookie to setHTTPCookie to prevent confusion with HTML setCookie</li>
-							<li>Changed: moved fileLoadDialogReponse into html_file_open_dialog callback as it must follow the call anyway</li>
-							<li>Fixed: retrieveConnectionDetails and getAllLobbyData functions</li>
-							<li>Fixed: (probably) various NetworkingSockets and NetworkingUtils functions</li>
-						</ul>
-						<h3>Version 3.7 Changes</h3>
-						<ul>
-							<li>Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
-							<li>Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
-							<li>Added: Game Search callbacks, enums, and functions</li>
-							<li>Added: missing Steam Parties functions</li>
-							<li>Changed: bIOFailure argument naming in godotsteam.cpp to ioFailure</li>
-							<li>Fixed: issue where Cyrillic characters did not display correctly or at all</li>
-							<li>Fixed: call result for JoinParty, was previously callback</li>
-							<li>Removed: mingw_patch.py since it fixes one issue but creates additional issues</li>
-						</ul>
-						<h3>Version 3.6.1 Changes</h3>
-						<ul>
-							<li>Changed: function getLobbyDataByIndex to getAllLobbyData</li>
-							<li>Changed: commented out getAllLobbyData until crash is fixed</li>
-							<li>Fixed: issue where not having the game installed or owning the game caused a crash</li>
-						</ul>
-						<h3>Version 3.6 Changes</h3>
-						<ul>
-							<li>Added: newest functions for Apps, Friends, and UserStats</li>
-							<li>Added: all functions and callbacks for Videos</li>
-							<li>Added: MinGW patch file for people using MinGW, thanks to MichaelBelousov</li>
-							<li>Added: all remaining Remote Storage, Utils, and Users functions and callbacks</li>
-							<li>Changed: some User callbacks were actually call results</li>
-							<li>Changed: moved callback code block to end of function block in godotsteam.cpp</li>
-							<li>Fixed: incorrect signal link for unsubscribe_item and subscribe_item callbacks</li>
-						</ul>
-						<h3>Version 3.5 Changes</h3>
-						<ul>
-							<li>Added: all Music Remote functions, callbacks, enums, and constants</li>
-							<li>Added: all Parties functions, callbacks, enums, and constants</li>
-							<li>Added: placeholders for function classes not added yet</li>
-							<li>Changed: minor tweaks to layout, comments, etc.</li>
-							<li>Changed: swapped getAuthSessionTicketID and getAuthSessionTicket to make more sense</li>
-							<li>Changed: moved pragma into Windows if</li>
-							<li>Fixed: getAuthSessionTicket to properly give buffer, thanks to <em>EIREXE</em></li>
-						</ul>
-						<h3>Version 3.4.1 Changes</h3>
-						<ul>
-							<li>Added: organization separators for all binds</li>
-							<li>Changed: enums are now callable as constants in Godot</li>
-							<li>Changed: case on enums</li>
-							<li>Fixed: some mis-spelling in enums</li>
-						</ul>
-						<h3>Version 3.4 Changes</h3>
-						<ul>
-							<li>Added: getAuthSessionTicketID to aquire additional ticket data</li>
-							<li>Added: additional pragma to silence offset warnings in Steamworks SDK itself</li>
-							<li>Changed: steamInit status results to use internal enums</li>
-							<li>Changed: getLeaderboardSortMethod now returns a dictionary with result and verbal response</li>
-							<li>Changed: getLeaderboardDisplayType now returns a dictionary with result and verbal response</li>
-							<li>Changed: getLeaderboardEntries to have a default failure response</li>
-							<li>Changed: leaderboard_scores_downloaded callback now incorporates getDownloadLeaderboardEntry to streamline process, callback returns the result array now</li>
-							<li>Changed: complete overhaul of enums and constants</li>
-							<li>Changed: leaderboardDetailsMax default from 0 to 10</li>
-							<li>Fixed: various void functions</li>
-							<li>Fixed: casting for addRequestLobbyListNumericalFilter, addRequestLobbyListStringFilter, addRequestLobbyListDistanceFilter</li>
-							<li>Fixed: setItemTags thanks to <em>EIREXE</em></li>
-							<li>Fixed: missing publishedFileID in return from GetQueryUGCResult</li>
-							<li>Fixed: getGlobalStatInt and getGlobalStatIntHistory</li>
-							<li>Removed: getLeaderboardHandle as redundant</li>
-							<li>Removed: getDownloadedLeaderboardEntry as it should not be called manually, has been added to leaderboard_scores_download callback</li>
-						</ul>
-						<h3>Version 3.3.2 Changes</h3>
-						<ul>
-							<li>Added: all Inventory functions, callbacks, and enums</li>
-							<li>Added: rule to suppress MSVC-only warning about strcpy</li>
-							<li>Fixed: minor corrections to Inputs, especially those copied over from Controllers (depreciated)</li>
-							<li>Fixed: tons of warnings for callbacks in Unix compiling</li>
-							<li>Fixed: printf warnings for int</li>
-							<li>Removed: unnecessary browserHandle argument from HTML functions</li>
-							<li>Removed: unnecessary browserHandle returns from HTML callbacks</li>
-							<li>Removed: unnecessary cookieHandle argument from HTTP functions</li>
-							<li>Removed: unnecessary cookieHandle returns from HTTP callbacks</li>
-						</ul>
-						<h3>Version 3.3.1 Changes</h3>
-						<ul>
-							<li>Added: all HTML Surface functions, callbacks, and enums</li>
-							<li>Added: all HTTP functions, callbacks, and enums </li>
-							<li>Changed: sendRemotePlayTogetherInvite now works since it was added back to the SDK</li>
-							<li>Fixed: (probably) output for getLaunchCommandLine</li>
-						</ul>
-						<h3>Version 3.3 Changes</h3>
-						<ul>
-							<li>Added: all Steam Input functions; used to be Steam Controller</li>
-							<li>Added: all Steam Input constants</li>
-							<li>Added: new Apps functions</li>
-							<li>Added: missing Friends functions</li>
-							<li>Added: missing Screenshots functions</li>
-							<li>Added: all missing Screenshot constants</li>
-							<li>Changed: removed Steam Controller as it is now depreciated</li>
-							<li>Changed: split up call results and callbacks in godotsteam.h for editing ease</li>
-							<li>Changed: user_stats_received to current_stats_received for requestCurrentStats callback / signal</li>
-							<li>Changed: sorted Apps and Friends functions alphabetically like Steamworks Docs to find new functions easier</li>
-							<li>Changed: getAchievementIcon; now returns the handle</li>
-							<li>Changed: getInputTypeForHandle to output verbose controller type</li>
-							<li>Changed: SteamInput function init to inputInit</li>
-							<li>Changed: SteamInput function shutdown to inputShutdown</li>
-							<li>Removed: user_achievement_icon_fetched signal / callback as it is never called</li>
-						</ul>
-						<h3>Version 3.2.1 Changes</h3>
-						<ul>
-							<li>Added: back some needed UGC constants</li>
-							<li>Changed: int to uint32 in some for loops</li>
-							<li>Fixed: compiling issues on Linux</li>
-						</ul>
-						<h3>Version 3.2.0 Changes</h3>
-						<ul>
-							<li>Added: all remaining UGC functions and callbacks</li>
-							<li>Added: all new Remote Play functions and callbacks</li>
-							<li>Added: remaining UGC constants and enums</li>
-							<li>Added: relevant Remote Storage callbacks for UGC</li>
-							<li>Added: back some needed UGC constants</li>
-							<li>Changed: renamed some UGC enums for consistency</li>
-							<li>Changed: getItemDownloadInfo to give proper default return</li>
-							<li>Fixed: a few missing default returns</li>
-							<li>Removed: non-listed UGC enums</li>
-						</ul>
-						<h3>Version 3.1 Changes</h3>
-						<ul>
-							<li>Added: all remaining User Stats functions</li>
-							<li>Added: missing User Stats constants, mostly leaderboard stuff</li>
-							<li>Added: missing default return values in some functions</li>
-							<li>Changed: getAchievementAndUnlockTime to return actual data</li>
-							<li>Changed: user_achievement_icon_fetched callback to return icon data for parsing in-game</li>
-							<li>Changed: value in D_METHOD for setLeaderboardDetailsMax to match function</li>
-							<li>Changed: getDownloadedLeaderboardEntry to use handle correctly</li>
-							<li>Fixed: delete used memory in getInstalledDepots</li>
-						</ul>
-						<h3>Version 3.0.2 Changes</h3>
-						<ul>
-							<li>Added: more verbose response to steamInit, now returns a dictionary</li>
-							<li>Added: missing initialization constants</li>
-							<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
-							<li>Fixed: currentAppID not utilized correctly</li>
-						</ul>
-						<h3>Version 3.0.1 Changes</h3>
-						<ul>
-							<li>Added: MacOS C++ rule back in for compiling</li>
-							<li>Added: all missing Steam Utils functions (except depreciated or non-relevant functions)</li>
-							<li>Added: additional ENUMS for Steam Utils</li>
-							<li>Added: missing failure conditions for some Steam Utils functions</li>
-							<li>Changed: output for getFriendGamePlayed to show game information even if no valid lobby</li>
-							<li>Changed: order of previous Steam Utils functions to be alphabetical with new ones</li>
-							<li>Changed: gamepad_text_input_dismissed callback</li>
-							<li>Fixed: lobby_message bug, thanks to pull request from Frostings</li>
-						</ul>
-						<h3>Version 3.0 Changes</h3>
-						<ul>
-							<li>Added: missing Matchmaking signals/callbacks</li>
-							<li>Added: missing User signals/callbacks</li>
-							<li>Added: missing Utility signals/callbacks</li>
-							<li>Added: join_requested, screenshot_requested callback</li>
-							<li>Changed: merged Godot 3.0.6 into Master branch</li>
-							<li>Changed: callback descriptions updated</li>
-							<li>Changed: organization of cpp and h files for better readability</li>
-							<li>Changed: signal lobby_message_received to lobby_message</li>
-							<li>Changed: server_connect and server_disconnected renamed to steam_server_connect and steam_server_disconnected respectively</li>
-							<li>Changed: leaderboard_loaded, leaderboard_uploaded, and _leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively</li>
-							<li>Changed: workshop_item_created, workshop_item_installed, and item_updated renamed to item_created, item_installed, and workshop_item_updated respectively</li>
-							<li>Changed: renamed workshop to UGC to match Steamworks</li>
-							<li>Fixed: addFavoriteGame and getItemInstallInfo functions</li>
-							<li>Removed: connection_changed signal</li>
-						</ul>
-						<h3>Version 2.8.5 Changes</h3>
-						<ul>
-							<li>Added: Networking functions; courtesy of Antokolos</li>
-							<li>Changed: linked against Steamworks 1.44</li>
-							<li>Fixed: leaderboard_uploaded always returning false even when successful</li>
-						</ul>
-						<h3>Version 2.8.4 Changes</h3>
-						<ul>
-							<li>Added: persona_state_change callback</li>
-							<li>Added: additional user statistics and achievement signals</li>
-							<li>Added: join_game_requested signal by Fischer96</li>
-							<li>Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize</li>
-							<li>Changed: dictionary term 'buf' to 'buffer' in getImageRGBA</li>
-							<li>Changed: getFriendAvatar to getPlayerAvatar</li>
-							<li>Changed: avatar_loaded now sends back Steam ID of avatar by avencherus</li>
-							<li>Fixed: lots of fixes by marcelofg55</li>
-							<li>Fixed: issue with avatar and Steam ID on Linux compile</li>
-							<li>Fixed: join_requested signal by Fischer96 (requires further work)</li>
-							<li>Fixed: getImageRGBA</li>
-							<li>Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55</li>
-							<li>Removed: drawAvatar</li>
-						</ul>
-						<h3>Version 2.8.3 Changes</h3>
-						<ul>
-							<li>Added: additional user statistics and achievement signals</li>
-							<li>Changed: minor notations</li>
-						</ul>
-						<h3>Version 2.8.2 Changes</h3>
-						<ul>
-							<li>Fixed: Linux not compiling correctly with new Friends and Matchmaking updates</li>
-							<li>Fixed: various Friends functions not providing correct data</li>
-						</ul>
-						<h3>Version 2.8.1 Changes</h3>
-						<ul>
-							<li>Added: additional missing lobby signals</li>
-							<li>Fixed: various lobby functions due to incorrect Steam lobby ID</li>
-							<li>Fixed: some bind methods</li>
-							<li>Fixed: config.py still using env</li>
-							<li>Fixed: location of core Godot includes</li>
-						</ul>
-						<h3>Version 2.8.0 Changes</h3>
-						<ul>
-							<li>Added: all remaining matchmaking functions</li>
-							<li>Added: all remaining friend functions</li>
-							<li>Changed: getRecentPlayers to include timestamp</li>
-							<li>Changed: naming of leaderboard_handle and leaderboard_entries for consistency</li>
-							<li>Changed: getAchievement to dictionary (courtesy of jandrewlong)</li>
-							<li>Fixed: invite functions giving incorrect steam ids</li>
-							<li>Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems</li>
-							<li>Removed: setGameInfo, clearGameInfo, inviteFriend</li>
-						</ul>
-						<h3>Version 2.7.0 Changes</h3>
-						<ul>
-							<li>Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)</li>
-							<li>Added: all missing SteamApps functions</li>
-							<li>Changed: NULL statements for achievement functions</li>
-							<li>Changed: cleaned up and organized signal functions in godotteam.h</li>
-							<li>Fixed: issue with dictionary formatting in a function</li>
-							<li>Fixed: missing NULL statement</li>
-							<li>Fixed: issue with getAchievement failing to compile</li>
-							<li>Removed: hasOtherApp function</li>
-						</ul>
-						<h3>Version 2.6.0 Changes</h3>
-						<ul>
-							<li>Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)</li>
-							<li>Added: Steam controller functionality (courtesy of marcelofg55)</li>
-							<li>Added: more workshop functionality</li>
-							<li>Changed: various small maintenance changes</li>
-						</ul>
-						<h3>Version 2.5.0 Changes</h3>
-						<ul>
-							<li>Added: getFileNameAndSize, getQuota, getSyncPlatforms functions</li>
-							<li>Changed: small corrections with Steam ID variable</li>
-							<li>Fixed: small things with getQuota</li>
-						</ul>
-						<h3>Version 2.4.1 Changes</h3>
-						<ul>
-							<li>Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions</li>
-							<li>Added: related signals to new functions</li>
-							<li>Added: some notes</li>
-							<li>Fixed: leaderboard_update signal</li>
-							<li>Removed: depreciated function requestAppProofOfPurchaseKey</li>
-							<li>Removed: related callback to requestAppProofOfPurchaseKey</li>
-							<li>Removed: commented out depreciated functions</li>
-						</ul>
-						<h3>Version 2.4.0 Changes</h3>
-						<ul>
-							<li>Added: more Screenshot features</li>
-							<li>Added: notes for callback</li>
-							<li>Fixed: types in _validate_auth_ticket_response</li>
-						</ul>
-						<h3>Version 2.3.0 Changes</h3>
-						<ul>
-							<li>Added: implemented Auth Session functions, thanks to marcelofg55</li>
-						</ul>
-						<h3>Version 2.2.1 Changes</h3>
-						<ul>
-							<li>Fixed: getFileTimestamp and getSteamID return types, thanks to marcelofg55</li>
-						</ul>
-						<h3>Version 2.2.0 Changes</h3>
-						<ul>
-							<li>Added: getNumberOfCurrentPlayers, thanks to marcelofg55</li>
-							<li>Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55</li>
-						</ul>
-						<h3>Version 2.1.1 Changes</h3>
-						<ul>
-							<li>Fixed: fileRead and fileWrite, thanks to marcelofg55</li>
-						</ul>
-						<h3>Version 2.1.0 Changes</h3>
-						<ul>
-							<li>Added: two more functions for Remote Storage</li>
-							<li>Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation</li>
-							<li>Removed: -no-pie from SCsub; now suggested for Ubuntu 16.10 and higher</li>
-						</ul>
-						<h3>Version 2.0.0 Changes</h3>
-						<ul>
-							<li>Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55</li>
-							<li>Added: new functions to documentation</li>
-							<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
-						</ul>
-					</section>
+	<header class="main">
+		<h1>Change Log | Godot 3.x Module</h1>
+	</header>
+	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+	<h3>Version Version 3.12.1 Changes</h3>
+	<ul>
+		<li>Fixed: incorrect case on app_installed and app_uninstalled, thanks to craftablescience</li>
+	</ul>
+	<h3>Version 3.12 Changes</h3>
+	<ul>
+		<li>Added: missing D_METHOD to all functions, should show the right argument names in-editor</li>
+		<li>Added: Input origin enums for PS5 and Steam Deck</li>
+		<li>Added: Input Types, Input Glyph Style, Input Glyph Size, and Input Configuration Enable Type enums</li>
+		<li>Added: getConnectionRealTimeStatus, configureConnectionLanes, connectP2PCustomSignaling, receivedP2PCustomSignal, getCertificateRequest, setCertificate, resetIdentity, runNetworkingCallbacks, beginAsyncRequestFakeIP, getFakeIP, createListenScoketP2PFakeIP, getRemoveFakeIPForConnection, and createFakeUDPPort functions and callback to NetworkingSockets class</li>
+		<li>Added: dismissFloatingGamepadTextInput function to Utils class</li>
+		<li>Added: setTimeCreatedDateRange and setTimeUpdatedDateRange to UGC class</li>
+		<li>Added: NetworkingeDebugOutputType enums for NetworkingUtils</li>
+		<li>Added: missing constant binds for Server API, OverlayToWebPageMode</li>
+		<li>Fixed: minor compiler warnings</li>
+		<li>Fixed: empty file hash being returned by file_details_result callback</li>
+		<li>Fixed: a variety of small bugs and possible crashes, thanks to qarmin</li>
+		<li>Fixed: missing binds for getFriendsGroupName, getFriendsGroupMembersList, getFriendsGroupIDByIndex, getFriendsGroupCount, getFriendMessage, getFriendCoplayTime, getFriendCoplayGame, getCoplayFriendCount, getCoplayFriend, getClanTag, getClanName, getClanCount, getClanChatMessage, getClanByIndex, getClanActivityCounts, fileWriteAsync, fileWriteStreamCancel, fileWriteStreamClose, fileWriteStreamOpen, fileWriteStreamWriteChunk, getCachedUGCCount, getUGCDownloadProgress, getUGCDetails, fileReadAsync, getOPFSettings, getOPFStringForApp, getVideoURL, isBroadcasting functions</li>
+		<li>Fixed: setPNGIcon and updateCurrentEntryCoverArt in Music Remote class</li>
+		<li>Fixed: missing getUGCDetails and getUGCDownloadProgress functions</li>
+		<li>Changed: updated doc_class file for in-editor documentation</li>
+		<li>Changed: updated to Steamworks 1.53</li>
+		<li>Changed: lobby_data_update, removed lobby data queries as they should be done manually</li>
+		<li>Changed: minor tweaks under-the-hood</li>
+		<li>Changed: various generic 'int' to their actual types</li>
+		<li>Changed: renamed servers and server stats to game server and game server stats respectively, to match SDK</li>
+		<li>Changed: SteamNetworkingQuickConnectionStatus to SteamNetConnectionRealTimeStatus_t per Steamworks SDK 1.53, causes a break in previous GodotSteam versions</li>
+		<li>Changed: getConfigValueInfo, removed name and next value from return dictionary as they are no longer passed by function in SDK 1.53</li>
+		<li>Changed: rearranged functions in godotsteam.cpp class binds to match godotsteam.h order</li>
+		<li>Changed: enum constant binds to match godotsteam.h enum order</li>
+		<li>Removed: unused callback new_launch_query_parameters, broadcast_upload_start, broadcast_upload_stop</li>
+		<li>Removed: allocateMessage as it shouldn't be used solo</li>
+		<li>Removed: getQuickConnectionStatus and getFirstConfigValue as they were removed from SDK 1.53</li>
+		<li>Removed: setDebugOutputFunction from Networking Utils</li>
+	</ul>
+	<h3>Version 3.11.1 Changes</h3>
+	<ul>
+		<li>Removed: unused structs</li>
+	</ul>
+	<h3>Version 3.11 Changes</h3>
+	<ul>
+		<li>Added: server branch merged into master</li>
+		<li>Changed: spacing in default arguments in godotsteam.h</li>
+		<li>Changed: renamed STEAM_GAMESERVER_CALLBACK as STEAM_CALLBACK</li>
+		<li>Removed: SteamGameServer_RunCallbacks function</li>
+	</ul>
+	<h3>Version 3.10.5 Changes</h3>
+	<ul>
+		<li>Added: more helper functions for newer networking classes, translations for steamnetworkingtypes</li>
+		<li>Fixed: lots of compiler warnings on Linux, thanks to gregcsokas</li>
+	</ul>
+	<h3>Version 3.10.4 Changes</h3>
+	<ul>
+		<li>Added: new helper functions for newer networking classes, translations for steamnetworkingtypes</li>
+		<li>Fixed: default argument inputInit function, thanks to hhyyrylainen</li>
+	</ul>
+	<h3>Version 3.10.3 Changes</h3>
+	<ul>
+		<li>Changed: various internal variable / arguments names for clarity, will affect signal-returned dictionaries</li>
+	</ul>
+	<h3>Version 3.10.2 Changes</h3>
+	<ul>
+		<li>Removed: not logged in as error condition in steamInit function</li>
+	</ul>
+	<h3>Version 3.10.1 Changes</h3>
+	<ul>
+		<li>Changed: various compilation errors for OSX, thanks to SapphireMH</li>
+		<li>Removed: receiveRelayAuthTicket, findRelayAuthTicketForServer, getHostedDedicatedServerAddress, and getGameCoordinatorServerLogin as they rely on datagram header that was removed from base SDK</li>
+	</ul>
+	<h3>Version 3.10 Changes</h3>
+	<ul>
+		<li>Added: various Steam Deck specific functions, thanks to EIREXE</li>
+		<li>Added: new AppLists class of functions and callbacks</li>
+		<li>Added: new or missing App functions, callbacks, and enums</li>
+		<li>Added: OverlayToWebPageMode enum and unread_chat_messages_changed callback for Friends class</li>
+		<li>Added: new Input functions and callbacks</li>
+		<li>Added: new Parental Settings fuctions, callback, and enums</li>
+		<li>Added: new Remote Storage functions, callback, and enums</li>
+		<li>Added: new UGC functions, callbacks, and enum</li>
+		<li>Added: memory allocation corrections</li>
+		<li>Changed: updated various Input class functions</li>
+		<li>Changed: lots of argument names internally, has no effect on usage</li>
+		<li>Fixed: some enum names</li>
+		<li>Fixed: various server list filter functions in Matchmaking Servers class</li>
+		<li>Fixed: receivedRelayAuthTicket, getGameCoordinatorServerLogin, FindRelayAuthTicketForServer in Networking Sockets class</li>
+		<li>Removed: second call for steam_api.h in godotsteam.cpp</li>
+	</ul>
+	<h3>Version 3.9.7 Changes</h3>
+	<ul>
+		<li>Added: two Matchmaking Server call results</li>
+		<li>Added: requestHandle to various HTTP functions so handle can be passed</li>
+		<li>Added: new internal variables for Matchmaking Servers</li>
+		<li>Added: setSyncPlatforms in Remote Storage, actual function was missing</li>
+		<li>Changed: serverRequest is now serverListRequest</li>
+		<li>Changed: various HTTP callbacks now return cookieHandle as well</li>
+		<li>Fixed: issue where lobby chat messages were truncated for every accented character used</li>
+		<li>Fixed: pingServer, playerDetails, serverRules functions in Matchmaking Servers</li>
+		<li>Fixed: receiveMessagesOnChannel, receiveMessagesOnPollGroup, receiveMessagesOnConnection in Networking Sockets, should now return an array of messages</li>
+		<li>Fixed: connectByIPAddress, createSocketPair in Networking Sockets</li>
+		<li>Fixed: network_messages_session_request callback, now provides identity of remote host</li>
+		<li>Fixed: network_connection_status_changed callback, now provides the full connection information</li>
+		<li>Removed: unnecessary bool from setLeaderboardDetailsMax</li>
+	</ul>
+	<h3>Version 3.9.6 Changes</h3>
+	<ul>
+		<li>Added: ability to provide different locations for custom modules, thanks to dsnopek</li>
+		<li>Changed: gamepad_text_input_dismissed to return submitted boolean and use UTF8 string, thanks to EIREXE</li>
+	</ul>
+	<h3>Version 3.9.5 Changes</h3>
+	<ul>
+		<li>Added: setLeaderboardDetailsMax function back in to set the internal details variable</li>
+		<li>Fixed: leaderboard_scores_downloaded sigal to provide the actual details for leaderboard results</li>
+	</ul>
+	<h3>Version 3.9.4 Changes</h3>
+	<ul>
+		<li>Fixed: conversion issue in getGlobalStatInt and getGlobalStatIntHistory that caused compiling failure on Linux</li>
+	</ul>
+	<h3>Version 3.9.3 Changes</h3>
+	<ul>
+		<li>Changed: restored getGlobalStatInt and getGlobalStatIntHistory functions</li>
+	</ul>
+	<h3>Version 3.9.2 Changes</h3>
+	<ul>
+		<li>Added: getNextMostAchievedAchievementInfo function, moved out of getMostAchievedAchievementInfo</li>
+		<li>Fixed: getMostAchievedAchievementInfo causing a crash</li>
+	</ul>
+	<h3>Version 3.9.1 Changes</h3>
+	<ul>
+		<li>Added: documentation to P2P functions, constants, and signals; thanks to blaze-the-star</li>
+		<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
+		<li>Fixed: incorrect function bind from pull request</li>
+		<li>Removed: unused C++ line from config.py for Mac, which caused compiling issues</li>
+		<li>Removed: storeStats from setAchievement, resetAllStats as it should be called manually after them</li>
+		<li>Removed: requestCurrentStats from storeStats as it should be called manually</li>
+	</ul>
+	<h3>Version 3.9 Changes</h3>
+	<ul>
+		<li>Added: new UGC functions addRequiredTagGroup, getQueryUGCNumTags, getQueryUGCTag, getQueryUGCTagDisplayName</li>
+		<li>Added: new Friends function activateGameOverlayInviteDialogConnectString</li>
+		<li>Added: default values to leaderboard functions, you can now pass handles for specific leaderboards or use the internally-stored, last-called handle</li>
+		<li>Added: multiple controller types from Input function getInputTypeForHandle</li>
+		<li>Changed: minor readability changes to function arguments and defaults</li>
+		<li>Changed: additional spacing and readability to overall module</li>
+		<li>Changed: replaced leaderboardDetailsMax with k_cLeaderboardDetailsMax</li>
+		<li>Changed: applied EIREXE's UTF-16 fix module-wide</li>
+		<li>Changed: minor corrections to comments and added missing comments</li>
+		<li>Changed: some additional code to some call results and callbacks</li>
+		<li>Changed: metadata length for UGC to 5000 from 255, thanks to EIREXE</li>
+		<li>Changed: beginAuthSession to use new auth function arguments</li>
+		<li>Changed: cancelAuthTicket to actually use the Steamworks function</li>
+		<li>Fixed: renamed addItemToFavorite to addItemToFavorites to match SDK</li>
+		<li>Fixed: incorrect class check in some UGC functions</li>
+		<li>Fixed: minor corrections to various functions</li>
+		<li>Fixed: destroyResult and getResultItemProperty being bound to the wrong functions</li>
+		<li>Removed: setLeaderboardDetailsMax as it is unnecessary</li>
+		<li>Removed: getAuthSessionTicketID as it is no longer useful due to auth function changes</li>
+	</ul>
+	<h3>Version 3.8.2 Changes</h3>
+	<ul>
+		<li>Added: different avatar constants</li>
+		<li>Changed: array deletions for Clang, <em>thanks to thisismike97</em></li>
+		<li>Changed: initializing char text, <em>thanks to thisismike97</em></li>
+		<li>Fixed: createQueryUserUGCRequest being commented out accidentally</li>
+		<li>Fixed: logic check for setOverlayNotificationPosition, <em>thanks to thisismike97</em></li>
+		<li>Fixed: UTF8 not being handled correctly in some UGC functions, <em>thanks to EIREXE</em></li>
+	</ul>
+	<h3>Version 3.8.1 Changes</h3>
+	<ul>
+		<li>Added: extra newline beween each class section for readability</li>
+		<li>Added: new signal, steamworks_error, currently used for call results failures</li>
+		<li>Changed: cleared most items from to-do list</li>
+		<li>Changed: getSyncPlatforms now returns a dictionary with the bitwise and full name version of the platform</li>
+		<li>Changed: separated callbacks and call results in the godotsteam.cpp into two categories</li>
+	</ul>
+	<h3>Version 3.8 Changes</h3>
+	<ul>
+		<li>Added: default argument to steamInit to pull all current stats or not, defaults to true so no one has to change anything</li>
+		<li>Added: new SteamNetworkingMessages class; with functions, callbacks, constants, and enums</li>
+		<li>Added: all missing functions due to 5 argument limit in Godot</li>
+		<li>Changed: filterText updated to match new SDK 1.50 function</li>
+		<li>Changed: HTTP class setCookie to setHTTPCookie to prevent confusion with HTML setCookie</li>
+		<li>Changed: moved fileLoadDialogReponse into html_file_open_dialog callback as it must follow the call anyway</li>
+		<li>Fixed: retrieveConnectionDetails and getAllLobbyData functions</li>
+		<li>Fixed: (probably) various NetworkingSockets and NetworkingUtils functions</li>
+	</ul>
+	<h3>Version 3.7 Changes</h3>
+	<ul>
+		<li>Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
+		<li>Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)</li>
+		<li>Added: Game Search callbacks, enums, and functions</li>
+		<li>Added: missing Steam Parties functions</li>
+		<li>Changed: bIOFailure argument naming in godotsteam.cpp to ioFailure</li>
+		<li>Fixed: issue where Cyrillic characters did not display correctly or at all</li>
+		<li>Fixed: call result for JoinParty, was previously callback</li>
+		<li>Removed: mingw_patch.py since it fixes one issue but creates additional issues</li>
+	</ul>
+	<h3>Version 3.6.1 Changes</h3>
+	<ul>
+		<li>Changed: function getLobbyDataByIndex to getAllLobbyData</li>
+		<li>Changed: commented out getAllLobbyData until crash is fixed</li>
+		<li>Fixed: issue where not having the game installed or owning the game caused a crash</li>
+	</ul>
+	<h3>Version 3.6 Changes</h3>
+	<ul>
+		<li>Added: newest functions for Apps, Friends, and UserStats</li>
+		<li>Added: all functions and callbacks for Videos</li>
+		<li>Added: MinGW patch file for people using MinGW, thanks to MichaelBelousov</li>
+		<li>Added: all remaining Remote Storage, Utils, and Users functions and callbacks</li>
+		<li>Changed: some User callbacks were actually call results</li>
+		<li>Changed: moved callback code block to end of function block in godotsteam.cpp</li>
+		<li>Fixed: incorrect signal link for unsubscribe_item and subscribe_item callbacks</li>
+	</ul>
+	<h3>Version 3.5 Changes</h3>
+	<ul>
+		<li>Added: all Music Remote functions, callbacks, enums, and constants</li>
+		<li>Added: all Parties functions, callbacks, enums, and constants</li>
+		<li>Added: placeholders for function classes not added yet</li>
+		<li>Changed: minor tweaks to layout, comments, etc.</li>
+		<li>Changed: swapped getAuthSessionTicketID and getAuthSessionTicket to make more sense</li>
+		<li>Changed: moved pragma into Windows if</li>
+		<li>Fixed: getAuthSessionTicket to properly give buffer, thanks to <em>EIREXE</em></li>
+	</ul>
+	<h3>Version 3.4.1 Changes</h3>
+	<ul>
+		<li>Added: organization separators for all binds</li>
+		<li>Changed: enums are now callable as constants in Godot</li>
+		<li>Changed: case on enums</li>
+		<li>Fixed: some mis-spelling in enums</li>
+	</ul>
+	<h3>Version 3.4 Changes</h3>
+	<ul>
+		<li>Added: getAuthSessionTicketID to aquire additional ticket data</li>
+		<li>Added: additional pragma to silence offset warnings in Steamworks SDK itself</li>
+		<li>Changed: steamInit status results to use internal enums</li>
+		<li>Changed: getLeaderboardSortMethod now returns a dictionary with result and verbal response</li>
+		<li>Changed: getLeaderboardDisplayType now returns a dictionary with result and verbal response</li>
+		<li>Changed: getLeaderboardEntries to have a default failure response</li>
+		<li>Changed: leaderboard_scores_downloaded callback now incorporates getDownloadLeaderboardEntry to streamline process, callback returns the result array now</li>
+		<li>Changed: complete overhaul of enums and constants</li>
+		<li>Changed: leaderboardDetailsMax default from 0 to 10</li>
+		<li>Fixed: various void functions</li>
+		<li>Fixed: casting for addRequestLobbyListNumericalFilter, addRequestLobbyListStringFilter, addRequestLobbyListDistanceFilter</li>
+		<li>Fixed: setItemTags thanks to <em>EIREXE</em></li>
+		<li>Fixed: missing publishedFileID in return from GetQueryUGCResult</li>
+		<li>Fixed: getGlobalStatInt and getGlobalStatIntHistory</li>
+		<li>Removed: getLeaderboardHandle as redundant</li>
+		<li>Removed: getDownloadedLeaderboardEntry as it should not be called manually, has been added to leaderboard_scores_download callback</li>
+	</ul>
+	<h3>Version 3.3.2 Changes</h3>
+	<ul>
+		<li>Added: all Inventory functions, callbacks, and enums</li>
+		<li>Added: rule to suppress MSVC-only warning about strcpy</li>
+		<li>Fixed: minor corrections to Inputs, especially those copied over from Controllers (depreciated)</li>
+		<li>Fixed: tons of warnings for callbacks in Unix compiling</li>
+		<li>Fixed: printf warnings for int</li>
+		<li>Removed: unnecessary browserHandle argument from HTML functions</li>
+		<li>Removed: unnecessary browserHandle returns from HTML callbacks</li>
+		<li>Removed: unnecessary cookieHandle argument from HTTP functions</li>
+		<li>Removed: unnecessary cookieHandle returns from HTTP callbacks</li>
+	</ul>
+	<h3>Version 3.3.1 Changes</h3>
+	<ul>
+		<li>Added: all HTML Surface functions, callbacks, and enums</li>
+		<li>Added: all HTTP functions, callbacks, and enums </li>
+		<li>Changed: sendRemotePlayTogetherInvite now works since it was added back to the SDK</li>
+		<li>Fixed: (probably) output for getLaunchCommandLine</li>
+	</ul>
+	<h3>Version 3.3 Changes</h3>
+	<ul>
+		<li>Added: all Steam Input functions; used to be Steam Controller</li>
+		<li>Added: all Steam Input constants</li>
+		<li>Added: new Apps functions</li>
+		<li>Added: missing Friends functions</li>
+		<li>Added: missing Screenshots functions</li>
+		<li>Added: all missing Screenshot constants</li>
+		<li>Changed: removed Steam Controller as it is now depreciated</li>
+		<li>Changed: split up call results and callbacks in godotsteam.h for editing ease</li>
+		<li>Changed: user_stats_received to current_stats_received for requestCurrentStats callback / signal</li>
+		<li>Changed: sorted Apps and Friends functions alphabetically like Steamworks Docs to find new functions easier</li>
+		<li>Changed: getAchievementIcon; now returns the handle</li>
+		<li>Changed: getInputTypeForHandle to output verbose controller type</li>
+		<li>Changed: SteamInput function init to inputInit</li>
+		<li>Changed: SteamInput function shutdown to inputShutdown</li>
+		<li>Removed: user_achievement_icon_fetched signal / callback as it is never called</li>
+	</ul>
+	<h3>Version 3.2.1 Changes</h3>
+	<ul>
+		<li>Added: back some needed UGC constants</li>
+		<li>Changed: int to uint32 in some for loops</li>
+		<li>Fixed: compiling issues on Linux</li>
+	</ul>
+	<h3>Version 3.2.0 Changes</h3>
+	<ul>
+		<li>Added: all remaining UGC functions and callbacks</li>
+		<li>Added: all new Remote Play functions and callbacks</li>
+		<li>Added: remaining UGC constants and enums</li>
+		<li>Added: relevant Remote Storage callbacks for UGC</li>
+		<li>Added: back some needed UGC constants</li>
+		<li>Changed: renamed some UGC enums for consistency</li>
+		<li>Changed: getItemDownloadInfo to give proper default return</li>
+		<li>Fixed: a few missing default returns</li>
+		<li>Removed: non-listed UGC enums</li>
+	</ul>
+	<h3>Version 3.1 Changes</h3>
+	<ul>
+		<li>Added: all remaining User Stats functions</li>
+		<li>Added: missing User Stats constants, mostly leaderboard stuff</li>
+		<li>Added: missing default return values in some functions</li>
+		<li>Changed: getAchievementAndUnlockTime to return actual data</li>
+		<li>Changed: user_achievement_icon_fetched callback to return icon data for parsing in-game</li>
+		<li>Changed: value in D_METHOD for setLeaderboardDetailsMax to match function</li>
+		<li>Changed: getDownloadedLeaderboardEntry to use handle correctly</li>
+		<li>Fixed: delete used memory in getInstalledDepots</li>
+	</ul>
+	<h3>Version 3.0.2 Changes</h3>
+	<ul>
+		<li>Added: more verbose response to steamInit, now returns a dictionary</li>
+		<li>Added: missing initialization constants</li>
+		<li>Changed: steamInit to give actual response on Steamworks status (from bool to int)</li>
+		<li>Fixed: currentAppID not utilized correctly</li>
+	</ul>
+	<h3>Version 3.0.1 Changes</h3>
+	<ul>
+		<li>Added: MacOS C++ rule back in for compiling</li>
+		<li>Added: all missing Steam Utils functions (except depreciated or non-relevant functions)</li>
+		<li>Added: additional ENUMS for Steam Utils</li>
+		<li>Added: missing failure conditions for some Steam Utils functions</li>
+		<li>Changed: output for getFriendGamePlayed to show game information even if no valid lobby</li>
+		<li>Changed: order of previous Steam Utils functions to be alphabetical with new ones</li>
+		<li>Changed: gamepad_text_input_dismissed callback</li>
+		<li>Fixed: lobby_message bug, thanks to pull request from Frostings</li>
+	</ul>
+	<h3>Version 3.0 Changes</h3>
+	<ul>
+		<li>Added: missing Matchmaking signals-callbacks</li>
+		<li>Added: missing User signals-callbacks</li>
+		<li>Added: missing Utility signals-callbacks</li>
+		<li>Added: join_requested, screenshot_requested callback</li>
+		<li>Changed: merged Godot 3.0.6 into Master branch</li>
+		<li>Changed: callback descriptions updated</li>
+		<li>Changed: organization of cpp and h files for better readability</li>
+		<li>Changed: signal lobby_message_received to lobby_message</li>
+		<li>Changed: server_connect and server_disconnected renamed to steam_server_connect and steam_server_disconnected respectively</li>
+		<li>Changed: leaderboard_loaded, leaderboard_uploaded, and _leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively</li>
+		<li>Changed: workshop_item_created, workshop_item_installed, and item_updated renamed to item_created, item_installed, and workshop_item_updated respectively</li>
+		<li>Changed: renamed workshop to UGC to match Steamworks</li>
+		<li>Fixed: addFavoriteGame and getItemInstallInfo functions</li>
+		<li>Removed: connection_changed signal</li>
+	</ul>
+	<h3>Version 2.8.5 Changes</h3>
+	<ul>
+		<li>Added: Networking functions; courtesy of Antokolos</li>
+		<li>Changed: linked against Steamworks 1.44</li>
+		<li>Fixed: leaderboard_uploaded always returning false even when successful</li>
+	</ul>
+	<h3>Version 2.8.4 Changes</h3>
+	<ul>
+		<li>Added: persona_state_change callback</li>
+		<li>Added: additional user statistics and achievement signals</li>
+		<li>Added: join_game_requested signal by Fischer96</li>
+		<li>Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize</li>
+		<li>Changed: dictionary term 'buf' to 'buffer' in getImageRGBA</li>
+		<li>Changed: getFriendAvatar to getPlayerAvatar</li>
+		<li>Changed: avatar_loaded now sends back Steam ID of avatar by avencherus</li>
+		<li>Fixed: lots of fixes by marcelofg55</li>
+		<li>Fixed: issue with avatar and Steam ID on Linux compile</li>
+		<li>Fixed: join_requested signal by Fischer96 (requires further work)</li>
+		<li>Fixed: getImageRGBA</li>
+		<li>Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55</li>
+		<li>Removed: drawAvatar</li>
+	</ul>
+	<h3>Version 2.8.3 Changes</h3>
+	<ul>
+		<li>Added: additional user statistics and achievement signals</li>
+		<li>Changed: minor notations</li>
+	</ul>
+	<h3>Version 2.8.2 Changes</h3>
+	<ul>
+		<li>Fixed: Linux not compiling correctly with new Friends and Matchmaking updates</li>
+		<li>Fixed: various Friends functions not providing correct data</li>
+	</ul>
+	<h3>Version 2.8.1 Changes</h3>
+	<ul>
+		<li>Added: additional missing lobby signals</li>
+		<li>Fixed: various lobby functions due to incorrect Steam lobby ID</li>
+		<li>Fixed: some bind methods</li>
+		<li>Fixed: config.py still using env</li>
+		<li>Fixed: location of core Godot includes</li>
+	</ul>
+	<h3>Version 2.8.0 Changes</h3>
+	<ul>
+		<li>Added: all remaining matchmaking functions</li>
+		<li>Added: all remaining friend functions</li>
+		<li>Changed: getRecentPlayers to include timestamp</li>
+		<li>Changed: naming of leaderboard_handle and leaderboard_entries for consistency</li>
+		<li>Changed: getAchievement to dictionary (courtesy of jandrewlong)</li>
+		<li>Fixed: invite functions giving incorrect steam ids</li>
+		<li>Fixed: getInstalledDepots, getDLCDownloadProgress, getItemUpdateProgress, getSubscribedItems</li>
+		<li>Removed: setGameInfo, clearGameInfo, inviteFriend</li>
+	</ul>
+	<h3>Version 2.7.0 Changes</h3>
+	<ul>
+		<li>Added: getAchievementDisplayAttribute, getAchievementName, getAchievementIcon, getImageRGBA, and getImageSize (courtesy of marcelofg55)</li>
+		<li>Added: all missing SteamApps functions</li>
+		<li>Changed: NULL statements for achievement functions</li>
+		<li>Changed: cleaned up and organized signal functions in godotteam.h</li>
+		<li>Fixed: issue with dictionary formatting in a function</li>
+		<li>Fixed: missing NULL statement</li>
+		<li>Fixed: issue with getAchievement failing to compile</li>
+		<li>Removed: hasOtherApp function</li>
+	</ul>
+	<h3>Version 2.6.0 Changes</h3>
+	<ul>
+		<li>Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)</li>
+		<li>Added: Steam controller functionality (courtesy of marcelofg55)</li>
+		<li>Added: more workshop functionality</li>
+		<li>Changed: various small maintenance changes</li>
+	</ul>
+	<h3>Version 2.5.0 Changes</h3>
+	<ul>
+		<li>Added: getFileNameAndSize, getQuota, getSyncPlatforms functions</li>
+		<li>Changed: small corrections with Steam ID variable</li>
+		<li>Fixed: small things with getQuota</li>
+	</ul>
+	<h3>Version 2.4.1 Changes</h3>
+	<ul>
+		<li>Added: getNumAchievements, getAchievementAchievedPercent, requestGlobalAchievementPercentages functions</li>
+		<li>Added: related signals to new functions</li>
+		<li>Added: some notes</li>
+		<li>Fixed: leaderboard_update signal</li>
+		<li>Removed: depreciated function requestAppProofOfPurchaseKey</li>
+		<li>Removed: related callback to requestAppProofOfPurchaseKey</li>
+		<li>Removed: commented out depreciated functions</li>
+	</ul>
+	<h3>Version 2.4.0 Changes</h3>
+	<ul>
+		<li>Added: more Screenshot features</li>
+		<li>Added: notes for callback</li>
+		<li>Fixed: types in _validate_auth_ticket_response</li>
+	</ul>
+	<h3>Version 2.3.0 Changes</h3>
+	<ul>
+		<li>Added: implemented Auth Session functions, thanks to marcelofg55</li>
+	</ul>
+	<h3>Version 2.2.1 Changes</h3>
+	<ul>
+		<li>Fixed: getFileTimestamp and getSteamID return types, thanks to marcelofg55</li>
+	</ul>
+	<h3>Version 2.2.0 Changes</h3>
+	<ul>
+		<li>Added: getNumberOfCurrentPlayers, thanks to marcelofg55</li>
+		<li>Added: leaderboard_uploaded and number_of_current_players callbacks, thanks to marcelofg55</li>
+	</ul>
+	<h3>Version 2.1.1 Changes</h3>
+	<ul>
+		<li>Fixed: fileRead and fileWrite, thanks to marcelofg55</li>
+	</ul>
+	<h3>Version 2.1.0 Changes</h3>
+	<ul>
+		<li>Added: two more functions for Remote Storage</li>
+		<li>Changed: instances of int32 and int64 to int32_t and int64_t respectively; mostly for Linux compilation</li>
+		<li>Removed: -no-pie from SCsub; now suggested for Ubuntu 16.10 and higher</li>
+	</ul>
+	<h3>Version 2.0.0 Changes</h3>
+	<ul>
+		<li>Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55</li>
+		<li>Added: new functions to documentation</li>
+		<li>Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
 				</div>
 			</div>
 			<!-- Sidebar -->
 			<div id="sidebar">
-				<div class="inner">
-					<!-- Menu -->
-					<nav id="menu">
-						<header class="major">
-							<h2>Menu</h2>
-						</header>
-						<ul>
-							<li><a href="index.html">Introduction</a></li>
-							<li>
-								<span class="opener">How-To's</span>
-								<ul>
-									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
-									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Functions (Module)</span>
-								<ul>
-									<li><a href="functions-module.html">All</a></li>
-									<li><a href="functions-module.html#core">Core</a></li>
-									<li><a href="functions-module.html#apps">Apps</a></li>
-									<li><a href="functions-module.html#friends">Friends</a></li>
-									<li><a href="functions-module.html#game-search">Game Search</a></li>
-									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
-									<li><a href="functions-module.html#http">HTTP</a></li>
-									<li><a href="functions-module.html#input">Input</a></li>
-									<li><a href="functions-module.html#inventory">Inventory</a></li>
-									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
-									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
-									<li><a href="functions-module.html#music">Music</a></li>
-									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
-									<li><a href="functions-module.html#networking">Networking</a></li>
-									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
-									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
-									<li><a href="functions-module.html#parties">Parties</a></li>
-									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
-									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
-									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
-									<li><a href="functions-module.html#server">Server</a></li>
-									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-module.html#ugc">UGC</a></li>
-									<li><a href="functions-module.html#users">Users</a></li>
-									<li><a href="functions-module.html#user-stats">User Stats</a></li>
-									<li><a href="functions-module.html#utils">Utils</a></li>
-									<li><a href="functions-module.html#video">Video</a></li>
-								</ul>
-							</li>
-							<li><a href="signals-modules.html">Signals</a></li>
-							<li>
-								<span class="opener">Godot 3.x Tutorials</span>
-								<ul>
-									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
-									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
-									<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
-									<li><a href="tutorials-avatars.html">Avatars</a></li>
-									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
-									<li><a href="tutorials-authentication.html">Authentication</a></li>
-									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
-									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
-									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
-									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
-									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
-									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
-								</ul>
-							</li>
-							<li><a href="games.html">Games Using GodotSteam</a></li>
-							<li><a href="todo.html">To-Do</a></li>
-							<li>
-								<span class="opener">Change Log</span>
-								<ul>
-									<li><a href="changelog-godot4.html">Godot 4.x</a></li>
-									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
-									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
-									<li><a href="changelog-gdnative.html">GDNative</a></li>
-								</ul>
-							</li>
-							<li><a href="contributors.html">Contributors</a></li>
-						</ul>
-					</nav>
-					<section>
-						<header class="major">
-							<h2>Stuck? Need Help?</h2>
-						</header>
-						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
-						<ul class="actions stacked">
-							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
-							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
-						</ul>
-					</section>
-					<section>
-						<header class="major">
-							<h2>Donate</h2>
-						</header>
-						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
-						<ul class="actions stacked">
-							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
-							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
-						</ul>
-					</section>
-					<footer>
-						<ul class="actions stacked">
-							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
-							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
-							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
-							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
-						</ul>
-					</footer>
-					<footer id="footer" class="copyright">
-						2021 &copy; GP Garcia & CoaguCo Industries
-					</footer>
-				</div>
-			</div>
-		</div>
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
 		<!-- Scripts -->
 		<script src="js/jquery.min.js"></script>
 		<script src="js/browser.min.js"></script>
 		<script src="js/breakpoints.min.js"></script>
 		<script src="js/util.js"></script>
 		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
 	</body>
 </html>

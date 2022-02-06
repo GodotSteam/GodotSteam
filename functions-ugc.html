@@ -1,0 +1,1715 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | UGC</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddAppDependency" target="_blank">
+			<span class="gdscript">
+				addAppDependency( <sup>int</sup> published_file_id, <sup>int</sup> app_id )
+			</span>
+			<span class="c-sharp">
+				addAppDependency( <sup>uint64_t</sup> published_file_id, <sup>uint32_t</sup> app_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling <strong>getAppDependencies</strong>. This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.</li>
+		<li>Triggers a <strong><em>add_app_dependency_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddDependency" target="_blank">
+			<span class="gdscript">
+				addDependency( <sup>int</sup> published_file_id, <sup>int</sup> child_published_file_id )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a workshop item as a dependency to the specified item. If the <strong>published_file_id</strong> item is of type <strong>k_EWorkshopFileTypeCollection (2)</strong>, than the <strong>child_published_file_id</strong> is simply added to that collection. Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the <strong>numChildren</strong> key returned from <strong>getQueryUGCResult</strong> and <strong>getQueryUGCChildren</strong>.</li>
+		<li>Triggers a <strong><em>add_ugc_dependency_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddExcludedTag" target="_blank">
+			<span class="gdscript">
+				addExcludedTag( <sup>int</sup> query_handle, <sup>string</sup> tag_name )
+			</span>
+			<span class="c-sharp">
+				addExcludedTag( <sup>uint64_t</sup> query_handle, <sup>string</sup> tag_name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a excluded tag to a pending UGC Query. This will only return UGC without the specified tag.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddItemKeyValueTag" target="_blank">
+			<span class="gdscript">
+				addItemKeyValueTag( <sup>int</sup> update_handle, <sup>string</sup> key, <sup>string</sup> value )
+			</span>
+			<span class="c-sharp">
+				addItemKeyValueTag( <sup>uint64_t</sup> update_handle, <sup>string</sup> key, <sup>string</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a key-value tag pair to an item. Keys can map to multiple different values (1-to-many relationship).</li>
+		<li>Key names are restricted to alpha-numeric characters and the '_' character.</li>
+		<li>Both keys and values cannot exceed 255 characters in length.</li>
+		<li>Key-value tags are searchable by exact match only.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddItemPreviewFile" target="_blank">
+			<span class="gdscript">
+				addItemPreviewFile( <sup>int</sup> query_handle, <sup>string</sup> preview_file, <sup>int</sup> type )
+			</span>
+			<span class="c-sharp">
+				addItemPreviewFile( <sup>uint64_t</sup> query_handle, <sup>string</sup> preview_file, <sup>int</sup> type )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds an additional preview file for the item.</li>
+		<li>Then the format of the image should be one that both the web and the application (if necessary) can render, and must be under 1MB. Suggested formats include JPG, PNG and GIF.</li>
+		<li><strong>Note:</strong> Using 1 or 2 in <strong>type</strong> are not currently supported with this API. For YouTube videos you should use <strong>addItemPreviewVideo</strong>.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddItemPreviewVideo" target="_blank">
+			<span class="gdscript">
+				addItemPreviewVideo( <sup>int</sup> query_handle, <sup>string</sup> video_id )
+			</span>
+			<span class="c-sharp">
+				addItemPreviewVideo( <sup>uint64_t</sup> query_handle, <sup>string</sup> video_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds an additional video preview from YouTube for the item.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddItemToFavorites" target="_blank">
+			<span class="gdscript">
+				addItemToFavorites( <sup>int</sup> app_id, <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				addItemToFavorites( <sup>uint32_t</sup> app_id, <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a workshop item to the users favorites list.</li>
+		<li>Triggers a <strong><em>user_favorite_items_list_changed</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddRequiredKeyValueTag" target="_blank">
+			<span class="gdscript">
+				addRequiredKeyValueTag( <sup>int</sup> query_handle, <sup>string</sup> key, <sup>string</sup> value )
+			</span>
+			<span class="c-sharp">
+				addRequiredKeyValueTag( <sup>uint64_t</sup> query_handle, <sup>string</sup> key, <sup>string</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a required key-value tag to a pending UGC Query. This will only return workshop items that have a key and a value.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddRequiredTag" target="_blank">
+			<span class="gdscript">
+				addRequiredTag( <sup>int</sup> query_handle, <sup>string</sup> tag_name )
+			</span>
+			<span class="c-sharp">
+				addRequiredTag( <sup>uint64_t</sup> query_handle, <sup>string</sup> tag_name )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds a required tag to a pending UGC Query. This will only return UGC with the specified tag.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#AddRequiredTagGroup" target="_blank">
+			<span class="gdscript">
+				addRequiredTagGroup( <sup>int</sup> query_handle, <sup>array</sup> tag_array )
+			</span>
+			<span class="c-sharp">
+				addRequiredTagGroup( <sup>uint64_t</sup> query_handle, <sup>array</sup> tag_array )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Adds the requirement that the returned items from the pending UGC Query have at least one of the tags in the given set (logical "or"). For each tag group that is added, at least one tag from each group is required to be on the matching items.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#BInitWorkshopForGameServer" target="_blank">
+			<span class="gdscript">
+				initWorkshopForGameServer( <sup>int</sup> workshop_depot_id )
+			</span>
+			<span class="c-sharp">
+				initWorkshopForGameServer( <sup>uint32_t</sup> workshop_depot_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Lets game servers set a specific workshop folder before issuing any UGC commands.</li>
+		<li>This is helpful if you want to support multiple game servers running out of the same install folder.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#CreateItem" target="_blank">
+			<span class="gdscript">
+				createItem( <sup>int</sup> app_id, <sup>int</sup> file_type )
+			</span>
+			<span class="c-sharp">
+				createItem( <sup>uint32</sup> app_id, <sup>int</sup> file_type )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Creates a new workshop item with no content attached yet.</li>
+		<li>Triggers a <strong><em>item_created</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#CreateQueryAllUGCRequest" target="_blank">
+			<span class="gdscript">
+				createQueryAllUGCRequest( <sup>int</sup> query_type, <sup>int</sup> matching_type, <sup>int</sup> creator_id, <sup>int</sup> consumer_id, <sup>int</sup> page )
+			</span>
+			<span class="c-sharp">
+				createQueryAllUGCRequest( <sup>int</sup> query_type, <sup>int</sup> matching_type, <sup>uint32_t</sup> creator_id, <sup>uint32_t</sup> consumer_id, <sup>int</sup> page )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Query for all matching UGC. You can use this to list all of the available UGC for your app.</li>
+		<li>This will return up to 50 results. You can make subsequent calls to this function, increasing the <strong>page</strong> each time to get the next set of results.</li>
+		<li><strong>Note:</strong> Either <strong>consumer_id</strong> or <strong>creator_id</strong> must have a valid app ID.</li>
+		<li><strong>Note:</strong> You must release the handle returned by this function by calling <strong>releaseQueryUGCRequest</strong> when you are done with it.</li>
+		<li>To query for the UGC associated with a single user you can use <strong>createQueryUserUGCRequest</strong> instead.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#CreateQueryUGCDetailsRequest" target="_blank">
+			createQueryUGCDetailsRequest( <sup>array</sup> published_file_ids )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Query for the details of specific workshop items.</li>
+		<li>This will return up to 50 results.</li>
+		<li><strong>Note:</strong> Either <strong>consumer_id</strong> or <strong>creator_id</strong> must have a valid app ID.</li>
+		<li><strong>Note:</strong> You must release the handle returned by this function by calling <strong>releaseQueryUGCRequest</strong> when you are done with it.</li>
+		<li>To query all the UGC for your app you can use <strong>createQueryAllUGCRequest</strong> instead.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#CreateQueryUserUGCRequest" target="_blank">
+			<span class="gdscript">
+				createQueryUserUGCRequest( <sup>int</sup> steam_id, <sup>int</sup> list_type, <sup>int</sup> matching_ugc_type, <sup>int</sup> sort_order, <sup>int</sup> creator_id, <sup>int</sup> consumer_id, <sup>int</sup> page )
+			</span>
+			<span class="c-sharp">
+				createQueryUserUGCRequest( <sup>uint64_t</sup> steam_id, <sup>int</sup> list_type, <sup>int</sup> matching_ugc_type, <sup>int</sup> sort_order, <sup>uint32_t</sup> creator_id, <sup>uint32_t</sup> consumer_id, <sup>int</sup> page )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.</li>
+		<li>This will return up to 50 results.</li>
+		<li><strong>Note:</strong> Either <strong>consumer_id</strong> or <strong>creator_id</strong> must have a valid app ID.</li>
+		<li><strong>Note:</strong> You must release the handle returned by this function by calling <strong>releaseQueryUGCRequest</strong> when you are done with it.</li>
+		<li>To query all the UGC for your app you can use <strong>createQueryAllUGCRequest</strong> instead.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#DeleteItem" target="_blank">
+			<span class="gdscript">
+				deleteItem( <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				deleteItem( <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Deletes the item without prompting the user.</li>
+		<li>Triggers a <strong><em>item_deleted</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#DownloadItem" target="_blank">
+			<span class="gdscript">
+				downloadItem( <sup>int</sup> published_file_id, <sup>bool</sup> high_priority )
+			</span>
+			<span class="c-sharp">
+				downloadItem( <sup>uint64_t</sup> published_file_id, <sup>bool</sup> high_priority )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Download new or update already installed item.</li>
+		<li>If the return value is true then register and wait for the callback <strong><em>item_downloaded</em></strong> before calling <strong>getItemInstallInfo</strong> or accessing the workshop item on disk.</li>
+		<li>If the user is not subscribed to the item (e.g. a Game Server using anonymous login), the workshop item will be downloaded and cached temporarily.</li>
+		<li>If the workshop item has an item state of 8, then this function can be called to initiate the update. Do not access the workshop item on disk until the callback <strong><em>item_downloaded</em></strong> is called.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetAppDependencies" target="_blank">
+			<span class="gdscript">
+				getAppDependencies( <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				getAppDependencies( <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the app dependencies associated with the given <strong>published_file_id</strong>. These are "soft" dependencies that are shown on the web. It is up to the application to determine whether an item can be used or not.</li>
+		<li>Triggers a <strong><em>get_app_dependencies_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetItemDownloadInfo" target="_blank">
+			<span class="gdscript">
+				getItemDownloadInfo( <sup>int</sup> file_id )
+			</span>
+			<span class="c-sharp">
+				getItemDownloadInfo( <sup>uint64_t</sup> file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get info about a pending download of a workshop item that has 8 set.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>ret (bool)</li>
+					<li>downloaded (int)</li>
+					<li>total (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>ret (bool)</li>
+					<li>downloaded (uint64_t)</li>
+					<li>total (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetItemInstallInfo" target="_blank">
+			<span class="gdscript">
+				getItemInstallInfo( <sup>int</sup> file_id )
+			</span>
+			<span class="c-sharp">
+				getItemInstallInfo( <sup>uint64_t</sup> file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets info about currently installed content on the disc for workshop items that have k_EItemStateInstalled (4) set.</li>
+		<li>Calling this sets the "used" flag on the workshop item for the current player and adds it to their k_EUserUGCList_UsedOrPlayed (7) list.</li>
+		<li>If k_EItemStateLegacyItem (2) is set then <strong>folder</strong> contains the path to the legacy file itself, not a folder.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>ret (bool)</li>
+					<li>size (int)</li>
+					<li>folder (string)</li>
+					<li>folder_size (int)</li>
+					<li>timestamp (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>ret (bool)</li>
+					<li>size (int)</li>
+					<li>folder (string)</li>
+					<li>folder_size (uint32)</li>
+					<li>timestamp (uint32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetItemState" target="_blank">
+			<span class="gdscript">
+				getItemState( <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				getItemState( <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current state of a workshop item on this client.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>:
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32</strong>:
+			</span>
+			<ul>
+				<li>0 - None</li>
+				<li>1 - Subscribed</li>
+				<li>2 - Legacy</li>
+				<li>4 - Installed</li>
+				<li>8 - Update</li>
+				<li>16 - Downloading</li>
+				<li>32 - Pending</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetItemUpdateProgress" target="_blank">
+			<span class="gdscript">
+				getItemUpdateProgress( <sup>int</sup> update_handle )
+			</span>
+			<span class="c-sharp">
+				getItemUpdateProgress( <sup>uint64_t</sup> update_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the progress of an item update.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>status (int)</li>
+					<li>processed (int)</li>
+					<li>total (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>status (int)</li>
+					<li>processed (uint64)</li>
+					<li>total (uint64)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetNumSubscribedItems" target="_blank">
+			getNumSubscribedItems()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the total number of items the current user is subscribed to for the game or application.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCAdditionalPreview" target="_blank">
+			<span class="gdscript">
+				getQueryUGCAdditionalPreview( <sup>int</sup> query_handle, <sup>int</sup> index, <sup>int</sup> preview_index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCAdditionalPreview( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index, <sup>uint32</sup> preview_index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the details of an additional preview associated with an individual workshop item after receiving a querying UGC call result.</li>
+		<li>You should call this in a loop to get the details of all the workshop items returned.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Before calling this you should call <strong>getQueryUGCNumAdditionalPreviews</strong> to get number of additional previews.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>success (bool)</li>
+					<li>handle (int)</li>
+					<li>index (int)</li>
+					<li>preview (int)</li>
+					<li>url_or_video (string)</li>
+					<li>filename (string)</li>
+					<li>type (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (bool)</li>
+					<li>handle (uint64_t)</li>
+					<li>index (uint32)</li>
+					<li>preview (uint32)</li>
+					<li>url_or_video (string)</li>
+					<li>filename (string)</li>
+					<li>type (int)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCChildren" target="_blank">
+			<span class="gdscript">
+				getQueryUGCChildren( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCChildren( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the IDs of any child items of an individual workshop item after receiving a querying UGC call result. These items can either be a part of a collection or some other dependency (see <strong>addDependency</strong>).</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>You should create <strong>published_file_id</strong> with <strong>num_children</strong> provided in returned dictionary after getting the UGC details with <strong>getQueryUGCResult</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>success (bool)</li>
+					<li>handle (int)</li>
+					<li>index (int)</li>
+					<li>children (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (bool)</li>
+					<li>handle (uint64_t)</li>
+					<li>index (uint32)</li>
+					<li>children (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCKeyValueTag" target="_blank">
+			<span class="gdscript">
+				getQueryUGCKeyValueTag( <sup>int</sup> query_handle, <sup>int</sup> index, <sup>int</sup> key_value_tag_index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCKeyValueTag( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index, <sup>uint32</sup> key_value_tag_index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the details of a key-value tag associated with an individual workshop item after receiving a querying UGC call result.</li>
+		<li>You should call this in a loop to get the details of all the workshop items returned.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Before calling this you should call <strong><em>getQueryUGCNumKeyValueTags</em></strong> to get number of tags.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>success (bool)</li>
+					<li>handle (int)</li>
+					<li>index (int)</li>
+					<li>tag (int)</li>
+					<li>key (string)</li>
+					<li>value (string)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (bool)</li>
+					<li>handle (uint64_t)</li>
+					<li>index (uint32)</li>
+					<li>tag (uint32)</li>
+					<li>key (string)</li>
+					<li>value (string)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCMetadata" target="_blank">
+			<span class="gdscript">
+				getQueryUGCMetadata( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCMetadata( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the developer set metadata of an individual workshop item after receiving a querying UGC call result.</li>
+		<li>You should call this in a loop to get the details of all the workshop items returned.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCNumAdditionalPreviews" target="_blank">
+			<span class="gdscript">
+				getQueryUGCNumAdditionalPreviews( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCNumAdditionalPreviews( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the number of additional previews of an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>You can then call <strong>getQueryUGCAdditionalPreview</strong> to get the details of each additional preview.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCNumKeyValueTags" target="_blank">
+			<span class="gdscript">
+				getQueryUGCNumKeyValueTags( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCNumKeyValueTags( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the number of key-value tags of an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>You can then call <strong>getQueryUGCKeyValueTag</strong> to get the details of each tag.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCNumTags" target="_blank">
+			<span class="gdscript">
+				getQueryUGCNumTags( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCNumTags( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Available in SDK v1.51.</li>
+		<li>Retrieve the number of tags for an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>You can then call <strong>getQueryUGCTag</strong> to get the tag name or <strong>getQueryUGCTagDisplayName</strong> to get the localized tag string (if any).</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCPreviewURL" target="_blank">
+			<span class="gdscript">
+				getQueryUGCPreviewURL( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCPreviewURL( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the URL to the preview image of an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>You can use this URL to download and display the preview image instead of having to download it using the <strong>handle_preview_file</strong> key in the return dictionary from <strong>getQueryUGCResult</strong>.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCResult" target="_blank">
+			<span class="gdscript">
+				getQueryUGCResult( <sup>int</sup> query_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCResult( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve the details of an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>file_id (int)</li>
+					<li>file_type (int)</li>
+					<li>creator_app_id (int)</li>
+					<li>consumer_app_id (int)</li>
+					<li>title (string)</li>
+					<li>description (string)</li>
+					<li>steam_id_owner (int)</li>
+					<li>time_created (int)</li>
+					<li>time_updated (int)</li>
+					<li>time_added_to_user_list (int)</li>
+					<li>visibility (int)</li>
+					<li>banned (bool)</li>
+					<li>accepted_for_use (bool)</li>
+					<li>tags_truncated (bool)</li>
+					<li>tags (string)</li>
+					<li>handle_file (int)</li>
+					<li>handle_preview-file (int)</li>
+					<li>file_name (string)</li>
+					<li>file_size (int)</li>
+					<li>preview_file_size (int)</li>
+					<li>url (string)</li>
+					<li>votes_up (int)</li>
+					<li>votes_down (int)</li>
+					<li>score (float)</li>
+					<li>num_children (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (uint64_t)</li>
+					<li>file_id (uint64_t)</li>
+					<li>file_type (uint64_t)</li>
+					<li>creator_app_id (uint32_t)</li>
+					<li>consumer_app_id (uint32_t)</li>
+					<li>title (string)</li>
+					<li>description (string)</li>
+					<li>steam_id_owner (uint64_t)</li>
+					<li>time_created (uint32)</li>
+					<li>time_updated (uint32)</li>
+					<li>time_added_to_user_list (uint32)</li>
+					<li>visibility (int)</li>
+					<li>banned (bool)</li>
+					<li>accepted_for_use (bool)</li>
+					<li>tags_truncated (bool)</li>
+					<li>tags (string)</li>
+					<li>handle_file (uint64_t)</li>
+					<li>handle_preview-file (uint64_t)</li>
+					<li>file_name (string)</li>
+					<li>file_size (int32)</li>
+					<li>preview_file_size (int32)</li>
+					<li>url (string)</li>
+					<li>votes_up (uint32)</li>
+					<li>votes_down (uint32)</li>
+					<li>score (float)</li>
+					<li>num_children (uint32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCStatistic" target="_blank">
+			<span class="gdscript">
+				getQueryUGCStatistic( <sup>int</sup> query_handle, <sup>int</sup> index, <sup>int</sup> stat_type )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCStatistic( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index, <sup>int</sup> stat_type )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>success (bool)</li>
+					<li>handle (int)</li>
+					<li>index (int)</li>
+					<li>type (int)</li>
+					<li>value (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (bool)</li>
+					<li>handle (uint64_t)</li>
+					<li>index (uint32)</li>
+					<li>type (int)</li>
+					<li>value (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCTag" target="_blank">
+			<span class="gdscript">
+				getQueryUGCTag( <sup>int</sup> query_handle, <sup>int</sup> index, <sup>int</sup> tag_index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCTag( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index, <sup>uint32</sup> tag_index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Available in SDK v1.51.</li>
+		<li>Retrieve the "nth" tag associated with an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Before calling this you should call <strong>getQueryUGCNumTags</strong> to get number of tags.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCTagDisplayName" target="_blank">
+			<span class="gdscript">
+				getQueryUGCTagDisplayName( <sup>int</sup> query_handle, <sup>int</sup> index, <sup>int</sup> tag_index )
+			</span>
+			<span class="c-sharp">
+				getQueryUGCTagDisplayName( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> index, <sup>uint32</sup> tag_index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Available in SDK v1.51.</li>
+		<li>Retrieve the "nth" display string (usually localized) for a tag, which is associated with an individual workshop item after receiving a querying UGC call result.</li>
+		<li><strong>Note:</strong> This must only be called with the handle obtained from a successful <strong><em>ugc_query_completed</em></strong> call result.</li>
+		<li>Before calling this you should call <strong>getQueryUGCNumTags</strong> to get number of tags.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetSubscribedItems" target="_blank">
+			getSubscribedItems()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a list of all of the items the current user is subscribed to for the current game.</li>
+		<li>Returns an <strong>array</strong> of <strong>published_file_ids</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetWorkshopEULAStatus" target="_blank">
+			getWorkshopEULAStatus()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Asynchronously retrieves data about whether the user accepted the Workshop EULA for the current app.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#GetUserItemVote" target="_blank">
+			<span class="gdscript">
+				getUserItemVote( <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				getUserItemVote( <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the users vote status on a workshop item.</li>
+		<li>Triggers a <strong><em>get_item_vote_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#ReleaseQueryUGCRequest" target="_blank">
+			<span class="gdscript">
+				releaseQueryUGCRequest( <sup>int</sup> query_handle )
+			</span>
+			<span class="c-sharp">
+				releaseQueryUGCRequest( <sup>uint64_t</sup> query_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Releases a UGC query handle when you are done with it to free up memory.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#RemoveAppDependency" target="_blank">
+			<span class="gdscript">
+				removeAppDependency( <sup>int</sup> published_file_id, <sup>int</sup> app_id )
+			</span>
+			<span class="c-sharp">
+				removeAppDependency( <sup>uint64_t</sup> published_file_id, <sup>uint32_t</sup> app_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Removes the dependency between the given item and the appid. This list of dependencies can be retrieved by calling <strong>getAppDependencies</strong>.</li>
+		<li>Triggers a <strong><em>remove_app_dependency_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#RemoveDependency" target="_blank">
+			<span class="gdscript">
+				removeDependency( <sup>int</sup> published_file_id, <sup>int</sup> child_published_file_id )
+			</span>
+			<span class="c-sharp">
+				removeDependency( <sup>uint64_t</sup> published_file_id, <sup>uint64_t</sup> child_published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Removes a workshop item as a dependency from the specified item.</li>
+		<li>Triggers a <strong><em>remove_ugc_dependency_result</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#RemoveItemFromFavorites" target="_blank">
+			<span class="gdscript">
+				removeItemFromFavorites( <sup>int</sup> app_id, <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				removeItemFromFavorites( <sup>uint32_t</sup> app_id, <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Removes a workshop item from the users favorites list.</li>
+		<li>Triggers a <strong><em>user_favorite_items_list_changed</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#RemoveItemKeyValueTags" target="_blank">
+			<span class="gdscript">
+				removeItemKeyValueTags( <sup>int</sup> update_handle, <sup>string</sup> key )
+			</span>
+			<span class="c-sharp">
+				removeItemKeyValueTags( <sup>uint64_t</sup> update_handle, <sup>string</sup> key )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Removes an existing key value tag from an item.</li>
+		<li>You can only call this up to 100 times per item update. If you need remove more tags than that you'll need to make subsequent item updates.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#RemoveItemPreview" target="_blank">
+			<span class="gdscript">
+				removeItemPreview( <sup>int</sup> update_handle, <sup>int</sup> index )
+			</span>
+			<span class="c-script">
+				removeItemPreview( <sup>uint64_t</sup> update_handle, <sup>uint32</sup> index )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Removes an existing preview from an item.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SendQueryUGCRequest" target="_blank">
+			<span class="gdscript">
+				sendQueryUGCRequest( <sup>int</sup> update_handle )
+			</span>
+			<span class="c-sharp">
+				sendQueryUGCRequest( <sup>uint64_t</sup> update_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Send a UGC query to Steam.</li>
+		<li>This must be called with a handle obtained from <strong>createQueryUserUGCRequest</strong>, <strong>createQueryAllUGCRequest</strong>, or <strong>createQueryUGCDetailsRequest</strong> to actually send the request to Steam. Before calling this you should use one or more of the following APIs to customize your query: <strong>addRequiredTag</strong>, <strong>addExcludedTag</strong>, <strong>setReturnOnlyIDs</strong>, <strong>setReturnKeyValueTags</strong>, <strong>setReturnLongDescription</strong>, <strong>setReturnMetadata</strong>, <strong>setReturnChildren</strong>, <strong>setReturnAdditionalPreviews</strong>, <strong>setReturnTotalOnly</strong>, <strong>setLanguage</strong>, <strong>setAllowCachedResponse</strong>, <strong>setCloudFileNameFilter</strong>, <strong>setMatchAnyTag</strong>, <strong>setSearchText</strong>, <strong>setRankedByTrendDays</strong>, or <strong>addRequiredKeyValueTag</strong>.</li>
+		<li>Triggers a <strong><em>ugc_query_completed</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetAllowCachedResponse" target="_blank">
+			<span class="gdscript">
+				setAllowCachedResponse( <sup>int</sup> update_handle, <sup>int</sup> max_age_seconds )
+			</span>
+			<span class="c-sharp">
+				setAllowCachedResponse( <sup>uint64_t</sup> update_handle, <sup>uint32</sup> max_age_seconds )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether results will be returned from the cache for the specific period of time on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetCloudFileNameFilter" target="_blank">
+			<span class="gdscript">
+				setCloudFileNameFilter( <sup>int</sup> update_handle, <sup>string</sup> match_cloud_filename )
+			</span>
+			<span class="c-sharp">
+				setCloudFileNameFilter( <sup>uint64_t</sup> update_handle, <sup>string</sup> match_cloud_filename )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets to only return items that have a specific filename on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This can only be used with <strong>createQueryUserUGCRequest</strong>.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemContent" target="_blank">
+			<span class="gdscript">
+				setItemContent( <sup>int</sup> update_handle, <sup>string</sup> content_folder )
+			</span>
+			<span class="c-sharp">
+				setItemContent( <sup>uint64_t</sup> update_handle, <sup>string</sup> content_folder )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the folder that will be stored as the content for an item.</li>
+		<li>For efficient upload and download, files should not be merged or compressed into single files (e.g. zip files).</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemDescription" target="_blank">
+			<span class="gdscript">
+				setItemDescription( <sup>int</sup> update_handle, <sup>string</sup> description )
+			</span>
+			<span class="c-sharp">
+				setItemDescription( <sup>uint64_t</sup> update_handle, <sup>string</sup> description )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets a new description for an item.</li>
+		<li>The description must be limited to the length defined by k_cchPublishedDocumentDescriptionMax (8000).</li>
+		<li>You can set what language this is for by using <strong>setItemUpdateLanguage</strong>, if no language is set then "english" is assumed.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemMetadata" target="_blank">
+			<span class="gdscript">
+				setItemMetadata( <sup>int</sup> update_handle, <sup>string</sup> metadata )
+			</span>
+			<span class="c-sharp">
+				setItemMetadata( <sup>uint64_t</sup> update_handle, <sup>string</sup> metadata )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets arbitrary metadata for an item. This metadata can be returned from queries without having to download and install the actual content.</li>
+		<li>The metadata must be limited to the size defined by k_cchDeveloperMetadataMax (5000).</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemPreview" target="_blank">
+			<span class="gdscript">
+				setItemPreview( <sup>int</sup> update_handle, <sup>string</sup> preview_file )
+			</span>
+			<span class="c-sharp">
+				setItemPreview( <sup>uint64_t</sup> update_handle, <sup>string</sup> preview_file )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the primary preview image for the item.</li>
+		<li>The format should be one that both the web and the application (if necessary) can render. Suggested formats include JPG, PNG and GIF.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemTags" target="_blank">
+			<span class="gdscript">
+				setItemTags( <sup>int</sup> update_handle, <sup>array</sup> tag_array)
+			</span>
+			<span class="c-sharp">
+				setItemTags( <sup>uint64_t</sup> update_handle, <sup>array</sup> tag_array)
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets arbitrary developer specified tags on an item.</li>
+		<li>Each tag must be limited to 255 characters. Tag names can only include printable characters, excluding ','. For reference on what characters are allowed, refer to <a href="http://en.cppreference.com/w/c/string/byte/isprint" target="_blank">http://en.cppreference.com/w/c/string/byte/isprint</a></li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemTitle" target="_blank">
+			<span class="gdscript">
+				setItemTitle( <sup>int</sup> update_handle, <sup>string</sup> title )
+			</span>
+			<span class="c-sharp">
+				setItemTitle( <sup>uint64_t</sup> update_handle, <sup>string</sup> title )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets a new title for an item.</li>
+		<li>The title must be limited to the size defined by k_cchPublishedDocumentTitleMax (128).</li>
+		<li>You can set what language this is for by using <strong>setItemUpdateLanguage</strong>, if no language is set then "english" is assumed.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemUpdateLanguage" target="_blank">
+			<span class="gdscript">
+				setItemUpdateLanguage( <sup>int</sup> update_handle, <sup>string</sup> language )
+			</span>
+			<span class="c-sharp">
+				setItemUpdateLanguage( <sup>uint64_t</sup> update_handle, <sup>string</sup> language )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the language of the title and description that will be set in this item update.</li>
+		<li>This must be in the format of the <a href="https://partner.steamgames.com/doc/store/localization#supported_languages" target="_blank">API language code</a>.</li>
+		<li>If this is not set then "english" is assumed.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetItemVisibility" target="_blank">
+			<span class="gdscript">
+				setItemVisibility( <sup>int</sup> update_handle, <sup>int</sup> visibility )
+			</span>
+			<span class="c-sharp">
+				setItemVisibility( <sup>uint64_t</sup> update_handle, <sup>int</sup> visibility )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the visibility of an item.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetLanguage" target="_blank">
+			<span class="gdscript">
+				setLanguage( <sup>int</sup> query_handle, <sup>string</sup> language )
+			</span>
+			<span class="c-sharp">
+				setLanguage( <sup>uint64_t</sup> query_handle, <sup>string</sup> language )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the language to return the title and description in for the items on a pending UGC Query.</li>
+		<li>This must be in the format of the <a href="https://partner.steamgames.com/doc/store/localization#supported_languages" target="_blank">API language code</a>.</li>
+		<li>If this is not set then "english" is assumed.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetMatchAnyTag" target="_blank">
+			<span class="gdscript">
+				setMatchAnyTag( <sup>int</sup> query_handle, <sup>bool</sup> match_any_tag )
+			</span>
+			<span class="c-sharp">
+				setMatchAnyTag( <sup>uint64_t</sup> query_handle, <sup>bool</sup> match_any_tag )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether workshop items will be returned if they have one or more matching tag, or if all tags need to match on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This can only be used with <strong>createQueryAllUGCRequest</strong>.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetRankedByTrendDays" target="_blank">
+			<span class="gdscript">
+				setRankedByTrendDays( <sup>int</sup> query_handle, <sup>int</sup> days )
+			</span>
+			<span class="c-sharp">
+				setRankedByTrendDays( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> days )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether the order of the results will be updated based on the rank of items over a number of days on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This can only be used with <strong>createQueryAllUGCRequest</strong>.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnAdditionalPreviews" target="_blank">
+			<span class="gdscript">
+				setReturnAdditionalPreviews( <sup>int</sup> query_handle, <sup>bool</sup> return_additional_previews )
+			</span>
+			<span class="c-sharp">
+				setReturnAdditionalPreviews( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_additional_previews )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to return any additional images/videos attached to the items on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnChildren" target="_blank">
+			<span class="gdscript">
+				setReturnChildren( <sup>int</sup> query_handle, <sup>bool</sup> return_children )
+			</span>
+			<span class="c-sharp">
+				setReturnChildren( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_children )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to return the IDs of the child items of the items on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnKeyValueTags" target="_blank">
+			<span class="gdscript">
+				setReturnKeyValueTags( <sup>int</sup> query_handle, <sup>bool</sup> return_key_value_tags )
+			</span>
+			<span class="c-sharp">
+				setReturnKeyValueTags( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_key_value_tags )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to return any key-value tags for the items on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnLongDescription" target="_blank">
+			<span class="gdscript">
+				setReturnLongDescription( <sup>int</sup> query_handle, <sup>bool</sup> return_long_description )
+			</span>
+			<span class="c-sharp">
+				setReturnLongDescription( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_long_description )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to return the full description for the items on a pending UGC Query.</li>
+		<li>If you don't set this then you only receive the summary which is the description truncated at 255 bytes.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnMetadata" target="_blank">
+			<span class="gdscript">
+				setReturnMetadata( <sup>int</sup> query_handle, <sup>bool</sup> return_metadata )
+			</span>
+			<span class="c-sharp">
+				setReturnMetadata( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_metadata )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to return the developer specified metadata for the items on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnOnlyIDs" target="_blank">
+			<span class="gdscript">
+				setReturnOnlyIDs( <sup>int</sup> query_handle, <sup>bool</sup> return_only_ids )
+			</span>
+			<span class="c-sharp">
+				setReturnOnlyIDs( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_only_ids )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to only return IDs instead of all the details on a pending UGC Query.</li>
+		<li>This is useful for when you don't need all the information (e.g. you just want to get the IDs of the items a user has in their favorites list.)</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnPlaytimeStats" target="_blank">
+			<span class="gdscript">
+				setReturnPlaytimeStats( <sup>int</sup> query_handle, <sup>int</sup> days )
+			</span>
+			<span class="c-sharp">
+				setReturnPlaytimeStats( <sup>uint64_t</sup> query_handle, <sup>uint32</sup> days )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to return the the playtime stats on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetReturnTotalOnly" target="_blank">
+			<span class="gdscript">
+				setReturnTotalOnly( <sup>int</sup> query_handle, <sup>bool</sup> return_total_only )
+			</span>
+			<span class="c-sharp">
+				setReturnTotalOnly( <sup>uint64_t</sup> query_handle, <sup>bool</sup> return_total_only )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets whether to only return the the total number of matching items on a pending UGC Query.</li>
+		<li>The actual items will not be returned when <strong><em>ugc_query_completed</em></strong> is called.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetSearchText" target="_blank">
+			<span class="gdscript">
+				setSearchText( <sup>int</sup> query_handle, <sup>string</sup> search_text )
+			</span>
+			<span class="c-sharp">
+				setSearchText( <sup>uint64_t</sup> query_handle, <sup>string</sup> search_text )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets a string to that items need to match in either the title or the description on a pending UGC Query.</li>
+		<li><strong>Note:</strong> This can only be used with <strong>createQueryAllUGCRequest</strong>.</li>
+		<li><strong>Note:</strong> This must be set before you send a UGC Query handle using <strong>sendQueryUGCRequest</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SetUserItemVote" target="_blank">
+			<span class="gdscript">
+				setUserItemVote( <sup>int</sup> published_file_id, <sup>bool</sup> vote_up )
+			</span>
+			<span class="c-sharp">
+				setUserItemVote( <sup>uint64_t</sup> published_file_id, <sup>bool</sup> vote_up )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Allows the user to rate a workshop item up or down.</li>
+		<li>Triggers a <strong><em>set_user_item_vote</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#ShowWorkshopEULA" target="_blank">
+			showWorkshopEULA()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Show the app's latest Workshop EULA to the user in an overlay window, where they can accept it or not.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#StartItemUpdate" target="_blank">
+			<span class="gdscript">
+				startItemUpdate( <sup>int</sup> app_id, <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				startItemUpdate( <sup>uint32_t</sup> app_id, <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Starts the item update process.</li>
+		<li>This gets you a handle that you can use to modify the item before finally sending off the update to the server with <strong>submitItemUpdate</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#StartPlaytimeTracking" target="_blank">
+			startPlaytimeTracking( <sup>array</sup> published_file_ids )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Start tracking playtime on a set of workshop items.</li>
+		<li>When your app shuts down, playtime tracking will automatically stop.</li>
+		<li>Triggers a <strong><em>start_playtime_tracking</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#StopPlaytimeTracking" target="_blank">
+			stopPlaytimeTracking( <sup>array</sup> published_file_ids )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Stop tracking playtime on a set of workshop items.</li>
+		<li>When your app shuts down, playtime tracking will automatically stop.</li>
+		<li>Triggers a <strong><em>stop_playtime_tracking</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#StopPlaytimeTrackingForAllItems" target="_blank">
+			stopPlaytimeTrackingForAllItems()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Stop tracking playtime of all workshop items.</li>
+		<li>When your app shuts down, playtime tracking will automatically stop.</li>
+		<li>Triggers a <strong><em>stop_playtime_tracking</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SubmitItemUpdate" target="_blank">
+			<span class="gdscript">
+				submitItemUpdate( <sup>int</sup> update_handle, <sup>string</sup> change_note )
+			</span>
+			<span class="c-sharp">
+				submitItemUpdate( <sup>uint64_t</sup> update_handle, <sup>string</sup> change_note )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Uploads the changes made to an item to the Steam Workshop.</li>
+		<li>You can track the progress of an item update with <strong>getItemUpdateProgress</strong>.</li>
+		<li>Triggers a <strong><em>item_updated</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SubscribeItem" target="_blank">
+			<span class="gdscript">
+				subscribeItem( <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				subscribeItem( <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Subscribe to a workshop item. It will be downloaded and installed as soon as possible.</li>
+		<li>Triggers a <strong><em>subscribe_item</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#SuspendDownloads" target="_blank">
+			suspendDownloads( <sup>bool</sup> suspend )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Suspends and resumes all workshop downloads.</li>
+		<li>If you call this with <strong>suspend</strong> set to true then downloads will be suspended until you resume them by setting <strong>suspend</strong> to false or when the game ends.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#UnsubscribeItem" target="_blank">
+			<span class="gdscript">
+				unsubscribeItem( <sup>int</sup> published_file_id )
+			</span>
+			<span class="c-sharp">
+				unsubscribeItem( <sup>uint64_t</sup> published_file_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Unsubscribe from a workshop item. This will result in the item being removed after the game quits.</li>
+		<li>Triggers a <strong><em>unsubscribe_item</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#UpdateItemPreviewFile" target="_blank">
+			<span class="gdscript">
+				updateItemPreviewFile( <sup>int</sup> update_handle, <sup>int</sup> index, <sup>string</sup> preview_file )
+			</span>
+			<span class="c-sharp">
+				updateItemPreviewFile( <sup>uint64_t</sup> update_handle, <sup>uint32</sup> index, <sup>string</sup> preview_file )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Updates an additional video preview from YouTube for the item.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUGC#UpdateItemPreviewVideo" target="_blank">
+			<span class="gdscript">
+				updateItemPreviewVideo( <sup>int</sup> update_handle, <sup>int</sup> index, <sup>string</sup> video_id )
+			</span>
+			<span class="c-sharp">
+				updateItemPreviewVideo( <sup>uint64_t</sup> update_handle, <sup>uint32</sup> index, <sup>string</sup> video_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Updates an additional video preview from YouTube for the item.</li>
+		<li><strong>Note:</strong> This must be set before you submit the UGC update handle using <strong>submitItemUpdate</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

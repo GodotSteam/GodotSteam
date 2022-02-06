@@ -1,0 +1,564 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | Networking Utilities</h1>
+	</header>
+	<p>The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<p>The <strong>identity_reference</strong> arguments refer to identities created with the Networking Type functions.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#CheckPingDataUpToDate" target="_blank">
+			checkPingDataUpToDate( <sup>float</sup> max_age_in_seconds )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Check if the ping data of sufficient recency is available, and if it's too old, start refreshing it.</li>
+		<li>Please only call this function when you really do need to force an immediate refresh of the data. (For example, in response to a specific user input to refresh this information.) Don't call it "just in case", before every connection, etc. That will cause extra traffic to be sent for no benefit. The library will automatically refresh the information as needed.</li>
+		<li>Returns a <strong>bool</strong>. <em>True</em> if sufficiently recent data is already available. <em>False</em> if sufficiently recent data is not available. In this case, ping measurement is initiated, if it is not already active. (You cannot restart a measurement already in progress.)</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#ConvertPingLocationToString" target="_blank">
+			<span class="gdscript">
+				convertPingLocationToString( <sup>int</sup> location )
+			</span>
+			<span class="c-sharp">
+				convertPingLocationToString( <sup>uint8</sup> location )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Convert a ping location into a text format suitable for sending over the wire. The format is a compact and human readable. However, it is subject to change so please do not parse it yourself.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeBetweenTwoLocations" target="_blank">
+			<span class="gdscript">
+				estimatePingTimeBetweenTwoLocations( <sup>int</sup> location1, <sup>int</sup> location2 )
+			</span>
+			<span class="c-sharp">
+				estimatePingTimeBetweenTwoLocations( <sup>uint8</sup> location1, <sup>uint8</sup> location2 )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Estimate the round-trip latency between two arbitrary locations, in milliseconds. This is a conservative estimate, based on routing through the relay network. For most basic relayed connections, this ping time will be pretty accurate, since it will be based on the route likely to be actually used.</li>
+		<li>If a direct IP route is used (perhaps via NAT traversal), then the route will be different, and the ping time might be better. Or it might actually be a bit worse! Standard IP routing is frequently suboptimal! But even in this case, the estimate obtained using this method is a reasonable upper bound on the ping time. (Also it has the advantage of returning immediately and not sending any packets.)</li>
+		<li>In a few cases we might not able to estimate the route. In this case a negative value is returned. k_nSteamNetworkingPing_Failed means the reason was because of some networking difficulty. (Failure to ping, etc) k_nSteamNetworkingPing_Unknown is returned if we cannot currently answer the question for some other reason.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeFromLocalHost" target="_blank">
+			<span class="gdscript">
+				estimatePingTimeFromLocalHost( <sup>int</sup> location )
+			</span>
+			<span class="c-sharp">
+				estimatePingTimeFromLocalHost( <sup>uint8</sup> location )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Same as <strong>estimatePingTimeBetweenTwoLocations</strong>, but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.</li>
+		<li>In rare cases this might return a slightly different estimate than combining <strong>getLocalPingLocation</strong> with <strong>estimatePingTimeBetweenTwoLocations</strong>. That's because this function uses a slightly more complete set of information about what route would be taken.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetConfigValue" target="_blank">
+			<span class="gdscript">
+				getConfigValue( <sup>int</sup> config_value, <sup>int</sup> scope_type, <sup>int</sup> connection_handle )
+			</span>
+			<span class="c-sharp">
+				getConfigValue( <sup>int</sup> config_value, <sup>int</sup> scope_type, <sup>uint32_t</sup> connection_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get a configuration value.</li>
+		<li>For values to pass to <strong>config_value</strong>, <a href="https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetworkingConfigValue" target="_blank">check the SDK's listing.</a></li>
+		<li>For values to pass to <strong>scope_type</strong>, <a href="https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetworkingConfigScope" target="_blank">check the SDK's listing.</a></li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>result (int), which may be:
+					<ul class="inner">
+						<li>-1 - bad value</li>
+						<li>-2 - bad connection handle</li>
+						<li>-3 - buffer too small</li>
+						<li>1 - OK</li>
+						<li>2 - OK, inherited</li>
+					</ul>
+				</li>
+				<li>type (int)</li>
+				<li>value (PoolByteArray)</li>
+				<li>buffer (int)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetConfigValueInfo" target="_blank">
+			getConfigValueInfo( <sup>int</sup> config_value )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns info about a configuration value.</li>
+		<li>For values to pass to <strong>config_value</strong>, <a href="https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetworkingConfigValue" target="_blank">check the SDK's listing.</a></li>
+		<li><strong>next_value</strong> can be used to iterate through all of the known configuration values.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>type (int)</li>
+				<li>scope (int)</li>
+				<li>next_value (int)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetDirectPingToPOP" target="_blank">
+			<span class="gdscript">
+				getDirectPingToPOP( <sup>int</sup> pop_id )
+			</span>
+			<span class="c-sharp">
+				getDirectPingToPOP( <sup>uint32</sup> pop_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get *direct* ping time to the relays at the point of presence.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetLocalPingLocation" target="_blank">
+			getLocalPingLocation()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Return location info for the current host. Returns the approximate age of the data, in seconds, or -1 if no data is available.</li>
+		<li>It takes a few seconds to initialize access to the relay network. If you call this very soon after calling <strong>initializeRelayNetworkAccess</strong>, the data may not be available yet.</li>
+		<li>This always return the most up-to-date information we have available right now, even if we are in the middle of re-calculating ping times.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>location (int)</li>
+				<li>ping (float)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetLocalTimestamp" target="_blank">
+			getLocalTimestamp()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>A general purpose high resolution local timer with the following properties:
+			<ul class="inner">
+				<li>Monotonicity is guaranteed.</li>
+				<li>The initial value will be at least 24*3600*30*1e6, i.e. about 30 days worth of microseconds. In this way, the timestamp value of 0 will always be at least "30 days ago". Also, negative numbers will never be returned.</li>
+				<li>Wraparound / overflow is not a practical concern.</li>
+			</ul>
+		</li>
+		<li>If you are running under the debugger and stop the process, the clock might not advance the full wall clock time that has elapsed between calls. If the process is not blocked from normal operation, the timestamp values will track wall clock time, even if you don't call the function frequently.</li>
+		<li>The value is only meaningful for this run of the process. Don't compare it to values obtained on another computer, or other runs of the same process.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetPingToDataCenter" target="_blank">
+			<span class="gdscript">
+				getPingToDataCenter( <sup>int</sup> pop_id )
+			</span>
+			<span class="c-sharp">
+				getPingToDataCenter( <sup>uint32</sup> pop_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fetch ping time of best available relayed route from this host to the specified data center.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>pop_relay (int)</li>
+					<li>ping</li>
+				</span>
+				<span class="c-sharp">
+					<li>pop_relay (uint32)</li>
+					<li>ping</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetPOPCount" target="_blank">
+			getPOPCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get number of network points of presence in the config.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetPOPList" target="_blank">
+			getPOPList()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get list of all POP IDs. Returns the number of entries that were filled into your list.</li>
+		<li>Returns an <strong>array</strong> of POP IDs.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetRelayNetworkStatus" target="_blank">
+			getRelayNetworkStatus()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fetch current status of the relay network.</li>
+		<li><strong><em>relay_network_status</em></strong> is also a callback. It will be triggered on both the user and gameserver interfaces any time the status changes, or ping measurement starts or stops.
+		<li>Returns an <strong>int</strong> which can be:
+			<ul class="inner">
+				<li>-102 - cannot try</li>
+				<li>-101 - failed</li>
+				<li>-100 - previously worked, now there is a problem</li>
+				<li>-10 - retrying</li>
+				<li>1 - never tried</li>
+				<li>2 - waiting</li>
+				<li>3 - attempting</li>
+				<li>100 - current</li>
+				<li>0 - unknown</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#InitRelayNetworkAccess" target="_blank">
+			initRelayNetworkAccess()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>If you know that you are going to be using the relay network (for example, because you anticipate making P2P connections), call this to initialize the relay network. If you do not call this, the initialization will be delayed until the first time you use a feature that requires access to the relay network, which will delay that first access.</li>
+		<li>You can also call this to force a retry if the previous attempt has failed. Performing any action that requires access to the relay network will also trigger a retry, and so calling this function is never strictly necessary, but it can be useful to call it a program launch time, if access to the relay network is anticipated. Use <strong>getRelayNetworkStatus</strong> or listen for <strong><em>relay_network_status</em></strong> callbacks to know when initialization has completed. Typically initialization completes in a few seconds.</li>
+		<li><strong>Note:</strong> dedicated servers hosted in known data centers do <strong>not</strong> need to call this, since they do not make routing decisions. However, if the dedicated server will be using P2P functionality, it will act as a "client" and this should be called.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#ParsePingLocationString" target="_blank">
+			parsePingLocationString( <sup>string</sup> location_string )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Parse back SteamNetworkPingLocation_t string. Returns false if we couldn't understand the string.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>success (bool)</li>
+					<li>ping_location (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (bool)</li>
+					<li>ping_location (uint8)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#SetConfigValue" target="_blank">
+			<span class="gdscript">
+				setConnectionConfigValueFloat( <sup>int</sup> connection, <sup>int</sup> config, <sup>float</sup> value )
+			</span>
+			<span class="c-sharp">
+				setConnectionConfigValueFloat( <sup>uint32</sup> connection, <sup>int</sup> config, <sup>float</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#SetConfigValue" target="_blank">
+			<span class="gdscript">
+				setConnectionConfigValueInt32( <sup>int</sup> connection, <sup>int</sup> config, <sup>int</sup> value )
+			</span>
+			<span class="c-sharp">
+				setConnectionConfigValueInt32( <sup>uint32</sup> connection, <sup>int</sup> config, <sup>int32</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#SetConfigValue" target="_blank">
+			<span class="gdscript">
+				setConnectionConfigValueString( <sup>int</sup> connection, <sup>int</sup> config, <sup>string</sup> value )
+			</span>
+			<span class="c-sharp">
+				setConnectionConfigValueString( <sup>uint32</sup> connection, <sup>int</sup> config, <sup>string</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#SetConfigValue" target="_blank">
+			setConfigValue( <sup>int</sup> setting, <sup>int</sup> scope_type, <sup>int</sup> data_type )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#shortcuts" target="_blank">
+			setGlobalConfigValueFloat( <sup>int</sup> config, <sup>float</sup> value )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#shortcuts" target="_blank">
+			<span class="gdscript">
+				setGlobalConfigValueInt32( <sup>int</sup> config, <sup>int</sup> value )
+			</span>
+			<span class="c-sharp">
+				setGlobalConfigValueInt32( <sup>int</sup> config, <sup>int32</sup> value )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#shortcuts" target="_blank">
+			setGlobalConfigValueString( <sup>int</sup> config, <sup>string</sup> value )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set a configuration value.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

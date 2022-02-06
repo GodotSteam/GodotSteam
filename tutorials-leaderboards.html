@@ -5,7 +5,7 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -24,36 +24,35 @@
 					<header id="header">
 						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
 					</header>
-					<!-- Section -->
 					<section>
-						<header class="main">
-							<h1>Tutorials - Leaderboards</h1>
-						</header>
-						<p>This tutorial will cover setting up leaderboards for your games.  <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">You can check out the example project on Github to see a somewhat working version.</a>
-						<hr />
-						<header class="major">
-							<h3>Set Up</h3>
-						</header>
-						<p>First, let's get our signals set up.</p>
+	<header class="main">
+		<h1>Tutorials - Leaderboards</h1>
+	</header>
+	<p>This tutorial will cover setting up leaderboards for your games.  <a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">You can check out the example project on Github to see a somewhat working version.</a>
+	<hr />
+	<header class="major">
+		<h3>Set Up</h3>
+	</header>
+	<p>First, let's get our signals set up.</p>
 <pre><code>
 Steam.connect("leaderboard_find_result", self, "_leaderboard_Find_Result")
 Steam.connect("leaderboard_score_uploaded", self, "_leaderboard_Score_Uploaded")
 Steam.connect("leaderboard_scores_downloaded", self, "_leaderboard_Scores_Downloaded")
 </code></pre>
-						<p>We'll go over each signal and related function in order.  First, you'll need to pass your leaderboard's Steamworks back-end name to the <strong>findLeaderboard</strong> function like so:</p>
+	<p>We'll go over each signal and related function in order.  First, you'll need to pass your leaderboard's Steamworks back-end name to the <strong>findLeaderboard</strong> function like so:</p>
 <pre><code>
 Steam.findLeaderboard( your_leaderboard_name )
 </code></pre>
-						<p>Once Steam finds your leaderboard it will pass back the handle to the <strong>leaderboard_find_result</strong> callback.  The <strong>_leaderboard_Find_Result</strong> function that it is connected to it should look something like this:</p>
+	<p>Once Steam finds your leaderboard it will pass back the handle to the <strong>leaderboard_find_result</strong> callback.  The <strong>_leaderboard_Find_Result</strong> function that it is connected to it should look something like this:</p>
 <pre><code>
 func _leaderboard_Find_Result(handle: int, found: int) -> void:
 	if found == 1:
 		LEADERBOARD_HANDLE = handle
 		print("Leaderboard handle found: "+str(LEADERBOARD_HANDLE))
 	else:
-		print("No handle was found")
+	print("No handle was found")
 </code></pre>
-						<p>Once you have this handle you can use all the additional functions.  <strong>Please note</strong> you do not need to save the leaderboard handle since it is stored internally.  However, you will only be able to work with one leaderboard at a time unless you store them locally in a variable. I would keep a dictioary of handles locally like:</p>
+	<p>Once you have this handle you can use all the additional functions.  <strong>Please note</strong> you do not need to save the leaderboard handle since it is stored internally.  However, you will only be able to work with one leaderboard at a time unless you store them locally in a variable. I would keep a dictioary of handles locally like:</p>
 <pre><code>
 var LEADERBOARD_HANDLES: Dictionary = {
 	"top_score": handle1,
@@ -61,17 +60,17 @@ var LEADERBOARD_HANDLES: Dictionary = {
 	"most_games": handlde3
 }
 </code></pre>
-						<p>This way you can call whatever handle you need when updating leaderboards quickly. Otherwise you have to query each leaderboard again with <strong>findLeaderboard</strong> then wait for the callback then upload the new score.  If you aren't updating leaderboards frequently or that many of them, then using the internally stored handle will probably work fine.</p>
-						<hr />
-						<header class="major">
-							<h3>Uploading Scores</h3>
-						</header>
-						<p>Before we can download scores, we need to upload them.  The function itself is pretty simple:</p>
+	<p>This way you can call whatever handle you need when updating leaderboards quickly. Otherwise you have to query each leaderboard again with <strong>findLeaderboard</strong> then wait for the callback then upload the new score.  If you aren't updating leaderboards frequently or that many of them, then using the internally stored handle will probably work fine.</p>
+	<hr />
+	<header class="major">
+		<h3>Uploading Scores</h3>
+	</header>
+	<p>Before we can download scores, we need to upload them.  The function itself is pretty simple:</p>
 <pre><code>
 Steam.uploadLeaderboardScore( score, keep_best, details, handle )
 </code></pre>
-						<p>The first argument is, obviously, the score. The second is if you want the score to update regardless of whether it is better than the current score for the user. The third are details which must be integers; they essentially can be anything but <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UploadLeaderboardScore" target="_blank">here is what Valve says about it</a>.  The fourth is the leaderboard handle we are updating.  You do not have to pass the handle though, if you want to use the internally stored one.</p>
-						<p>Once you pass a score to Steam, you should receive a callback from <strong>leaderboard_score_uploaded</strong>.  This will trigger our <strong>_leaderboard_Score_Uploaded</strong> function:</p>
+	<p>The first argument is, obviously, the score. The second is if you want the score to update regardless of whether it is better than the current score for the user. The third are details which must be integers; they essentially can be anything but <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UploadLeaderboardScore" target="_blank">here is what Valve says about it</a>.  The fourth is the leaderboard handle we are updating.  You do not have to pass the handle though, if you want to use the internally stored one.</p>
+	<p>Once you pass a score to Steam, you should receive a callback from <strong>leaderboard_score_uploaded</strong>.  This will trigger our <strong>_leaderboard_Score_Uploaded</strong> function:</p>
 <pre><code>
 func _leaderboard_Score_Uploaded(success: int, score: int, score_changed: int, new_rank: int, prev_rank:int) -> void:
 	if success == 1:
@@ -80,39 +79,39 @@ func _leaderboard_Score_Uploaded(success: int, score: int, score_changed: int, n
 	else:
 		print("Failed to upload scores!")
 </code></pre>		
-						<p>For the most part you are just looking for a success of 1 to tell that it worked.  However, you may with to use the additional variables passed back by the signal for logic in your game:
-							<ul>
-								<li><strong>score:</strong> the new score as it stands</li>
-								<li><strong>score_changed:</strong> if the score was changed (0 if false, 1 if true)</li>
-								<li><strong>new_rank:</strong> the new global rank of this player</li>
-								<li><strong>prev_rank:</strong> the previous rank of this player</li>
-							</ul>
-						</p>
-						<hr />
-						<header class="major">
-							<h3>Downloading Scores</h3>
-						</header>
-						<p>Naturally you'll want to display leaderboard scores to the player.  But before we pull any leaderboard entries, we need to set the maximum amount of details each one contains by setting the <strong>setLeaderboardDetailsMax</strong> function up:</p>
+	<p>For the most part you are just looking for a success of 1 to tell that it worked.  However, you may with to use the additional variables passed back by the signal for logic in your game:
+		<ul>
+			<li><strong>score:</strong> the new score as it stands</li>
+			<li><strong>score_changed:</strong> if the score was changed (0 if false, 1 if true)</li>
+			<li><strong>new_rank:</strong> the new global rank of this player</li>
+			<li><strong>prev_rank:</strong> the previous rank of this player</li>
+		</ul>
+	</p>
+	<hr />
+	<header class="major">
+		<h3>Downloading Scores</h3>
+	</header>
+	<p>Naturally you'll want to display leaderboard scores to the player.  But before we pull any leaderboard entries, we need to set the maximum amount of details each one contains by setting the <strong>setLeaderboardDetailsMax</strong> function up:</p>
 <pre><code>
 var DETAILS_MAX: int = Steam.setLeaderboardDetailsMax( value )
 print("Max details: "+str(DETAILS_MAX)
 </code></pre>
-						<p>By default the value is set to 0 but you will want to change it to match the number of details you upload with scores from the previous section. If you do not save any details with the scores you can safely ignore this part and move on to just requesting leaderboard entries.</p>
-						<p>In most cases you'll want to use <strong>downloadLeaderboardEntries</strong>, but you can also use <strong>downloadLeaderboardEntriesForUsers</strong> by passing an array of users' Steam IDs to it.  Both will respond with the same callback, but <strong>downloadLeaderboardEntriesForUsers</strong> does not allow as much control over what you can request:</p>
+	<p>By default the value is set to 0 but you will want to change it to match the number of details you upload with scores from the previous section. If you do not save any details with the scores you can safely ignore this part and move on to just requesting leaderboard entries.</p>
+	<p>In most cases you'll want to use <strong>downloadLeaderboardEntries</strong>, but you can also use <strong>downloadLeaderboardEntriesForUsers</strong> by passing an array of users' Steam IDs to it.  Both will respond with the same callback, but <strong>downloadLeaderboardEntriesForUsers</strong> does not allow as much control over what you can request:</p>
 <pre><code>
 Steam.downloadLeaderboardEntries( 1, 10, 0, leaderboard_handle )
 
 Steam.downloadLeaderboardEntriesForUsers( user_array, leaderboard_handle )
 </code></pre>
-						<p>Just like uploading, downloading scores does not require a leaderboard handle to be included if you are using the internally stored one.  You will noticed, as I mentioned above, that <strong>downloadLeaderboardEntriesForUsers</strong> only takes an array of users' Steam IDs as it's other argument whereas <strong>downloadLeaderboardEntries</strong> has quite a few others; which we will cover right now.</p>
-						<p>The first argument the index of entries you are starting with; this is usually 1 for your first request. The second argument is the last index to retrieve; there isn't a listed cap to this number but make it something you can display easily like 10 or so.  The third argument is the type of data request; <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#ELeaderboardDataRequest" target="_blank">you can read more details about it in the SDK documentation</a>. For a quick overview:
-							<ul>
-								<li>0 - Used for a sequential range by leaderboard rank.</li>
-								<li>1 - Used to get entries relative to the user's entry. You may want to use negatives for the start to get entries before the user's.</li>
-								<li>2 - Used to get all entries for friends for the current user. Start and end arguments are ignored.</li>
-								<li>3 - Used internally by Steam, <strong>do not use this</strong>.</li>
-							</ul>
-						<p>After you request leaderboard entries, you should receive a <strong>leaderboard_scores_downloaded</strong> callback which will trigger our <strong>_leaderboard_Scores_Downloaded</strong> function.  That function should look similar to this:</p>
+	<p>Just like uploading, downloading scores does not require a leaderboard handle to be included if you are using the internally stored one.  You will noticed, as I mentioned above, that <strong>downloadLeaderboardEntriesForUsers</strong> only takes an array of users' Steam IDs as it's other argument whereas <strong>downloadLeaderboardEntries</strong> has quite a few others; which we will cover right now.</p>
+	<p>The first argument the index of entries you are starting with; this is usually 1 for your first request. The second argument is the last index to retrieve; there isn't a listed cap to this number but make it something you can display easily like 10 or so.  The third argument is the type of data request; <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#ELeaderboardDataRequest" target="_blank">you can read more details about it in the SDK documentation</a>. For a quick overview:
+		<ul>
+			<li>0 - Used for a sequential range by leaderboard rank.</li>
+			<li>1 - Used to get entries relative to the user's entry. You may want to use negatives for the start to get entries before the user's.</li>
+			<li>2 - Used to get all entries for friends for the current user. Start and end arguments are ignored.</li>
+			<li>3 - Used internally by Steam, <strong>do not use this</strong>.</li>
+		</ul>
+	<p>After you request leaderboard entries, you should receive a <strong>leaderboard_scores_downloaded</strong> callback which will trigger our <strong>_leaderboard_Scores_Downloaded</strong> function.  That function should look similar to this:</p>
 <pre><code>
 func _leaderboard_Scores_Downloaded(message: string, result: Array) -> void:
 	print("Scores downloaded message: "+str(message)
@@ -121,140 +120,174 @@ func _leaderboard_Scores_Downloaded(message: string, result: Array) -> void:
 	for R in result:
 		# Use each entry that is returned
 </code></pre>
-						<p>The message is just a basic message to inform you to the status the download; whether successful or not and why. The second piece sent back are the results as an array. Each entry in the array is actually a dictionary like so:
-							<ul>
-								<li><strong>score:</strong> this user's score</li>
-								<li><strong>steamID:</strong> this user's Steam ID; you can use this to get their avatar, name, etc.</li>
-								<li><strong>global_rank:</strong> obviously their global ranking for this leaderboard</li>
-								<li><strong>ugc_handle:</strong> handle for any UGC that is attached to this entry</li>
-								<li><strong>details:</strong> any details you stored with this entry for later use</li>
-							</ul>
-						</p>
-						<hr />
-						<p>I will add more to this tutorial at a later date with other functions but this should cover all the basics for working with leaderboards.</p>
-					</section>
+	<p>The message is just a basic message to inform you to the status the download; whether successful or not and why. The second piece sent back are the results as an array. Each entry in the array is actually a dictionary like so:
+		<ul>
+			<li><strong>score:</strong> this user's score</li>
+			<li><strong>steamID:</strong> this user's Steam ID; you can use this to get their avatar, name, etc.</li>
+			<li><strong>global_rank:</strong> obviously their global ranking for this leaderboard</li>
+			<li><strong>ugc_handle:</strong> handle for any UGC that is attached to this entry</li>
+			<li><strong>details:</strong> any details you stored with this entry for later use</li>
+		</ul>
+	</p>
+	<hr />
+	<p>I will add more to this tutorial at a later date with other functions but this should cover all the basics for working with leaderboards.</p>
+	<p><a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">To see this tutorial in action, check out the exaple branch on the GodotSteam Github repo.</a> There you can get a full view of the code used which can serve as a starting point for you to branch out from.</p>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
 				</div>
 			</div>
 			<!-- Sidebar -->
 			<div id="sidebar">
-				<div class="inner">
-					<!-- Menu -->
-					<nav id="menu">
-						<header class="major">
-							<h2>Menu</h2>
-						</header>
-						<ul>
-							<li><a href="index.html">Introduction</a></li>
-							<li>
-								<span class="opener">How-To's</span>
-								<ul>
-									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
-									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Functions (Module)</span>
-								<ul>
-									<li><a href="functions-module.html">All</a></li>
-									<li><a href="functions-module.html#core">Core</a></li>
-									<li><a href="functions-module.html#apps">Apps</a></li>
-									<li><a href="functions-module.html#friends">Friends</a></li>
-									<li><a href="functions-module.html#game-search">Game Search</a></li>
-									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
-									<li><a href="functions-module.html#http">HTTP</a></li>
-									<li><a href="functions-module.html#input">Input</a></li>
-									<li><a href="functions-module.html#inventory">Inventory</a></li>
-									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
-									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
-									<li><a href="functions-module.html#music">Music</a></li>
-									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
-									<li><a href="functions-module.html#networking">Networking</a></li>
-									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
-									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
-									<li><a href="functions-module.html#parties">Parties</a></li>
-									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
-									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
-									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
-									<li><a href="functions-module.html#server">Server</a></li>
-									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-module.html#ugc">UGC</a></li>
-									<li><a href="functions-module.html#users">Users</a></li>
-									<li><a href="functions-module.html#user-stats">User Stats</a></li>
-									<li><a href="functions-module.html#utils">Utils</a></li>
-									<li><a href="functions-module.html#video">Video</a></li>
-								</ul>
-							</li>
-							<li><a href="signals-modules.html">Signals</a></li>
-							<li>
-								<span class="opener">Godot 3.x Tutorials</span>
-								<ul>
-									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
-									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
-									<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
-									<li><a href="tutorials-avatars.html">Avatars</a></li>
-									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
-									<li><a href="tutorials-authentication.html">Authentication</a></li>
-									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
-									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
-									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
-									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
-									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
-									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
-								</ul>
-							</li>
-							<li><a href="games.html">Games Using GodotSteam</a></li>
-							<li><a href="todo.html">To-Do</a></li>
-							<li>
-								<span class="opener">Change Log</span>
-								<ul>
-									<li><a href="changelog-godot4.html">Godot 4.x</a></li>
-									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
-									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
-									<li><a href="changelog-gdnative.html">GDNative</a></li>
-								</ul>
-							</li>
-							<li><a href="contributors.html">Contributors</a></li>
-						</ul>
-					</nav>
-					<section>
-						<header class="major">
-							<h2>Stuck? Need Help?</h2>
-						</header>
-						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
-						<ul class="actions stacked">
-							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
-							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
-						</ul>
-					</section>
-					<section>
-						<header class="major">
-							<h2>Donate</h2>
-						</header>
-						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
-						<ul class="actions stacked">
-							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
-							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
-						</ul>
-					</section>
-					<footer>
-						<ul class="actions stacked">
-							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
-							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
-							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
-							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
-						</ul>
-					</footer>
-					<footer id="footer" class="copyright">
-						2021 &copy; GP Garcia & CoaguCo Industries
-					</footer>
-				</div>
-			</div>
-		</div>
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
 		<!-- Scripts -->
 		<script src="js/jquery.min.js"></script>
 		<script src="js/browser.min.js"></script>
 		<script src="js/breakpoints.min.js"></script>
 		<script src="js/util.js"></script>
 		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
 	</body>
 </html>

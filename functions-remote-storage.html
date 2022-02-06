@@ -1,0 +1,759 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | Remote Storage</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#BeginFileWriteBatch" target="_blank">
+			beginFileWriteBatch()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Use this along with <strong>endFileWriteBatch</strong> to wrap a set of local file writes/deletes that should be considered part of one single state change. For example, if saving game progress requires updating both savegame1.dat and maxprogress.dat, wrap those operations with calls to <strong>beginFileWriteBatch</strong> and <strong>endFileWriteBatch</strong>.</li>
+		<li>These functions provide a hint to Steam which will help it manage the app's Cloud files. Using these functions is optional, however it will provide better reliability.</li>
+		<li>Note that the functions may be used whether the writes are done using the Remote Storage API, or done directly to local disk (where AutoCloud is used).</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#EndFileWriteBatch" target="_blank">
+			endFileWriteBatch()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Use this along with <strong>beginFileWriteBatch</strong> - see that documentation for more details.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileDelete" target="_blank">
+			fileDelete( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Deletes a file from the local disk, and propagates that delete to the cloud.</li>
+		<li>This is meant to be used when a user actively deletes a file. Use <strong>fileForget</strong> if you want to remove a file from the Steam Cloud but retain it on the users local disk.</li>
+		<li>When a file has been deleted it can be re-written with <strong>fileWrite</strong> to reupload it to the Steam Cloud.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileExists" target="_blank">
+			fileExists( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Check if a remote file exists.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileForget" target="_blank">
+			fileForget( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Deletes the file from remote storage, but leaves it on the local disk and remains accessible from the API.</li>
+		<li>When you are out of Cloud space, this can be used to allow calls to <strong>fileWrite</strong> to keep working without needing to make the user delete files.</li>
+		<li>How you decide which files to forget are up to you. It could be a simple Least Recently Used (LRU) queue or something more complicated.</li>
+		<li>Requiring the user to manage their Cloud-ized files for a game, while is possible to do, it is never recommended. For instance, "Which file would you like to delete so that you may store this new one?" removes a significant advantage of using the Cloud in the first place: its transparency.</li>
+		<li>Once a file has been deleted or forgotten, calling <strong>fileWrite</strong> will resynchronize it in the Cloud. Rewriting a forgotten file is the only way to make it persisted again.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FilePersisted" target="_blank">
+			filePersisted( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if a specific file is persisted in the Steam Cloud.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileRead" target="_blank">
+			<span class="gdscript">
+				fileRead( <sup>string</sup> file, <sup>int</sup> data_to_read )
+			</span>
+			<span class="c-sharp">
+				fileRead( <sup>string</sup> file, <sup>uint32_t</sup> data_to_read )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Opens a binary file, reads the contents of the file into a byte array, and then closes the file.</li>
+		<li><strong>Note:</strong> This is a synchronous call and as such is a will block your calling thread on the disk IO, and will also block the SteamAPI, which can cause other threads in your application to block. To avoid "hitching" due to a busy disk on the client machine using <strong>fileReadAsync</strong>, the asynchronous version of this API is recommended.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>ret (bool)</li>
+				<li>buf (PoolByteArray)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileReadAsync" target="_blank">
+			<span class="gdscript">
+				fileReadAsync( <sup>string</sup> file, <sup>int</sup> offset, <sup>int</sup> data_to_read )
+			</span>
+			<span class="c-sharp">
+				fileReadAsync( <sup>string</sup> file, <sup>uint32</sup> offset, <sup>uint32_t</sup> data_to_read )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Starts an asynchronous read from a file. The offset and amount to read should be valid for the size of the file, as indicated by <strong>getFileSize</strong> or <strong>getFileTimestamp</strong>.</li>
+		<li>Triggers a <strong><em>_file_read_async_complete</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileShare" target="_blank">
+			fileShare( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Share a file.</li>
+		<li>Triggers a <strong><em>file_share_result</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWrite" target="_blank">
+			fileWrite( <sup>string</sup> file, <sup>PoolByteArray</sup> data )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Creates a new file, writes the bytes to the file, and then closes the file. If the target file already exists, it is overwritten.</li>
+		<li><strong>Note:</strong> This is a synchronous call and as such is a will block your calling thread on the disk IO, and will also block the SteamAPI, which can cause other threads in your application to block. To avoid "hitching" due to a busy disk on the client machine using <strong>fileWriteAsync</strong>, the asynchronous version of this API is recommended.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWriteAsync" target="_blank">
+			fileWriteAsync( <sup>string</sup> file, <sup>PoolByteArray</sup> data )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Creates a new file and asynchronously writes the raw byte data to the Steam Cloud, and then closes the file. If the target file already exists, it is overwritten.</li>
+		<li>Triggers a <strong><em>_file_write_async_complete</em></strong> call result.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWriteStreamCancel" target="_blank">
+			<span class="gdscript">
+				fileWriteStreamCancel( <sup>int</sup> write_handle )
+			</span>
+			<span class="c-sharp">
+				fileWriteStreamCancel( <sup>uint64_t</sup> write_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Cancels a file write stream that was started by <strong>fileWriteStreamOpen</strong>.</li>
+		<li>This trashes all of the data written and closes the write stream, but if there was an existing file with this name, it remains untouched.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWriteStreamClose" target="_blank">
+			<span class="gdscript">
+				fileWriteStreamClose( <sup>int</sup> write_handle )
+			</span>
+			<span class="c-sharp">
+				fileWriteStreamClose( <sup>uint64_t</sup> write_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Closes a file write stream that was started by <strong>fileWriteStreamOpen</strong>.</li>
+		<li>This flushes the stream to the disk, overwriting the existing file if there was one.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWriteStreamOpen" target="_blank">
+			fileWriteStreamOpen( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Creates a new file output stream allowing you to stream out data to the Steam Cloud file in chunks. If the target file already exists, it is not overwritten until <strong>fileWriteStreamClose</strong> has been called.</li>
+		<li>To write data out to this stream you can use <strong>fileWriteStreamWriteChunk</strong>, and then to close or cancel you use <strong>fileWriteStreamClose</strong> and <strong>fileWriteStreamCancel</strong> respectively.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWriteStreamWriteChunk" target="_blank">
+			<span class="gdscript">
+				fileWriteStreamWriteChunk( <sup>int</sup> write_handle, <sup>PoolByteArray</sup> data )
+			</span>
+			<span class="c-sharp">
+				fileWriteStreamWriteChunk( <sup>uint64_t</sup> write_handle, <sup>PoolByteArray</sup> data )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Writes a blob of data to the file write stream.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetCachedUGCCount" target="_blank">
+			getCachedUGCCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of cached UGC.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetCachedUGCHandle" target="_blank">
+			<span class="gdscript">
+				getCachedUGCHandle( <sup>int</sup> content )
+			</span>
+			<span class="c-sharp">
+				getCachedUGCHandle( <sup>int32</sup> content )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the cached UGC's handle.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetFileCount" target="_blank">
+			getFileCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the total number of local files synchronized by Steam Cloud.</li>
+		<li>Used for enumeration with <strong>getFileNameAndSize</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetFileNameAndSize" target="_blank">
+			getFileNameAndSize( <sup>int</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the file name and size of a file from the index.</li>
+		<li><strong>Note:</strong> You must call <strong>getFileCount</strong> first to get the number of files.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<span class="gdscript">
+					<li>name (string)</li>
+					<li>size (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>name (string)</li>
+					<li>size (int32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetFileSize" target="_blank">
+			getFileSize( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the size of the current file.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetFileTimestamp" target="_blank">
+			getFileTimestamp( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the timestamp of when the file was uploaded.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetLocalFileChange" target="_blank">
+			getLocalFileChange( <sup>int</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><strong>Note:</strong> only applies to applications flagged as supporting dynamic Steam Cloud sync.</li>
+		<li>After calling <strong>getLocalFileChangeCount</strong>, use this method to iterate over the changes. The changes described have already been made to local files. Your application should take appropriate action to reload state from disk, and possibly notify the user.</li>
+		<li>For example: The local system had been suspended, during which time the user played elsewhere and uploaded changes to the Steam Cloud. On resume, Steam downloads those changes to the local system before resuming the application. The application receives an <strong><em>local_file_changed</em></strong>, and uses <strong>getLocalFileChangeCount</strong> and <strong>getLocalFileChange</strong> to iterate those changes. Depending on the application structure and the nature of the changes, the application could:
+			<ul class="inner">
+				<li>Re-load game progress to resume at exactly the point where the user was when they exited the game on the other device</li>
+				<li>Notify the user of any synchronized changes that don't require reloading</li>
+				<li>Etc.</li>
+			</ul>
+		</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>file (string)</li>
+				<li>change_type (int)</li>
+				<li>path_type (int)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetLocalFileChangeCount" target="_blank">
+			getLocalFileChangeCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><strong>Note:</strong> only applies to applications flagged as supporting dynamic Steam Cloud sync.</li>
+		<li>When your application receives a <strong><em>local_file_changed</em></strong>, use this method to get the number of changes (file updates and file deletes) that have been made. You can then iterate the changes using <strong>getLocalFileChange</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetQuota" target="_blank">
+			getQuota()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of bytes available, and used on the users Steam Cloud storage.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<span class="gdscript">
+					<li>total_bytes (int)</li>
+					<li>available_bytes (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>total_bytes (uint64_t)</li>
+					<li>available_bytes (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetSyncPlatforms" target="_blank">
+			getSyncPlatforms( <sup>string</sup> file )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Obtains the platforms that the specified file will synchronize to.</li>
+		<li>Returns a <strong>dictionary</strong>:</li>
+			<ul class="inner">
+				<li>bitwise (int)
+					<ul class="inner">
+						<li>0 - None</li>
+						<li>1<<0 - Windows</li>
+						<li>1<<1 - OSX</li>
+						<li>1<<2 - PS3</li>
+						<li>1<<3 - Linux</li>
+						<li>1<<4 - Reserved</li>
+						<li>0xffffffff - All</li>
+					</ul>
+				</li>
+				<li>verbose (string)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetUGCDetails" target="_blank">
+			<span class="gdscript">
+				getUGCDetails( <sup>int</sup> content )
+			</span>
+			<span class="c-sharp">
+				getUGCDetails( <sup>uint64_t</sup> content )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets metadata for a file after it has been downloaded. This is the same metadata given in the <strong><em>download_ugc_result</em></strong> call result.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>handle (int)</li>
+					<li>app_id (int)</li>
+					<li>size (int)</li>
+					<li>filename (string)</li>
+					<li>owner_id (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>handle (uint64_t)</li>
+					<li>app_id (uint32_t)</li>
+					<li>size (int32)</li>
+					<li>filename (string)</li>
+					<li>owner_id (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#GetUGCDownloadProgress" target="_blank">
+			<span class="gdscript">
+				getUGCDownloadProgress( <sup>int</sup> content )
+			</span>
+			<span class="c-sharp">
+				getUGCDownloadProgress( <sup>uint64_t</sup> content )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the amount of data downloaded so far for a piece of content. <strong>bytes_expected</strong> can be 0 if function returns false or if the transfer hasn't started yet, so be careful to check for that before dividing to get a percentage.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>bytes_downloaded (int)</li>
+					<li>bytes_expected (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>bytes_downloaded (int32)</li>
+					<li>bytes_expected (int32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#IsCloudEnabledForAccount" target="_blank">
+			isCloudEnabledForAccount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the account wide Steam Cloud setting is enabled for this user; or if they disabled it in the Settings->Cloud dialog.</li>
+		<li>Ensure that you are also checking <strong>isCloudEnabledForApp</strong>, as these two options are mutually exclusive.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#IsCloudEnabledForApp" target="_blank">
+			isCloudEnabledForApp()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the per game Steam Cloud setting is enabled for this user; or if they disabled it in the Game Properties->Update dialog.</li>
+		<li>Ensure that you are also checking <strong>isCloudEnabledForAccount</strong>, as these two options are mutually exclusive.</li>
+		<li>It's generally recommended that you allow the user to toggle this setting within your in-game options, you can toggle it with <strong>setCloudEnabledForApp</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#SetCloudEnabledForApp" target="_blank">
+			setCloudEnabledForApp( <sup>bool</sup> enabled )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Enable or disable Steam Cloud for this application. This must only ever be called as the direct result of the user explicitly requesting that it's enabled or not. This is typically accomplished with a checkbox within your in-game options.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#SetSyncPlatforms" target="_blank">
+			setSyncPlatforms( <sup>string</sup> file, <sup>int</sup> platform )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Allows you to specify which operating systems a file will be synchronized to.</li>
+		<li>Use this if you have a multiplatform game but have data which is incompatible between platforms.</li>
+		<li>Files default to k_ERemoteStoragePlatformAll (0xffffffff) when they are first created. You can use the bitwise OR operator, "|" to specify multiple platforms.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#SetSyncPlatforms" target="_blank">
+			<span class="gdscript">
+				ugcDownload( <sup>int</sup> content, <sup>int</sup> priority )
+			</span>
+			<span class="c-sharp">
+				ugcDownload( <sup>uint64_t</sup> content, <sup>uint32</sup> priority )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Downloads a UGC file.</li>
+		<li>A priority value of 0 will download the file immediately, otherwise it will wait to download the file until all downloads with a lower priority value are completed.  Downloads with equal priority will occur simultaneously.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#SetSyncPlatforms" target="_blank">
+			<span class="gdscript">
+				ugcDownloadToLocation( <sup>int</sup> content, <sup>string</sup> location, <sup>int</sup> priority )
+			</span>
+			<span class="c-sharp">
+				ugcDownloadToLocation( <sup>uint64_t</sup> content, <sup>string</sup> location, <sup>uint32</sup> priority )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Downloads a UGC file to a specific location.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamRemoteStorage#SetSyncPlatforms" target="_blank">
+			<span class="gdscript">
+				ugcRead( <sup>int</sup> content, <sup>int</sup> data_size, <sup>int</sup> offset, <sup>int</sup> action )
+			</span>
+			<span class="c-sharp">
+				ugcRead( <sup>uint64_t</sup> content, <sup>int32</sup> data_size, <sup>uint32</sup> offset, <sup>int</sup> action )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>After download, gets the content of the file.</li>
+		<li>Returns a <strong>PoolByteArray</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

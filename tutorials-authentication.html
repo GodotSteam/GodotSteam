@@ -5,7 +5,7 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -24,17 +24,16 @@
 					<header id="header">
 						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
 					</header>
-					<!-- Section -->
 					<section>
-						<header class="main">
-							<h1>Tutorial| Authentication</h1>
-						</header>
-						<p>In this tutorial we will talk about authenticating users with Steam. You will need to implement your own networking code; <a href="tutorials-lobbies-p2p.html" target="_blank">you can check out the P2P networking tutorial for more on that</a> or even use Godot's high-level networking. <a href="https://partner.steamgames.com/doc/features/auth" target="_blank">You can read more about the whole authentication process in Steam's documentation page on the subject.</a></p>
-						<hr/>
-						<header class="major">
-							<h3>Setting Up Signals</h3>
-						</header>
-						<p>First, in both your clients and server, you'll want to set two variables: <strong>TICKET</strong> and <strong>CLIENT_TICKETS</strong>.  You will keep the local client's ticket dictionary in, obviously, <strong>TICKET</strong> and a list of all connected clients in your <strong>CLIENT_TICKETS</strong> array.  More on that later.  Now, we'll set up the signals for authentication callbacks and their respective functions:</p>
+	<header class="main">
+		<h1>Tutorial | Authentication</h1>
+	</header>
+	<p>In this tutorial we will talk about authenticating users with Steam. You will need to implement your own networking code; <a href="tutorials-lobbies-p2p.html" target="_blank">you can check out the P2P networking tutorial for more on that</a> or even use Godot's high-level networking. <a href="https://partner.steamgames.com/doc/features/auth" target="_blank">You can read more about the whole authentication process in Steam's documentation page on the subject.</a></p>
+	<hr/>
+	<header class="major">
+		<h3>Setting Up Signals</h3>
+	</header>
+	<p>First, in both your clients and server, you'll want to set two variables: <strong>TICKET</strong> and <strong>CLIENT_TICKETS</strong>.  You will keep the local client's ticket dictionary in, obviously, <strong>TICKET</strong> and a list of all connected clients in your <strong>CLIENT_TICKETS</strong> array.  More on that later.  Now, we'll set up the signals for authentication callbacks and their respective functions:</p>
 <pre><code>
 # Set up some variables
 var TICKET: Dictionary		# Your auth ticket
@@ -70,22 +69,22 @@ func _validate_Auth_Ticket_Response(authID: int, response: int, ownerID: int) ->
 	print("Auth response: "+str(VERBOSE_RESPONSE))
 	print("Game owner ID: "+str(ownerID))
 </code></pre>
-						<p>Our <strong>_get_Auth_Session_Ticket_Response</strong> function will send back the auth ticket's handle and whether getting the ticket was successful (returns a 1) or not (anything else).  You can add logic for success or failure based on your game's needs.  If successful, you'll probably want to send you new ticket to the server or other clients for validation at this point.</p>
-						<p>The <strong>_validate_Auth_Ticket_Response</strong> function is in response to <strong>beginAuthSession</strong>, when the ticket has been validated.  It sends back the Steam ID of the client that provided the auth ticket for validation, the result of the validation (success is 0, failure is anything else), and finally the Steam ID that owns the game.  As Valve notes, this may be different if the game is borrowed from Steam Family Share.  Inside this function, you can again put in whatever logic your game requires.  You will probably want to add the client to the server if successful, obviously.</p>
-						<hr/>
-						<header class="major">
-							<h3>Getting Your Auth Ticket</h3>
-						</header>
-						<p>First you'll want to get an auth ticket from Steam and pass it to your <strong>TICKET</strong> dictionary variable; this way you can pass it along to the server or other clients as needed:</p>
+	<p>Our <strong>_get_Auth_Session_Ticket_Response</strong> function will send back the auth ticket's handle and whether getting the ticket was successful (returns a 1) or not (anything else).  You can add logic for success or failure based on your game's needs.  If successful, you'll probably want to send you new ticket to the server or other clients for validation at this point.</p>
+	<p>The <strong>_validate_Auth_Ticket_Response</strong> function is in response to <strong>beginAuthSession</strong>, when the ticket has been validated.  It sends back the Steam ID of the client that provided the auth ticket for validation, the result of the validation (success is 0, failure is anything else), and finally the Steam ID that owns the game.  As Valve notes, this may be different if the game is borrowed from Steam Family Share.  Inside this function, you can again put in whatever logic your game requires.  You will probably want to add the client to the server if successful, obviously.</p>
+	<hr/>
+	<header class="major">
+		<h3>Getting Your Auth Ticket</h3>
+	</header>
+	<p>First you'll want to get an auth ticket from Steam and pass it to your <strong>TICKET</strong> dictionary variable; this way you can pass it along to the server or other clients as needed:</p>
 <pre><code>
 TICKET = Steam.getAuthSessionTicket()
 </code></pre>
-						<p>Now that you have your auth ticket, you'll want to pass it along to the server or other clients for validation.</p>
-						<hr/>
-						<header class="major">
-							<h3>Validating The Auth Ticket</h3>
-						</header>
-						<p>Your server or other clients will now want to take your auth ticket and validate it before allowing you to join the game. In a peer-to-peer situation, every client will want to validate the ticket of every other player. The server or clients will want to pass your <strong>TICKET</strong> dictionary's buffer and size, as well as your Steam ID, to <strong>beginAuthSession</strong>.  For this we'll create a <strong>_validate_Auth_Session</strong> function:</p>
+	<p>Now that you have your auth ticket, you'll want to pass it along to the server or other clients for validation.</p>
+	<hr/>
+	<header class="major">
+		<h3>Validating The Auth Ticket</h3>
+	</header>
+	<p>Your server or other clients will now want to take your auth ticket and validate it before allowing you to join the game. In a peer-to-peer situation, every client will want to validate the ticket of every other player. The server or clients will want to pass your <strong>TICKET</strong> dictionary's buffer and size, as well as your Steam ID, to <strong>beginAuthSession</strong>.  For this we'll create a <strong>_validate_Auth_Session</strong> function:</p>
 <pre><code>
 func _validate_Auth_Session(ticket: Dictionary, steam_id: int) -> void:
 	var RESPONSE: int = Steam.beginAuthSession(ticket['buffer'], ticket['size'], steam_id)
@@ -104,24 +103,25 @@ func _validate_Auth_Session(ticket: Dictionary, steam_id: int) -> void:
 	if RESPONSE == 0:
 		print("Validation successful, adding user to CLIENT_TICKETS")
 		CLIENT_TICKETS.append({"id": steam_id, ticket": ticket['id']} )
-		# You can now add the client to the game
+	
+	# You can now add the client to the game
 
 </code></pre>
-						<p>If the response is 0, you can allow the player to connect to the server or game.  A callback will also be received and trigger our <strong>_validate_Auth_Ticket_Response</strong> function; which, as we saw before, sends along the Steam ID of the auth ticket provider, the result, and owner of the game.  This callback will also be triggered when the client cancels or ends the auth session.</p>
-						<p>After the ticket is validated, you'll want to save the player's Steam ID and their ticket handle in your <stromg>CLIENT_TICKETS</stromg> array either as an array or dictionary so they can be called later to cancel the auth sessions. In our example above, we used a dictionary so we can just pull the ticket handle by the user's Steam ID.</p>
-						<hr/>
-						<header class="major">
-							<h3>Ending Auth Sessions</h3>
-						</header>
-						<p>Finally when the game is over or the client is leaving the game, you'll want to end the auth sessions. When the client is ready to leave the game, they will pass their own ticket handle to the <strong>cancelAuthTIcket</strong> function like so:</p>
+	<p>If the response is 0, you can allow the player to connect to the server or game.  A callback will also be received and trigger our <strong>_validate_Auth_Ticket_Response</strong> function; which, as we saw before, sends along the Steam ID of the auth ticket provider, the result, and owner of the game.  This callback will also be triggered when the client cancels or ends the auth session.</p>
+	<p>After the ticket is validated, you'll want to save the player's Steam ID and their ticket handle in your <stromg>CLIENT_TICKETS</stromg> array either as an array or dictionary so they can be called later to cancel the auth sessions. In our example above, we used a dictionary so we can just pull the ticket handle by the user's Steam ID.</p>
+	<hr/>
+	<header class="major">
+		<h3>Ending Auth Sessions</h3>
+	</header>
+	<p>Finally when the game is over or the client is leaving the game, you'll want to end the auth sessions. When the client is ready to leave the game, they will pass their own ticket handle to the <strong>cancelAuthTIcket</strong> function like so:</p>
 <pre><code>
 Steam.cancelAuthTicket(TICKET['id'])
 </code></pre>
-						<p>This will trigger the <strong>_validate_Auth_Ticket_Response</strong> function for the server or other clients to let them know the player has left and invalidated their auth ticket.  Additionally, if the game session is over, the server or other clients can call <strong>endAuthSession</strong> to also close out the auth session:</p>
+	<p>This will trigger the <strong>_validate_Auth_Ticket_Response</strong> function for the server or other clients to let them know the player has left and invalidated their auth ticket.  Additionally, if the game session is over, the server or other clients can call <strong>endAuthSession</strong> to also close out the auth session:</p>
 <pre><code>
 Steam.endAuthSession(steam_id)
 </code></pre>
-						<p>They will need to pass the Steam ID of every client connected. You can do this in a loop from your <strong>CLIENT_TICKETS</strong> array like so:</p>
+	<p>They will need to pass the Steam ID of every client connected. You can do this in a loop from your <strong>CLIENT_TICKETS</strong> array like so:</p>
 <pre><code>
 for C in CLIENT_TICKETS:
 	Steam.endAuthSession(C['id'])
@@ -129,132 +129,166 @@ for C in CLIENT_TICKETS:
 	# Then remove this client from the ticket array
 	CLIENT_TICKETS.erase(C)
 </code></pre>
-						<p>At the time of writing, I'm not totally clear on whether or not each client must still call <strong>cancelAuthTicket</strong> on their own auth ticket even if <strong>endAuthSession</strong> was used. However, it is probably good practice to do it just in case.</p>
-						<hr/>
-						<p>That concludes this simple tutorial for authenticated sessions.</p>
-					</section>
+	<p>At the time of writing, I'm not totally clear on whether or not each client must still call <strong>cancelAuthTicket</strong> on their own auth ticket even if <strong>endAuthSession</strong> was used. However, it is probably good practice to do it just in case.</p>
+	<hr/>
+	<p>That concludes this simple tutorial for authenticated sessions.</p>
+	<p><a href="https://github.com/Gramps/GodotSteam/tree/example" target="_blank">To see this tutorial in action, check out the example branch on the GodotSteam Github repo.</a> There you can get a full view of the code used which can serve as a starting point for you to branch out from.</p>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
 				</div>
 			</div>
 			<!-- Sidebar -->
 			<div id="sidebar">
-				<div class="inner">
-					<!-- Menu -->
-					<nav id="menu">
-						<header class="major">
-							<h2>Menu</h2>
-						</header>
-						<ul>
-							<li><a href="index.html">Introduction</a></li>
-							<li>
-								<span class="opener">How-To's</span>
-								<ul>
-									<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
-									<li><a href="howto-gdnative.html">How-To GDNative</a></li>
-								</ul>
-							</li>
-							<li>
-								<span class="opener">Functions (Module)</span>
-								<ul>
-									<li><a href="functions-module.html">All</a></li>
-									<li><a href="functions-module.html#core">Core</a></li>
-									<li><a href="functions-module.html#apps">Apps</a></li>
-									<li><a href="functions-module.html#friends">Friends</a></li>
-									<li><a href="functions-module.html#game-search">Game Search</a></li>
-									<li><a href="functions-module.html#html-surface">HTML Surface</a></li>
-									<li><a href="functions-module.html#http">HTTP</a></li>
-									<li><a href="functions-module.html#input">Input</a></li>
-									<li><a href="functions-module.html#inventory">Inventory</a></li>
-									<li><a href="functions-module.html#matchmaking">Matchmaking</a></li>
-									<li><a href="functions-module.html#matchmaking-servers">Matchmaking Servers</a></li>
-									<li><a href="functions-module.html#music">Music</a></li>
-									<li><a href="functions-module.html#music-remote">Music Remote</a></li>
-									<li><a href="functions-module.html#networking">Networking</a></li>
-									<li><a href="functions-module.html#networking-sockets">Networking Sockets</a></li>
-									<li><a href="functions-module.html#networking-utils">Networking Utils</a></li>
-									<li><a href="functions-module.html#parties">Parties</a></li>
-									<li><a href="functions-module.html#remote-play">Remote Play</a></li>
-									<li><a href="functions-module.html#remote-storage">Remote Storage</a></li>
-									<li><a href="functions-module.html#screenshots">Screenshots</a></li>
-									<li><a href="functions-module.html#server">Server</a></li>
-									<li><a href="functions-module.html#server-stats">Server Stats</a></li>
-									<li><a href="functions-module.html#ugc">UGC</a></li>
-									<li><a href="functions-module.html#users">Users</a></li>
-									<li><a href="functions-module.html#user-stats">User Stats</a></li>
-									<li><a href="functions-module.html#utils">Utils</a></li>
-									<li><a href="functions-module.html#video">Video</a></li>
-								</ul>
-							</li>
-							<li><a href="signals-modules.html">Signals</a></li>
-							<li>
-								<span class="opener">Godot 3.x Tutorials</span>
-								<ul>
-									<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
-									<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
-									<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
-									<li><a href="tutorials-avatars.html">Avatars</a></li>
-									<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
-									<li><a href="tutorials-authentication.html">Authentication</a></li>
-									<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
-									<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
-									<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
-									<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
-									<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
-									<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
-								</ul>
-							</li>
-							<li><a href="games.html">Games Using GodotSteam</a></li>
-							<li><a href="todo.html">To-Do</a></li>
-							<li>
-								<span class="opener">Change Log</span>
-								<ul>
-									<li><a href="changelog-godot4.html">Godot 4.x</a></li>
-									<li><a href="changelog-godot3.html">Godot 3.x</a></li>
-									<li><a href="changelog-godot2.html">Godot 2.x</a></li>
-									<li><a href="changelog-gdnative.html">GDNative</a></li>
-								</ul>
-							</li>
-							<li><a href="contributors.html">Contributors</a></li>
-						</ul>
-					</nav>
-					<section>
-						<header class="major">
-							<h2>Stuck? Need Help?</h2>
-						</header>
-						<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
-						<ul class="actions stacked">
-							<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
-							<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
-						</ul>
-					</section>
-					<section>
-						<header class="major">
-							<h2>Donate</h2>
-						</header>
-						<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
-						<ul class="actions stacked">
-							<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
-							<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
-						</ul>
-					</section>
-					<footer>
-						<ul class="actions stacked">
-							<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
-							<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
-							<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
-							<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
-						</ul>
-					</footer>
-					<footer id="footer" class="copyright">
-						2021 &copy; GP Garcia & CoaguCo Industries
-					</footer>
-				</div>
-			</div>
-		</div>
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
 		<!-- Scripts -->
 		<script src="js/jquery.min.js"></script>
 		<script src="js/browser.min.js"></script>
 		<script src="js/breakpoints.min.js"></script>
 		<script src="js/util.js"></script>
 		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
 	</body>
 </html>

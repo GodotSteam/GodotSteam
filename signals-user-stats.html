@@ -1,0 +1,486 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="signals">
+	<header class="main">
+		<h1>Signals | User Stats</h1>
+	</header>
+	<p>These require you to run Steam.run_callbacks() in your _process() function to receive them.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GlobalAchievementPercentagesReady_t" target="_blank">
+			global_achievement_percentages_ready
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when the global achievement percentages have been received from the server.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>game (int)</li>
+					<li>result (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>game (uint64_t)</li>
+					<li>result (uint32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#GlobalStatsReceived_t" target="_blank">
+			global_stats_received
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when the global stats have been received from the server.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>game_id (int)</li>
+					<li>result (string)</li>
+				</span>
+				<span class="c-sharp">
+					<li>game_id (uint64_t)</li>
+					<li>result (string)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardFindResult_t" target="_blank">
+			leaderboard_find_result
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Result when finding a leaderboard.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>leaderboard_handle (int)</li>
+					<li>found (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>leaderboard_handle (uint64_t)</li>
+					<li>found (uint8_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoresDownloaded_t" target="_blank">
+			leaderboard_scores_downloaded
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when scores for a leaderboard have been downloaded and are ready to be retrieved.</li>
+		<li>Sends back the following data:
+			<ul class="inner">
+				<li>message (string)</li>
+				<li>leaderboard_entries_array (array)
+					<ul class="inner">
+						<li>entryDict (dictionary)
+							<ul class="inner">
+								<span class="gdscript">
+									<li>score (int)</li>
+									<li>steam_id (int)</li>
+									<li>global_rank (int)</li>
+									<li>ugc_handle (int)</li>
+									<li>details (array)</li>
+								</span>
+								<span class="c-sharp">
+									<li>score (int)</li>
+									<li>steam_id (uint64_t)</li>
+									<li>global_rank (int)</li>
+									<li>ugc_handle (uint64_t)</li>
+									<li>details (array)</li>
+								</span>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoreUploaded_t" target="_blank">
+			leaderboard_score_uploaded
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Result indicating that a leaderboard score has been uploaded.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>success (int)</li>
+					<li>score (int)</li>
+					<li>score_changed (int)</li>
+					<li>global_rank_new (int)</li>
+					<li>global_rank_prev (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (uint8)</li>
+					<li>score (int32)</li>
+					<li>score_changed (uint8)</li>
+					<li>global_rank_new (int)</li>
+					<li>global_rank_prev (int)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardUGCSet_t" target="_blank">
+			leaderboard_ugc_set
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Result indicating that user generated content has been attached to one of the current user's leaderboard entries.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>leaderboard_handle (int)</li>
+					<li>result (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>leaderboard_handle (uint64_t)</li>
+					<li>result (int)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#NumberOfCurrentPlayers_t" target="_blank">
+			number_of_current_players
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current number of players for the current app ID.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>success (int)</li>
+					<li>players (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>success (uint8)</li>
+					<li>players (int32)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UserAchievementStored_t" target="_blank">
+			user_achievement_stored
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Result of a request to store the achievements on the server, or an "indicate progress" call. If both current progress and max progress are zero, that means the achievement has been fully unlocked.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>game (int)</li>
+					<li>group_achieve (bool)</li>
+					<li>name (string)</li>
+					<li>current_progress (int)</li>
+					<li>max_progress (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>game (uint64_t)</li>
+					<li>group_achieve (bool)</li>
+					<li>name (string)</li>
+					<li>current_progress (uint32_t)</li>
+					<li>max_progress (uint32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UserStatsReceived_t" target="_blank">
+			current_stats_received
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when the latest stats and achievements for the local user have been received from the server; in response to function <strong><em>requestCurrentStats</em></strong>.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>game (int)</li>
+					<li>result (int)</li>
+					<li>user (int) as Steam ID</li>
+				</span>
+				<span class="c-sharp">
+					<li>game (uint64_t)</li>
+					<li>result (uint32_t)</li>
+					<li>user (uint64_t) as Steam ID</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UserStatsReceived_t" target="_blank">
+			user_stats_received
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when the latest stats and achievements for a specific user (including the local user) have been received from the server.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>game (int)</li>
+					<li>result (int)</li>
+					<li>user (int) as Steam ID</li>
+				</span>
+				<span class="c-sharp">
+					<li>game (uint64_t)</li>
+					<li>result (uint32_t)</li>
+					<li>user (uint64_t) as Steam ID</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UserStatsStored_t" target="_blank">
+			user_stats_stored
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Result of a request to store the user stats.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>game (int)</li>
+					<li>result int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>game (uint64_t)</li>
+					<li>result (uint32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamUserStats#UserStatsUnloaded_t" target="_blank">
+			user_stats_unloaded
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Callback indicating that a user's stats have been unloaded. Call RequestUserStats again before accessing stats for this user.</li>
+		<li>Sends back the following data:
+			<ul>
+				<span class="gdscript">
+					<li>user (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>user (uint64_t) as Steam ID</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

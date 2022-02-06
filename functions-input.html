@@ -1,0 +1,734 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | Input</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#ActivateActionSet" target="_blank">
+			<span class="gdscript">
+				activateActionSet( <sup>int</sup> input_handle, <sup>int</sup> action_set_handle )
+			</span>
+			<span class="c-sharp">
+				activateActionSet( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> action_set_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Reconfigure the controller to use the specified action set (i.e. "Menu", "Walk", or "Drive").</li>
+		<li>This is cheap, and can be safely called repeatedly. It's often easier to repeatedly call it in your state loops, instead of trying to place it in all of your state transitions.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#ActivateActionSetLayer" target="_blank">
+			<span class="gdscript">
+				activateActionSetLayer( <sup>int</sup> input_handle, <sup>int</sup> action_set_layer_handle )
+			</span>
+			<span class="c-sharp">
+				activateActionSetLayer( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> action_set_layer_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Reconfigure the controller to use the specified action set layer.</li>
+		<li>See the <a href="https://partner.steamgames.com/doc/features/steam_controller/action_set_layers" target="_blank">Action Set Layers</a> article for full details and an in-depth practical example.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#DeactivateActionSetLayer" target="_blank">
+			<span class="gdscript">
+				deactivateActionSetLayer( <sup>int</sup> input_handle, <sup>int</sup> action_set_handle )
+			</span>
+			<span class="c-sharp">
+				deactivateActionSetLayer( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> action_set_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Reconfigure the controller to stop using the specified action set.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#DeactivateAllActionSetLayers" target="_blank">
+			<span class="gdscript">
+				deactivateAllActionSetLayers( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				deactivateAllActionSetLayers( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Reconfigure the controller to stop using all action set layers.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetActiveActionSetLayers" target="_blank">
+			<span class="gdscript">
+				getActiveActionSetLayers( <sup>int</sup> input_handle)
+			</span>
+			<span class="c-sharp">
+				getActiveActionSetLayers( <sup>uint64_t</sup> input_handle)
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fill an array with all of the currently active action set layers for a specified controller handle.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>array</strong> that contains <strong>int</strong> handles.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>array</strong> that contains <strong>uint64_t</strong> handles<.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetActiveActionSetLayers" target="_blank">
+			getActionSetHandle( <sup>string</sup> action_set_name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Fill an array with all of the currently active action set layers for a specified controller handle.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetActionOriginFromXboxOrigin" target="_blank">
+			<span class="gdscript">
+				getActionOriginFromXboxOrigin( <sup>int</sup> input_handle, <sup>int</sup> origin )
+			</span>
+			<span class="c-sharp">
+				getActionOriginFromXboxOrigin( <sup>uint64_t</sup> input_handle, <sup>int</sup> origin )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get an action origin that you can use in your glyph look up table or passed into <strong>getGlyphForActionOrigin</strong> or <strong>getStringForActionOrigin</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetAnalogActionData" target="_blank">
+			<span class="gdscript">
+				getAnalogActionData( <sup>int</sup> input_handle, <sup>int</sup> analog_action_handle )
+			</span>
+			<span class="c-sharp">
+				getAnalogActionData( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> analog_action_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current state of the supplied analog game action.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>mode (int)</li>
+				<li>x (float)</li>
+				<li>y (float)</li>
+				<li>active (bool)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetAnalogActionHandle" target="_blank">
+			getAnalogActionHandle( <sup>string</sup> action_name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the handle of the specified analog action.</li>
+		<li><strong>Note:</strong> This function does not take an action set handle parameter. That means that each action in your VDF file must have a unique string identifier. In other words, if you use an action called "up" in two different action sets, this function will only ever return one of them and the other will be ignored.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetAnalogActionOrigins" target="_blank">
+			<span class="gdscript">
+				getAnalogActionOrigins( <sup>int</sup> input_handle, <sup>int</sup> action_set_handle, <sup>int</sup> analog_action_handle )
+			</span>
+			<span class="c-sharp">
+				getAnalogActionOrigins( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> action_set_handle, <sup>uint64_t</sup> analog_action_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the origin(s) for an analog action within an action set by filling the return array with handles. Use this to display the appropriate on-screen prompt for the action.</li>
+		<li>Returns an <strong>array</strong> contains <strong>int</strong> handles.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetConnectedControllers" target="_blank">
+			getConnectedControllers()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Enumerates currently connected controllers by filling returned array with controller handles.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>array</strong> of <strong>int</strong> controller handles.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>array</strong> of <strong>uint64_t</strong> controller handles.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetControllerForGamepadIndex" target="_blank">
+			getControllerForGamepadIndex( <sup>int</sup> index )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the associated controller handle for the specified emulated gamepad. Can be used with <strong>getInputTypeForHandle</strong> to determine the type of controller using Steam Input Gamepad Emulation.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetCurrentActionSet" target="_blank">
+			<span class="gdscript">
+				getCurrentActionSet( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				getCurrentActionSet( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the currently active action set for the specified controller.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetDeviceBindingRevision" target="_blank">
+			<span class="gdscript">
+				getDeviceBindingRevision( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				getDeviceBindingRevision( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get's the major and minor device binding revisions for Steam Input API configurations. Minor revisions are for small changes such as adding a new option action or updating localization in the configuration. When updating a Minor revision only one new configuration needs to be update with the "Use Action Block" flag set. Major revisions are to be used when changing the number of action sets or otherwise reworking configurations to the degree that older configurations are no longer usable. When a user's binding disagree's with the major revision of the current official configuration Steam will forcibly update the user to the new configuration. New configurations will need to be made for every controller when updating the Major revision.</li>
+		<li>Returns an <strong>array</strong> containing:
+			<ul class="inner">
+				<li>major (int)</li>
+				<li>minor (int)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetDigitalActionData" target="_blank">
+			<span class="gdscript">
+				getDigitalActionData( <sup>int</sup> input_handle, <sup>int</sup> digital_action_handle )
+			</span>
+			<span class="c-sharp">
+				getDigitalActionData( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> digital_action_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the current state of the supplied digital game action.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>state (bool)</li>
+				<li>active (bool)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetDigitalActionHandle" target="_blank">
+			getDigitalActionHandle( <sup>string</sup> action_name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the handle of the specified digital action.</li>
+		<li><strong>Note:</strong> This function does not take an action set handle parameter. That means that each action in your VDF file must have a unique string identifier. In other words, if you use an action called "up" in two different action sets, this function will only ever return one of them and the other will be ignored.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetDigitalActionOrigins" target="_blank">
+			<span class="gdscript">
+				getDigitalActionOrigins( <sup>int</sup> input_handle, <sup>int</sup> action_set_handle, <sup>int</sup> digital_action_handle )
+			</span>
+			<span class="c-sharp">
+				getDigitalActionOrigins( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> action_set_handle, <sup>uint64_t</sup> digital_action_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the origin(s) for a digital action within an action set by filling return array with input handles. Use this to display the appropriate on-screen prompt for the action.</li>
+		<li>Returns an <strong>array</strong> containing <strong>int</strong> handles.</span></li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetGamepadIndexForController" target="_blank">
+			<span class="gdscript">
+				getGamepadIndexForController( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				getGamepadIndexForController( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the associated gamepad index for the specified controller, if emulating a gamepad.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetGlyphForActionOrigin" target="_blank">
+			getGlyphForActionOrigin( <sup>int</sup> origin )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get a local path to art for on-screen glyph for a particular origin.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetInputTypeForHandle" target="_blank">
+			<span class="gdscript">
+				getInputTypeForHandle( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				getInputTypeForHandle( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns the input type (device model) for the specified controller. This tells you if a given controller is a Steam controller, Xbox 360 controller, PS4 controller, etc.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetMotionData" target="_blank">
+			<span class="gdscript">
+				getMotionData( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				getMotionData( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns raw motion data for the specified controller.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>rot_quat_x (float)</li>
+				<li>rot_quat_y (float)</li>
+				<li>rot_quat_z (float)</li>
+				<li>rot_quat_w (float)</li>
+				<li>pos_accel_x (float)</li>
+				<li>pos_accel_y (float)</li>
+				<li>pos_accel_z (float)</li>
+				<li>rot_vel_x (float)</li>
+				<li>rot_vel_y (float)</li>
+				<li>rot_vel_z (float)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetRemotePlaySessionID" target="_blank">
+			<span class="gdscript">
+				getRemotePlaySessionID( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				getRemotePlaySessionID( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the Steam Remote Play session ID associated with a device, or 0 if there is no session associated with it. See isteamremoteplay.h for more information on Steam Remote Play sessions.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#GetStringForActionOrigin" target="_blank">
+			getStringforActionOrigin( <sup>int</sup> origin )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns a localized string (from Steam's language setting) for the specified origin.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#Init" target="_blank">
+			inputInit( <sup>bool</sup> explicitly_call_runframe )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><strong>inputInit</strong> and <strong>inputShutdown</strong> must be called when starting/ending use of this interface.</li>
+		<li>If <strong>explicitly_call_runframe</strong> is called then you will need to manually call <strong>runFrame</strong> each frame, otherwise Steam Input will updated when <strong>run_callbacks</strong> is called.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#Shutdown" target="_blank">
+			inputShutdown()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li><strong>inputInit</strong> and <strong>inputShutdown</strong> must be called when starting/ending use of this interface.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#RunFrame" target="_blank">
+			runFrame()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Synchronize API state with the latest Steam Controller inputs available. This is performed automatically by <strong>run_callbacks</strong>, but for the absolute lowest possible latency, you can call this directly before reading controller state.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#SetLEDColor" target="_blank">
+			<span class="gdscript">
+				setLEDColor( <sup>int</sup> input_handle, <sup>int</sup> color_r, <sup>int</sup> color_g, <sup>int</sup> color_b, <sup>int</sup> flags )
+			</span>
+			<span class="c-sharp">
+				setLEDColor( <sup>uint64_t</sup> input_handle, <sup>int</sup> color_r, <sup>int</sup> color_g, <sup>int</sup> color_b, <sup>int</sup> flags )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set the controller LED color on supported controllers.</li>
+		<li><strong>Notes:</strong> The VSC does not support any color but white, and will interpret the RGB values as a greyscale value affecting the brightness of the Steam button LED. The DS4 responds to full color information and uses the values to set the color & brightness of the lightbar.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#ShowBindingPanel" target="_blank">
+			<span class="gdscript">
+				showBindingPanel( <sup>int</sup> input_handle )
+			</span>
+			<span class="c-sharp">
+				showBindingPanel( <sup>uint64_t</sup> input_handle )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Invokes the Steam overlay and brings up the binding screen.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#StopAnalogActionMomentum" target="_blank">
+			<span class="gdscript">
+				stopAnalogActionMomentum( <sup>int</sup> input_handle, <sup>int</sup> action )
+			</span>
+			<span class="c-sharp">
+				stopAnalogActionMomentum( <sup>uint64_t</sup> input_handle, <sup>uint64_t</sup> action )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Stops the momentum of an analog action (where applicable, ie a touchpad w/ virtual trackball settings).</li>
+		<li><strong>Note:</strong> This will also stop all associated haptics. This is useful for situations where you want to indicate to the user that the limit of an action has been reached, such as spinning a carousel or scrolling a webpage.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#TranslateActionOrigin" target="_blank">
+			translateActionOrigin( <sup>int</sup> destination_input, <sup>int</sup> source_origin )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the equivalent origin for a given controller type or the closest controller type that existed in the SDK you built into your game if <strong>destination_input</strong> is 0. This action origin can be used in your glyph look up table or passed into <strong>getGlyphForActionOrigin</strong> or <strong>getStringForActionOrigin</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#TriggerHapticPulse" target="_blank">
+			<span class="gdscript">
+				triggerHapticPulse( <sup>int</sup> input_handle, <sup>int</sup> target_pad, <sup>int</sup> duration )
+			</span>
+			<span class="c-sharp">
+				triggerHapticPulse( <sup>uint64_t</sup> input_handle, <sup>int</sup> target_pad, <sup>int</sup> duration )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Triggers a (low-level) haptic pulse on supported controllers.</li>
+		<li>Currently only the VSC supports haptic pulses. This API call will be ignored for all other controller models. The typical max value of an unsigned short is 65535, which means the longest haptic pulse you can trigger with this method has a duration of 0.065535 seconds (ie, less than 1/10th of a second). This function should be thought of as a low-level primitive meant to be repeatedly used in higher-level user functions to generate more sophisticated behavior.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#TriggerRepeatedHapticPulse" target="_blank">
+			<span class="gdscript">
+				triggerRepeatedHapticPulse( <sup>int</sup> input_handle, <sup>int</sup> target_pad, <sup>int</sup> duration, <sup>int</sup> offset, <sup>int</sup> repeat, <sup>int</sup> flags )
+			</span>
+			<span class="c-sharp">
+				triggerRepeatedHapticPulse( <sup>uint64_t</sup> input_handle, <sup>int</sup> target_pad, <sup>int</sup> duration, <sup>int</sup> offset, <sup>int</sup> repeat, <sup>int</sup> flags )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Triggers a repeated haptic pulse on supported controllers.</li>
+		<li><strong>Notes:</strong> Currently only the VSC supports haptic pulses. This API call will be ignored for incompatible controller models. This is a more user-friendly function to call than TriggerHapticPulse as it can generate pulse patterns long enough to be actually noticed by the user. Changing the usDurationMicroSec and usOffMicroSec parameters will change the "texture" of the haptic pulse.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#TriggerVibration" target="_blank">
+			<span class="gdscript">
+				triggerVibration( <sup>int</sup> input_handle, <sup>int</sup> left_speed, <sup>int</sup> right_speed )
+			</span>
+			<span class="c-sharp">
+				triggerVibration( <sup>uint64_t</sup> input_handle, <sup>uint16_t</sup> left_speed, <sup>uint16_t</sup> right_speed )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Trigger a vibration event on supported controllers.</li>
+		<li><strong>Notes:</strong> This API call will be ignored for incompatible controller models. This generates the traditional "rumble" vibration effect. The VSC will emulate traditional rumble using its haptics.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>

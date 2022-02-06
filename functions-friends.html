@@ -1,0 +1,1568 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>GodotSteam - A Steamworks Module For Godot Engine | By Gramps | GitHub</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="css/main.css?v=2.7" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!--[if lt IE 8]>
+		<link rel="stylesheet" href="{{ '/css/ie.css' | relative_url }}">
+		<![endif]-->
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
+					</header>
+					<section id="functions">
+	<header class="main">
+		<h1>Functions | Friends</h1>
+	</header>
+	<p>Here is a list of all the functions available in the GodotSteam module. The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
+	<div id="toggle-data" class="box">
+		<form action="#">
+			<div class="row gtr-uniform">
+				<div class="col-6 col-6-small">
+					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
+					<label for="gdscript">GDScript</label>
+				</div>
+				<div class="col-6 col-6-small">
+					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
+					<label for="c-sharp">C#</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<hr />
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ActivateGameOverlay" target="_blank">
+			activateGameOverlay( <sup>string</sup> dialog )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ActivateGameOverlayInviteDialog" target="_blank">
+			<span class="gdscript">
+				activateGameOverlayInviteDialog( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				activateGameOverlayInviteDialog( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ActivateGameOverlayToStore" target="_blank">
+			<span class="gdscript">
+				activateGameOverlayToStore( <sup>int</sup> app_id )
+			</span>
+			<span class="c-sharp">
+				activateGameOverlayToStore( <sup>uint32_t</sup> app_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Activates the overlay with the application/game Steam store page.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ActivateGameOverlayToUser" target="_blank">
+			<span class="gdscript">
+				activateGameOverlayToUser( <sup>string</sup> url, <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				activateGameOverlayToUser( <sup>string</sup> url, <sup>uint32_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ActivateGameOverlayToWebPage" target="_blank">
+			activateGameOverlayToWebPage( <sup>string</sup> url )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Activates the overlay with specified web address.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>activateGameOverlayInviteDialogConnectString( <sup>string</sup> connectString )</h4>
+	<ul>
+		<li>Activates the game overlay to open an invite dialog that will send the provided Rich Presence connect string to selected friends.</li>
+		<li><strong>Note:</strong> This function is not in the Steamworks docs but does exist in the SDK itself.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ClearRichPresence" target="_blank">
+			clearRichPresence()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Clears all of the current user's Rich Presence key/values.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#CloseClanChatWindowInSteam" target="_blank">
+			<span class="gdscript">
+				closeClanChatWindowInSteam( <sup>int</sup> chat_id )
+			</span>
+			<span class="c-sharp">
+				closeClanChatWindowInSteam( <sup>uint64_t</sup> chat_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Closes the specified Steam group chat room in the Steam UI.
+		<li>Returns a <strong>bool</strong>.</li> 
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#DownloadClanActivityCounts" target="_blank">
+			<span class="gdscript">
+				downloadClanActivityCounts( <sup>int</sup> clan_id, <sup>int</sup> clans_to_request )
+			</span>
+			<span class="c-sharp">
+				downloadClanActivityCounts( <sup>uint64_t</sup> clan_id, <sup>int</sup> clans_to_request )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Refresh the Steam Group activity data or get the data from groups other than one that the current user is a member. After receiving the callback you can then use <strong>getClanActivityCounts</strong> to get the up to date user counts.</li>
+		<li>Triggers a <strong><em>clan_activity_downloaded</em></strong> callback.</li>
+		<li>Return nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#EnumerateFollowingList" target="_blank">
+			<span class="gdscript">
+				enumerateFollowingList( <sup>int</sup> startIndex )
+			</span>
+			<span class="c-sharp">
+				enumerateFollowingList( <sup>uint32</sup> startIndex )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the list of users that the current user is following. You can be following people that are not your friends. Following allows you to receive updates when the person does things like post a new piece of content to the Steam Workshop.</li>
+		<li><strong>Note:</strong> This returns up to k_cEnumerateFollowersMax users at once. If the current user is following more than that, you will need to call this repeatedly, with unStartIndex set to the total number of followers that you have received so far. I.E. If you have received 50 followers, and the user is following 105, you will need to call this again with unStartIndex = 50 to get the next 50, and then again with unStartIndex = 100 to get the remaining 5 users.</li>
+		<li>Triggers a <strong><em>enumerate_following_list</em></strong> callback.</li>
+		<li>Return nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetChatMemberByIndex" target="_blank">
+			<span class="gdscript">
+				getChatMemberByIndex( <sup>int</sup> clan_id, <sup>int</sup> user )
+			</span>
+			<span class="c-sharp">
+				getChatMemberByIndex( <sup>uint64_t</sup> clan_id, <sup>int</sup> user )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam ID at the given index in a Steam group chat.</li>
+		<li><strong>Note:</strong> You must call <strong>getClanChatMemberCount</strong> before calling this.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanActivityCounts" target="_blank">
+			<span class="gdscript">
+				getClanActivityCounts( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				getClanActivityCounts( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the most recent information we have about what the users in a Steam Group are doing.  This can only retrieve data that the local client knows about. To refresh the data or get data from a group other than one that the current user is a member of you must call <strong>downloadClanActivityCounts</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<span class="gdscript">
+					<li>clan (int)</li>
+					<li>online (int)</li>
+					<li>ingame (int)</li>
+					<li>chatting (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>clan (uint64_t)</li>
+					<li>online (int)</li>
+					<li>ingame (int)</li>
+					<li>chatting (int)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanByIndex" target="_blank">
+			getClanByIndex( <sup>int</sup> clan )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam group's Steam ID at the given index.</li>
+		<li><strong>Notes:</strong> You must call <strong>getClanCount</strong> before calling this.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanChatMemberCount" target="_blank">
+			<span class="gdscript">
+				getClanChatMemberCount( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				getClanChatMemberCount( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the number of users in a Steam group chat.</li>
+		<li><strong>Note:</strong> Large steam groups cannot be iterated by the local user.</li>
+		<li><strong>Note:</strong> The current user must be in a lobby to retrieve the Steam IDs of other users in that lobby. This is used for iteration, after calling this then <strong>getChatMemberByIndex</strong> can be used to get the Steam ID of each person in the chat.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanChatMessage" target="_blank">
+			<span class="gdscript">
+				getClanChatMessage( <sup>int</sup> chat_id, <sup>int</sup> message )
+			</span>
+			<span class="c-sharp">
+				getClanChatMessage( <sup>int</sup> chat_id, <sup>int</sup> message )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the data from a Steam group chat room message.  This should only ever be called in response to a <strong>connected_clan_chat_message</strong> callback.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<span class="gdscript">
+					<li>ret (bool)</li>
+					<li>text (string)</li>
+					<li>type (int)</li>
+					<li>chatter (int) as a Steam ID</li>
+				</span>
+				<span class="c-sharp">
+					<li>ret (bool)</li>
+					<li>text (string)</li>
+					<li>type (int)</li>
+					<li>chatter (uint64_t) as a Steam ID</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanCount" target="_blank">
+			getClanCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of Steam groups that the current user is a member of.  This is used for iteration, after calling this then <strong>getClanByIndex</strong> can be used to get the Steam ID of each Steam group.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanName" target="_blank">
+			<span class="gdscript">
+				getClanName( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				getClanName( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the display name for the specified Steam group; if the local client knows about it.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanOfficerByIndex" target="_blank">
+			<span class="gdscript">
+				getClanOfficerByIndex( <sup>int</sup> clan_id, <sup>int</sup> officer )
+			</span>
+			<span class="c-sharp">
+				getClanOfficerByIndex( <sup>uint64_t</sup> clan_id, <sup>int</sup> officer )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam ID of the officer at the given index in a Steam group.</li>
+		<li><strong>Note:</strong> You must call <strong>getClanOfficerCount</strong> before calling this.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanOfficerCount" target="_blank">
+			<span class="gdscript">
+				getClanOfficerCount( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				getClanOfficerCount( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of officers (administrators and moderators) in a specified Steam group. This also includes the owner of the Steam group. This is used for iteration, after calling this then <strong>getClanOfficerByIndex</strong> can be used to get the Steam ID of each officer.</li>
+		<li><strong>Note:</strong> You must call <strong>requestClanOfficerList</strong> before this to get the required data.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanOwner" target="_blank">
+			<span class="gdscript">
+				getClanOwner( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				getClanOwner( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the steam ID of the clan owner.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetClanTag" target="_blank">
+			<span class="gdscript">
+				getClanTag( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				getClanTag( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the unique tag (abbreviation) for the specified Steam group; If the local client knows about it.  The Steam group abbreviation is a unique way for people to identify the group and is limited to 12 characters. In some games this will appear next to the name of group members.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetCoplayFriend" target="_blank">
+			getCoplayFriend( <sup>int</sup> friend_number )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam ID of the recently played with user at the given index.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetCoplayFriendCount" target="_blank">
+			getCoplayFriendCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of players that the current users has recently played with, across all games.  This is used for iteration, after calling this then <strong>getCoplayFriend</strong> can be used to get the Steam ID of each player.  These players are have been set with previous calls to <strong>setPlayedWith</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFollowerCount" target="_blank">
+			<span class="gdscript">
+				getFollowerCount( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getFollowerCount( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of users following the specified user.</li>
+		<li>Triggers a <strong><em>get_follower_count</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li> 
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendByIndex" target="_blank">
+			getFriendByIndex( <sup>int</sup> friend_number, <sup>int</sup> friend_flags )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam ID of the user at the given index.</li>
+		<li><strong>Note:</strong> You must call <strong>getFriendCount</strong> before calling this.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendCoplayGame" target="_blank">
+			<span class="gdscript">
+				getFriendCoplayGame( <sup>int</sup> friend_id )
+			</span>
+			<span class="c-sharp">
+				getFriendCoplayGame( <sup>uint64_t</sup> friend_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the app ID of the game that user played with someone on their recently-played-with list.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendCoplayTime" target="_blank">
+			<span class="gdscript">
+				getFriendCoplayTime( <sup>int</sup> friend_id )
+			</span>
+			<span class="c-sharp">
+				getFriendCoplayTime( <sup>uint64_t</sup> friend_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the timestamp of when the user played with someone on their recently-played-with list.  The time is provided in Unix epoch format (seconds since Jan 1st 1970).</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendCount" target="_blank">
+			getFriendCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of users the client knows about who meet a specified criteria. (Friends, blocked, users on the same server, etc). This can be used to iterate over all of the users by calling GetFriendByIndex to get the Steam IDs of each user.</li>
+		<li><strong>Note:</strong> Returns -1 if the current user is not logged on.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendCountFromSource" target="_blank">
+			<span class="gdscript">
+				getFriendCountFromSource( <sup>int</sup> source_id )
+			</span>
+			<span class="c-sharp">
+				getFriendCountFromSource( <sup>uint64_t</sup> source_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get the number of users in a source (Steam group, chat room, lobby, or game server). This is used for iteration, after calling this then <strong>getFriendFromSourceByIndex</strong> can be used to get the Steam ID of each person in the source.</li>
+		<li><strong>Note:</strong> Large Steam groups cannot be iterated by the local user.</li>
+		<li><strong>Note:</strong> If you're getting the number of lobby members then you should use <strong>getNumLobbyMembers</strong> instead.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendFromSourceByIndex" target="_blank">
+			<span class="gdscript">
+				getFriendFromSourceByIndex( <sup>int</sup> source_id, <sup>int</sup> friend_number )
+			</span>
+			<span class="c-sharp">
+				getFriendFromSourceByIndex( <sup>uint64_t</sup> source_id, <sup>int</sup> friend_number )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam ID at the given index from a source (Steam group, chat room, lobby, or game server).</li>
+		<li><strong>Note:</strong> You must call <strong>getFriendCountFromSource</strong> before calling this.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint64_t</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendGamePlayed" target="_blank">
+			<span class="gdscript">
+				getFriendGamePlayed( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getFriendGamePlayed( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the specified friend is in a game, and gets info about the game if they are.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<span class="gdscript">
+					<li>id (int) as app ID</li>
+					<li>ip (string)</li>
+					<li>game_port (int)</li>
+					<li>query_port (int)</li>
+					<li>lobby (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>id (int) as app ID</li>
+					<li>ip (string)</li>
+					<li>game_port (uint16)</li>
+					<li>query_port (uint16)</li>
+					<li>lobby (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendMessage" target="_blank">
+			<span class="gdscript">
+				getFriendMessage( <sup>int</sup> friend_id, <sup>int</sup> message )
+			</span>
+			<span class="c-sharp">
+				getFriendMessage( <sup>uint64_t</sup> friend_id, <sup>int</sup> message )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the data from a Steam friends message. This should only ever be called in response to a <strong>connected_friend_chat_message</strong> callback.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul>
+				<li>ret (int)</li>
+				<li>text (string)</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendPersonaName" target="_blank">
+			<span class="gdscript">
+				getFriendPersonaName( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getFriendPersonaName( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the specified user's persona (display) name. This will only be known to the current user if the other user is in their friends list, on the same game server, in a chat room or lobby, or in a small Steam group with the local user. To get the persona name of the current user use <strong>getPersonaName</strong>.</li>
+		<li><strong>Note:</strong> Upon on first joining a lobby, chat room, or game server the current user will not known the name of the other users automatically; that information will arrive asynchronously via <strong>persona_state_change</strong> callbacks.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendPersonaNameHistory" target="_blank">
+			<span class="gdscript">
+				getFriendPersonaNameHistory( <sup>int</sup> steam_id, <sup>int</sup> name_history )
+			</span>
+			<span class="c-sharp">
+				getFriendPersonaNameHistory( <sup>uint64_t</sup> steam_id, <sup>int</sup> name_history )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets one of the previous display names for the specified user. This only works for display names that the current user has seen on the local computer.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendPersonaState" target="_blank">
+			<span class="gdscript">
+				getFriendPersonaState( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getFriendPersonaState( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current status of the specified user. This will only be known to the current user if the other user is in their friends list, on the same game server, in a chat room or lobby, or in a small Steam group with the local user. To get the state of the current user use <strong>getPersonaState</strong>.</li>
+		<li>Returns an <strong>int</strong>; should be one of the following:
+			<ul>
+				<li>0 - Offline</li>
+				<li>1 - Online</li>
+				<li>2 - Busy</li>
+				<li>3 - Away</li>
+				<li>4 - Snooze</li>
+				<li>5 - Looking For Trade</li>
+				<li>6 - Looking for Play</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendRelationship" target="_blank">
+			<span class="gdscript">
+				getFriendRelationship( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getFriendRelationship( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a relationship to a specified user.</li>
+		<li>Returns an <strong>int</strong>; should be one of the following:
+			<ul>
+				<li>0 - None</li>
+				<li>1 - Blocked</li>
+				<li>2 - Request Recipient</li>
+				<li>3 - Friend</li>
+				<li>4 - Request Initiator</li>
+				<li>5 - Ignored</li>
+				<li>6 - Ignored Friend</li>
+				<li>7 - Suggested</li>
+				<li>8 - Max</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendRichPresence" target="_blank">
+			<span class="gdscript">
+				getFriendRichPresence( <sup>int</sup> friend_id, <sup>string</sup> key )
+			</span>
+			<span class="c-sharp">
+				getFriendRichPresence( <sup>uint64_t</sup> friend_id, <sup>string</sup> key )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get a Rich Presence value from a specified friend (typically only used for debugging).</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendRichPresenceKeyByIndex" target="_blank">
+			<span class="gdscript">
+				getFriendRichPresenceKeyByIndex( <sup>int</sup> friend_id, <sup>int</sup> key )
+			</span>
+			<span class="c-sharp">
+				getFriendRichPresenceKeyByIndex( <sup>uint64_t</sup> friend_id, <sup>int</sup> key )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets an empty string ("") if the index is invalid or the specified user has no Rich Presence data available.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendRichPresenceKeyCount" target="_blank">
+			<span class="gdscript">
+				getFriendRichPresenceKeyCount( <sup>int</sup> friend_id )
+			</span>
+			<span class="c-sharp">
+				getFriendRichPresenceKeyCount( <sup>uint64_t</sup> friend_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of Rich Presence keys that are set on the specified user. This is used for iteration, after calling this then <strong>getFriendRichPresenceKeyByIndex</strong> to get the rich presence keys. This is typically only ever used for debugging purposes.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendsGroupMembersCount" target="_blank">
+			getFriendsGroupCount()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of friends groups (tags) the user has created. This is used for iteration, after calling this then <strong>getFriendsGroupIDByIndex</strong> can be used to get the ID of each friend group. This is not to be confused with Steam groups. Those can be obtained with <strong>getClanCount</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendsGroupIDByIndex" target="_blank">
+			<span class="gdscript">
+				getFriendsGroupIDByIndex( <sup>int</sup> friend_group )
+			</span>
+			<span class="c-sharp">
+				getFriendsGroupIDByIndex( <sup>int16</sup> friend_group )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the friends group ID for the given index.</li>
+		<li><strong>Note:</strong> You must call <strong>getFriendsGroupCount</strong> before calling this.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int16</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendsGroupMembersCount" target="_blank">
+			<span class="gdscript">
+				getFriendsGroupMemberCount( <sup>int</sup> friend_group )
+			</span>
+			<span class="c-sharp">
+				getFriendsGroupMemberCount( <sup>int16</sup> friend_group )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of friends in a given friends group.  This should be called before getting the list of friends with <strong>getFriendsGroupMembersList</strong>.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendsGroupMembersList" target="_blank">
+			<span class="gdscript">
+				getFriendsGroupMembersList( <sup>int</sup> friend_group, <sup>int</sup> member_count )
+			</span>
+			<span class="c-sharp">
+				getFriendsGroupMembersList( <sup>int16</sup> friend_group, <sup>int</sup> member_count )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the number of friends in the given friends group.  If fewer friends exist than requested those positions' Steam IDs will be invalid.  You must call <strong>getFriendsGroupMembersCount</strong> before calling this to set up the <strong>member_count</strong> argument with an appropriate size!</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>array</strong> of <strong>int</strong> friend Steam IDs.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>array</strong> of <strong>uint64_t</strong> friend Steam IDs.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendsGroupName" target="_blank">
+			<span class="gdscript">
+				getFriendsGroupName( <sup>int</sup> friend_group )
+			</span>
+			<span class="c-sharp">
+				getFriendsGroupName( <sup>uint64_t</sup> friend_group )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the name for the given friends group.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendSteamLevel" target="_blank">
+			<span class="gdscript">
+				getFriendSteamLevel( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getFriendSteamLevel( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the Steam level of the specified user. You can use the local users Steam ID to get their level.</li>
+		<li>Returns an <strong>int</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetLargeFriendAvatar" target="_blank">
+			<span class="gdscript">
+				getLargeFriendAvatar( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getLargeFriendAvatar( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a handle to the large (128*128px) avatar for the specified user. You can pass in <strong>getSteamID</strong> to get the current user's avatar.</li>
+		<li><strong>Note:</strong> This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call <strong>requestUserInformation</strong> to cache the avatar locally.</li>
+		<li>Triggers a <strong>avatar_loaded</strong> callback.</li>
+		<li>Returns an <strong>int</strong> which is a Steam image handle which is used with <strong>getImageSize</strong> and <strong>getImageRGBA</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetMediumFriendAvatar" target="_blank">
+			<span class="gdscript">
+				getMediumFriendAvatar( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getMediumFriendAvatar( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a handle to the medium (64*64px) avatar for the specified user. You can pass in <strong>getSteamID</strong> to get the current user's avatar.</li>
+		<li><strong>Note:</strong> This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call <strong>requestUserInformation</strong> to cache the avatar locally.</li>
+		<li>Triggers a <strong>avatar_loaded</strong> callback.</li>
+		<li>Returns an <strong>int</strong> which is a Steam image handle which is used with <strong>getImageSize</strong> and <strong>getImageRGBA</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetPersonaName" target="_blank">
+			getPersonaName()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the current user's persona (display) name. This is the same name that is displayed the users community profile page. To get the persona name of other users use <strong>getFriendPersonaName</strong>.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetPersonaState" target="_blank">
+			getPersonaState()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the friend status of the current user. To get the state of other users use <strong>getFriendPersonaState</strong>.</li>
+		<li>Return an <strong>int</strong>; should be one of the following:
+			<ul>
+				<li>0 - Offline</li>
+				<li>1 - Online</li>
+				<li>2 - Busy</li>
+				<li>3 - Away</li>
+				<li>4 - Snooze</li>
+				<li>5 - Looking For Trade</li>
+				<li>6 - Looking for Play</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<span class="gdscript">
+			getPlayerAvatar( <sup>int</sup> size, <sup>int</sup> steam_id )
+		</span>
+		<span class="c-sharp">
+			getPlayerAvatar( <sup>int</sup> size, <sup>uint64_t</sup> steam_id )
+		</span>
+	</h4>
+	<ul>
+		<li>Get player's avatar. Short-cuts to the various avatar functions in Steamworks.</li>
+		<li><strong>Note:</strong> This is a unique function to GodotSteam.</li>
+		<li>Size is passed as follows:
+			<ul class="inner">
+				<li>1 - small avatar</li>
+				<li>2 - medium avatar</li>
+				<li>3 - large avatar</li>
+			</ul>
+		</li>
+		<li>Triggers a <strong><em>avatar_loaded</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li> 
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetPlayerNickname" target="_blank">
+			<span class="gdscript">
+				getPlayerNickname( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getPlayerNickname( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets the nickname that the current user has set for the specified user.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>getRecentPlayers()</h4>
+	<ul>
+		<li>Get list of players user has recently played game with.</li>
+		<li><strong>Note:</strong> This is a unique function to GodotSteam.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul>
+				<li>player (dictionary)
+					<ul>
+						<span class="gdscript">
+							<li>id (int) as friend Steam ID.</li>
+							<li>name (string)</li>
+							<li>time (int)</li>
+							<li>status (int)</li>
+						</span>
+						<span class="c-sharp">
+							<li>id (uint64_t) as friend Steam ID.</li>
+							<li>name (string)</li>
+							<li>time (int)</li>
+							<li>status (int)</li>
+						</span>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetSmallFriendAvatar" target="_blank">
+			<span class="gdscript">
+				getSmallFriendAvatar( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				getSmallFriendAvatar( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Gets a handle to the small (32*32px) avatar for the specified user. You can pass in <strong>getSteamID</strong> to get the current user's avatar.</li>
+		<li><strong>Note:</strong> This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call <strong>requestUserInformation</strong> to cache the avatar locally.</li>
+		<li>Triggers a <strong>avatar_loaded</strong> callback.</li>
+		<li>Returns an <strong>int</strong> which is a Steam image handle which is used with <strong>getImageSize</strong> and <strong>getImageRGBA</strong>.</li>
+	</ul>
+	<h4>
+		<a href="" target="_blank">
+			getUserFriendsGroups()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Get list of friends groups (tags) the user has created. This is not to be confused with Steam groups.</li>
+		<li><strong>Note:</strong> This is a unique function to GodotSteam.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul>
+				<li>tags (dictionary)
+					<ul>
+						<span class="gdscript">
+							<li>id (int) as friend group ID</li>
+							<li>name (string)</li>
+							<li>members (int)</li>
+						</span>
+						<span class="c-sharp">
+							<li>id (int16) as friend group ID</li>
+							<li>name (string)</li>
+							<li>members (int)</li>
+						</span>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetUserRestrictions" target="_blank">
+			getUserRestrictions()
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>If current user is chat restricted, they can't send or receive any text or voice chat messages. The user can't see custom avatars. But the user can be online and send or receive game invites. A chat restricted user cannot add friends or join any groups. Restricted users can still be online and send/receive game invites.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>; it should be one of the following:
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>uint32</strong>; it should be one of the following:
+			</span>
+			<ul>
+				<li>0 - None</li>
+				<li>1 - Unknown</li>
+				<li>2 - Any Chat</li>
+				<li>4 - Voice Chat</li>
+				<li>8 - Group Chat</li>
+				<li>16 - Rating</li>
+				<li>32 - Game Invites</li>
+				<li>64 - Trading</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>getUserSteamFriends()</h4>
+	<ul>
+		<li>Get a list of user's Steam friends; a mix of different Steamworks API friend functions.</li>
+		<li><strong>Note:</strong> This is a unique function to GodotSteam.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul>
+				<li>friends (dictionary)
+					<ul>
+						<span class="gdscript">
+							<li>id (int) as friend Steam ID</li>
+							<li>name (string)</li>
+							<li>status (int)</li>
+						</span>
+						<span class="c-sharp">
+							<li>id (uint64_t) as friend Steam ID</li>
+							<li>name (string)</li>
+							<li>status (int)</li>
+						</span>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>getUserSteamGroups()</h4>
+	<ul>
+		<li>Get list of user's Steam groups; a mix of different Steamworks API group functions.</li>
+		<li><strong>Note:</strong> This is a unique function to GodotSteam.</li>
+		<li>Returns an <strong>array</strong> of:
+			<ul>
+				<li>groups (dictionary)
+					<ul>
+						<span class="gdscript">
+							<li>id (int) as group ID</li>
+							<li>name (string)</li>
+							<li>tag (string)</li>
+						</span>
+						<span class="c-sharp">
+							<li>id (uint64_t) as group ID</li>
+							<li>name (string)</li>
+							<li>tag (string)</li>
+						</span>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#HasFriend" target="_blank">
+			<span class="gdscript">
+				hasFriend( <sup>int</sup> steam_id, <sup>int</sup> friend_flags )
+			</span>
+			<span class="c-sharp">
+				hasFriend( <sup>uint64_t</sup> steam_id, <sup>int</sup> friend_flags )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns true if the specified user meets any of the criteria specified in friendFlags:
+			<ul class="inner">
+				<li>0x00 - None</li>
+				<li>0x01 - Blocked</li>
+				<li>0x02 - Friendship Requested</li>
+				<li>0x04 - Immediate</li>
+				<li>0x08 - Clan Member</li>
+				<li>0x10 - On Game Server</li>
+				<li>0x80 - Requesting Friendship</li>
+				<li>0x100 - Requesting Info</li>
+				<li>0x200 - Ignored</li>
+				<li>0x400 - Ignored Friend</li>
+				<li>0x0000 - Chat Member</li>
+				<li>0xFFFF - All</li>
+			</ul>
+		</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#InviteUserToGame" target="_blank">
+			<span class="gdscript">
+				inviteUserToGame( <sup>int</sup> steam_id, <sup>string</sup> connectString )
+			</span>
+			<span class="c-sharp">
+				inviteUserToGame( <sup>uint64_t</sup> steam_id, <sup>string</sup> connectString )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Invites a friend or clan member to the current game using a special invite string. If the target user accepts the invite then the pchConnectString gets added to the command-line when launching the game. If the game is already running for that user, then they will receive a <strong>join_game_requested</strong> callback with the connect string.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#IsClanChatAdmin" target="_blank">
+			<span class="gdscript">
+				isClanChatAdmin( <sup>int</sup> chat_id, <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				isClanChatAdmin( <sup>uint64_t</sup> chat_id, <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if a user in the Steam group chat room is an admin.</li>
+		<li>Returns a <strong>bool</strong>.</li> 
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#IsClanPublic" target="_blank">
+			<span class="gdscript">
+				isClanPublic( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				isClanPublic( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the Steam group is public.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#IsClanOfficialGameGroup" target="_blank">
+			<span class="gdscript">
+				isClanOfficialGameGroup( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				isClanOfficialGameGroup( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the Steam group is an official game group/community hub.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#IsClanChatWindowOpenInSteam" target="_blank">
+			<span class="gdscript">
+				isClanChatWindowOpenInSteam( <sup>int</sup> chat_id )
+			</span>
+			<span class="c-sharp">
+				isClanChatWindowOpenInSteam( <sup>uint64_t</sup> chat_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the Steam Group chat room is open in the Steam UI.</li>
+		<li>Returns a <strong>bool</strong>.</li> 
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#IsFollowing" target="_blank">
+			<span class="gdscript">
+				isFollowing( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				isFollowing( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if the current user is following the specified user.</li>
+		<li>Triggers a <strong><em>is_following</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#IsUserInSource" target="_blank">
+			<span class="gdscript">
+				isUserInSource( <sup>int</sup> steam_id, <sup>int</sup> source_id )
+			</span>
+			<span class="c-sharp">
+				isUserInSource( <sup>uint64_t</sup> steam_id, <sup>uint64_t</sup> source_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Checks if a specified user is in a source (Steam group, chat room, lobby, or game server).</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#JoinClanChatRoom" target="_blank">
+			<span class="gdscript">
+				joinClanChatRoom( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				joinClanChatRoom( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Allows the user to join Steam group (clan) chats right within the game. The behavior is somewhat complicated, because the user may or may not be already in the group chat from outside the game or in the overlay. You can use <strong>activateGameOverlayToUser</strong> to open the in-game overlay version of the chat.</li>
+		<li>Triggers a <strong><em>join_clan_chat_complete</em></strong> callback.</li>
+		<li>May additionally trigger the following callbacks:
+			<ul class="inner">
+				<li><strong>connect_chat_join</strong></li>
+				<li><strong>connect_chat_leave</strong></li>
+				<li><strong>connect_clan_chat_message</strong></li>
+			</ul>
+		</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#LeaveClanChatRoom" target="_blank">
+			<span class="gdscript">
+				leaveClanChatRoom( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				leaveClanChatRoom( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Leaves a Steam group chat that the user has previously entered with <strong>joinClanChatRoom</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#OpenClanChatWindowInSteam" target="_blank">
+			<span class="gdscript">
+				openClanChatWindowInSteam( <sup>int</sup> chat_id )
+			</span>
+			<span class="c-sharp">
+				openClanChatWindowInSteam( <sup>uint64_t</sup> chat_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Opens the specified Steam group chat room in the Steam UI.</li>
+		<li>Returns a <strong>bool</strong>.</li> 
+	</ul>
+	<h4>registerProtocolInOverlayBrowser( <sup>string</sup> protocol )</h4>
+	<ul>
+		<li>Call this before calling <strong>activateGameOverlayToWebPage</strong> to have the Steam Overlay Browser block navigations to your specified protocol (scheme) uris and instead dispatch a <strong>overlay_browser_protocol</strong> callback to your game. <strong>activateGameOverlayToWebPage</strong> must have been called with 1.</li>
+		<li><strong>Note:</strong> While this function is in the SDK, it is not listed in the Steamworks docs.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#ReplyToFriendMessage" target="_blank">
+			<span class="gdscript">
+				replyToFriendMessage( <sup>int</sup> steam_id, <sup>string</sup> message )
+			</span>
+			<span class="c-sharp">
+				replyToFriendMessage( <sup>uint64_t</sup> steam_id, <sup>string</sup> message )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sends a message to a Steam friend.</li>
+		<li>Returns a <strong>bool</strong>.</li> 
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#RequestClanOfficerList" target="_blank">
+			<span class="gdscript">
+				requestClanOfficerList( <sup>int</sup> clan_id )
+			</span>
+			<span class="c-sharp">
+				requestClanOfficerList( <sup>uint64_t</sup> clan_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Requests information about a Steam group officers (administrators and moderators).</li>
+		<li><strong>Note:</strong> You can only ask about Steam groups that a user is a member of.</li>
+		<li><strong>Note:</strong> This won't download avatars for the officers automatically. If no avatar image is available for an officer, then call <strong>requestUserInformation</strong> to download the avatar.</li>
+		<li>Triggers a <strong><em>request_clan_officer_list</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#RequestFriendRichPresence" target="_blank">
+			<span class="gdscript">
+				requestFriendRichPresence( <sup>int</sup> friend_id )
+			</span>
+			<span class="c-sharp">
+				requestFriendRichPresence( <sup>uint64_t</sup> friend_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Requests Rich Presence data from a specific user. This is used to get the Rich Presence information from a user that is not a friend of the current user, like someone in the same lobby or game server. This function is rate limited, if you call this too frequently for a particular user then it will just immediately post a callback without requesting new data from the server.</li>
+		<li>Triggers a <strong><em>friend_rich_presence_update</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#RequestUserInformation" target="_blank">
+			<span class="gdscript">
+				requestUserInformation( <sup>int</sup> steam_id, <sup>bool</sup> require_name_only )
+			</span>
+			<span class="c-sharp">
+				requestUserInformation( <sup>uint64_t</sup> steam_id, <sup>bool</sup> require_name_only )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Requests information about a user, basically the persona name and avatar. If requireNameOnly is set, then the avatar of a user isn't downloaded.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#SendClanChatMessage" target="_blank">
+			<span class="gdscript">
+				sendClanChatMessage( <sup>int</sup> chat_id, <sup>string</sup> text )
+			</span>
+			<span class="c-sharp">
+				sendClanChatMessage( <sup>uint64_t</sup> chat_id, <sup>string</sup> text )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sends a message to a Steam group chat room.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#SetInGameVoiceSpeaking" target="_blank">
+			<span class="gdscript">
+				setInGameVoiceSpeaking( <sup>int</sup> steam_id, <sup>bool</sup> speaking )
+			</span>
+			<span class="c-sharp">
+				setInGameVoiceSpeaking( <sup>uint64_t</sup> steam_id, <sup>bool</sup> speaking )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Let Steam know that the user is currently using voice chat in game. This will suppress the microphone for all voice communication in the Steam UI.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#SetListenForFriendsMessages" target="_blank">
+			setListenForFriendsMessages( <sup>bool</sup> intercept )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Listens for Steam friends chat messages. You can then show these chats inline in the game. For example with a Blizzard style chat message system or the chat system in Dota 2. After enabling this you will receive <strong>connected_friend_chat_message</strong> callbacks when ever the user receives a chat message. You can get the actual message data from this callback with <strong>getFriendMessage</strong>. You can send messages with <strong>replyToFriendMessage</strong>.</li>
+		<li>Triggers a <strong><em>connected_friend_chat_message</em></strong> callback.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#SetPersonaName" target="_blank">
+			setPersonaName( <sup>string</sup> name )
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets the current user's persona name, stores it on the server and publishes the changes to all friends who are online. Changes take place locally immediately, and a <strong>persona_state_change</strong> callback is posted, presuming success. If the name change fails to happen on the server, then an additional <strong>persona_state_change</strong> callback will be posted to change the name back, in addition to the final result available in the call result.</li>
+		<li>Triggers a <strong><em>name_changed</em></strong> callback.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#SetPlayedWith" target="_blank">
+			<span class="gdscript">
+				setPlayedWith( <sup>int</sup> steam_id )
+			</span>
+			<span class="c-sharp">
+				setPlayedWith( <sup>uint64_t</sup> steam_id )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set player as 'Played With' for current game.</li>
+		<li><strong>Note:</strong> The current user must be in game with the other player for the association to work.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#SetRichPresence" target="_blank">
+			setRichPresence( <sup>string</sup> key, <sup>string</sup> value)
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Sets a Rich Presence key/value for the current user that is automatically shared to all friends playing the same game. Each user can have up to 20 keys set as defined by k_cchMaxRichPresenceKeys. There are two special keys used for viewing/joining games:
+			<ul class="inner">
+				<li>"status" - A UTF-8 string that will show up in the 'view game info' dialog in the Steam friends list.</li>
+				<li>"connect" - A UTF-8 string that contains the command-line for how a friend can connect to a game. This enables the 'join game' button in the 'view game info' dialog, in the steam friends list right click menu, and on the players Steam community profile. Be sure your app implements ISteamApps::GetLaunchCommandLine so you can disable the popup warning when launched via a command line.</li>
+			</ul>
+		</li>
+		<li>There are three additional special keys used by the new Steam Chat:
+			<ul class="inner">
+				<li>"steam_display" - Names a rich presence localization token that will be displayed in the viewing user's selected language in the Steam client UI. See Rich Presence Localization for more info, including a link to a page for testing this rich presence data. If steam_display is not set to a valid localization tag, then rich presence will not be displayed in the Steam client.</li>
+				<li>"steam_player_group" - When set, indicates to the Steam client that the player is a member of a particular group. Players in the same group may be organized together in various places in the Steam UI. This string could identify a party, a server, or whatever grouping is relevant for your game. The string itself is not displayed to users.</li>
+				<li>"steam_player_group_size" - When set, indicates the total number of players in the steam_player_group. The Steam client may use this number to display additional information about a group when all of the members are not part of a user's friends list. (For example, "Bob, Pete, and 4 more".)</li>
+			</ul>
+		</li>
+		<li>You can clear all of the keys for the current user with <strong>clearRichPresence</strong>. To get rich presence keys for friends use <strong>getFriendRichPresence</strong>.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+</section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+				</div>
+			</div>
+			<!-- Sidebar -->
+			<div id="sidebar">
+	<div id="sidebar-inner" class="inner">
+		<!-- Menu -->
+		<nav id="menu">
+			<header class="major">
+				<h2>Menu</h2>
+			</header>
+			<ul>
+				<li><a href="index.html">Introduction</a></li>
+				<li>
+					<span class="opener">How-To's</span>
+					<ul>
+						<li><a href="howto-module.html">How-To Godot 2, 3, 4</a></li>
+						<li><a href="howto-gdnative.html">How-To GDNative</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Functions</span>
+					<ul>
+						<li><a href="functions-main.html">Main</a></li>
+						<li><a href="functions-apps.html">Apps</a></li>
+						<li><a href="functions-apps-list.html">App Lists</a></li>
+						<li><a href="functions-friends.html">Friends</a></li>
+						<li><a href="functions-game-search.html">Game Search</a></li>
+						<li><a href="functions-game-server.html">Game Server</a></li>
+						<li><a href="functions-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="functions-html-surface.html">HTML Surface</a></li>
+						<li><a href="functions-http.html">HTTP</a></li>
+						<li><a href="functions-input.html">Input</a></li>
+						<li><a href="functions-inventory.html">Inventory</a></li>
+						<li><a href="functions-matchmaking.html">Matchmaking</a></li>
+						<li><a href="functions-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="functions-music.html">Music</a></li>
+						<li><a href="functions-music-remote.html">Music Remote</a></li>
+						<li><a href="functions-networking.html">Networking</a></li>
+						<li><a href="functions-networking-messages.html">Networking Messages</a></li>
+						<li><a href="functions-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="functions-networking-types.html">Networking Types</a></li>
+						<li><a href="functions-networking-utils.html">Networking Utils</a></li>
+						<li><a href="functions-parental-settings.html">Parental Settings</a></li>
+						<li><a href="functions-parties.html">Parties</a></li>
+						<li><a href="functions-remote-play.html">Remote Play</a></li>
+						<li><a href="functions-remote-storage.html">Remote Storage</a></li>
+						<li><a href="functions-screenshots.html">Screenshots</a></li>
+						<li><a href="functions-ugc.html">UGC</a></li>
+						<li><a href="functions-user.html">User</a></li>
+						<li><a href="functions-user-stats.html">User Stats</a></li>
+						<li><a href="functions-utils.html">Utils</a></li>
+						<li><a href="functions-video.html">Video</a></li>
+					</ul>
+				</li>
+				<li>
+					<span class="opener">Signals</span>
+					<ul>
+						<li><a href="signals-main.html">Main</a></li>
+						<li><a href="signals-apps.html">Apps</a></li>
+						<li><a href="signals-apps-list.html">Apps List</a></li>
+						<li><a href="signals-friends.html">Friends</a></li>
+						<li><a href="signals-game-search.html">Game Search</a></li>
+						<li><a href="signals-game-server.html">Game Server</a></li>
+						<li><a href="signals-game-server-stats.html">Game Server Stats</a></li>
+						<li><a href="signals-html-surface.html">HTML Surface</a></li>
+						<li><a href="signals-http.html">HTTP</a></li>
+						<li><a href="signals-input.html">Input</a></li>
+						<li><a href="signals-inventory.html">Inventory</a></li>
+						<li><a href="signals-matchmaking.html">Matchmaking</a></li>
+						<li><a href="signals-matchmaking-servers.html">Matchmaking Servers</a></li>
+						<li><a href="signals-music-remote.html">Music Remote</a></li>
+						<li><a href="signals-networking.html">Networking</a></li>
+						<li><a href="signals-networking-sockets.html">Networking Sockets</a></li>
+						<li><a href="signals-networking-utils.html">Networking Utils</a></li>
+						<li><a href="signals-parental-settings.html">Parental Settings</a></li>
+						<li><a href="signals-parties.html">Parties</a></li>
+						<li><a href="signals-remote-play.html">Remote Play</a></li>
+						<li><a href="signals-remote-storage.html">Remote Storage</a></li>
+						<li><a href="signals-screenshots.html">Screenshots</a></li>
+						<li><a href="signals-ugc.html">UGC</a></li>
+						<li><a href="signals-user.html">User</a></li>
+						<li><a href="signals-user-stats.html">User Stats</a></li>
+						<li><a href="signals-utils.html">Utils</a></li>
+						<li><a href="signals-video.html">Video</a></li>
+					</ul>
+				<li>
+					<span class="opener">Godot 3.x Tutorials</span>
+					<ul>
+						<li><a href="tutorials-initializing.html">Initializing Steam</a></li>
+						<li><a href="tutorials-stats-achievements.html">Stats and Achievements</a></li>
+						<li><a href="tutorials-leaderboards.html">Leaderboards</a></li>
+						<li><a href="tutorials-avatars.html">Avatars</a></li>
+						<li><a href="tutorials-lobbies-p2p.html">Lobbies / P2P Networking</a></li>
+						<li><a href="tutorials-authentication.html">Authentication</a></li>
+						<li><a href="tutorials-mac-export.html">Mac Exporting</a></li>
+						<li><a href="tutorials-achievement-icons.html">Achievement Icons</a></li>
+						<li><a href="tutorials-auto-matchmaking.html">Auto-Matchmaking</a></li>
+						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
+						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
+						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+					</ul>
+				</li>
+				<li><a href="games.html">Games Using GodotSteam</a></li>
+				<li><a href="todo.html">To-Do</a></li>
+				<li>
+					<span class="opener">Change Log</span>
+					<ul>
+						<li><a href="changelog-godot4.html">Godot 4.x</a></li>
+						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
+						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
+						<li><a href="changelog-gdnative.html">GDNative</a></li>
+					</ul>
+				</li>
+				<li><a href="contributors.html">Contributors</a></li>
+			</ul>
+		</nav>
+		<section>
+			<header class="major">
+				<h2>Stuck? Need Help?</h2>
+			</header>
+			<p>Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="mailto:godotsteam@coaguco.com" target="_blank"><i class="fas fa-envelope-open-text"></i>&nbsp;&nbsp;Send A Support E-Mail</a></li>
+				<li><a class="button primary" href="https://discord.gg/SJRSq6K" target="_blank"><i class="fab fa-discord"></i>&nbsp;&nbsp;Chat With Us On Discord</a></li>
+			</ul>
+		</section>
+		<section>
+			<header class="major">
+				<h2>Donate</h2>
+			</header>
+			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
+			<ul class="actions stacked">
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+			</ul>
+		</section>
+		<footer>
+			<ul class="actions stacked">
+				<li>Godot Engine by <a href="https://godotengine.org">Juan Linietsky, Ariel Manzur and contributors</a></li>
+				<li>Steamworks API by <a href="https://valvesoftware.com">Valve Corporation</a></li>
+				<li>GodotSteam by <a href="https://coaguco.com">GP Garcia</a> and contributors</li>
+				<li>Site Template by <a href="https://html5up.net">HTML5UP</a></li>
+			</ul>
+		</footer>
+		<footer id="footer" class="copyright">
+			2022 &copy; GP Garcia & CoaguCo Industries
+		</footer>
+	</div>
+</div>		</div>
+		<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/browser.min.js"></script>
+		<script src="js/breakpoints.min.js"></script>
+		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/godotsteam.js"></script>
+	</body>
+</html>
