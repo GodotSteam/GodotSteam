@@ -6,6 +6,12 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Updated 2/9/22**
+- Added: new game to game list
+
+**Updated 2/6/22**
+- Added: new contributor
+
 **Updated 2/05/22**
 - Added: links to Steamworks SDK docs per function
 - Added: new games to game list
