@@ -21,7 +21,7 @@
 		<link title="Linux Caveats">https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html</link>
 		<link title="Exporting and Shipping">https://gramps.github.io/GodotSteam/tutorials-exporting-shipping.html</link>
 	</tutorials>
-	<methods name="Apps">
+	<methods>
 		<method name="acceptConnection">
 			<return type="int" />
 			<argument index="0" name="connection" type="int" />
