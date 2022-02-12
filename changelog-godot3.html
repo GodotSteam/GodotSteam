@@ -29,7 +29,56 @@
 		<h1>Change Log | Godot 3.x Module</h1>
 	</header>
 	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
-	<h3>Version Version 3.12.1 Changes</h3>
+	<h3>Version 3.13 Changes</h3>
+	<ul>
+		<li>Added: missing function getPlaybackStatus to Music class</li>
+		<li>Added: missing function setDurationControlOnlineState to Users class</li>
+		<li>Added: missing signals for Matchmaking Servers</li>
+		<li>Added: missing PropertyInfo data for signals</li>
+		<li>Changed: serverInit now takes the individual arguments and no longer a dictionary of arguments</li>
+		<li>Changed: getAppName, getAppListInstallDir, and getAppListBuildId in App Lists to use uint32_t instead of uint32</li>
+		<li>Changed: initGameServer to use correct arguments</li>
+		<li>Changed: all signal / callback names for Game Server class to lower-case to match the all others</li>
+		<li>Changed: server_connect_failure, policy_response, client_group_status callback to match function names</li>
+		<li>Changed: various variables in Game Server class callbacks to match the others</li>
+		<li>Changed: setMaxPlayerCount argument to players_max from max to be more clear</li>
+		<li>Changed: setPasswordProtected argument to password_protected from password to be more clear</li>
+		<li>Changed: call result / signal stat_received to stats_received</li>
+		<li>Changed: createCookieContainer now sends back the cookie_handle</li>
+		<li>Changed: checkResultSteamID changed argument name to match</li>
+		<li>Changed: getItemsWithPrices return dictionary name</li>
+		<li>Changed: getAppID now returns uint32_t</li>
+		<li>Changed: getFavoriteGames to have more distinct port names in return dictionary</li>
+		<li>Changed: some returned types and argument types to better match their Steamworks counterparts</li>
+		<li>Changed: names of some keys and some integer types in getQueryUGCResult return dictionary</li>
+		<li>Changed: keys in getBeaconDetails return dictionary to be more clear</li>
+		<li>Changed: removed data_size argument from various Remote Storage functions and get size internally</li>
+		<li>Changed: playerDetails and serverRules IP argument to a string</li>
+		<li>Changed: various Networking Messages, Networking Sockets, and Networking Utils functions to use internal struct system with Networking Type functions</li>
+		<li>Changed: a variety of miscellaneous small changes and corrections</li>
+		<li>Fixed: some missing function binds</li>
+		<li>Fixed: lobby_message callback data, thanks to kongo555</li>
+		<li>Fixed: missing default value for getAvailableP2PPacketSize, readP2PPacket, sendP2PPacket</li>
+		<li>Fixed: getAnalogActionData so the return dictionary has the right keys</li>
+		<li>Fixed: getUserSteamFriends, getUserSteamGroups to give the correct Steam ID back</li>
+		<li>Fixed: getFriendGamePlayed using wrong key name in return dictionary</li>
+		<li>Fixed: toIdentityString to provide the correct string data</li>
+		<li>Fixed: parseIdentityString to properly parse back the string data</li>
+		<li>Fixed: getSesssionConnectionInfo now passes back all data</li>
+		<li>Fixed: getLocalPingLocation should return both the ping and location ID in a dictionary</li>
+		<li>Fixed: getPingToDataCenter, getPOPList, parsePingLocationString, closeConnection, getAuthenticationStatus, getConnectionInfo, createSocketPair functions</li>
+		<li>Removed: requestAllProofOfPurchaseKeys and requestAppProofOfPurchaseKey as they are depreciated</li>
+		<li>Removed: gameplay_stats signal from Game Server class as it wasn't connected to anything</li>
+		<li>Removed: getUserDataFolder as it is depreciated</li>
+		<li>Removed: leading _ in front of callbacks and call results internally</li>
+		<li>Removed: initGameServer as it is unnecessary</li>
+		<li>Removed: connectByIPAddress, isPingMeasurementInProgress, setLinkedLobby as they are not in the SDK</li>
+	</ul>
+	<h3>Version 3.12.1 Changes</h3>
+	<ul>
+		<li>Fixed: incorrect case on app_installed and app_uninstalled, thanks to craftablescience</li>
+	</ul>
+	<h3>Version 3.12.1 Changes</h3>
 	<ul>
 		<li>Fixed: incorrect case on app_installed and app_uninstalled, thanks to craftablescience</li>
 	</ul>
@@ -602,7 +651,7 @@
 					</ul>
 				</li>
 				<li><a href="games.html">Games Using GodotSteam</a></li>
-				<li><a href="todo.html">To-Do</a></li>
+				<li><a href="https://github.com/Gramps/GodotSteam/projects/1.html" target="_blank">To-Do</a></li>
 				<li>
 					<span class="opener">Change Log</span>
 					<ul>
