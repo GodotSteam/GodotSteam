@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Steam" inherits="Object" version="3.4">
 	<brief_description>
-	Steamworks SDK / API for the Godot Game Engine.
+		Steamworks SDK / API for the Godot Game Engine.
 	</brief_description>
 	<description>
-	An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine. <link title="Full documentation and tutorials are available at https://gramps.github.io/GodotSteam/.">https://gramps.github.io/GodotSteam/</link>
+		An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.
+		Full documentation and tutorials are available at https://gramps.github.io/GodotSteam/.
 	</description>
 	<tutorials>
-		[b]Here are a list of tutorials currently available in the documentation:[/b]
 		<link title="Initializing Steam">https://gramps.github.io/GodotSteam/tutorials-initializing.html</link>
 		<link title="Stats and Achievements">https://gramps.github.io/GodotSteam/tutorials-stats-achievements.html</link>
 		<link title="Leaderboards">https://gramps.github.io/GodotSteam/tutorials-leaderboards.html</link>
@@ -26,6 +26,7 @@
 			<return type="int" />
 			<argument index="0" name="connection" type="int" />
 			<description>
+				Accept an incoming connection that has been received on a listen socket.
 			</description>
 		</method>
 		<method name="acceptGame">
@@ -5040,16 +5041,13 @@
 			<argument index="0" name="result" type="int" />
 			<description>
 				Called when an account on your favorites list is updated.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#FavoritesListAccountsUpdated_t</link>
 			</description>
 		</signal>
 		<signal name="favorites_list_changed">
 			<argument index="0" name="favorite" type="Dictionary" />
 			<description>
 				A server was added/removed from the favorites list, you should refresh now.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#FavoritesListChanged_t</link>
 			</description>
-		</signal>
 		</signal>
 		<signal name="file_details_result">
 			<argument index="0" name="result" type="int" />
@@ -5462,7 +5460,6 @@
 			<argument index="3" name="chat_state" type="int" />
 			<description>
 				A lobby chat room state has changed, this is usually sent when a user has joined or left the lobby.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyChatUpdate_t</link>
 			</description>
 		</signal>
 		<signal name="lobby_created">
@@ -5470,13 +5467,11 @@
 			<argument index="1" name="lobby_id" type="int" />
 			<description>
 				Result of our request to create a Lobby. At this point, the lobby has been joined and is ready for use.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyCreated_t</link>
 			</description>
 		</signal>
 		<signal name="lobby_data_update">
 			<description>
 				The lobby metadata has changed.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyDataUpdate_t</link>
 			</description>
 		</signal>
 		<signal name="lobby_game_created">
@@ -5485,8 +5480,7 @@
 			<argument index="2" name="server_ip" type="String" />
 			<argument index="3" name="port" type="int" />
 			<description>
-				A game server has been set via [member setLobbyGameServer] for all of the members of the lobby to join. It's up to the individual clients to take action on this; the typical game behavior is to leave the lobby and connect to the specified game server; but the lobby may stay open throughout the session if desired.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyGameCreated_t</link>
+				A game server has been set via [method setLobbyGameServer] for all of the members of the lobby to join. It's up to the individual clients to take action on this; the typical game behavior is to leave the lobby and connect to the specified game server; but the lobby may stay open throughout the session if desired.
 			</description>
 		</signal>
 		<signal name="lobby_invite">
@@ -5494,8 +5488,7 @@
 			<argument index="1" name="lobby" type="int" />
 			<argument index="2" name="game" type="int" />
 			<description>
-				Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyGameCreated_t</link>
+				Someone has invited you to join a lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.
 			</description>
 		</signal>
 		<signal name="lobby_joined">
@@ -5505,7 +5498,6 @@
 			<argument index="3" name="response" type="int" />
 			<description>
 				Received upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyEnter_t</link>
 			</description>
 		</signal>
 		<signal name="lobby_kicked">
@@ -5514,25 +5506,22 @@
 			<argument index="2" name="due_to_disconnect" type="int" />
 			<description>
 				Posted if a user is forcefully removed from a lobby; can occur if a user loses connection to Steam.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyKicked_t</link>
 			</description>
 		</signal>
 		<signal name="lobby_match_list">
 			<argument index="0" name="lobbies" type="Array" />
 			<description>
 				Result when requesting the lobby list.
-				Emits signal in response to function [member requestLobbyList].
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyMatchList_t</link>
+				Emits signal in response to function [method requestLobbyList].
 			</description>
 		</signal>
 		<signal name="lobby_message">
-			<argument index="0" name="lobby_id" type="int" />
+			<argument index="0" name="result" type="int" />
 			<argument index="1" name="user" type="int" />
 			<argument index="2" name="message" type="String" />
 			<argument index="3" name="chat_type" type="int" />
 			<description>
 				A chat (text or binary) message for this lobby has been received.
-				<link title="Read more on the official Steamworks SDK documentation.">"https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyChatMsg_t</link>
 			</description>
 		</signal>
 		<signal name="local_file_changed">
