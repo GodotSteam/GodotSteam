@@ -1,15 +1,14 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 3.x). For the Windows, Linux, and Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
-- [Server](https://github.com/Gramps/GodotSteam/tree/server)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
 Documentation
 ----------
-[Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
+[Documentation is available here](https://gramps.github.io/GodotSteam/) and [is mirrored on and exported from CoaguCo's site](https://coaguco.com/godotSteam).
 
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
@@ -18,6 +17,50 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.12.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.13 Changes**
+- Added: missing function getPlaybackStatus to Music class
+- Added: missing function setDurationControlOnlineState to Users class
+- Added: missing signals for Matchmaking Servers
+- Added: missing PropertyInfo data for signals
+- Changed: serverInit now takes the individual arguments and no longer a dictionary of arguments
+- Changed: getAppName, getAppListInstallDir, and getAppListBuildId in App Lists to use uint32_t instead of uint32
+- Changed: initGameServer to use correct arguments
+- Changed: all signal / callback names for Game Server class to lower-case to match the all others
+- Changed: server_connect_failure, policy_response, client_group_status callback to match function names
+- Changed: various variables in Game Server class callbacks to match the others
+- Changed: setMaxPlayerCount argument to players_max from max to be more clear
+- Changed: setPasswordProtected argument to password_protected from password to be more clear
+- Changed: call result / signal stat_received to stats_received
+- Changed: createCookieContainer now sends back the cookie_handle
+- Changed: checkResultSteamID changed argument name to match
+- Changed: getItemsWithPrices return dictionary name
+- Changed: getAppID now returns uint32_t
+- Changed: getFavoriteGames to have more distinct port names in return dictionary
+- Changed: some returned types and argument types to better match their Steamworks counterparts
+- Changed: names of some keys and some integer types in getQueryUGCResult return dictionary
+- Changed: keys in getBeaconDetails return dictionary to be more clear
+- Changed: removed data_size argument from various Remote Storage functions and get size internally
+- Changed: playerDetails and serverRules IP argument to a string
+- Changed: various Networking Messages, Networking Sockets, and Networking Utils functions to use internal struct system with Networking Type functions
+- Changed: a variety of miscellaneous small changes and corrections
+- Fixed: some missing function binds
+- Fixed: lobby_message callback data, thanks to _kongo555_
+- Fixed: missing default value for getAvailableP2PPacketSize, readP2PPacket, sendP2PPacket
+- Fixed: getAnalogActionData so the return dictionary has the right keys
+- Fixed: getUserSteamFriends, getUserSteamGroups to give the correct Steam ID back
+- Fixed: getFriendGamePlayed using wrong key name in return dictionary
+- Fixed: toIdentityString to provide the correct string data
+- Fixed: parseIdentityString to properly parse back the string data
+- Fixed: getSesssionConnectionInfo now passes back all data
+- Fixed: getLocalPingLocation should return both the ping and location ID in a dictionary
+- Fixed: getPingToDataCenter, getPOPList, parsePingLocationString, closeConnection, getAuthenticationStatus, getConnectionInfo, createSocketPair functions
+- Removed: requestAllProofOfPurchaseKeys and requestAppProofOfPurchaseKey as they are depreciated
+- Removed: gameplay_stats signal from Game Server class as it wasn't connected to anything
+- Removed: getUserDataFolder as it is depreciated
+- Removed: leading _ in front of callbacks and call results internally
+- Removed: initGameServer as it is unnecessary
+- Removed: connectByIPAddress, isPingMeasurementInProgress, setLinkedLobby as they are not in the SDK
 
 **Version 3.12.1 Changes**
 - Fixed: incorrect case on app_installed and app_uninstalled, thanks to _craftablescience_
