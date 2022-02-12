@@ -1,17 +1,16 @@
 # GodotSteam for Godot 2.x
-Steam API for the Godot game engine (versions 2 to 2.1.6). For the Windows, Linux, and Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 2.x). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
-- [Server](https://github.com/Gramps/GodotSteam/tree/server)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
 **Notice:** GodotSteam for Godot 2.x is now retired. Please use the Godot 3.x version and update your game. This branch still works fine but will not receive any further updates.
 
 Documentation
 ----------
-[Documentation is available here](https://gramps.github.io/GodotSteam/).
+[Documentation is available here](https://gramps.github.io/GodotSteam/) and [is mirrored on and exported from CoaguCo's site](https://coaguco.com/godotSteam).
 
 You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
