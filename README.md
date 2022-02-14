@@ -16,7 +16,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.12.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.13)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 3.13 Changes**
 - Added: missing function getPlaybackStatus to Music class
