@@ -5292,7 +5292,9 @@ Dictionary Steam::getFakeIP(int first_port){
 		fake_ip["result"] = fake_ip_result.m_eResult;
 		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
 		fake_ip["ip"] = fake_ip_result.m_unIP;
-		fake_ip["ports"] = fake_ip_result.m_unPorts;
+		char ports[8];
+		for (size_t i = 0; i<sizeof(fake_ip_result.m_unPorts)/sizeof(fake_ip_result.m_unPorts[0]); i++){ ports[i] = fake_ip_result.m_unPorts[i]; }
+		fake_ip["ports"] = ports;
 	}
 	return fake_ip;
 }
@@ -5627,8 +5629,10 @@ Dictionary Steam::getLocalPingLocation(){
 	if(SteamNetworkingUtils() != NULL){
 		SteamNetworkPingLocation_t location;
 		float ping = SteamNetworkingUtils()->GetLocalPingLocation(location);
+		char m_data[512];
+		for (size_t i = 0; i<sizeof(location.m_data)/sizeof(location.m_data[0]); i++){ m_data[i] = location.m_data[i]; }
 		// Populate the dictionary
-		ping_location["location"]  = location.m_data;
+		ping_location["location"] = m_data;
 		ping_location["ping"] = ping;
 	}
 	return ping_location;
@@ -5642,8 +5646,8 @@ int Steam::estimatePingTimeBetweenTwoLocations(uint8 location1, uint8 location2)
 	// Add these locations to ping structs
 	SteamNetworkPingLocation_t ping_location1;
 	SteamNetworkPingLocation_t ping_location2;
-	ping_location1.m_data[1] = {location1};
-	ping_location2.m_data[1] = {location2};
+	ping_location1.m_data[0] = {location1};
+	ping_location2.m_data[0] = {location2};
 	return SteamNetworkingUtils()->EstimatePingTimeBetweenTwoLocations(ping_location1, ping_location2);
 }
 
@@ -5654,7 +5658,7 @@ int Steam::estimatePingTimeFromLocalHost(uint8 location){
 	}
 	// Add this location to ping struct
 	SteamNetworkPingLocation_t ping_location;
-	ping_location.m_data[1] = {location};
+	ping_location.m_data[0] = {location};
 	return SteamNetworkingUtils()->EstimatePingTimeFromLocalHost(ping_location);
 }
 
@@ -5665,8 +5669,8 @@ String Steam::convertPingLocationToString(uint8 location){
 		char buffer;
 		// Add this location to ping struct
 		SteamNetworkPingLocation_t ping_location;
-		ping_location.m_data[1] = {location};
-		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, &buffer, 1024);
+		ping_location.m_data[0] = {location};
+		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, &buffer, k_cchMaxSteamNetworkingPingLocationString);
 		location_string += buffer;
 	}
 	return location_string;
@@ -5680,7 +5684,9 @@ Dictionary Steam::parsePingLocationString(const String& location_string){
 		bool success = SteamNetworkingUtils()->ParsePingLocationString(location_string.utf8().get_data(), result);
 		// Populate the dictionary
 		parse_string["success"] = success;
-		parse_string["ping_location"] = result.m_data;
+		char m_data[512];
+		for (size_t i = 0; i<sizeof(result.m_data)/sizeof(result.m_data[0]); i++){ m_data[i] = result.m_data[i]; }
+		parse_string["ping_location"] = m_data;
 	}
 	return parse_string;
 }
@@ -5758,7 +5764,7 @@ Dictionary Steam::getConfigValue(int config_value, int scope_type, uint32_t conn
 		config_info["result"] = result;
 		config_info["type"] = data_type;
 		config_info["value"] = config_result;
-		config_info["buffer"] = buffer_size;
+		config_info["buffer"] = (uint64_t)buffer_size;
 	}
 	return config_info;
 }
@@ -5769,12 +5775,10 @@ Dictionary Steam::getConfigValueInfo(int config_value){
 	if(SteamNetworkingUtils() != NULL){
 		ESteamNetworkingConfigDataType data_type;
 		ESteamNetworkingConfigScope scope;
-		ESteamNetworkingConfigValue next_value;
 		if(SteamNetworkingUtils()->GetConfigValueInfo((ESteamNetworkingConfigValue)config_value, &data_type, &scope)){
 			// Populate the dictionary
 			config_info["type"] = data_type;
 			config_info["scope"] = scope;
-			config_info["next_value"] = next_value;
 		}
 	}
 	return config_info;
