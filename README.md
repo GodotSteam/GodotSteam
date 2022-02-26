@@ -16,7 +16,13 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.13)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.13.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.13.1 Changes**
+- Changed: all HTML Surface functions can now have the handle passed to them or not; will use internal handle if not passed
+- Changed: all HTML Surface callbacks now send back their browser handles, if applicable
+- Changed: fileWrite and fileWriteAsync now allow you to pass size or not; will determine if not passed
+- Fixed: fileWrite and fileWriteAsync passing wrong byte array size
 
 **Version 3.13 Changes**
 - Added: missing function getPlaybackStatus to Music class

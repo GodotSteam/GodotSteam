@@ -2225,23 +2225,35 @@ bool Steam::updateUserAvgRateStat(uint64_t steam_id, const String& name, float t
 /////////////////////////////////////////////////
 //
 //! Add a header to any HTTP requests from this browser.
-void Steam::addHeader(const String& key, const String& value){
+void Steam::addHeader(const String& key, const String& value, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->AddHeader(browser_handle, key.utf8().get_data(), value.utf8().get_data());
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->AddHeader(this_handle, key.utf8().get_data(), value.utf8().get_data());
 	}
 }
 
 //! Sets whether a pending load is allowed or if it should be canceled.  NOTE:You MUST call this in response to a HTML_StartRequest_t callback.
-void Steam::allowStartRequest(bool allowed){
+void Steam::allowStartRequest(bool allowed, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->AllowStartRequest(browser_handle, allowed);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->AllowStartRequest(this_handle, allowed);
 	}
 }
 
 //! Copy the currently selected text from the current page in an HTML surface into the local clipboard.
-void Steam::copyToClipboard(){
+void Steam::copyToClipboard(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->CopyToClipboard(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->CopyToClipboard(this_handle);
 	}
 }
 
@@ -2253,37 +2265,57 @@ void Steam::createBrowser(const String& user_agent, const String& user_css){
 }
 
 //! Run a javascript script in the currently loaded page.
-void Steam::executeJavascript(const String& script){
+void Steam::executeJavascript(const String& script, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->ExecuteJavascript(browser_handle, script.utf8().get_data());
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->ExecuteJavascript(this_handle, script.utf8().get_data());
 	}
 }
 
 //! Find a string in the current page of an HTML surface. This is the equivalent of "ctrl+f" in your browser of choice. It will highlight all of the matching strings. You should call StopFind when the input string has changed or you want to stop searching.
-void Steam::find(const String& search, bool currently_in_find, bool reverse){
+void Steam::find(const String& search, bool currently_in_find, bool reverse, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->Find(browser_handle, search.utf8().get_data(), currently_in_find, reverse);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->Find(this_handle, search.utf8().get_data(), currently_in_find, reverse);
 	}
 }
 
 //! Retrieves details about a link at a specific position on the current page in an HTML surface.
-void Steam::getLinkAtPosition(int x, int y){
+void Steam::getLinkAtPosition(int x, int y, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->GetLinkAtPosition(browser_handle, x, y);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->GetLinkAtPosition(this_handle, x, y);
 	}
 }
 
 //! Navigate back in the page history.
-void Steam::goBack(){
+void Steam::goBack(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->GoBack(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->GoBack(this_handle);
 	}
 }
 
 //! Navigate forward in the page history
-void Steam::goForward(){
+void Steam::goForward(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->GoForward(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->GoForward(this_handle);
 	}
 }
 
@@ -2295,100 +2327,156 @@ void Steam::htmlInit(){
 }
 
 //! Allows you to react to a page wanting to open a javascript modal dialog notification.
-void Steam::jsDialogResponse(bool result){
+void Steam::jsDialogResponse(bool result, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->JSDialogResponse(browser_handle, result);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->JSDialogResponse(this_handle, result);
 	}
 }
 
 //! cUnicodeChar is the unicode character point for this keypress (and potentially multiple chars per press).
-void Steam::keyChar(uint32 unicode_char, int key_modifiers){
+void Steam::keyChar(uint32 unicode_char, int key_modifiers, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->KeyChar(browser_handle, unicode_char, (ISteamHTMLSurface::EHTMLKeyModifiers)key_modifiers);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->KeyChar(this_handle, unicode_char, (ISteamHTMLSurface::EHTMLKeyModifiers)key_modifiers);
 	}
 }
 
 //! Keyboard interactions, native keycode is the virtual key code value from your OS.
-void Steam::keyDown(uint32 native_key_code, int key_modifiers){
+void Steam::keyDown(uint32 native_key_code, int key_modifiers, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->KeyDown(browser_handle, native_key_code, (ISteamHTMLSurface::EHTMLKeyModifiers)key_modifiers);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->KeyDown(this_handle, native_key_code, (ISteamHTMLSurface::EHTMLKeyModifiers)key_modifiers);
 	}
 }
 
 //! Keyboard interactions, native keycode is the virtual key code value from your OS.
-void Steam::keyUp(uint32 native_key_code, int key_modifiers){
+void Steam::keyUp(uint32 native_key_code, int key_modifiers, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->KeyUp(browser_handle, native_key_code, (ISteamHTMLSurface::EHTMLKeyModifiers)key_modifiers);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->KeyUp(this_handle, native_key_code, (ISteamHTMLSurface::EHTMLKeyModifiers)key_modifiers);
 	}
 }
 
 //! Navigate to a specified URL. If you send POST data with pchPostData then the data should be formatted as: name1=value1&name2=value2. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: http://, https://, ftp://, and file:///. If no scheme is specified then http:// is used.
-void Steam::loadURL(const String& url, const String& post_data){
+void Steam::loadURL(const String& url, const String& post_data, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->LoadURL(browser_handle, url.utf8().get_data(), post_data.utf8().get_data());
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->LoadURL(this_handle, url.utf8().get_data(), post_data.utf8().get_data());
 	}
 }
 
 //! Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseDoubleClick(int mouse_button){
+void Steam::mouseDoubleClick(int mouse_button, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->MouseDoubleClick(browser_handle, (ISteamHTMLSurface::EHTMLMouseButton)mouse_button);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->MouseDoubleClick(this_handle, (ISteamHTMLSurface::EHTMLMouseButton)mouse_button);
 	}
 }
 
 //! Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseDown(int mouse_button){
+void Steam::mouseDown(int mouse_button, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->MouseDown(browser_handle, (ISteamHTMLSurface::EHTMLMouseButton)mouse_button);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->MouseDown(this_handle, (ISteamHTMLSurface::EHTMLMouseButton)mouse_button);
 	}
 }
 
 //! Tells an HTML surface where the mouse is.
-void Steam::mouseMove(int x, int y){
+void Steam::mouseMove(int x, int y, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->MouseMove(browser_handle, x, y);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->MouseMove(this_handle, x, y);
 	}
 }
 
 //! Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseUp(int mouse_button){
+void Steam::mouseUp(int mouse_button, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->MouseUp(browser_handle, (ISteamHTMLSurface::EHTMLMouseButton)mouse_button);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->MouseUp(this_handle, (ISteamHTMLSurface::EHTMLMouseButton)mouse_button);
 	}
 }
 
 //! Tells an HTML surface that the mouse wheel has moved.
-void Steam::mouseWheel(int32 delta){
+void Steam::mouseWheel(int32 delta, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->MouseWheel(browser_handle, delta);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->MouseWheel(this_handle, delta);
 	}
 }
 
 //! Paste from the local clipboard to the current page in an HTML surface.
-void Steam::pasteFromClipboard(){
+void Steam::pasteFromClipboard(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->PasteFromClipboard(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->PasteFromClipboard(this_handle);
 	}
 }
 
 //! Refreshes the current page. The reload will most likely hit the local cache instead of going over the network. This is equivalent to F5 or Ctrl+R in your browser of choice.
-void Steam::reload(){
+void Steam::reload(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->Reload(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->Reload(this_handle);
 	}
 }
 
 //! You MUST call this when you are done with an HTML surface, freeing the resources associated with it. Failing to call this will result in a memory leak!
-void Steam::removeBrowser(){
+void Steam::removeBrowser(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->RemoveBrowser(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->RemoveBrowser(this_handle);
 	}
 }
 
 //! Enable/disable low-resource background mode, where javascript and repaint timers are throttled, resources are more aggressively purged from memory, and audio/video elements are paused. When background mode is enabled, all HTML5 video and audio objects will execute ".pause()" and gain the property "._steam_background_paused = 1". When background mode is disabled, any video or audio objects with that property will resume with ".play()".
-void Steam::setBackgroundMode(bool background_mode){
+void Steam::setBackgroundMode(bool background_mode, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->SetBackgroundMode(browser_handle, background_mode);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->SetBackgroundMode(this_handle, background_mode);
 	}
 }
 
@@ -2400,37 +2488,57 @@ void Steam::setCookie(const String& hostname, const String& key, const String& v
 }
 
 //! Scroll the current page horizontally.
-void Steam::setHorizontalScroll(uint32 absolute_pixel_scroll){
+void Steam::setHorizontalScroll(uint32 absolute_pixel_scroll, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->SetHorizontalScroll(browser_handle, absolute_pixel_scroll);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->SetHorizontalScroll(this_handle, absolute_pixel_scroll);
 	}
 }
 
 //! Tell a HTML surface if it has key focus currently, controls showing the I-beam cursor in text controls amongst other things.
-void Steam::setKeyFocus(bool has_key_focus){
+void Steam::setKeyFocus(bool has_key_focus, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->SetKeyFocus(browser_handle, has_key_focus);	
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->SetKeyFocus(this_handle, has_key_focus);
 	}
 }
 
 //! Zoom the current page in an HTML surface. The current scale factor is available from HTML_NeedsPaint_t.flPageScale, HTML_HorizontalScroll_t.flPageScale, and HTML_VerticalScroll_t.flPageScale.
-void Steam::setPageScaleFactor(float zoom, int point_x, int point_y){
+void Steam::setPageScaleFactor(float zoom, int point_x, int point_y, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->SetPageScaleFactor(browser_handle, zoom, point_x, point_y);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->SetPageScaleFactor(this_handle, zoom, point_x, point_y);
 	}
 }
 
 //! Sets the display size of a surface in pixels.
-void Steam::setSize(uint32 width, uint32 height){
+void Steam::setSize(uint32 width, uint32 height, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->SetSize(browser_handle, width, height);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->SetSize(this_handle, width, height);
 	}
 }
 
 //! Scroll the current page vertically.
-void Steam::setVerticalScroll(uint32 absolute_pixel_scroll){
+void Steam::setVerticalScroll(uint32 absolute_pixel_scroll, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->SetVerticalScroll(browser_handle, absolute_pixel_scroll);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->SetVerticalScroll(this_handle, absolute_pixel_scroll);
 	}
 }
 
@@ -2443,23 +2551,35 @@ bool Steam::htmlShutdown(){
 }
 
 //! Cancel a currently running find.
-void Steam::stopFind(){
+void Steam::stopFind(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->StopFind(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->StopFind(this_handle);
 	}
 }
 
 //! Stop the load of the current HTML page.
-void Steam::stopLoad(){
+void Steam::stopLoad(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->StopLoad(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->StopLoad(this_handle);
 	}
 }
 
 //! Open the current pages HTML source code in default local text editor, used for debugging.
-void Steam::viewSource(){
+void Steam::viewSource(uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->ViewSource(browser_handle);
+		// If no handle is passed use internal one
+		if(this_handle == 0){
+			this_handle = browser_handle;
+		}
+		SteamHTMLSurface()->ViewSource(this_handle);
 	}
 }
 
@@ -5293,7 +5413,9 @@ Dictionary Steam::getFakeIP(int first_port){
 		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
 		fake_ip["ip"] = fake_ip_result.m_unIP;
 		char ports[8];
-		for (size_t i = 0; i<sizeof(fake_ip_result.m_unPorts)/sizeof(fake_ip_result.m_unPorts[0]); i++){ ports[i] = fake_ip_result.m_unPorts[i]; }
+		for (size_t i = 0; i < sizeof(fake_ip_result.m_unPorts) / sizeof(fake_ip_result.m_unPorts[0]); i++){
+			ports[i] = fake_ip_result.m_unPorts[i];
+		}
 		fake_ip["ports"] = ports;
 	}
 	return fake_ip;
@@ -5630,7 +5752,9 @@ Dictionary Steam::getLocalPingLocation(){
 		SteamNetworkPingLocation_t location;
 		float ping = SteamNetworkingUtils()->GetLocalPingLocation(location);
 		char m_data[512];
-		for (size_t i = 0; i<sizeof(location.m_data)/sizeof(location.m_data[0]); i++){ m_data[i] = location.m_data[i]; }
+		for(size_t i = 0; i < sizeof(location.m_data) / sizeof(location.m_data[0]); i++){
+			m_data[i] = location.m_data[i];
+		}
 		// Populate the dictionary
 		ping_location["location"] = m_data;
 		ping_location["ping"] = ping;
@@ -5685,7 +5809,9 @@ Dictionary Steam::parsePingLocationString(const String& location_string){
 		// Populate the dictionary
 		parse_string["success"] = success;
 		char m_data[512];
-		for (size_t i = 0; i<sizeof(result.m_data)/sizeof(result.m_data[0]); i++){ m_data[i] = result.m_data[i]; }
+		for(size_t i = 0; i < sizeof(result.m_data) / sizeof(result.m_data[0]); i++){
+			m_data[i] = result.m_data[i];
+		}
 		parse_string["ping_location"] = m_data;
 	}
 	return parse_string;
@@ -6156,17 +6282,29 @@ void Steam::fileShare(const String& file){
 }
 
 //! Write to given file from Steam Cloud.
-bool Steam::fileWrite(const String& file, const PoolByteArray& data){
-	if(SteamRemoteStorage() == NULL){
-		return false;
+bool Steam::fileWrite(const String& file, PoolByteArray data, int32 size){
+	if(SteamRemoteStorage() != NULL){
+		// Get the size from the poolbytearray, just in case
+		int32 data_size = data.size();
+		// If a size was passed, use that instead
+		if(size > 0){
+			data_size = size;
+		}
+		return SteamRemoteStorage()->FileWrite(file.utf8().get_data(), data.read().ptr(), data_size);
 	}
-	return SteamRemoteStorage()->FileWrite(file.utf8().get_data(), data.read().ptr(), sizeof(data));
+	return false;
 }
 
 //! Creates a new file and asynchronously writes the raw byte data to the Steam Cloud, and then closes the file. If the target file already exists, it is overwritten.
-void Steam::fileWriteAsync(const String& file, const PoolByteArray& data){
+void Steam::fileWriteAsync(const String& file, PoolByteArray data, int32 size){
 	if(SteamRemoteStorage() != NULL){
-		SteamAPICall_t api_call = SteamRemoteStorage()->FileWriteAsync(file.utf8().get_data(), data.read().ptr(), sizeof(data));
+		// Get the size from the PoolByteArray, just in case
+		int32 data_size = data.size();
+		// If a size was passed, use that instead
+		if(size > 0){
+			data_size = size;
+		}
+		SteamAPICall_t api_call = SteamRemoteStorage()->FileWriteAsync(file.utf8().get_data(), data.read().ptr(), data_size);
 		callResultFileWriteAsyncComplete.Set(api_call, this, &Steam::file_write_async_complete);
 	}
 }
@@ -6200,7 +6338,7 @@ bool Steam::fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray data)
 	if(SteamRemoteStorage() == NULL){
 		return false;
 	}
-	return SteamRemoteStorage()->FileWriteStreamWriteChunk((UGCFileWriteStreamHandle_t)write_handle, data.read().ptr(), sizeof(data));
+	return SteamRemoteStorage()->FileWriteStreamWriteChunk((UGCFileWriteStreamHandle_t)write_handle, data.read().ptr(), data.size());
 }
 
 //! Gets the number of cached UGC.
@@ -7751,7 +7889,7 @@ Dictionary Steam::decompressVoice(const PoolByteArray& voice, uint32 voice_size,
 	if(SteamUser() != NULL){
 		uint32 written = 0;
 		PoolByteArray outputBuffer;
-		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, &outputBuffer, sizeof(outputBuffer), &written, sample_rate);
+		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, &outputBuffer, outputBuffer.size(), &written, sample_rate);
 		if(result == 0){
 			decompressed["uncompressed"] = outputBuffer;
 			decompressed["size"] = written;
@@ -7934,7 +8072,7 @@ bool Steam::loggedOn(){
 //! Requests an application ticket encrypted with the secret "encrypted app ticket key".
 void Steam::requestEncryptedAppTicket(const String& secret){
 	if(SteamUser() != NULL){
-		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket((void*)secret.utf8().get_data(), sizeof(secret));
+		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket((void*)secret.utf8().get_data(), sizeof(&secret));
 		callResultEncryptedAppTicketResponse.Set(api_call, this, &Steam::encrypted_app_ticket_response);
 	}
 }
@@ -9405,7 +9543,7 @@ void Steam::stats_unloaded(GSStatsUnloaded_t* callData){
 //! A new browser was created and is ready for use.
 void Steam::html_browser_ready(HTML_BrowserReady_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
-	emit_signal("html_browser_ready");
+	emit_signal("html_browser_ready", browser_handle);
 }
 
 //! Called when page history status has changed the ability to go backwards and forward.
@@ -9413,20 +9551,20 @@ void Steam::html_can_go_backandforward(HTML_CanGoBackAndForward_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	bool go_back = call_data->bCanGoBack;
 	bool go_forward = call_data->bCanGoForward;
-	emit_signal("html_can_go_backandforward", go_back, go_forward);
+	emit_signal("html_can_go_backandforward", browser_handle, go_back, go_forward);
 }
 
 //! Called when the current page in a browser gets a new title.
 void Steam::html_changed_title(HTML_ChangedTitle_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& title = call_data->pchTitle;
-	emit_signal("html_changed_title", title);
+	emit_signal("html_changed_title", browser_handle, title);
 }
 
 //! Called when the browser has been requested to close due to user interaction; usually because of a javascript window.close() call.
 void Steam::html_close_browser(HTML_CloseBrowser_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
-	emit_signal("html_close_browser");
+	emit_signal("html_close_browser", browser_handle);
 }
 
 //! Called when a browser surface has received a file open dialog from a <input type="file"> click or similar, you must call FileLoadDialogResponse with the file(s) the user selected.
@@ -9438,7 +9576,7 @@ void Steam::html_file_open_dialog(HTML_FileOpenDialog_t* call_data){
 	// So it is added here unless there is a case to use it separately.
 	SteamHTMLSurface()->FileLoadDialogResponse(browser_handle, &call_data->pchInitialFile);
 	// Send the signal back to the user
-	emit_signal("html_file_open_dialog", title, initial_file);
+	emit_signal("html_file_open_dialog", browser_handle, title, initial_file);
 }
 
 //! Called when a browser has finished loading a page.
@@ -9446,13 +9584,13 @@ void Steam::html_finished_request(HTML_FinishedRequest_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& url = call_data->pchURL;
 	const String& title = call_data->pchPageTitle;
-	emit_signal("html_finished_request", url, title);
+	emit_signal("html_finished_request", browser_handle, url, title);
 }
 
 //! Called when a a browser wants to hide a tooltip.
 void Steam::html_hide_tooltip(HTML_HideToolTip_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
-	emit_signal("html_hide_tooltip");
+	emit_signal("html_hide_tooltip", browser_handle);
 }
 
 //! Provides details on the visibility and size of the horizontal scrollbar.
@@ -9465,21 +9603,21 @@ void Steam::html_horizontal_scroll(HTML_HorizontalScroll_t* call_data){
 	scroll_data["page_scale"] = call_data->flPageScale;
 	scroll_data["visible"] = call_data->bVisible;
 	scroll_data["page_size"] = call_data->unPageSize;
-	emit_signal("html_horizontal_scroll", scroll_data);
+	emit_signal("html_horizontal_scroll", browser_handle, scroll_data);
 }
 
 //! Called when the browser wants to display a Javascript alert dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
 void Steam::html_js_alert(HTML_JSAlert_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& message = call_data->pchMessage;
-	emit_signal("html_js_alert", message);
+	emit_signal("html_js_alert", browser_handle, message);
 }
 
 //! Called when the browser wants to display a Javascript confirmation dialog, call JSDialogResponse when the user dismisses this dialog; or right away to ignore it.
 void Steam::html_js_confirm(HTML_JSConfirm_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& message = call_data->pchMessage;
-	emit_signal("html_js_confirm", message);
+	emit_signal("html_js_confirm", browser_handle, message);
 }
 
 //! Result of a call to GetLinkAtPosition.
@@ -9492,7 +9630,7 @@ void Steam::html_link_at_position(HTML_LinkAtPosition_t* call_data){
 	link_data["url"] = call_data->pchURL;
 	link_data["input"] = call_data->bInput;
 	link_data["live_link"] = call_data->bLiveLink;
-	emit_signal("html_link_at_position", link_data);
+	emit_signal("html_link_at_position", browser_handle, link_data);
 }
 
 //! Called when a browser surface has a pending paint. This is where you get the actual image data to render to the screen.
@@ -9511,7 +9649,7 @@ void Steam::html_needs_paint(HTML_NeedsPaint_t* call_data){
 	page_data["scroll_y"] = call_data->unScrollY;
 	page_data["page_scale"] = call_data->flPageScale;
 	page_data["page_serial"] = call_data->unPageSerial;
-	emit_signal("html_needs_paint", page_data);
+	emit_signal("html_needs_paint", browser_handle, page_data);
 }
 
 //! A browser has created a new HTML window.
@@ -9525,14 +9663,14 @@ void Steam::html_new_window(HTML_NewWindow_t* call_data){
 	window_data["wide"] = call_data->unWide;
 	window_data["tall"] = call_data->unTall;
 	window_data["new_handle"] = call_data->unNewWindow_BrowserHandle_IGNORE;
-	emit_signal("html_new_window", window_data);
+	emit_signal("html_new_window", browser_handle, window_data);
 }
 
 //! The browser has requested to load a url in a new tab.
 void Steam::html_open_link_in_new_tab(HTML_OpenLinkInNewTab_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& url = call_data->pchURL;
-	emit_signal("html_open_link_in_new_tab", url);
+	emit_signal("html_open_link_in_new_tab", browser_handle, url);
 }
 
 //! Results from a search.
@@ -9540,21 +9678,21 @@ void Steam::html_search_results(HTML_SearchResults_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	uint32 results = call_data->unResults;
 	uint32 current_match = call_data->unCurrentMatch;
-	emit_signal("html_search_results", results, current_match);
+	emit_signal("html_search_results", browser_handle, results, current_match);
 }
 
 //! Called when a browser wants to change the mouse cursor.
 void Steam::html_set_cursor(HTML_SetCursor_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	uint32 mouse_cursor = call_data->eMouseCursor;
-	emit_signal("html_set_cursor", mouse_cursor);
+	emit_signal("html_set_cursor", browser_handle, mouse_cursor);
 }
 
 //! Called when a browser wants to display a tooltip.
 void Steam::html_show_tooltip(HTML_ShowToolTip_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& message = call_data->pchMsg;
-	emit_signal("html_show_tooltip", message);
+	emit_signal("html_show_tooltip", browser_handle, message);
 }
 
 //! Called when a browser wants to navigate to a new page.
@@ -9564,21 +9702,21 @@ void Steam::html_start_request(HTML_StartRequest_t* call_data){
 	const String& target = call_data->pchTarget;
 	const String& post_data = call_data->pchPostData;
 	bool redirect = call_data->bIsRedirect;
-	emit_signal("html_start_request", url, target, post_data, redirect);
+	emit_signal("html_start_request", browser_handle, url, target, post_data, redirect);
 }
 
 //! Called when a browser wants you to display an informational message. This is most commonly used when you hover over links.
 void Steam::html_status_text(HTML_StatusText_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& message = call_data->pchMsg;
-	emit_signal("html_status_text", message);
+	emit_signal("html_status_text", browser_handle, message);
 }
 
 //! Called when the text of an existing tooltip has been updated.
 void Steam::html_update_tooltip(HTML_UpdateToolTip_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
 	const String& message = call_data->pchMsg;
-	emit_signal("html_update_tooltip", message);
+	emit_signal("html_update_tooltip", browser_handle, message);
 }
 
 //! Called when the browser is navigating to a new url.
@@ -9591,7 +9729,7 @@ void Steam::html_url_changed(HTML_URLChanged_t* call_data){
 	url_data["redirect"] = call_data->bIsRedirect;
 	url_data["title"] = call_data->pchPageTitle;
 	url_data["new_navigation"] = call_data->bNewNavigation;
-	emit_signal("html_url_changed", url_data);
+	emit_signal("html_url_changed", browser_handle, url_data);
 }
 
 //! Provides details on the visibility and size of the vertical scrollbar.
@@ -9604,7 +9742,7 @@ void Steam::html_vertical_scroll(HTML_VerticalScroll_t* call_data){
 	scroll_data["page_scale"] = call_data->flPageScale;
 	scroll_data["visible"] = call_data->bVisible;
 	scroll_data["page_size"] = call_data->unPageSize;
-	emit_signal("html_vertical_scroll", scroll_data);
+	emit_signal("html_vertical_scroll", browser_handle, scroll_data);
 }
 
 // HTTP CALLBACKS ///////////////////////////////
@@ -11308,40 +11446,40 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("updateUserAvgRateStat", "steam_id", "name", "this_session", "session_length"), &Steam::updateUserAvgRateStat);
 
 	// HTML SURFACE BIND METHODS ////////////////
-	ClassDB::bind_method(D_METHOD("addHeader", "key", "value"), &Steam::addHeader);
-	ClassDB::bind_method(D_METHOD("allowStartRequest", "allowed"), &Steam::allowStartRequest);
-	ClassDB::bind_method("copyToClipboard", &Steam::copyToClipboard);
+	ClassDB::bind_method(D_METHOD("addHeader", "key", "value", "this_handle"), &Steam::addHeader, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("allowStartRequest", "allowed", "this_handle"), &Steam::allowStartRequest, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("copyToClipboard", "this_handle"), &Steam::copyToClipboard, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("createBrowser", "user_agent", "user_css"), &Steam::createBrowser);
-	ClassDB::bind_method(D_METHOD("executeJavascript", "script"), &Steam::executeJavascript);
-	ClassDB::bind_method(D_METHOD("find", "search", "currently_in_find", "reverse"), &Steam::find);
-	ClassDB::bind_method(D_METHOD("getLinkAtPosition", "x", "y"), &Steam::getLinkAtPosition);
-	ClassDB::bind_method("goBack", &Steam::goBack);
-	ClassDB::bind_method("goForward", &Steam::goForward);
+	ClassDB::bind_method(D_METHOD("executeJavascript", "script", "this_handle"), &Steam::executeJavascript, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("find", "search", "currently_in_find", "reverse", "this_handle"), &Steam::find, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("getLinkAtPosition", "x", "y", "this_handle"), &Steam::getLinkAtPosition, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("goBack", "this_handle"), &Steam::goBack, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("goForward", "this_handle"), &Steam::goForward, DEFVAL(0));
 	ClassDB::bind_method("htmlInit", &Steam::htmlInit);
-	ClassDB::bind_method(D_METHOD("jsDialogResponse", "result"), &Steam::jsDialogResponse);
-	ClassDB::bind_method(D_METHOD("keyChar", "unicode_char", "key_modifiers"), &Steam::keyChar);
-	ClassDB::bind_method(D_METHOD("keyDown", "native_key_code", "key_modifiers"), &Steam::keyDown);
-	ClassDB::bind_method(D_METHOD("keyUp", "native_key_code", "key_modifiers"), &Steam::keyUp);
-	ClassDB::bind_method(D_METHOD("loadURL", "url", "post_data"), &Steam::loadURL);
-	ClassDB::bind_method(D_METHOD("mouseDoubleClick", "mouse_button"), &Steam::mouseDoubleClick);
-	ClassDB::bind_method(D_METHOD("mouseDown", "mouse_button"), &Steam::mouseDown);
-	ClassDB::bind_method(D_METHOD("mouseMove", "x", "y"), &Steam::mouseMove);
-	ClassDB::bind_method(D_METHOD("mouseUp", "mouse_button"), &Steam::mouseUp);
-	ClassDB::bind_method(D_METHOD("mouseWheel", "delta"), &Steam::mouseWheel);
-	ClassDB::bind_method("pasteFromClipboard", &Steam::pasteFromClipboard);
-	ClassDB::bind_method("reload", &Steam::reload);
-	ClassDB::bind_method("removeBrowser", &Steam::removeBrowser);
-	ClassDB::bind_method(D_METHOD("setBackgroundMode", "background_mode"), &Steam::setBackgroundMode);
+	ClassDB::bind_method(D_METHOD("jsDialogResponse", "result", "this_handle"), &Steam::jsDialogResponse, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("keyChar", "unicode_char", "key_modifiers", "this_handle"), &Steam::keyChar, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("keyDown", "native_key_code", "key_modifiers", "this_handle"), &Steam::keyDown, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("keyUp", "native_key_code", "key_modifiers", "this_handle"), &Steam::keyUp, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("loadURL", "url", "post_data", "this_handle"), &Steam::loadURL, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("mouseDoubleClick", "mouse_button", "this_handle"), &Steam::mouseDoubleClick, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("mouseDown", "mouse_button", "this_handle"), &Steam::mouseDown, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("mouseMove", "x", "y", "this_handle"), &Steam::mouseMove, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("mouseUp", "mouse_button", "this_handle"), &Steam::mouseUp, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("mouseWheel", "delta", "this_handle"), &Steam::mouseWheel, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("pasteFromClipboard", "this_handle"), &Steam::pasteFromClipboard, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("reload", "this_handle"), &Steam::reload, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("removeBrowser", "this_handle"), &Steam::removeBrowser, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("setBackgroundMode", "background_mode", "this_handle"), &Steam::setBackgroundMode, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("setCookie", "hostname", "key", "value", "path", "expires", "secure", "http_only"), &Steam::setCookie);
-	ClassDB::bind_method(D_METHOD("setHorizontalScroll", "absolute_pixel_scroll"), &Steam::setHorizontalScroll);
-	ClassDB::bind_method(D_METHOD("setKeyFocus", "has_key_focus"), &Steam::setKeyFocus);
-	ClassDB::bind_method(D_METHOD("setPageScaleFactor", "zoom", "point_x", "point_y"), &Steam::setPageScaleFactor);
-	ClassDB::bind_method(D_METHOD("setSize", "width", "height"), &Steam::setSize);
-	ClassDB::bind_method(D_METHOD("setVerticalScroll", "absolute_pixel_scroll"), &Steam::setVerticalScroll);
+	ClassDB::bind_method(D_METHOD("setHorizontalScroll", "absolute_pixel_scroll", "this_handle"), &Steam::setHorizontalScroll, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("setKeyFocus", "has_key_focus", "this_handle"), &Steam::setKeyFocus, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("setPageScaleFactor", "zoom", "point_x", "point_y", "this_handle"), &Steam::setPageScaleFactor, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("setSize", "width", "height", "this_handle"), &Steam::setSize, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("setVerticalScroll", "absolute_pixel_scroll", "this_handle"), &Steam::setVerticalScroll, DEFVAL(0));
 	ClassDB::bind_method("htmlShutdown", &Steam::htmlShutdown);
-	ClassDB::bind_method("stopFind", &Steam::stopFind);
-	ClassDB::bind_method("stopLoad", &Steam::stopLoad);
-	ClassDB::bind_method("viewSource", &Steam::viewSource);
+	ClassDB::bind_method(D_METHOD("stopFind", "this_handle"), &Steam::stopFind, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("stopLoad", "this_handle"), &Steam::stopLoad, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("viewSource", "this_handle"), &Steam::viewSource, DEFVAL(0));
 
 	// HTTP BIND METHODS ////////////////////////
 	ClassDB::bind_method(D_METHOD("createCookieContainer", "allow_response_to_modify"), &Steam::createCookieContainer);
@@ -11710,8 +11848,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("fileRead", "file", "data_to_read"), &Steam::fileRead);
 	ClassDB::bind_method(D_METHOD("fileReadAsync", "file", "offset", "data_to_read"), &Steam::fileReadAsync);
 	ClassDB::bind_method(D_METHOD("fileShare", "file"), &Steam::fileShare);
-	ClassDB::bind_method(D_METHOD("fileWrite", "file", "data"), &Steam::fileWrite);
-	ClassDB::bind_method(D_METHOD("fileWriteAsync", "file", "data"), &Steam::fileWriteAsync);
+	ClassDB::bind_method(D_METHOD("fileWrite", "file", "data", "size"), &Steam::fileWrite, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("fileWriteAsync", "file", "data", "size"), &Steam::fileWriteAsync, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("fileWriteStreamCancel", "write_handle"), &Steam::fileWriteStreamCancel);
 	ClassDB::bind_method(D_METHOD("fileWriteStreamClose", "write_handle"), &Steam::fileWriteStreamClose);
 	ClassDB::bind_method(D_METHOD("fileWriteStreamOpen", "file"), &Steam::fileWriteStreamOpen);
@@ -12011,28 +12149,28 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("stats_unloaded", PropertyInfo(Variant::INT, "steam_id")));
 
 	// HTML SURFACE SIGNALS /////////////////////
-	ADD_SIGNAL(MethodInfo("html_browser_ready"));
-	ADD_SIGNAL(MethodInfo("html_can_go_backandforward", PropertyInfo(Variant::BOOL, "go_back"), PropertyInfo(Variant::BOOL, "go_forward")));
-	ADD_SIGNAL(MethodInfo("html_changed_title", PropertyInfo(Variant::STRING, "title")));
-	ADD_SIGNAL(MethodInfo("html_close_browser"));
-	ADD_SIGNAL(MethodInfo("html_file_open_dialog", PropertyInfo(Variant::STRING, "title"), PropertyInfo(Variant::STRING, "initial_file")));
-	ADD_SIGNAL(MethodInfo("html_finished_request", PropertyInfo(Variant::STRING, "url"), PropertyInfo(Variant::STRING, "title")));
-	ADD_SIGNAL(MethodInfo("html_hide_tooltip"));
-	ADD_SIGNAL(MethodInfo("html_horizontal_scroll", PropertyInfo(Variant::DICTIONARY, "scroll_data")));
-	ADD_SIGNAL(MethodInfo("html_js_alert", PropertyInfo(Variant::STRING, "message")));
-	ADD_SIGNAL(MethodInfo("html_js_confirm", PropertyInfo(Variant::STRING, "message")));
-	ADD_SIGNAL(MethodInfo("html_link_at_position", PropertyInfo(Variant::DICTIONARY, "link_data")));
-	ADD_SIGNAL(MethodInfo("html_needs_paint", PropertyInfo(Variant::DICTIONARY, "page_data")));
-	ADD_SIGNAL(MethodInfo("html_new_window", PropertyInfo(Variant::DICTIONARY, "window_data")));
-	ADD_SIGNAL(MethodInfo("html_open_link_in_new_tab", PropertyInfo(Variant::STRING, "url")));
-	ADD_SIGNAL(MethodInfo("html_search_results", PropertyInfo(Variant::INT, "results"), PropertyInfo(Variant::INT, "current_match")));
-	ADD_SIGNAL(MethodInfo("html_set_cursor", PropertyInfo(Variant::INT, "mouse_cursor")));
-	ADD_SIGNAL(MethodInfo("html_show_tooltip", PropertyInfo(Variant::STRING, "message")));
-	ADD_SIGNAL(MethodInfo("html_start_request", PropertyInfo(Variant::STRING, "url"), PropertyInfo(Variant::STRING, "target"), PropertyInfo(Variant::STRING, "post_data"), PropertyInfo(Variant::BOOL, "redirect")));
-	ADD_SIGNAL(MethodInfo("html_status_text", PropertyInfo(Variant::STRING, "message")));
-	ADD_SIGNAL(MethodInfo("html_update_tooltip", PropertyInfo(Variant::STRING, "message")));
-	ADD_SIGNAL(MethodInfo("html_url_changed", PropertyInfo(Variant::DICTIONARY, "url_data")));
-	ADD_SIGNAL(MethodInfo("html_vertical_scroll", PropertyInfo(Variant::DICTIONARY, "scroll_data")));
+	ADD_SIGNAL(MethodInfo("html_browser_ready", PropertyInfo(Variant::INT, "browser_handle")));
+	ADD_SIGNAL(MethodInfo("html_can_go_backandforward", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::BOOL, "go_back"), PropertyInfo(Variant::BOOL, "go_forward")));
+	ADD_SIGNAL(MethodInfo("html_changed_title", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "title")));
+	ADD_SIGNAL(MethodInfo("html_close_browser", PropertyInfo(Variant::INT, "browser_handle")));
+	ADD_SIGNAL(MethodInfo("html_file_open_dialog", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "title"), PropertyInfo(Variant::STRING, "initial_file")));
+	ADD_SIGNAL(MethodInfo("html_finished_request", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "url"), PropertyInfo(Variant::STRING, "title")));
+	ADD_SIGNAL(MethodInfo("html_hide_tooltip", PropertyInfo(Variant::INT, "browser_handle")));
+	ADD_SIGNAL(MethodInfo("html_horizontal_scroll", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::DICTIONARY, "scroll_data")));
+	ADD_SIGNAL(MethodInfo("html_js_alert", PropertyInfo(Variant::INT, "browser_handle"),  PropertyInfo(Variant::STRING, "message")));
+	ADD_SIGNAL(MethodInfo("html_js_confirm", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "message")));
+	ADD_SIGNAL(MethodInfo("html_link_at_position", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::DICTIONARY, "link_data")));
+	ADD_SIGNAL(MethodInfo("html_needs_paint", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::DICTIONARY, "page_data")));
+	ADD_SIGNAL(MethodInfo("html_new_window", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::DICTIONARY, "window_data")));
+	ADD_SIGNAL(MethodInfo("html_open_link_in_new_tab", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "url")));
+	ADD_SIGNAL(MethodInfo("html_search_results", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::INT, "results"), PropertyInfo(Variant::INT, "current_match")));
+	ADD_SIGNAL(MethodInfo("html_set_cursor", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::INT, "mouse_cursor")));
+	ADD_SIGNAL(MethodInfo("html_show_tooltip", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "message")));
+	ADD_SIGNAL(MethodInfo("html_start_request", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "url"), PropertyInfo(Variant::STRING, "target"), PropertyInfo(Variant::STRING, "post_data"), PropertyInfo(Variant::BOOL, "redirect")));
+	ADD_SIGNAL(MethodInfo("html_status_text", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "message")));
+	ADD_SIGNAL(MethodInfo("html_update_tooltip", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::STRING, "message")));
+	ADD_SIGNAL(MethodInfo("html_url_changed", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::DICTIONARY, "url_data")));
+	ADD_SIGNAL(MethodInfo("html_vertical_scroll", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::DICTIONARY, "scroll_data")));
 
 	// HTTP SIGNALS /////////////////////////////
 	ADD_SIGNAL(MethodInfo("http_request_completed", PropertyInfo(Variant::INT, "cookie_handle"), PropertyInfo(Variant::INT, "context_value"), PropertyInfo(Variant::BOOL, "request_success"), PropertyInfo(Variant::INT, "status_code"), PropertyInfo(Variant::INT, "body_size")));
