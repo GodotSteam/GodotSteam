@@ -6,6 +6,10 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Updated 3/5/22**
+- Added: new game to game list
+- Changed: changelog for GodotSteam 3.x
+
 **Updated 2/12/22**
 - Changed: changelog for GodotSteam 3.x
 - Changed: data in matchmaking signals

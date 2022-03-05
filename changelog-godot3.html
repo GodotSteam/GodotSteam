@@ -29,6 +29,13 @@
 		<h1>Change Log | Godot 3.x Module</h1>
 	</header>
 	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+	<h3>Version 3.13.1 Changes</h3>
+	<ul>
+		<li>Changed: all HTML Surface functions can now have the handle passed to them or not; will use internal handle if not passed</li>
+		<li>Changed: all HTML Surface callbacks now send back their browser handles, if applicable</li>
+		<li>Changed: fileWrite and fileWriteAsync now allow you to pass size or not; will determine if not passed</li>
+		<li>Fixed: fileWrite and fileWriteAsync passing wrong byte array size</li>
+	</ul>
 	<h3>Version 3.13 Changes</h3>
 	<ul>
 		<li>Added: missing function getPlaybackStatus to Music class</li>
