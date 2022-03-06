@@ -16,7 +16,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.13.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.13.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.13.2 Changes**
+- Fixed: various functions and callbacks that sent back scrambled IP addresses
 
 **Version 3.13.1 Changes**
 - Changed: all HTML Surface functions can now have the handle passed to them or not; will use internal handle if not passed

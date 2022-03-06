@@ -1119,7 +1119,7 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steam_id){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = game_info.m_unGameIP >> (j * 8);
 			}
-			sprintf(gameIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf(gameIP, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 			friend_game["ip"] = gameIP;
 			friend_game["game_port"] = game_info.m_usGamePort;
 			friend_game["query_port"] = (char)game_info.m_usQueryPort;
@@ -3655,7 +3655,7 @@ Array Steam::getFavoriteGames(){
 			for(int j = 0; j < NBYTES; j++){
 				octet[j] = ip >> (j * 8);
 			}
-			sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf(favoriteIP, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 			favorite["ip"] = favoriteIP;
 			favorite["game_port"] = port;
 			favorite["query_port"] = query_port;
@@ -3914,7 +3914,7 @@ Dictionary Steam::getLobbyGameServer(uint64_t steam_lobby_id){
 			for(int i = 0; i < NBYTES; i++){
 				octet[i] = server_ip >> (i * 8);
 			}
-			sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+			sprintf(ip, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 			game_server["ip"] = ip;
 			game_server["port"] = server_port;
 			// Convert the server ID
@@ -9887,7 +9887,7 @@ void Steam::favorites_list_changed(FavoritesListChanged_t* call_data){
 	for(int j = 0; j < NBYTES; j++){
 		octet[j] = call_data->m_nIP >> (j * 8);
 	}
-	sprintf(favoriteIP, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(favoriteIP, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 	favorite["ip"] = favoriteIP; 
 	favorite["query_port"] = call_data->m_nQueryPort;
 	favorite["connection_port"] = call_data->m_nConnPort;
@@ -9963,7 +9963,7 @@ void Steam::lobby_game_created(LobbyGameCreated_t* call_data){
 	for(int i = 0; i < NBYTES; i++){
 		octet[i] = ip >> (i * 8);
 	}
-	sprintf(server_ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(server_ip, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 	emit_signal("lobby_game_created", lobby_id, server_id, server_ip, port);
 }
 
@@ -10119,7 +10119,7 @@ void Steam::fake_ip_result(SteamNetworkingFakeIPResult_t* call_data){
 	for(int i = 0; i < NBYTES; i++){
 		octet[i] = ip >> (i * 8);
 	}
-	sprintf(fake_ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(fake_ip, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 	// Get the ports as an array
 	Array port_list;
 	uint16* ports = call_data->m_unPorts;
@@ -10245,7 +10245,7 @@ void Steam::client_game_server_deny(ClientGameServerDeny_t* call_data){
 	for(int j = 0; j < NBYTES; j++){
 		octet[j] = server_ip >> (j * 8);
 	}
-	sprintf(ip, "%d.%d.%d.%d", octet[3], octet[2], octet[1], octet[0]);
+	sprintf(ip, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 	emit_signal("client_game_server_deny", app_id, ip, server_port, secure, reason);
 }
 
