@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.13.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.13.3 Changes**
+- Fixed: get correct size of lobby message in sendLobbyChatMsg; _thanks to Green Fox_
+
 **Version 3.13.2 Changes**
 - Fixed: various functions and callbacks that sent back scrambled IP addresses
 

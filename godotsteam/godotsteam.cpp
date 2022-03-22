@@ -3858,7 +3858,7 @@ bool Steam::sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body
 		return false;
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
-	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), 4096);
+	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), message_body.size() + 1);
 }
 
 //! Refreshes metadata for a lobby you're not necessarily in right now.
