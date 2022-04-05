@@ -490,8 +490,8 @@ Array Steam::getDLCDataByIndex(){
 	for(int i = 0; i < count; i++){
 		AppId_t app_id = 0;
 		bool available = false;
-		char name[128];
-		bool success = SteamApps()->BGetDLCDataByIndex(i, &app_id, &available, name, 128);
+		char name[STEAM_BUFFER_SIZE];
+		bool success = SteamApps()->BGetDLCDataByIndex(i, &app_id, &available, name, STEAM_BUFFER_SIZE);
 		if(success){
 			Dictionary dlc;
 			dlc["id"] = app_id;
@@ -605,11 +605,9 @@ String Steam::getAppInstallDir(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return "";
 	}
-	const uint32 folder_buffer = 256;
-	char *buffer = new char[folder_buffer];
-	SteamApps()->GetAppInstallDir((AppId_t)app_id, (char*)buffer, folder_buffer);
+	char buffer[STEAM_BUFFER_SIZE];
+	SteamApps()->GetAppInstallDir((AppId_t)app_id, buffer, STEAM_BUFFER_SIZE);
 	String app_dir = buffer;
-	delete[] buffer;
 	return app_dir;
 }
 
@@ -634,8 +632,8 @@ String Steam::getAvailableGameLanguages(){
 String Steam::getCurrentBetaName(){
 	String beta_name = "";
 	if(SteamApps() != NULL){
-		char name_string[1024];
-		if (SteamApps()->GetCurrentBetaName(name_string, 1024)) {
+		char name_string[STEAM_LARGE_BUFFER_SIZE];
+		if (SteamApps()->GetCurrentBetaName(name_string, STEAM_LARGE_BUFFER_SIZE)) {
 			beta_name = String(name_string);
 		}
 	}
@@ -956,10 +954,10 @@ Dictionary Steam::getClanChatMessage(uint64_t chat_id, int message){
 		return chat_message;
 	}
 	CSteamID chat = (uint64)chat_id;
-	char text[2048];
+	char text[STEAM_LARGE_BUFFER_SIZE];
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	CSteamID user_id;
-	chat_message["ret"] = SteamFriends()->GetClanChatMessage(chat, message, text, 2048, &type, &user_id);
+	chat_message["ret"] = SteamFriends()->GetClanChatMessage(chat, message, text, STEAM_LARGE_BUFFER_SIZE, &type, &user_id);
 	chat_message["text"] = String(text);
 	chat_message["type"] = type;
 	uint64_t user = user_id.ConvertToUint64();
@@ -1146,9 +1144,9 @@ Dictionary Steam::getFriendMessage(uint64_t friend_id, int message){
 	if(SteamFriends() == NULL){
 		return chat;
 	}
-	char text[2048];
+	char text[STEAM_LARGE_BUFFER_SIZE];
 	EChatEntryType type = k_EChatEntryTypeInvalid;
-	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(friend_id), message, text, 2048, &type);
+	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(friend_id), message, text, STEAM_LARGE_BUFFER_SIZE, &type);
 	chat["text"] = String(text);
 	return chat;
 }
@@ -3363,11 +3361,10 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String& name){
 	if(SteamInventory() == NULL){
 		return "";
 	}
-	uint32 buffer_size = 256;
-	char *value = new char[buffer_size];
-	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), value, &buffer_size);
-	String property = value;
-	delete[] value;
+	uint32 buffer_size = STEAM_BUFFER_SIZE;
+	char buffer[buffer_size];
+	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), buffer, &buffer_size);
+	String property = String::utf8(buffer,buffer_size);
 	return property;
 }
 
@@ -3428,11 +3425,10 @@ uint32 Steam::getNumItemsWithPrices(){
 String Steam::getResultItemProperty(uint32 index, const String& name){
 	if(SteamInventory() != NULL){
 		// Set up variables to fill
-		uint32 buffer_size = 256;
-		char *value = new char[buffer_size];
-		SteamInventory()->GetResultItemProperty(inventory_handle, index, name.utf8().get_data(), (char*)value, &buffer_size);
+		uint32 buffer_size = STEAM_BUFFER_SIZE;
+		char value[STEAM_BUFFER_SIZE];
+		SteamInventory()->GetResultItemProperty(inventory_handle, index, name.utf8().get_data(), value, &buffer_size);
 		String property = value;
-		delete[] value;
 		return property;
 	}
 	return "";
@@ -3535,11 +3531,10 @@ bool Steam::serializeResult(){
 	bool result_serialized = false;
 	if(SteamInventory() != NULL){
 		// Set up return array
-		static uint32 buffer_size = 0;
-		if(SteamInventory()->SerializeResult(inventory_handle, NULL, &buffer_size)){
-			char *buffer = new char[buffer_size];
-			result_serialized = SteamInventory()->SerializeResult(inventory_handle, &buffer, &buffer_size);
-			delete[] buffer;
+		uint32 buffer_size = STEAM_BUFFER_SIZE;
+		char buffer[STEAM_BUFFER_SIZE];
+		if(SteamInventory()->SerializeResult(inventory_handle, buffer, &buffer_size)){
+			result_serialized = String::utf8(buffer,buffer_size);
 		}
 	}
 	return result_serialized;
@@ -9910,11 +9905,11 @@ void Steam::lobby_message(LobbyChatMsg_t* call_data){
 	// Convert the chat type over
 	EChatEntryType type = (EChatEntryType)chat_type;
 	// Get the chat message data
-	char buffer[4096];
-	SteamMatchmaking()->GetLobbyChatEntry(lobby_id, call_data->m_iChatID, &user_id, &buffer, 4096, &type);
+	char buffer[STEAM_LARGE_BUFFER_SIZE];
+	int size = SteamMatchmaking()->GetLobbyChatEntry(lobby_id, call_data->m_iChatID, &user_id, &buffer, STEAM_LARGE_BUFFER_SIZE, &type);
 	uint64_t lobby = lobby_id.ConvertToUint64();
 	uint64_t user = user_id.ConvertToUint64();
-	emit_signal("lobby_message", lobby, user, String::utf8(buffer), chat_type);
+	emit_signal("lobby_message", lobby, user, String::utf8(buffer,size), chat_type);
 }
 
 //! A lobby chat room state has changed, this is usually sent when a user has joined or left the lobby.
