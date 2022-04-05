@@ -44,6 +44,8 @@
 #define STEAM_USER_WEB_INSTANCE 4
 #define QUERY_PORT_ERROR 0xFFFE
 #define QUERY_PORT_NOT_INITIALIZED 0xFFFF
+#define STEAM_BUFFER_SIZE 255
+#define STEAM_LARGE_BUFFER_SIZE 8160
 
 // Define Steam Server API constants
 #define FLAG_ACTIVE 0x01
@@ -712,8 +714,8 @@ String Steam::getLaunchCommandLine(){
 	if(SteamApps() == NULL){
 		return "";
 	}
-	char commands;
-	SteamApps()->GetLaunchCommandLine(&commands, 256);
+	char commands[STEAM_BUFFER_SIZE];
+	SteamApps()->GetLaunchCommandLine(commands, STEAM_BUFFER_SIZE);
 	String command_line;
 	command_line += commands;
 	return command_line;
@@ -784,26 +786,28 @@ Array Steam::getInstalledApps(uint32 max_app_ids){
 
 //! Get a given app ID's name.
 String Steam::getAppName(uint32_t app_id, int name_max){
-	String app_name = "";
+	String app_name;
 	if(SteamAppList() != NULL){
-		char app;
-		int name_found = SteamAppList()->GetAppName((AppId_t)app_id, &app, name_max);
-		if(name_found != -1){
+		char* appBuffer = new char[name_max];
+		int bufferSize = SteamAppList()->GetAppName((AppId_t)app_id, appBuffer, name_max);
+		if(bufferSize != 0){
 			app_name += app;
 		}
+		delete[] appBuffer;
 	}
 	return app_name;
 }
 
 //! Get a given app ID's install directory.
 String Steam::getAppListInstallDir(uint32_t app_id, int name_max){
-	String dir_name = "";
+	String dir_name;
 	if(SteamAppList() != NULL){
-		char directory;
-		int name_found = SteamAppList()->GetAppInstallDir((AppId_t)app_id, &directory, name_max);
-		if(name_found != -1){
-			dir_name += directory;
+		char* dirBuffer = new char[name_max];
+		int bufferSize = SteamAppList()->GetAppInstallDir((AppId_t)app_id, dirBuffer, name_max);
+		if(bufferSize != 0){
+			dir_name += dirBuffer;
 		}
+		delete[] dirBuffer;
 	}
 	return dir_name;
 }
@@ -3812,10 +3816,10 @@ Dictionary Steam::getAllLobbyData(uint64_t steam_lobby_id){
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
 	int dataCount = SteamMatchmaking()->GetLobbyDataCount(lobby_id);
-	char key;
-	char value;
+	char key[MAX_LOBBY_KEY_LENGTH];
+	char value[CHAT_METADATA_MAX];
 	for(int i = 0; i < dataCount; i++){
-		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobby_id, i, &key, MAX_LOBBY_KEY_LENGTH, &value, CHAT_METADATA_MAX);
+		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobby_id, i, key, MAX_LOBBY_KEY_LENGTH, value, CHAT_METADATA_MAX);
 		if(success){
 			data["index"] = i;
 			data["key"] = key;
@@ -4775,14 +4779,14 @@ Dictionary Steam::getSessionConnectionInfo(const String& identity_reference, boo
 		// Parse the data to a dictionary
 		connection_info["connection_state"] = connection_state;
 		// If getting the connection information
-		if(get_connection){
-			char identity;
-			this_info.m_identityRemote.ToString(&identity, 128);
+		if(get_connection){ //todo: we should read the `this_info.m_identityRemote.m_eType` and only extract the meaningful values here (IP is meaningless when m_eType == k_ESteamNetworkingIdentityType_SteamID)
+			char identity[STEAM_BUFFER_SIZE];
+			this_info.m_identityRemote.ToString(identity, STEAM_BUFFER_SIZE);
 			connection_info["identity"] = identity;
 			connection_info["user_data"] = (uint64_t)this_info.m_nUserData;
 			connection_info["listen_socket"] = this_info.m_hListenSocket;
-			char ip_address;
-			this_info.m_addrRemote.ToString(&ip_address, 128, true);
+			char ip_address[STEAM_BUFFER_SIZE];
+			this_info.m_addrRemote.ToString(ip_address, STEAM_BUFFER_SIZE, true);
 			connection_info["remote_address"] = ip_address;
 			connection_info["remote_pop"] = this_info.m_idPOPRemote;
 			connection_info["pop_relay"] = this_info.m_idPOPRelay;
@@ -4831,8 +4835,8 @@ Array Steam::receiveMessagesOnChannel(int channel, int max_messages){
 			message["payload"] = channel_messages[i].m_pData;
 			message["size"] = channel_messages[i].m_cbSize;
 			message["connection"] = channel_messages[i].m_conn;
-			char identity;
-			channel_messages[i].m_identityPeer.ToString(&identity, 128);
+			char identity[STEAM_BUFFER_SIZE];
+			channel_messages[i].m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
 			message["user_data"] = (uint64_t)channel_messages[i].m_nConnUserData;
 			message["time_received"] = (uint64_t)channel_messages[i].m_usecTimeReceived;
@@ -4999,8 +5003,8 @@ Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messa
 			message["payload"] = connection_messages[i].m_pData;
 			message["size"] = connection_messages[i].m_cbSize;
 			message["connection"] = connection_messages[i].m_conn;
-			char identity;
-			connection_messages[i].m_identityPeer.ToString(&identity, 128);
+			char identity[STEAM_BUFFER_SIZE];
+			connection_messages[i].m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
 			message["user_data"] = (uint64_t)connection_messages[i].m_nConnUserData;
 			message["time_received"] = (uint64_t)connection_messages[i].m_usecTimeReceived;
@@ -5060,8 +5064,8 @@ Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 			message["payload"] = poll_messages[i].m_pData;
 			message["size"] = poll_messages[i].m_cbSize;
 			message["connection"] = poll_messages[i].m_conn;
-			char identity;
-			poll_messages[i].m_identityPeer.ToString(&identity, 128);
+			char identity[STEAM_BUFFER_SIZE];
+			poll_messages[i].m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
 			message["user_data"] = (uint64_t)poll_messages[i].m_nConnUserData;
 			message["time_received"] = (uint64_t)poll_messages[i].m_usecTimeReceived;
@@ -5083,13 +5087,13 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle){
 	if(SteamNetworkingSockets() != NULL){
 		SteamNetConnectionInfo_t info;
 		if(SteamNetworkingSockets()->GetConnectionInfo((HSteamNetConnection)connection_handle, &info)){
-			char identity;
-			info.m_identityRemote.ToString(&identity, 128);
+			char identity[STEAM_BUFFER_SIZE];
+			info.m_identityRemote.ToString(identity, STEAM_BUFFER_SIZE);
 			connection_info["identity"] = identity;
 			connection_info["user_data"] = (uint64_t)info.m_nUserData;
 			connection_info["listen_socket"] = info.m_hListenSocket;
-			char ip_address;
-			info.m_addrRemote.ToString(&ip_address, 128, true);
+			char ip_address[STEAM_BUFFER_SIZE];
+			info.m_addrRemote.ToString(ip_address, STEAM_BUFFER_SIZE, true);
 			connection_info["remote_address"] = ip_address;
 			connection_info["remote_pop"] = info.m_idPOPRemote;
 			connection_info["pop_relay"] = info.m_idPOPRelay;
@@ -5106,8 +5110,8 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle){
 Dictionary Steam::getDetailedConnectionStatus(uint32 connection){
 	Dictionary connectionStatus;
 	if(SteamNetworkingSockets() != NULL){
-		char buffer;
-		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, &buffer, 2048);
+		char buffer[STEAM_LARGE_BUFFER_SIZE];
+		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
 		// Add data to dictionary
 		connectionStatus["success"] = success;
 		connectionStatus["status"] = buffer;
@@ -5136,8 +5140,8 @@ String Steam::getConnectionName(uint32 peer){
 	// Set empty string variable for use
 	String connection_name = "";
 	if(SteamNetworkingSockets() != NULL){
-		char name;
-		if(SteamNetworkingSockets()->GetConnectionName((HSteamNetConnection)peer, &name, 256)){
+		char name[STEAM_BUFFER_SIZE];
+		if(SteamNetworkingSockets()->GetConnectionName((HSteamNetConnection)peer, name, STEAM_BUFFER_SIZE)){
 			connection_name += name;	
 		}
 	}
@@ -6104,8 +6108,8 @@ Dictionary Steam::getBeaconDetails(uint64_t beacon_id){
 	if(SteamParties() != NULL){
 		CSteamID owner;
 		SteamPartyBeaconLocation_t location;
-		char metadata;
-		if(SteamParties()->GetBeaconDetails(beacon_id, &owner, &location, &metadata, 2048)){
+		char metadata[STEAM_LARGE_BUFFER_SIZE];
+		if(SteamParties()->GetBeaconDetails(beacon_id, &owner, &location, metadata, STEAM_LARGE_BUFFER_SIZE)){
 			details["beacon_id"] = beacon_id;
 			details["owner_id"] = (uint64_t)owner.ConvertToUint64();
 			details["type"] = location.m_eType;
@@ -10050,8 +10054,8 @@ void Steam::p2p_session_request(P2PSessionRequest_t* call_data){
 //! Posted when a remote host is sending us a message, and we do not already have a session with them.
 void Steam::network_messages_session_request(SteamNetworkingMessagesSessionRequest_t* call_data){
 	SteamNetworkingIdentity remote = call_data->m_identityRemote;
-	char identity;
-	remote.ToString(&identity, 128);
+	char identity[STEAM_BUFFER_SIZE];
+	remote.ToString(identity, STEAM_BUFFER_SIZE);
 	emit_signal("network_messages_session_request", identity);
 }
 
@@ -10073,13 +10077,13 @@ void Steam::network_connection_status_changed(SteamNetConnectionStatusChangedCal
 	SteamNetConnectionInfo_t connection_info = call_data->m_info;
 	// Move connection info into a dictionary
 	Dictionary connection;
-	char identity;
-	connection_info.m_identityRemote.ToString(&identity, 128);
+	char identity[STEAM_BUFFER_SIZE];
+	connection_info.m_identityRemote.ToString(identity, STEAM_BUFFER_SIZE);
 	connection["identity"] = identity;
 	connection["user_data"] = (uint64_t)connection_info.m_nUserData;
 	connection["listen_socket"] = connection_info.m_hListenSocket;
-	char ip_address;
-	connection_info.m_addrRemote.ToString(&ip_address, 128, true);
+	char ip_address[STEAM_BUFFER_SIZE];
+	connection_info.m_addrRemote.ToString(ip_address, STEAM_BUFFER_SIZE, true);
 	connection["remote_address"] = ip_address;
 	connection["remote_pop"] = connection_info.m_idPOPRemote;
 	connection["pop_relay"] = connection_info.m_idPOPRelay;
@@ -11602,7 +11606,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("addRequestLobbyListFilterSlotsAvailable", "slots_available"), &Steam::addRequestLobbyListFilterSlotsAvailable);
 	ClassDB::bind_method(D_METHOD("addRequestLobbyListDistanceFilter", "distance_filter"), &Steam::addRequestLobbyListDistanceFilter);
 	ClassDB::bind_method(D_METHOD("addRequestLobbyListResultCountFilter", "max_results"), &Steam::addRequestLobbyListResultCountFilter);
-	ClassDB::bind_method(D_METHOD("createLobby", "lobby_type", "max_messages"), &Steam::createLobby, DEFVAL(2));
+	ClassDB::bind_method(D_METHOD("createLobby", "lobby_type", "max_members"), &Steam::createLobby, DEFVAL(2));
 	ClassDB::bind_method(D_METHOD("joinLobby", "steam_lobby_id"), &Steam::joinLobby);
 	ClassDB::bind_method(D_METHOD("leaveLobby", "steam_lobby_id"), &Steam::leaveLobby);
 	ClassDB::bind_method(D_METHOD("inviteUserToLobby", "steam_lobby_id", "steam_id_invitee"), &Steam::inviteUserToLobby);
@@ -12112,7 +12116,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("connected_chat_leave", PropertyInfo(Variant::INT, "chat_id"), PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::BOOL, "kicked"), PropertyInfo(Variant::BOOL, "dropped")));
 	ADD_SIGNAL(MethodInfo("connected_clan_chat_message", PropertyInfo(Variant::DICTIONARY, "chat")));
 	ADD_SIGNAL(MethodInfo("connected_friend_chat_message", PropertyInfo(Variant::DICTIONARY, "chat")));
-	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "from"), PropertyInfo(Variant::STRING, "connect_string")));
+	ADD_SIGNAL(MethodInfo("join_requested", PropertyInfo(Variant::INT, "lobby_id"), PropertyInfo(Variant::INT, "steam_id")));
 	ADD_SIGNAL(MethodInfo("overlay_toggled", PropertyInfo(Variant::BOOL, "active")));
 	ADD_SIGNAL(MethodInfo("join_game_requested", PropertyInfo(Variant::INT, "user"), PropertyInfo(Variant::STRING, "connect")));
 	ADD_SIGNAL(MethodInfo("change_server_requested", PropertyInfo(Variant::STRING, "server"), PropertyInfo(Variant::STRING, "password")));
