@@ -934,7 +934,7 @@ class Steam: public Object {
 		bool closeSessionWithUser(const String& identity_reference);
 		Dictionary getSessionConnectionInfo(const String& identity_reference, bool get_connection, bool get_status);
 		Array receiveMessagesOnChannel(int channel, int max_messages);
-		int sendMessageToUser(const String& identity_reference, const String& message, int flags, int channel);
+		int sendMessageToUser(const String& identity_reference, const PoolByteArray data, int flags, int channel);
 		
 		// Networking Sockets ///////////////////
 		int acceptConnection(uint32 connection);

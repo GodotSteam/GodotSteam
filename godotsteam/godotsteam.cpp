@@ -4776,14 +4776,17 @@ Dictionary Steam::getSessionConnectionInfo(const String& identity_reference, boo
 		connection_info["connection_state"] = connection_state;
 		// If getting the connection information
 		if(get_connection){
-			char identity;
-			this_info.m_identityRemote.ToString(&identity, 128);
+			char identity[128];
+			this_info.m_identityRemote.ToString(identity, 128);
 			connection_info["identity"] = identity;
+
 			connection_info["user_data"] = (uint64_t)this_info.m_nUserData;
 			connection_info["listen_socket"] = this_info.m_hListenSocket;
-			char ip_address;
-			this_info.m_addrRemote.ToString(&ip_address, 128, true);
+
+			char ip_address[128];
+			this_info.m_addrRemote.ToString(ip_address, 128, true);
 			connection_info["remote_address"] = ip_address;
+
 			connection_info["remote_pop"] = this_info.m_idPOPRemote;
 			connection_info["pop_relay"] = this_info.m_idPOPRelay;
 			connection_info["connection_state"] = this_info.m_eState;
@@ -4815,25 +4818,32 @@ Dictionary Steam::getSessionConnectionInfo(const String& identity_reference, boo
 Array Steam::receiveMessagesOnChannel(int channel, int max_messages){
 	Array messages;
 	if(SteamNetworkingMessages() != NULL){
-		// Allocate the space for the messages
-		SteamNetworkingMessage_t *channel_messages;
-		channel_messages = SteamNetworkingUtils()->AllocateMessage(0);
 		// Get the messages
+		SteamNetworkingMessage_t *channel_messages;
 		int available_messages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(channel, &channel_messages, max_messages);
-		// Which is bigger, max messages or available messages?
-		int message_iteration = available_messages;
-		if(available_messages < max_messages){
-			message_iteration = max_messages;
-		}
+
 		// Loop through and create the messages as dictionaries then add to the messages array
-		for(int i = 1; i < message_iteration; i++){
+		for(int i = 0; i < available_messages; i++){
 			Dictionary message;
-			message["payload"] = channel_messages[i].m_pData;
-			message["size"] = channel_messages[i].m_cbSize;
+
+			int message_size = channel_messages[i].m_cbSize;
+
+			PoolByteArray data;
+			data.resize(message_size);
+			uint8_t* source_data = (uint8_t*)channel_messages[i].m_pData;
+			uint8_t* output_data = data.write().ptr();
+			for(int j = 0; j < message_size; j++){
+				output_data[j] = source_data[j];
+			}
+
+			message["payload"] = data;
+			message["size"] = message_size;
 			message["connection"] = channel_messages[i].m_conn;
-			char identity;
-			channel_messages[i].m_identityPeer.ToString(&identity, 128);
+
+			char identity[128];
+			channel_messages[i].m_identityPeer.ToString(identity, 128);
 			message["identity"] = identity;
+
 			message["user_data"] = (uint64_t)channel_messages[i].m_nConnUserData;
 			message["time_received"] = (uint64_t)channel_messages[i].m_usecTimeReceived;
 			message["message_number"] = (uint64_t)channel_messages[i].m_nMessageNumber;
@@ -4841,19 +4851,20 @@ Array Steam::receiveMessagesOnChannel(int channel, int max_messages){
 			message["flags"] = channel_messages[i].m_nFlags;
 			message["user_data"] = (uint64_t)channel_messages[i].m_nUserData;
 			messages.append(message);
+
+			// Release the message
+			channel_messages[i].Release();
 		}
-		// Release the messages
-		channel_messages->Release();
 	}
 	return messages;
 }
 
 //! Sends a message to the specified host. If we don't already have a session with that user, a session is implicitly created. There might be some handshaking that needs to happen before we can actually begin sending message data.
-int Steam::sendMessageToUser(const String& identity_reference, const String& message, int flags, int channel){
+int Steam::sendMessageToUser(const String& identity_reference, PoolByteArray data, int flags, int channel){
 	if(SteamNetworkingMessages() == NULL){
 		return 0;
 	}
-	return SteamNetworkingMessages()->SendMessageToUser(networking_identities[identity_reference.utf8().get_data()], message.utf8().get_data(), message.size(), flags, channel);
+	return SteamNetworkingMessages()->SendMessageToUser(networking_identities[identity_reference.utf8().get_data()], data.read().ptr(), data.size(), flags, channel);
 }
 
 
@@ -4983,25 +4994,32 @@ int Steam::flushMessagesOnConnection(uint32 connection_handle){
 Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messages){
 	Array messages;
 	if(SteamNetworkingSockets() != NULL){
-		// Allocate the space for the messages
-		SteamNetworkingMessage_t *connection_messages;
-		connection_messages = SteamNetworkingUtils()->AllocateMessage(0);
 		// Get the messages
+		SteamNetworkingMessage_t *connection_messages;
 		int available_messages = SteamNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection_handle, &connection_messages, max_messages);
-		// Which is bigger, max messages or available messages?
-		int message_iteration = available_messages;
-		if(available_messages < max_messages){
-			message_iteration = max_messages;
-		}
+
 		// Loop through and create the messages as dictionaries then add to the messages array
-		for(int i = 1; i < message_iteration; i++){
+		for(int i = 0; i < available_messages; i++){
 			Dictionary message;
-			message["payload"] = connection_messages[i].m_pData;
-			message["size"] = connection_messages[i].m_cbSize;
+
+			int message_size = connection_messages[i].m_cbSize;
+
+			PoolByteArray data;
+			data.resize(message_size);
+			uint8_t* source_data = (uint8_t*)connection_messages[i].m_pData;
+			uint8_t* output_data = data.write().ptr();
+			for(int j = 0; j < message_size; j++){
+				output_data[j] = source_data[j];
+			}
+
+			message["payload"] = data;
+			message["size"] = message_size;
 			message["connection"] = connection_messages[i].m_conn;
-			char identity;
-			connection_messages[i].m_identityPeer.ToString(&identity, 128);
+
+			char identity[128];
+			connection_messages[i].m_identityPeer.ToString(identity, 128);
 			message["identity"] = identity;
+
 			message["user_data"] = (uint64_t)connection_messages[i].m_nConnUserData;
 			message["time_received"] = (uint64_t)connection_messages[i].m_usecTimeReceived;
 			message["message_number"] = (uint64_t)connection_messages[i].m_nMessageNumber;
@@ -5009,9 +5027,10 @@ Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messa
 			message["flags"] = connection_messages[i].m_nFlags;
 			message["user_data"] = (uint64_t)connection_messages[i].m_nUserData;
 			messages.append(message);
+
+			// Release the messages
+			connection_messages[i].Release();
 		}
-		// Release the messages
-		connection_messages->Release();
 	}
 	return messages;
 }
@@ -5044,25 +5063,32 @@ bool Steam::setConnectionPollGroup(uint32 connection_handle, uint32 poll_group){
 Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 	Array messages;
 	if(SteamNetworkingSockets() != NULL){
-		// Allocate the space for the messages
-		SteamNetworkingMessage_t *poll_messages;
-		poll_messages = SteamNetworkingUtils()->AllocateMessage(0);
 		// Get the messages
+		SteamNetworkingMessage_t *poll_messages;
 		int available_messages = SteamNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)poll_group, &poll_messages, max_messages);
-		// Which is bigger, max messages or available messages?
-		int message_iteration = available_messages;
-		if(available_messages < max_messages){
-			message_iteration = max_messages;
-		}
+
 		// Loop through and create the messages as dictionaries then add to the messages array
-		for(int i = 1; i < message_iteration; i++){
+		for(int i = 0; i < available_messages; i++){
 			Dictionary message;
-			message["payload"] = poll_messages[i].m_pData;
-			message["size"] = poll_messages[i].m_cbSize;
+
+			int message_size = poll_messages[i].m_cbSize;
+
+			PoolByteArray data;
+			data.resize(message_size);
+			uint8_t* source_data = (uint8_t*)poll_messages[i].m_pData;
+			uint8_t* output_data = data.write().ptr();
+			for(int j = 0; j < message_size; j++){
+				output_data[j] = source_data[j];
+			}
+
+			message["payload"] = data;
+			message["size"] = message_size;
 			message["connection"] = poll_messages[i].m_conn;
-			char identity;
-			poll_messages[i].m_identityPeer.ToString(&identity, 128);
+
+			char identity[128];
+			poll_messages[i].m_identityPeer.ToString(identity, 128);
 			message["identity"] = identity;
+
 			message["user_data"] = (uint64_t)poll_messages[i].m_nConnUserData;
 			message["time_received"] = (uint64_t)poll_messages[i].m_usecTimeReceived;
 			message["message_number"] = (uint64_t)poll_messages[i].m_nMessageNumber;
@@ -5070,9 +5096,10 @@ Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 			message["flags"] = poll_messages[i].m_nFlags;
 			message["user_data"] = (uint64_t)poll_messages[i].m_nUserData;
 			messages.append(message);
+
+			// Release the message
+			poll_messages[i].Release();
 		}
-		// Release the messages
-		poll_messages->Release();
 	}
 	return messages;
 }
@@ -5083,14 +5110,18 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle){
 	if(SteamNetworkingSockets() != NULL){
 		SteamNetConnectionInfo_t info;
 		if(SteamNetworkingSockets()->GetConnectionInfo((HSteamNetConnection)connection_handle, &info)){
-			char identity;
-			info.m_identityRemote.ToString(&identity, 128);
+
+			char identity[128];
+			info.m_identityRemote.ToString(identity, 128);
 			connection_info["identity"] = identity;
+
 			connection_info["user_data"] = (uint64_t)info.m_nUserData;
 			connection_info["listen_socket"] = info.m_hListenSocket;
-			char ip_address;
-			info.m_addrRemote.ToString(&ip_address, 128, true);
+
+			char ip_address[128];
+			info.m_addrRemote.ToString(ip_address, 128, true);
 			connection_info["remote_address"] = ip_address;
+
 			connection_info["remote_pop"] = info.m_idPOPRemote;
 			connection_info["pop_relay"] = info.m_idPOPRelay;
 			connection_info["connection_state"] = info.m_eState;
@@ -10050,8 +10081,9 @@ void Steam::p2p_session_request(P2PSessionRequest_t* call_data){
 //! Posted when a remote host is sending us a message, and we do not already have a session with them.
 void Steam::network_messages_session_request(SteamNetworkingMessagesSessionRequest_t* call_data){
 	SteamNetworkingIdentity remote = call_data->m_identityRemote;
-	char identity;
-	remote.ToString(&identity, 128);
+
+	char identity[128];
+	remote.ToString(identity, 128);
 	emit_signal("network_messages_session_request", identity);
 }
 
@@ -10073,14 +10105,18 @@ void Steam::network_connection_status_changed(SteamNetConnectionStatusChangedCal
 	SteamNetConnectionInfo_t connection_info = call_data->m_info;
 	// Move connection info into a dictionary
 	Dictionary connection;
-	char identity;
-	connection_info.m_identityRemote.ToString(&identity, 128);
+
+	char identity[128];
+	connection_info.m_identityRemote.ToString(identity, 128);
 	connection["identity"] = identity;
+
 	connection["user_data"] = (uint64_t)connection_info.m_nUserData;
 	connection["listen_socket"] = connection_info.m_hListenSocket;
-	char ip_address;
-	connection_info.m_addrRemote.ToString(&ip_address, 128, true);
+
+	char ip_address[128];
+	connection_info.m_addrRemote.ToString(ip_address, 128, true);
 	connection["remote_address"] = ip_address;
+
 	connection["remote_pop"] = connection_info.m_idPOPRemote;
 	connection["pop_relay"] = connection_info.m_idPOPRelay;
 	connection["connection_state"] = connection_info.m_eState;
@@ -11705,7 +11741,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("closeSessionWithUser", "identity_reference"), &Steam::closeSessionWithUser);
 	ClassDB::bind_method(D_METHOD("getSessionConnectionInfo", "identity_reference", "get_connection", "get_status"), &Steam::getSessionConnectionInfo);
 	ClassDB::bind_method(D_METHOD("receiveMessagesOnChannel", "channel", "max_messages"), &Steam::receiveMessagesOnChannel);
-	ClassDB::bind_method(D_METHOD("sendMessageToUser", "indentity_reference", "message", "flags", "channel"), &Steam::sendMessageToUser);
+	ClassDB::bind_method(D_METHOD("sendMessageToUser", "identity_reference", "data", "flags", "channel"), &Steam::sendMessageToUser);
 	
 	// NETWORKING SOCKETS BIND METHODS //////////
 	ClassDB::bind_method(D_METHOD("acceptConnection", "connection"), &Steam::acceptConnection);
