@@ -7,7 +7,7 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 What's New
 -------------
 **Updated 4/20/22**
-- Added: new game to game list
+- Added: new games to game list
 - Fixed: outdated version of Font Awesome
 
 **Updated 3/12/22**
