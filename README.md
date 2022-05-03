@@ -6,6 +6,9 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Updated 5/3/22**
+- Added: new game to game list
+
 **Updated 4/24/22**
 - Added: new game to game list
 
