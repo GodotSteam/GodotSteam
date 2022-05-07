@@ -18,6 +18,18 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.13.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.14 Changes**
+- Added: inventory handle argument to various Inventory class functions, defaults to 0 to use internally store argument
+- Changed: various Inventory class functions to send back the new inventory handle as well as storing it internally
+- Fixed: various string issues; _thanks to Green Fox_
+- Fixed: _file_read_async_complete_ call result not sending back the file buffer
+- Fixed: missing variant type for _avatar_loaded_ signal
+- Fixed: _enumerate_following_list_ calling the wrong signal name
+- Fixed: print of Steamworks error didn't contain signal name
+- Fixed: some variable and argument names
+- Fixed: deserializeResult to accept incoming PoolByteArray buffer
+- Fixed: various message functions in new networking classes; _thanks to Avantir-Chaosfire_
+
 **Version 3.13.3 Changes**
 - Fixed: get correct size of lobby message in sendLobbyChatMsg; _thanks to Green Fox_
 

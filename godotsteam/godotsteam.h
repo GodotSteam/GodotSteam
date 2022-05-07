@@ -786,39 +786,39 @@ class Steam: public Object {
 		String getStringForAnalogActionName(uint64_t action_handle);
 
 		// Inventory ////////////////////////////
-		bool addPromoItem(uint32 item);
-		bool addPromoItems(PoolIntArray items);
-		bool checkResultSteamID(uint64_t steam_id_expected);
-		bool consumeItem(uint64_t item_consume, uint32 quantity);
-		bool deserializeResult();
-		void destroyResult();
-		bool exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
-		bool generateItems(const PoolIntArray items, const uint32 quantity);
-		bool getAllItems();
+		int32 addPromoItem(uint32 item);
+		int32 addPromoItems(PoolIntArray items);
+		bool checkResultSteamID(uint64_t steam_id_expected, int32 this_inventory_handle = 0);
+		int32 consumeItem(uint64_t item_consume, uint32 quantity);
+		int32 deserializeResult(PoolByteArray buffer);
+		void destroyResult(int32 this_inventory_handle = 0);
+		int32 exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
+		int32 generateItems(const PoolIntArray items, const uint32 quantity);
+		int32 getAllItems();
 		String getItemDefinitionProperty(uint32 definition, const String& name);
-		bool getItemsByID(const uint64_t id_array, uint32 count);
+		int32 getItemsByID(const uint64_t id_array, uint32 count);
 		uint64_t getItemPrice(uint32 definition);
 		Array getItemsWithPrices(uint32 length);
 		uint32 getNumItemsWithPrices();
-		String getResultItemProperty(uint32 index, const String& name);
-		Array getResultItems();
-		String getResultStatus();
-		uint32 getResultTimestamp();
-		bool grantPromoItems();
+		String getResultItemProperty(uint32 index, const String& name, int32 this_inventory_handle = 0);
+		Array getResultItems(int32 this_inventory_handle = 0);
+		String getResultStatus(int32 this_inventory_handle = 0);
+		uint32 getResultTimestamp(int32 this_inventory_handle = 0);
+		int32 grantPromoItems();
 		bool loadItemDefinitions();
 		void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 		void requestPrices();
-		bool serializeResult();
+		String serializeResult(int32 this_inventory_handle = 0);
 		void startPurchase(const PoolIntArray items, const uint32 quantity);
-		bool transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
-		bool triggerItemDrop(uint32 definition);
+		int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
+		int32 triggerItemDrop(uint32 definition);
 		void startUpdateProperties();
-		bool submitUpdateProperties();
-		bool removeProperty(uint64_t item_id, const String& name);
-		bool setPropertyString(uint64_t item_id, const String& name, const String& value);
-		bool setPropertyBool(uint64_t item_id, const String& name, bool value);
-		bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value);
-		bool setPropertyFloat(uint64_t item_id, const String& name, float value);
+		int32 submitUpdateProperties(int32 this_inventory_update_handle = 0);
+		bool removeProperty(uint64_t item_id, const String& name, int32 this_inventory_update_handle = 0);
+		bool setPropertyString(uint64_t item_id, const String& name, const String& value, int32 this_inventory_update_handle = 0);
+		bool setPropertyBool(uint64_t item_id, const String& name, bool value, int32 this_inventory_update_handle = 0);
+		bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value, int32 this_inventory_update_handle = 0);
+		bool setPropertyFloat(uint64_t item_id, const String& name, float value, int32 this_inventory_update_handle = 0);
 
 		// Matchmaking //////////////////////////
 		Array getFavoriteGames();
@@ -934,7 +934,7 @@ class Steam: public Object {
 		bool closeSessionWithUser(const String& identity_reference);
 		Dictionary getSessionConnectionInfo(const String& identity_reference, bool get_connection, bool get_status);
 		Array receiveMessagesOnChannel(int channel, int max_messages);
-		int sendMessageToUser(const String& identity_reference, const String& message, int flags, int channel);
+		int sendMessageToUser(const String& identity_reference, const PoolByteArray data, int flags, int channel);
 		
 		// Networking Sockets ///////////////////
 		int acceptConnection(uint32 connection);
