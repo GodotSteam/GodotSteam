@@ -16,7 +16,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.13.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.14)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 3.14 Changes**
 - Added: inventory handle argument to various Inventory class functions, defaults to 0 to use internally store argument
