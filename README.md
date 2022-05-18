@@ -6,6 +6,11 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Updated 5/18/22**
+- Added: new contributor
+- Changed: updates to various functions
+- Fixed: some missing C-sharp bits
+
 **Updated 5/10/22**
 - Added: new contributor
 - Changed: change-log for Godot 3.x

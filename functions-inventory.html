@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css?v=2.7" />
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -59,7 +59,14 @@
 		<li>Grant a specific one-time promotional item to the current user.</li>
 		<li>This can be safely called from the client because the items it can grant can be locked down via policies in the itemdefs. One of the primary scenarios for this call is to grant an item to users who also own a specific other game. This can be useful if your game has custom UI for showing a specific promo item to the user otherwise if you want to grant multiple promotional items then use <strong>addPromoItems</strong> or <strong>grantPromoItems</strong>.</li>
 		<li>Any items that can be granted <strong>must</strong> have a "promo" attribute in their itemdef. That promo item list a set of app IDs that the user must own to be granted this given item. This version will grant all items that have promo attributes specified for them in the configured item definitions. This allows adding additional promotional items without having to update the game client. For example the following will allow the item to be granted if the user owns either TF2 or SpaceWar.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#AddPromoItems" target="_blank">
@@ -71,17 +78,30 @@
 		<li>Grant a specific one-time promotional item to the current user.</li>
 		<li>This can be safely called from the client because the items it can grant can be locked down via policies in the itemdefs. One of the primary scenarios for this call is to grant an item to users who also own a specific other game. If you want to grant a single promotional item then use <strong>addPromoItem</strong>. If you want to grant all possible promo items then use <strong>grantPromoItems</strong>.</li>
 		<li>Any items that can be granted <strong>must</strong> have a "promo" attribute in their itemdef. That promo item list a set of app ID's that the user must own to be granted this given item. This version will grant all items that have promo attributes specified for them in the configured item definitions. This allows adding additional promotional items without having to update the game client. For example the following will allow the item to be granted if the user owns either TF2 or SpaceWar.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>	
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#CheckResultSteamID" target="_blank">
-			checkResultSteamID( <sup>int</sup> steam_id_expected )
+			<span class="gdscript">
+				checkResultSteamID( <sup>int</sup> steam_id_expected, <sup>int</sup> this_inventory_handle = 0 )
+			</span>
+			<span class="c-sharp">
+				checkResultSteamID( <sup>uint64_t</sup> steam_id_expected, <sup>int32</sup> this_inventory_handle = 0 )
+			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Checks whether an inventory result handle belongs to the specified Steam ID.</li>
 		<li>This is important when using <strong>deserializeResult</strong>, to verify that a remote player is not pretending to have a different user's inventory.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li>
 		<li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
@@ -99,11 +119,18 @@
 		<li>Consumes items from a user's inventory. If the quantity of the given item goes to zero, it is permanently removed.</li>
 		<li>Once an item is removed it cannot be recovered. This is not for the faint of heart - if your game implements item removal at all, a high-friction UI confirmation process is highly recommended.</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#DeserializeResult" target="_blank">
-			deserializeResult()
+			deserializeResult( <sup>PoolIntArray</sup> buffer )
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
@@ -111,16 +138,29 @@
 		<li>Deserializes a result set and verifies the signature bytes.</li>
 		<li>This call has a potential soft-failure mode where the handle status is set to 27. <strong>getResultItems</strong> will still succeed in this mode. The "expired" result could indicate that the data may be out of date - not just due to timed expiration (one hour), but also because one of the items in the result set may have been traded or consumed since the result set was generated. You could compare the timestamp from <strong>getResultTimestamp</strong> to <strong>getServerRealTime</strong> to determine how old the data is. You could simply ignore the "expired" result code and continue as normal, or you could request the player with expired data to send an updated result set.</li>
 		<li>You should call <strong>checkResultSteamID</strong> on the result handle when it completes to verify that a remote player is not pretending to have a different user's inventory.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#DestroyResult" target="_blank">
-			destroyResult()
+			<span class="gdscript">
+				destroyResult( <sup>int</sup> this_inventory_handle = 0 )
+			</span>
+			<span class="c-sharp">
+				destroyResult( <sup>int32</sup> this_inventory_handle = 0 )
+			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Destroys a result handle and frees all associated memory.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li>
 		<li>Returns nothing; <strong>void</strong>.</li>
 	</ul>
 	<h4>
@@ -141,7 +181,14 @@
 		<li>Any items that can be granted <strong>must</strong> have an exchange attribute in their itemdef. The exchange attribute specifies a set of recipes that are valid exchanges for this item. Exchange recipes are evaluated atomically by the Inventory Service; if the supplied components do not match the recipe, or do not contain sufficient quantity, the exchange will fail.</li>
 		<li>Will allow the item to be exchanged for either one #101 and one #102, five #103s or three #104s and three #105s. See the <a href="https://partner.steamgames.com/doc/features/inventory/schema" target="_blank">Steam Inventory Schema</a> documentation for more details.</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GenerateItems" target="_blank">
@@ -159,7 +206,14 @@
 		<li>This API is only intended for prototyping - it is only usable by Steam accounts that belong to the publisher group for your game.</li>
 		<li>You can pass in an array of items, identified by their item defintion int's and optionally a second array of corresponding quantities for each item. The length of these arrays <strong>must</strong> match!</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetAllItems" target="_blank">
@@ -171,7 +225,14 @@
 		<li>Start retrieving all items in the current users inventory.</li>
 		<li><strong>Note:</strong> Calls to this function are subject to rate limits and may return cached results if called too frequently. It is suggested that you call this function only when you are about to display the user's full inventory, or if you expect that the inventory may have changed.</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetItemDefinitionProperty" target="_blank">
@@ -207,7 +268,14 @@
 		<li>The subset is specified by an array of item instance IDs.</li>
 		<li>The results from this call can be serialized using <strong>serializeResult</strong> and passed to other players to "prove" that the current user owns specific items, without exposing the user's entire inventory. For example, you could call this with the IDs of the user's currently equipped items and serialize this to a buffer, and then transmit this buffer to other players upon joining a game.</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetItemPrice" target="_blank">
@@ -283,10 +351,10 @@
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetResultItemProperty" target="_blank">
 			<span class="gdscript">
-				getResultItemProperty( <sup>int</sup> index, <sup>string</sup> name )
+				getResultItemProperty( <sup>int</sup> index, <sup>string</sup> name, <sup>int</sup> this_inventory_handle )
 			</span>
 			<span class="c-sharp">
-				getResultItemProperty( <sup>uint32</sup> index, <sup>string</sup> name )
+				getResultItemProperty( <sup>uint32</sup> index, <sup>string</sup> name, <sup>int32</sup> this_inventory_handle )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
@@ -295,16 +363,23 @@
 		<li>Gets the dynamic properties from an item in an inventory result set.</li>
 		<li>Property names are always composed of ASCII letters, numbers, and/or underscores.</li>
 		<li>If the results do not fit in the given buffer, partial results may be copied.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li>
 		<li>Returns a <strong>string</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetResultItems" target="_blank">
-			getResultItems()
+			<span class="gdscript">
+				getResultItems( <sup>int</sup> this_inventory_handle )
+			</span>
+			<span class="c-sharp">
+				getResultItems( <sup>int32</sup> this_inventory_handle )
+			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Get the items associated with an inventory result handle.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li>
 		<li>
 			<span class="gdscript">
 				Returns an <strong>array</strong> containing <strong>int</strong> item ID's.
@@ -316,24 +391,36 @@
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetResultStatus" target="_blank">
-			getResultStatus()
+			<span class="gdscript">
+				getResultStatus( <sup>int</sup> this_inventory_handle )
+			</span>
+			<span class="c-sharp">
+				getResultStatus( <sup>int32</sup> this_inventory_handle )
+			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Find out the status of an asynchronous inventory result handle.</li>
 		<li>This is a polling equivalent to registering a callback function for <strong><em>inventory_result_ready</em></strong>.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li>
 		<li>Returns a <strong>string</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#GetResultTimestamp" target="_blank">
-			getResultTimestamp()
+			<span class="gdscript">
+				getResultTimestamp( <sup>int</sup> this_inventory_handle )
+			</span>
+			<span class="c-sharp">
+				getResultTimestamp( <sup>int32</sup> this_inventory_handle )
+			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Gets the server time at which the result was generated.</li>
 		<li>You can compare this value against <strong>getServerRealTime</strong> to determine the age of the result.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li>
 		<li>
 			<span class="gdscript">
 				Returns an <strong>int</strong>.
@@ -354,7 +441,14 @@
 		<li>This can be safely called from the client because the items it can grant can be locked down via policies in the itemdefs. One of the primary scenarios for this call is to grant an item to users who also own a specific other game. If you want to grant specific promotional items rather than all of them see: <strong>addPromoItem</strong> and <strong>addPromoItems</strong>.</li>
 		<li>Any items that can be granted <strong>must</strong> have a "promo" attribute in their itemdef. That promo item list a set of app ID's that the user must own to be granted this given item. This version will grant all items that have promo attributes specified for them in the configured item definitions. This allows adding additional promotional items without having to update the game client. For example the following will allow the item to be granted if the user owns either TF2 or SpaceWar.</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#LoadItemDefinitions" target="_blank">
@@ -399,14 +493,19 @@
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#SerializeResult" target="_blank">
-			serializeResult()
+			<span class="gdscript">
+				serializeResult( <sup>int</sup> this_inventory_handle )
+			</span>
+			<span class="c-sharp">
+				serializeResult( <sup>int32</sup> this_inventory_handle )
+			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.</li>
 		<li>A result set can be serialized on the local client, transmitted to other players via your game networking, and deserialized by the remote players. This is a secure way of preventing hackers from lying about posessing rare/high-value items. Serializes a result set with signature bytes to an output buffer. The size of a serialized result depends on the number items which are being serialized. When securely transmitting items to other players, it is recommended to use <strong>getItemsByID</strong> first to create a minimal result set.</li>
-		<li>Results have a built-in timestamp which will be considered "expired" after an hour has elapsed. See <strong>deserializeResult</strong> for expiration handling.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_handle</strong> is omitted, GodotSteam will use the internally stored ID.</li><li>Results have a built-in timestamp which will be considered "expired" after an hour has elapsed. See <strong>deserializeResult</strong> for expiration handling.</li>
 		<li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
@@ -443,7 +542,14 @@
 		<li>Transfer items between stacks within a user's inventory.</li>
 		<li>This can be used to stack, split, and moving items. The source and destination items must have the same itemdef id. To move items onto a destination stack specify the source, the quantity to move, and the destination item id. To split an existing stack, pass -1 into <strong>item_destination</strong>. A new item stack will be generated with the requested quantity.</li>
 		<li><strong>Note:</strong> Tradability/marketability restrictions are copied along with transferred items. The destination stack receives the latest tradability/marketability date of any item in its composition.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#TriggerItemDrop" target="_blank">
@@ -466,7 +572,14 @@
 		</li>
 		<li>Only item definitions which are marked as "playtime item generators" can be spawned.</li>
 		<li>Typically this function should be called at the end of a game or level or match or any point of significance in the game in which an item drop could occur. The granularity of the playtime generator settings is in minutes, so calling it more frequently than minutes is not useful and will be rate limited in the Steam client. The Steam servers will perform playtime accounting to prevent too-frequent drops. The servers will also manage adding the item to the players inventory.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#StartUpdateProperties" target="_blank">
@@ -487,82 +600,90 @@
 	<ul>
 		<li>Submits the transaction request to modify dynamic properties on items for the current user. See <strong>startUpdateProperties</strong>.</li>
 		<li><strong>Note:</strong> You must call <strong>destroyResult</strong> on the provided inventory result for when you are done with it.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+			<span class="c-sharp">
+				Returns an <strong>int32</strong> as the inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+			</span>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#RemoveProperty" target="_blank">
 			<span class="gdscript">
-				removeProperty( <sup>int</sup> item_id, <sup>string</sup> name )
+				removeProperty( <sup>int</sup> item_id, <sup>string</sup> name, <sup>int</sup> this_inventory_update_handle )
 			</span>
 			<span class="c-sharp">
-				removeProperty( <sup>uint64_t</sup> item_id, <sup>string</sup> name )
+				removeProperty( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>int32</sup> this_inventory_update_handle )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Removes a <a href="https://partner.steamgames.com/doc/features/inventory/dynamicproperties" target="_blank">dynamic property</a> for the given item.
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_update_handle</strong> is omitted, GodotSteam will use the internally stored ID. Also note this different from <strong>this_inventory_handle</strong> and is stored separately.</li>
 		<li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#SetProperty" target="_blank">
 			<span class="gdscript">
-				setPropertyString( <sup>int</sup> item_id, <sup>string</sup> name, <sup>string</sup> value )
+				setPropertyString( <sup>int</sup> item_id, <sup>string</sup> name, <sup>string</sup> value, <sup>int</sup> this_inventory_update_handle )
 			</span>
 			<span class="c-sharp">
-				setPropertyString( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>string</sup> value )
+				setPropertyString( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>string</sup> value, <sup>int32</sup> this_inventory_update_handle )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Sets a <a href="https://partner.steamgames.com/doc/features/inventory/dynamicproperties" target="_blank">dynamic property</a> for the given item. Supported value types are strings.
-		<li>Returns a <strong>bool</strong>.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_update_handle</strong> is omitted, GodotSteam will use the internally stored ID. Also note this different from <strong>this_inventory_handle</strong> and is stored separately.</li><li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#SetProperty" target="_blank">
 			<span class="gdscript">
-				setPropertyBool( <sup>int</sup> item_id, <sup>string</sup> name, <sup>bool</sup> value )
+				setPropertyBool( <sup>int</sup> item_id, <sup>string</sup> name, <sup>bool</sup> value, <sup>int</sup> this_inventory_update_handle )
 			</span>
 			<span class="c-sharp">
-				setPropertyBool( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>bool</sup> value )
+				setPropertyBool( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>bool</sup> value, <sup>int32</sup> this_inventory_update_handle )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Sets a <a href="https://partner.steamgames.com/doc/features/inventory/dynamicproperties" target="_blank">dynamic property</a> for the given item. Supported value types are boolean.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_update_handle</strong> is omitted, GodotSteam will use the internally stored ID. Also note this different from <strong>this_inventory_handle</strong> and is stored separately.</li><li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#SetProperty" target="_blank">
 			<span class="gdscript">
-				setPropertyInt( <sup>int</sup> item_id, <sup>string</sup> name, <sup>int</sup> value )
+				setPropertyInt( <sup>int</sup> item_id, <sup>string</sup> name, <sup>int</sup> value, <sup>int</sup> this_inventory_update_handle )
 			</span>
 			<span class="c-sharp">
-				setPropertyInt( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>uint64_t</sup> value )
+				setPropertyInt( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>uint64_t</sup> value, <sup>int32</sup> this_inventory_update_handle )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Sets a <a href="https://partner.steamgames.com/doc/features/inventory/dynamicproperties" target="_blank">dynamic property</a> for the given item. Supported value types are 64 bit integers.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_update_handle</strong> is omitted, GodotSteam will use the internally stored ID. Also note this different from <strong>this_inventory_handle</strong> and is stored separately.</li><li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamInventory#SetProperty" target="_blank">
 			<span class="gdscript">
-				setPropertyFloat( <sup>int</sup> item_id, <sup>string</sup> name, <sup>float</sup> value )
+				setPropertyFloat( <sup>int</sup> item_id, <sup>string</sup> name, <sup>float</sup> value, <sup>int</sup> this_inventory_update_handle )
 			</span>
 			<span class="c-sharp">
-				setPropertyFloat( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>float</sup> value )
+				setPropertyFloat( <sup>uint64_t</sup> item_id, <sup>string</sup> name, <sup>float</sup> value, <sup>int32</sup> this_inventory_update_handle )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
 	<ul>
 		<li>Sets a <a href="https://partner.steamgames.com/doc/features/inventory/dynamicproperties" target="_blank">dynamic property</a> for the given item. Supported value types are 32 bit floats.</li>
-		<li>Returns a <strong>bool</strong>.</li>
+		<li><strong>Note:</strong> If the argument <strong>this_inventory_update_handle</strong> is omitted, GodotSteam will use the internally stored ID. Also note this different from <strong>this_inventory_handle</strong> and is stored separately.</li><li>Returns a <strong>bool</strong>.</li>
 	</ul>
 </section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
 				</div>
@@ -668,7 +789,7 @@
 					</ul>
 				</li>
 				<li><a href="games.html">Games Using GodotSteam</a></li>
-				<li><a href="todo.html">To-Do</a></li>
+				<li><a href="https://github.com/Gramps/GodotSteam/projects/1.html" target="_blank">To-Do</a></li>
 				<li>
 					<span class="opener">Change Log</span>
 					<ul>
