@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="css/main.css?v=2.7" />
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
 		<!--[if lt IE 9]>
 			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -29,6 +29,27 @@
 		<h1>Change Log | Godot 3.x Module</h1>
 	</header>
 	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+	<h3>Version 3.14 Changes</h3>
+	<ul>
+		<li>Added: inventory handle argument to various Inventory class functions, defaults to 0 to use internally store argument</li>
+		<li>Changed: various Inventory class functions to send back the new inventory handle as well as storing it internally</li>
+		<li>Fixed: various string issues; thanks to Green Fox</li>
+		<li>Fixed: file_read_async_complete call result not sending back the file buffer</li>
+		<li>Fixed: missing variant type for avatar_loaded signal</li>
+		<li>Fixed: enumerate_following_list calling the wrong signal name</li>
+		<li>Fixed: print of Steamworks error didn't contain signal name</li>
+		<li>Fixed: some variable and argument names</li>
+		<li>Fixed: deserializeResult to accept incoming PoolByteArray buffer</li>
+		<li>Fixed: various message functions in new networking classes; thanks to Avantir-Chaosfire</li>
+	</ul>
+	<h3>Version 3.13.3 Changes</h3>
+	<ul>
+		<li>Fixed: get correct size of lobby message in sendLobbyChatMsg; thanks to Green Fox</li>
+	</ul>
+	<h3>Version 3.13.2 Changes</h3>
+	<ul>
+		<li>Fixed: various functions and callbacks that sent back scrambled IP addresses</li>
+	</ul>
 	<h3>Version 3.13.1 Changes</h3>
 	<ul>
 		<li>Changed: all HTML Surface functions can now have the handle passed to them or not; will use internal handle if not passed</li>

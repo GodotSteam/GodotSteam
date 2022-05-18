@@ -6,6 +6,10 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Updated 5/10/22**
+- Added: new contributor
+- Changed: change-log for Godot 3.x
+
 **Updated 5/3/22**
 - Added: new game to game list
 
