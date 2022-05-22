@@ -24,91 +24,63 @@
 					<header id="header">
 						<a href="index.html" class="logo"><strong>GodotSteam</strong> A Steamworks module for Godot Engine</a>
 					</header>
-					<section id="functions">
+					<section>
 	<header class="main">
-		<h1>Functions | Video</h1>
+		<h1>Tutorials - Removing Steam Easily</h1>
 	</header>
-	<p>The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
-	<div id="toggle-data" class="box">
-		<form action="#">
-			<div class="row gtr-uniform">
-				<div class="col-6 col-6-small">
-					<input id="gdscript" type="radio" name="layout" checked="true" autocomplete="off" />
-					<label for="gdscript">GDScript</label>
-				</div>
-				<div class="col-6 col-6-small">
-					<input id="c-sharp" type="radio" name="layout" autocomplete="off" />
-					<label for="c-sharp">C#</label>
-				</div>
-			</div>
-		</form>
-	</div>
-	<hr />
-	<h4>
-		<a href="https://partner.steamgames.com/doc/api/ISteamVideo#GetOPFSettings" target="_blank">
-			<span class="gdscript">
-				getOPFSettings( <sup>int</sup> app_id )
-			</span>
-			<span class="c-sharp">
-				getOPFSettings( <sup>uint32_t</sup> app_id )
-			</span>
-			<i class="fas fa-external-link-alt"></i>
-		</a>
-	</h4>
-	<ul>
-		<li>Get the OPF details for 360 video playback.</li>
-		<li>To retrieve the 360 OPF (open projection format) data to playback a 360 video, start by making a call to this, then the callback will indicate whether the request was successful. If it was successful, the actual OPF JSON data can be retrieved with a call to <strong>getOPFStringForApp</strong>.</li>
-		<li>Triggers a <strong><em>get_opf_settings_result</em></strong> callback.</li>
-		<li>Returns nothing; <strong>void</strong>.</li>
-	</ul>
-	<h4>
-		<a href="https://partner.steamgames.com/doc/api/ISteamVideo#GetOPFStringForApp" target="_blank">
-			<span class="gdscript">
-				getOPFStringForApp( <sup>int</sup> app_id )
-			</span>
-			<span class="c-sharp">
-				getOPFStringForApp( <sup>uint32_t</sup> app_id )
-			</span>
-			<i class="fas fa-external-link-alt"></i>
-		</a>
-	</h4>
-	<ul>
-		<li>Gets the OPF string for the specified video App ID.</li>
-		<li>Once the callback for <strong><em>get_opf_settings_result</em></strong> has been raised and the EResult indicates success, then calling this will return back the actual OPF data in a JSON format. The size of the OPF string varies, but at this time 48,000 bytes should be sufficient to contain the full string. If it is not, pnBufferSize will be set to the size required. In that case, make a second call with the correct buffer size.</li>
-		<li><strong>Note:</strong> The data returned in a successful call to <strong>getOPFStringForApp</strong> can only be retrieved once. If you need to retrieve it multiple times, a call to <strong>getOPFSettings</strong> will need to be made each time.</li>
-		<li>Returns a <strong>string</strong>.</li>
-	</ul>
-	<h4>
-		<a href="https://partner.steamgames.com/doc/api/ISteamVideo#GetVideoURL" target="_blank">
-			<span class="gdscript">
-				getVideoURL( <sup>int</sup> app_id )
-			</span>
-			<span class="c-sharp">
-				getVideoURL( <sup>uint32_t</sup> app_id )
-			</span>
-			<i class="fas fa-external-link-alt"></i>
-		</a>
-	</h4>
-	<ul>
-		<li>Asynchronously gets the URL suitable for streaming the video associated with the specified video app ID.</li>
-		<li>Triggers a <strong><em>get_video_result</em></strong> callback.</li>
-		<li>Returns nothing; <strong>void</strong>.</li>
-	</ul>
-	<h4>
-		<a href="https://partner.steamgames.com/doc/api/ISteamVideo#IsBroadcasting" target="_blank">
-			isBroadcasting()
-			<i class="fas fa-external-link-alt"></i>
-		</a>
-	</h4>
-	<ul>
-		<li>Checks if the user is currently live broadcasting and gets the number of users.</li>
-		<li>Returns a <strong>dictionary</strong>:
-			<ul>
-				<li>broadcasting (bool)</li>
-				<li>viewers (int)</li>
-			</ul>
-		</il>
-	</ul>
+	<p>A lot of folks like to ship on other platforms like Playstation, XBox, Switch, Itch.io, etc.  Removing deeply embedded Steamworks stuff can be a pain and some have opted to keep separate repositories for their game's Steam version.  However, there is an alternative to this: programmatically ignoring the Steamworks bits. Below are some examples shared by <a href="" target="_blank">users in our Discord</a>.</p>
+	<hr/>
+	<p>Albey shared some scripts for his solution in GDScript and there are three separate files. The <strong>SteamHandler.gd</strong> file which swaps out which version of the game this is:</p>
+<pre><code>
+extends Node
+
+var interface: SteamIntegrationBlank
+
+func _ready() -> void:
+  if OS.has_feature("Steam"):
+    interface = load("res://Entities/Autoloads/Steam/SteamIntegration.gd").new()
+  else:
+    interface = load("res://Entities/Autoloads/Steam/SteamIntegrationBlank.gd").new()
+
+  interface.initialise_steam()
+  if interface.status != interface.STATUS_OK:
+    get_tree().quit()
+</code></pre>
+	<p>The <strong>SteamIntegrationBlank.gd</strong> file which handles what happens when Steam is not present:</p>
+<pre><code>
+extends Reference
+class_name SteamIntegrationBlank
+
+const STATUS_OK = 1
+const STATUS_STEAM_NOT_RUNNING = 20
+var status := STATUS_OK
+
+func initialise_steam() -> void:
+  pass
+</code></pre>
+	<p>And finally the <strong>SteamIntegration.gd</strong> file for when Steam is present:</p>
+<pre><code>
+extends SteamIntegrationBlank
+
+const APP_ID = ***
+
+func initialise_steam() -> void:
+  if Steam.restartAppIfNecessary(APP_ID):
+    status = STATUS_STEAM_NOT_RUNNING
+    return
+
+  var init: Dictionary = Steam.steamInit()
+  status = init['status']
+</code></pre>
+	<hr/>
+	<p><a href="https://catcafemanager.com/" target="_blank">Rutger from Roost Games (maker of Cat Cafe Manager)</a> shared a tidbit about it: "If anyone is wondering how to do that, since I had to find out through the Switch port, I have a <strong>Platform</strong> global as a wrapper for any platform specific stuff, it just does this in the <strong>_ready:</strong>".  His example code is as following:</p>
+<pre><code>
+if Engine.has_singleton("Steam"):
+	self.platform = "steam"
+	self.Steam = Engine.get_singleton("Steam")
+</code></pre>
+	<hr/>
+	<p>Hopefully these examples give you some ideas on how to remove Steamworks features from your game without having to make a bunch of different builds and repositories.</p>
 </section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
 				</div>
 			</div>
