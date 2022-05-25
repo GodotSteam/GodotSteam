@@ -20,6 +20,7 @@ You can [download pre-compiled versions _(currently v3.14)_ of this repo here](h
 
 **Version 3.15 Changes**
 - Fixed: issue with receiving messages, now allows more than one at a time; _thanks to Frostings_
+- Fixed: getQueryUGCChildren not working correctly; _thanks to EIREXE_
 
 **Version 3.14 Changes**
 - Added: inventory handle argument to various Inventory class functions, defaults to 0 to use internally store argument
