@@ -7266,21 +7266,27 @@ Dictionary Steam::getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 ind
 }
 
 //! Retrieve the ids of any child items of an individual workshop item after receiving a querying UGC call result. These items can either be a part of a collection or some other dependency (see AddDependency).
-Dictionary Steam::getQueryUGCChildren(uint64_t query_handle, uint32 index){
+Dictionary Steam::getQueryUGCChildren(uint64_t query_handle, uint32 index, uint32_t child_count){
 	Dictionary children;
 	if(SteamUGC() == NULL){
 		return children;
 	}
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
-	PublishedFileId_t *child = new PublishedFileId_t[100];
-	bool success = SteamUGC()->GetQueryUGCChildren(handle, index, (PublishedFileId_t*)child, 100);
-	if(success){
+	PoolVector<uint64_t> vec;
+	vec.resize(child_count);
+	bool success = SteamUGC()->GetQueryUGCChildren(handle, index, (PublishedFileId_t*)vec.write().ptr(), child_count);
+	if(success) {
+		Array godot_arr;
+		godot_arr.resize(child_count);
+		for (uint32_t i = 0; i < child_count; i++) {
+			godot_arr[i] = vec[i];
+		}
+		
 		children["success"] = success;
 		children["handle"] = (uint64_t)handle;
 		children["index"] = index;
-		children["children"] = child;
+		children["children"] = godot_arr;
 	}
-	delete[] child;
 	return children;
 }
 
@@ -12033,7 +12039,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getItemUpdateProgress", "update_handle"), &Steam::getItemUpdateProgress);
 	ClassDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
 	ClassDB::bind_method(D_METHOD("getQueryUGCAdditionalPreview", "query_handle", "index", "preview_index"), &Steam::getQueryUGCAdditionalPreview);
-	ClassDB::bind_method(D_METHOD("getQueryUGCChildren", "query_handle", "index"), &Steam::getQueryUGCChildren);
+	ClassDB::bind_method(D_METHOD("getQueryUGCChildren", "query_handle", "index", "child_count"), &Steam::getQueryUGCChildren);
 	ClassDB::bind_method(D_METHOD("getQueryUGCKeyValueTag", "query_handle", "index", "key_value_tag_index"), &Steam::getQueryUGCKeyValueTag);
 	ClassDB::bind_method(D_METHOD("getQueryUGCMetadata", "query_handle", "index"), &Steam::getQueryUGCMetadata);
 	ClassDB::bind_method(D_METHOD("getQueryUGCNumAdditionalPreviews", "query_handle", "index"), &Steam::getQueryUGCNumAdditionalPreviews);

@@ -1139,7 +1139,7 @@ class Steam: public Object {
 		Dictionary getItemUpdateProgress(uint64_t update_handle);
 		uint32 getNumSubscribedItems();
 		Dictionary getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 index, uint32 preview_index);
-		Dictionary getQueryUGCChildren(uint64_t query_handle, uint32 index);
+		Dictionary getQueryUGCChildren(uint64_t query_handle, uint32 index, uint32_t child_count);
 		Dictionary getQueryUGCKeyValueTag(uint64_t query_handle, uint32 index, uint32 key_value_tag_index);
 		String getQueryUGCMetadata(uint64_t query_handle, uint32 index);
 		uint32 getQueryUGCNumAdditionalPreviews(uint64_t query_handle, uint32 index);
