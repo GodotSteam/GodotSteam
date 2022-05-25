@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.14)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.15 Changes**
+- Fixed: issue with receiving messages, now allows more than one at a time; _thanks to Frostings_
+
 **Version 3.14 Changes**
 - Added: inventory handle argument to various Inventory class functions, defaults to 0 to use internally store argument
 - Changed: various Inventory class functions to send back the new inventory handle as well as storing it internally
