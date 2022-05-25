@@ -975,8 +975,8 @@ class Steam: public Object {
 //		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
 		void resetIdentity(const String& this_identity);
 		void runNetworkingCallbacks();
-		void sendMessages(int messages, const PoolStringArray& message, uint32 connection_handle, int flags);
-		Dictionary sendMessageToConnection(uint32 connection_handle, const String& message, int flags);
+		void sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags);
+		Dictionary sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags);
 		Dictionary setCertificate(const PoolByteArray& certificate);		
 		bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
 		void setConnectionName(uint32 peer, const String& name);

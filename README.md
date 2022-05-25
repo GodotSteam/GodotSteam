@@ -19,6 +19,7 @@ Current Build
 You can [download pre-compiled versions _(currently v3.14)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 3.15 Changes**
+- Changed: sendMessageToConnection and sendMessages now take PoolByteArrays to send any data
 - Fixed: issue with receiving messages, now allows more than one at a time; _thanks to Frostings_
 - Fixed: getQueryUGCChildren not working correctly; _thanks to EIREXE_
 

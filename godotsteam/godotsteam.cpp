@@ -5051,11 +5051,11 @@ Dictionary Steam::createSocketPair(bool loopback, const String& identity_referen
 }
 
 //! Send a message to the remote host on the specified connection.
-Dictionary Steam::sendMessageToConnection(uint32 connection_handle, const String& message, int flags){
+Dictionary Steam::sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags){
 	Dictionary message_response;
 	if(SteamNetworkingSockets() != NULL){
 		int64 number;
-		int result = SteamNetworkingSockets()->SendMessageToConnection((HSteamNetConnection)connection_handle, message.utf8().get_data(), message.size(), flags, &number);
+		int result = SteamNetworkingSockets()->SendMessageToConnection((HSteamNetConnection)connection_handle, data.read().ptr(), data.size(), flags, &number);
 		// Populate the dictionary
 		message_response["result"] = result;
 		message_response["message_number"] = (uint64_t)number;
@@ -5064,12 +5064,12 @@ Dictionary Steam::sendMessageToConnection(uint32 connection_handle, const String
 }
 
 //! Send one or more messages without copying the message payload. This is the most efficient way to send messages. To use this function, you must first allocate a message object using ISteamNetworkingUtils::AllocateMessage. (Do not declare one on the stack or allocate your own.)
-void Steam::sendMessages(int messages, const PoolStringArray& message, uint32 connection_handle, int flags){
+void Steam::sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags){
 	if(SteamNetworkingSockets() != NULL){
 		SteamNetworkingMessage_t *networkMessage;
 		networkMessage = SteamNetworkingUtils()->AllocateMessage(0);
-		networkMessage->m_pData = (void *)message.read().ptr();
-		networkMessage->m_cbSize = message.size();
+		networkMessage->m_pData = (void *)data.read().ptr();
+		networkMessage->m_cbSize = data.size();
 		networkMessage->m_conn = (HSteamNetConnection)connection_handle;
 		networkMessage->m_nFlags = flags;
 		int64 result;
@@ -11876,8 +11876,8 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method("receivedRelayAuthTicket", &Steam::receivedRelayAuthTicket);	<------ Uses datagram relay structs which were removed from base SDK
 	ClassDB::bind_method(D_METHOD("resetIdentity", "this_identity"), &Steam::resetIdentity);
 	ClassDB::bind_method("runNetworkingCallbacks", &Steam::runNetworkingCallbacks);
-	ClassDB::bind_method(D_METHOD("sendMessages", "messages", "message", "connection_handle", "flags"), &Steam::sendMessages);
-	ClassDB::bind_method(D_METHOD("sendMessageToConnection", "connection_handle", "message", "flags"), &Steam::sendMessageToConnection);
+	ClassDB::bind_method(D_METHOD("sendMessages", "messages", "data", "connection_handle", "flags"), &Steam::sendMessages);
+	ClassDB::bind_method(D_METHOD("sendMessageToConnection", "connection_handle", "data", "flags"), &Steam::sendMessageToConnection);
 	ClassDB::bind_method(D_METHOD("setCertificate", "certificate"), &Steam::setCertificate);	
 	ClassDB::bind_method(D_METHOD("setConnectionPollGroup", "connection_handle", "poll_group"), &Steam::setConnectionPollGroup);
 	ClassDB::bind_method(D_METHOD("setConnectionName", "peer", "name"), &Steam::setConnectionName);
