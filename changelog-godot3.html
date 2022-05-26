@@ -29,6 +29,12 @@
 		<h1>Change Log | Godot 3.x Module</h1>
 	</header>
 	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+	<h3>Version 3.15 Changes</h3>
+	<ul>
+		<li>Changed: sendMessageToConnection and sendMessages now take PoolByteArrays to send any data</li>
+		<li>Fixed: issue with receiving messages, now allows more than one at a time; thanks to Frostings</li>
+		<li>Fixed: getQueryUGCChildren not working correctly; thanks to EIREXE</li>
+	</ul>
 	<h3>Version 3.14 Changes</h3>
 	<ul>
 		<li>Added: inventory handle argument to various Inventory class functions, defaults to 0 to use internally store argument</li>
@@ -676,6 +682,7 @@
 						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+						<li><a href="tutorials-remove-steam.html">Remove Steam</a></li>
 					</ul>
 				</li>
 				<li><a href="games.html">Games Using GodotSteam</a></li>

@@ -6,6 +6,10 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Updated 5/25/22**
+- Changed: change-log for Godot 3.x
+- Changed: function pages for networking sockets and ugc
+
 **Updated 5/18/22**
 - Added: new contributor
 - Changed: updates to various functions
