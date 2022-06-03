@@ -6,6 +6,12 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 6/2/22**
+- Added: new game to game list
+
+**Updated 5/27/22**
+- Changed: lobby tutorial to correct example code
+
 **Updated 5/25/22**
 - Changed: change-log for Godot 3.x
 - Changed: function pages for networking sockets and ugc
