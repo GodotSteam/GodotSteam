@@ -1,0 +1,84 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_tag:
+        required: true
+        type: string
+      binary_name:
+        required: true
+        type: string
+      build_params:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      export_name:
+        required: true
+        type: string
+      template_path:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  build-linux:
+    runs-on: osx-latest
+    
+    steps:
+      # Checkout Godot
+      - name: Checkout Godot
+        uses: actions/checkout@v3
+        with:
+          repository: "godotengine/godot"
+          path: "godot"
+          ref: ${{ inputs.godot_tag }}
+      # Checkout current source of GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+        with:
+          path: "godotsteam"
+      - name: Copy GodotSteam Module
+        run: |
+          cp -r godotsteam/godotsteam godot/modules
+      # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+      - name: Copy Steamworks
+        run: |
+          cp -r steamworks/sdk/public godot/modules/godotsteam/sdk
+          cp -r steamworks/sdk/redistributable_bin godot/modules/godotsteam/sdk
+          ls -la godot/modules/godotsteam/sdk
+      - name: Install Build Tools
+        run: |
+          brew install scons yasm
+      - name: Build OSX x86_64
+        working-directory: "godot"
+        run: |
+          scons ${{ inputs.build_params }}
+          mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
+      - name: Upload OSX Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: godot/bin/${{ inputs.export_name }}
+          retention-days: 1
+      - name: Upload OSX Steam dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: osx-libsteam-api-so
+          path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
+          retention-days: 1
