@@ -4,6 +4,8 @@ var STEAM_ID: int = 0
 
 signal kick_player
 
+# Stored at the class level to enable comparisons when helper functions are called
+var AVATAR: Image
 
 # Is it ready? Do stuff!
 func _ready():
@@ -18,7 +20,7 @@ func _set_Member(steam_id: int, steam_name: String) -> void:
 	STEAM_ID = steam_id
 	$Member/Stuff/Username.set_text(steam_name)
 	# Get the avatar and show it
-	Steam.getPlayerAvatar(2, STEAM_ID)
+	Steam.getPlayerAvatar(Steam.AVATAR_MEDIUM, STEAM_ID)
 
 
 # Kick this player
@@ -37,24 +39,14 @@ func _on_View_pressed() -> void:
 #################################################
 # Load an avatar
 func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
-	if id == STEAM_ID:
-		print("Loading avatar for user: "+str(id))
-		# Create the image and texture for loading
-		var AVATAR: Image = Image.new()
-		var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
-		AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
-		# Lock and draw the image
-		AVATAR.lock()
-		for y in range(0, size):
-			for x in range(0, size):
-				var pixel: int = 4 * (x + y * size)
-				var r: float = float(buffer[pixel]) / 255
-				var g: float = float(buffer[pixel+1]) / 255
-				var b: float = float(buffer[pixel+2]) / 255
-				var a: float = float(buffer[pixel+3]) / 255
-				AVATAR.set_pixel(x, y, Color(r, g, b, a))
-		AVATAR.unlock()
-		# Apply it to the texture
-		AVATAR_TEXTURE.create_from_image(AVATAR)
-		# Set it
-		$Member/Avatar.set_texture(AVATAR_TEXTURE)
+	# Check we're only triggering a load for the right player, and check the data has actually changed
+    if id == STEAM_ID and not buffer == AVATAR.get_data():
+        print("Loading avatar for user: "+str(id))
+        # Create the image and texture for loading
+        AVATAR = Image.new()
+        var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
+        AVATAR.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
+        # Apply it to the texture
+        AVATAR_TEXTURE.create_from_image(AVATAR)
+        # Set it
+        $Member/Avatar.set_texture(AVATAR_TEXTURE)

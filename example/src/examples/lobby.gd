@@ -195,7 +195,7 @@ func _read_P2P_Packet() -> void:
 # Send a Steam P2P packet
 func _send_P2P_Packet(target: int, packet_data: Dictionary) -> void:
 	# Set the send_type and channel
-	var SEND_TYPE: int = 2
+	var SEND_TYPE: int = Steam.P2P_SEND_RELIABLE
 	var CHANNEL: int = 0
 	# Create a data array to send the data through
 	var PACKET_DATA: PoolByteArray = []
@@ -209,8 +209,6 @@ func _send_P2P_Packet(target: int, packet_data: Dictionary) -> void:
 			for MEMBER in LOBBY_MEMBERS:
 				if MEMBER['steam_id'] != global.STEAM_ID:
 					SEND_RESPONSE = Steam.sendP2PPacket(MEMBER['steam_id'], PACKET_DATA, SEND_TYPE, CHANNEL)
-		else:
-			$Output.append_bbcode("[STEAM] There are no players to send packets to\n")
 	# Else send the packet to a particular user
 	else:
 		# Send this packet
