@@ -43,26 +43,18 @@ var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
 	<header class="major">
 		<h3>Creating The Image</h3>
 	</header>
-	<p>This buffer contains the actual image data for our icon but is rather tricky to use.  However, before that we will need to create a new image and texture to attach to a sprite later on:
+	<p>This buffer contains the actual image data for our icon. However, as this buffer is simply binary data, we need to load it into an Image so that Godot can use it as a Texture:
 <pre><code>
 var SIZE: int = 32
 var ICON: Image = Image.new()
 var ICON_TEXTURE: ImageTexture = ImageTexture.new()
-ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
+
 </code></pre>
 	<p>The size variable can be whatever you want; for our example we will use 32 (32 pixels by 32 pixels).</p>
-	<p>Now let's go back and parse that buffer data:</p>
+	<p>Now that we've made our Image and Texture objects, we can load the buffer data into the Image. Note the format we use (RGBA8); this is the format the data in the buffer takes when we receive it from Steam,
+		and so in order for Godot to know how to make sense of it, we need to ensure it is correct:</p>
 <pre><code>
-ICON.lock()
-for y in range(0, SIZE):
-	for x in range(0, SIZE):
-		var pixel: int = 4 * (x + y * SIZE)
-		var r: float = float(BUFFER['buffer'][pixel]) / 255
-		var g: float = float(BUFFER['buffer'][pixel+1]) / 255
-		var b: float = float(BUFFER['buffer'][pixel+2]) / 255
-		var a: float = float(BUFFER['buffer'][pixel+3]) / 255
-		ICON.set_pixel(x, y, Color(r, g, b, a))
-ICON.unlock()
+	ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
 </code></pre>
 	<p>Now that all the pixels are set in the right places, we can create the texture:</p>
 <pre><code>	
@@ -89,19 +81,7 @@ var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
 #Create the image and texture for loading
 var ICON: Image = Image.new()
 var ICON_TEXTURE: ImageTexture = ImageTexture.new()
-ICON.create(SIZE, SIZE, false, Image.FORMAT_RGBAF)
-
-# Lock and draw the image
-ICON.lock()
-for y in range(0, SIZE):
-	for x in range(0, SIZE):
-		var pixel: int = 4 * (x + y * SIZE)
-		var r: float = float(BUFFER['buffer'][pixel]) / 255
-		var g: float = float(BUFFER['buffer'][pixel+1]) / 255
-		var b: float = float(BUFFER['buffer'][pixel+2]) / 255
-		var a: float = float(BUFFER['buffer'][pixel+3]) / 255
-		ICON.set_pixel(x, y, Color(r, g, b, a))
-ICON.unlock()
+ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
 
 # Apply it to the texture
 ICON_TEXTURE.create_from_image(ICON)
