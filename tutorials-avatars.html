@@ -48,31 +48,16 @@ Steam.connect("avatar_loaded", self, "loaded_avatar")
 </code></pre>
 	<p>This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  If you have read the <a href="tutorials-achievement-icons.html">Achievement Icons tutorial</a>, this should all look pretty familiar.  Our <strong>loaded_avatar</strong> function will look something like this:</p>
 <pre><code>
-func loaded_avatar(id: int, size: int, buffer: PoolByteArray) -> void:
+func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 	print("Avatar for user: "+str(id))
 	print("Size: "+str(size))
-
-	# Create a new image and texture to fill out
-	var AVATAR: Image = Image.new()
+	# Create the image and texture for loading
+	AVATAR = Image.new()
 	var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
-	AVATAR.create(size, size, false, Image.FORMAT_RGBAF)
-
-	# Lock the image and fill the pixels from the data buffer
-	AVATAR.lock()
-	for y in range(0, size):
-		for x in range(0, size):
-			var pixel: int = 4 * (x + y * size)
-			var r: float = float(buffer[pixel]) / 255
-			var g: float = float(buffer[pixel+1]) / 255
-			var b: float = float(buffer[pixel+2]) / 255
-			var a: float = float(buffer[pixel+3]) / 255
-			AVATAR.set_pixel(x, y, Color(r, g, b, a))
-	AVATAR.unlock()
-
-	# Now apply the texture
+	AVATAR.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
+	# Apply it to the texture
 	AVATAR_TEXTURE.create_from_image(AVATAR)
-
-	# For our purposes, set a sprite with the avatar texture
+	# Set it
 	$Sprite.set_texture(AVATAR_TEXTURE)
 </code></pre>
 <p>Naturally that texture could be applied elsewhere, depending on where you place this function.</p>
