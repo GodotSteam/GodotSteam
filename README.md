@@ -8,6 +8,8 @@ What's New
 -------------
 **Update 6/9/22**
 - Added: new code contributor
+- Added: new Github Sponsors donor link
+- Added: CoaguCast podcast links to guests' games
 - Changed: lobby tutorial to use efficient avatar code
 
 **Update 6/2/22**

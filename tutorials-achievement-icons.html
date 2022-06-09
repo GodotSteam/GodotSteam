@@ -54,7 +54,7 @@ var ICON_TEXTURE: ImageTexture = ImageTexture.new()
 	<p>Now that we've made our Image and Texture objects, we can load the buffer data into the Image. Note the format we use (RGBA8); this is the format the data in the buffer takes when we receive it from Steam,
 		and so in order for Godot to know how to make sense of it, we need to ensure it is correct:</p>
 <pre><code>
-	ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
+ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
 </code></pre>
 	<p>Now that all the pixels are set in the right places, we can create the texture:</p>
 <pre><code>	
@@ -226,8 +226,9 @@ get_node("Sprite").set_texture(ICON_TEXTURE)
 			</header>
 			<p>If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!</p>
 			<ul class="actions stacked">
-				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;Donate with Patreon</a></li>
-				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;Donate with Paypal</a></li>
+				<li><a class="button primary" href="https://github.com/sponsors/Gramps" target="_blank"><i class="fab fa-github"></i>&nbsp;&nbsp;with Github Sponsors</a></li>
+				<li><a class="button primary" href="https://patreon.com/coaguco" target="_blank"><i class="fab fa-patreon"></i>&nbsp;&nbsp;with Patreon</a></li>
+				<li><a class="button primary" href="https://www.paypal.me/sithlordkyle" target="_blank"><i class="fab fa-paypal"></i>&nbsp;&nbsp;with Paypal</a></li>
 			</ul>
 		</section>
 		<footer>
