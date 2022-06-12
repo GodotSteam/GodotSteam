@@ -99,6 +99,7 @@ production=yes tools=no target=release
 	<header class="major">
 		<h3>5. Copy Steamworks Redistributables</h3>
 	</header>
+	<p>If you downloaded the pre-compiles, make sure your working directory looks like the ones below then move on to step 6. If you are compiling, keep reading.</p>
 	<p>When compiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong>, for your OS, from <strong>godot/modules/godotsteam/sdk/redistributable_bin/</strong> folder to the Godot binary location. By default, it is in the Godot source <strong>godot/bin/</strong> folder.  You can move them to a new folder but, for the sake of the how-to, we will leave them in the <strong>bin</strong> folder.</p>
 	<p>In the <strong>godot/bin/</strong> folder, or wherever you put the editor executable, you must include a <strong><em>steam_appid.txt</em></strong> file with either your game's Steam ID, or the generic 480, as the only text inside. Running the game from the editor or <em>outside</em> of the Steam client will cause a crash without it.</p>
 	<p> With everything now in place, your working directory should look like this:</p>

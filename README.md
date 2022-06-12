@@ -6,6 +6,10 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 6/12/22**
+- Added: new game to game list
+- Changed: the how-to for module to reflect new zip layout
+
 **Update 6/9/22**
 - Added: new code contributor
 - Added: new Github Sponsors donor link
