@@ -7,7 +7,7 @@ reloadable=true
 
 [entry]
 
-X11.64="res://addons/godotsteam/x11/godotsteam.so"
+X11.64="res://addons/godotsteam/x11/libgodotsteam.so"
 Windows.64="res://addons/godotsteam/win64/godotsteam.dll"
 OSX.64="res://addons/godotsteam/osx/godotsteam.dylib"
 
