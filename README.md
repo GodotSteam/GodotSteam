@@ -1,15 +1,14 @@
 # GodotSteam for GDNative
-Steam API for the Godot game engine (version 3.x). For the Windows, Linux, and Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
-- [Server](https://github.com/Gramps/GodotSteam/tree/server)
 
 Documentation
 ----------
-[Documentation is available here](https://gramps.github.io/GodotSteam/) and [there is the project's Wiki page here](https://github.com/Gramps/GodotSteam/wiki).
+[Documentation is available here](https://gramps.github.io/GodotSteam/) and [is mirrored on and exported from CoaguCo's site](https://coaguco.com/godotsteam).
 
 Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
