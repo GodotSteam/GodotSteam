@@ -59,8 +59,8 @@ jobs:
           ref: ${{ inputs.steamworks_sdk_tag }}
       - name: Copy Steamworks
         run: |
-          robocopy public/steam godot/modules/godotsteam/sdk/public/steam /e
-          robocopy redistributable_bin godot/modules/godotsteam/sdk/redistributable_bin /e
+          robocopy steamworks/public/steam godot/modules/godotsteam/sdk/public/steam /e
+          robocopy steamworks/redistributable_bin godot/modules/godotsteam/sdk/redistributable_bin /e
           cd godot/modules/godotsteam/sdk && dir
           EXIT 0
       - name: Install Build Requirements
