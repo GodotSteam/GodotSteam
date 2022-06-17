@@ -29,6 +29,15 @@
 		<h1>Change Log | Godot 3.x Module</h1>
 	</header>
 	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+	<h3>Version 3.16 Changes</h3>
+	<ul>
+		<li>Added: new enums for Community Profile item types and properties in Friends class</li>
+		<li>Added: new functions hasEquippedProfileItem, getProfileItemPropertyString, and getProfileItemPropertyInt in Friends class</li>
+		<li>Added: new callbacks/signals _equipped_profile_items_changed_ and _equipped_profile_items_ in Friends class</li>
+		<li>Added: new networking identity types</li>
+		<li>Added: new functions setXboxPairwiseID, getXboxPairwiseID, setPSNID, getPSNID, setStadiaID, and getStadiaID to Networking Types class</li>
+		<li>Changed: minor correction to createListenSocketP2P in attempt to fix possible crash</li>
+	</ul>
 	<h3>Version 3.15 Changes</h3>
 	<ul>
 		<li>Changed: sendMessageToConnection and sendMessages now take PoolByteArrays to send any data</li>

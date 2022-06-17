@@ -914,6 +914,37 @@
 		<li>Gets the nickname that the current user has set for the specified user.</li>
 		<li>Returns a <strong>string</strong>.</li>
 	</ul>
+
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetProfileItemPropertyString" target="_blank">
+			<span class="gdscript">
+				getProfileItemPropertyString( <sup>int</sup> steam_id, <sup>int</sup> item_type, <sup>int</sup> item_property )
+			</span>
+			<span class="c-sharp">
+				getProfileItemPropertyString( <sup>uint64_t</sup> steam_id, <sup>int</sup> item_type, <sup>int</sup> item_property )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns a string property for a user's equipped profile item.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GetProfileItemPropertyUint" target="_blank">
+			<span class="gdscript">
+				getProfileItemPropertyInt( <sup>int</sup> steam_id, <sup>int</sup> item_type, <sup>int</sup> item_property )
+			</span>
+			<span class="c-sharp">
+				getProfileItemPropertyInt( <sup>uint64_t</sup> steam_id, <sup>int</sup> item_type, <sup>int</sup> item_property )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Returns an unsigned integer property for a user's equipped profile item.</li>
+		<li>Return an <strong><span class="gdscript">int</span><span class="c-sharp">uint32</span></strong>.</li>
+	</ul>
 	<h4>getRecentPlayers()</h4>
 	<ul>
 		<li>Get list of players user has recently played game with.</li>
@@ -1056,6 +1087,21 @@
 				</li>
 			</ul>
 		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#BHasEquippedProfileItem" target="_blank">
+			<span class="gdscript">
+				hasEquippedProfileItem( <sup>int</sup> steam_id, <sup>int</sup> item_type )
+			</span>
+			<span class="c-sharp">
+				hasEquippedProfileItem( <sup>uint64_t</sup> steam_id, <sup>int</sup> item_type )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>After calling RequestEquippedProfileItems, you can use this function to check if the user has a type of profile item equipped or not.</li>
+		<li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#HasFriend" target="_blank">

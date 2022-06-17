@@ -6,6 +6,11 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 6/18/22**
+- Added: new functions to Friends and Networking Types function lists
+- Added: new signals / callbacks to Friends signal list
+- Changed: change-log for Godot 3.x
+
 **Update 6/12/22**
 - Added: new game to game list
 - Changed: the how-to for module to reflect new zip layout

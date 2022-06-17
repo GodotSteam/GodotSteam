@@ -90,27 +90,6 @@
 		</li>
 	</ul>
 	<h4>
-		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#FriendRichPresenceUpdate_t" target="_blank">
-			friend_rich_presence_update
-			<i class="fas fa-external-link-alt"></i>
-		</a>
-	</h4>
-	<ul>
-		<li>Called when rich presence data has been updated for a user, this can happen automatically when friends in the same game update their rich presence, or after a call to <strong><em>requestFriendRichPresence</em></strong>.</li>
-		<li>Sends back the following data:
-			<ul class="inner">
-				<span class="gdscript">
-					<li>steam_id (int)</li>
-					<li>app_id (int)</li>
-				</span>
-				<span class="c-sharp">
-					<li>steam_id (uint64_t)</li>
-					<li>app_id (uint32)</li>
-				</span>
-			</ul>
-		</li>
-	</ul>
-	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#GameConnectedChatJoin_t" target="_blank">
 			connected_chat_join
 			<i class="fas fa-external-link-alt"></i>
@@ -205,6 +184,27 @@
 						<li>text (string)</li>
 					</ul>
 				</li>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#FriendRichPresenceUpdate_t" target="_blank">
+			friend_rich_presence_update
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when rich presence data has been updated for a user, this can happen automatically when friends in the same game update their rich presence, or after a call to <strong><em>requestFriendRichPresence</em></strong>.</li>
+		<li>Sends back the following data:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>steam_id (int)</li>
+					<li>app_id (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>steam_id (uint64_t)</li>
+					<li>app_id (uint32)</li>
+				</span>
 			</ul>
 		</li>
 	</ul>
@@ -479,6 +479,72 @@
 					<li>result (int)</li>
 					<li>steam_id (uint64_t)</li>
 					<li>following (bool)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#EquippedProfileItemsChanged_t" target="_blank">
+			equipped_profile_items_changed
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Callback for when a user's equipped Steam Commuity profile items have changed. This can be for the current user or their friends.</li>
+		<li><strong>Note:</strong> GodotSteam is using the callback version.</li>
+		<li>Sends back the following data:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>steam_id (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>steam_id (uint64_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#EquippedProfileItems_t" target="_blank">
+			equipped_profile_items
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Call result from <strong><em>requestEquippedProfileItems</em></strong>. Also sent as a callback.</li>
+		<li><strong>Note:</strong> GodotSteam is using the callback version.</li>
+		<li>Sends back the following data:
+				<ul class="inner">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>steam_id (int)
+						<ul class="inner">
+							<li>profile_data (dictionary)
+								<ul class="inner">
+									<li>has_avatar_animated (bool)</li>
+									<li>has_avatar_frame (bool)</li>
+									<li>has_profile_modifier (bool)</li>
+									<li>has_profile_background (bool)</li>
+									<li>has_profile_mini_background (bool)</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (int)</li>
+					<li>steam_id (uint64_t)
+						<ul class="inner">
+							<li>profile_data (dictionary)
+								<ul class="inner">
+									<li>has_avatar_animated (bool)</li>
+									<li>has_avatar_frame (bool)</li>
+									<li>has_profile_modifier (bool)</li>
+									<li>has_profile_background (bool)</li>
+									<li>has_profile_mini_background (bool)</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
 				</span>
 			</ul>
 		</li>

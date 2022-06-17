@@ -200,6 +200,41 @@
 		</li>
 	</ul>
 	<h4>
+		getPSNID( <sup>string</sup> reference_name )
+	</h4>
+	<ul>
+		<li>Retrieve this identity's Playstation Network ID.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		getStadiaID( <sup>string</sup> reference_name )
+	</h4>
+	<ul>
+		<li>Retrieve this identity's Google Stadia ID.</li>
+		<li>
+			<span class="gdscript">
+				Returns an <strong>int</strong>.
+			</span>
+			<span class="c-sharp">
+				Returns a <strong>uint64</strong>.
+			</span>
+		</li>
+	</ul>
+	<h4>
+		getXboxPairwiseID( <sup>string</sup> reference_name )
+	</h4>
+	<ul>
+		<li>Retrieve this identity's XBox pair ID.</li>
+		<li>Returns a <strong>string</strong>.</li>
+	</ul>
+	<h4>
 		isAddressLocalHost( <sup>string</sup> reference_name )
 	</h4>
 	<ul>
@@ -304,7 +339,38 @@
 	<ul>
 		<li>Returns false if invalid length.</li>
 		<li>Returns a <strong>bool</strong>.</li>
-	</ul> 
+	</ul>
+	<h4>
+		<span class="gdscript">
+			setPSNID( <sup>string</sup> reference_name, <sup>int</sup> psn_id )
+		</span>
+		<span class="c-sharp">
+			setPSNID( <sup>string</sup> reference_name, <sup>uint64_t</sup> psn_id )
+		</span>
+	</h4>
+	<ul>
+		<li>Set the Playstation Network ID for this identity.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		<span class="gdscript">
+			setStadiaID( <sup>string</sup> reference_name, <sup>int</sup> stadia_id )
+		</span>
+		<span class="c-sharp">
+			setStadiaID( <sup>string</sup> reference_name, <sup>uint64_t</sup> stadia_id )
+		</span>
+	</h4>
+	<ul>
+		<li>Set the Google Stadia ID for this identity.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<h4>
+		setXboxPairwiseID( <sup>string</sup> reference_name, <sup>string</sup> xbox_id )
+	</h4>
+	<ul>
+		<li>Set the Xbox Pairwise ID for this identity.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
 	<h4>
 		toIdentityString( <sup>string</sup> reference_name)
 	</h4>
