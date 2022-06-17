@@ -59,8 +59,8 @@ jobs:
           ref: ${{ inputs.steamworks_sdk_tag }}
       - name: Copy Steamworks
         run: |
-          cp -r steamworks/sdk/public godot/modules/godotsteam/sdk
-          cp -r steamworks/sdk/redistributable_bin godot/modules/godotsteam/sdk
+          cp -r public godot/modules/godotsteam/sdk
+          cp -r redistributable_bin godot/modules/godotsteam/sdk
           ls -la godot/modules/godotsteam/sdk
       - name: Install Build Tools
         run: |
