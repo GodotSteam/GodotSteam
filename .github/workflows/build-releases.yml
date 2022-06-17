@@ -6,7 +6,7 @@ on:
       - '*'
 
 env:
-  STEAMWORKS_SDK_TAG: "153a"
+  STEAMWORKS_SDK_TAG: "sdk-154"
   GODOT_TAG: "3.4.4-stable"
 
 jobs:
