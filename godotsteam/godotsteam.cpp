@@ -196,6 +196,8 @@ Steam::Steam():
 	callbackNameChanged(this, &Steam::name_changed),
 	callbackOverlayBrowserProtocol(this, &Steam::overlay_browser_protocol),
 	callbackUnreadChatMessagesChanged(this, &Steam::unread_chat_messages_changed),
+	callbackEquippedProfileItemsChanged(this, &Steam::equipped_profile_items_changed),
+	callbackEquippedProfileItems(this, &Steam::equipped_profile_items),
 
 	// Game Search callbacks ////////////////////
 	callbackSearchForGameProgress(this, &Steam::search_for_game_progress),
@@ -1352,6 +1354,24 @@ String Steam::getPlayerNickname(uint64_t steam_id){
 	return String::utf8(SteamFriends()->GetPlayerNickname(user_id));
 }
 
+// Returns a string property for a user's equipped profile item.
+String Steam::getProfileItemPropertyString(uint64_t steam_id, int item_type, int item_property){
+	if(SteamFriends() == NULL){
+		return "";
+	}
+	CSteamID user_id = (uint64)steam_id;
+	return String::utf8(SteamFriends()->GetProfileItemPropertyString(user_id, (ECommunityProfileItemType)item_type, (ECommunityProfileItemProperty)item_property));
+}
+
+// Returns an unsigned integer property for a user's equipped profile item.
+uint32 Steam::getProfileItemPropertyInt(uint64_t steam_id, int item_type, int item_property){
+	if(SteamFriends() == NULL){
+		return 0;
+	}
+	CSteamID user_id = (uint64)steam_id;
+	return SteamFriends()->GetProfileItemPropertyUint(user_id, (ECommunityProfileItemType)item_type, (ECommunityProfileItemProperty)item_property);
+}
+
 //! Get list of players user has recently played game with.
 Array Steam::getRecentPlayers(){
 	if(SteamFriends() == NULL){
@@ -1449,6 +1469,15 @@ Array Steam::getUserSteamGroups(){
 		steam_groups.append(groups);
 	}
 	return steam_groups;
+}
+
+// After calling RequestEquippedProfileItems, you can use this function to check if the user has a type of profile item equipped or not.
+bool Steam::hasEquippedProfileItem(uint64_t steam_id, int item_type){
+	if(SteamFriends() == NULL){
+		return false;
+	}
+	CSteamID user_id = (uint64)steam_id;
+	return SteamFriends()->BHasEquippedProfileItem(user_id, (ECommunityProfileItemType)item_type);
 }
 
 //! Returns true if the specified user meets any of the criteria specified in iFriendFlags.
@@ -5655,6 +5684,21 @@ uint32 Steam::getIdentityIPAddr(const String& reference_name){
 	return this_address->GetIPv4();
 }
 
+// Retrieve this identity's Playstation Network ID.
+uint64 Steam::getPSNID(const String& reference_name){
+	return networking_identities[reference_name.utf8().get_data()].GetPSNID();
+}
+
+// Retrieve this identity's Google Stadia ID.
+uint64 Steam::getStadiaID(const String& reference_name){
+	return networking_identities[reference_name.utf8().get_data()].GetStadiaID();
+}
+
+// Retrieve this identity's XBox pair ID.
+String Steam::getXboxPairwiseID(const String& reference_name){
+	return networking_identities[reference_name.utf8().get_data()].GetXboxPairwiseID();
+}
+
 // Set to localhost. (We always use IPv6 ::1 for this, not 127.0.0.1).
 void Steam::setIdentityLocalHost(const String& reference_name){
 	networking_identities[reference_name.utf8().get_data()].SetLocalHost();
@@ -5751,6 +5795,21 @@ void Steam::setIPv6LocalHost(const String& reference_name, uint16 port){
 	ip_addresses[reference_name.utf8().get_data()].SetIPv6LocalHost(port);
 }
 
+// Set the Playstation Network ID for this identity.
+void Steam::setPSNID(const String& reference_name, uint64_t psn_id){
+	networking_identities[reference_name.utf8().get_data()].SetPSNID(psn_id);
+}
+
+// Set the Google Stadia ID for this identity.
+void Steam::setStadiaID(const String& reference_name, uint64_t stadia_id){
+	networking_identities[reference_name.utf8().get_data()].SetStadiaID(stadia_id);
+}
+
+// Set the Xbox Pairwise ID for this identity.
+bool Steam::setXboxPairwiseID(const String& reference_name, const String& xbox_id){
+	return networking_identities[reference_name.utf8().get_data()].SetXboxPairwiseID(xbox_id.utf8().get_data());
+}
+
 // Return true if this identity is localhost. (Either IPv6 ::1, or IPv4 127.0.0.1).
 bool Steam::isAddressLocalHost(const String& reference_name){
 	return ip_addresses[reference_name.utf8().get_data()].IsLocalHost();
@@ -5803,12 +5862,12 @@ String Steam::toIdentityString(const String& reference_name){
 
 // Helper function to turn an array of options into an array of SteamNetworkingConfigValue_t structs
 const SteamNetworkingConfigValue_t* Steam::convertOptionsArray(Array options){
+	// Get the number of option arrays in the array.
+	int options_size = sizeof(options);
+	// Create the array for options.
+	SteamNetworkingConfigValue_t *option_array = new SteamNetworkingConfigValue_t[options_size];
 	// If there are options
-	if(sizeof(options) > 0){
-		// Get the number of option arrays in the array.
-		int options_size = sizeof(options);
-		// Create the array for options.
-		SteamNetworkingConfigValue_t *option_array = new SteamNetworkingConfigValue_t[options_size];
+	if(options_size > 0){
 		// Populate the options
 		for(int i = 0; i < options_size; i++){
 			SteamNetworkingConfigValue_t this_option;
@@ -5838,9 +5897,8 @@ const SteamNetworkingConfigValue_t* Steam::convertOptionsArray(Array options){
 			}
 			option_array[i] = this_option;
 		}
-		return option_array;
 	}
-	return NULL;
+	return option_array;
 }
 
 
@@ -9369,6 +9427,33 @@ void Steam::unread_chat_messages_changed(UnreadChatMessagesChanged_t* call_data)
 	emit_signal("unread_chat_messages_changed");
 }
 
+// Callback for when a user's equipped Steam Commuity profile items have changed. This can be for the current user or their friends.
+void Steam::equipped_profile_items_changed(EquippedProfileItemsChanged_t* call_data){
+	CSteamID this_steam_id = call_data->m_steamID;
+	uint64_t steam_id = this_steam_id.ConvertToUint64();
+	emit_signal("equipped_profile_items_changed", steam_id);
+}
+
+// Call from RequestEquippedProfileItems... nice.
+void Steam::equipped_profile_items(EquippedProfileItems_t* call_data){
+	int result = call_data->m_eResult;
+	CSteamID this_steam_id = call_data->m_steamID;
+	uint64_t steam_id = this_steam_id.ConvertToUint64();
+	bool has_animated_avatar = call_data->m_bHasAnimatedAvatar;
+	bool has_avatar_frame = call_data->m_bHasAvatarFrame;
+	bool has_profile_modifier = call_data->m_bHasProfileModifier;
+	bool has_profile_background = call_data->m_bHasProfileBackground;
+	bool has_mini_profile_background = call_data->m_bHasMiniProfileBackground;
+	// Pass all profile data to a dictionary
+	Dictionary profile_data;
+	profile_data["avatar_animated"] = has_animated_avatar;
+	profile_data["avatar_frame"] = has_avatar_frame;
+	profile_data["profile_modifier"] = has_profile_modifier;
+	profile_data["profile_background"] = has_profile_background;
+	profile_data["profile_mini_background"] = has_mini_profile_background;
+	emit_signal("equipped_profile_items", steam_id, profile_data);
+}
+
 // GAME SEARCH CALLBACKS ////////////////////////
 //
 //! There are no notes about this in Valve's header files or documentation.
@@ -11481,12 +11566,15 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getPersonaState", &Steam::getPersonaState);
 	ClassDB::bind_method(D_METHOD("getPlayerAvatar", "size", "steam_id"), &Steam::getPlayerAvatar, DEFVAL(2), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getPlayerNickname", "steam_id"), &Steam::getPlayerNickname);
+	ClassDB::bind_method(D_METHOD("getProfileItemPropertyString", "steam_id", "item_type", "item_property"), &Steam::getProfileItemPropertyString);
+	ClassDB::bind_method(D_METHOD("getProfileItemPropertyInt", "steam_id", "item_type", "item_propery"), &Steam::getProfileItemPropertyInt);
 	ClassDB::bind_method("getRecentPlayers", &Steam::getRecentPlayers);
 	ClassDB::bind_method(D_METHOD("getSmallFriendAvatar", "steam_id"), &Steam::getSmallFriendAvatar);
 	ClassDB::bind_method("getUserFriendsGroups", &Steam::getUserFriendsGroups);
 	ClassDB::bind_method("getUserRestrictions", &Steam::getUserRestrictions);
 	ClassDB::bind_method("getUserSteamFriends", &Steam::getUserSteamFriends);
 	ClassDB::bind_method("getUserSteamGroups", &Steam::getUserSteamGroups);
+	ClassDB::bind_method(D_METHOD("hasEquippedProfileItem", "steam_id", "friend_flags"), &Steam::hasEquippedProfileItem);
 	ClassDB::bind_method(D_METHOD("hasFriend", "steam_id", "friend_flags"), &Steam::hasFriend);
 	ClassDB::bind_method(D_METHOD("inviteUserToGame", "friend_id", "connect_string"), &Steam::inviteUserToGame);
 	ClassDB::bind_method(D_METHOD("isClanChatAdmin", "chat_id", "steam_id"), &Steam::isClanChatAdmin);
@@ -11895,6 +11983,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getIdentitySteamID64", "reference_name"), &Steam::getIdentitySteamID64);
 	ClassDB::bind_method("getIPAddresses", &Steam::getIPAddresses);
 	ClassDB::bind_method(D_METHOD("getIPv4", "reference_name"), &Steam::getIPv4);
+	ClassDB::bind_method(D_METHOD("getPSNID", "reference_name"), &Steam::getPSNID);
+	ClassDB::bind_method(D_METHOD("getStadiaID", "reference_name"), &Steam::getStadiaID);
+	ClassDB::bind_method(D_METHOD("getXboxPairwiseID", "reference_name"), &Steam::getXboxPairwiseID);
 	ClassDB::bind_method(D_METHOD("isAddressLocalHost", "reference_name"), &Steam::isAddressLocalHost);
 	ClassDB::bind_method(D_METHOD("isIdentityInvalid", "reference_name"), &Steam::isIdentityInvalid);
 	ClassDB::bind_method(D_METHOD("isIdentityLocalHost", "reference_name"), &Steam::isIdentityLocalHost);
@@ -11911,6 +12002,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("setIPv4", "reference_name", "ip", "port"), &Steam::setIPv4);
 	ClassDB::bind_method(D_METHOD("setIPv6", "reference_name", "ipv6", "port"), &Steam::setIPv6);
 	ClassDB::bind_method(D_METHOD("setIPv6LocalHost", "reference_name", "port"), &Steam::setIPv6LocalHost, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("setPSNID", "reference_name", "psn_id"), &Steam::setPSNID);
+	ClassDB::bind_method(D_METHOD("setStadiaID", "reference_name", "stadia_id"), &Steam::setStadiaID);
+	ClassDB::bind_method(D_METHOD("setXboxPairwiseID", "reference_name", "xbox_id"), &Steam::setXboxPairwiseID); 
 	ClassDB::bind_method(D_METHOD("toIdentityString", "reference_name"), &Steam::toIdentityString);
 	ClassDB::bind_method(D_METHOD("toIPAddressString", "reference_name", "with_port"), &Steam::toIPAddressString);
 	
@@ -12251,6 +12345,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("name_changed", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::BOOL, "local_success"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("overlay_browser_protocol", PropertyInfo(Variant::STRING, "uri")));
 	ADD_SIGNAL(MethodInfo("unread_chat_messages_changed"));
+	ADD_SIGNAL(MethodInfo("equipped_profile_items_changed"));
+	ADD_SIGNAL(MethodInfo("equipped_profile_items"));
 
 	// GAME SEARCH SIGNALS //////////////////////
 	ADD_SIGNAL(MethodInfo("search_for_game_progress", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "search_id"), PropertyInfo(Variant::DICTIONARY, "search_progress")));
@@ -13712,6 +13808,10 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);											// 1
 	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);										// 2
 	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);											// 3
+	BIND_CONSTANT(IDENTITY_TYPE_UNKNOWN_TYPE);											// 4
+	BIND_CONSTANT(IDENTITY_TYPE_XBOX_PAIRWISE);											// 17
+	BIND_CONSTANT(IDENTITY_TYPE_SONY_PSN);												// 18
+	BIND_CONSTANT(IDENTITY_TYPE_GOOGLE_STADIA);											// 19 
 	BIND_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);											// 0X7FFFFFFF
 
 	// NETWORKING SOCKET DEBUG OUTPUT ///////////
@@ -14038,6 +14138,28 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);									// 1
 	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);											// 2
 	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);											// 3
+
+	// PROFILE ITEM TYPES
+	BIND_CONSTANT(PROFILE_ITEM_TYPE_ANIMATED_AVATAR);									// 0
+	BIND_CONSTANT(PROFILE_ITEM_TYPE_AVATAR_FRAME);										// 1
+	BIND_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_MODIFIER);									// 2
+	BIND_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_BACKGROUND);								// 3
+	BIND_CONSTANT(PROFILE_ITEM_TYPE_MINI_PROFILE_BACKGROUND);							// 4
+	
+	// PROFILE ITEM PROPERTIES
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_SMALL);									// 0
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_LARGE);									// 1
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_INTERNAL_NAME);									// 2
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_TITLE);											// 3
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_DESCRIPTION);									// 4
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_APP_ID);										// 5
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_TYPE_ID);										// 6
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_CLASS);											// 7
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM);									// 8
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4);										// 9
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM_SMALL);								// 10
+	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4_SMALL);								// 11
+		
 }
 
 Steam::~Steam(){

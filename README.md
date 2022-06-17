@@ -18,6 +18,14 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.14)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.16 Changes**
+- Added: new enums for Community Profile item types and properties in Friends class
+- Added: new functions hasEquippedProfileItem, getProfileItemPropertyString, and getProfileItemPropertyInt in Friends class
+- Added: new callbacks/signals _equipped_profile_items_changed_ and _equipped_profile_items_ in Friends class
+- Added: new networking identity types
+- Added: new functions setXboxPairwiseID, getXboxPairwiseID, setPSNID, getPSNID, setStadiaID, and getStadiaID to Networking Types class
+- Changed: minor correction to createListenSocketP2P in attempt to fix possible crash
+
 **Version 3.15 Changes**
 - Changed: sendMessageToConnection and sendMessages now take PoolByteArrays to send any data
 - Fixed: issue with receiving messages, now allows more than one at a time; _thanks to Frostings_
