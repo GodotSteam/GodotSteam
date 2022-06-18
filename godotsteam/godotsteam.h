@@ -1004,8 +1004,8 @@ class Steam: public Object {
 		uint64_t getIdentitySteamID64(const String& reference_name);
 		Array getIPAddresses();
 		uint32 getIPv4(const String& reference_name);
-		uint64 getPSNID(const String& reference_name);
-		uint64 getStadiaID(const String& reference_name);
+		uint64_t getPSNID(const String& reference_name);
+		uint64_t getStadiaID(const String& reference_name);
 		String getXboxPairwiseID(const String& reference_name);
 		bool isAddressLocalHost(const String& reference_name);
 		bool isIdentityInvalid(const String& reference_name);

@@ -5685,12 +5685,12 @@ uint32 Steam::getIdentityIPAddr(const String& reference_name){
 }
 
 // Retrieve this identity's Playstation Network ID.
-uint64 Steam::getPSNID(const String& reference_name){
+uint64_t Steam::getPSNID(const String& reference_name){
 	return networking_identities[reference_name.utf8().get_data()].GetPSNID();
 }
 
 // Retrieve this identity's Google Stadia ID.
-uint64 Steam::getStadiaID(const String& reference_name){
+uint64_t Steam::getStadiaID(const String& reference_name){
 	return networking_identities[reference_name.utf8().get_data()].GetStadiaID();
 }
 
@@ -9451,7 +9451,7 @@ void Steam::equipped_profile_items(EquippedProfileItems_t* call_data){
 	profile_data["profile_modifier"] = has_profile_modifier;
 	profile_data["profile_background"] = has_profile_background;
 	profile_data["profile_mini_background"] = has_mini_profile_background;
-	emit_signal("equipped_profile_items", steam_id, profile_data);
+	emit_signal("equipped_profile_items", result, steam_id, profile_data);
 }
 
 // GAME SEARCH CALLBACKS ////////////////////////

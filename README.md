@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.14)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.16.1 Changes**
+- Fixed: issues with getPSNID and getStadiaID functions when compiling on Linux
+
 **Version 3.16 Changes**
 - Added: new enums for Community Profile item types and properties in Friends class
 - Added: new functions hasEquippedProfileItem, getProfileItemPropertyString, and getProfileItemPropertyInt in Friends class
