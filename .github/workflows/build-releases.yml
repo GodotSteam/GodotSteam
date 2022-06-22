@@ -224,89 +224,170 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
-################# OSX Universal Builds #################
+################# MacOS Universal Builds #################
 
-  build-osx-editor:
+  build-macos-editor-x86_64:
     needs: [env-setup]
-    uses: ./.github/workflows/build-osx-artifact.yml
+    uses: ./.github/workflows/build-macos-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.tools.x86_64"
       export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-editor-osx.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "osx-editor"
+      artifact_name: "macos-editor-x86_64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-osx-release-template:
+  build-macos-release-template-x86_64:
     needs: [env-setup]
-    uses: ./.github/workflows/build-osx-artifact.yml
+    uses: ./.github/workflows/build-macos-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.opt.x86_64"
       export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "osx-release-template"
+      artifact_name: "osx-release-template-x86_64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-osx-debug-template:
+  build-macos-debug-template-x86_64:
     needs: [env-setup]
-    uses: ./.github/workflows/build-osx-artifact.yml
+    uses: ./.github/workflows/build-macos-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.opt.debug.x86_64"
       export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template-osx.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "osx-debug-template"
+      artifact_name: "macos-debug-template-x86_64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+      
+  build-macos-editor-arm:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      binary_name: "godot.osx.tools.arm64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-editor-osx.arm64"
+      build_params: "-j4 p=osx arch=arm64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "macos-editor-arm64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-osx-bundle:
-    needs: [build-osx-editor, build-osx-release-template, build-osx-debug-template]
+  build-macos-release-template-arm:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      binary_name: "godot.osx.opt.arm64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.arm64"
+      build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "osx-release-template-arm64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-macos-debug-template-arm:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      binary_name: "godot.osx.opt.debug.arm64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template-osx.arm64"
+      build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "macos-debug-template-arm64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  create-macos-bundle:
+    needs: [build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm, build-macos-release-template-arm, build-macos-debug-template-arm]
     runs-on: macos-latest
     steps:
-      - name: Download Osx Editor
+      - name: Download MacOS x86_64 Editor
         uses: actions/download-artifact@v3
         with:
-          name: osx-editor
+          name: macos-editor-x86_64
           path: files
-      - name: Download Osx Release Template
+      - name: Download MacOS ARM Editor
         uses: actions/download-artifact@v3
         with:
-          name: osx-release-template
+          name: macos-editor-arm
           path: files
-      - name: Download Osx Debug Template
+      - name: Download MacOS x86_64 Release Template
         uses: actions/download-artifact@v3
         with:
-          name: osx-debug-template
+          name: macos-release-template-x86_64
           path: files
-      - name: Download Osx Steam API
+      - name: Download MacOS x86_64 Debug Template
         uses: actions/download-artifact@v3
         with:
-          name: osx-libsteam-api-so
+          name: macos-debug-template-x86_64
           path: files
-      - name: Create Osx Bundle
+      - name: Download MacOS ARM Release Template
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-release-template-arm
+          path: files
+      - name: Download MacOS ARM Debug Template
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-debug-template-arm
+          path: files
+      - name: Download MacOS Steam API
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-libsteam-api-dylib
+          path: files
+      - name: Download MacOS Tool App
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-tool-app
+          path: files
+      - name: Download MacOS Template App
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-template-app
+          path: files
+      - name: Create MacOS Bundle
         run: |
-          echo "480" >> files/steam_appid.txt
-          ls -la files
-          zip -j osx-${{ env.GODOT_TAG }}-osx-x86_64.zip files/*
+          lipo -create godot.osx.tools.x86_64 godot.osx.tools.arm64 -output godot.osx.tools.universal
+          lipo -create godot.osx.opt.x86_64 godot.osx.opt.arm64 -output godot.osx.opt.universal
+          lipo -create godot.osx.opt.debug.x86_64 godot.osx.opt.debug.arm64 -output godot.osx.opt.debug.universal
+          mv osx_tools.app GodotEditor.app
+          mkdir GodotEditor.app/Contents/MacOS
+          mv godot.osx.tools.universal GodotEditor.app/Contents/MacOS/godot
+          cp libsteam_api.dylib GodotEditor.app/Contents/MacOS
+          chmod +x GodotEditor.app/Contents/MacOS/godot
+          echo "480" | sudo tee steam_appid.txt
+          mv steam_appid.txt GodotEditor.app/Contents/MacOS/steam_appid.txt
+          mkdir osx_template.app/Contents/MacOS
+          mv godot.osx.opt.universal osx_template.app/Contents/MacOS/godot_osx_release.64
+          mv godot.osx.opt.debug.universal osx_template.app/Contents/MacOS/godot_osx_release_debug.64
+          cp libsteam_api.dylib osx_template.app/Contents/MacOS
+          chmod +x osx_template.app/Contents/MacOS/godot_osx*
+          zip -r9 osx.zip osx_template.app/          
+          zip -j macos-${{ env.GODOT_TAG }}-universal.zip osx.zip GodotEditor.app
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: osx-${{ env.GODOT_TAG }}-osx-x86_64.zip
+          file: macos-${{ env.GODOT_TAG }}-universal.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
 ################# Create Template Bundles #################
   create-templates-bundle:
-    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-osx-release-template, build-osx-debug-template]
+    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm, build-macos-debug-template-arm]
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows Release Template
@@ -339,23 +420,46 @@ jobs:
         with:
           name: linux-libsteam-api-so
           path: files
-      - name: Download Osx Release Template
+      - name: Download MacOS x86_64 Release Template
         uses: actions/download-artifact@v3
         with:
-          name: osx-release-template
+          name: macos-release-template-x86_64
           path: files
-      - name: Download Osx Debug Template
+      - name: Download MacOS x86_64 Debug Template
         uses: actions/download-artifact@v3
         with:
-          name: osx-debug-template
+          name: macos-debug-template-x86_64
           path: files
-      - name: Download Osx Steam API
+      - name: Download MacOS ARM Release Template
         uses: actions/download-artifact@v3
         with:
-          name: osx-libsteam-api-so
+          name: macos-release-template-arm
+          path: files
+      - name: Download MacOS ARM Debug Template
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-debug-template-arm
+          path: files
+      - name: Download MacOS Steam API
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-libsteam-api-dylib
+          path: files
+      - name: Download MacOS Template App
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-template-app
           path: files
       - name: Create Template Bundle
         run: |
+          lipo -create godot.osx.opt.x86_64 godot.osx.opt.arm64 -output godot.osx.opt.universal
+          lipo -create godot.osx.opt.debug.x86_64 godot.osx.opt.debug.arm64 -output godot.osx.opt.debug.universal
+          mkdir osx_template.app/Contents/MacOS
+          mv godot.osx.opt.universal osx_template.app/Contents/MacOS/godot_osx_release.64
+          mv godot.osx.opt.debug.universal osx_template.app/Contents/MacOS/godot_osx_release_debug.64
+          cp libsteam_api.dylib osx_template.app/Contents/MacOS
+          chmod +x osx_template.app/Contents/MacOS/godot_osx*
+          zip -r9 osx.zip osx_template.app/
           echo "480" >> files/steam_appid.txt
           ls -la files
           zip -j godotsteam-${{ env.GODOT_TAG }}-templates.zip files/*
