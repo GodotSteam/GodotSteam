@@ -270,7 +270,7 @@ jobs:
 
   create-osx-bundle:
     needs: [build-osx-editor, build-osx-release-template, build-osx-debug-template]
-    runs-on: osx-latest
+    runs-on: macos-latest
     steps:
       - name: Download Osx Editor
         uses: actions/download-artifact@v3
