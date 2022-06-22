@@ -290,7 +290,7 @@ jobs:
       - name: Download Osx Steam API
         uses: actions/download-artifact@v3
         with:
-          name: osx-libsteam-api-dylib
+          name: osx-libsteam-api-so
           path: files
       - name: Create Osx Bundle
         run: |
@@ -352,7 +352,7 @@ jobs:
       - name: Download Osx Steam API
         uses: actions/download-artifact@v3
         with:
-          name: osx-libsteam-api-dylib
+          name: osx-libsteam-api-so
           path: files
       - name: Create Template Bundle
         run: |
