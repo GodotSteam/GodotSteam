@@ -226,10 +226,87 @@ jobs:
 
 ################# OSX Universal Builds #################
 
+  build-osx-editor:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-osx-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      binary_name: "godot.osx.tools.x86_64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-editor-osx.x86_64"
+      build_params: "-j4 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "osx-editor"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-osx-release-template:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-osx-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      binary_name: "godot.osx.opt.x86_64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.x86_64"
+      build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "osx-release-template"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-osx-debug-template:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-osx-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      binary_name: "godot.osx.opt.debug.x86_64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template-osx.x86_64"
+      build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "osx-debug-template"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  create-osx-bundle:
+    needs: [build-osx-editor, build-osx-release-template, build-osx-debug-template]
+    runs-on: osx-latest
+    steps:
+      - name: Download Osx Editor
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-editor
+          path: files
+      - name: Download Osx Release Template
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-release-template
+          path: files
+      - name: Download Osx Debug Template
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-debug-template
+          path: files
+      - name: Download Osx Steam API
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-libsteam-api-dylib
+          path: files
+      - name: Create Osx Bundle
+        run: |
+          echo "480" >> files/steam_appid.txt
+          ls -la files
+          zip -j osx-${{ env.GODOT_TAG }}-osx-x86_64.zip files/*
+      - name: Upload bundle to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: osx-${{ env.GODOT_TAG }}-osx-x86_64.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
 
 ################# Create Template Bundles #################
   create-templates-bundle:
-    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template]
+    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-osx-release-template, build-osx-debug-template]
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows Release Template
@@ -261,6 +338,21 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: linux-libsteam-api-so
+          path: files
+      - name: Download Osx Release Template
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-release-template
+          path: files
+      - name: Download Osx Debug Template
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-debug-template
+          path: files
+      - name: Download Osx Steam API
+        uses: actions/download-artifact@v3
+        with:
+          name: osx-libsteam-api-dylib
           path: files
       - name: Create Template Bundle
         run: |
