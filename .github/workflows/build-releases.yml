@@ -268,7 +268,7 @@ jobs:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
       
-  build-macos-editor-arm:
+  build-macos-editor-arm64:
     needs: [env-setup]
     uses: ./.github/workflows/build-macos-artifact.yml
     with:
@@ -282,7 +282,7 @@ jobs:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-macos-release-template-arm:
+  build-macos-release-template-arm64:
     needs: [env-setup]
     uses: ./.github/workflows/build-macos-artifact.yml
     with:
@@ -296,7 +296,7 @@ jobs:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-macos-debug-template-arm:
+  build-macos-debug-template-arm64:
     needs: [env-setup]
     uses: ./.github/workflows/build-macos-artifact.yml
     with:
@@ -311,7 +311,7 @@ jobs:
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
   create-macos-bundle:
-    needs: [build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm, build-macos-release-template-arm, build-macos-debug-template-arm]
+    needs: [build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
     runs-on: macos-latest
     steps:
       - name: Download MacOS x86_64 Editor
@@ -322,7 +322,7 @@ jobs:
       - name: Download MacOS ARM Editor
         uses: actions/download-artifact@v3
         with:
-          name: macos-editor-arm
+          name: macos-editor-arm64
           path: files
       - name: Download MacOS x86_64 Release Template
         uses: actions/download-artifact@v3
@@ -337,12 +337,12 @@ jobs:
       - name: Download MacOS ARM Release Template
         uses: actions/download-artifact@v3
         with:
-          name: macos-release-template-arm
+          name: macos-release-template-arm64
           path: files
       - name: Download MacOS ARM Debug Template
         uses: actions/download-artifact@v3
         with:
-          name: macos-debug-template-arm
+          name: macos-debug-template-arm64
           path: files
       - name: Download MacOS Steam API
         uses: actions/download-artifact@v3
@@ -387,7 +387,7 @@ jobs:
 
 ################# Create Template Bundles #################
   create-templates-bundle:
-    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm, build-macos-debug-template-arm]
+    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows Release Template
@@ -433,12 +433,12 @@ jobs:
       - name: Download MacOS ARM Release Template
         uses: actions/download-artifact@v3
         with:
-          name: macos-release-template-arm
+          name: macos-release-template-arm64
           path: files
       - name: Download MacOS ARM Debug Template
         uses: actions/download-artifact@v3
         with:
-          name: macos-debug-template-arm
+          name: macos-debug-template-arm64
           path: files
       - name: Download MacOS Steam API
         uses: actions/download-artifact@v3
