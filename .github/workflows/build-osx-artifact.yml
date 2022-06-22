@@ -19,9 +19,6 @@ on:
       export_name:
         required: true
         type: string
-      template_path:
-        required: true
-        type: string
     secrets:
       steamworks_sdk_repo:
         required: true
