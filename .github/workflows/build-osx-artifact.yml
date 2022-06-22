@@ -28,7 +28,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: osx-latest
+    runs-on: macos-latest
     
     steps:
       # Checkout Godot
