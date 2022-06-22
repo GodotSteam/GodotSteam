@@ -109,12 +109,11 @@ jobs:
       - name: Create Linux Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          zip -j linux-${{ env.TAG }}-64bit.zip files/*
+          zip -j linux-${{ env.GODOT_TAG }//[^0-9]/}-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: linux-$TAG-64bit.zip
+          file: linux-${{ env.GODOT_TAG }//[^0-9]/}-64bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -135,9 +134,7 @@ jobs:
       - name: Create Linux Headless Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          echo $TAG
-          zip -j linux-${{ env.TAG }}-headless-64bit.zip files/*
+          zip -j linux-${{ env.GODOT_TAG }//[^0-9]/}-headless-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -216,12 +213,11 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          zip -j windows-$TAG-64bit.zip files/*
+          zip -j windows-${{ env.GODOT_TAG }//[^0-9]/}-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: windows-$TAG-64bit.zip
+          file: windows-${{ env.GODOT_TAG }//[^0-9]/}-64bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           
@@ -296,12 +292,11 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          zip -j windows-$TAG-32bit.zip files/*
+          zip -j windows-${{ env.GODOT_TAG }//[^0-9]/}-32bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: windows-$TAG-32bit.zip
+          file: windows-${{ env.GODOT_TAG }//[^0-9]/}-32bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -458,12 +453,11 @@ jobs:
           cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
           zip -r9 files/macos.zip files/osx_template.app/
-          IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          zip -j macos-$TAG-universal.zip files/macos.zip files/GodotEditor.app
+          zip -j macos-${{ env.GODOT_TAG }//[^0-9]/}-universal.zip files/macos.zip files/GodotEditor.app
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: macos-$TAG-universal.zip
+          file: macos-${{ env.GODOT_TAG }//[^0-9]/}-universal.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -560,11 +554,10 @@ jobs:
           zip -r9 files/macos.zip files/osx_template.app/
           rm files/osx_template.app/
           echo "480" >> files/steam_appid.txt
-          IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          zip -j godotsteam-$TAG-templates.zip files/*
+          zip -j godotsteam-${{ env.GODOT_TAG }//[^0-9]/}-templates.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: godotsteam-$TAG-templates.zip
+          file: godotsteam-${{ env.GODOT_TAG }//[^0-9]/}-templates.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
