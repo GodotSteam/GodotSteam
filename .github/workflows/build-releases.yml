@@ -317,7 +317,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.tools.x86_64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-editor-osx.x86_64"
+      export_name: "godot.osx.tools.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-editor-x86_64"
     secrets:
@@ -331,7 +331,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.opt.x86_64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.x86_64"
+      export_name: "godot.osx.opt.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-release-template-x86_64"
     secrets:
@@ -345,7 +345,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.opt.debug.x86_64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template-osx.x86_64"
+      export_name: "godot.osx.opt.debug.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-debug-template-x86_64"
     secrets:
@@ -359,7 +359,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.tools.arm64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-editor-osx.arm64"
+      export_name: "godot.osx.tools.arm64"
       build_params: "-j4 p=osx arch=arm64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-editor-arm64"
     secrets:
@@ -373,7 +373,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.opt.arm64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.arm64"
+      export_name: "godot.osx.opt.arm64"
       build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-release-template-arm64"
     secrets:
@@ -387,7 +387,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.osx.opt.debug.arm64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template-osx.arm64"
+      export_name: "godot.osx.opt.debug.arm64"
       build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-debug-template-arm64"
     secrets:
@@ -460,7 +460,7 @@ jobs:
           mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
           cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
-          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          VERSION_TAG=echo$( ${{ env.GODOT_TAG }} | tr -dc '0-9' )
           echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
           zip -r9 files/macos.zip files/osx_template.app/
           zip -j macos-${VERSION_TAG}-universal.zip files/macos.zip files/GodotEditor.app
