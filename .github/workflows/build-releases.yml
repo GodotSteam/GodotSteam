@@ -109,11 +109,13 @@ jobs:
       - name: Create Linux Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j linux-${{ env.GODOT_TAG //[!0-9]/}}-64bit.zip files/*
+          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+          zip -j linux-${VERSION_TAG}-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: linux-${{ env.GODOT_TAG //[!0-9]/}}-64bit.zip
+          file: linux-${{ env.VERSION_TAG }}-64bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -134,11 +136,13 @@ jobs:
       - name: Create Linux Headless Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j linux-${{ env.GODOT_TAG //[!0-9]/}}-headless-64bit.zip files/*
+          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+          zip -j linux-${VERSION_TAG}-headless-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: linux-${{ env.TAG }}-headless-64bit.zip
+          file: linux-${{ env.VERSION_TAG }}-headless-64bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -213,11 +217,13 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j windows-${{ env.GODOT_TAG //[!0-9]/}}-64bit.zip files/*
+          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+          zip -j windows-${VERSION_TAG}-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: windows-${{ env.GODOT_TAG //[!0-9]/}}-64bit.zip
+          file: windows-${{ env.VERSION_TAG }}-64bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           
@@ -292,11 +298,13 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j windows-${{ env.GODOT_TAG //[!0-9]/}}-32bit.zip files/*
+          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+          zip -j windows-${VERSION_TAG}-32bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: windows-${{ env.GODOT_TAG //[!0-9]/}}-32bit.zip
+          file: windows-${{ env.VERSION_TAG }}-32bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -452,12 +460,14 @@ jobs:
           mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
           cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
+          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
           zip -r9 files/macos.zip files/osx_template.app/
-          zip -j macos-${{ env.GODOT_TAG //[!0-9]/}}-universal.zip files/macos.zip files/GodotEditor.app
+          zip -j macos-${VERSION_TAG}-universal.zip files/macos.zip files/GodotEditor.app
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: macos-${{ env.GODOT_TAG //[!0-9]/}}-universal.zip
+          file: macos-${{ env.VERSION_TAG }}-universal.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -554,10 +564,12 @@ jobs:
           zip -r9 files/macos.zip files/osx_template.app/
           rm files/osx_template.app/
           echo "480" >> files/steam_appid.txt
-          zip -j godotsteam-${{ env.GODOT_TAG //[!0-9]/}}-templates.zip files/*
+          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+          zip -j godotsteam-${VERSION_TAG}-templates.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: godotsteam-${{ env.GODOT_TAG //[!0-9]/}}-templates.zip
+          file: godotsteam-${{ env.VERSION_TAG }}-templates.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
