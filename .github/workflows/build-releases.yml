@@ -224,7 +224,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           
-################# Win64 Builds #################
+################# Win32 Builds #################
   
   build-win32-editor:
     needs: [env-setup]
