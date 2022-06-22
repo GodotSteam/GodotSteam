@@ -249,7 +249,7 @@ jobs:
       binary_name: "godot.osx.opt.x86_64"
       export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "osx-release-template-x86_64"
+      artifact_name: "macos-release-template-x86_64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
@@ -291,7 +291,7 @@ jobs:
       binary_name: "godot.osx.opt.arm64"
       export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-osx.arm64"
       build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "osx-release-template-arm64"
+      artifact_name: "macos-release-template-arm64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
@@ -376,8 +376,8 @@ jobs:
           mv godot.osx.opt.debug.universal osx_template.app/Contents/MacOS/godot_osx_release_debug.64
           cp libsteam_api.dylib osx_template.app/Contents/MacOS
           chmod +x osx_template.app/Contents/MacOS/godot_osx*
-          zip -r9 osx.zip osx_template.app/          
-          zip -j macos-${{ env.GODOT_TAG }}-universal.zip osx.zip GodotEditor.app
+          zip -r9 macos.zip osx_template.app/          
+          zip -j macos-${{ env.GODOT_TAG }}-universal.zip macos.zip GodotEditor.app
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -459,7 +459,7 @@ jobs:
           mv godot.osx.opt.debug.universal osx_template.app/Contents/MacOS/godot_osx_release_debug.64
           cp libsteam_api.dylib osx_template.app/Contents/MacOS
           chmod +x osx_template.app/Contents/MacOS/godot_osx*
-          zip -r9 osx.zip osx_template.app/
+          zip -r9 macos.zip osx_template.app/
           echo "480" >> files/steam_appid.txt
           ls -la files
           zip -j godotsteam-${{ env.GODOT_TAG }}-templates.zip files/*
