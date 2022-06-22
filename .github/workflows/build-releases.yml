@@ -136,11 +136,12 @@ jobs:
         run: |
           echo "480" >> files/steam_appid.txt
           IFS=- read TAG EXTRA ${{ env.GODOT_TAG }}
-          zip -j linux-$TAG-headless-64bit.zip files/*
+          echo $TAG
+          zip -j linux-${{ env.TAG }}-headless-64bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: linux-$TAG-headless-64bit.zip
+          file: linux-${{ env.TAG }}-headless-64bit.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
