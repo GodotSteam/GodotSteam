@@ -27,7 +27,7 @@ on:
 
 
 jobs:
-  build-linux:
+  build-macos:
     runs-on: macos-latest
     
     steps:
@@ -62,20 +62,20 @@ jobs:
       - name: Install Build Tools
         run: |
           brew install scons yasm
-      - name: Build OSX x86_64
+      - name: Build MacOS Universal
         working-directory: "godot"
         run: |
           scons ${{ inputs.build_params }}
           mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
-      - name: Upload OSX Build
+      - name: Upload MacOS Build
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
           retention-days: 1
-      - name: Upload OSX Steam dylib
+      - name: Upload MacOS Steam Dylib
         uses: actions/upload-artifact@v3
         with:
-          name: osx-libsteam-api-so
+          name: macos-libsteam-api-dylib
           path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
           retention-days: 1
