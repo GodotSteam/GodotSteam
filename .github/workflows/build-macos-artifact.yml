@@ -83,8 +83,10 @@ jobs:
           retention-days: 1
       - name: Zip the MacOS Apps
         run: |
-          zip -r godot/misc/dist/osx_tools.zip godot/misc/dist/osx_tools.app
-          zip -r godot/misc/dist/osx_template.zip godot/misc/dist/osx_template.app
+          pushd godot/misc/dist
+          zip -r ./osx_tools.zip ./osx_tools.app/
+          zip -r ./osx_template.zip ./osx_template.app/
+          popd
       - name: Upload MacOS Tool App
         uses: actions/upload-artifact@v3
         with:
