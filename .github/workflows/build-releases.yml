@@ -447,8 +447,9 @@ jobs:
           lipo -create files/godot.osx.tools.x86_64 files/godot.osx.tools.arm64 -output files/godot.osx.tools.universal
           lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
           lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
-          mkdir files/GodotEditor.app
-          mv files/Contents files/GodotEditor.app
+          unzip files/osx_tools.zip -d files
+          unzip files/osx_template.zip -d files
+          mv files/osx_tools.app files/GodotEditor.app
           ls -la files
           mkdir files/GodotEditor.app/Contents/MacOS
           mv files/godot.osx.tools.universal files/GodotEditor.app/Contents/MacOS/godot
@@ -463,7 +464,7 @@ jobs:
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
           VERSION_TAG=echo$( ${{ env.GODOT_TAG }} | tr -dc '0-9' )
           echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
-          zip -r9 files/macos.zip files/osx_template.app/
+          zip -r files/macos.zip files/osx_template.app
           zip -j macos-${VERSION_TAG}-universal.zip files/macos.zip files/GodotEditor.app
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
@@ -557,14 +558,13 @@ jobs:
           lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
           lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
           rm files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64
-          mkdir files/osx_template.app
-          mv files/Contents files/osx_template.app
+          unzip files/osx_template.zip -d files
           mkdir files/osx_template.app/Contents/MacOS
           mv files/godot.osx.opt.universal files/osx_template.app/Contents/MacOS/godot_osx_release.64
           mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
           cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
-          zip -r9 files/macos.zip files/osx_template.app/
+          zip -r files/macos.zip files/osx_template.app
           rm -r files/osx_template.app/
           echo "480" >> files/steam_appid.txt
           VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
