@@ -37,6 +37,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.tools.64"
       export_name: "linux-${{needs.env-setup.outputs.version_tag}}-editor.64"
       build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64"
@@ -51,6 +52,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.64"
       export_name: "linux-${{needs.env-setup.outputs.version_tag}}-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
@@ -65,6 +67,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.debug.64"
       export_name: "linux-${{needs.env-setup.outputs.version_tag}}-debug-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
@@ -79,6 +82,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot_server.x11.opt.tools.64
       export_name: "linux-${{needs.env-setup.outputs.version_tag}}-editor-headless.64"
       build_params: "-j4 platform=server production=yes tools=yes target=release_debug bits=64"
@@ -155,6 +159,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.tools.64.exe
       export_name: "win64-${{needs.env-setup.outputs.version_tag}}-editor.exe"
       build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no"
@@ -169,6 +174,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.64.exe
       export_name: "win64-${{needs.env-setup.outputs.version_tag}}-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no"
@@ -183,6 +189,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.debug.64.exe
       export_name: "win64-${{needs.env-setup.outputs.version_tag}}-debug-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no"
@@ -218,11 +225,11 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j windows-${{ env.VERSION_TAG }}-64bit.zip files/*
+          zip -j win64-${{ env.VERSION_TAG }}.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: windows-${{ env.VERSION_TAG }}-64bit.zip
+          file: win64-${{ env.VERSION_TAG }}.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           
@@ -234,6 +241,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.tools.32.exe
       export_name: "win32-${{needs.env-setup.outputs.version_tag}}-editor.exe"
       build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no bits=32"
@@ -248,6 +256,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.32.exe
       export_name: "win32-${{needs.env-setup.outputs.version_tag}}-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no bits=32"
@@ -262,6 +271,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.debug.32.exe
       export_name: "win32-${{needs.env-setup.outputs.version_tag}}-debug-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no bits=32"
@@ -448,7 +458,6 @@ jobs:
           unzip files/osx_tools.zip -d files
           unzip files/osx_template.zip -d files
           mv files/osx_tools.app files/GodotEditor.app
-          ls -la files
           mkdir files/GodotEditor.app/Contents/MacOS
           mv files/godot.osx.tools.universal files/GodotEditor.app/Contents/MacOS/godot
           cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
