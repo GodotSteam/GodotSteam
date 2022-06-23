@@ -83,11 +83,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macos-tool-app
-          path: godot/misc/dist/osx_tools.app
+          path: godot/misc/dist/osx_tools.app/
           retention-days: 1
       - name: Upload MacOS Template App
         uses: actions/upload-artifact@v3
         with:
           name: macos-template-app
-          path: godot/misc/dist/osx_template.app
+          path: godot/misc/dist/osx_template.app/
           retention-days: 1
