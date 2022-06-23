@@ -298,7 +298,7 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          VERSION_TAG=echo$( ${{ env.GODOT_TAG }} | tr -dc '0-9' )
+          VERSION_TAG= $(echo ${{ env.GODOT_TAG }} | tr -dc '0-9' )
           echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
           zip -j windows-${VERSION_TAG}-32bit.zip files/*
       - name: Upload bundle to release
@@ -566,7 +566,7 @@ jobs:
           cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
           zip -r9 files/macos.zip files/osx_template.app/
-          rm files/osx_template.app/
+          rm -r files/osx_template.app/
           echo "480" >> files/steam_appid.txt
           VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
           echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
