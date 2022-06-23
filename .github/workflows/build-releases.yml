@@ -298,7 +298,7 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          VERSION_TAG=echo ${{ env.GODOT_TAG }} | tr -dc '0-9'
+          VERSION_TAG=echo$( ${{ env.GODOT_TAG }} | tr -dc '0-9' )
           echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
           zip -j windows-${VERSION_TAG}-32bit.zip files/*
       - name: Upload bundle to release
@@ -448,8 +448,9 @@ jobs:
           lipo -create files/godot.osx.tools.x86_64 files/godot.osx.tools.arm64 -output files/godot.osx.tools.universal
           lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
           lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
+          mkdir files/GodotEditor.app
+          mv files/Contents files/GodotEditor.app
           ls -la files
-          mv files/osx_tools.app/ files/GodotEditor.app
           mkdir files/GodotEditor.app/Contents/MacOS
           mv files/godot.osx.tools.universal files/GodotEditor.app/Contents/MacOS/godot
           cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
@@ -557,6 +558,8 @@ jobs:
           lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
           lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
           rm files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64
+          mkdir files/osx_template.app
+          mv files/Contents files/osx_template.app
           mkdir files/osx_template.app/Contents/MacOS
           mv files/godot.osx.opt.universal files/osx_template.app/Contents/MacOS/godot_osx_release.64
           mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
