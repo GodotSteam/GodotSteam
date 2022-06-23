@@ -298,7 +298,7 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          echo ::set-env name=VERSION_TAG::$(echo ${GODOT_TAG} | tr -dc '0-9')
+          echo ::set-output name=VERSION_TAG::$(echo ${GODOT_TAG} | tr -dc '0-9')
           zip -j windows-${VERSION_TAG}-32bit.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
