@@ -72,22 +72,26 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
+          if-no-files-found: error
           retention-days: 1
       - name: Upload MacOS Steam Dylib
         uses: actions/upload-artifact@v3
         with:
           name: macos-libsteam-api-dylib
           path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
+          if-no-files-found: error
           retention-days: 1
       - name: Upload MacOS Tool App
         uses: actions/upload-artifact@v3
         with:
           name: macos-tool-app
           path: godot/misc/dist/osx_tools.app/
+          if-no-files-found: error
           retention-days: 1
       - name: Upload MacOS Template App
         uses: actions/upload-artifact@v3
         with:
           name: macos-template-app
           path: godot/misc/dist/osx_template.app/
+          if-no-files-found: error
           retention-days: 1
