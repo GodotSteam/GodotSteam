@@ -81,17 +81,21 @@ jobs:
           path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
           if-no-files-found: error
           retention-days: 1
+      - name: Zip the MacOS Apps
+        run: |
+          zip -r godot/misc/dist/osx_tools.zip godot/misc/dist/osx_tools.app
+          zip -r godot/misc/dist/osx_template.zip godot/misc/dist/osx_template.app
       - name: Upload MacOS Tool App
         uses: actions/upload-artifact@v3
         with:
           name: macos-tool-app
-          path: godot/misc/dist/osx_tools.app
+          path: godot/misc/dist/osx_tools.zip
           if-no-files-found: error
           retention-days: 1
       - name: Upload MacOS Template App
         uses: actions/upload-artifact@v3
         with:
           name: macos-template-app
-          path: godot/misc/dist/osx_template.app
+          path: godot/misc/dist/osx_template.zip
           if-no-files-found: error
           retention-days: 1
