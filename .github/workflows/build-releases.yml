@@ -448,7 +448,8 @@ jobs:
           lipo -create files/godot.osx.tools.x86_64 files/godot.osx.tools.arm64 -output files/godot.osx.tools.universal
           lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
           lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
-          mv files/osx_tools.app files/GodotEditor.app
+          ls -la files
+          mv files/osx_tools.app/ files/GodotEditor.app
           mkdir files/GodotEditor.app/Contents/MacOS
           mv files/godot.osx.tools.universal files/GodotEditor.app/Contents/MacOS/godot
           cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
