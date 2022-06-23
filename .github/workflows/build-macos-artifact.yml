@@ -19,9 +19,6 @@ on:
       export_name:
         required: true
         type: string
-      template_path:
-        required: true
-        type: string
     secrets:
       steamworks_sdk_repo:
         required: true
@@ -30,8 +27,8 @@ on:
 
 
 jobs:
-  build-linux:
-    runs-on: osx-latest
+  build-macos:
+    runs-on: macos-latest
     
     steps:
       # Checkout Godot
@@ -65,20 +62,42 @@ jobs:
       - name: Install Build Tools
         run: |
           brew install scons yasm
-      - name: Build OSX x86_64
+      - name: Build MacOS
         working-directory: "godot"
         run: |
           scons ${{ inputs.build_params }}
           mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
-      - name: Upload OSX Build
+      - name: Upload MacOS Build
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
+          if-no-files-found: error
           retention-days: 1
-      - name: Upload OSX Steam dylib
+      - name: Upload MacOS Steam Dylib
         uses: actions/upload-artifact@v3
         with:
-          name: osx-libsteam-api-so
+          name: macos-libsteam-api-dylib
           path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
+          if-no-files-found: error
+          retention-days: 1
+      - name: Zip the MacOS Apps
+        run: |
+          pushd godot/misc/dist
+          zip -r ./osx_tools.zip ./osx_tools.app/
+          zip -r ./osx_template.zip ./osx_template.app/
+          popd
+      - name: Upload MacOS Tool App
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-tool-app
+          path: godot/misc/dist/osx_tools.zip
+          if-no-files-found: error
+          retention-days: 1
+      - name: Upload MacOS Template App
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-template-app
+          path: godot/misc/dist/osx_template.zip
+          if-no-files-found: error
           retention-days: 1
