@@ -47,7 +47,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.x11.opt.64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template-x11.64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
       artifact_name: "linux-release-template"
     secrets:
@@ -61,7 +61,7 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       binary_name: "godot.x11.opt.debug.64"
-      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template-x11.64"
+      export_name: "GodotSteam-${{needs.env-setup.outputs.godot_tag}}-debug-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
       artifact_name: "linux-debug-template"
     secrets:
@@ -466,8 +466,8 @@ jobs:
           echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
           pushd files
           zip -r ./macos.zip ./osx_template.app
+          zip -r ../macos-${VERSION_TAG}-universal.zip ./macos.zip ./GodotEditor.app
           popd
-          zip -j -r macos-${VERSION_TAG}-universal.zip files/macos.zip files/GodotEditor.app
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
