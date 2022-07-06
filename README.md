@@ -6,6 +6,9 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 7/6/22**
+- Added: new game to game list
+
 **Update 6/18/22**
 - Added: new functions to Friends and Networking Types function lists
 - Added: new signals / callbacks to Friends signal list
