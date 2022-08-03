@@ -468,6 +468,23 @@
 		<li>Synchronize API state with the latest Steam Controller inputs available. This is performed automatically by <strong>run_callbacks</strong>, but for the absolute lowest possible latency, you can call this directly before reading controller state.</li>
 		<li>Returns nothing; <strong>void</strong>.</li>
 	</ul>
+	<!-- setDualSenseTriggerEffect -->
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/isteaminput#SetDualSenseTriggerEffect" target="_blank">
+			<span class="gdscript">
+				setDualSenseTriggerEffect( <sup>int</sup> input_handle, <sup>int</sup> parameter_index, <sup>int</sup> trigger_mask, <sup>int</sup> effect_mode, <sup>int</sup> position, <sup>int</sup> amplitude, <sup>int</sup> frequency )
+			</span>
+			<span class="c-sharp">
+				setDualSenseTriggerEffect( <sup>uint64_t</sup> input_handle, <sup>int</sup> parameter_index, <sup>int</sup> trigger_mask, <sup>int</sup> effect_mode, <sup>int</sup> position, <sup>int</sup> amplitude, <sup>int</sup> frequency )
+			</span>
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Set the trigger effect for a DualSense controller.</li>
+		<li>Returns nothing; <strong>void</strong>.</li>
+	</ul>
+	<!-- setLEDColor -->
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/isteaminput#SetLEDColor" target="_blank">
 			<span class="gdscript">

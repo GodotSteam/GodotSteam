@@ -6,6 +6,12 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 8/3/22**
+- Changed: change-log for Godot 3.x
+- Added: new functions for Apps and Inputs function lists
+- Added: some extra information to stats and achievements tutorial
+- Fixed: function information for getPublicIP in Game Server function list
+
 **Update 7/24/22**
 - Added: new game to game list
 

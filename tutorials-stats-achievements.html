@@ -31,6 +31,10 @@
 	<p>At some point you may want to save statistics to Steam's database and/or use their achievement system.  You will want to <a href="https://partner.steamgames.com/doc/features/achievements" target="_blank">read up about these in Steam's documentation</a> as I won't be covering the basics on how to set it up in the Steamworks back-end.</p>
 	<hr/>
 	<header class="major">
+		<h3>Preparations</h3>
+	</header>
+	<p>First thing, you'll want to set up your achievements and statistics in the Steamworks back-end.  Most importantly, you want to publish these changes live.  If not, they will not be exposed to the Steamworks API and you will get errors when trying to retrieve or set them.  Once they have been published you can continue on with this tutorial.</p>
+	<header class="major">
 		<h3>Getting Steam Statistics And Achievements</h3>
 	</header>
 	<p>When starting up your game, in most cases, you'll want to pull all related achievements and statistics from Steam's servers for the local user.  There are a few ways to handle connecting the callback for statistics / achievements data received from Steam's servers.</p>

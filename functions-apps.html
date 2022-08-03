@@ -398,12 +398,24 @@
 		<li>Returns a <strong>bool</strong>.</li>
 	</ul>
 	<h4>
+		<span class="gdscript">
+			setDLCContext( <sup>int</sup> app_id )
+		</span>
+		<span class="c-sharp">
+			setDLCContext( <sup>uint32_t</sup> app_id )
+		</span>
+	</h4>
+	<ul>
+		<li>Set current DLC AppID being played (or 0 if none). Allows Steam to track usage of major DLC extensions.</li>
+		<li>Returns a <strong>bool</strong>.</li>
+	</ul>
+	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamApps#UninstallDLC" target="_blank">
 			<span class="gdscript">
-				uninstallDLC( <sup>int</sup> value )
+				uninstallDLC( <sup>int</sup> dlc_id )
 			</span>
 			<span class="c-sharp">
-				uninstallDLC( <sup>uint32_t</sup> value )
+				uninstallDLC( <sup>uint32_t</sup> dlc_id )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>

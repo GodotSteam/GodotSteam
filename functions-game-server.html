@@ -221,13 +221,12 @@
 	</h4>
 	<ul>
 		<li>Gets the public IP of the server according to Steam. This is useful when the server is behind NAT and you want to advertise its IP in a lobby for other clients to directly connect to.</li>
-		<li>
-			<span class="gdscript">
-				Returns an <strong>int</strong>. Will be 0 if the IP could not be determined.
-			</span>
-			<span class="c-sharp">
-				Returns an <strong>uint32</strong>. Will be 0 if the IP could not be determined.
-			</span>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<li>ipv4 (int)</li>
+				<li>ipv6 (int)</li>
+				<li>type (int)</li>
+			</ul>
 		</li>
 	</ul>
 	<h4>
