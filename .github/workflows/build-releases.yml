@@ -9,6 +9,7 @@ env:
   STEAMWORKS_SDK_TAG: "sdk-1.55"
   GODOT_TAG: "3.4.5-stable"
   VERSION_TAG: "345"
+  ZIP_TAG: "g345-s155-gs317"
 
 jobs:
   env-setup:
@@ -39,7 +40,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.tools.64"
-      export_name: "linux-${{needs.env-setup.outputs.version_tag}}-editor.64"
+      export_name: "linux-${{ env.VERSION_TAG }}-editor.64"
       build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64"
       artifact_name: "linux-editor"
     secrets:
@@ -54,7 +55,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.64"
-      export_name: "linux-${{needs.env-setup.outputs.version_tag}}-template.64"
+      export_name: "linux-${{ env.VERSION_TAG }}-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
       artifact_name: "linux-release-template"
     secrets:
@@ -69,7 +70,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.debug.64"
-      export_name: "linux-${{needs.env-setup.outputs.version_tag}}-debug-template.64"
+      export_name: "linux-${{ env.VERSION_TAG }}-debug-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
       artifact_name: "linux-debug-template"
     secrets:
@@ -84,7 +85,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot_server.x11.opt.tools.64
-      export_name: "linux-${{needs.env-setup.outputs.version_tag}}-editor-headless.64"
+      export_name: "linux-${{ env.VERSION_TAG }}-editor-headless.64"
       build_params: "-j4 platform=server production=yes tools=yes target=release_debug bits=64"
       artifact_name: "linux-headless"
     secrets:
@@ -118,11 +119,11 @@ jobs:
       - name: Create Linux Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j linux64-${{ env.VERSION_TAG }}.zip files/*
+          zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: linux64-${{ env.VERSION_TAG }}.zip
+          file: linux64-${{ env.ZIP_TAG }}.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -143,11 +144,11 @@ jobs:
       - name: Create Linux Headless Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j linux64-${{ env.VERSION_TAG }}-headless.zip files/*
+          zip -j linux64-${{ env.ZIP_TAG }}-headless.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: linux64-${{ env.VERSION_TAG }}-headless.zip
+          file: linux64-${{ env.ZIP_TAG }}-headless.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -161,7 +162,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.tools.64.exe
-      export_name: "win64-${{needs.env-setup.outputs.version_tag}}-editor.exe"
+      export_name: "windows-${{ env.VERSION_TAG }}-editor-64bit.exe"
       build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no"
       artifact_name: "win64-editor"
     secrets:
@@ -176,7 +177,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.64.exe
-      export_name: "win64-${{needs.env-setup.outputs.version_tag}}-template.exe"
+      export_name: "windows-${{ env.VERSION_TAG }}-template-64bit.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no"
       artifact_name: "win64-release-template"
     secrets:
@@ -191,7 +192,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.debug.64.exe
-      export_name: "win64-${{needs.env-setup.outputs.version_tag}}-debug-template.exe"
+      export_name: "windows-${{ env.VERSION_TAG }}-debug-template-64bit.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no"
       artifact_name: "win64-debug-template"
     secrets:
@@ -225,11 +226,11 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j win64-${{ env.VERSION_TAG }}.zip files/*
+          zip -j win64-${{ env.ZIP_TAG }}.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: win64-${{ env.VERSION_TAG }}.zip
+          file: win64-${{ env.ZIP_TAG }}.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           
@@ -243,7 +244,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.tools.32.exe
-      export_name: "win32-${{needs.env-setup.outputs.version_tag}}-editor.exe"
+      export_name: "windows-${{ env.VERSION_TAG }}-editor-32bit.exe"
       build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no bits=32"
       artifact_name: "win32-editor"
     secrets:
@@ -258,7 +259,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.32.exe
-      export_name: "win32-${{needs.env-setup.outputs.version_tag}}-template.exe"
+      export_name: "windows-${{ env.VERSION_TAG }}-template-32bit.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no bits=32"
       artifact_name: "win32-release-template"
     secrets:
@@ -273,7 +274,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.opt.debug.32.exe
-      export_name: "win32-${{needs.env-setup.outputs.version_tag}}-debug-template.exe"
+      export_name: "windows-${{ env.VERSION_TAG }}-debug-template-32bit.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no bits=32"
       artifact_name: "win32-debug-template"
     secrets:
@@ -307,11 +308,11 @@ jobs:
       - name: Create Windows Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          zip -j win32-${{ env.VERSION_TAG }}.zip files/*
+          zip -j win32-${{ env.ZIP_TAG }}.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: win32-${{ env.VERSION_TAG }}.zip
+          file: win32-${{ env.ZIP_TAG }}.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
@@ -477,12 +478,12 @@ jobs:
           chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
           pushd files
           zip -r ./macos.zip ./osx_template.app
-          zip -r ../macos-${{ env.VERSION_TAG }}-universal.zip ./macos.zip ./GodotEditor.app
+          zip -r ../macos-${{ env.ZIP_TAG }}-universal.zip ./macos.zip ./GodotEditor.app
           popd
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: macos-${{ env.VERSION_TAG }}-universal.zip
+          file: macos-${{ env.ZIP_TAG }}-universal.zip
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
 
