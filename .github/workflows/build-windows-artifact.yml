@@ -9,6 +9,7 @@ on:
         type: string
       version_tag:
         required: true
+        type: String
       binary_name:
         required: true
         type: string
