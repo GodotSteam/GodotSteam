@@ -323,6 +323,7 @@ jobs:
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.osx.tools.x86_64"
       export_name: "godot.osx.tools.x86_64"
       build_params: "-j4 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
