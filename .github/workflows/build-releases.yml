@@ -18,7 +18,7 @@ jobs:
     outputs:
       steamworks_sdk_tag: ${{ steps.set-steamworks-sdk-tag.outputs.steamworks_sdk_tag }}
       godot_tag: ${{ steps.set-godot-tag.outputs.godot_tag }}
-      version_tag: ${{ steps.set-godot-tag.outputs.version_tag }}
+      version_tag: ${{ steps.set-version-tag.outputs.version_tag }}
     steps:
       - id: set-steamworks-sdk-tag
         run: |    
@@ -55,7 +55,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.64"
-      export_name: "linux-${{ env-setup.outputs.version_tag }}-template.64"
+      export_name: "linux-${{needs.env-setup.outputs.version_tag }}-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
       artifact_name: "linux-release-template"
     secrets:
@@ -70,7 +70,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.x11.opt.debug.64"
-      export_name: "linux-${{ env-setup.outputs.version_tag }}-debug-template.64"
+      export_name: "linux-${{needs.env-setup.outputs.version_tag }}-debug-template.64"
       build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
       artifact_name: "linux-debug-template"
     secrets:
@@ -85,7 +85,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot_server.x11.opt.tools.64
-      export_name: "linux-${{ env-setup.outputs.version_tag }}-editor-headless.64"
+      export_name: "linux-${{needs.env-setup.outputs.version_tag }}-editor-headless.64"
       build_params: "-j4 platform=server production=yes tools=yes target=release_debug bits=64"
       artifact_name: "linux-headless"
     secrets:
