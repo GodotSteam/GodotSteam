@@ -7,6 +7,8 @@ on:
       godot_tag:
         required: true
         type: string
+      version_tag:
+        required: true
       binary_name:
         required: true
         type: string
