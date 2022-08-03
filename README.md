@@ -34,7 +34,9 @@ Known Issues
 Quick How-To
 ----------
 - Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
+
 **Alternatively, to compile it yourself:**
+
 - Download this repository and unpack it.
 - Download and unpack the [Steamworks SDK 1.53](https://partner.steamgames.com); this requires a Steam developer account.
   - Please see "Known Issues" above about versions.
