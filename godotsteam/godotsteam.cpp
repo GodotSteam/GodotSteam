@@ -744,6 +744,15 @@ bool Steam::markContentCorrupt(bool missing_files_only){
 	return SteamApps()->MarkContentCorrupt(missing_files_only);
 }
 
+//
+bool Steam::setDLCContext(uint32_t app_id){
+	if(SteamApps() == NULL){
+		return false;
+	}
+	return SteamApps()->SetDlcContext((AppId_t)app_id);
+}
+
+
 //! Allows you to uninstall an optional DLC.
 void Steam::uninstallDLC(uint32_t dlc_id){
 	if(SteamApps() != NULL){
@@ -2106,12 +2115,17 @@ Dictionary Steam::getNextOutgoingPacket(){
 }
 
 // Gets the public IP of the server according to Steam.
-//uint32 Steam::getPublicIP(){
-//	if(SteamGameServer() == NULL){
-//		return 0;
-//	}
-//	return SteamGameServer()->GetPublicIP();
-//}
+Dictionary Steam::getPublicIP(){
+	Dictionary public_ip;
+	if(SteamGameServer() != NULL){
+		SteamIPAddress_t this_public_ip = SteamGameServer()->GetPublicIP();
+		// Populate the dictionary for returning
+		public_ip["ipv4"] = this_public_ip.m_unIPv4;
+		public_ip["ipv6"] = this_public_ip.m_rgubIPv6;
+		public_ip["type"] = this_public_ip.m_eType;
+	}
+	return public_ip;
+}
 
 // NOTE: These are heartbeat/advertisement functions.
 //
@@ -3196,6 +3210,40 @@ bool Steam::setInputActionManifestFilePath(const String& manifest_path){
 	return SteamInput()->SetInputActionManifestFilePath(manifest_path.utf8().get_data());
 }
 
+// Set the trigger effect for a DualSense controller
+void Steam::setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, int effect_mode, int position, int amplitude, int frequency){
+	if(SteamInput() != NULL){
+		ScePadTriggerEffectParam these_parameters;
+		memset(&these_parameters, 0, sizeof(these_parameters));
+		these_parameters.triggerMask = trigger_mask;
+		if(effect_mode == 0){
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_OFF;
+		}
+		else if(effect_mode == 1){
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_FEEDBACK;
+		}
+		else if(effect_mode == 2){
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_WEAPON;
+		}
+		else if(effect_mode == 3){
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_VIBRATION;
+		}
+		else if(effect_mode == 4){
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK;
+		}
+		else if(effect_mode == 5){
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK;
+		}
+		else{
+			these_parameters.command[parameter_index].mode = SCE_PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION;
+		}
+		these_parameters.command[parameter_index].commandData.vibrationParam.position = position;
+		these_parameters.command[parameter_index].commandData.vibrationParam.amplitude = amplitude;
+		these_parameters.command[parameter_index].commandData.vibrationParam.frequency = frequency;
+		SteamInput()->SetDualSenseTriggerEffect((InputHandle_t)input_handle, &these_parameters);
+	}
+}
+
 //! Waits on an IPC event from Steam sent when there is new data to be fetched from the data drop. Returns true when data was recievied before the timeout expires. Useful for games with a dedicated input thread.
 bool Steam::waitForData(bool wait_forever, uint32 timeout){
 	if(SteamInput() == NULL){
@@ -3218,6 +3266,16 @@ void Steam::enableDeviceCallbacks(){
 		SteamInput()->EnableDeviceCallbacks();
 	}
 }
+
+// Enable SteamInputActionEvent_t callbacks. Directly calls your callback function for lower latency than standard Steam callbacks. Supports one callback at a time.
+// Note: this is called within either SteamInput()->RunFrame or by SteamAPI_RunCallbacks
+//void Steam::enableActionEventCallbacks(){
+//	if(SteamInput() != NULL){
+//		// Too dumb to figure out how to pass this function to the pointer
+//		SteamInputActionEventCallbackPointer *this_action_callback = &Steam::inputActionEventCallback;
+//		SteamInput()->EnableActionEventCallbacks(*this_action_callback);
+//	}
+//}
 
 //! Get a local path to a PNG file for the provided origin's glyph. 
 String Steam::getGlyphPNGForActionOrigin(int origin, int size, uint32 flags){
@@ -9985,29 +10043,29 @@ void Steam::http_request_headers_received(HTTPRequestHeadersReceived_t* call_dat
 // INPUT CALLBACKS //////////////////////////////
 //
 // Purpose: when callbacks are enabled this fires each time a controller action state changes
-//void Steam::input_action_event(SteamInputActionEvent_t* call_data){
-//	uint64_t input_handle = call_data->controllerHandle;
-//	int event_type = call_data->eEventType;
-//	uint64_t analog_handle = call_data->analogAction.actionHandle;
-//	uint64_t digital_handle = call_data->digitalAction.actionHandle;
-//	// Get the digital action data
-//	Dictionary digital_action;
-//	digital_action["state"] = call_data->digitalAction.digitalActionData.bState;
-//	digital_action["active"] = call_data->digitalAction.digitalActionData.bActive;
-//	// Get the analog action data
-//	Dictionary analog_action;
-//	analog_action["mode"] = call_data->analogAction.analogActionData.eMode;
-//	analog_action["x"] = call_data->analogAction.analogActionData.x;
-//	analog_action["y"] = call_data->analogAction.analogActionData.y;
-//	analog_action["active"] = call_data->analogAction.analogActionData.bActive;
-//	// Split into a dictionary since Godot won't allow more than 6 arguments sent back
-//	Dictionary action_information;
-//	action_information["analog_action_handle"] = analog_handle;
-//	action_information["analog_action_data"] = analog_action;
-//	action_information["digital_action_handle"] = digital_handle;
-//	action_information["digital_action_data"] = digital_action;
-//	emit_signal("input_action_event", input_handle, event_type, action_information);
-//}
+void Steam::inputActionEventCallback(SteamInputActionEvent_t* call_data){
+	uint64_t input_handle = call_data->controllerHandle;
+	int event_type = call_data->eEventType;
+	uint64_t analog_handle = call_data->analogAction.actionHandle;
+	uint64_t digital_handle = call_data->digitalAction.actionHandle;
+	// Get the digital action data
+	Dictionary digital_action;
+	digital_action["state"] = call_data->digitalAction.digitalActionData.bState;
+	digital_action["active"] = call_data->digitalAction.digitalActionData.bActive;
+	// Get the analog action data
+	Dictionary analog_action;
+	analog_action["mode"] = call_data->analogAction.analogActionData.eMode;
+	analog_action["x"] = call_data->analogAction.analogActionData.x;
+	analog_action["y"] = call_data->analogAction.analogActionData.y;
+	analog_action["active"] = call_data->analogAction.analogActionData.bActive;
+	// Split into a dictionary since Godot won't allow more than 6 arguments sent back
+	Dictionary action_information;
+	action_information["analog_action_handle"] = analog_handle;
+	action_information["analog_action_data"] = analog_action;
+	action_information["digital_action_handle"] = digital_handle;
+	action_information["digital_action_data"] = digital_action;
+	emit_signal("input_action_event", input_handle, event_type, action_information);
+}
 
 //! Purpose: called when a new controller has been connected, will fire once per controller if multiple new controllers connect in the same frame
 void Steam::input_device_connected(SteamInputDeviceConnected_t* call_data){
@@ -11505,6 +11563,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getLaunchQueryParam", "key"), &Steam::getLaunchQueryParam);
 	ClassDB::bind_method(D_METHOD("installDLC", "dlc_id"), &Steam::installDLC);
 	ClassDB::bind_method(D_METHOD("markContentCorrupt", "missing_files_only"), &Steam::markContentCorrupt);
+	ClassDB::bind_method(D_METHOD("setDLCContext", "app_id"), &Steam::setDLCContext);
 	ClassDB::bind_method(D_METHOD("uninstallDLC", "dlc_id"), &Steam::uninstallDLC);
 
 	// APP LIST BIND METHODS ////////////////////
@@ -11626,7 +11685,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("endServerAuthSession", "steam_id"), &Steam::endServerAuthSession);
 	ClassDB::bind_method("getServerAuthSessionTicket", &Steam::getServerAuthSessionTicket);
 	ClassDB::bind_method("getNextOutgoingPacket", &Steam::getNextOutgoingPacket);
-//	ClassDB::bind_method("getPublicIP", &Steam::getPublicIP);
+	ClassDB::bind_method("getPublicIP", &Steam::getPublicIP);
 	ClassDB::bind_method("getServerSteamID", &Steam::getServerSteamID);
 	ClassDB::bind_method(D_METHOD("handleIncomingPacket", "packet", "ip", "port"), &Steam::handleIncomingPacket);
 	ClassDB::bind_method("logOff", &Steam::logOff);
@@ -11761,9 +11820,11 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("triggerRepeatedHapticPulse", "input_handle", "target_pad", "duration", "offset", "repeat", "flags"), &Steam::triggerRepeatedHapticPulse);
 	ClassDB::bind_method(D_METHOD("triggerVibration", "input_handle", "left_speed", "right_speed"), &Steam::triggerVibration);
 	ClassDB::bind_method(D_METHOD("setInputActionManifestFilePath", "manifest_path"), &Steam::setInputActionManifestFilePath);
+	ClassDB::bind_method(D_METHOD("setDualSenseTriggerEffect", "input_handle", "parameters"), &Steam::setDualSenseTriggerEffect);
 	ClassDB::bind_method(D_METHOD("waitForData", "wait_forever", "timeout"), &Steam::waitForData);
 	ClassDB::bind_method("newDataAvailable", &Steam::newDataAvailable);
 	ClassDB::bind_method("enableDeviceCallbacks", &Steam::enableDeviceCallbacks);
+//	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
 	ClassDB::bind_method(D_METHOD("getGlyphPNGForActionOrigin", "origin", "size", "flags"), &Steam::getGlyphPNGForActionOrigin);
 	ClassDB::bind_method(D_METHOD("getGlyphSVGForActionOrigin", "origin", "flags"), &Steam::getGlyphSVGForActionOrigin);
 	ClassDB::bind_method(D_METHOD("triggerVibrationExtended", "input_handle", "left_speed", "right_speed", "left_trigger_speed", "right_trigger_speed"), &Steam::triggerVibrationExtended);
@@ -14159,7 +14220,15 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4);										// 9
 	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM_SMALL);								// 10
 	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4_SMALL);								// 11
-		
+
+	// DUALSENSE PAD TRIGGER EFFECT MODES
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_OFF);											// 0
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_FEEDBACK);									// 1
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_WEAPON);										// 2
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_VIBRATION);									// 3
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK);					// 4
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK);								// 5
+	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION);					// 6
 }
 
 Steam::~Steam(){

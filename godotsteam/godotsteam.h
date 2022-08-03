@@ -23,6 +23,7 @@
 #include "steam/steam_api.h"
 #include "steam/steam_gameserver.h"
 #include "steam/steamnetworkingfakeip.h"
+#include "steam/isteamdualsense.h"
 
 // Include Godot headers
 #include "core/object.h"
@@ -264,6 +265,9 @@ class Steam: public Object {
 		};
 		enum GlyphStyle {
 			INPUT_GLYPH_STYLE_KNOCKOUT = 0x0, INPUT_GLYPH_STYLE_LIGHT = 0x1, INPUT_GLYPH_STYLE_DARK = 0x2, INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY = 0x10, INPUT_GLYPH_STYLE_SOLID_ABXY = 0x20
+		};
+		enum SCEPadTriggerEffectMode {
+			PAD_TRIGGER_EFFECT_MODE_OFF = 0, PAD_TRIGGER_EFFECT_MODE_FEEDBACK = 1, PAD_TRIGGER_EFFECT_MODE_WEAPON = 2, PAD_TRIGGER_EFFECT_MODE_VIBRATION = 3, PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK = 4, PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK = 5, PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION = 6
 		};
 
 		// Inventory enums
@@ -526,6 +530,7 @@ class Steam: public Object {
 		String getLaunchQueryParam(const String& key);
 		void installDLC(uint32_t dlc_id);
 		bool markContentCorrupt(bool missing_files_only);
+		bool setDLCContext(uint32_t app_id);
 		void uninstallDLC(uint32_t dlc_id);
 		
 		// App Lists ////////////////////////////
@@ -647,7 +652,7 @@ class Steam: public Object {
 		void endServerAuthSession(uint64_t steam_id);
 		Dictionary getServerAuthSessionTicket();
 		Dictionary getNextOutgoingPacket();
-//		uint32 getPublicIP();
+		Dictionary getPublicIP();
 		uint64_t getServerSteamID();
 		Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
 		void logOff();
@@ -752,6 +757,8 @@ class Steam: public Object {
 		void activateActionSetLayer(uint64_t input_handle, uint64_t action_set_layer_handle);
 		void deactivateActionSetLayer(uint64_t input_handle, uint64_t action_set_handle);
 		void deactivateAllActionSetLayers(uint64_t input_handle);
+		void enableDeviceCallbacks();
+//		void enableActionEventCallbacks();
 		uint64_t getActionSetHandle(const String& action_set_name);
 		int getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
 		Array getActiveActionSetLayers(uint64_t input_handle);
@@ -767,12 +774,21 @@ class Steam: public Object {
 		Array getDigitalActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t digital_action_handle);
 		int getGamepadIndexForController(uint64_t input_handle);
 		String getGlyphForActionOrigin(int origin);
+		String getGlyphForXboxOrigin(int origin);
+		String getGlyphPNGForActionOrigin(int origin, int size, uint32 flags);
+		String getGlyphSVGForActionOrigin(int origin, uint32 flags);
 		String getInputTypeForHandle(uint64_t input_handle);
 		Dictionary getMotionData(uint64_t input_handle);
 		int getRemotePlaySessionID(uint64_t input_handle);
+		uint16 getSessionInputConfigurationSettings();
 		String getStringForActionOrigin(int origin);
+		String getStringForAnalogActionName(uint64_t action_handle);
+		String getStringForDigitalActionName(uint64_t action_handle);
+		String getStringForXboxOrigin(int origin);
 		bool inputInit(bool explicitly_call_runframe = false);
 		bool inputShutdown();
+		void inputActionEventCallback(SteamInputActionEvent_t* call_data);
+		bool newDataAvailable();
 		void runFrame(bool reserved_value = true);
 		void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);
 		bool showBindingPanel(uint64_t input_handle);
@@ -780,20 +796,12 @@ class Steam: public Object {
 		int translateActionOrigin(int destination_input, int source_origin);
 		void triggerHapticPulse(uint64_t input_handle, int target_pad, int duration);
 		void triggerRepeatedHapticPulse(uint64_t input_handle, int target_pad, int duration, int offset, int repeat, int flags);
-		void triggerVibration(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed);
-		bool setInputActionManifestFilePath(const String& manifest_path);
-		bool waitForData(bool wait_forever, uint32 timeout);
-		bool newDataAvailable();
-		void enableDeviceCallbacks();
-		String getGlyphPNGForActionOrigin(int origin, int size, uint32 flags);
-		String getGlyphSVGForActionOrigin(int origin, uint32 flags);
-		void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
 		void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String& gain_db, uint8 other_intensity, const String& other_gain_db);
-		String getStringForXboxOrigin(int origin);
-		String getGlyphForXboxOrigin(int origin);
-		uint16 getSessionInputConfigurationSettings();
-		String getStringForDigitalActionName(uint64_t action_handle);
-		String getStringForAnalogActionName(uint64_t action_handle);
+		void triggerVibration(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed);
+		void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
+		bool setInputActionManifestFilePath(const String& manifest_path);
+		void setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, int effect_mode, int position, int amplitude, int frequency);
+		bool waitForData(bool wait_forever, uint32 timeout);
 
 		// Inventory ////////////////////////////
 		int32 addPromoItem(uint32 item);
