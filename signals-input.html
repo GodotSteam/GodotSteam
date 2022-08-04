@@ -45,64 +45,6 @@
 	</div>
 	<hr />
 	<h4>
-		input_action_event
-	</h4>
-	<ul>
-		<li>When callbacks are enabled this fires each time a controller action state changes.</li>
-		<li>Sends back the following data:
-			<ul class="inner">
-				<span class="gdscript">
-					<li>input_handle (int)</li>
-					<li>event_type (int)</li>
-					<li>action_information (dictionary):
-						<ul class="inner">
-							<li>analog_action_handle (int)</li>
-							<li>analog_action_data (dictionary):
-								<ul class="inner">
-									<li>mode (int)</li>
-									<li>x (float)</li>
-									<li>y (float)</li>
-									<li>active (bool)</li>
-								</ul>
-							</li>
-							<li>digital_action_handle (int)</li>
-							<li>digital_action_data (dictionary):
-								<ul class="inner">
-									<li>state (int)</li>
-									<li>active (bool)</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</span>
-				<span class="c-sharp">
-					<li>input_handle (uint64_t)</li>
-					<li>event_type (int)</li>
-					<li>action_information (dictionary):
-						<ul class="inner">
-							<li>analog_action_handle (uint64_t)</li>
-							<li>analog_action_data (dictionary):
-								<ul class="inner">
-									<li>mode (int)</li>
-									<li>x (float)</li>
-									<li>y (float)</li>
-									<li>active (bool)</li>
-								</ul>
-							</li>
-							<li>digital_action_handle (uint64_t)</li>
-							<li>digital_action_data (dictionary):
-								<ul class="inner">
-									<li>state (int)</li>
-									<li>active (bool)</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</span>
-			</ul>
-		</li>
-	</ul>
-	<h4>
 		input_device_connected
 	</h4>
 	<ul>
