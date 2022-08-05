@@ -831,12 +831,12 @@ class Steam: public Object {
 		int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 		int32 triggerItemDrop(uint32 definition);
 		void startUpdateProperties();
-		int32 submitUpdateProperties(int32 this_inventory_update_handle = 0);
-		bool removeProperty(uint64_t item_id, const String& name, int32 this_inventory_update_handle = 0);
-		bool setPropertyString(uint64_t item_id, const String& name, const String& value, int32 this_inventory_update_handle = 0);
-		bool setPropertyBool(uint64_t item_id, const String& name, bool value, int32 this_inventory_update_handle = 0);
-		bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value, int32 this_inventory_update_handle = 0);
-		bool setPropertyFloat(uint64_t item_id, const String& name, float value, int32 this_inventory_update_handle = 0);
+		int32 submitUpdateProperties(uint64_t this_inventory_update_handle = 0);
+		bool removeProperty(uint64_t item_id, const String& name, uint64_t this_inventory_update_handle = 0);
+		bool setPropertyString(uint64_t item_id, const String& name, const String& value, uint64_t this_inventory_update_handle = 0);
+		bool setPropertyBool(uint64_t item_id, const String& name, bool value, uint64_t this_inventory_update_handle = 0);
+		bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value, uint64_t this_inventory_update_handle = 0);
+		bool setPropertyFloat(uint64_t item_id, const String& name, float value, uint64_t this_inventory_update_handle = 0);
 
 		// Matchmaking //////////////////////////
 		Array getFavoriteGames();
@@ -1035,7 +1035,7 @@ class Steam: public Object {
 		void setStadiaID(const String& reference_name, uint64_t stadia_id);
 		bool setXboxPairwiseID(const String& reference_name, const String& xbox_id);
 		String toIdentityString(const String& reference_name);
-		String toIPAddressString(const String& reference_name, bool with_port);		
+		String toIPAddressString(const String& reference_name, bool with_port);
 		const SteamNetworkingConfigValue_t* convertOptionsArray(Array options);
 		
 		// Networking Utils /////////////////////
@@ -1346,7 +1346,7 @@ class Steam: public Object {
 		bool is_init_success;
 
 		// Apps
-		uint64 current_app_id = 0;
+		uint64_t current_app_id = 0;
 		
 		// Friends
 		CSteamID clan_activity;

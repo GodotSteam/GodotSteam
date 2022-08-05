@@ -7,9 +7,9 @@ on:
 
 env:
   STEAMWORKS_SDK_TAG: "sdk-1.55"
-  GODOT_TAG: "3.4.5-stable"
-  VERSION_TAG: "345"
-  ZIP_TAG: "g345-s155-gs317"
+  GODOT_TAG: "3.5-stable"
+  VERSION_TAG: "35"
+  ZIP_TAG: "g35-s155-gs317"
 
 jobs:
   env-setup:

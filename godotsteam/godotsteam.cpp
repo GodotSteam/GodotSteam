@@ -3740,7 +3740,7 @@ void Steam::startUpdateProperties(){
 }
 
 //! Submits the transaction request to modify dynamic properties on items for the current user. See StartUpdateProperties.
-int32 Steam::submitUpdateProperties(int32 this_inventory_update_handle){
+int32 Steam::submitUpdateProperties(uint64_t this_inventory_update_handle){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
 		// If no inventory update handle is passed, use internal one
@@ -3756,7 +3756,7 @@ int32 Steam::submitUpdateProperties(int32 this_inventory_update_handle){
 }
 
 //! Removes a dynamic property for the given item.
-bool Steam::removeProperty(uint64_t item_id, const String& name, int32 this_inventory_update_handle){
+bool Steam::removeProperty(uint64_t item_id, const String& name, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3768,7 +3768,7 @@ bool Steam::removeProperty(uint64_t item_id, const String& name, int32 this_inve
 }
 
 //! Sets a dynamic property for the given item. Supported value types are strings.
-bool Steam::setPropertyString(uint64_t item_id, const String& name, const String& value, int32 this_inventory_update_handle){
+bool Steam::setPropertyString(uint64_t item_id, const String& name, const String& value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3780,7 +3780,7 @@ bool Steam::setPropertyString(uint64_t item_id, const String& name, const String
 }
 
 //! Sets a dynamic property for the given item. Supported value types are boolean.
-bool Steam::setPropertyBool(uint64_t item_id, const String& name, bool value, int32 this_inventory_update_handle){
+bool Steam::setPropertyBool(uint64_t item_id, const String& name, bool value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3792,7 +3792,7 @@ bool Steam::setPropertyBool(uint64_t item_id, const String& name, bool value, in
 }
 
 //! Sets a dynamic property for the given item. Supported value types are 64 bit integers.
-bool Steam::setPropertyInt(uint64_t item_id, const String& name, uint64_t value, int32 this_inventory_update_handle){
+bool Steam::setPropertyInt(uint64_t item_id, const String& name, uint64_t value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3804,7 +3804,7 @@ bool Steam::setPropertyInt(uint64_t item_id, const String& name, uint64_t value,
 }
 
 //! Sets a dynamic property for the given item. Supported value types are 32 bit floats.
-bool Steam::setPropertyFloat(uint64_t item_id, const String& name, float value, int32 this_inventory_update_handle){
+bool Steam::setPropertyFloat(uint64_t item_id, const String& name, float value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3862,7 +3862,7 @@ int Steam::addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 fla
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	return SteamMatchmaking()->AddFavoriteGame(current_app_id, ip, port, query_port, flags, last_played);
+	return SteamMatchmaking()->AddFavoriteGame((AppId_t)current_app_id, ip, port, query_port, flags, last_played);
 }
 
 //! Removes the game server from the local storage; returns true if one was removed.
@@ -4108,7 +4108,7 @@ Dictionary Steam::getLobbyGameServer(uint64_t steam_lobby_id){
 			game_server["ip"] = ip;
 			game_server["port"] = server_port;
 			// Convert the server ID
-			int server = server_id.ConvertToUint64();
+			uint64_t server = server_id.ConvertToUint64();
 			game_server["id"] = server;
 		}
 	}
@@ -7170,7 +7170,7 @@ uint64_t Steam::createQueryUserUGCRequest(uint64_t steam_id, int list_type, int 
 	}
 	// Get tue universe ID from the Steam ID
 	CSteamID user_id = (uint64)steam_id;
-	AccountID_t account = user_id.ConvertToUint64();
+	AccountID_t account = (AccountID_t)user_id.ConvertToUint64();
 	EUserUGCList list;
 	if(list_type == 0){
 		list = k_EUserUGCList_Published;
@@ -12365,7 +12365,7 @@ void Steam::_bind_methods(){
 	// VIDEO BIND METHODS ///////////////////////
 	ClassDB::bind_method(D_METHOD("getOPFSettings", "app_id"), &Steam::getOPFSettings);
 	ClassDB::bind_method(D_METHOD("getOPFStringForApp", "app_id"), &Steam::getOPFStringForApp);
-	ClassDB::bind_method(D_METHOD("getVideoURL" "app_id"), &Steam::getVideoURL);
+	ClassDB::bind_method(D_METHOD("getVideoURL", "app_id"), &Steam::getVideoURL);
 	ClassDB::bind_method("isBroadcasting", &Steam::isBroadcasting);
 
 	/////////////////////////////////////////////
@@ -12376,7 +12376,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("steamworks_error", PropertyInfo(Variant::STRING, "failed_signal"), PropertyInfo(Variant::STRING, "io failure")));
 
 	// APPS SIGNALS /////////////////////////////
-	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
+	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "file_size"), PropertyInfo(Variant::INT, "file_hash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("new_launch_url_parameters"));
 	ADD_SIGNAL(MethodInfo("timed_trial_status", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::BOOL, "is_offline"), PropertyInfo(Variant::INT, "seconds_allowed"), PropertyInfo(Variant::INT, "seconds_played")));

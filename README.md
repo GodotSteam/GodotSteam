@@ -16,7 +16,15 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.17)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.17.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.17.1 Changes**
+- Fixed: missing comma in getVideoURL argument function
+- Fixed: argument name mismatch with file_details_result
+- Fixed: wrong int type for inventory update handle
+- Fixed: not casting app ID for addFavoriteGame
+- Fixed: wrong int type for server ID in getLobbyGameServer
+- Fixed: not casting account ID for createQueryUserUGCRequest
 
 **Version 3.17 Changes**
 - Added: new functions, enums for Steamworks SDK 1.55
