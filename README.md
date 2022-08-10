@@ -6,8 +6,12 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 8/10/22**
+- Added: new game to game list
+- Fixed: incorrect game name in game list
+
 **Update 8/9/22**
-- AddeD: new game to game list
+- Added: new game to game list
 
 **Update 8/3/22**
 - Changed: change-log for Godot 3.x
