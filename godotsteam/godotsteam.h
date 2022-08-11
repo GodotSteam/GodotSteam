@@ -1040,9 +1040,9 @@ class Steam: public Object {
 		
 		// Networking Utils /////////////////////
 		bool checkPingDataUpToDate(float max_age_in_seconds);
-		String convertPingLocationToString(uint8 location);
-		int estimatePingTimeBetweenTwoLocations(uint8 location1, uint8 location2);
-		int estimatePingTimeFromLocalHost(uint8 location);
+		String convertPingLocationToString(PoolByteArray location);
+		int estimatePingTimeBetweenTwoLocations(PoolByteArray location1, PoolByteArray location2);
+		int estimatePingTimeFromLocalHost(PoolByteArray location);
 		Dictionary getConfigValue(int config_value, int scope_type, uint32_t connection_handle);
 		Dictionary getConfigValueInfo(int config_value);
 		int getDirectPingToPOP(uint32 pop_id);

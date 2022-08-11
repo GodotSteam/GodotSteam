@@ -5984,52 +5984,67 @@ Dictionary Steam::getLocalPingLocation(){
 	Dictionary ping_location;
 	if(SteamNetworkingUtils() != NULL){
 		SteamNetworkPingLocation_t location;
-		float ping = SteamNetworkingUtils()->GetLocalPingLocation(location);
-		char m_data[512];
-		for(size_t i = 0; i < sizeof(location.m_data) / sizeof(location.m_data[0]); i++){
-			m_data[i] = location.m_data[i];
-		}
+		float age = SteamNetworkingUtils()->GetLocalPingLocation(location);
 		// Populate the dictionary
-		ping_location["location"] = m_data;
-		ping_location["ping"] = ping;
+		PoolByteArray data;
+		data.resize(512);
+		uint8_t* output_data = data.write().ptr();
+		for(int j = 0; j < 512; j++){
+			output_data[j] = location.m_data[j];
+		}
+		ping_location["age"] = age;
+		ping_location["location"] = data;
 	}
 	return ping_location;
 }
 
 //! Estimate the round-trip latency between two arbitrary locations, in milliseconds. This is a conservative estimate, based on routing through the relay network. For most basic relayed connections, this ping time will be pretty accurate, since it will be based on the route likely to be actually used.
-int Steam::estimatePingTimeBetweenTwoLocations(uint8 location1, uint8 location2){
+int Steam::estimatePingTimeBetweenTwoLocations(PoolByteArray location1, PoolByteArray location2){
 	if(SteamNetworkingUtils() == NULL){
 		return 0;
 	}
 	// Add these locations to ping structs
 	SteamNetworkPingLocation_t ping_location1;
 	SteamNetworkPingLocation_t ping_location2;
-	ping_location1.m_data[0] = {location1};
-	ping_location2.m_data[0] = {location2};
+	uint8_t* input_location_1 = (uint8*) location1.read().ptr();
+	for(int j = 0; j < 512; j++){
+		ping_location1.m_data[j] = input_location_1[j];
+	}
+	uint8_t* input_location_2 = (uint8*) location2.read().ptr();
+	for(int j = 0; j < 512; j++){
+		ping_location2.m_data[j] = (uint8) input_location_2[j];
+	}
 	return SteamNetworkingUtils()->EstimatePingTimeBetweenTwoLocations(ping_location1, ping_location2);
 }
 
 //! Same as EstimatePingTime, but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.
-int Steam::estimatePingTimeFromLocalHost(uint8 location){
+int Steam::estimatePingTimeFromLocalHost(PoolByteArray location){
 	if(SteamNetworkingUtils() == NULL){
 		return 0;
 	}
 	// Add this location to ping struct
 	SteamNetworkPingLocation_t ping_location;
-	ping_location.m_data[0] = {location};
+	uint8_t* input_location = (uint8*) location.read().ptr();
+	for(int j = 0; j < 512; j++){
+		ping_location.m_data[j] = input_location[j];
+	}
 	return SteamNetworkingUtils()->EstimatePingTimeFromLocalHost(ping_location);
 }
 
 //! Convert a ping location into a text format suitable for sending over the wire. The format is a compact and human readable. However, it is subject to change so please do not parse it yourself. Your buffer must be at least k_cchMaxSteamNetworkingPingLocationString bytes.
-String Steam::convertPingLocationToString(uint8 location){
+String Steam::convertPingLocationToString(PoolByteArray location){
 	String location_string = "";
 	if(SteamNetworkingUtils() != NULL){
-		char buffer;
+		char *buffer = new char[512];
 		// Add this location to ping struct
 		SteamNetworkPingLocation_t ping_location;
-		ping_location.m_data[0] = {location};
-		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, &buffer, k_cchMaxSteamNetworkingPingLocationString);
+		uint8_t* input_location = (uint8*) location.read().ptr();
+		for(int j = 0; j < 512; j++){
+			ping_location.m_data[j] = input_location[j];
+		}
+		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, buffer, k_cchMaxSteamNetworkingPingLocationString);
 		location_string += buffer;
+		delete[] buffer;
 	}
 	return location_string;
 }
@@ -6041,12 +6056,14 @@ Dictionary Steam::parsePingLocationString(const String& location_string){
 		SteamNetworkPingLocation_t result;
 		bool success = SteamNetworkingUtils()->ParsePingLocationString(location_string.utf8().get_data(), result);
 		// Populate the dictionary
-		parse_string["success"] = success;
-		char m_data[512];
-		for(size_t i = 0; i < sizeof(result.m_data) / sizeof(result.m_data[0]); i++){
-			m_data[i] = result.m_data[i];
+		PoolByteArray data;
+		data.resize(512);
+		uint8_t* output_data = data.write().ptr();
+		for(int j = 0; j < 512; j++){
+			output_data[j] = result.m_data[j];
 		}
-		parse_string["ping_location"] = m_data;
+		parse_string["success"] = success;
+		parse_string["ping_location"] = data;
 	}
 	return parse_string;
 }

@@ -518,7 +518,7 @@
 		</method>
 		<method name="convertPingLocationToString">
 			<return type="String" />
-			<argument index="0" name="location" type="int" />
+			<argument index="0" name="location" type="PoolByteArray" />
 			<description>
 			</description>
 		</method>
@@ -846,14 +846,14 @@
 		</method>
 		<method name="estimatePingTimeBetweenTwoLocations">
 			<return type="int" />
-			<argument index="0" name="location1" type="int" />
-			<argument index="1" name="location2" type="int" />
+			<argument index="0" name="location1" type="PoolByteArray" />
+			<argument index="1" name="location2" type="PoolByteArray" />
 			<description>
 			</description>
 		</method>
 		<method name="estimatePingTimeFromLocalHost">
 			<return type="int" />
-			<argument index="0" name="location" type="int" />
+			<argument index="0" name="location" type="PoolByteArray" />
 			<description>
 			</description>
 		</method>
