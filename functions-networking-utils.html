@@ -29,7 +29,6 @@
 		<h1>Functions | Networking Utilities</h1>
 	</header>
 	<p>The descriptions are pulled from the official Steamworks SDK documentation with modifications made to fit GodotSteam's implementation of the functions.  Naturally, any GodotSteam-specific functions will be noted as such.</p>
-	<p>The <strong>identity_reference</strong> arguments refer to identities created with the Networking Type functions.</p>
 	<div id="toggle-data" class="box">
 		<form action="#">
 			<div class="row gtr-uniform">
@@ -59,10 +58,10 @@
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#ConvertPingLocationToString" target="_blank">
 			<span class="gdscript">
-				convertPingLocationToString( <sup>int</sup> location )
+				convertPingLocationToString( <sup>PoolByteArray</sup> location )
 			</span>
 			<span class="c-sharp">
-				convertPingLocationToString( <sup>uint8</sup> location )
+				convertPingLocationToString( <sup>PoolByteArray</sup> location )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
@@ -74,10 +73,10 @@
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeBetweenTwoLocations" target="_blank">
 			<span class="gdscript">
-				estimatePingTimeBetweenTwoLocations( <sup>int</sup> location1, <sup>int</sup> location2 )
+				estimatePingTimeBetweenTwoLocations( <sup>PoolByteArray</sup> location1, <sup>PoolByteArray</sup> location2 )
 			</span>
 			<span class="c-sharp">
-				estimatePingTimeBetweenTwoLocations( <sup>uint8</sup> location1, <sup>uint8</sup> location2 )
+				estimatePingTimeBetweenTwoLocations( <sup>PoolByteArray</sup> location1, <sup>PoolByteArray</sup> location2 )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
@@ -91,10 +90,10 @@
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeFromLocalHost" target="_blank">
 			<span class="gdscript">
-				estimatePingTimeFromLocalHost( <sup>int</sup> location )
+				estimatePingTimeFromLocalHost( <sup>PoolByteArray</sup> location )
 			</span>
 			<span class="c-sharp">
-				estimatePingTimeFromLocalHost( <sup>uint8</sup> location )
+				estimatePingTimeFromLocalHost( <sup>PoolByteArray</sup> location )
 			</span>
 			<i class="fas fa-external-link-alt"></i>
 		</a>
@@ -176,13 +175,13 @@
 		</a>
 	</h4>
 	<ul>
-		<li>Return location info for the current host. Returns the approximate age of the data, in seconds, or -1 if no data is available.</li>
+		<li>Return location info for the current host. Returns the approximate age of the data, in seconds, or -1 if no data is available. You can use this value in <strong></strong>checkPingDataUpToDate</strong>.</li>
 		<li>It takes a few seconds to initialize access to the relay network. If you call this very soon after calling <strong>initializeRelayNetworkAccess</strong>, the data may not be available yet.</li>
 		<li>This always return the most up-to-date information we have available right now, even if we are in the middle of re-calculating ping times.</li>
 		<li>Returns a <strong>dictionary</strong>:
 			<ul class="inner">
-				<li>location (int)</li>
-				<li>ping (float)</li>
+				<li>location (PoolByteArray)</li>
+				<li>age (float)</li>
 			</ul>
 		</li>
 	</ul>
@@ -304,11 +303,11 @@
 			<ul class="inner">
 				<span class="gdscript">
 					<li>success (bool)</li>
-					<li>ping_location (int)</li>
+					<li>ping_location (PoolByteArray)</li>
 				</span>
 				<span class="c-sharp">
 					<li>success (bool)</li>
-					<li>ping_location (uint8)</li>
+					<li>ping_location (PoolByteArray)</li>
 				</span>
 			</ul>
 		</li>
