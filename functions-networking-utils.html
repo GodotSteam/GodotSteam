@@ -57,12 +57,7 @@
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#ConvertPingLocationToString" target="_blank">
-			<span class="gdscript">
-				convertPingLocationToString( <sup>PoolByteArray</sup> location )
-			</span>
-			<span class="c-sharp">
-				convertPingLocationToString( <sup>PoolByteArray</sup> location )
-			</span>
+			convertPingLocationToString( <sup>PoolByteArray</sup> location )
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
@@ -72,12 +67,7 @@
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeBetweenTwoLocations" target="_blank">
-			<span class="gdscript">
-				estimatePingTimeBetweenTwoLocations( <sup>PoolByteArray</sup> location1, <sup>PoolByteArray</sup> location2 )
-			</span>
-			<span class="c-sharp">
-				estimatePingTimeBetweenTwoLocations( <sup>PoolByteArray</sup> location1, <sup>PoolByteArray</sup> location2 )
-			</span>
+			estimatePingTimeBetweenTwoLocations( <sup>convertPingLocationToString</sup> location1, <sup>convertPingLocationToString</sup> location2 )
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
@@ -89,12 +79,7 @@
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeFromLocalHost" target="_blank">
-			<span class="gdscript">
-				estimatePingTimeFromLocalHost( <sup>PoolByteArray</sup> location )
-			</span>
-			<span class="c-sharp">
-				estimatePingTimeFromLocalHost( <sup>PoolByteArray</sup> location )
-			</span>
+			estimatePingTimeFromLocalHost( <sup>PoolByteArray</sup> location )
 			<i class="fas fa-external-link-alt"></i>
 		</a>
 	</h4>
@@ -301,14 +286,8 @@
 		<li>Parse back SteamNetworkPingLocation_t string. Returns false if we couldn't understand the string.</li>
 		<li>Returns a <strong>dictionary</strong>:
 			<ul class="inner">
-				<span class="gdscript">
-					<li>success (bool)</li>
-					<li>ping_location (PoolByteArray)</li>
-				</span>
-				<span class="c-sharp">
-					<li>success (bool)</li>
-					<li>ping_location (PoolByteArray)</li>
-				</span>
+				<li>success (bool)</li>
+				<li>ping_location (PoolByeArray)</li>
 			</ul>
 		</li>
 	</ul>
