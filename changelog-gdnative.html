@@ -29,6 +29,31 @@
 		<h1>Change Log | GDNative</h1>
 	</header>
 	<p>The change log for the gdnative repository.</p>
+	<h3>Version 3.4.1 Changes</h3>
+	<ul>
+		<li>Fixed: OSX naming of DyLib files</li>
+	</ul>
+	<h3>Version 3.4 Changes</h3>
+	<ul>
+		<li>Added: setDLCContext, getProfileItemPropertyString, getProfileItemPropertyInt, hasEquippedProfileItem, getPublicIP, getPSNID, getStadiaID, getXboxPairwiseID functions</li>
+		<li>Added: handle arguments to HTML Surface class functions</li>
+		<li>Added: inventory handle arguments to Inventory class functions</li>
+		<li>Added: networking identity references into new Networking class functions</li>
+		<li>Added: equipped_profile_items_changed, equipped_profile_items callbacks</li>
+		<li>Added: additional data types to signals</li>
+		<li>Changed: many functions in Networking Sockets and Networking Types classes</li>
+		<li>Changed: newtorking identity maps</li>
+		<li>Changed: various argument names to fall in line with module version</li>
+		<li>Changed: renamed some signals</li>
+		<li>Fixed: serverInit, advertiseGame functions</li>
+		<li>Fixed: getSessionID using wrong type in Remote Play class</li>
+		<li>Fixed: various incorrect types in Screenshots class</li>
+		<li>Fixed: wrong int type for inventory update handle</li>
+		<li>Fixed: not casting app ID for addFavoriteGame</li>
+		<li>Fixed: wrong int type for server ID in getLobbyGameServer</li>
+		<li>Removed: requestAllProofOfPurchaseKeys, requestAppProofOfPurchaseKey functions and related callbacks</li>
+		<li>Removed: leading dash from signal / callback function names</li>
+	</ul>
 	<h3>Version 3.3 Changes</h3>
 	<ul>
 		<li>Added: missing D_METHOD to all functions, should show the right argument names in-editor</li>

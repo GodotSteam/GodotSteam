@@ -9,6 +9,7 @@ What's New
 **Update 8/14/22**
 - Changed: small bits of out-of-date text
 - Changed: updated Networking Utils functions
+- Changed: GDNative change-log
 - Fixed: games page link not exporting correctly
 
 **Update 8/11/22**
