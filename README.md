@@ -14,8 +14,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
-*NOTE*: Both the Godot Engine 3.4.5 and Godot Engine 3.5 versions are available in the release section but only the 3.4.5 is available on Godot Asset Library and in this repo.
+You can [download pre-compiled versions _(currently v3.4.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.4.1 Changes:**
+- Fixed: OSX file name for DyLib
 
 **Version 3.4 Changes:**
 - Added: setDLCContext, getProfileItemPropertyString, getProfileItemPropertyInt, hasEquippedProfileItem, getPublicIP, getPSNID, getStadiaID, getXboxPairwiseID functions
