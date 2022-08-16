@@ -6,6 +6,10 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 8/16/22**
+- Added: new games to game list
+- Changed: included favicon to all pages
+
 **Update 8/14/22**
 - Changed: small bits of out-of-date text
 - Changed: updated Networking Utils functions
