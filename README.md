@@ -1,9 +1,10 @@
 # GodotSteam for Godot Engine
-An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms. 
+Steam API for the Godot game engine (version 4.x). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [Server](https://github.com/Gramps/GodotSteam/tree/server)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
 Documentation
@@ -16,20 +17,28 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v4.0)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.1 Changes**
+- Changed: brought branch up to speed with GodotSteam 3.17.1
+- Fixed: various small issues to get it running with Godot alpha 15
 
 **Version 4.0 Changes**
 - Added: Initial build, highly experimental!
 
 Known Issues
 ----------
-- Since Godot 4 is still in pre-alpha, this should not be used for production!
+- Since Godot 4 is still in alpha, this should not be used for production!
 - **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.
 
 Quick How-To
 ----------
+- Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
+
+**Alternatively, to compile it yourself:**
+
 - Download this repository and unpack it.
-- Download and unpack the [Steamworks SDK 1.52](https://partner.steamgames.com); this requires a Steam developer account.
+- Download and unpack the [Steamworks SDK 1.55](https://partner.steamgames.com); this requires a Steam developer account.
 - Download and unpack the [Godot source 4.x](https://github.com/godotengine/godot).
 - Move the following to godotsteam/sdk/ folder:
 ````

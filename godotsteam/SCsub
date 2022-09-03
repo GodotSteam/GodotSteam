@@ -10,7 +10,7 @@ env.Append(CPPPATH=["%s/sdk/public/" % module_path])
 if env["platform"]== "x11" or env["platform"] == "server":
 	env.Append(LIBS=["steam_api"])
 	env.Append(RPATH=["."])
-	if env["bits"]=="32":
+	if env['arch'] == "x86_x":
 		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux32" % module_path])
 	else: # 64 bit
 		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux64" % module_path])
@@ -19,7 +19,7 @@ if env["platform"]== "x11" or env["platform"] == "server":
 elif env["platform"] == "windows":
 	# Mostly VisualStudio
 	if env["CC"] == "cl":
-		if env["bits"]=="32":
+		if env['arch'] == "x86_x":
 			env.Append(LINKFLAGS=["steam_api.lib"])
 			env.Append(LIBPATH=["%s/sdk/redistributable_bin" % module_path])
 		else: # 64 bit
@@ -28,7 +28,7 @@ elif env["platform"] == "windows":
 	
 	# Mostly "GCC"
 	else:
-		if env["bits"]=="32":
+		if env['arch'] == "x86_x":
 			env.Append(LIBS=["steam_api"])
 			env.Append(LIBPATH=["%s/sdk/redistributable_bin" % module_path])
 		else: # 64 bit
