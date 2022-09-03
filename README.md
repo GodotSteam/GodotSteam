@@ -19,6 +19,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v4.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 4.1.1 Changes**
+- Fixed: wrong arch in SCsub file
+
 **Version 4.1 Changes**
 - Changed: brought branch up to speed with GodotSteam 3.17.1
 - Fixed: various small issues to get it running with Godot alpha 15
