@@ -17,10 +17,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v4.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.1.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
 **Version 4.1.1 Changes**
 - Fixed: wrong arch in SCsub file
+- Fixed: registering class in register_types.cpp
 
 **Version 4.1 Changes**
 - Changed: brought branch up to speed with GodotSteam 3.17.1
