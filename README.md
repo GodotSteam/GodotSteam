@@ -4,6 +4,7 @@ An open-source and fully functional Steamworks SDK / API module and plug-in for 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
+- [Server](https://github.com/Gramps/GodotSteam/tree/server)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
 Documentation
@@ -17,6 +18,13 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.17.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.17.3 Changes**
+- Fixed: getVoice and getAvailableVoice functions
+- REmoved: all server functionality, put back into server branch
+
+**Version 3.17.2 Changes**
+- Changed: ping to data_age in getLocalPingLocation to accurately label the returned data
 
 **Version 3.17.1 Changes**
 - Fixed: missing comma in getVideoURL argument function

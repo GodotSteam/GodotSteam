@@ -21,7 +21,6 @@
 
 // Include Steamworks API headers
 #include "steam/steam_api.h"
-#include "steam/steam_gameserver.h"
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
 
@@ -498,9 +497,6 @@ class Steam: public Object {
 		bool restartAppIfNecessary(uint32 app_id);
 		Dictionary steamInit(bool retrieve_stats = true);
 		bool isSteamRunning();
-		bool serverInit(const String& ip, uint16 game_port, uint16 query_port, int server_mode, const String& version_string);
-		void serverReleaseCurrentThreadMemory();
-		void serverShutdown();
 		void steamworksError(const String& failed_signal);
 
 		// Apps /////////////////////////////////
@@ -639,55 +635,6 @@ class Steam: public Object {
 		int cancelRequestPlayersForGame();
 		int submitPlayerResult(uint64_t game_id, uint64_t player_id, int player_result);
 		int endGame(uint64_t game_id);
-
-		// Game Server //////////////////////////
-		void associateWithClan(uint64_t clan_id);
-		uint32 beginServerAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
-		bool serverLoggedOn();
-		bool secure();
-		void cancelServerAuthTicket(uint32_t auth_ticket);
-		void clearAllKeyValues();
-		void computeNewPlayerCompatibility(uint64_t steam_id);
-		void setAdvertiseServerActive(bool active);
-		void endServerAuthSession(uint64_t steam_id);
-		Dictionary getServerAuthSessionTicket();
-		Dictionary getNextOutgoingPacket();
-		Dictionary getPublicIP();
-		uint64_t getServerSteamID();
-		Dictionary handleIncomingPacket(int packet, const String& ip, uint16 port);
-		void logOff();
-		void logOn(const String& token);
-		void logOnAnonymous();
-		bool requestUserGroupStatus(uint64_t steam_id, int group_id);
-		void setBotPlayerCount(int bots);
-		void setDedicatedServer(bool dedicated);
-		void setGameData(const String& data);
-		void setGameDescription(const String& description);
-		void setGameTags(const String& tags);
-		void setKeyValue(const String& key, const String& value);
-		void setMapName(const String& map);
-		void setMaxPlayerCount(int players_max);
-		void setModDir(const String& mod_directory);
-		void setPasswordProtected(bool password_protected);
-		void setProduct(const String& product);
-		void setRegion(const String& region);
-		void setServerName(const String& name);
-		void setSpectatorPort(uint16 port);
-		void setSpectatorServerName(const String& name);
-		int userHasLicenceForApp(uint64_t steam_id, uint32 app_id);
-		bool wasRestartRequested();
-
-		// Game Server Stats ////////////////////
-		bool clearUserAchievement(uint64_t steam_id, const String& name);
-		Dictionary serverGetUserAchievement(uint64_t steam_id, const String& name);
-		uint32_t serverGetUserStatInt(uint64_t steam_id, const String& name);
-		float serverGetUserStatFloat(uint64_t steam_id, const String& name);
-		void serverRequestUserStats(uint64_t steam_id);
-		bool setUserAchievement(uint64_t steam_id, const String& name);
-		bool setUserStatInt(uint64_t steam_id, const String& name, int32 stat);
-		bool setUserStatFloat(uint64_t steam_id, const String& name, float stat);
-		void storeUserStats(uint64_t steam_id);
-		bool updateUserAvgRateStat(uint64_t steam_id, const String& name, float this_session, double session_length);
 
 		// HTML Surface /////////////////////////
 		void addHeader(const String& key, const String& value, uint32 this_handle = 0);
@@ -1229,13 +1176,13 @@ class Steam: public Object {
 		Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
 		void endAuthSession(uint64_t steam_id);
 		Dictionary getAuthSessionTicket();
-		int getAvailableVoice();
+		Dictionary getAvailableVoice();
 		void getDurationControl();
 		Dictionary getEncryptedAppTicket();
 		int getGameBadgeLevel(int series, bool foil);
 		int getPlayerSteamLevel();
 		uint64_t getSteamID();
-		uint32 getVoice();
+		Dictionary getVoice();
 		uint32 getVoiceOptimalSampleRate();
 		Dictionary initiateGameConnection(uint64_t server_id, uint32 server_ip, uint16 server_port, bool secure);
 		bool isBehindNAT();
@@ -1458,22 +1405,6 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, submit_player_result, SubmitPlayerResultResultCallback_t, callbackSubmitPlayerResult);
 		STEAM_CALLBACK(Steam, end_game_result, EndGameResultCallback_t, callbackEndGameResult);
 
-		// Game Server callbacks ////////////////
-		STEAM_CALLBACK(Steam, server_connect_failure, SteamServerConnectFailure_t, callbackServerConnectFailure);
-		STEAM_CALLBACK(Steam, server_connected, SteamServersConnected_t, callbackServerConnected);
-		STEAM_CALLBACK(Steam, server_disconnected, SteamServersDisconnected_t, callbackServerDisconnected);
-		STEAM_CALLBACK(Steam, client_approved, GSClientApprove_t, callbackClientApproved);
-		STEAM_CALLBACK(Steam, client_denied, GSClientDeny_t, callbackClientDenied);
-		STEAM_CALLBACK(Steam, client_kick, GSClientKick_t, callbackClientKicked);
-		STEAM_CALLBACK(Steam, policy_response, GSPolicyResponse_t, callbackPolicyResponse);
-		STEAM_CALLBACK(Steam, client_group_status, GSClientGroupStatus_t, callbackClientGroupStatus);
-		STEAM_CALLBACK(Steam, associate_clan, AssociateWithClanResult_t, callbackAssociateClan);
-		STEAM_CALLBACK(Steam, player_compat, ComputeNewPlayerCompatibilityResult_t, callbackPlayerCompat);
-
-		// Game Server Stat callbacks ///////////
-		STEAM_CALLBACK(Steam, stats_stored, GSStatsStored_t, callbackStatsStored);
-		STEAM_CALLBACK(Steam, stats_unloaded, GSStatsUnloaded_t, callbackStatsUnloaded);
-
 		// HTML Surface callbacks ///////////////
 		STEAM_CALLBACK(Steam, html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
 		STEAM_CALLBACK(Steam, html_can_go_backandforward, HTML_CanGoBackAndForward_t, callbackHTMLCanGoBackandforward);
@@ -1624,10 +1555,6 @@ class Steam: public Object {
 		void get_follower_count(FriendsGetFollowerCount_t *call_data, bool io_failure);
 		CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 		void is_following(FriendsIsFollowing_t *call_data, bool io_failure);
-
-		// Game Server Stats call results ///////
-		CCallResult<Steam, GSStatsReceived_t> callResultStatReceived;
-		void stats_received(GSStatsReceived_t *call_data, bool io_failure);
 
 		// Inventory call results ///////////////
 		CCallResult<Steam, SteamInventoryEligiblePromoItemDefIDs_t> callResultEligiblePromoItemDefIDs;
