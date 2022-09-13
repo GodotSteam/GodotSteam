@@ -7,8 +7,6 @@ Additional flavors include:
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 
-**Notice:** GodotSteam Server is now retired; it has been merged into the master branch. This branch still works fine but will not receive any further updates.
-
 Documentation
 ----------
 [Documentation is available here](https://gramps.github.io/GodotSteam/) and [is mirrored on and exported from CoaguCo's site](https://coaguco.com/godotsteam).
@@ -19,46 +17,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v1.2.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v2.0)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 1.2.4 Changes**
-- Fixed: lots of compiler warnings on Linux, _thanks to gregcsokas_
-
-**Version 1.2.3 Changes**
-- Added: missing functions to Apps class
-- Added: new functions and callbacks to UGC class
-- Changed: EnableHeartbeats was renamed to SetAdvertiseServerActive in SDK
-- Changed: various internal variable names
-- Fixed: some memory allocation issues
-- Removed: setHeartbeatInterval and forceHeartbeat; was removed from SDK
-
-
-**Version 1.2.2 Changes**
-- Added: Added: ability to provide different locations for custom modules, thanks to dsnopek
-
-**Version 1.2.1 Changes**
-- Fixed: getNumSubscribedItems was mislabeled as getSubscribedItems
-
-**Version 1.2 Changes**
-- Added: various notations and spacing
-- Added: addRequiredTagGroup, getQueryUGCTag, getQueryUGCTagDisplayName, and getQueryUGCNumTags functions from UGC
-- Changed: setCookie to setHTTPCookie
-- Fixed: various delete statements
-- Fixed: converting user ID in createQueryUserUGCRequest
-- Fixed: metadata length in setItemMetadata
-- Fixed: library paths in config.py
-- Removed: compiling flag in config.py for OSX
-- Removed: ticket struct as it causes craches
-
-**Version 1.1.1 Changes**
-- Changed: includes Godot header file to allow more than 5 arguments in a function
-- Fixed: filterText for Steamworks SDK 1.50
-
-**Version 1.1.0 Changes**
-- Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes
-- Added: related callbacks, call results, constants, and enums
-- Added: headless server platform for linux
-- Fixed: OSX compiling config rules
+**Version 2.0 Changes**
+- Changed: separated server back into it's own module / branch
+- Changed: brought server branch in line with related master branch functions
 
 Known Issues
 ----------
@@ -66,10 +29,15 @@ Known Issues
 
 Quick How-To
 ----------
+- Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
+
+**Alternatively, to compile it yourself:**
+
 - Download this repository and unpack it.
-- Download and unpack the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
+- Download and unpack the [Steamworks SDK 1.55](https://partner.steamgames.com); this requires a Steam developer account.
+  - Please see "Known Issues" above about versions.
 - Download and unpack the [Godot source 3.x](https://github.com/godotengine/godot).
-- Move the following to godotsteam_server/sdk/:
+- Move the following to godotsteam/sdk/ folder:
 ````
     sdk/public/
     sdk/redistributable_bin/

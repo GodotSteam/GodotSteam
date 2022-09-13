@@ -41,3 +41,4 @@ elif env["platform"] == "osx":
 	env.Append(LIBPATH=['%s/sdk/redistributable_bin/osx' % module_path])
 
 env.add_source_files(env.modules_sources,"*.cpp")
+
