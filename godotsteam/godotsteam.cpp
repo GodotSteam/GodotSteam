@@ -10661,10 +10661,8 @@ void Steam::leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_da
 	else{
 		// Set up a message to fill in
 		String message;
-		// Incorrect leaderboard
-		if(call_data->m_hSteamLeaderboard != leaderboard_handle){
-			message = "Leaderboard handle was incorrect";
-		}
+		// Get this download's handle
+		uint64_t this_handle = call_data->m_hSteamLeaderboard;
 		// Clear previous leaderboard entries
 		leaderboard_entries_array.clear();
 		// Create the entry pointer and details array
@@ -10704,7 +10702,7 @@ void Steam::leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_da
 		}
 		memdelete(entry);
 		// Emit the signal, with array, back
-		emit_signal("leaderboard_scores_downloaded", message, leaderboard_entries_array);
+		emit_signal("leaderboard_scores_downloaded", message, this_handle, leaderboard_entries_array);
 	}
 }
 
@@ -10714,16 +10712,13 @@ void Steam::leaderboard_score_uploaded(LeaderboardScoreUploaded_t *call_data, bo
 		steamworksError("leaderboard_scores_uploaded");
 	}
 	else{
-		// Incorrect leaderboard
-		if(call_data->m_hSteamLeaderboard != leaderboard_handle){
-			return;
-		}
+		uint64_t this_handle = call_data->m_hSteamLeaderboard;
 		uint8 success = call_data->m_bSuccess;
 		int32 score = call_data->m_nScore;
 		uint8 score_changed = call_data->m_bScoreChanged;
 		int global_rank_new = call_data->m_nGlobalRankNew;
 		int global_rank_prev = call_data->m_nGlobalRankPrevious;
-		emit_signal("leaderboard_score_uploaded", success, score, score_changed, global_rank_new, global_rank_prev);
+		emit_signal("leaderboard_score_uploaded", success, this_handle, score, score_changed, global_rank_new, global_rank_prev);
 	}
 }
 

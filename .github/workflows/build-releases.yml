@@ -1,592 +1,592 @@
 name: Build Releases
 
 on:
-  push:
-    tags:
-      - '*'
+	push:
+		tags:
+			- '*'
 
 env:
-  STEAMWORKS_SDK_TAG: "sdk-1.55"
-  GODOT_TAG: "3.5-stable"
-  VERSION_TAG: "35"
-  ZIP_TAG: "g35-s155-gs317"
+	STEAMWORKS_SDK_TAG: "sdk-1.55"
+	GODOT_TAG: "3.5-stable"
+	VERSION_TAG: "35"
+	ZIP_TAG: "g35-s155-gs3173"
 
 jobs:
-  env-setup:
-    name: "Setup env variables"
-    runs-on: ubuntu-latest
-    outputs:
-      steamworks_sdk_tag: ${{ steps.set-steamworks-sdk-tag.outputs.steamworks_sdk_tag }}
-      godot_tag: ${{ steps.set-godot-tag.outputs.godot_tag }}
-      version_tag: ${{ steps.set-version-tag.outputs.version_tag }}
-    steps:
-      - id: set-steamworks-sdk-tag
-        run: |    
-          echo "::set-output name=steamworks_sdk_tag::${{ env.STEAMWORKS_SDK_TAG }}"
-      - id: set-godot-tag
-        run: |    
-          echo "::set-output name=godot_tag::${{ env.GODOT_TAG }}"
-      - id: set-version-tag
-        run: |    
-          echo "::set-output name=version_tag::${{ env.VERSION_TAG }}"
+	env-setup:
+		name: "Setup env variables"
+		runs-on: ubuntu-latest
+		outputs:
+			steamworks_sdk_tag: ${{ steps.set-steamworks-sdk-tag.outputs.steamworks_sdk_tag }}
+			godot_tag: ${{ steps.set-godot-tag.outputs.godot_tag }}
+			version_tag: ${{ steps.set-version-tag.outputs.version_tag }}
+		steps:
+			- id: set-steamworks-sdk-tag
+				run: |    
+					echo "::set-output name=steamworks_sdk_tag::${{ env.STEAMWORKS_SDK_TAG }}"
+			- id: set-godot-tag
+				run: |    
+					echo "::set-output name=godot_tag::${{ env.GODOT_TAG }}"
+			- id: set-version-tag
+				run: |    
+					echo "::set-output name=version_tag::${{ env.VERSION_TAG }}"
 
 ################# Linux 64 Builds #################
 
-  build-linux-editor:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.x11.opt.tools.64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor.64"
-      build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64"
-      artifact_name: "linux-editor"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-editor:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.x11.opt.tools.64"
+			export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor.64"
+			build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64"
+			artifact_name: "linux-editor"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-linux-release-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.x11.opt.64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-template.64"
-      build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
-      artifact_name: "linux-release-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-release-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.x11.opt.64"
+			export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-template.64"
+			build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
+			artifact_name: "linux-release-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-linux-debug-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.x11.opt.debug.64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-template.64"
-      build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
-      artifact_name: "linux-debug-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-debug-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.x11.opt.debug.64"
+			export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-template.64"
+			build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
+			artifact_name: "linux-debug-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-linux-headless:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot_server.x11.opt.tools.64
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor-headless.64"
-      build_params: "-j4 platform=server production=yes tools=yes target=release_debug bits=64"
-      artifact_name: "linux-headless"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-headless:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot_server.x11.opt.tools.64
+			export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor-headless.64"
+			build_params: "-j4 platform=server production=yes tools=yes target=release_debug bits=64"
+			artifact_name: "linux-headless"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-linux-bundle:
-    needs: [build-linux-editor, build-linux-release-template, build-linux-debug-template]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Linux Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-editor
-          path: files
-      - name: Download Linux Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-release-template
-          path: files
-      - name: Download Linux Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-debug-template
-          path: files
-      - name: Download Linux Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-libsteam-api-so
-          path: files
-      - name: Create Linux Bundle
-        run: |
-          echo "480" >> files/steam_appid.txt
-          zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: linux64-${{ env.ZIP_TAG }}.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+	create-linux-bundle:
+		needs: [build-linux-editor, build-linux-release-template, build-linux-debug-template]
+		runs-on: ubuntu-latest
+		steps:
+			- name: Download Linux Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-editor
+					path: files
+			- name: Download Linux Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-release-template
+					path: files
+			- name: Download Linux Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-debug-template
+					path: files
+			- name: Download Linux Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-libsteam-api-so
+					path: files
+			- name: Create Linux Bundle
+				run: |
+					echo "480" >> files/steam_appid.txt
+					zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
+			- name: Upload bundle to release
+				uses: svenstaro/upload-release-action@v2
+				with:
+					file: linux64-${{ env.ZIP_TAG }}.zip
+					repo_token: ${{ secrets.GITHUB_TOKEN }}
+					tag: ${{ github.ref }}
 
-  create-headless-bundle:
-    needs: [build-linux-headless]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Linux Headless
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-headless
-          path: files
-      - name: Download Linux Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-libsteam-api-so
-          path: files
-      - name: Create Linux Headless Bundle
-        run: |
-          echo "480" >> files/steam_appid.txt
-          zip -j linux64-${{ env.ZIP_TAG }}-headless.zip files/*
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: linux64-${{ env.ZIP_TAG }}-headless.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+	create-headless-bundle:
+		needs: [build-linux-headless]
+		runs-on: ubuntu-latest
+		steps:
+			- name: Download Linux Headless
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-headless
+					path: files
+			- name: Download Linux Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-libsteam-api-so
+					path: files
+			- name: Create Linux Headless Bundle
+				run: |
+					echo "480" >> files/steam_appid.txt
+					zip -j linux64-${{ env.ZIP_TAG }}-headless.zip files/*
+			- name: Upload bundle to release
+				uses: svenstaro/upload-release-action@v2
+				with:
+					file: linux64-${{ env.ZIP_TAG }}-headless.zip
+					repo_token: ${{ secrets.GITHUB_TOKEN }}
+					tag: ${{ github.ref }}
 
 ################# Win64 Builds #################
-  
-  build-win64-editor:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.tools.64.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-editor-64bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no"
-      artifact_name: "win64-editor"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	
+	build-win64-editor:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot.windows.opt.tools.64.exe
+			export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-editor-64bit.exe"
+			build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no"
+			artifact_name: "win64-editor"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-win64-release-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.64.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-template-64bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no"
-      artifact_name: "win64-release-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-win64-release-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot.windows.opt.64.exe
+			export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-template-64bit.exe"
+			build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no"
+			artifact_name: "win64-release-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-win64-debug-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.debug.64.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-debug-template-64bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no"
-      artifact_name: "win64-debug-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-win64-debug-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot.windows.opt.debug.64.exe
+			export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-debug-template-64bit.exe"
+			build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no"
+			artifact_name: "win64-debug-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-win64-bundle:
-    needs: [build-win64-editor, build-win64-release-template, build-win64-debug-template]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Windows Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-editor
-          path: files
-      - name: Download Windows Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-release-template
-          path: files
-      - name: Download Windows Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-debug-template
-          path: files
-      - name: Download Windows 64 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_64
-          path: files
-      - name: Create Windows Bundle
-        run: |
-          echo "480" >> files/steam_appid.txt
-          zip -j win64-${{ env.ZIP_TAG }}.zip files/*
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: win64-${{ env.ZIP_TAG }}.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          
+	create-win64-bundle:
+		needs: [build-win64-editor, build-win64-release-template, build-win64-debug-template]
+		runs-on: ubuntu-latest
+		steps:
+			- name: Download Windows Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-editor
+					path: files
+			- name: Download Windows Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-release-template
+					path: files
+			- name: Download Windows Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-debug-template
+					path: files
+			- name: Download Windows 64 Bit Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: win_steam_api_64
+					path: files
+			- name: Create Windows Bundle
+				run: |
+					echo "480" >> files/steam_appid.txt
+					zip -j win64-${{ env.ZIP_TAG }}.zip files/*
+			- name: Upload bundle to release
+				uses: svenstaro/upload-release-action@v2
+				with:
+					file: win64-${{ env.ZIP_TAG }}.zip
+					repo_token: ${{ secrets.GITHUB_TOKEN }}
+					tag: ${{ github.ref }}
+					
 ################# Win32 Builds #################
-  
-  build-win32-editor:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.tools.32.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-editor-32bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no bits=32"
-      artifact_name: "win32-editor"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	
+	build-win32-editor:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot.windows.opt.tools.32.exe
+			export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-editor-32bit.exe"
+			build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no bits=32"
+			artifact_name: "win32-editor"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-win32-release-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.32.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-template-32bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no bits=32"
-      artifact_name: "win32-release-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-win32-release-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot.windows.opt.32.exe
+			export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-template-32bit.exe"
+			build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no bits=32"
+			artifact_name: "win32-release-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-win32-debug-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.debug.32.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-debug-template-32bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no bits=32"
-      artifact_name: "win32-debug-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-win32-debug-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: godot.windows.opt.debug.32.exe
+			export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-debug-template-32bit.exe"
+			build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no bits=32"
+			artifact_name: "win32-debug-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-win32-bundle:
-    needs: [build-win32-editor, build-win32-release-template, build-win32-debug-template]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Windows Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-editor
-          path: files
-      - name: Download Windows Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-release-template
-          path: files
-      - name: Download Windows Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-debug-template
-          path: files
-      - name: Download Windows 32 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_32
-          path: files
-      - name: Create Windows Bundle
-        run: |
-          echo "480" >> files/steam_appid.txt
-          zip -j win32-${{ env.ZIP_TAG }}.zip files/*
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: win32-${{ env.ZIP_TAG }}.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+	create-win32-bundle:
+		needs: [build-win32-editor, build-win32-release-template, build-win32-debug-template]
+		runs-on: ubuntu-latest
+		steps:
+			- name: Download Windows Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: win32-editor
+					path: files
+			- name: Download Windows Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win32-release-template
+					path: files
+			- name: Download Windows Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win32-debug-template
+					path: files
+			- name: Download Windows 32 Bit Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: win_steam_api_32
+					path: files
+			- name: Create Windows Bundle
+				run: |
+					echo "480" >> files/steam_appid.txt
+					zip -j win32-${{ env.ZIP_TAG }}.zip files/*
+			- name: Upload bundle to release
+				uses: svenstaro/upload-release-action@v2
+				with:
+					file: win32-${{ env.ZIP_TAG }}.zip
+					repo_token: ${{ secrets.GITHUB_TOKEN }}
+					tag: ${{ github.ref }}
 
 ################# MacOS Universal Builds #################
 
-  build-macos-editor-x86_64:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.osx.tools.x86_64"
-      export_name: "godot.osx.tools.x86_64"
-      build_params: "-j4 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "macos-editor-x86_64"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-editor-x86_64:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.osx.tools.x86_64"
+			export_name: "godot.osx.tools.x86_64"
+			build_params: "-j4 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
+			artifact_name: "macos-editor-x86_64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-macos-release-template-x86_64:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.osx.opt.x86_64"
-      export_name: "godot.osx.opt.x86_64"
-      build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "macos-release-template-x86_64"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-release-template-x86_64:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.osx.opt.x86_64"
+			export_name: "godot.osx.opt.x86_64"
+			build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
+			artifact_name: "macos-release-template-x86_64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-macos-debug-template-x86_64:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.osx.opt.debug.x86_64"
-      export_name: "godot.osx.opt.debug.x86_64"
-      build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "macos-debug-template-x86_64"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
-      
-  build-macos-editor-arm64:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.osx.tools.arm64"
-      export_name: "godot.osx.tools.arm64"
-      build_params: "-j4 p=osx arch=arm64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "macos-editor-arm64"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-debug-template-x86_64:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.osx.opt.debug.x86_64"
+			export_name: "godot.osx.opt.debug.x86_64"
+			build_params: "-j4 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
+			artifact_name: "macos-debug-template-x86_64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+			
+	build-macos-editor-arm64:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.osx.tools.arm64"
+			export_name: "godot.osx.tools.arm64"
+			build_params: "-j4 p=osx arch=arm64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
+			artifact_name: "macos-editor-arm64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-macos-release-template-arm64:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.osx.opt.arm64"
-      export_name: "godot.osx.opt.arm64"
-      build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "macos-release-template-arm64"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-release-template-arm64:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.osx.opt.arm64"
+			export_name: "godot.osx.opt.arm64"
+			build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
+			artifact_name: "macos-release-template-arm64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-macos-debug-template-arm64:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.osx.opt.debug.arm64"
-      export_name: "godot.osx.opt.debug.arm64"
-      build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
-      artifact_name: "macos-debug-template-arm64"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-debug-template-arm64:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+			godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+			version_tag: ${{needs.env-setup.outputs.version_tag}}
+			binary_name: "godot.osx.opt.debug.arm64"
+			export_name: "godot.osx.opt.debug.arm64"
+			build_params: "-j4 p=osx arch=arm64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
+			artifact_name: "macos-debug-template-arm64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-macos-bundle:
-    needs: [build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
-    runs-on: macos-latest
-    steps:
-      - name: Download MacOS x86_64 Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-editor-x86_64
-          path: files
-      - name: Download MacOS ARM Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-editor-arm64
-          path: files
-      - name: Download MacOS x86_64 Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-release-template-x86_64
-          path: files
-      - name: Download MacOS x86_64 Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-debug-template-x86_64
-          path: files
-      - name: Download MacOS ARM Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-release-template-arm64
-          path: files
-      - name: Download MacOS ARM Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-debug-template-arm64
-          path: files
-      - name: Download MacOS Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-libsteam-api-dylib
-          path: files
-      - name: Download MacOS Tool App
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-tool-app
-          path: files
-      - name: Download MacOS Template App
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-template-app
-          path: files
-      - name: Create MacOS Bundle
-        run: |
-          lipo -create files/godot.osx.tools.x86_64 files/godot.osx.tools.arm64 -output files/godot.osx.tools.universal
-          lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
-          lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
-          unzip files/osx_tools.zip -d files
-          unzip files/osx_template.zip -d files
-          mv files/osx_tools.app files/GodotEditor.app
-          mkdir files/GodotEditor.app/Contents/MacOS
-          mv files/godot.osx.tools.universal files/GodotEditor.app/Contents/MacOS/godot
-          cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
-          chmod +x files/GodotEditor.app/Contents/MacOS/godot
-          echo "480" | sudo tee files/steam_appid.txt
-          mv files/steam_appid.txt files/GodotEditor.app/Contents/MacOS/steam_appid.txt
-          mkdir files/osx_template.app/Contents/MacOS
-          mv files/godot.osx.opt.universal files/osx_template.app/Contents/MacOS/godot_osx_release.64
-          mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
-          cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
-          chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
-          pushd files
-          zip -r ./macos.zip ./osx_template.app
-          zip -r ../macos-${{ env.ZIP_TAG }}-universal.zip ./macos.zip ./GodotEditor.app
-          popd
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: macos-${{ env.ZIP_TAG }}-universal.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+	create-macos-bundle:
+		needs: [build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
+		runs-on: macos-latest
+		steps:
+			- name: Download MacOS x86_64 Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-editor-x86_64
+					path: files
+			- name: Download MacOS ARM Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-editor-arm64
+					path: files
+			- name: Download MacOS x86_64 Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-x86_64
+					path: files
+			- name: Download MacOS x86_64 Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-x86_64
+					path: files
+			- name: Download MacOS ARM Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-arm64
+					path: files
+			- name: Download MacOS ARM Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-arm64
+					path: files
+			- name: Download MacOS Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-libsteam-api-dylib
+					path: files
+			- name: Download MacOS Tool App
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-tool-app
+					path: files
+			- name: Download MacOS Template App
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-template-app
+					path: files
+			- name: Create MacOS Bundle
+				run: |
+					lipo -create files/godot.osx.tools.x86_64 files/godot.osx.tools.arm64 -output files/godot.osx.tools.universal
+					lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
+					lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
+					unzip files/osx_tools.zip -d files
+					unzip files/osx_template.zip -d files
+					mv files/osx_tools.app files/GodotEditor.app
+					mkdir files/GodotEditor.app/Contents/MacOS
+					mv files/godot.osx.tools.universal files/GodotEditor.app/Contents/MacOS/godot
+					cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
+					chmod +x files/GodotEditor.app/Contents/MacOS/godot
+					echo "480" | sudo tee files/steam_appid.txt
+					mv files/steam_appid.txt files/GodotEditor.app/Contents/MacOS/steam_appid.txt
+					mkdir files/osx_template.app/Contents/MacOS
+					mv files/godot.osx.opt.universal files/osx_template.app/Contents/MacOS/godot_osx_release.64
+					mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
+					cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
+					chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
+					pushd files
+					zip -r ./macos.zip ./osx_template.app
+					zip -r ../macos-${{ env.ZIP_TAG }}-universal.zip ./macos.zip ./GodotEditor.app
+					popd
+			- name: Upload bundle to release
+				uses: svenstaro/upload-release-action@v2
+				with:
+					file: macos-${{ env.ZIP_TAG }}-universal.zip
+					repo_token: ${{ secrets.GITHUB_TOKEN }}
+					tag: ${{ github.ref }}
 
 ################# Create Template Bundles #################
-  create-templates-bundle:
-    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-win32-release-template, build-win32-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
-    runs-on: macos-latest
-    steps:
-      - name: Download Windows 64 Bit Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-release-template
-          path: files
-      - name: Download Windows 64 Bit Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-debug-template
-          path: files
-      - name: Download Windows 64 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_64
-          path: files
-      - name: Download Windows 32 Bit Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-release-template
-          path: files
-      - name: Download Windows 32 Bit Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-debug-template
-          path: files
-      - name: Download Windows 32 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_32
-          path: files
-      - name: Download Linux Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-release-template
-          path: files
-      - name: Download Linux Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-debug-template
-          path: files
-      - name: Download Linux Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-libsteam-api-so
-          path: files
-      - name: Download MacOS x86_64 Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-release-template-x86_64
-          path: files
-      - name: Download MacOS x86_64 Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-debug-template-x86_64
-          path: files
-      - name: Download MacOS ARM Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-release-template-arm64
-          path: files
-      - name: Download MacOS ARM Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-debug-template-arm64
-          path: files
-      - name: Download MacOS Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-libsteam-api-dylib
-          path: files
-      - name: Download MacOS Template App
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-template-app
-          path: files
-      - name: Create Template Bundle
-        run: |
-          lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
-          lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
-          rm files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64
-          unzip files/osx_template.zip -d files
-          rm -r files/osx_template.zip
-          mkdir files/osx_template.app/Contents/MacOS
-          mv files/godot.osx.opt.universal files/osx_template.app/Contents/MacOS/godot_osx_release.64
-          mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
-          cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
-          chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
-          pushd files
-          zip -r ./macos.zip ./osx_template.app
-          popd
-          rm -r files/osx_template.app/
-          zip -j godotsteam-${{ env.VERSION_TAG }}-templates.zip files/*
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: godotsteam-${{ env.VERSION_TAG }}-templates.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+	create-templates-bundle:
+		needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-win32-release-template, build-win32-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
+		runs-on: macos-latest
+		steps:
+			- name: Download Windows 64 Bit Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-release-template
+					path: files
+			- name: Download Windows 64 Bit Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-debug-template
+					path: files
+			- name: Download Windows 64 Bit Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: win_steam_api_64
+					path: files
+			- name: Download Windows 32 Bit Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win32-release-template
+					path: files
+			- name: Download Windows 32 Bit Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win32-debug-template
+					path: files
+			- name: Download Windows 32 Bit Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: win_steam_api_32
+					path: files
+			- name: Download Linux Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-release-template
+					path: files
+			- name: Download Linux Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-debug-template
+					path: files
+			- name: Download Linux Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-libsteam-api-so
+					path: files
+			- name: Download MacOS x86_64 Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-x86_64
+					path: files
+			- name: Download MacOS x86_64 Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-x86_64
+					path: files
+			- name: Download MacOS ARM Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-arm64
+					path: files
+			- name: Download MacOS ARM Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-arm64
+					path: files
+			- name: Download MacOS Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-libsteam-api-dylib
+					path: files
+			- name: Download MacOS Template App
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-template-app
+					path: files
+			- name: Create Template Bundle
+				run: |
+					lipo -create files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 -output files/godot.osx.opt.universal
+					lipo -create files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64 -output files/godot.osx.opt.debug.universal
+					rm files/godot.osx.opt.x86_64 files/godot.osx.opt.arm64 files/godot.osx.opt.debug.x86_64 files/godot.osx.opt.debug.arm64
+					unzip files/osx_template.zip -d files
+					rm -r files/osx_template.zip
+					mkdir files/osx_template.app/Contents/MacOS
+					mv files/godot.osx.opt.universal files/osx_template.app/Contents/MacOS/godot_osx_release.64
+					mv files/godot.osx.opt.debug.universal files/osx_template.app/Contents/MacOS/godot_osx_release_debug.64
+					cp files/libsteam_api.dylib files/osx_template.app/Contents/MacOS
+					chmod +x files/osx_template.app/Contents/MacOS/godot_osx*
+					pushd files
+					zip -r ./macos.zip ./osx_template.app
+					popd
+					rm -r files/osx_template.app/
+					zip -j godotsteam-${{ env.VERSION_TAG }}-templates.zip files/*
+			- name: Upload bundle to release
+				uses: svenstaro/upload-release-action@v2
+				with:
+					file: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+					repo_token: ${{ secrets.GITHUB_TOKEN }}
+					tag: ${{ github.ref }}

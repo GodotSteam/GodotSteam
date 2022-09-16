@@ -19,9 +19,13 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.17.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.17.4 Changes**
+- Changed: leaderboard_scores_downloaded and leaderboard_score_updated now pass back their handles; this is incompatible with earlier versions
+- Fixed: issue where leaderboard_score_uploaded would not fire if passed leaderboard_handle was not internally stored
+
 **Version 3.17.3 Changes**
 - Fixed: getVoice and getAvailableVoice functions
-- REmoved: all server functionality, put back into server branch
+- Removed: all server functionality, put back into server branch
 
 **Version 3.17.2 Changes**
 - Changed: ping to data_age in getLocalPingLocation to accurately label the returned data
