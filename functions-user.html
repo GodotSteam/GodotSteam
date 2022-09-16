@@ -176,7 +176,18 @@
 		<li>Checks to see if there is captured audio data available from <strong>getVoice</strong>, and gets the size of the data.</li>
 		<li>Most applications will only use compressed data and should ignore the other parameters, which exist primarily for backwards compatibility. See <strong>getVoice</strong> for further explanation of "uncompressed" data.</li>
 		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
-		<li>Returns an <strong>int</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>buffer (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (int)</li>
+					<li>buffer (uint32)</li>
+				</span>
+			</ul>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetDurationControl" target="_blank">
@@ -275,7 +286,20 @@
 		<li>It is recommended that you pass in an 8 kilobytes or larger destination buffer for compressed audio. Static buffers are recommended for performance reasons. However, if you would like to allocate precisely the right amount of space for a buffer before each call you may use <strong>getAvailableVoice</strong> to find out how much data is available to be read.</li>
 		<li><strong>Note:</strong> "Uncompressed" audio is a deprecated feature and should not be used by most applications. It is raw single-channel 16-bit PCM wave data which may have been run through preprocessing filters and/or had silence removed, so the uncompressed audio could have a shorter duration than you expect. There may be no data at all during long periods of silence. Also, fetching uncompressed audio will cause <strong>getVoice</strong> to discard any leftover compressed audio, so you must fetch both types at once. Finally, <strong>getAvailableVoice</strong> is not precisely accurate when the uncompressed size is requested. So if you really need to use uncompressed audio, you should call <strong>getVoice</strong> frequently with two very large (20KiB+) output buffers instead of trying to allocate perfectly-sized buffers. But most applications should ignore all of these details and simply leave the "uncompressed" parameters as NULL/0.</li>
 		<li>See <a href="https://partner.steamgames.com/doc/features/voice" target="_blank">Steam Voice</a> for more information.</li>
-		<li>Returns an <strong>int</strong>.</li>
+		<li>Returns a <strong>dictionary</strong>:
+			<ul class="innter">
+				<span class="gdscript">
+					<li>result (int)</li>
+					<li>written (int)</li>
+					<li>buffer (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>result (int)</li>
+					<li>written (uint32)</li>
+					<li>buffer (uint8)</li>
+				</span>
+			</ul>
+		</li>
 	</ul>
 	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamUser#GetVoiceOptimalSampleRate" target="_blank">

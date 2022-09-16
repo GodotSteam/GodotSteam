@@ -118,29 +118,40 @@
 		<li>Called when scores for a leaderboard have been downloaded and are ready to be retrieved.</li>
 		<li>Sends back the following data:
 			<ul class="inner">
-				<li>message (string)</li>
-				<li>leaderboard_entries_array (array)
-					<ul class="inner">
-						<li>entryDict (dictionary)
-							<ul class="inner">
-								<span class="gdscript">
+				<span class="gdscript">
+					<li>message (string)</li>
+					<li>this_handle (int)</li>
+					<li>leaderboard_entries_array (array)
+						<ul class="inner">
+							<li>entryDict (dictionary)
+								<ul class="inner">
 									<li>score (int)</li>
 									<li>steam_id (int)</li>
 									<li>global_rank (int)</li>
 									<li>ugc_handle (int)</li>
 									<li>details (array)</li>
-								</span>
-								<span class="c-sharp">
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</span>
+				<span class="c-sharp">
+					<li>message (string)</li>
+					<li>this_handle (uint64_t)</li>
+					<li>leaderboard_entries_array (array)
+						<ul class="inner">
+							<li>entryDict (dictionary)
+								<ul class="inner">
 									<li>score (int)</li>
 									<li>steam_id (uint64_t)</li>
 									<li>global_rank (int)</li>
 									<li>ugc_handle (uint64_t)</li>
 									<li>details (array)</li>
-								</span>
-							</ul>
-						</li>
-					</ul>
-				</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</span>
 			</ul>
 		</li>
 	</ul>
@@ -156,6 +167,7 @@
 			<ul>
 				<span class="gdscript">
 					<li>success (int)</li>
+					<li>this_handle (int)</li>
 					<li>score (int)</li>
 					<li>score_changed (int)</li>
 					<li>global_rank_new (int)</li>
@@ -163,6 +175,7 @@
 				</span>
 				<span class="c-sharp">
 					<li>success (uint8)</li>
+					<li>this_handle (uint64_t)</li>
 					<li>score (int32)</li>
 					<li>score_changed (uint8)</li>
 					<li>global_rank_new (int)</li>

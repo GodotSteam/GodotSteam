@@ -8,6 +8,8 @@ What's New
 -------------
 **Update 9/16/22**
 - Added: new game to game list
+- Changed: function data for getVoice, getAvailableVoice functions
+- Changed: signal data for leaderboard_scores_uploaded and leaderboard_scores_downloaded
 
 **Update 9/5/22**
 - Added: new game to game list
