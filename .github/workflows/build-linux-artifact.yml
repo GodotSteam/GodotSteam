@@ -1,0 +1,94 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_tag:
+        required: true
+        type: string
+      version_tag:
+        required: true
+        type: string
+      binary_name:
+        required: true
+        type: string
+      build_params:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      export_name:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-20.04
+    
+    steps:
+      # Checkout Godot
+      - name: Checkout Godot
+        uses: actions/checkout@v3
+        with:
+          repository: "godotengine/godot"
+          path: "godot"
+          ref: ${{ inputs.godot_tag }}
+      # Checkout current source of GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+        with:
+          path: "godotsteam"
+      - name: Copy GodotSteam Module
+        run: |
+          cp -r godotsteam/godotsteam godot/modules
+      # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+      - name: Copy Steamworks
+        run: |
+          mkdir godot/modules/godotsteam/sdk/public
+          cp -r steamworks/public godot/modules/godotsteam/sdk
+          cp -r steamworks/redistributable_bin godot/modules/godotsteam/sdk
+          ls -la godot/modules/godotsteam/sdk
+      - name: Install Build Requirements
+        run: |
+          # Apparently Azure repositories are terribly unreliable, so copy out the list from Godot itself
+          sudo rm -f /etc/apt/sources.list.d/*
+          sudo cp -f godot/misc/ci/sources.list /etc/apt/sources.list
+          sudo apt-get update
+          # The actual dependencies
+          sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev \
+              libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev \
+              libdbus-1-dev libudev-dev libxi-dev libxrandr-dev yasm xvfb wget unzip \
+              llvm libspeechd-dev speech-dispatcher fontconfig libfontconfig-dev
+      - name: Build Linux Editor
+        working-directory: "godot"
+        run: |
+          scons ${{ inputs.build_params }}
+          mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
+          ls -la bin
+      - name: Upload Linux Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: godot/bin/${{ inputs.export_name }}
+          retention-days: 1
+      - name: Upload Linux Steam File
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-libsteam-api-so
+          path: godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so
+          retention-days: 1

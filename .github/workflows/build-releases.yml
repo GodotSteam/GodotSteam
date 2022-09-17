@@ -1,0 +1,153 @@
+name: Build Releases
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  STEAMWORKS_SDK_TAG: "sdk-1.55"
+  GODOT_TAG: "3.5-stable"
+  VERSION_TAG: "35"
+  ZIP_TAG: "g35-s155-gss2"
+
+jobs:
+  env-setup:
+    name: "Setup env variables"
+    runs-on: ubuntu-latest
+    outputs:
+      steamworks_sdk_tag: ${{ steps.set-steamworks-sdk-tag.outputs.steamworks_sdk_tag }}
+      godot_tag: ${{ steps.set-godot-tag.outputs.godot_tag }}
+      version_tag: ${{ steps.set-version-tag.outputs.version_tag }}
+    steps:
+      - id: set-steamworks-sdk-tag
+        run: |    
+          echo "::set-output name=steamworks_sdk_tag::${{ env.STEAMWORKS_SDK_TAG }}"
+      - id: set-godot-tag
+        run: |    
+          echo "::set-output name=godot_tag::${{ env.GODOT_TAG }}"
+      - id: set-version-tag
+        run: |    
+          echo "::set-output name=version_tag::${{ env.VERSION_TAG }}"
+
+################# Linux 64 Builds #################
+
+  build-linux-editor:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
+      binary_name: "godot.x11.opt.tools.64"
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor.64"
+      build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64"
+      artifact_name: "linux-editor"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-linux-release-template:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
+      binary_name: "godot.x11.opt.64"
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-template.64"
+      build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
+      artifact_name: "linux-release-template"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-linux-debug-template:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
+      binary_name: "godot.x11.opt.debug.64"
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-template.64"
+      build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
+      artifact_name: "linux-debug-template"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-linux-headless:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
+      binary_name: godot_server.x11.opt.tools.64
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor-headless.64"
+      build_params: "-j4 platform=server production=yes tools=yes target=release_debug bits=64"
+      artifact_name: "linux-headless"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  create-linux-bundle:
+    needs: [build-linux-editor, build-linux-release-template, build-linux-debug-template]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux Editor
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-editor
+          path: files
+      - name: Download Linux Release Template
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-release-template
+          path: files
+      - name: Download Linux Debug Template
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-debug-template
+          path: files
+      - name: Download Linux Steam API
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-libsteam-api-so
+          path: files
+      - name: Create Linux Bundle
+        run: |
+          echo "480" >> files/steam_appid.txt
+          zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
+      - name: Upload bundle to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: linux64-${{ env.ZIP_TAG }}.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+
+  create-headless-bundle:
+    needs: [build-linux-headless]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux Headless
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-headless
+          path: files
+      - name: Download Linux Steam API
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-libsteam-api-so
+          path: files
+      - name: Create Linux Headless Bundle
+        run: |
+          echo "480" >> files/steam_appid.txt
+          zip -j linux64-${{ env.ZIP_TAG }}-headless.zip files/*
+      - name: Upload bundle to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: linux64-${{ env.ZIP_TAG }}-headless.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
