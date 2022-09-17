@@ -92,6 +92,36 @@ jobs:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
+  build-linux-debug-server:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
+      binary_name: godot_server.x11.opt.tools.64
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-server.64"
+      build_params: "-j4 platform=server production=yes tools=no target=release_debug bits=64"
+      artifact_name: "linux-debug-server"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-linux-server:
+    needs: [env-setup]
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
+      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
+      version_tag: ${{needs.env-setup.outputs.version_tag}}
+      binary_name: godot_server.x11.opt.tools.64
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-server.64"
+      build_params: "-j4 platform=server production=yes tools=no target=release bits=64"
+      artifact_name: "linux-server"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
   create-linux-bundle:
     needs: [build-linux-editor, build-linux-release-template, build-linux-debug-template]
     runs-on: ubuntu-latest
@@ -135,6 +165,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: linux-headless
+          path: files
+      - name: Download Linux Debug Server
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-debug-server
+          path: files
+      - name: Download Linux Server
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-server
           path: files
       - name: Download Linux Steam API
         uses: actions/download-artifact@v3
