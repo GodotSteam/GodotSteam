@@ -64,6 +64,7 @@ jobs:
           cp -r steamworks/redistributable_bin godot/modules/godotsteam/sdk
           ls -la godot/modules/godotsteam/sdk
       - name: Install Build Requirements
+        run: |
           # Apparently Azure repositories are terribly unreliable, so copy out the list from Godot itself
           sudo rm -f /etc/apt/sources.list.d/*
           sudo cp -f godot/misc/ci/sources.list /etc/apt/sources.list
