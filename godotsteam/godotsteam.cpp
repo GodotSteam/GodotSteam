@@ -47,15 +47,6 @@
 #define STEAM_BUFFER_SIZE 255
 #define STEAM_LARGE_BUFFER_SIZE 8160
 
-// Define Steam Server API constants
-#define FLAG_ACTIVE 0x01
-#define FLAG_DEDICATED 0x04
-#define FLAG_LINUX 0x08
-#define FLAG_NONE 0x00
-#define FLAG_PASSWORDED 0x10
-#define FLAG_PRIVATE 0x20
-#define FLAG_SECURE 0x02
-
 // Define Friends constants
 #define CHAT_METADATA_MAX 8192
 #define ENUMERATED_FOLLOWERS_MAX 50
@@ -3242,7 +3233,7 @@ void Steam::startUpdateProperties(){
 }
 
 //! Submits the transaction request to modify dynamic properties on items for the current user. See StartUpdateProperties.
-int32 Steam::submitUpdateProperties(int32 this_inventory_update_handle){
+int32 Steam::submitUpdateProperties(uint64_t this_inventory_update_handle){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
 		// If no inventory update handle is passed, use internal one
@@ -3258,7 +3249,7 @@ int32 Steam::submitUpdateProperties(int32 this_inventory_update_handle){
 }
 
 //! Removes a dynamic property for the given item.
-bool Steam::removeProperty(uint64_t item_id, const String& name, int32 this_inventory_update_handle){
+bool Steam::removeProperty(uint64_t item_id, const String& name, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3270,7 +3261,7 @@ bool Steam::removeProperty(uint64_t item_id, const String& name, int32 this_inve
 }
 
 //! Sets a dynamic property for the given item. Supported value types are strings.
-bool Steam::setPropertyString(uint64_t item_id, const String& name, const String& value, int32 this_inventory_update_handle){
+bool Steam::setPropertyString(uint64_t item_id, const String& name, const String& value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3282,7 +3273,7 @@ bool Steam::setPropertyString(uint64_t item_id, const String& name, const String
 }
 
 //! Sets a dynamic property for the given item. Supported value types are boolean.
-bool Steam::setPropertyBool(uint64_t item_id, const String& name, bool value, int32 this_inventory_update_handle){
+bool Steam::setPropertyBool(uint64_t item_id, const String& name, bool value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3294,7 +3285,7 @@ bool Steam::setPropertyBool(uint64_t item_id, const String& name, bool value, in
 }
 
 //! Sets a dynamic property for the given item. Supported value types are 64 bit integers.
-bool Steam::setPropertyInt(uint64_t item_id, const String& name, uint64_t value, int32 this_inventory_update_handle){
+bool Steam::setPropertyInt(uint64_t item_id, const String& name, uint64_t value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3306,7 +3297,7 @@ bool Steam::setPropertyInt(uint64_t item_id, const String& name, uint64_t value,
 }
 
 //! Sets a dynamic property for the given item. Supported value types are 32 bit floats.
-bool Steam::setPropertyFloat(uint64_t item_id, const String& name, float value, int32 this_inventory_update_handle){
+bool Steam::setPropertyFloat(uint64_t item_id, const String& name, float value, uint64_t this_inventory_update_handle){
 	if(SteamInventory() == NULL){
 		return false;
 	}
@@ -3364,7 +3355,7 @@ int Steam::addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 fla
 	if(SteamMatchmaking() == NULL){
 		return 0;
 	}
-	return SteamMatchmaking()->AddFavoriteGame(current_app_id, ip, port, query_port, flags, last_played);
+	return SteamMatchmaking()->AddFavoriteGame((AppId_t)current_app_id, ip, port, query_port, flags, last_played);
 }
 
 //! Removes the game server from the local storage; returns true if one was removed.
@@ -3610,7 +3601,7 @@ Dictionary Steam::getLobbyGameServer(uint64_t steam_lobby_id){
 			game_server["ip"] = ip;
 			game_server["port"] = server_port;
 			// Convert the server ID
-			int server = server_id.ConvertToUint64();
+			uint64_t server = server_id.ConvertToUint64();
 			game_server["id"] = server;
 		}
 	}
@@ -5486,52 +5477,67 @@ Dictionary Steam::getLocalPingLocation(){
 	Dictionary ping_location;
 	if(SteamNetworkingUtils() != NULL){
 		SteamNetworkPingLocation_t location;
-		float ping = SteamNetworkingUtils()->GetLocalPingLocation(location);
-		char m_data[512];
-		for(size_t i = 0; i < sizeof(location.m_data) / sizeof(location.m_data[0]); i++){
-			m_data[i] = location.m_data[i];
-		}
+		float age = SteamNetworkingUtils()->GetLocalPingLocation(location);
 		// Populate the dictionary
-		ping_location["location"] = m_data;
-		ping_location["ping"] = ping;
+		PackedByteArray data;
+		data.resize(512);
+		uint8_t* output_data = data.ptrw();
+		for(int j = 0; j < 512; j++){
+			output_data[j] = location.m_data[j];
+		}
+		ping_location["age"] = age;
+		ping_location["location"] = data;
 	}
 	return ping_location;
 }
 
 //! Estimate the round-trip latency between two arbitrary locations, in milliseconds. This is a conservative estimate, based on routing through the relay network. For most basic relayed connections, this ping time will be pretty accurate, since it will be based on the route likely to be actually used.
-int Steam::estimatePingTimeBetweenTwoLocations(uint8 location1, uint8 location2){
+int Steam::estimatePingTimeBetweenTwoLocations(PackedByteArray location1, PackedByteArray location2){
 	if(SteamNetworkingUtils() == NULL){
 		return 0;
 	}
 	// Add these locations to ping structs
 	SteamNetworkPingLocation_t ping_location1;
 	SteamNetworkPingLocation_t ping_location2;
-	ping_location1.m_data[0] = {location1};
-	ping_location2.m_data[0] = {location2};
+	uint8_t* input_location_1 = (uint8*) location1.ptr();
+	for(int j = 0; j < 512; j++){
+		ping_location1.m_data[j] = input_location_1[j];
+	}
+	uint8_t* input_location_2 = (uint8*) location2.ptr();
+	for(int j = 0; j < 512; j++){
+		ping_location2.m_data[j] = (uint8) input_location_2[j];
+	}
 	return SteamNetworkingUtils()->EstimatePingTimeBetweenTwoLocations(ping_location1, ping_location2);
 }
 
 //! Same as EstimatePingTime, but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.
-int Steam::estimatePingTimeFromLocalHost(uint8 location){
+int Steam::estimatePingTimeFromLocalHost(PackedByteArray location){
 	if(SteamNetworkingUtils() == NULL){
 		return 0;
 	}
 	// Add this location to ping struct
 	SteamNetworkPingLocation_t ping_location;
-	ping_location.m_data[0] = {location};
+	uint8_t* input_location = (uint8*) location.ptr();
+	for(int j = 0; j < 512; j++){
+		ping_location.m_data[j] = input_location[j];
+	}
 	return SteamNetworkingUtils()->EstimatePingTimeFromLocalHost(ping_location);
 }
 
 //! Convert a ping location into a text format suitable for sending over the wire. The format is a compact and human readable. However, it is subject to change so please do not parse it yourself. Your buffer must be at least k_cchMaxSteamNetworkingPingLocationString bytes.
-String Steam::convertPingLocationToString(uint8 location){
+String Steam::convertPingLocationToString(PackedByteArray location){
 	String location_string = "";
 	if(SteamNetworkingUtils() != NULL){
-		char buffer;
+		char *buffer = new char[512];
 		// Add this location to ping struct
 		SteamNetworkPingLocation_t ping_location;
-		ping_location.m_data[0] = {location};
-		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, &buffer, k_cchMaxSteamNetworkingPingLocationString);
+		uint8_t* input_location = (uint8*) location.ptr();
+		for(int j = 0; j < 512; j++){
+			ping_location.m_data[j] = input_location[j];
+		}
+		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, buffer, k_cchMaxSteamNetworkingPingLocationString);
 		location_string += buffer;
+		delete[] buffer;
 	}
 	return location_string;
 }
@@ -5543,12 +5549,14 @@ Dictionary Steam::parsePingLocationString(const String& location_string){
 		SteamNetworkPingLocation_t result;
 		bool success = SteamNetworkingUtils()->ParsePingLocationString(location_string.utf8().get_data(), result);
 		// Populate the dictionary
-		parse_string["success"] = success;
-		char m_data[512];
-		for(size_t i = 0; i < sizeof(result.m_data) / sizeof(result.m_data[0]); i++){
-			m_data[i] = result.m_data[i];
+		PackedByteArray data;
+		data.resize(512);
+		uint8_t* output_data = data.ptrw();
+		for(int j = 0; j < 512; j++){
+			output_data[j] = result.m_data[j];
 		}
-		parse_string["ping_location"] = m_data;
+		parse_string["success"] = success;
+		parse_string["ping_location"] = data;
 	}
 	return parse_string;
 }
@@ -6672,7 +6680,7 @@ uint64_t Steam::createQueryUserUGCRequest(uint64_t steam_id, int list_type, int 
 	}
 	// Get tue universe ID from the Steam ID
 	CSteamID user_id = (uint64)steam_id;
-	AccountID_t account = user_id.ConvertToUint64();
+	AccountID_t account = (AccountID_t)user_id.ConvertToUint64();
 	EUserUGCList list;
 	if(list_type == 0){
 		list = k_EUserUGCList_Published;
@@ -7666,12 +7674,16 @@ Dictionary Steam::getAuthSessionTicket(){
 }
 
 //! Checks to see if there is captured audio data available from GetVoice, and gets the size of the data.
-int Steam::getAvailableVoice(){
-	if(SteamUser() == NULL){
-		return 0;
+Dictionary Steam::getAvailableVoice(){
+	Dictionary voice_data;
+	if(SteamUser() != NULL){
+		uint32 bytes_available = 0;
+		int result = SteamUser()->GetAvailableVoice(&bytes_available, NULL, 0);
+		// Add this data to the dictionary
+		voice_data["result"] = result;
+		voice_data["buffer"] = bytes_available;
 	}
-	uint32 bytesAvailable = 0;
-	return SteamUser()->GetAvailableVoice(&bytesAvailable, NULL, 0);
+	return voice_data;
 }
 
 //! Retrieves anti indulgence / duration control for current user / game combination.
@@ -7724,17 +7736,18 @@ uint64_t Steam::getSteamID(){
 }
 
 //! Read captured audio data from the microphone buffer.
-uint32 Steam::getVoice(){
-	if(SteamUser() == NULL){
-		return 0;
+Dictionary Steam::getVoice(){
+	Dictionary voice_data;
+	if(SteamUser() != NULL){
+		uint32 written = 0;
+		uint8 buffer[1024];
+		int result = SteamUser()->GetVoice(true, &buffer, 1024, &written, false, NULL, 0, NULL, 0);
+		// Add the data to the dictionary
+		voice_data["result"] = result;
+		voice_data["written"] = written;
+		voice_data["buffer"] = buffer;
 	}
-	uint32 written = 0;
-	uint8 buffer[1024];
-	int response = SteamUser()->GetVoice(true, &buffer, 1024, &written, false, NULL, 0, NULL, 0);
-	if(response == 1){
-		return written;
-	}
-	return 0;
+	return voice_data;
 }
 
 //! Gets the native sample rate of the Steam voice decoder.
@@ -10662,10 +10675,8 @@ void Steam::leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_da
 	else{
 		// Set up a message to fill in
 		String message;
-		// Incorrect leaderboard
-		if(call_data->m_hSteamLeaderboard != leaderboard_handle){
-			message = "Leaderboard handle was incorrect";
-		}
+		// Get this download's handle
+		uint64_t this_handle = call_data->m_hSteamLeaderboard;
 		// Clear previous leaderboard entries
 		leaderboard_entries_array.clear();
 		// Create the entry pointer and details array
@@ -10703,7 +10714,7 @@ void Steam::leaderboard_scores_downloaded(LeaderboardScoresDownloaded_t *call_da
 		}
 		memdelete(entry);
 		// Emit the signal, with array, back
-		emit_signal("leaderboard_scores_downloaded", message, leaderboard_entries_array);
+		emit_signal("leaderboard_scores_downloaded", message, this_handle, leaderboard_entries_array);
 	}
 }
 
@@ -10713,16 +10724,13 @@ void Steam::leaderboard_score_uploaded(LeaderboardScoreUploaded_t *call_data, bo
 		steamworksError("leaderboard_scores_uploaded");
 	}
 	else{
-		// Incorrect leaderboard
-		if(call_data->m_hSteamLeaderboard != leaderboard_handle){
-			return;
-		}
+		uint64_t this_handle = call_data->m_hSteamLeaderboard;
 		uint8 success = call_data->m_bSuccess;
 		int32 score = call_data->m_nScore;
 		uint8 score_changed = call_data->m_bScoreChanged;
 		int global_rank_new = call_data->m_nGlobalRankNew;
 		int global_rank_prev = call_data->m_nGlobalRankPrevious;
-		emit_signal("leaderboard_score_uploaded", success, score, score_changed, global_rank_new, global_rank_prev);
+		emit_signal("leaderboard_score_uploaded", success, this_handle, score, score_changed, global_rank_new, global_rank_prev);
 	}
 }
 
@@ -11601,7 +11609,7 @@ void Steam::_bind_methods(){
 	// VIDEO BIND METHODS ///////////////////////
 	ClassDB::bind_method(D_METHOD("getOPFSettings", "app_id"), &Steam::getOPFSettings);
 	ClassDB::bind_method(D_METHOD("getOPFStringForApp", "app_id"), &Steam::getOPFStringForApp);
-	ClassDB::bind_method(D_METHOD("getVideoURL" "app_id"), &Steam::getVideoURL);
+	ClassDB::bind_method(D_METHOD("getVideoURL", "app_id"), &Steam::getVideoURL);
 	ClassDB::bind_method("isBroadcasting", &Steam::isBroadcasting);
 
 	/////////////////////////////////////////////
@@ -11612,7 +11620,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("steamworks_error", PropertyInfo(Variant::STRING, "failed_signal"), PropertyInfo(Variant::STRING, "io failure")));
 
 	// APPS SIGNALS /////////////////////////////
-	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "fileSize"), PropertyInfo(Variant::INT, "fileHash"), PropertyInfo(Variant::INT, "flags")));
+	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "file_size"), PropertyInfo(Variant::INT, "file_hash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("new_launch_url_parameters"));
 	ADD_SIGNAL(MethodInfo("timed_trial_status", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::BOOL, "is_offline"), PropertyInfo(Variant::INT, "seconds_allowed"), PropertyInfo(Variant::INT, "seconds_played")));
@@ -11856,15 +11864,6 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
 	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
 	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
-
-	// STEAM SERVER API CONSTANTS ///////////////
-	BIND_CONSTANT(FLAG_ACTIVE);															// 0x01
-	BIND_CONSTANT(FLAG_DEDICATED);														// 0x04
-	BIND_CONSTANT(FLAG_LINUX);															// 0x08
-	BIND_CONSTANT(FLAG_NONE);															// 0x00
-	BIND_CONSTANT(FLAG_PASSWORDED);														// 0x10
-	BIND_CONSTANT(FLAG_PRIVATE);														// 0x20
-	BIND_CONSTANT(FLAG_SECURE);															// 0x02
 
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
