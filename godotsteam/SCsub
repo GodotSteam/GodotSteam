@@ -7,7 +7,7 @@ module_path = Dir('.').srcnode().abspath
 env.Append(CPPPATH=["%s/sdk/public/" % module_path])
 
 # If compiling Linux
-if env["platform"]== "x11" or env["platform"] == "server":
+if env["platform"]== "linuxbsd" or env["platform"] == "server":
 	env.Append(LIBS=["steam_api"])
 	env.Append(RPATH=["."])
 	if env['arch'] == "x86_32":
