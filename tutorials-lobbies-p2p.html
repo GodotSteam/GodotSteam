@@ -165,8 +165,8 @@ func _on_Lobby_Created(connect: int, lobby_id: int) -> void:
 		Steam.setLobbyJoinable(LOBBY_ID, true)
 
 		# Set some lobby data
-		Steam.setLobbyData(lobbyID, "name", "Gramps' Lobby")
-		Steam.setLobbyData(lobbyID, "mode", "GodotSteam test")
+		Steam.setLobbyData(lobby_id, "name", "Gramps' Lobby")
+		Steam.setLobbyData(lobby_id, "mode", "GodotSteam test")
 
 		# Allow P2P connections to fallback to being relayed through Steam if needed
 		var RELAY: bool = Steam.allowP2PPacketRelay(true)
@@ -231,22 +231,22 @@ func _on_Lobby_Match_List(lobbies: Array) -> void:
 		<p>Next we'll tackle joining a lobby. Clicking one of the lobby buttons we created in the last step will fire this function:</p>
 
 <pre><code>
-func _join_Lobby(lobbyID: int) -> void:
-	print("Attempting to join lobby "+str(lobbyID)+"...")
+func _join_Lobby(lobby_id: int) -> void:
+	print("Attempting to join lobby "+str(lobby_id)+"...")
 
 	# Clear any previous lobby members lists, if you were in a previous lobby
 	LOBBY_MEMBERS.clear()
 
 	# Make the lobby join request to Steam
-	Steam.joinLobby(lobbyID)
+	Steam.joinLobby(lobby_id)
 </code></pre>
 		<p>This will attempt to join the lobby you click on and, when it succeeds, it will fire the <strong>_on_Lobby_Joined</strong> callback:</p>
 <pre><code>
-func _on_Lobby_Joined(lobbyID: int, _permissions: int, _locked: bool, response: int) -> void:
+func _on_Lobby_Joined(lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
 	# If joining was successful
 	if response == 1:
 		# Set this lobby ID as your lobby ID
-		LOBBY_ID = lobbyID
+		LOBBY_ID = lobby_id
 
 		# Get the lobby members
 		_get_Lobby_Members()
@@ -291,14 +291,14 @@ func _on_Lobby_Joined(lobbyID: int, _permissions: int, _locked: bool, response: 
 		</p>
 		<p>If the player is already in-game and accepts a Steam invite or clicks on a friend in their friend list then selects 'Join Game' from there, it will trigger the <strong>join_requested</strong> callback. This function will handle that:</p>
 <pre><code>
-func _on_Lobby_Join_Requested(lobbyID: int, friendID: int) -> void:
+func _on_Lobby_Join_Requested(lobby_id: int, friendID: int) -> void:
 	# Get the lobby owner's name
 	var OWNER_NAME: String = Steam.getFriendPersonaName(friendID)
 
 	print("Joining "+str(OWNER_NAME)+"'s lobby...")
 
 	# Attempt to join the lobby
-	_join_Lobby(lobbyID)
+	_join_Lobby(lobby_id)
 </code></pre>
 		<p>It will then follow the normal <strong>_join_Lobby</strong> process of setting up all lobby members, handshakes, etc.</p>
 		<p>Not to sound repetitive, but note again that if the player is not in-game and accepts a Steam invite or joins a game through the friends list then we are back to the command line situation talked about earlier.</p>
@@ -359,24 +359,24 @@ func _make_P2P_Handshake() -> void:
 		</header>
 		<p>Now that a player has joined the lobby, everyone in the lobby will receive a callback notifying of the change.  We will handle it like this:</p>
 <pre><code>
-func _on_Lobby_Chat_Update(lobbyID: int, changedID: int, makingChangeID: int, chatState: int) -> void:
+func _on_Lobby_Chat_Update(lobby_id: int, change_id: int, making_change_id: int, chat_state: int) -> void:
 	# Get the user who has made the lobby change
-	var CHANGER: String = Steam.getFriendPersonaName(changedID)
+	var CHANGER: String = Steam.getFriendPersonaName(change_id)
 
 	# If a player has joined the lobby
-	if chatState == 1:
+	if chat_state == 1:
 		print(str(CHANGER)+" has joined the lobby.")
 
 	# Else if a player has left the lobby
-	elif chatState == 2:
+	elif chat_state == 2:
 		print(str(CHANGER)+" has left the lobby.")
 
 	# Else if a player has been kicked
-	elif chatState == 8:
+	elif chat_state == 8:
 		print(str(CHANGER)+" has been kicked from the lobby.")
 
 	# Else if a player has been banned
-	elif chatState == 16:
+	elif chat_state == 16:
 		print(str(CHANGER)+" has been banned from the lobby.")
 
 	# Else there was some unknown change

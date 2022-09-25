@@ -6,6 +6,11 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 9/25/22**
+- Changed: Godot 3.x and Godot 4.x change-logs updated
+- Fixed: incorrect list of arguments for lobby_data_updated signal
+- Fixed: some variable names in lobby tutorial
+
 **Update 9/21/22**
 - Added: new game to game list
 

@@ -30,6 +30,16 @@
 		<h1>Change Log | Godot 3.x Module</h1>
 	</header>
 	<p>The change log for the current master repository based on Godot 3.x, obviously.</p>
+	<h3>Version 3.17.4 Changes</h3>
+	<ul>
+		<li>Changed: leaderboard_scores_downloaded and leaderboard_score_updated now pass back their handles; this is incompatible with earlier versions</li>
+		<li>Fixed: issue where leaderboard_score_uploaded would not fire if passed leaderboard_handle was not internally stored</li>
+	</ul>
+	<h3>Version 3.17.3 Changes</h3>
+	<ul>
+		<li>Fixed: getVoice and getAvailableVoice functions</li>
+		<li>Removed: all server functionality, put back into server branch</li>
+	</ul>
 	<h3>Version 3.17.2 Changes</h3>
 	<ul>
 		<li>Fixed: location data structs for new Networking classes, thanks to Kryx-Ikyr</li>
