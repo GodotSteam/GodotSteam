@@ -7495,7 +7495,12 @@ void Steam::getAppDependencies(uint64_t published_file_id){
 void Steam::submitItemUpdate(uint64_t update_handle, const String& change_note){
 	if(SteamUGC() != NULL){
 		UGCUpdateHandle_t handle = uint64(update_handle);
-		SteamAPICall_t api_call = SteamUGC()->SubmitItemUpdate(handle, change_note.utf8().get_data());
+		SteamAPICall_t api_call;
+		if (change_note.empty()) {
+			api_call = SteamUGC()->SubmitItemUpdate(handle, NULL);
+		} else {
+			api_call = SteamUGC()->SubmitItemUpdate(handle, change_note.utf8().get_data());
+		}
 		callResultItemUpdate.Set(api_call, this, &Steam::item_updated);
 	}
 }
