@@ -38,7 +38,7 @@ You can [download pre-compiled versions _(currently v4.1.3)_ of this repo here](
 
 Known Issues
 ----------
-- Since Godot 4 is still in alpha, this should not be used for production!
+- Since Godot 4 is still in beta, this should not be used for production!
 - **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.
 
 Quick How-To
