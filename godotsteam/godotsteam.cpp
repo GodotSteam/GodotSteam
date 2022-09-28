@@ -11655,23 +11655,6 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("submit_player_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::INT, "player_id")));
 	ADD_SIGNAL(MethodInfo("end_game_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "game_id")));
 
-	// GAME SERVER SIGNALS //////////////////////
-	ADD_SIGNAL(MethodInfo("server_connect_failure", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
-	ADD_SIGNAL(MethodInfo("server_connected"));
-	ADD_SIGNAL(MethodInfo("server_disconnected", PropertyInfo(Variant::INT, "result")));
-	ADD_SIGNAL(MethodInfo("client_approved", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "owner_id")));
-	ADD_SIGNAL(MethodInfo("client_denied", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
-	ADD_SIGNAL(MethodInfo("client_kick", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason")));
-	ADD_SIGNAL(MethodInfo("policy_response", PropertyInfo(Variant::INT, "secure")));
-	ADD_SIGNAL(MethodInfo("client_group_status", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "group_id"), PropertyInfo(Variant::BOOL, "member"), PropertyInfo(Variant::BOOL, "officer")));
-	ADD_SIGNAL(MethodInfo("associate_clan", PropertyInfo(Variant::INT, "result")));
-	ADD_SIGNAL(MethodInfo("player_compat", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "players_dont_like_candidate"), PropertyInfo(Variant::INT, "players_candidate_doesnt_like"), PropertyInfo(Variant::INT, "clan_players_dont_like_candidate"), PropertyInfo(Variant::INT, "steam_id")));
-
-	// GAME SERVER STATS SIGNALS ////////////////
-	ADD_SIGNAL(MethodInfo("stats_received", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "steam_id")));
-	ADD_SIGNAL(MethodInfo("stats_stored", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "steam_id")));
-	ADD_SIGNAL(MethodInfo("stats_unloaded", PropertyInfo(Variant::INT, "steam_id")));
-
 	// HTML SURFACE SIGNALS /////////////////////
 	ADD_SIGNAL(MethodInfo("html_browser_ready", PropertyInfo(Variant::INT, "browser_handle")));
 	ADD_SIGNAL(MethodInfo("html_can_go_backandforward", PropertyInfo(Variant::INT, "browser_handle"), PropertyInfo(Variant::BOOL, "go_back"), PropertyInfo(Variant::BOOL, "go_forward")));

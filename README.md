@@ -17,7 +17,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.17.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.17.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.17.5 Changes**
+- Changed: submitItemUpdate to use null if no notes are passed, thanks to _mashumafi_
+- Removed: unused server signals
 
 **Version 3.17.4 Changes**
 - Changed: leaderboard_scores_downloaded and leaderboard_score_updated now pass back their handles; this is incompatible with earlier versions
