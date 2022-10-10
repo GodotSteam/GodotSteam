@@ -5430,16 +5430,18 @@
 		</signal>
 		<signal name="leaderboard_score_uploaded">
 			<argument index="0" name="success" type="bool" />
-			<argument index="1" name="score" type="int" />
-			<argument index="2" name="score_changed" type="bool" />
-			<argument index="3" name="global_rank_new" type="int" />
-			<argument index="4" name="global_rank_previous" type="int" />
+			<argument index="1" name="leaderboard_handle" type="int" />
+			<argument index="2" name="score" type="int" />
+			<argument index="3" name="score_changed" type="bool" />
+			<argument index="4" name="global_rank_new" type="int" />
+			<argument index="5" name="global_rank_previous" type="int" />
 			<description>
 			</description>
 		</signal>
 		<signal name="leaderboard_scores_downloaded">
 			<argument index="0" name="message" type="String" />
-			<argument index="1" name="leaderboard_entries" type="Array" />
+			<argument index="1" name="leaderboard_handle" type="int" />
+			<argument index="2" name="leaderboard_entries" type="Array" />
 			<description>
 			</description>
 		</signal>
