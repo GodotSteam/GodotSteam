@@ -11572,7 +11572,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("setStatInt", "name", "value"), &Steam::setStatInt);
 	ClassDB::bind_method("storeStats", &Steam::storeStats);
 	ClassDB::bind_method(D_METHOD("updateAvgRateStat", "name", "this_session", "session_length"), &Steam::updateAvgRateStat);
-	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best", "details", "this_leaderboard"), &Steam::uploadLeaderboardScore, DEFVAL(true), DEFVAL(PackedInt64Array()), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("uploadLeaderboardScore", "score", "keep_best", "details", "this_leaderboard"), &Steam::uploadLeaderboardScore, DEFVAL(true), DEFVAL(PackedInt32Array()), DEFVAL(0));
 	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
 
 	// UTILS BIND METHODS ///////////////////////
