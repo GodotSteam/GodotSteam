@@ -88,16 +88,6 @@
 
 
 /////////////////////////////////////////////////
-///// DECLARING STRUCTS
-/////////////////////////////////////////////////
-//
-struct SteamNetworkingIdentity networkingIdentity;
-struct SteamNetworkingConfigValue_t networkingConfigValue;
-struct SteamNetworkingIPAddr networkingIPAddress;
-struct SteamNetworkPingLocation_t networkPingLocation;
-
-
-/////////////////////////////////////////////////
 ///// STEAM SINGLETON? STEAM SINGLETON
 /////////////////////////////////////////////////
 //
@@ -1797,7 +1787,7 @@ Dictionary SteamServer::getSessionConnectionInfo(const String& identity_referenc
 	if(SteamNetworkingMessages() != NULL){
 		SteamNetConnectionInfo_t this_info;
 		SteamNetConnectionRealTimeStatus_t this_status;
-		int connection_state = SteamNetworkingMessages()->GetSessionConnectionInfo(networkingIdentity, &this_info, &this_status);
+		int connection_state = SteamNetworkingMessages()->GetSessionConnectionInfo(networking_identities[identity_reference.utf8().get_data()], &this_info, &this_status);
 		// Parse the data to a dictionary
 		connection_info["connection_state"] = connection_state;
 		// If getting the connection information

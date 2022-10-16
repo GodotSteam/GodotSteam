@@ -31,7 +31,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
     
     steps:
       # Checkout Godot
@@ -48,7 +48,10 @@ jobs:
           path: "godotsteam_server"
       - name: Copy GodotSteam Server Module
         run: |
-          cp -r godotsteam_server/godotsteam_server godot/modules
+          dir
+          robocopy godotsteam_server/godotsteam_server godot/modules/godotsteam_server /e
+          cd godot/modules/godotsteam_server && dir
+          EXIT 0
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
         uses: actions/checkout@v3
@@ -59,36 +62,38 @@ jobs:
           ref: ${{ inputs.steamworks_sdk_tag }}
       - name: Copy Steamworks
         run: |
-          mkdir godot/modules/godotsteam_server/sdk/public
-          cp -r steamworks/public godot/modules/godotsteam_server/sdk
-          cp -r steamworks/redistributable_bin godot/modules/godotsteam_server/sdk
-          ls -la godot/modules/godotsteam_server/sdk
+          robocopy steamworks/public/steam godot/modules/godotsteam_server/sdk/public/steam /e
+          robocopy steamworks/redistributable_bin godot/modules/godotsteam_server/sdk/redistributable_bin /e
+          cd godot/modules/godotsteam_server/sdk && dir
+          EXIT 0
       - name: Install Build Requirements
         run: |
-          # Apparently Azure repositories are terribly unreliable, so copy out the list from Godot itself
-          sudo rm -f /etc/apt/sources.list.d/*
-          sudo cp -f godot/misc/ci/sources.list /etc/apt/sources.list
-          sudo apt-get update
-          # The actual dependencies
-          sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev \
-              libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev \
-              libdbus-1-dev libudev-dev libxi-dev libxrandr-dev yasm xvfb wget unzip \
-              llvm libspeechd-dev speech-dispatcher fontconfig libfontconfig-dev
-      - name: Build Linux Editor
+          python --version
+          python -m pip install scons
+          scons --version
+          
+      - name: Build Windows
         working-directory: "godot"
         run: |
           scons ${{ inputs.build_params }}
-          mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
-          ls -la bin
-      - name: Upload Linux Build
+          cd bin && ren ${{ inputs.binary_name }} ${{ inputs.export_name }}
+      - name: Upload Windows Build
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
           retention-days: 1
-      - name: Upload Linux Steam File
+      - name: Upload Windows 64 bit Steam File
         uses: actions/upload-artifact@v3
         with:
-          name: linux-libsteam-api-so
-          path: godot/modules/godotsteam_server/sdk/redistributable_bin/linux64/libsteam_api.so
+          name: win_steam_api_64
+          path: |
+            godot/modules/godotsteam_server/sdk/redistributable_bin/win64/steam_api64.dll
+          retention-days: 1
+      - name: Upload Windows 32 bit Steam File
+        uses: actions/upload-artifact@v3
+        with:
+          name: win_steam_api_32
+          path: |
+            godot/modules/godotsteam_server/sdk/redistributable_bin/steam_api.dll
           retention-days: 1
