@@ -287,6 +287,16 @@ input, select, textarea {
 		font-size: 0.9em;
 		margin: 0 0 20px !important;
 	}
+pre.inner {
+  margin: 0 !important;
+}
+pre.inner code{
+	display: inline-block;
+	padding: 0 1.5em !important;
+}
+code.inner {
+	
+}
 
 		pre code {
 			display: inline-block;

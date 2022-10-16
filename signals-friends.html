@@ -70,6 +70,56 @@
 		</li>
 	</ul>
 	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#AvatarImageLoaded_t" target="_blank">
+			avatar_loaded
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when a large avatar is loaded if you have tried requesting it when it was unavailable.</li>
+		<li>Emits signal in response to function <strong><em>getFriendAvatar</em></strong>.</li>
+		<li>Sends back the following data:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>avatar_id (int)</li>
+					<li>width (int)</li>
+					<li>data (PoolByteArray)</li>
+				</span>
+				<span class="c-sharp">
+					<li>avatar_id (uint64_t)</li>
+					<li>width (int)</li>
+					<li>data (PoolByteArray)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
+		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#AvatarImageLoaded_t" target="_blank">
+			avatar_image_loaded
+			<i class="fas fa-external-link-alt"></i>
+		</a>
+	</h4>
+	<ul>
+		<li>Called when an avatar is requested; sends back the raw Steamworks callback data compared to <strong><em>avatar_loaded</em></strong></li>
+		<li>Emits signal in response to avatar functions.</li>
+		<li>Sends back the following data:
+			<ul class="inner">
+				<span class="gdscript">
+					<li>avatar_id (int)</li>
+					<li>avatar_handle (int)</li>
+					<li>width (int)</li>
+					<li>height (int)</li>
+				</span>
+				<span class="c-sharp">
+					<li>avatar_id (uint64_t)</li>
+					<li>avatar_handle (uint32_t)</li>
+					<li>width (uint32_t)</li>
+					<li>height (uint32_t)</li>
+				</span>
+			</ul>
+		</li>
+	</ul>
+	<h4>
 		<a href="https://partner.steamgames.com/doc/api/ISteamFriends#DownloadClanActivityCountsResult_t" target="_blank">
 			clan_activity_downloaded
 			<i class="fas fa-external-link-alt"></i>
@@ -651,6 +701,7 @@
 						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+						<li><a href="tutorials-common-issues.html">Common Issues</a></li>
 						<li><a href="tutorials-remove-steam.html">Remove Steam</a></li>
 					</ul>
 				</li>
@@ -663,6 +714,7 @@
 						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 						<li><a href="changelog-gdnative.html">GDNative</a></li>
+						<li><a href="changelog-server.html">Server</a></li>
 					</ul>
 				</li>
 				<li><a href="contributors.html">Contributors</a></li>

@@ -51,7 +51,7 @@ func _leaderboard_Find_Result(handle: int, found: int) -> void:
 		LEADERBOARD_HANDLE = handle
 		print("Leaderboard handle found: "+str(LEADERBOARD_HANDLE))
 	else:
-		print("No handle was found")
+	print("No handle was found")
 </code></pre>
 	<p>Once you have this handle you can use all the additional functions.  <strong>Please note</strong> you do not need to save the leaderboard handle since it is stored internally.  However, you will only be able to work with one leaderboard at a time unless you store them locally in a variable. I would keep a dictioary of handles locally like:</p>
 <pre><code>
@@ -114,8 +114,8 @@ Steam.downloadLeaderboardEntriesForUsers( user_array, leaderboard_handle )
 		</ul>
 	<p>After you request leaderboard entries, you should receive a <strong>leaderboard_scores_downloaded</strong> callback which will trigger our <strong>_leaderboard_Scores_Downloaded</strong> function.  That function should look similar to this:</p>
 <pre><code>
-func _leaderboard_Scores_Downloaded(message: String, result: Array) -> void:
-	print("Scores downloaded message: "+str(message))
+func _leaderboard_Scores_Downloaded(message: string, result: Array) -> void:
+	print("Scores downloaded message: "+str(message)
 
 	# Add logic to display results
 	for R in result:
@@ -124,7 +124,7 @@ func _leaderboard_Scores_Downloaded(message: String, result: Array) -> void:
 	<p>The message is just a basic message to inform you to the status the download; whether successful or not and why. The second piece sent back are the results as an array. Each entry in the array is actually a dictionary like so:
 		<ul>
 			<li><strong>score:</strong> this user's score</li>
-			<li><strong>steam_id:</strong> this user's Steam ID; you can use this to get their avatar, name, etc.</li>
+			<li><strong>steamID:</strong> this user's Steam ID; you can use this to get their avatar, name, etc.</li>
 			<li><strong>global_rank:</strong> obviously their global ranking for this leaderboard</li>
 			<li><strong>ugc_handle:</strong> handle for any UGC that is attached to this entry</li>
 			<li><strong>details:</strong> any details you stored with this entry for later use</li>
@@ -234,6 +234,7 @@ func _leaderboard_Scores_Downloaded(message: String, result: Array) -> void:
 						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+						<li><a href="tutorials-common-issues.html">Common Issues</a></li>
 						<li><a href="tutorials-remove-steam.html">Remove Steam</a></li>
 					</ul>
 				</li>
@@ -246,6 +247,7 @@ func _leaderboard_Scores_Downloaded(message: String, result: Array) -> void:
 						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 						<li><a href="changelog-gdnative.html">GDNative</a></li>
+						<li><a href="changelog-server.html">Server</a></li>
 					</ul>
 				</li>
 				<li><a href="contributors.html">Contributors</a></li>

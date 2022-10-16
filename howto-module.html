@@ -29,81 +29,114 @@
 	<header class="main">
 		<h1>How-To For Modules</h1>
 	</header>
-	<p>These instructions should work for both 2.x and 3.x versions of the GodotSteam module.</p>
+	<p>These instructions should work for both 2.x and 3.x versions of the GodotSteam module; 4.x versions are slightly different but similar. There are two different paths you can take: downloading pre-compiles or compiling yourself.  Let's get to it!</p>
 	<hr />
 	<header class="major">
-		<h3>1. Preparing</h3>
+		<h3>Known Issues</h3>
 	</header>
+	<p>Real quick, let's get some known issues out of the way to prevent you from wondering what is going on.</p>
 	<ul>
-		<li><a href="https://github.com/Gramps/GodotSteam" target="_blank">Download the branch corresponding to your Godot version.</a></li>
-		<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
-		<li><a href="https://github.com/godotengine/godot" target="_blank">Download the Godot Engine source.</a>
+		<li><strong>Using MinGW causes crashes.</strong> I strongly recommend you <strong>do not use MinGW</strong> to compile at this time.</li>
+		<li><strong>As of Steamworks SDK 1.53,</strong> you cannot compile with previous version of GodotSteam (3.11.1 or earlier) due to a code change in the SDK.
 			<ul>
-				<li>For GodotSteam with Godot 2, preferably use 2.1.6 (or latest). <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
-				<li>For GodotSteam with Godot 3, preferably use 3.3.3 (or latest). <a href="https://github.com/godotengine/godot/tags" target="_blank">You can find it in the tags section.</a></li>
+				<li>Using <strong>Steamworks SDK 1.53 or newer</strong> then you must use <strong>GodotSteam 3.12 or newer</strong>.</li>
+				<li>Using <strong>Steamworks SDK 1.53 or earlier</strong> then you must use <strong>GodotSteam 3.11.1 or earlier</strong>.</li>
 			</ul>
 		</li>
 	</ul>
-	<p>Unzip the Godot Engine source code and place the contents into a folder.  For the purpose of this how-to we will name the folder <strong>godot</strong>.</p>
-	<p>Unzip the GodotSteam you downloaded and copy the <strong>godotsteam</strong> folder from it into the <strong>godot/modules/</strong> folder.</p>
-	<p><strong>NOTE:</strong> You may now put the <strong>godotsteam</strong> folder anywhere you want and just append the <strong><em>custom_modules=</em></strong> flag in SCONS as long as it points to the godotsteam folder's location. For example: <strong><em>scons platform=windows production=yes tools=yes target=release_debug custom_modules=C:\stuff\godotsteam</em></strong>.</p>
-	<h4>Alternate Preparation Option</h4>
+	<hr/>
+	<header class="major">
+		<h3>1a. Downloading</h3>
+	</header>
+	<p>By far the easiest way to use GodotSteam is to download our pre-compiled editors and templates; especially good for folks who don't want to set up the tools for compiling and just want to get going.</p>
 	<ul>
-		<li><a href="https://github.com/Gramps/GodotSteam/releases" target="_blank">Downloading pre-compiled versions of the GodotSteam editor and template.</a></li>
-		<li><a href="https://partner.steamgames.com" target="_blank">Download the Steamworks SDK.</a></li>
+		<li>Download the <a href="https://github.com/Gramps/GodotSteam/releases" target="_blank">pre-compiled editor from the Release section</a> and unpack it.</li>
+		<li>Alternatively you can download and install the <a href="https://godotengine.org/asset-library/asset/1045" target="_blank">GDNative plug-in through Godot Asset Library</a>.</li>
+		<li>Everything you need should be included.
+			<ul>
+				<li>Users on Linux may have issues with the libsteam_api.so, if so then <a href="https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html" target="_blank">read our Linux Caveats doc</a>.</li>
+			</ul>
+		</li>
 	</ul>
-	<p>Once you have the pre-compiles and Steamworks SDK, skip ahead to Step 5 in this tutorial.</p>
+	<p>At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!</p>
 	<hr/>
 	<header class="major">
-		<h3>2. Copy The Steamworks SDK</h3>
+		<h3>1b. Compile Yourself</h3>
 	</header>
-	<p>Unzip the Steamworks SDK and extract the following folders into the <strong>godot/modules/godotsteam/sdk/</strong> folder:
-<pre><code>
-public/
-redistributable_bin/
-</code></pre>
-	</p>
+	<p>For those of you who are comfortable compiling or want to give it a shot, here are some steps to follow.</p>
+	<ul>
+		<li>Set your system up for <a href="https://docs.godotengine.org/en/stable/development/compiling/index.html" target="_blank">compiling based on Godot's recommendations / required tools.</a></li>
+		<li>Download and unpack the <a href="https://github.com/godotengine/godot" target="_blank">Godot source</a></li>
+		<li>Acquire the GodotSteam source either by downloading it here or cloning the repo:
+			<ul class="inner">
+				<li>Download the repository (either master, godot4, or godot2) then unpack it into a folder called <strong>godotsteam</strong> inside your Godot Engine source code <strong>/modules</strong> folder.
+					<ul class="inner">
+						<li>You will have to create the <strong>godotsteam</strong> folder and it must be named exactly this.</li>
+					</ul>
+				</li>
+				<li>Alternatively, clone this repository into your Godot Engine source code <strong>/modules</strong> folder.
+					<ul class="inner">
+						<li>Use <code class="inner">git clone https://github.com/Gramps/GodotSteam.git godotsteam</code></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Download and unpack the [Steamworks SDK 1.55](https://partner.steamgames.com).
+			<ul>
+				<li>This requires a Steam developer account.</li>
+				<li>Please see "Known Issues" above about versions.</li>
+			</ul>
+		</li>
+	</ul>
 	<hr/>
 	<header class="major">
-		<h3>3. Folder Layout</h3>
+		<h3>2. Setting Up The SDK</h3>
 	</header>
-	<p>The repo's directory contents should now look like this:
+	<p>Move the following from the unzipped Steamworks SDK to the <strong>/modules/godotsteam/sdk/</strong> folder:</p>
 <pre><code>
-godot/modules/godotsteam/sdk/public/*
-godot/modules/godotsteam/sdk/redistributable_bin/*
-godot/modules/godotsteam/SCsub
-godot/modules/godotsteam/config.py
-godot/modules/godotsteam/godotsteam.cpp
-godot/modules/godotsteam/godotsteam.h
-godot/modules/godotsteam/register_types.cpp
-godot/modules/godotsteam/register_types.h
+sdk/public/
+sdk/redistributable_bin/
 </code></pre>
-	</p>
 	<hr/>
 	<header class="major">
-		<h3>4. Compiling</h3>
+		<h3>3. Double-Checking Folder / File Structure</h3>
 	</header>
-	<p>Compile for your platform:<br/>On Windows ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html" tareget="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_windows.html</a> )<br/>
-	On Linux ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_x11.html</a> )<br/>
-	On OSX ( <a href="http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html" target="_blank">http://docs.godotengine.org/en/stable/reference/compiling_for_osx.html</a> )</p>
-	<p>For the best results (size and performance), you will want to use these SCONS flags when compiling your editor:</p>
+	The repo's directory contents should now look like this:
 <pre><code>
-production=yes tools=yes target=release_debug
+godotsteam/sdk/public/*
+godotsteam/sdk/redistributable_bin/*
+godotsteam/SCsub
+godotsteam/config.py
+godotsteam/godotsteam.cpp
+godotsteam/godotsteam.h
+godotsteam/register_types.cpp
+godotsteam/register_types.h
 </code></pre>
-	<p>Use this for your template:</p>
-<pre><code>
-production=yes tools=no target=release
-</code></pre>
-	<p><strong>NOTE:</strong> when creating templates for OSX, please refer to this post for assistance as the documentation is a bit lacking ( <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">http://steamcommunity.com/app/404790/discussions/0/364042703865087202/</a> ).</em></p>
-	<p><strong>NOTE: using MinGW causes crashes.</strong> There is a _mingw-patch.py_ file that corrects one known crash due to compiling with MinGW but there is now a newer crash that hasn't been solved; as well as who knows how many unfound issues. I strong recommend you <strong>do not use MinGW</strong> to compile at this time.</p>
+	<p>You can also just put the godotsteam directory where ever you like and just apply the <code class="inner">custom_modules=.../path/to/dir/godotsteam</code> flag in SCONS when compiling.  Make sure the <code class="inner">custom_modules=</code> flag points to where the godotsteam folder is located.</p>
 	<hr/>
 	<header class="major">
-		<h3>5. Copy Steamworks Redistributables</h3>
+		<h3>4. Compiling Time</h3>
 	</header>
-	<p>If you downloaded the pre-compiles, make sure your working directory looks like the ones below then move on to step 6. If you are compiling, keep reading.</p>
-	<p>When compiling the engine is finished, copy the <strong><em>shared library (steam_api)</em></strong>, for your OS, from <strong>godot/modules/godotsteam/sdk/redistributable_bin/</strong> folder to the Godot binary location. By default, it is in the Godot source <strong>godot/bin/</strong> folder.  You can move them to a new folder but, for the sake of the how-to, we will leave them in the <strong>bin</strong> folder.</p>
-	<p>In the <strong>godot/bin/</strong> folder, or wherever you put the editor executable, you must include a <strong><em>steam_appid.txt</em></strong> file with either your game's Steam ID, or the generic 480, as the only text inside. Running the game from the editor or <em>outside</em> of the Steam client will cause a crash without it.</p>
-	<p> With everything now in place, your working directory should look like this:</p>
+	<p>Recompile for your platform:</p>
+	<ul>
+		<li>For editors: <code class="inner">scons platform=[your platform] production=yes tools=yes target=release_debug</code></li>
+		<li>For debug templates: <code class="inner">scons platform=[your platform] production=yes tools=no target=release_debug</code></li>
+		<li>For release templates: <code class="inner">scons platform=[your platform] production=yes tools=no target=release</code></li>
+	</ul>
+	<p>Some things to be aware of:</p>
+	<ul>
+		<li>If using Ubuntu 16.10 or higher and having issues with PIE security in GCC, use <code class="inner">LINKFLAGS='-no-pie'</code> to get an executable instead of a shared library.</li>
+		<li>When creating templates for OSX, please <a href="http://steamcommunity.com/app/404790/discussions/0/364042703865087202/" target="_blank">refer to this post for assistance as the documentation is a bit lacking</a>.</li>
+	</ul>
+	<hr/>
+	<header class="major">
+		<h3>5. Altogether Now</h3>
+	</header>
+	<p>When compiling the engine is finished, do the following before running it the first time:</p>
+	<ul>
+		<li>Copy the shared library (steam_api), for your OS, from <strong>sdk/redistributable_bin/</strong> folders to the Godot binary location. By default, it is in the Godot source <strong>godot/bin/</strong> folder.  You can move them to a new folder but, for the sake of the how-to, we will leave them in the <strong>bin</strong> folder.</li>
+		<li>In the <strong>godot/bin/</strong> folder, or wherever you put the editor executable, you must include a <strong><em>steam_appid.txt</em></strong> file with either your game's Steam ID, or the generic 480, as the only text inside. Running the game from the editor or <em>outside</em> of the Steam client will cause a crash without it.</li>
+	<p>The finished hierarchy should look like this (if you downloaded the pre-compiles, the editor files go in place of these tool files, which are the same thing):</p>
 	<strong>Linux 32-bit</strong>
 <pre><code>
 godot/bin/libsteam_api.so
@@ -134,18 +167,31 @@ godot/bin/steam_api64.dll
 godot/bin/steam_appid.txt
 godot/bin/godot.windows.tools.64.exe
 </code></pre>
+	<p>Lack of the <strong>Steam API .dll/.so/.dylib</strong>, for your respective OS, or the <strong>steam_appid.txt</strong> will cause the editor or game fail and crash when testing or running the game <strong><em>outside</em></strong> of the Steam client.</p>
+	<ul class="inner">
+		<li><strong>NOTE:</strong> Some people report putting the Steam API file inside their project folder fixes some issues.</li>
+		<li><strong>NOTE:</strong> For MacOS, the libsteam_api.dylib and steam_appid.txt must be in the Content/MacOS/ folder in your application zip or the game will crash.</li>
+		<li><strong>NOTE:</strong> For Linux, you may have to load the overlay library for Steam overlay to work:
+<pre><code>
+export LD_PRELOAD=~/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so;~/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so
+
+or 
+  
+export LD_PRELOAD=~/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so;
+export LD_PRELOAD=~/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so;
+</code></pre>
+	<p>This can be done in an .sh file that runs these before running your executable.  This issue may not arise for all users and can also just be done by the user in a terminal separately.  You can <a href="https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html" target="_blank">read more about it in our Linux Caveats doc</a>.</p>
 	<hr/>
 	<header class="major">
-		<h3>6. Done</h3>
+		<h3>6. Good To Go</h3>
 	</header>
-	<p>Now you can open the editor you just created and get to work!  If you are are starting from scratch or importing an existing project, you can just start adding in Steamworks code.  Remember, every function starts with the <strong>Steam</strong> class; e.g. <strong><em>Steam.run_callbacks()</em></strong> or <strong><em>Steam.getUserID()</em></strong>.  All of the available functions can be found in the editor in the <strong>Search</strong> section under Steam.  Additionally, you should be able to read the Steamworks API documentation to see what all is available and cross-reference with GodotSteam.</p>
-	<p>I suggest checking out the various tutorials available here in the documentation to get you started on most of the main features of Steamworks.  Though I do recommend that you create a separate copy of your project if you intend to have a non-Steam version of your game.</p>
+	<p>From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to <a href="https://partner.steamgames.com/doc/home" target="_blank">read the Steamworks API documentation</a> to see what all is available and <a href="https://gramps.github.io/GodotSteam/" target="_blank">cross-reference with GodotSteam's documentation</a>.</p>
 	<hr/>
 	<header class="major">
-		<h3>7. Exporting / Shipping</h3>
+		<h3>7. Shipping Your Game</h3>
 	</header>
 	<p><a href="tutorials-exporting-shipping.html" target="_blank">Check out the exporting and shipping tutorial to learn more details about process.</a>  Here are a few important bits though:</p>
-	<p>Your game must ship with the executable and Steam API DLL/SO/DyLIB to function. Lack of the Steam API DLL/SO/DyLib (for your respective OS) will cause it fail and crash. Do not, however, ship your <strong><em>steam_appid.txt</em></strong> file; it is a harmless file to include by Valve recommends you do not.</p>
+	<p>Your game must ship with the executable and Steam API .dll/.so/.dylib to function. Lack of these files (for your respective OS) will cause it fail and crash. Do not, however, ship your <strong><em>steam_appid.txt</em></strong> file; it is a harmless file to include by Valve recommends you do not.</p>
 	<p><strong>NOTE:</strong> For Linux, some users may experience problems with the editor or game finding the <strong><em>libsteam_api.so</em></strong> file even with it right there in the directory. It is actually an issue with how Steam installed that file on the system. <a href="tutorials-linux-caveats.html" target="_blank">Read more on this in the Linux Caveats tutorial.</a></p>
 	<p><strong>NOTE:</strong> For OSX, the <strong><em>libsteam_api.dylib</em></strong> must be in the <strong>Content/MacOS/</strong> folder in your application zip or the game will crash. <a href="tutorials-mac-export.html" target="_blank">Read more on this in the Mac Exporting tutorial.</a>  Those of you using the pre-compiled OSX template from the GodotSteam release section can ignore this as <strong><em>libsteam_api.dylib</em></strong> is already included.</p>
 </section>					<a href="#" id="to-top" class="display:none;"><i class="fas fa-arrow-alt-circle-up"></i></a>
@@ -249,6 +295,7 @@ godot/bin/godot.windows.tools.64.exe
 						<li><a href="tutorials-rich-presence.html">Rich Presence</a></li>
 						<li><a href="tutorials-linux-caveats.html">Linux Caveats</a></li>
 						<li><a href="tutorials-exporting-shipping.html">Exporting and Shipping</a></li>
+						<li><a href="tutorials-common-issues.html">Common Issues</a></li>
 						<li><a href="tutorials-remove-steam.html">Remove Steam</a></li>
 					</ul>
 				</li>
@@ -261,6 +308,7 @@ godot/bin/godot.windows.tools.64.exe
 						<li><a href="changelog-godot3.html">Godot 3.x</a></li>
 						<li><a href="changelog-godot2.html">Godot 2.x</a></li>
 						<li><a href="changelog-gdnative.html">GDNative</a></li>
+						<li><a href="changelog-server.html">Server</a></li>
 					</ul>
 				</li>
 				<li><a href="contributors.html">Contributors</a></li>
