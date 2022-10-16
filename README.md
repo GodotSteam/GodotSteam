@@ -6,6 +6,13 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 10/16/22**
+- Added: new tutorial for common issues
+- Added: server changelog back in
+- Added: new signal avatar_image_loaded
+- Changed: Godot 3.x change-logs updated
+- Changed: Godot 4.x change-logs updated
+
 **Update 10/7/22**
 - Added: new game to game list
 
