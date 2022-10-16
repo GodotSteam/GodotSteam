@@ -139,16 +139,6 @@
 
 
 /////////////////////////////////////////////////
-///// DECLARING STRUCTS
-/////////////////////////////////////////////////
-//
-struct SteamNetworkingIdentity networkingIdentity;
-struct SteamNetworkingConfigValue_t networkingConfigValue;
-struct SteamNetworkingIPAddr networkingIPAddress;
-struct SteamNetworkPingLocation_t networkPingLocation;
-
-
-/////////////////////////////////////////////////
 ///// STEAM SINGLETON? STEAM SINGLETON
 /////////////////////////////////////////////////
 //
@@ -4454,7 +4444,7 @@ Dictionary Steam::getSessionConnectionInfo(const String& identity_reference, boo
 	if(SteamNetworkingMessages() != NULL){
 		SteamNetConnectionInfo_t this_info;
 		SteamNetConnectionRealTimeStatus_t this_status;
-		int connection_state = SteamNetworkingMessages()->GetSessionConnectionInfo(networkingIdentity, &this_info, &this_status);
+		int connection_state = SteamNetworkingMessages()->GetSessionConnectionInfo(networking_identities[identity_reference.utf8().get_data()], &this_info, &this_status);
 		// Parse the data to a dictionary
 		connection_info["connection_state"] = connection_state;
 		// If getting the connection information
@@ -7510,7 +7500,12 @@ void Steam::getAppDependencies(uint64_t published_file_id){
 void Steam::submitItemUpdate(uint64_t update_handle, const String& change_note){
 	if(SteamUGC() != NULL){
 		UGCUpdateHandle_t handle = uint64(update_handle);
-		SteamAPICall_t api_call = SteamUGC()->SubmitItemUpdate(handle, change_note.utf8().get_data());
+		SteamAPICall_t api_call;
+		if(change_note.length() == 0){
+			api_call = SteamUGC()->SubmitItemUpdate(handle, NULL);
+		}else{
+			api_call = SteamUGC()->SubmitItemUpdate(handle, change_note.utf8().get_data());
+		}
 		callResultItemUpdate.Set(api_call, this, &Steam::item_updated);
 	}
 }
@@ -9989,7 +9984,7 @@ void Steam::get_video_result(GetVideoURLResult_t* call_data){
 //! Intended to serve as generic error messaging for failed call results
 void Steam::steamworksError(const String& failed_signal){
 	// Emit the signal to inform the user of the failure
-	emit_signal("steamworks_error", failed_signal, "io failure");
+	emit_signal("steamworks_error", failed_signal, "io_failure");
 }
 
 // FRIENDS CALL RESULTS /////////////////////////
@@ -11617,7 +11612,7 @@ void Steam::_bind_methods(){
 	/////////////////////////////////////////////
 	//
 	// STEAMWORKS SIGNALS ///////////////////////
-	ADD_SIGNAL(MethodInfo("steamworks_error", PropertyInfo(Variant::STRING, "failed_signal"), PropertyInfo(Variant::STRING, "io failure")));
+	ADD_SIGNAL(MethodInfo("steamworks_error", PropertyInfo(Variant::STRING, "failed_signal"), PropertyInfo(Variant::STRING, "io_failure")));
 
 	// APPS SIGNALS /////////////////////////////
 	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "file_size"), PropertyInfo(Variant::INT, "file_hash"), PropertyInfo(Variant::INT, "flags")));
