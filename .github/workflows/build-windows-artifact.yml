@@ -49,7 +49,7 @@ jobs:
       - name: Copy GodotSteam Module
         run: |
           dir
-          robocopy godotsteam/godotsteam godot/modules/godotsteam /e
+          robocopy godotsteam godot/modules/godotsteam /e
           cd godot/modules/godotsteam && dir
           EXIT 0
       # Checkout Steamworks SDK

@@ -48,7 +48,7 @@ jobs:
           path: "godotsteam"
       - name: Copy GodotSteam Module
         run: |
-          cp -r godotsteam/godotsteam godot/modules
+          cp -r godotsteam godot/modules/godotsteam
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
         uses: actions/checkout@v3
