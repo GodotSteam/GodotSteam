@@ -1,1 +1,23 @@
+# C/C++ generated
+*.a
+*.ax
+*.d
+*.dll
+*.lib
+*.lo
+*.o
+*.os
+*.ox
+*.Plo
+*.so
+
+# Python generated
+__pycache__/
+*.pyc
+
+# Steam SDK
+sdk/*
+!sdk/put SDK here
+
+# Doxygen
 doxygen/
