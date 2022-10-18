@@ -17,7 +17,12 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.18)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.18.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.18.1 Changes**
+- Added: link to SDK placeholder
+- Added: more descriptions to in-editor docs
+- Fixed: some regressions that made their way into 3.18
 
 **Version 3.18 Changes**
 - Added: avatar_image_loaded callback to get raw response from Steamworks

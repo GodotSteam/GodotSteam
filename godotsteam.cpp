@@ -162,6 +162,7 @@ Steam::Steam():
 
 	// Friends callbacks ////////////////////////
 	callbackAvatarLoaded(this, &Steam::avatar_loaded),
+	callbackAvatarImageLoaded(this, &Steam::avatar_image_loaded),
 	callbackClanActivityDownloaded(this, &Steam::clan_activity_downloaded),
 	callbackFriendRichPresenceUpdate(this, &Steam::friend_rich_presence_update),
 	callbackConnectedChatJoin(this, &Steam::connected_chat_join),
@@ -8846,6 +8847,16 @@ void Steam::avatar_loaded(AvatarImageLoaded_t* avatarData){
 	call_deferred("emit_signal", "avatar_loaded", avatar_id, width, data);
 }
 
+//! Called when a large avatar is loaded if you have tried requesting it when it was unavailable.
+void Steam::avatar_image_loaded(AvatarImageLoaded_t* avatarData){
+	uint32 width = avatarData->m_iWide;
+	uint32 height = avatarData->m_iTall;
+	int avatar_index = avatarData->m_iImage;
+	CSteamID steam_id = avatarData->m_steamID;
+	uint64_t avatar_id = steam_id.ConvertToUint64();
+	call_deferred("emit_signal", "avatar_image_loaded", avatar_id, avatar_index, width, height);
+}
+
 //! Called when a Steam group activity has received.
 void Steam::clan_activity_downloaded(DownloadClanActivityCountsResult_t* call_data){
 	bool success = call_data->m_bSuccess;
@@ -9970,7 +9981,7 @@ void Steam::get_video_result(GetVideoURLResult_t* call_data){
 //! Intended to serve as generic error messaging for failed call results
 void Steam::steamworksError(const String& failed_signal){
 	// Emit the signal to inform the user of the failure
-	emit_signal("steamworks_error", failed_signal, "io failure");
+	emit_signal("steamworks_error", failed_signal, "io_failure");
 }
 
 // FRIENDS CALL RESULTS /////////////////////////
@@ -11613,7 +11624,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("app_uninstalled", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "install_folder_index")));
 
 	// FRIENDS SIGNALS //////////////////////////
-	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::ARRAY, "data")));
+	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "avatar_id"), PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::ARRAY, "data")));
+	ADD_SIGNAL(MethodInfo("avatar_image_loaded", PropertyInfo(Variant::INT, "avatar_id"), PropertyInfo(Variant::INT, "avatar_index"), PropertyInfo(Variant::INT, "width"), PropertyInfo(Variant::INT, "height")));
 	ADD_SIGNAL(MethodInfo("request_clan_officer_list", PropertyInfo(Variant::STRING, "message"), PropertyInfo(Variant::ARRAY, "officer_list")));
 	ADD_SIGNAL(MethodInfo("clan_activity_downloaded", PropertyInfo(Variant::DICTIONARY, "activity")));
 	ADD_SIGNAL(MethodInfo("friend_rich_presence_update", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "app_id")));
@@ -13083,7 +13095,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT);						// 3
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING);							// 4
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG);								// 5
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE);							// 6,
+	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE);							// 6
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG);							// 7
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING);						// 8
 	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT);						// 0X7FFFFFFF
@@ -13209,7 +13221,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LOCAL_FILE_CHANGE_INVALID);											// 0
 	BIND_CONSTANT(LOCAL_FILE_CHANGE_FILE_UPDATED);										// 1
 	BIND_CONSTANT(LOCAL_FILE_CHANGE_FILE_DELETED);										// 2
-	
+
 	// FILE PATH TYPES //////////////////////////
 	BIND_CONSTANT(FILE_PATH_TYPE_INVALID);												// 0
 	BIND_CONSTANT(FILE_PATH_TYPE_ABSOLUTE);												// 1
@@ -13280,7 +13292,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);											// ~0
 
 	// UGC QUERY ////////////////////////////////
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);												// 0
+	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);											// 0
 	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);								// 1
 	BIND_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);				// 2
 	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TREND);											// 3
