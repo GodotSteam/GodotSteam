@@ -32,18 +32,21 @@
 		<method name="acceptGame">
 			<return type="int" />
 			<description>
+				After receiving SearchForGameResultCallback_t, accept or decline the game. Multiple SearchForGameResultCallback_t will follow as players accept game until the host starts or cancels the game.
 			</description>
 		</method>
 		<method name="acceptP2PSessionWithUser">
 			<return type="bool" />
 			<argument index="0" name="steam_id_remote" type="int" />
 			<description>
+				This allows the game to specify accept an incoming packet.
 			</description>
 		</method>
 		<method name="acceptSessionWithUser">
 			<return type="bool" />
 			<argument index="0" name="identity_reference" type="String" />
 			<description>
+				AcceptSessionWithUser() should only be called in response to a SteamP2PSessionRequest_t callback SteamP2PSessionRequest_t will be posted if another user tries to send you a message, and you haven't tried to talk to them.
 			</description>
 		</method>
 		<method name="activateActionSet">
@@ -51,6 +54,7 @@
 			<argument index="0" name="input_handle" type="int" />
 			<argument index="1" name="action_set_handle" type="int" />
 			<description>
+				Reconfigure the controller to stop using the specified action set.
 			</description>
 		</method>
 		<method name="activateActionSetLayer">
@@ -58,49 +62,57 @@
 			<argument index="0" name="input_handle" type="int" />
 			<argument index="1" name="action_set_layer_handle" type="int" />
 			<description>
+				Reconfigure the controller to stop using the specified action set.
 			</description>
 		</method>
 		<method name="activateGameOverlay">
 			<return type="void" />
 			<argument index="0" name="type" type="String" default="&quot;&quot;" />
 			<description>
+				Activates the overlay with optional dialog to open the following: "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements", "LobbyInvite".
 			</description>
 		</method>
 		<method name="activateGameOverlayInviteDialog">
 			<return type="void" />
 			<argument index="0" name="steam_id" type="int" />
 			<description>
+				Activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.
 			</description>
 		</method>
 		<method name="activateGameOverlayInviteDialogConnectString">
 			<return type="void" />
 			<argument index="0" name="connect_string" type="String" />
 			<description>
+				Activates the game overlay to open an invite dialog that will send the provided Rich Presence connect string to selected friends.
 			</description>
 		</method>
 		<method name="activateGameOverlayToStore">
 			<return type="void" />
 			<argument index="0" name="app_id" type="int" default="0" />
 			<description>
+				Activates the overlay with the application/game Steam store page.
 			</description>
 		</method>
 		<method name="activateGameOverlayToUser">
 			<return type="void" />
-			<argument index="0" name="type" type="String" default="&quot;&quot;" />
+			<argument index="0" name="url" type="String" default="&quot;&quot;" />
 			<argument index="1" name="steam_id" type="int" default="0" />
 			<description>
+				Activates the overlay to the following: "steamid", "chat", "jointrade", "stats", "achievements", "friendadd", "friendremove", "friendrequestaccept", "friendrequestignore".
 			</description>
 		</method>
 		<method name="activateGameOverlayToWebPage">
 			<return type="void" />
 			<argument index="0" name="url" type="String" />
 			<description>
+				Activates the overlay with specified web address.
 			</description>
 		</method>
 		<method name="activationSuccess">
 			<return type="bool" />
 			<argument index="0" name="activate" type="bool" />
 			<description>
+				If remote access was successfully activated.
 			</description>
 		</method>
 		<method name="addAppDependency">
@@ -108,6 +120,7 @@
 			<argument index="0" name="published_file_id" type="int" />
 			<argument index="1" name="app_id" type="int" />
 			<description>
+				Adds a dependency between the given item and the appid. This list of dependencies can be retrieved by calling GetAppDependencies. This is a soft-dependency that is displayed on the web. It is up to the application to determine whether the item can actually be used or not.
 			</description>
 		</method>
 		<method name="addDependency">
@@ -115,6 +128,7 @@
 			<argument index="0" name="published_file_id" type="int" />
 			<argument index="1" name="child_published_file_id" type="int" />
 			<description>
+				Adds a workshop item as a dependency to the specified item. If the nParentPublishedFileID item is of type k_EWorkshopFileTypeCollection, than the nChildPublishedFileID is simply added to that collection. Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the m_unNumChildren member variable of the SteamUGCDetails_t struct and GetQueryUGCChildren.
 			</description>
 		</method>
 		<method name="addExcludedTag">
@@ -122,6 +136,7 @@
 			<argument index="0" name="query_handle" type="int" />
 			<argument index="1" name="tag_name" type="String" />
 			<description>
+				Adds a excluded tag to a pending UGC Query. This will only return UGC without the specified tag.
 			</description>
 		</method>
 		<method name="addFavoriteGame">
@@ -132,6 +147,7 @@
 			<argument index="3" name="flags" type="int" />
 			<argument index="4" name="last_played" type="int" />
 			<description>
+				Adds the game server to the local list; updates the time played of the server if it already exists in the list.
 			</description>
 		</method>
 		<method name="addGameSearchParams">
@@ -139,19 +155,23 @@
 			<argument index="0" name="key" type="String" />
 			<argument index="1" name="values" type="String" />
 			<description>
+				A keyname and a list of comma separated values: one of which is must be found in order for the match to qualify; fails if a search is currently in progress.
 			</description>
 		</method>
 		<method name="addHeader">
 			<return type="void" />
 			<argument index="0" name="key" type="String" />
 			<argument index="1" name="value" type="String" />
+			<argument index="2" name="this_handle" type="int" />
 			<description>
+				Add a header to any HTTP requests from this browser.
 			</description>
 		</method>
 		<method name="addIPAddress">
 			<return type="bool" />
 			<argument index="0" name="reference_name" type="String" />
 			<description>
+				Add a new IP address struct.
 			</description>
 		</method>
 		<method name="addIdentity">
@@ -5430,18 +5450,16 @@
 		</signal>
 		<signal name="leaderboard_score_uploaded">
 			<argument index="0" name="success" type="bool" />
-			<argument index="1" name="leaderboard_handle" type="int" />
-			<argument index="2" name="score" type="int" />
-			<argument index="3" name="score_changed" type="bool" />
-			<argument index="4" name="global_rank_new" type="int" />
-			<argument index="5" name="global_rank_previous" type="int" />
+			<argument index="1" name="score" type="int" />
+			<argument index="2" name="score_changed" type="bool" />
+			<argument index="3" name="global_rank_new" type="int" />
+			<argument index="4" name="global_rank_previous" type="int" />
 			<description>
 			</description>
 		</signal>
 		<signal name="leaderboard_scores_downloaded">
 			<argument index="0" name="message" type="String" />
-			<argument index="1" name="leaderboard_handle" type="int" />
-			<argument index="2" name="leaderboard_entries" type="Array" />
+			<argument index="1" name="leaderboard_entries" type="Array" />
 			<description>
 			</description>
 		</signal>
