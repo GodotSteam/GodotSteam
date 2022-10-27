@@ -7602,8 +7602,8 @@ int Steam::beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t stea
 	if(SteamUser() == NULL){
 		return -1;
 	}
-	CSteamID authSteamID = createSteamID(steam_id);
-	return SteamUser()->BeginAuthSession(ticket.read().ptr(), ticket_size, authSteamID);
+	CSteamID auth_steam_id = createSteamID(steam_id);
+	return SteamUser()->BeginAuthSession(ticket.read().ptr(), ticket_size, auth_steam_id);
 }
 
 //! Cancels an auth ticket.
@@ -7631,8 +7631,8 @@ Dictionary Steam::decompressVoice(const PoolByteArray& voice, uint32 voice_size,
 //! Ends an auth session.
 void Steam::endAuthSession(uint64_t steam_id){
 	if(SteamUser() != NULL){
-		CSteamID authSteamID = createSteamID(steam_id);
-		SteamUser()->EndAuthSession(authSteamID);
+		CSteamID auth_steam_id = createSteamID(steam_id);
+		SteamUser()->EndAuthSession(auth_steam_id);
 	}
 }
 
@@ -8438,9 +8438,10 @@ Array Steam::getLeaderboardEntries(){
 String Steam::filterText(int context, uint64_t steam_id, const String& message){
 	String new_message = "";
 	if(SteamUtils() != NULL){
-		char *filtered = new char[2048];
+		auto utf8_input = message.utf8();
+		char *filtered = new char[utf8_input.length() + 1];
 		CSteamID source_id = (uint64)steam_id;
-		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, message.utf8().get_data(), filtered, strlen(filtered)+1);
+		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, utf8_input.get_data(), filtered, utf8_input.length() + 1);
 		new_message = filtered;
 		delete[] filtered;
 	}
@@ -9987,9 +9988,9 @@ void Steam::request_clan_officer_list(ClanOfficerListResponse_t *call_data, bool
 			message = "Clan officer list response failed.";
 		}
 		else{
-			CSteamID ownerSteamID = SteamFriends()->GetClanOwner(call_data->m_steamIDClan);
+			CSteamID owner_steam_id = SteamFriends()->GetClanOwner(call_data->m_steamIDClan);
 			int officers = SteamFriends()->GetClanOfficerCount(call_data->m_steamIDClan);
-			message = "The owner of the clan is: " + (String)String::utf8(SteamFriends()->GetFriendPersonaName(ownerSteamID)) + " (" + itos(ownerSteamID.ConvertToUint64()) + ") and there are " + itos(call_data->m_cOfficers) + " officers.";
+			message = "The owner of the clan is: " + (String)String::utf8(SteamFriends()->GetFriendPersonaName(owner_steam_id)) + " (" + itos(owner_steam_id.ConvertToUint64()) + ") and there are " + itos(call_data->m_cOfficers) + " officers.";
 			for(int i = 0; i < officers; i++){
 				Dictionary officer;
 				CSteamID officerSteamID = SteamFriends()->GetClanOfficerByIndex(call_data->m_steamIDClan, i);

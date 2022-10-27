@@ -19,6 +19,10 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.18)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.18.1 Changes**
+- Changed: minor internal variable names
+- Fixed: filterText truncating input; thanks to _tcoxon_
+
 **Version 3.18 Changes**
 - Added: avatar_image_loaded callback to get raw response from Steamworks
 - Changed: project layout to be Git clone friendly
