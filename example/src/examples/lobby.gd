@@ -135,8 +135,8 @@ func _on_Lobby_Join_Requested(lobby_id: int, friend_id: int) -> void:
 
 
 # Whan lobby metadata has changed
-func _on_Lobby_Data_Update(success: bool, lobby_id: int, memberID: int, key: int) -> void:
-	print("[STEAM] Success: "+str(success)+", Lobby ID: "+str(lobby_id)+", Member ID: "+str(memberID)+", Key: "+str(key)+"\n\n")
+func _on_Lobby_Data_Update(lobby_id: int, memberID: int, key: int) -> void:
+	print("[STEAM] Success, Lobby ID: "+str(lobby_id)+", Member ID: "+str(memberID)+", Key: "+str(key)+"\n\n")
 
 
 # When the player leaves a lobby for whatever reason
