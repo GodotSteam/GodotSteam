@@ -40,13 +40,13 @@ func _on_View_pressed() -> void:
 # Load an avatar
 func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 	# Check we're only triggering a load for the right player, and check the data has actually changed
-    if id == STEAM_ID and not buffer == AVATAR.get_data():
-        print("Loading avatar for user: "+str(id))
-        # Create the image and texture for loading
-        AVATAR = Image.new()
-        var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
-        AVATAR.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
-        # Apply it to the texture
-        AVATAR_TEXTURE.create_from_image(AVATAR)
-        # Set it
-        $Member/Avatar.set_texture(AVATAR_TEXTURE)
+	if id == STEAM_ID and (not AVATAR or not buffer == AVATAR.get_data()):
+		print("Loading avatar for user: "+str(id))
+		# Create the image and texture for loading
+		AVATAR = Image.new()
+		var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
+		AVATAR.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
+		# Apply it to the texture
+		AVATAR_TEXTURE.create_from_image(AVATAR)
+		# Set it
+		$Member/Avatar.set_texture(AVATAR_TEXTURE)
