@@ -14,5 +14,5 @@ OSX.64="res://addons/godotsteam/osx/libgodotsteam.dylib"
 [dependencies]
 
 X11.64=[ "res://addons/godotsteam/x11/libsteam_api.so" ]
-Windows.64=[ "res://addon/godotsteam/win64/steam_api64.dll" ]
+Windows.64=[ "res://addons/godotsteam/win64/steam_api64.dll" ]
 OSX.64=[ "res://addons/godotsteam/osx/libsteam_api.dylib" ]
