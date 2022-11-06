@@ -6,6 +6,9 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 11/6/22**
+- Removed: getUserDataFolder from functions list
+
 **Update 10/25/22**
 - Added: new games to game list
 
