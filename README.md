@@ -6,6 +6,9 @@ Alternately, the documentation is mirrored and exported from: https://coaguco.co
 
 What's New
 -------------
+**Update 11/7/22**
+- Added: new contributor
+
 **Update 11/6/22**
 - Removed: getUserDataFolder from functions list
 
