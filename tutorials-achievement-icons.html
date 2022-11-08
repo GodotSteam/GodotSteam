@@ -30,6 +30,7 @@
 		<h1>Tutorials - Achievement Icons</h1>
 	</header>
 	<p>This quick tutorial will cover to how get achievement icons from Steam's servers.  It was made because there are some extra steps folks need to use to render the images and it may not be very clear otherwise.</p>
+	<hr/>
 	<header class="major">
 		<h3>Getting The Handle And Buffer</h3>
 	</header>
@@ -41,6 +42,7 @@ var HANDLE: int = Steam.getAchievementIcon("achievement name")
 <pre><code>
 var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
 </code></pre>
+	<hr/>
 	<header class="major">
 		<h3>Creating The Image</h3>
 	</header>
@@ -65,6 +67,7 @@ ICON_TEXTURE.create_from_image(ICON)
 <pre><code>
 get_node("Sprite").set_texture(ICON_TEXTURE)
 </code></pre>
+	<hr/>
 	<header class="major">
 		<h3>All-In-One</h3>
 	</header>

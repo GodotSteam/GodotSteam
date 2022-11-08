@@ -32,6 +32,13 @@
 	<p>In this tutorial, we will cover the basic initialization of Steamworks in your game; as well as getting callbacks globally.  <a href="tutorials-common-issues">Check out the common issues tutorial if</a> you have issues getting things to work too.</p>
 	<hr/>
 	<header class="major">
+		<h3>Preparation</h3>
+	</header>
+	<p>Before we go any further, it is recommended that you enable logging in your project if you have not done so.  This will help both you, and us, debug any issues you might run into down the road.</p>
+	<p>To enable logging in the Godot editor, go to: <strong>Projects > Project Settings > Logging > File Logging</strong> and check <strong>Enable File Logging</strong>.  This will start placing logs in your project's user data folder.  Where are these, you might ask?  <a href="https://docs.godotengine.org/en/stable/tutorials-io/data_paths.html#accessing-persistent-user-data-user" target="_blank">Check out the official Godot Engine documentation to find the locations.</a></p>
+	<p><img src="img/tutorial-initializing-logging.png" alt="Enable Logging" /></p>
+	<hr/>
+	<header class="major">
 		<h3>Initialize Steam</h3>
 	</header>
 	<p>In my personal projects, I usually create an auto-load GDscript called <strong>global.gd</strong> which is added as a singleton. I then create a function called <strong>_initialize_Steam</strong> and add the code below.  This is then called from the <strong>_ready</strong> function in my <strong>global.gd</strong>:</p>
