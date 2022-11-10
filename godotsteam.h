@@ -91,7 +91,7 @@ class Steam: public Object {
 			LAUNCH_OPTION_TYPE_OPTION2 = 11, LAUNCH_OPTION_TYPE_OPTION3 = 12, LAUNCH_OPTION_TYPE_OCULUS_VR = 13, LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY = 14, LAUNCH_OPTION_TYPE_OS_VR = 15, LAUNCH_OPTION_TYPE_DIALOG = 1000
 		};
 		enum MarketingMessageFlags {
-			MARKETING_MESSAGE_FLAGS_NONE = 0, MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY = (1<<0), MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS = (1<<1), MARKETING_MESSAGE_FLAGS_PLATFORM_MAC = (1<<2), MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX = (1<<3), MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS
+			MARKETING_MESSAGE_FLAGS_NONE = 0, MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY = (1<<0), MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS = (1<<1), MARKETING_MESSAGE_FLAGS_PLATFORM_MAC = (1<<2), MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX = (1<<3), MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS = 14
 		};
 		enum NotificationPosition {
 			POSITION_TOP_LEFT = 0, POSITION_TOP_RIGHT = 1, POSITION_BOTTOM_LEFT = 2, POSITION_BOTTOM_RIGHT = 3
@@ -491,7 +491,7 @@ class Steam: public Object {
 		// STEAMWORKS FUNCTIONS /////////////////
 		/////////////////////////////////////////
 		//
-		CSteamID createSteamID(uint64_t steam_id, int account_type = -1);
+		CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
 
 		// Main /////////////////////////////////
 		bool restartAppIfNecessary(uint32 app_id);
@@ -561,7 +561,7 @@ class Steam: public Object {
 		uint64_t getCoplayFriend(int friend_number);
 		int getCoplayFriendCount();
 		void getFollowerCount(uint64_t steam_id);
-		uint64_t getFriendByIndex(int friend_number, int friend_flags);
+		uint64_t getFriendByIndex(int friend_number, BitField<FriendFlags> friend_flags);
 		uint32 getFriendCoplayGame(uint64_t friend_id);
 		int getFriendCoplayTime(uint64_t friend_id);
 		int getFriendCount();
@@ -571,8 +571,8 @@ class Steam: public Object {
 		Dictionary getFriendMessage(uint64_t friend_id, int message);
 		String getFriendPersonaName(uint64_t steam_id);
 		String getFriendPersonaNameHistory(uint64_t steam_id, int name_history);
-		int getFriendPersonaState(uint64_t steam_id);
-		int getFriendRelationship(uint64_t steam_id);
+		PersonaState getFriendPersonaState(uint64_t steam_id);
+		FriendRelationship getFriendRelationship(uint64_t steam_id);
 		String getFriendRichPresence(uint64_t friend_id, const String& key);
 		int getFriendRichPresenceKeyCount(uint64_t friend_id);
 		String getFriendRichPresenceKeyByIndex(uint64_t friend_id, int key);		
@@ -585,19 +585,19 @@ class Steam: public Object {
 		int getLargeFriendAvatar(uint64_t steam_id);
 		int getMediumFriendAvatar(uint64_t steam_id);
 		String getPersonaName();
-		int getPersonaState();
+		PersonaState getPersonaState();
 		void getPlayerAvatar(int size = 2, uint64_t steam_id = 0);
 		String getPlayerNickname(uint64_t steam_id);
-		String getProfileItemPropertyString(uint64_t steam_id, int item_type, int item_property);
-		uint32 getProfileItemPropertyInt(uint64_t steam_id, int item_type, int item_property);
+		String getProfileItemPropertyString(uint64_t steam_id, CommunityProfileItemType item_type, CommunityProfileItemProperty item_property);
+		uint32 getProfileItemPropertyInt(uint64_t steam_id, CommunityProfileItemType item_type, CommunityProfileItemProperty item_property);
 		Array getRecentPlayers();
 		int getSmallFriendAvatar(uint64_t steam_id);
 		Array getUserFriendsGroups();
 		uint32 getUserRestrictions();
 		Array getUserSteamFriends();
 		Array getUserSteamGroups();
-		bool hasEquippedProfileItem(uint64_t steam_id, int item_type);
-		bool hasFriend(uint64_t steam_id, int friend_flags);
+		bool hasEquippedProfileItem(uint64_t steam_id, CommunityProfileItemType item_type);
+		bool hasFriend(uint64_t steam_id, BitField<FriendFlags> friend_flags);
 		bool inviteUserToGame(uint64_t friend_id, const String& connect_string);
 		bool isClanChatAdmin(uint64_t chat_id, uint64_t steam_id);
 		bool isClanPublic(uint64_t clan_id);
@@ -633,7 +633,7 @@ class Steam: public Object {
 		int requestPlayersForGame(int player_min, int player_max, int max_team_size);
 		int hostConfirmGameStart(uint64_t game_id);
 		int cancelRequestPlayersForGame();
-		int submitPlayerResult(uint64_t game_id, uint64_t player_id, int player_result);
+		int submitPlayerResult(uint64_t game_id, uint64_t player_id, PlayerResult player_result);
 		int endGame(uint64_t game_id);
 
 		// HTML Surface /////////////////////////
@@ -648,14 +648,14 @@ class Steam: public Object {
 		void goForward(uint32 this_handle = 0);
 		void htmlInit();
 		void jsDialogResponse(bool result, uint32 this_handle = 0);
-		void keyChar(uint32 unicode_char, int key_modifiers, uint32 this_handle = 0);
-		void keyDown(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
-		void keyUp(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
+		void keyChar(uint32 unicode_char, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
+		void keyDown(uint32 native_key_code, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
+		void keyUp(uint32 native_key_code, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
 		void loadURL(const String& url, const String& post_data, uint32 this_handle = 0);
-		void mouseDoubleClick(int mouse_button, uint32 this_handle = 0);
-		void mouseDown(int mouse_button, uint32 this_handle = 0);
+		void mouseDoubleClick(HTMLMouseButton mouse_button, uint32 this_handle = 0);
+		void mouseDown(HTMLMouseButton mouse_button, uint32 this_handle = 0);
 		void mouseMove(int x, int y, uint32 this_handle = 0);
-		void mouseUp(int mouse_button, uint32 this_handle = 0);
+		void mouseUp(HTMLMouseButton mouse_button, uint32 this_handle = 0);
 		void mouseWheel(int32 delta, uint32 this_handle = 0);
 		void pasteFromClipboard(uint32 this_handle = 0);
 		void reload(uint32 this_handle = 0);
@@ -674,7 +674,7 @@ class Steam: public Object {
 
 		// HTTP /////////////////////////////////
 		uint32_t createCookieContainer( bool allow_responses_to_modify);
-		uint32_t createHTTPRequest(int request_method, const String& absolute_url);
+		uint32_t createHTTPRequest(HTTPMethod request_method, const String& absolute_url);
 		bool deferHTTPRequest(uint32 request_handle);
 		float getHTTPDownloadProgressPct(uint32 request_handle);
 		bool getHTTPRequestWasTimedOut(uint32 request_handle);
@@ -707,7 +707,7 @@ class Steam: public Object {
 		void enableDeviceCallbacks();
 //		void enableActionEventCallbacks();
 		uint64_t getActionSetHandle(const String& action_set_name);
-		int getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
+		InputActionOrigin getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
 		Array getActiveActionSetLayers(uint64_t input_handle);
 		Dictionary getAnalogActionData(uint64_t input_handle, uint64_t analog_action_handle);
 		uint64_t getAnalogActionHandle(const String& action_name);
@@ -720,15 +720,15 @@ class Steam: public Object {
 		uint64_t getDigitalActionHandle(const String& action_name);
 		Array getDigitalActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t digital_action_handle);
 		int getGamepadIndexForController(uint64_t input_handle);
-		String getGlyphForActionOrigin(int origin);
+		String getGlyphForActionOrigin(InputActionOrigin origin);
 		String getGlyphForXboxOrigin(int origin);
-		String getGlyphPNGForActionOrigin(int origin, int size, uint32 flags);
-		String getGlyphSVGForActionOrigin(int origin, uint32 flags);
+		String getGlyphPNGForActionOrigin(InputActionOrigin origin, GlyphSize size, uint32 flags);
+		String getGlyphSVGForActionOrigin(InputActionOrigin origin, uint32 flags);
 		String getInputTypeForHandle(uint64_t input_handle);
 		Dictionary getMotionData(uint64_t input_handle);
 		int getRemotePlaySessionID(uint64_t input_handle);
 		uint16 getSessionInputConfigurationSettings();
-		String getStringForActionOrigin(int origin);
+		String getStringForActionOrigin(InputActionOrigin origin);
 		String getStringForAnalogActionName(uint64_t action_handle);
 		String getStringForDigitalActionName(uint64_t action_handle);
 		String getStringForXboxOrigin(int origin);
@@ -740,14 +740,14 @@ class Steam: public Object {
 		void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);
 		bool showBindingPanel(uint64_t input_handle);
 		void stopAnalogActionMomentum(uint64_t input_handle, uint64_t action);
-		int translateActionOrigin(int destination_input, int source_origin);
+		int translateActionOrigin(SteamInputType destination_input, InputActionOrigin source_origin);
 		void triggerHapticPulse(uint64_t input_handle, int target_pad, int duration);
 		void triggerRepeatedHapticPulse(uint64_t input_handle, int target_pad, int duration, int offset, int repeat, int flags);
 		void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String& gain_db, uint8 other_intensity, const String& other_gain_db);
 		void triggerVibration(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed);
 		void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
 		bool setInputActionManifestFilePath(const String& manifest_path);
-		void setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, int effect_mode, int position, int amplitude, int frequency);
+		void setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, SCEPadTriggerEffectMode effect_mode, int position, int amplitude, int frequency);
 		bool waitForData(bool wait_forever, uint32 timeout);
 
 		// Inventory ////////////////////////////
@@ -790,13 +790,13 @@ class Steam: public Object {
 		int addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
 		bool removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
 		void requestLobbyList();
-		void addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, int comparison_type);
-		void addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, int comparison_type);
+		void addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, LobbyComparison comparison_type);
+		void addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, LobbyComparison comparison_type);
 		void addRequestLobbyListNearValueFilter(const String& key_to_match, int value_to_be_close_to);
 		void addRequestLobbyListFilterSlotsAvailable(int slots_available);
-		void addRequestLobbyListDistanceFilter(int distance_filter);
+		void addRequestLobbyListDistanceFilter(LobbyDistanceFilter distance_filter);
 		void addRequestLobbyListResultCountFilter(int max_results);
-		void createLobby(int lobby_type, int max_members);
+		void createLobby(LobbyType lobby_type, int max_members);
 		void joinLobby(uint64_t steam_lobby_id);
 		void leaveLobby(uint64_t steam_lobby_id);
 		bool inviteUserToLobby(uint64_t steam_lobby_id, uint64_t steam_id_invitee);
@@ -814,7 +814,7 @@ class Steam: public Object {
 		Dictionary getLobbyGameServer(uint64_t steam_lobby_id);
 		bool setLobbyMemberLimit(uint64_t steam_lobby_id, int max_members);
 		int getLobbyMemberLimit(uint64_t steam_lobby_id);
-		bool setLobbyType(uint64_t steam_lobby_id, int lobby_type);
+		bool setLobbyType(uint64_t steam_lobby_id, LobbyType lobby_type);
 		bool setLobbyJoinable(uint64_t steam_lobby_id, bool joinable);
 		uint64_t getLobbyOwner(uint64_t steam_lobby_id);
 		bool setLobbyOwner(uint64_t steam_lobby_id, uint64_t steam_id_new_owner);
@@ -841,7 +841,7 @@ class Steam: public Object {
 		// Music ////////////////////////////////
 		bool musicIsEnabled();
 		bool musicIsPlaying();
-		int getPlaybackStatus();
+		AudioPlaybackStatus getPlaybackStatus();
 		float musicGetVolume();
 		void musicPause();
 		void musicPlay();
@@ -879,7 +879,7 @@ class Steam: public Object {
 		bool updateCurrentEntryElapsedSeconds(int seconds);
 		bool updateCurrentEntryText(const String& text);
 		bool updateLooped(bool looped);
-		bool updatePlaybackStatus(int status);
+		bool updatePlaybackStatus(AudioPlaybackStatus status);
 		bool updateShuffled(bool shuffle);
 		bool updateVolume(float volume);
 
@@ -891,7 +891,7 @@ class Steam: public Object {
 		Dictionary getP2PSessionState(uint64_t steam_id_remote);
 		uint32_t getAvailableP2PPacketSize(int channel = 0);
 		Dictionary readP2PPacket(uint32_t packet, int channel = 0);
-		bool sendP2PPacket(uint64_t steam_id_remote, const PackedByteArray data, int send_type, int channel = 0);
+		bool sendP2PPacket(uint64_t steam_id_remote, const PackedByteArray data, P2PSend send_type, int channel = 0);
 
 		// Networking Messages //////////////////
 		bool acceptSessionWithUser(const String& identity_reference);
@@ -919,7 +919,7 @@ class Steam: public Object {
 		bool destroyPollGroup(uint32 poll_group);
 //		int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
 		int flushMessagesOnConnection(uint32 connection_handle);
-		int getAuthenticationStatus();
+		NetworkingAvailability getAuthenticationStatus();
 		Dictionary getCertificateRequest();
 		Dictionary getConnectionInfo(uint32 connection_handle);
 		String getConnectionName(uint32 peer);
@@ -934,7 +934,7 @@ class Steam: public Object {
 		bool getListenSocketAddress(uint32 socket);
 		String getIdentity();
 		Dictionary getRemoteFakeIPForConnection(uint32 connection);
-		int initAuthentication();
+		NetworkingAvailability initAuthentication();
 		Array receiveMessagesOnConnection(uint32 connection, int max_messages);
 		Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
 //		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
@@ -990,42 +990,42 @@ class Steam: public Object {
 		String convertPingLocationToString(PackedByteArray location);
 		int estimatePingTimeBetweenTwoLocations(PackedByteArray location1, PackedByteArray location2);
 		int estimatePingTimeFromLocalHost(PackedByteArray location);
-		Dictionary getConfigValue(int config_value, int scope_type, uint32_t connection_handle);
-		Dictionary getConfigValueInfo(int config_value);
+		Dictionary getConfigValue(NetworkingConfigValue config_value, NetworkingConfigScope scope_type, uint32_t connection_handle);
+		Dictionary getConfigValueInfo(NetworkingConfigValue config_value);
 		int getDirectPingToPOP(uint32 pop_id);
 		Dictionary getLocalPingLocation();
 		uint64_t getLocalTimestamp();
 		Dictionary getPingToDataCenter(uint32 pop_id);
 		int getPOPCount();
 		Array getPOPList();
-		int getRelayNetworkStatus();
+		NetworkingAvailability getRelayNetworkStatus();
 		void initRelayNetworkAccess();
 		Dictionary parsePingLocationString(const String& location_string);
-		bool setConnectionConfigValueFloat(uint32 connection, int config, float value);
-		bool setConnectionConfigValueInt32(uint32 connection, int config, int32 value);
-		bool setConnectionConfigValueString(uint32 connection, int config, const String& value);
-//		bool setConfigValue(int setting, int scope_type, uint32_t connection_handle, int data_type, auto value);
-		bool setGlobalConfigValueFloat(int config, float value);		
-		bool setGlobalConfigValueInt32(int config, int32 value);
-		bool setGlobalConfigValueString(int config, const String& value);
+		bool setConnectionConfigValueFloat(uint32 connection, NetworkingConfigValue config, float value);
+		bool setConnectionConfigValueInt32(uint32 connection, NetworkingConfigValue config, int32 value);
+		bool setConnectionConfigValueString(uint32 connection, NetworkingConfigValue config, const String& value);
+//		bool setConfigValue(NetworkingConfigValue setting, NetworkingConfigScope scope_type, uint32_t connection_handle, NetworkingConfigDataType data_type, auto value);
+		bool setGlobalConfigValueFloat(NetworkingConfigValue config, float value);		
+		bool setGlobalConfigValueInt32(NetworkingConfigValue config, int32 value);
+		bool setGlobalConfigValueString(NetworkingConfigValue config, const String& value);
 
 		// Parental Settings ////////////////////
 		bool isParentalLockEnabled();
 		bool isParentalLockLocked();
 		bool isAppBlocked(uint32 app_id);
 		bool isAppInBlockList(uint32 app_id);
-		bool isFeatureBlocked(int feature);
-		bool isFeatureInBlockList(int feature);
+		bool isFeatureBlocked(ParentalFeature feature);
+		bool isFeatureInBlockList(ParentalFeature feature);
 
 		// Parties //////////////////////////////
 		void cancelReservation(uint64_t beacon_id, uint64_t steam_id);
 		void changeNumOpenSlots(uint64_t beacon_id, uint32 open_slots);
-		void createBeacon(uint32 open_slots, uint64_t location_id, int type, const String& connect_string, const String& metadata);
+		void createBeacon(uint32 open_slots, uint64_t location_id, SteamPartyBeaconLocationType type, const String& connect_string, const String& metadata);
 		bool destroyBeacon(uint64_t beacon_id);
 		Array getAvailableBeaconLocations(uint32 max);
 		uint64_t getBeaconByIndex(uint32 index);
 		Dictionary getBeaconDetails(uint64_t beacon_id);
-		String getBeaconLocationData(uint64_t location_id, int location_type, int location_data);
+		String getBeaconLocationData(uint64_t location_id, SteamPartyBeaconLocationType location_type, SteamPartyBeaconLocationData location_data);
 		uint32 getNumActiveBeacons();
 		void joinParty(uint64_t beacon_id);
 		void onReservationCompleted(uint64_t beacon_id, uint64_t steam_id);
@@ -1073,11 +1073,11 @@ class Steam: public Object {
 		bool setSyncPlatforms(const String& file, int platform);
 		void ugcDownload(uint64_t content, uint32 priority);
 		void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
-		PackedByteArray ugcRead(uint64_t content, int32 data_size, uint32 offset, int action);
+		PackedByteArray ugcRead(uint64_t content, int32 data_size, uint32 offset, UGCReadAction action);
 		
 		// Screenshots //////////////////////////
 		uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnail_filename, int width, int height);
-		uint32_t addVRScreenshotToLibrary(int type, const String& filename, const String& vr_filename);
+		uint32_t addVRScreenshotToLibrary(VRScreenshotType type, const String& filename, const String& vr_filename);
 		void hookScreenshots(bool hook);
 		bool isScreenshotsHooked();
 		bool setLocation(uint32_t screenshot, const String& location);
@@ -1091,17 +1091,17 @@ class Steam: public Object {
 		void addDependency(uint64_t published_file_id, uint64_t child_published_file_id);
 		bool addExcludedTag(uint64_t query_handle, const String& tag_name);
 		bool addItemKeyValueTag(uint64_t query_handle, const String& key, const String& value);
-		bool addItemPreviewFile(uint64_t query_handle, const String& preview_file, int type);
+		bool addItemPreviewFile(uint64_t query_handle, const String& preview_file, ItemPreviewType type);
 		bool addItemPreviewVideo(uint64_t query_handle, const String& video_id);
 		void addItemToFavorites(uint32_t app_id, uint64_t published_file_id);
 		bool addRequiredKeyValueTag(uint64_t query_handle, const String& key, const String& value);
 		bool addRequiredTag(uint64_t query_handle, const String& tag_name);
 		bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
 		bool initWorkshopForGameServer(uint32_t workshop_depot_id);
-		void createItem(uint32 app_id, int file_type);
-		uint64_t createQueryAllUGCRequest(int query_type, int matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
+		void createItem(uint32 app_id, WorkshopFileType file_type);
+		uint64_t createQueryAllUGCRequest(UGCQuery query_type, UGCMatchingUGCType matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 		uint64_t createQueryUGCDetailsRequest(Array published_file_id);
-		uint64_t createQueryUserUGCRequest(uint64_t steam_id, int list_type, int matching_ugc_type, int sort_order, uint32_t creator_id, uint32_t consumer_id, uint32 page);
+		uint64_t createQueryUserUGCRequest(uint64_t steam_id, UserUGCList list_type, UGCMatchingUGCType matching_ugc_type, UserUGCListSortOrder sort_order, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 		void deleteItem(uint64_t published_file_id);
 		bool downloadItem(uint64_t published_file_id, bool high_priority);
 		Dictionary getItemDownloadInfo(uint64_t published_file_id);
@@ -1118,7 +1118,7 @@ class Steam: public Object {
 		uint32 getQueryUGCNumTags(uint64_t query_handle, uint32 index);
 		String getQueryUGCPreviewURL(uint64_t query_handle, uint32 index);
 		Dictionary getQueryUGCResult(uint64_t query_handle, uint32 index);
-		Dictionary getQueryUGCStatistic(uint64_t query_handle, uint32 index, int stat_type);
+		Dictionary getQueryUGCStatistic(uint64_t query_handle, uint32 index, ItemStatistic stat_type);
 		String getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index);
 		String getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index);
 		Array getSubscribedItems();
@@ -1139,7 +1139,7 @@ class Steam: public Object {
 		bool setItemTags(uint64_t update_handle, Array tag_array);
 		bool setItemTitle(uint64_t update_handle, const String& title);
 		bool setItemUpdateLanguage(uint64_t update_handle, const String& language);
-		bool setItemVisibility(uint64_t update_handle, int visibility);
+		bool setItemVisibility(uint64_t update_handle, RemoteStoragePublishedFileVisibility visibility);
 		bool setLanguage(uint64_t query_handle, const String& language);
 		bool setMatchAnyTag(uint64_t query_handle, bool match_any_tag);
 		bool setRankedByTrendDays(uint64_t query_handle, uint32 days);
@@ -1171,7 +1171,7 @@ class Steam: public Object {
 
 		// Users ////////////////////////////////
 		void advertiseGame(const String& server_ip, int port);
-		int beginAuthSession(PackedByteArray ticket, int ticket_size, uint64_t steam_id);
+		BeginAuthSessionResult beginAuthSession(PackedByteArray ticket, int ticket_size, uint64_t steam_id);
 		void cancelAuthTicket(uint32_t auth_ticket);
 		Dictionary decompressVoice(const PackedByteArray& voice, uint32 voice_size, uint32 sample_rate);
 		void endAuthSession(uint64_t steam_id);
@@ -1202,10 +1202,10 @@ class Steam: public Object {
 		// User Stats ///////////////////////////
 		void attachLeaderboardUGC(uint64_t ugc_handle, uint64_t this_leaderboard = 0);
 		bool clearAchievement(const String& achievement_name);
-		void downloadLeaderboardEntries(int start, int end, int type = k_ELeaderboardDataRequestGlobal, uint64_t this_leaderboard = 0);
+		void downloadLeaderboardEntries(int start, int end, LeaderboardDataRequest type = LeaderboardDataRequest(k_ELeaderboardDataRequestGlobal), uint64_t this_leaderboard = 0);
 		void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard = 0);
 		void findLeaderboard(const String& leaderboard_name);
-		void findOrCreateLeaderboard(const String& leaderboard_name, int sort_method, int display_type);
+		void findOrCreateLeaderboard(const String& leaderboard_name, LeaderboardSortMethod sort_method, LeaderboardDisplayType display_type);
 		Dictionary getAchievement(const String& achievement_name);
 		Dictionary getAchievementAchievedPercent(const String& achievement_name);
 		Dictionary getAchievementAndUnlockTime(const String& achievement_name);
@@ -1248,7 +1248,7 @@ class Steam: public Object {
 		Array getLeaderboardEntries();
 
 		// Utils ////////////////////////////////
-		String filterText(int context, uint64_t steam_id, const String& message);
+		String filterText(TextFilteringContext context, uint64_t steam_id, const String& message);
 		String getAPICallFailureReason();
 		uint32_t getAppID();
 		int getCurrentBatteryPower();
@@ -1271,8 +1271,8 @@ class Steam: public Object {
 		void setOverlayNotificationInset(int horizontal, int vertical);
 		void setOverlayNotificationPosition(int pos);
 		void setVRHeadsetStreamingEnabled(bool enabled);
-		bool showGamepadTextInput(int input_mode, int line_input_mode, const String& description, uint32 max_text, const String& preset_text);
-		bool showFloatingGamepadTextInput(int input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
+		bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String& description, uint32 max_text, const String& preset_text);
+		bool showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
 		void setGameLauncherMode(bool mode);
 		void startVRDashboard();
 		bool isSteamRunningOnSteamDeck();
@@ -1660,4 +1660,106 @@ class Steam: public Object {
 		CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
 		void check_file_signature(CheckFileSignature_t *call_data, bool io_failure);
 };
+
+VARIANT_ENUM_CAST(Steam::AccountType);
+VARIANT_BITFIELD_CAST(Steam::AppOwnershipFlags);
+VARIANT_ENUM_CAST(Steam::AppReleaseState);
+VARIANT_BITFIELD_CAST(Steam::AppType);
+VARIANT_ENUM_CAST(Steam::AuthSessionResponse);
+VARIANT_ENUM_CAST(Steam::BeginAuthSessionResult);
+VARIANT_ENUM_CAST(Steam::BroadcastUploadResult);
+VARIANT_ENUM_CAST(Steam::ChatEntryType);
+VARIANT_ENUM_CAST(Steam::ChatRoomEnterResponse);
+VARIANT_BITFIELD_CAST(Steam::ChatSteamIDInstanceFlags);
+VARIANT_ENUM_CAST(Steam::DenyReason);
+VARIANT_ENUM_CAST(Steam::GameIDType);
+VARIANT_ENUM_CAST(Steam::LaunchOptionType);
+VARIANT_BITFIELD_CAST(Steam::MarketingMessageFlags);
+VARIANT_ENUM_CAST(Steam::NotificationPosition);
+VARIANT_ENUM_CAST(Steam::Result);
+VARIANT_ENUM_CAST(Steam::Universe);
+VARIANT_ENUM_CAST(Steam::UserHasLicenseForAppResult);
+VARIANT_ENUM_CAST(Steam::VoiceResult);
+VARIANT_ENUM_CAST(Steam::VRHMDType);
+VARIANT_ENUM_CAST(Steam::RegisterActivationCodeResult);
+VARIANT_ENUM_CAST(Steam::AvatarSizes);
+VARIANT_BITFIELD_CAST(Steam::FriendFlags);
+VARIANT_ENUM_CAST(Steam::FriendRelationship);
+VARIANT_ENUM_CAST(Steam::OverlayToStoreFlag);
+VARIANT_ENUM_CAST(Steam::OverlayToWebPageMode);
+VARIANT_BITFIELD_CAST(Steam::PersonaChange);
+VARIANT_ENUM_CAST(Steam::PersonaState);
+VARIANT_BITFIELD_CAST(Steam::UserRestriction);
+VARIANT_ENUM_CAST(Steam::GameSearchErrorCode);
+VARIANT_ENUM_CAST(Steam::PlayerResult);
+VARIANT_BITFIELD_CAST(Steam::HTMLKeyModifiers);
+VARIANT_ENUM_CAST(Steam::HTMLMouseButton);
+VARIANT_ENUM_CAST(Steam::MouseCursor);
+VARIANT_ENUM_CAST(Steam::HTTPMethod);
+VARIANT_ENUM_CAST(Steam::HTTPStatusCode);
+VARIANT_ENUM_CAST(Steam::InputActionOrigin);
+VARIANT_ENUM_CAST(Steam::SteamInputType);
+VARIANT_BITFIELD_CAST(Steam::ConfigurationEnableType);
+VARIANT_ENUM_CAST(Steam::GlyphSize);
+VARIANT_BITFIELD_CAST(Steam::GlyphStyle);
+VARIANT_BITFIELD_CAST(Steam::SteamItemFlags);
+VARIANT_BITFIELD_CAST(Steam::ChatMemberStateChange);
+VARIANT_ENUM_CAST(Steam::LobbyComparison);
+VARIANT_ENUM_CAST(Steam::LobbyDistanceFilter);
+VARIANT_ENUM_CAST(Steam::LobbyType);
+VARIANT_ENUM_CAST(Steam::MatchMakingServerResponse);
+VARIANT_ENUM_CAST(Steam::AudioPlaybackStatus);
+VARIANT_ENUM_CAST(Steam::P2PSend);
+VARIANT_ENUM_CAST(Steam::P2PSessionError);
+VARIANT_ENUM_CAST(Steam::SNetSocketConnectionType);
+VARIANT_ENUM_CAST(Steam::SNetSocketState);
+VARIANT_ENUM_CAST(Steam::NetworkingConfigValue);
+VARIANT_ENUM_CAST(Steam::NetworkingGetConfigValueResult);
+VARIANT_ENUM_CAST(Steam::NetworkingConnectionState);
+VARIANT_ENUM_CAST(Steam::NetworkingConnectionEnd);
+VARIANT_ENUM_CAST(Steam::NetworkingIdentityType);
+VARIANT_ENUM_CAST(Steam::NetworkingSocketsDebugOutputType);
+VARIANT_ENUM_CAST(Steam::NetworkingAvailability);
+VARIANT_ENUM_CAST(Steam::NetworkingConfigScope);
+VARIANT_ENUM_CAST(Steam::NetworkingConfigDataType);
+VARIANT_ENUM_CAST(Steam::ParentalFeature);
+VARIANT_ENUM_CAST(Steam::SteamPartyBeaconLocationType);
+VARIANT_ENUM_CAST(Steam::SteamPartyBeaconLocationData);
+VARIANT_BITFIELD_CAST(Steam::RemoteStoragePlatform);
+VARIANT_ENUM_CAST(Steam::RemoteStoragePublishedFileVisibility);
+VARIANT_ENUM_CAST(Steam::UGCReadAction);
+VARIANT_ENUM_CAST(Steam::WorkshopEnumerationType);
+VARIANT_ENUM_CAST(Steam::WorkshopFileAction);
+VARIANT_ENUM_CAST(Steam::WorkshopFileType);
+VARIANT_ENUM_CAST(Steam::WorkshopVideoProvider);
+VARIANT_ENUM_CAST(Steam::WorkshopVote);
+VARIANT_ENUM_CAST(Steam::LocalFileChange);
+VARIANT_ENUM_CAST(Steam::FilePathType);
+VARIANT_ENUM_CAST(Steam::VRScreenshotType);
+VARIANT_ENUM_CAST(Steam::ItemPreviewType);
+VARIANT_BITFIELD_CAST(Steam::ItemState);
+VARIANT_ENUM_CAST(Steam::ItemStatistic);
+VARIANT_ENUM_CAST(Steam::ItemUpdateStatus);
+VARIANT_ENUM_CAST(Steam::UGCMatchingUGCType);
+VARIANT_ENUM_CAST(Steam::UGCQuery);
+VARIANT_ENUM_CAST(Steam::UserUGCList);
+VARIANT_ENUM_CAST(Steam::UserUGCListSortOrder);
+VARIANT_ENUM_CAST(Steam::FailureType);
+VARIANT_ENUM_CAST(Steam::DurationControlProgress);
+VARIANT_ENUM_CAST(Steam::DurationControlNotification);
+VARIANT_ENUM_CAST(Steam::LeaderboardDataRequest);
+VARIANT_ENUM_CAST(Steam::LeaderboardDisplayType);
+VARIANT_ENUM_CAST(Steam::LeaderboardSortMethod);
+VARIANT_ENUM_CAST(Steam::LeaderboardUploadScoreMethod);
+VARIANT_ENUM_CAST(Steam::SteamUserStatType);
+VARIANT_ENUM_CAST(Steam::CheckFileSignature);
+VARIANT_ENUM_CAST(Steam::GamepadTextInputLineMode);
+VARIANT_ENUM_CAST(Steam::GamepadTextInputMode);
+VARIANT_ENUM_CAST(Steam::FloatingGamepadTextInputMode);
+VARIANT_ENUM_CAST(Steam::SteamAPICallFailure);
+VARIANT_ENUM_CAST(Steam::TextFilteringContext);
+VARIANT_ENUM_CAST(Steam::CommunityProfileItemType);
+VARIANT_ENUM_CAST(Steam::CommunityProfileItemProperty);
+VARIANT_ENUM_CAST(Steam::SCEPadTriggerEffectMode);
+
 #endif // GODOTSTEAM_H
