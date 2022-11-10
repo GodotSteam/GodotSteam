@@ -97,6 +97,12 @@
 #define MUSIC_NAME_MAX_LENGTH 255
 #define MUSIC_PNG_MAX_LENGTH 65535
 
+// Define Networking Message constants
+#define NETWORKING_SEND_UNRELIABLE 0
+#define NETWORKING_SEND_NO_NAGLE 1
+#define NETWORKING_SEND_NO_DELAY 4
+#define NETWORKING_SEND_RELIABLE 8
+
 // Define Remote Play constants
 #define DEVICE_FORM_FACTOR_UNKNOWN 0
 #define DEVICE_FORM_FACTOR_PHONE 1
@@ -162,6 +168,7 @@ Steam::Steam():
 
 	// Friends callbacks ////////////////////////
 	callbackAvatarLoaded(this, &Steam::avatar_loaded),
+	callbackAvatarImageLoaded(this, &Steam::avatar_image_loaded),
 	callbackClanActivityDownloaded(this, &Steam::clan_activity_downloaded),
 	callbackFriendRichPresenceUpdate(this, &Steam::friend_rich_presence_update),
 	callbackConnectedChatJoin(this, &Steam::connected_chat_join),
@@ -301,7 +308,7 @@ Steam::Steam():
 	callbackGetAuthSessionTicketResponse(this, &Steam::get_auth_session_ticket_response),
 	callbackIPCFailure(this, &Steam::ipc_failure),
 	callbackLicensesUpdated(this, &Steam::licenses_updated),
-	callbackMicrotransactionAuthResponse(this, &Steam::microstransaction_auth_response),
+	callbackMicrotransactionAuthResponse(this, &Steam::microtransaction_auth_response),
 	callbackSteamServerConnected(this, &Steam::steam_server_connected),
 	callbackSteamServerDisconnected(this, &Steam::steam_server_disconnected),
 	callbackValidateAuthTicketResponse(this, &Steam::validate_auth_ticket_response),
@@ -667,7 +674,7 @@ bool Steam::markContentCorrupt(bool missing_files_only){
 	return SteamApps()->MarkContentCorrupt(missing_files_only);
 }
 
-//
+// Set current DLC AppID being played (or 0 if none). Allows Steam to track usage of major DLC extensions.
 bool Steam::setDLCContext(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return false;
@@ -1476,7 +1483,7 @@ void Steam::isFollowing(uint64_t steam_id){
 	}
 }
 
-//! Returns true if the local user can see that steam_id_user is a member or in steamIDSource.
+//! Returns true if the local user can see that steam_id_user is a member or in souce_id.
 bool Steam::isUserInSource(uint64_t steam_id, uint64_t source_id){
 	if(SteamFriends() == NULL){
 		return false;
@@ -3465,7 +3472,7 @@ String Steam::getLobbyData(uint64_t steam_lobby_id, const String& key){
 		return "";
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
-	return SteamMatchmaking()->GetLobbyData(lobby_id, key.utf8().get_data());
+	return String::utf8(SteamMatchmaking()->GetLobbyData(lobby_id, key.utf8().get_data()));
 }
 
 //! Sets a key/value pair in the lobby metadata.
@@ -3531,7 +3538,7 @@ bool Steam::sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body
 		return false;
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
-	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), message_body.size() + 1);
+	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), strlen(message_body.utf8().get_data()) + 1);
 }
 
 //! Refreshes metadata for a lobby you're not necessarily in right now.
@@ -5190,7 +5197,7 @@ void Steam::setIdentitySteamID(const String& reference_name, uint32 steam_id){
 	networking_identities[reference_name.utf8().get_data()].SetSteamID(createSteamID(steam_id));
 }
 
-// Return black CSteamID (!IsValid()) if identity is not a SteamID
+// Return CSteamID (!IsValid()) if identity is not a SteamID
 uint32 Steam::getIdentitySteamID(const String& reference_name){
 	CSteamID steam_id = networking_identities[reference_name.utf8().get_data()].GetSteamID();
 	return steam_id.ConvertToUint64();
@@ -7617,8 +7624,8 @@ Steam::BeginAuthSessionResult Steam::beginAuthSession(PackedByteArray ticket, in
 	if(SteamUser() == NULL){
 		return BeginAuthSessionResult(-1);
 	}
-	CSteamID authSteamID = createSteamID(steam_id);
-	return BeginAuthSessionResult(SteamUser()->BeginAuthSession(ticket.ptr(), ticket_size, authSteamID));
+	CSteamID auth_steam_id = createSteamID(steam_id);
+	return BeginAuthSessionResult(SteamUser()->BeginAuthSession(ticket.ptr(), ticket_size, auth_steam_id));
 }
 
 //! Cancels an auth ticket.
@@ -7646,8 +7653,8 @@ Dictionary Steam::decompressVoice(const PackedByteArray& voice, uint32 voice_siz
 //! Ends an auth session.
 void Steam::endAuthSession(uint64_t steam_id){
 	if(SteamUser() != NULL){
-		CSteamID authSteamID = createSteamID(steam_id);
-		SteamUser()->EndAuthSession(authSteamID);
+		CSteamID auth_steam_id = createSteamID(steam_id);
+		SteamUser()->EndAuthSession(auth_steam_id);
 	}
 }
 
@@ -8452,9 +8459,10 @@ Array Steam::getLeaderboardEntries(){
 String Steam::filterText(TextFilteringContext context, uint64_t steam_id, const String& message){
 	String new_message = "";
 	if(SteamUtils() != NULL){
-		char *filtered = new char[2048];
+		auto utf8_input = message.utf8();
+		char *filtered = new char[utf8_input.length() + 1];
 		CSteamID source_id = (uint64)steam_id;
-		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, message.utf8().get_data(), filtered, strlen(filtered)+1);
+		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, utf8_input.get_data(), filtered, utf8_input.length() + 1);
 		new_message = filtered;
 		delete[] filtered;
 	}
@@ -8858,6 +8866,16 @@ void Steam::avatar_loaded(AvatarImageLoaded_t* avatarData){
 	CSteamID steam_id = avatarData->m_steamID;
 	uint64_t avatar_id = steam_id.ConvertToUint64();
 	call_deferred("emit_signal", "avatar_loaded", avatar_id, width, data);
+}
+
+//! Called when a large avatar is loaded if you have tried requesting it when it was unavailable.
+void Steam::avatar_image_loaded(AvatarImageLoaded_t* avatarData){
+	uint32 width = avatarData->m_iWide;
+	uint32 height = avatarData->m_iTall;
+	int avatar_index = avatarData->m_iImage;
+	CSteamID steam_id = avatarData->m_steamID;
+	uint64_t avatar_id = steam_id.ConvertToUint64();
+	call_deferred("emit_signal", "avatar_image_loaded", avatar_id, avatar_index, width, height);
 }
 
 //! Called when a Steam group activity has received.
@@ -9839,7 +9857,7 @@ void Steam::licenses_updated(LicensesUpdated_t* call_data){
 }
 
 //! Called when a user has responded to a microtransaction authorization request.
-void Steam::microstransaction_auth_response(MicroTxnAuthorizationResponse_t *call_data){
+void Steam::microtransaction_auth_response(MicroTxnAuthorizationResponse_t *call_data){
 	uint32 app_id = call_data->m_unAppID;
 	uint64_t order_id = call_data->m_ulOrderID;
 	bool authorized;
@@ -9849,7 +9867,7 @@ void Steam::microstransaction_auth_response(MicroTxnAuthorizationResponse_t *cal
 	else{
 		authorized = false;
 	}
-	emit_signal("microstransaction_auth_response", app_id, order_id, authorized);
+	emit_signal("microtransaction_auth_response", app_id, order_id, authorized);
 }
 
 //! Called when a connections to the Steam back-end has been established. This means the Steam client now has a working connection to the Steam servers. Usually this will have occurred before the game has launched, and should only be seen if the user has dropped connection due to a networking issue or a Steam server update.
@@ -10001,9 +10019,9 @@ void Steam::request_clan_officer_list(ClanOfficerListResponse_t *call_data, bool
 			message = "Clan officer list response failed.";
 		}
 		else{
-			CSteamID ownerSteamID = SteamFriends()->GetClanOwner(call_data->m_steamIDClan);
+			CSteamID owner_steam_id = SteamFriends()->GetClanOwner(call_data->m_steamIDClan);
 			int officers = SteamFriends()->GetClanOfficerCount(call_data->m_steamIDClan);
-			message = "The owner of the clan is: " + (String)String::utf8(SteamFriends()->GetFriendPersonaName(ownerSteamID)) + " (" + itos(ownerSteamID.ConvertToUint64()) + ") and there are " + itos(call_data->m_cOfficers) + " officers.";
+			message = "The owner of the clan is: " + (String)String::utf8(SteamFriends()->GetFriendPersonaName(owner_steam_id)) + " (" + itos(owner_steam_id.ConvertToUint64()) + ") and there are " + itos(call_data->m_cOfficers) + " officers.";
 			for(int i = 0; i < officers; i++){
 				Dictionary officer;
 				CSteamID officerSteamID = SteamFriends()->GetClanOfficerByIndex(call_data->m_steamIDClan, i);
@@ -11625,7 +11643,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("app_uninstalled", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "install_folder_index")));
 
 	// FRIENDS SIGNALS //////////////////////////
-	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::ARRAY, "data")));
+	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "avatar_id"), PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::ARRAY, "data")));
+	ADD_SIGNAL(MethodInfo("avatar_image_loaded", PropertyInfo(Variant::INT, "avatar_id"), PropertyInfo(Variant::INT, "avatar_index"), PropertyInfo(Variant::INT, "width"), PropertyInfo(Variant::INT, "height")));
 	ADD_SIGNAL(MethodInfo("request_clan_officer_list", PropertyInfo(Variant::STRING, "message"), PropertyInfo(Variant::ARRAY, "officer_list")));
 	ADD_SIGNAL(MethodInfo("clan_activity_downloaded", PropertyInfo(Variant::DICTIONARY, "activity")));
 	ADD_SIGNAL(MethodInfo("friend_rich_presence_update", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "app_id")));
@@ -11805,7 +11824,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "auth_ticket"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("ipc_failure", PropertyInfo(Variant::INT, "type")));
 	ADD_SIGNAL(MethodInfo("licenses_updated"));
-	ADD_SIGNAL(MethodInfo("microstransaction_auth_response", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "order_id"), PropertyInfo(Variant::BOOL, "authorized")));
+	ADD_SIGNAL(MethodInfo("microtransaction_auth_response", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "order_id"), PropertyInfo(Variant::BOOL, "authorized")));
 	ADD_SIGNAL(MethodInfo("steam_server_connect_failed", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
 	ADD_SIGNAL(MethodInfo("steam_server_connected"));
 	ADD_SIGNAL(MethodInfo("steam_server_disconnected"));
@@ -11909,6 +11928,12 @@ void Steam::_bind_methods(){
 	// MUSIC REMOTE CONSTANTS ///////////////////
 	BIND_CONSTANT(MUSIC_NAME_MAX_LENGTH); 												// 255
 	BIND_CONSTANT(MUSIC_PNG_MAX_LENGTH); 												// 65535
+
+	// NETWORKING MESSAGE CONSTANTS /////////////
+	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
+	BIND_CONSTANT(NETWORKING_SEND_NO_NAGLE);											// 1
+	BIND_CONSTANT(NETWORKING_SEND_NO_DELAY);											// 4
+	BIND_CONSTANT(NETWORKING_SEND_RELIABLE);											// 8
 
 	// REMOTE PLAY CONSTANTS ////////////////////
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN);											// 0
@@ -12128,14 +12153,6 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY);								// 14
 	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OS_VR);										// 15
 	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_DIALOG);										// 1000
-
-	// MARKETING MESSAGE FLAGS //////////////////
-	BIND_BITFIELD_FLAG(MARKETING_MESSAGE_FLAGS_NONE);									// 0
-	BIND_BITFIELD_FLAG(MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY);							// (1<<0)
-	BIND_BITFIELD_FLAG(MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS);						// (1<<1)
-	BIND_BITFIELD_FLAG(MARKETING_MESSAGE_FLAGS_PLATFORM_MAC);							// (1<<2)
-	BIND_BITFIELD_FLAG(MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX);							// (1<<3)
-	BIND_BITFIELD_FLAG(MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS);					// 14
 
 	// NOTIFICATION POSITION ////////////////////
 	BIND_ENUM_CONSTANT(POSITION_TOP_LEFT);												// 0

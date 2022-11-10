@@ -19,7 +19,7 @@
 // Include INT types header
 #include <inttypes.h>
 
-// Include Steamworks API header
+// Include Steamworks API headers
 #include "steam/steam_api.h"
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
@@ -89,9 +89,6 @@ class Steam: public Object {
 		enum LaunchOptionType {
 			LAUNCH_OPTION_TYPE_NONE = 0, LAUNCH_OPTION_TYPE_DEFAULT = 1, LAUNCH_OPTION_TYPE_SAFE_MODE = 2, LAUNCH_OPTION_TYPE_MULTIPLAYER = 3, LAUNCH_OPTION_TYPE_CONFIG = 4, LAUNCH_OPTION_TYPE_OPEN_VR = 5, LAUNCH_OPTION_TYPE_SERVER = 6, LAUNCH_OPTION_TYPE_EDITOR = 7, LAUNCH_OPTION_TYPE_MANUAL = 8, LAUNCH_OPTION_TYPE_BENCHMARK = 9, LAUNCH_OPTION_TYPE_OPTION1 = 10,
 			LAUNCH_OPTION_TYPE_OPTION2 = 11, LAUNCH_OPTION_TYPE_OPTION3 = 12, LAUNCH_OPTION_TYPE_OCULUS_VR = 13, LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY = 14, LAUNCH_OPTION_TYPE_OS_VR = 15, LAUNCH_OPTION_TYPE_DIALOG = 1000
-		};
-		enum MarketingMessageFlags {
-			MARKETING_MESSAGE_FLAGS_NONE = 0, MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY = (1<<0), MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS = (1<<1), MARKETING_MESSAGE_FLAGS_PLATFORM_MAC = (1<<2), MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX = (1<<3), MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS = 14
 		};
 		enum NotificationPosition {
 			POSITION_TOP_LEFT = 0, POSITION_TOP_RIGHT = 1, POSITION_BOTTOM_LEFT = 2, POSITION_BOTTOM_RIGHT = 3
@@ -488,7 +485,7 @@ class Steam: public Object {
 
 
 		/////////////////////////////////////////
-		// STEAMWORKS FUNCTIONS /////////////////
+		// STEAMWORKS FUNCTIONS
 		/////////////////////////////////////////
 		//
 		CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
@@ -1363,7 +1360,7 @@ class Steam: public Object {
 
 
 		/////////////////////////////////////////
-		// STEAM CALLBACKS //////////////////////
+		// STEAM CALLBACKS
 		/////////////////////////////////////////
 		//
 		// Apps callbacks ///////////////////////
@@ -1378,6 +1375,7 @@ class Steam: public Object {
 
 		// Friends callbacks ////////////////////
 		STEAM_CALLBACK(Steam, avatar_loaded, AvatarImageLoaded_t, callbackAvatarLoaded);
+		STEAM_CALLBACK(Steam, avatar_image_loaded, AvatarImageLoaded_t, callbackAvatarImageLoaded);
 		STEAM_CALLBACK(Steam, clan_activity_downloaded, DownloadClanActivityCountsResult_t, callbackClanActivityDownloaded);
 		STEAM_CALLBACK(Steam, friend_rich_presence_update, FriendRichPresenceUpdate_t, callbackFriendRichPresenceUpdate);
 		STEAM_CALLBACK(Steam, connected_chat_join, GameConnectedChatJoin_t, callbackConnectedChatJoin);
@@ -1517,7 +1515,7 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, get_auth_session_ticket_response, GetAuthSessionTicketResponse_t, callbackGetAuthSessionTicketResponse);
 		STEAM_CALLBACK(Steam, ipc_failure, IPCFailure_t, callbackIPCFailure);
 		STEAM_CALLBACK(Steam, licenses_updated, LicensesUpdated_t, callbackLicensesUpdated);
-		STEAM_CALLBACK(Steam, microstransaction_auth_response, MicroTxnAuthorizationResponse_t, callbackMicrotransactionAuthResponse);
+		STEAM_CALLBACK(Steam, microtransaction_auth_response, MicroTxnAuthorizationResponse_t, callbackMicrotransactionAuthResponse);
 		STEAM_CALLBACK(Steam, steam_server_connected, SteamServersConnected_t, callbackSteamServerConnected);
 		STEAM_CALLBACK(Steam, steam_server_disconnected, SteamServersDisconnected_t, callbackSteamServerDisconnected);
 		STEAM_CALLBACK(Steam, validate_auth_ticket_response, ValidateAuthTicketResponse_t, callbackValidateAuthTicketResponse);
@@ -1674,7 +1672,6 @@ VARIANT_BITFIELD_CAST(Steam::ChatSteamIDInstanceFlags);
 VARIANT_ENUM_CAST(Steam::DenyReason);
 VARIANT_ENUM_CAST(Steam::GameIDType);
 VARIANT_ENUM_CAST(Steam::LaunchOptionType);
-VARIANT_BITFIELD_CAST(Steam::MarketingMessageFlags);
 VARIANT_ENUM_CAST(Steam::NotificationPosition);
 VARIANT_ENUM_CAST(Steam::Result);
 VARIANT_ENUM_CAST(Steam::Universe);
