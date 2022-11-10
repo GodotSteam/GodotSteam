@@ -20,6 +20,8 @@
 		<link title="Rich Presence">https://gramps.github.io/GodotSteam/tutorials-rich-presence.html</link>
 		<link title="Linux Caveats">https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html</link>
 		<link title="Exporting and Shipping">https://gramps.github.io/GodotSteam/tutorials-exporting-shipping.html</link>
+		<link title="Common Issues">https://gramps.github.io/GodotSteam/tutorials-common-issues.html</link>
+		<link title="Remove Steam">https://gramps.github.io/GodotSteam/tutorials-remove-steam.html</link>
 	</tutorials>
 	<methods>
 		<method name="acceptConnection">
@@ -1127,6 +1129,7 @@
 		<method name="getAppBuildId">
 			<return type="int" />
 			<description>
+				Return the build ID for this app; will change based on backend updates.
 			</description>
 		</method>
 		<method name="getAppDependencies">
@@ -1144,6 +1147,7 @@
 			<return type="String" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
+				Gets the install folder for a specific app ID.
 			</description>
 		</method>
 		<method name="getAppListBuildId">
@@ -1170,6 +1174,7 @@
 		<method name="getAppOwner">
 			<return type="int" />
 			<description>
+				Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.
 			</description>
 		</method>
 		<method name="getAuthSessionTicket">
@@ -1191,6 +1196,7 @@
 		<method name="getAvailableGameLanguages">
 			<return type="String" />
 			<description>
+				Gets a comma separated list of the languages the current app supports.
 			</description>
 		</method>
 		<method name="getAvailableP2PPacketSize">
@@ -1384,27 +1390,32 @@
 		<method name="getCurrentBetaName">
 			<return type="String" />
 			<description>
+				Checks if the user is running from a beta branch, and gets the name of the branch if they are.
 			</description>
 		</method>
 		<method name="getCurrentGameLanguage">
 			<return type="String" />
 			<description>
+				Gets the current language that the user has set.
 			</description>
 		</method>
 		<method name="getDLCCount">
 			<return type="int" />
 			<description>
+				Get the number of DLC the user owns for a parent application / game.
 			</description>
 		</method>
 		<method name="getDLCDataByIndex">
 			<return type="Array" />
 			<description>
+				Returns metadata for a DLC by index.
 			</description>
 		</method>
 		<method name="getDLCDownloadProgress">
 			<return type="Dictionary" />
 			<argument index="0" name="dlc_id" type="int" />
 			<description>
+				Gets the download progress for optional DLC.
 			</description>
 		</method>
 		<method name="getDetailedConnectionStatus">
@@ -1455,6 +1466,7 @@
 			<return type="int" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
+				Gets the time of purchase of the specified app in Unix epoch format (time since Jan 1st, 1970).
 			</description>
 		</method>
 		<method name="getEncryptedAppTicket">
@@ -1482,6 +1494,7 @@
 			<return type="void" />
 			<argument index="0" name="filename" type="String" />
 			<description>
+				Asynchronously retrieves metadata details about a specific file in the depot manifest.
 			</description>
 		</method>
 		<method name="getFileNameAndSize">
@@ -1850,6 +1863,7 @@
 			<return type="Array" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
+				Gets a list of all installed depots for a given App ID; returned in mount order.
 			</description>
 		</method>
 		<method name="getItemDefinitionProperty">
@@ -1911,12 +1925,14 @@
 		<method name="getLaunchCommandLine">
 			<return type="String" />
 			<description>
+				Gets the command line if the game was launched via Steam URL, e.g. steam://run/{appid}//{command line}/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation > General page on your app.
 			</description>
 		</method>
 		<method name="getLaunchQueryParam">
 			<return type="String" />
 			<argument index="0" name="key" type="String" />
 			<description>
+				Gets the associated launch parameter if the game is run via steam://run/{appid}/?param1=value1;param2=value2;param3=value3 etc.
 			</description>
 		</method>
 		<method name="getLeaderboardDisplayType">
@@ -2632,6 +2648,7 @@
 			<return type="void" />
 			<argument index="0" name="dlc_id" type="int" />
 			<description>
+				Allows you to install an optional DLC.
 			</description>
 		</method>
 		<method name="inviteUserToGame">
@@ -2675,6 +2692,7 @@
 			<return type="bool" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
+				Check if given application/game is installed, not necessarily owned.
 			</description>
 		</method>
 		<method name="isBehindNAT">
@@ -2730,12 +2748,14 @@
 		<method name="isCybercafe">
 			<return type="bool" />
 			<description>
+				Checks whether the current App ID is for Cyber Cafes.
 			</description>
 		</method>
 		<method name="isDLCInstalled">
 			<return type="bool" />
 			<argument index="0" name="dlc_id" type="int" />
 			<description>
+				Checks if the user owns a specific DLC and if the DLC is installed
 			</description>
 		</method>
 		<method name="isFeatureBlocked">
@@ -2783,6 +2803,7 @@
 		<method name="isLowViolence">
 			<return type="bool" />
 			<description>
+				Checks if the license owned by the user provides low violence depots.
 			</description>
 		</method>
 		<method name="isOverlayEnabled">
@@ -2839,6 +2860,7 @@
 		<method name="isSteamRunning">
 			<return type="bool" />
 			<description>
+				Returns true/false if Steam is running.
 			</description>
 		</method>
 		<method name="isSteamRunningInVR">
@@ -2854,27 +2876,32 @@
 		<method name="isSubscribed">
 			<return type="bool" />
 			<description>
+				Checks if the active user is subscribed to the current App ID.
 			</description>
 		</method>
 		<method name="isSubscribedApp">
 			<return type="bool" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
+				Checks if the active user is subscribed to a specified app ID.
 			</description>
 		</method>
 		<method name="isSubscribedFromFamilySharing">
 			<return type="bool" />
 			<description>
+				Checks if the active user is accessing the current app ID via a temporary Family Shared license owned by another user. If you need to determine the Steam ID of the permanent owner of the license, use getAppOwner.
 			</description>
 		</method>
 		<method name="isSubscribedFromFreeWeekend">
 			<return type="bool" />
 			<description>
+				Checks if the user is subscribed to the current app through a free weekend. This function will return false for users who have a retail or other type of license. Suggested you contact Valve on how to package and secure your free weekend properly.
 			</description>
 		</method>
 		<method name="isTimedTrial">
 			<return type="Dictionary" />
 			<description>
+				Check if game is a timed trial with limited playtime.
 			</description>
 		</method>
 		<method name="isTwoFactorEnabled">
@@ -2892,6 +2919,7 @@
 		<method name="isVACBanned">
 			<return type="bool" />
 			<description>
+				Checks if the user has a VAC ban on their account.
 			</description>
 		</method>
 		<method name="isVRHeadsetStreamingEnabled">
@@ -2993,6 +3021,7 @@
 			<return type="bool" />
 			<argument index="0" name="missing_files_only" type="bool" />
 			<description>
+				Allows you to force verify game content on next launch.
 			</description>
 		</method>
 		<method name="mouseDoubleClick">
@@ -3458,6 +3487,7 @@
 			<return type="bool" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
+				Checks if your executable was launched through Steam and relaunches it through Steam if it wasn't.
 			</description>
 		</method>
 		<method name="retrieveConnectionDetails">
@@ -3764,6 +3794,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="setDLCContext">
+			<return type="bool" />
+			<argument index="0" name="app_id" type="int" />
+			<description>
+				Set current DLC app ID being played (or 0 if none). Allows Steam to track usage of major DLC extensions.
+			</description>
 		<method name="setDisplayName">
 			<return type="bool" />
 			<argument index="0" name="name" type="String" />
@@ -4525,6 +4561,7 @@
 			<return type="Dictionary" />
 			<argument index="0" name="retrieve_stats" type="bool" default="true" />
 			<description>
+				Initialize Steamworks, obviously.
 			</description>
 		</method>
 		<method name="stopAnalogActionMomentum">
@@ -4740,6 +4777,7 @@
 			<return type="void" />
 			<argument index="0" name="dlc_id" type="int" />
 			<description>
+				Allows you to uninstall an optional DLC.
 			</description>
 		</method>
 		<method name="unsubscribeItem">

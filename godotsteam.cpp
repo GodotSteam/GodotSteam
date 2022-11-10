@@ -97,6 +97,12 @@
 #define MUSIC_NAME_MAX_LENGTH 255
 #define MUSIC_PNG_MAX_LENGTH 65535
 
+// Define Networking Message constants
+#define NETWORKING_SEND_UNRELIABLE 0
+#define NETWORKING_SEND_NO_NAGLE 1
+#define NETWORKING_SEND_NO_DELAY 4
+#define NETWORKING_SEND_RELIABLE 8
+
 // Define Remote Play constants
 #define DEVICE_FORM_FACTOR_UNKNOWN 0
 #define DEVICE_FORM_FACTOR_PHONE 1
@@ -302,7 +308,7 @@ Steam::Steam():
 	callbackGetAuthSessionTicketResponse(this, &Steam::get_auth_session_ticket_response),
 	callbackIPCFailure(this, &Steam::ipc_failure),
 	callbackLicensesUpdated(this, &Steam::licenses_updated),
-	callbackMicrotransactionAuthResponse(this, &Steam::microstransaction_auth_response),
+	callbackMicrotransactionAuthResponse(this, &Steam::microtransaction_auth_response),
 	callbackSteamServerConnected(this, &Steam::steam_server_connected),
 	callbackSteamServerDisconnected(this, &Steam::steam_server_disconnected),
 	callbackValidateAuthTicketResponse(this, &Steam::validate_auth_ticket_response),
@@ -668,7 +674,7 @@ bool Steam::markContentCorrupt(bool missing_files_only){
 	return SteamApps()->MarkContentCorrupt(missing_files_only);
 }
 
-//
+// Set current DLC AppID being played (or 0 if none). Allows Steam to track usage of major DLC extensions.
 bool Steam::setDLCContext(uint32_t app_id){
 	if(SteamApps() == NULL){
 		return false;
@@ -1477,7 +1483,7 @@ void Steam::isFollowing(uint64_t steam_id){
 	}
 }
 
-//! Returns true if the local user can see that steam_id_user is a member or in steamIDSource.
+//! Returns true if the local user can see that steam_id_user is a member or in source_id.
 bool Steam::isUserInSource(uint64_t steam_id, uint64_t source_id){
 	if(SteamFriends() == NULL){
 		return false;
@@ -3451,7 +3457,7 @@ String Steam::getLobbyData(uint64_t steam_lobby_id, const String& key){
 		return "";
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
-	return SteamMatchmaking()->GetLobbyData(lobby_id, key.utf8().get_data());
+	return String::utf8(SteamMatchmaking()->GetLobbyData(lobby_id, key.utf8().get_data()));
 }
 
 //! Sets a key/value pair in the lobby metadata.
@@ -3517,7 +3523,8 @@ bool Steam::sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body
 		return false;
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
-	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), message_body.size() + 1);
+//	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), message_body.size() + 1);
+	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), strlen(message_body.utf8().get_data()) + 1);
 }
 
 //! Refreshes metadata for a lobby you're not necessarily in right now.
@@ -5176,7 +5183,7 @@ void Steam::setIdentitySteamID(const String& reference_name, uint32 steam_id){
 	networking_identities[reference_name.utf8().get_data()].SetSteamID(createSteamID(steam_id));
 }
 
-// Return black CSteamID (!IsValid()) if identity is not a SteamID
+// Return CSteamID (!IsValid()) if identity is not a SteamID
 uint32 Steam::getIdentitySteamID(const String& reference_name){
 	CSteamID steam_id = networking_identities[reference_name.utf8().get_data()].GetSteamID();
 	return steam_id.ConvertToUint64();
@@ -9837,7 +9844,7 @@ void Steam::licenses_updated(LicensesUpdated_t* call_data){
 }
 
 //! Called when a user has responded to a microtransaction authorization request.
-void Steam::microstransaction_auth_response(MicroTxnAuthorizationResponse_t *call_data){
+void Steam::microtransaction_auth_response(MicroTxnAuthorizationResponse_t *call_data){
 	uint32 app_id = call_data->m_unAppID;
 	uint64_t order_id = call_data->m_ulOrderID;
 	bool authorized;
@@ -9847,7 +9854,7 @@ void Steam::microstransaction_auth_response(MicroTxnAuthorizationResponse_t *cal
 	else{
 		authorized = false;
 	}
-	emit_signal("microstransaction_auth_response", app_id, order_id, authorized);
+	emit_signal("microtransaction_auth_response", app_id, order_id, authorized);
 }
 
 //! Called when a connections to the Steam back-end has been established. This means the Steam client now has a working connection to the Steam servers. Usually this will have occurred before the game has launched, and should only be seen if the user has dropped connection due to a networking issue or a Steam server update.
@@ -11806,7 +11813,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "auth_ticket"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("ipc_failure", PropertyInfo(Variant::INT, "type")));
 	ADD_SIGNAL(MethodInfo("licenses_updated"));
-	ADD_SIGNAL(MethodInfo("microstransaction_auth_response", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "order_id"), PropertyInfo(Variant::BOOL, "authorized")));
+	ADD_SIGNAL(MethodInfo("microtransaction_auth_response", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "order_id"), PropertyInfo(Variant::BOOL, "authorized")));
 	ADD_SIGNAL(MethodInfo("steam_server_connect_failed", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::BOOL, "retrying")));
 	ADD_SIGNAL(MethodInfo("steam_server_connected"));
 	ADD_SIGNAL(MethodInfo("steam_server_disconnected"));
@@ -11910,6 +11917,12 @@ void Steam::_bind_methods(){
 	// MUSIC REMOTE CONSTANTS ///////////////////
 	BIND_CONSTANT(MUSIC_NAME_MAX_LENGTH); 												// 255
 	BIND_CONSTANT(MUSIC_PNG_MAX_LENGTH); 												// 65535
+
+	// NETWORKING MESSAGE CONSTANTS /////////////
+	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
+	BIND_CONSTANT(NETWORKING_SEND_NO_NAGLE);											// 1
+	BIND_CONSTANT(NETWORKING_SEND_NO_DELAY);											// 4
+	BIND_CONSTANT(NETWORKING_SEND_RELIABLE);											// 8
 
 	// REMOTE PLAY CONSTANTS ////////////////////
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN);											// 0
@@ -12129,14 +12142,6 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY);									// 14
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OS_VR);											// 15
 	BIND_CONSTANT(LAUNCH_OPTION_TYPE_DIALOG);											// 1000
-
-	// MARKETING MESSAGE FLAGS //////////////////
-	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_NONE);										// 0
-	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_HIGH_PRIORITY);								// (1<<0)
-	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_WINDOWS);							// (1<<1)
-	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_MAC);								// (1<<2)
-	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_LINUX);								// (1<<3)
-	BIND_CONSTANT(MARKETING_MESSAGE_FLAGS_PLATFORM_RESTRICTIONS);
 
 	// NOTIFICATION POSITION ////////////////////
 	BIND_CONSTANT(POSITION_TOP_LEFT);													// 0

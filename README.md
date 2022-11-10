@@ -17,7 +17,14 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.18.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.18.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.18.3 Changes**
+- Added: networking type message constants
+- Added: more descriptions and tutorial links to in-editor docs
+- Fixed: getLobbyData not returning UTF-8 encoded string
+- Fixed: sendLobbyChatMsg truncating non-English strings
+- Removed: MarketingMessageFlags as they don't exist in the header files
 
 **Version 3.18.2 Changes**
 - Changed: minor internal variable names
