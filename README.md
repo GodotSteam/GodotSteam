@@ -14,7 +14,17 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.4.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.5.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.5.1 Changes:**
+- Changed: createSteamID function to use proper 64-bit int
+- Changed: brought the plug-in version up to speed with the module version
+- Changed: output from subscribe_item, unsubscribe_item file_id to uint64_t
+- Fixed: some new compiling quirks
+- Removed: setIdentitySteamID and getIdentitySteamID
+
+**Version 3.5 Changes:**
+- Fixed: incorrect type for getAppListBuildId
 
 **Version 3.4.1 Changes:**
 - Fixed: OSX file name for DyLib
