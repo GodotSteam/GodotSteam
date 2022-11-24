@@ -19,7 +19,7 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v2.0.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 2.0.1 Changes**))
+**Version 2.0.1 Changes**
 - Changed: layout to make Git cloning easier
 - Fixed getSessionConnectionInfo using old networking struct
 - Removed: unused networking stricts
