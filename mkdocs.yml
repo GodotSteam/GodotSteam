@@ -1,0 +1,154 @@
+site_name: GodotSteam
+site_url: https://godotsteam.com
+site_description: An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.
+site_author: GP Garcia
+copyright: Copyright &copy; 2015-2023 GP Garcia | CoaguCo Industries
+repo_url: https://github.com/Gramps/GodotSteam/
+repo_name: GodotSteam
+nav:
+  - Introduction: 'index.md'
+  - How-To's:
+    - How-To Godot 2, 3, 4: 'howto_modules.md'
+    - How-To GDNative: 'howto_gdnative.md'
+  - Functions:
+    - Main: 'functions/main.md'
+    - App Lists: 'functions/app_lists.md'
+    - Apps: 'functions/apps.md'
+    - Friends: 'functions/friends.md'
+    - Game Search: 'functions/game_search.md'
+    - Game Server: 'functions/game_server.md'
+    - Game Server Stats: 'functions/game_server_stats.md'
+    - HTML Surface: 'functions/html_surface.md'
+    - HTTP: 'functions/http.md'
+    - Input: 'functions/input.md'
+    - Inventory: 'functions/inventory.md'
+    - Matchmaking: 'functions/matchmaking.md'
+    - Matchmaking Servers: 'functions/matchmaking_servers.md'
+    - Music: 'functions/music.md'
+    - Music Remote: 'functions/music_remote.md'
+    - Networking: 'functions/networking.md'
+    - Networking Messages: 'functions/networking_messages.md'
+    - Networking Sockets: 'functions/networking_sockets.md'
+    - Networking Types: 'functions/networking_types.md'
+    - Networking Utils: 'functions/networking_utils.md'
+    - Parental Settings: 'functions/parental_settings.md'
+    - Parties: 'functions/parties.md'
+    - Remote Play: 'functions/remote_play.md'
+    - Remote Storage: 'functions/remote_storage.md'
+    - Screenshots: 'functions/screenshots.md'
+    - UGC: 'functions/ugc.md'
+    - Users: 'functions/users.md'
+    - User Stats: 'functions/user_stats.md'
+    - Utils: 'functions/utils.md'
+    - Video: 'functions/video.md'
+  - Signals:
+    - Main: 'signals/main.md'
+    - App Lists: 'signals/app_lists.md'
+    - Apps: 'signals/apps.md'
+    - Friends: 'signals/friends.md'
+    - Game Search: 'signals/game_search.md'
+    - Game Server: 'signals/game_server.md'
+    - Game Server Stats: 'signals/game_server_stats.md'
+    - HTML Surface: 'signals/html_surface.md'
+    - HTTP: 'signals/http.md'
+    - Input: 'signals/input.md'
+    - Inventory: 'signals/inventory.md'
+    - Matchmaking: 'signals/matchmaking.md'
+    - Matchmaking Servers: 'signals/matchmaking_servers.md'
+    - Music Remote: 'signals/music_remote.md'
+    - Networking: 'signals/networking.md'
+    - Networking Sockets: 'signals/networking_sockets.md'
+    - Networking Utils: 'signals/networking_utils.md'
+    - Parental Settings: 'signals/parental_settings.md'
+    - Parties: 'signals/parties.md'
+    - Remote Play: 'signals/remote_play.md'
+    - Remote Storage: 'signals/remote_storage.md'
+    - Screenshots: 'signals/screenshots.md'
+    - UGC: 'signals/ugc.md'
+    - Users: 'signals/user.md'
+    - User Stats: 'signals/user_stats.md'
+    - Utils: 'signals/utils.md'
+    - Video: 'signals/video.md'
+  - Enums:
+    - Main: 'enums/main.md'
+    - Apps: 'enums/apps.md'
+    - Friends: 'enums/friends.md'
+    - Game Search: 'enums/game_search.md'
+    - HTML Surface: 'enums/html_surface.md'
+    - HTTP: 'enums/http.md'
+    - Input: 'enums/input.md'
+    - Inventory: 'enums/inventory.md'
+    - Matchmaking: 'enums/matchmaking.md'
+    - Matchmaking Servers: 'enums/matchmaking_servers.md'
+    - Music: 'enums/music.md'
+    - Networking: 'enums/networking.md'
+    - Networking Sockets: 'enums/networking_sockets.md'
+    - Networking Utils: 'enums/networking_utils.md'
+    - Parental Settings: 'enums/parental_settings.md'
+    - Parties: 'enums/parties.md'
+    - Remote Storage: 'enums/remote_storage.md'
+    - Screenshots: 'enums/screenshots.md'
+    - UGC: 'enums/ugc.md'
+    - Users: 'enums/users.md'
+    - User Stats: 'enums/user_stats.md'
+    - Utils: 'enums/utils.md'
+  - Godot 3.x Tutorials:
+    - Achievement Icons: 'tutorials/achievement_icons.md'
+    - Authentication: 'tutorials/authentication.md'
+    - Auto-Matchmaking: 'tutorials/auto_matchmaking.md'
+    - Avatars: 'tutorials/avatars.md'
+    - Common Issues: 'tutorials/common_issues.md'
+    - Exporting and Shipping: 'tutorials/exporting_shipping.md'
+    - Initializing Steam: 'tutorials/initializing.md'
+    - Leaderboards: 'tutorials/leaderboards.md'
+    - Linux Caveats: 'tutorials/linux_caveats.md'
+    - Lobbies / P2P Networking: 'tutorials/lobbies_p2p.md'
+    - Mac Exporting: 'tutorials/mac_export.md'
+    - Rich Presence: 'tutorials/rich_presence.md'
+    - Remove Steam: 'tutorials/remove_steam.md'
+    - Stats and Achievements: 'tutorials/stats_achievements.md'
+    - Workshop: 'tutorials/workshop.md'
+  - Games Using GodotSteam: 'games.md'
+  - To-Do: 'https://github.com/Gramps/GodotSteam/projects/1'
+  - Change-Logs:
+    - Godot 4.x: 'changelog/godot4.md'
+    - Godot 3.x: 'changelog/godot3.md'
+    - Godot 2.x: 'changelog/godot2.md'
+    - GDNative: 'changelog/gdnative.md'
+    - Server: 'changelog/server.md'
+  - Contributors:
+    - Contributor List: 'contributors.md'
+    - Contributing Code: 'contribute_rules.md'
+theme:
+  name: material
+  favicon: assets/images/favicon.png
+  logo: assets/images/inverted-logo.png
+plugins:
+  - search
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Gramps/GodotSteam
+    - icon: fontawesome/brands/mastodon
+      link: https://mastodon.gamedev.place/@coaguco
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/coaguco
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:hello@godotsteam.com
+extra_css:
+  - assets/stylesheets/extra.css
