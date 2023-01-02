@@ -1349,7 +1349,7 @@ html .md-footer-meta.md-typeset a:is(:focus,
  transition:color 125ms,background-color 125ms,border-color 125ms
 }
 .md-typeset .md-button--store {
-  padding: .625em 1em;
+  padding: .625em 0em .625em 1em !important;
 }
 .md-typeset .md-button--primary,
 .md-typeset .md-button--store {

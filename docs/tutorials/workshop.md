@@ -18,9 +18,11 @@ And, when you're finally read both of those, we can start.
 
 ## Using Items In Workshop / UGC
 
-Lyaaaaaaaaaaaaaaa submitted some code showing how they use items in Workshop / UGC which we'll break down here.
+Lyaaaaaaaaaaaaaaa submitted some code showing how they use items in Workshop / UGC:
 
+```
 extends Node
+
 class_name Steam_Workshop
 
 signal query_request_success
@@ -110,7 +112,7 @@ func _on_query_completed(p_query_handler    : int,
         emit_signal("query_request_success",
                     p_results_returned,
                     _page_number)
-
+```
 
 ## Workshop / UGC Items
 
@@ -224,3 +226,4 @@ func _on_item_updated(p_result : int, p_accept_tos : bool) -> void:
 
     if p_accept_tos:
         Steam_Workshop.open_tos()
+```
