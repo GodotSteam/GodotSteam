@@ -542,6 +542,62 @@ The **send_type** variable will corresponed to these integers:
 
 The channel used should match for both read and send functions. You may want to use multiple channels so this should obviously be adjusted.
 
+As your game increases in complexity, you may find the amount of data you're sending increases significantly. One of the core tenets of responsive, effective networking is reducing the amount of data you're sending, to reduce the chance of some part becoming corrupted or requiring players of your game to have a very fast internet connection to even play your game. Luckily, we can introduce **compression** to our send function to shrink the size of the data without needing to change our whole dictionary. The concept is straightforward enough; when we call the **var2bytes** function, we turn our dictionary (or some other variable) into a **PoolByteArray** and send it over the internet. We can compress the PoolByteArray to be smaller with a single line of code:
+
+````
+func _send_P2P_Packet(target: int, packet_data: Dictionary) -> void:
+	# Set the send_type and channel
+	var SEND_TYPE: int = Steam.P2P_SEND_RELIABLE
+	var CHANNEL: int = 0
+
+	# Create a data array to send the data through
+	var DATA: PoolByteArray
+	# Compress the PoolByteArray we create from our dictionary  using the GZIP compression method
+	var COMPRESSED_DATA: PoolByteArray = var2bytes(packet_data).compress(File.COMPRESSION_GZIP)
+	DATA.append_array(COMPRESSED_DATA)
+
+	# If sending a packet to everyone
+	if target == 0:
+		# If there is more than one user, send packets
+		if LOBBY_MEMBERS.size() > 1:
+			# Loop through all members that aren't you
+			for MEMBER in LOBBY_MEMBERS:
+				if MEMBER['steam_id'] != STEAM_ID:
+					Steam.sendP2PPacket(MEMBER['steam_id'], DATA, SEND_TYPE, CHANNEL)
+	# Else send it to someone specific
+	else:
+		Steam.sendP2PPacket(target, DATA, SEND_TYPE, CHANNEL)
+````
+
+Of course, we've now sent a **compressed** PoolByteArray to someone else over the internet, so when they receive the packet, they will need to first **decompress** the PoolByteArray before they can decode it.
+		To accomplish this, we add a single line of code to our **\_read_P2P_Packet** function like so:
+````
+func _read_P2P_Packet() -> void:
+	var PACKET_SIZE: int = Steam.getAvailableP2PPacketSize(0)
+
+	# There is a packet
+	if PACKET_SIZE > 0:
+		var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, 0)
+
+		if PACKET.empty() or PACKET == null:
+			print("WARNING: read an empty packet with non-zero size!")
+
+		# Get the remote user's ID
+		var PACKET_SENDER: int = PACKET['steam_id_remote']
+
+		# Make the packet data readable
+		var PACKET_CODE: PoolByteArray = PACKET['data']
+		# Decompress the array before turning it into a useable dictionary
+		var READABLE: Dictionary = bytes2var(PACKET_CODE.decompress_dynamic(-1, File.COMPRESSION_GZIP))
+
+		# Print the packet to output
+		print("Packet: "+str(READABLE))
+
+		# Append logic here to deal with packet data
+````
+
+The key point to note here is the format **must be the same for sending and receiving**. There's a whole lot to read about compression in Godot, far beyond this tutorial; to learn more, [read all about it here.](https://docs.godotengine.org/en/stable/classes/class_poolbytearray.html#class-poolbytearray-method-compress)
+
 ---
 
 ## P2P Session Failures
