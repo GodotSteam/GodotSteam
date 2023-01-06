@@ -561,7 +561,7 @@ class Steam: public Object {
 		uint64_t getFriendByIndex(int friend_number, int friend_flags);
 		uint32 getFriendCoplayGame(uint64_t friend_id);
 		int getFriendCoplayTime(uint64_t friend_id);
-		int getFriendCount();
+		int getFriendCount(int friend_flags = 0x04);
 		int getFriendCountFromSource(uint64_t source_id);
 		uint64_t getFriendFromSourceByIndex(uint64_t source_id, int friend_number);
 		Dictionary getFriendGamePlayed(uint64_t steam_id);
