@@ -1015,11 +1015,11 @@ int Steam::getFriendCoplayTime(uint64_t friend_id){
 }
 
 //! Get number of friends user has.
-int Steam::getFriendCount(){
+int Steam::getFriendCount(int friend_flags){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	return SteamFriends()->GetFriendCount(0x04);
+	return SteamFriends()->GetFriendCount(friend_flags);
 }
 
 //! Iterators for getting users in a chat room, lobby, game server or clan.
@@ -10896,7 +10896,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getFriendByIndex", "friend_number", "friend_flags"), &Steam::getFriendByIndex);
 	ClassDB::bind_method(D_METHOD("getFriendCoplayGame", "friend_id"), &Steam::getFriendCoplayGame);
 	ClassDB::bind_method(D_METHOD("getFriendCoplayTime", "friend_id"), &Steam::getFriendCoplayTime);
-	ClassDB::bind_method("getFriendCount", &Steam::getFriendCount);
+	ClassDB::bind_method("getFriendCount", &Steam::getFriendCount, DEFVAL(0x04));
 	ClassDB::bind_method(D_METHOD("getFriendCountFromSource", "source_id"), &Steam::getFriendCountFromSource);
 	ClassDB::bind_method(D_METHOD("getFriendFromSourceByIndex", "source_id", "friend_number"), &Steam::getFriendFromSourceByIndex);
 	ClassDB::bind_method(D_METHOD("getFriendGamePlayed", "steam_id"), &Steam::getFriendGamePlayed);
