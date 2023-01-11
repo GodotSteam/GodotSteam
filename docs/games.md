@@ -700,8 +700,7 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 
 <!-- Swing Lord -->
 <figure class="game" markdown>
-[![Swing Lord](https://steamcdn-a.akamaihd.net/steam/apps/1405480/header.jpg){ loading=lazy align=left }](
-https://store.steampowered.com/app/1405480/Swing_Lord/){ target="_blank" }
+[![Swing Lord](https://steamcdn-a.akamaihd.net/steam/apps/1405480/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1405480/Swing_Lord/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1405480/Swing_Lord/){ target="_blank" .md-button .md-button--store }
 </figure>
@@ -714,12 +713,15 @@ https://store.steampowered.com/app/1405480/Swing_Lord/){ target="_blank" }
 </figure>
 
 <!-- Sword and Sandals Immortals -->
+<figure class="game" markdown>
 [![Swords and Sandals: Immortals](https://steamcdn-a.akamaihd.net/steam/apps/1707650/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1707650/Swords_and_Sandals_Immortals/){ target="_blank" }
+
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1707650/Swords_and_Sandals_Immortals/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-firefox-browser: ](https://swordsandsandals.com/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-twitter: ](https://twitter.com/oliver_joyce){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-youtube: ](https://www.youtube.com/whiskeybarrelstudios/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-discord: ](https://discord.com/invite/swordsandsandals){ target="_blank" .md-button .md-button--store }
+</figure>
 
 <!-- TD Worlds -->
 <figure class="game" markdown>
