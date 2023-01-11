@@ -713,6 +713,14 @@ https://store.steampowered.com/app/1405480/Swing_Lord/){ target="_blank" }
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1877970/SwingingMan/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Sword and Sandals Immortals -->
+[![Swords and Sandals: Immortals](https://steamcdn-a.akamaihd.net/steam/apps/1707650/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1707650/Swords_and_Sandals_Immortals/){ target="_blank" }
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1707650/Swords_and_Sandals_Immortals/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://swordsandsandals.com/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/oliver_joyce){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/whiskeybarrelstudios/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/swordsandsandals){ target="_blank" .md-button .md-button--store }
+
 <!-- TD Worlds -->
 <figure class="game" markdown>
 [![TD Worlds](https://steamcdn-a.akamaihd.net/steam/apps/1659180/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1659180/TD_Worlds/){ target="_blank" }

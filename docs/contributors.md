@@ -48,6 +48,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- ArchWitch Games
 	- Avencherus
 	- Charles Maddock
+	- columbiacolles
 	- David Wery
 	- David-AW
 	- Dillon Joel Steyl
