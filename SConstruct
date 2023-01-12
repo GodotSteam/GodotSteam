@@ -52,11 +52,11 @@ if env['platform'] == "osx":
     env['target_path'] += 'osx/'
     cpp_library += '.osx'
     if env['target'] in ('debug', 'd'):
-        env.Append(CCFLAGS=['-g', '-O2', '-arch', 'x86_64', '-std=c++17'])
-        env.Append(LINKFLAGS=['-arch', 'x86_64'])
+        env.Append(CCFLAGS=['-g', '-O2', '-arch', 'x86_64', '-arch', 'arm64', '-std=c++17'])
+        env.Append(LINKFLAGS=['-arch', 'x86_64', '-arch', 'arm64'])
     else:
-        env.Append(CCFLAGS=['-g', '-O3', '-arch', 'x86_64', '-std=c++17'])
-        env.Append(LINKFLAGS=['-arch', 'x86_64'])
+        env.Append(CCFLAGS=['-g', '-O3', '-arch', 'x86_64', '-arch', 'arm64', '-std=c++17'])
+        env.Append(LINKFLAGS=['-arch', 'x86_64', '-arch', 'arm64'])
     # Set the correct Steam library
     steam_lib_path += "/osx"
     steamworks_library = 'libsteam_api.dylib'
