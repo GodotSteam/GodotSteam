@@ -10,7 +10,7 @@ By far the easiest way to use GodotSteam is to download our pre-compiled editors
 - [x] Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases){ target="_blank" } and unpack it.
 - [x] Alternatively you can download and install the [GDNative plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1045){ target="_blank" }.
 - [x] Everything you need should be included.
-    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html){ target="_blank" }.
+    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](/tutorials/linux_caveats/){ target="_blank" }.
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 

@@ -128,7 +128,7 @@
 	
 	**flags** is a bitmask of k_nSteamNetworkingSend_xxx options.
 	
-	**channel** is a routing number you can use to help route message to different systems. You'll have to call [receiveMessagesOnChannel](/functions/networking_messages/#) with the same channel number in order to retrieve the data on the other end.
+	**channel** is a routing number you can use to help route message to different systems. You'll have to call [receiveMessagesOnChannel](/functions/networking_messages/#receivemessagesonchannel) with the same channel number in order to retrieve the data on the other end.
 	
 	Using different channels to talk to the same user will still use the same underlying connection, saving on resources. If you don't need this feature, use 0. Otherwise, small integers are the most efficient.
 	

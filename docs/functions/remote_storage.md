@@ -187,7 +187,7 @@
 
 	**Returns:** bool
 
-   ---
+	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamRemoteStorage#FileWriteStreamWriteChunk){ .md-button .md-button--store target="_blank" }
 
 ## getCachedUGCCount

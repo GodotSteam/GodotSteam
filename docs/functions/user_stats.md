@@ -499,7 +499,7 @@
 !!! function "getUserStatInt( ```uint64_t``` steam_id, ```string``` name )"
 	Gets the current value of the a stat for the specified user.
 
-	You must have called [requestUserStats](/functions/user_stats/#) and it needs to return successfully via its callback prior to calling this.
+	You must have called [requestUserStats](/functions/user_stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this.
 
 	The equivalent function for the local user is [getStat](/functions/user_stats/#getstat).
 

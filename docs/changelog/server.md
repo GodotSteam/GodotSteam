@@ -59,7 +59,3 @@
 * Added: related callbacks, call results, constants, and enums
 * Added: headless server platform for linux
 * Fixed: OSX compiling config rules 
-
--------------------------------
-
-Updated on 2022-11-24 at 12:17:42 -0600

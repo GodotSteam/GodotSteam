@@ -100,9 +100,9 @@
 
 	The caller of this API passes in the requested item and an array of existing items and quantities to exchange for it. The API currently takes an array of items to generate but at this time the size of that array must be 1 and the quantity of the new item must be 1.
 
-	Any items that can be granted _must</strong> have an exchange attribute in their itemdef. The exchange attribute specifies a set of recipes that are valid exchanges for this item. Exchange recipes are evaluated atomically by the Inventory Service; if the supplied components do not match the recipe, or do not contain sufficient quantity, the exchange will fail.
+	Any items that can be granted **must** have an exchange attribute in their itemdef. The exchange attribute specifies a set of recipes that are valid exchanges for this item. Exchange recipes are evaluated atomically by the Inventory Service; if the supplied components do not match the recipe, or do not contain sufficient quantity, the exchange will fail.
 
-	Will allow the item to be exchanged for either one #101 and one #102, five #103s or three #104s and three #105s. See the <a href="https://partner.steamgames.com/doc/features/inventory/schema){ .md-button .md-button--store target="_blank" }Steam Inventory Schema</a> documentation for more details.
+	Will allow the item to be exchanged for either one #101 and one #102, five #103s or three #104s and three #105s. See the [Steam Inventory Schema](https://partner.steamgames.com/doc/features/inventory/schema){ .md-button .md-button--store target="_blank" } documentation for more details.
 
 	**Returns:** int32
 
@@ -127,10 +127,10 @@
 
 	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
 
+	**Note:** You must call [destroyResult](/functions/inventory/#destroyresult) on the provided inventory result when you are done with it.
+
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamInventory#GenerateItems){ .md-button .md-button--store target="_blank" }
-
-	**Note:** You must call [destroyResult](/functions/inventory/#destroyresult) on the provided inventory result when you are done with it.
 
 ## getAllItems
 
@@ -158,7 +158,7 @@
 
 	Pass in NULL for **name** to get a comma-separated list of available property names.
 
-	**Note:** Call [loadItemDefinitions](/functions/inventory/#loaditemdefinitions) first, to ensure that items are ready to be used before calling [getItemDefinitionProperty](/functions/inventory/#loaditemdefinitions).
+	**Note:** Call [loadItemDefinitions](/functions/inventory/#loaditemdefinitions) first, to ensure that items are ready to be used before calling [getItemDefinitionProperty](/functions/inventory/#getitemdefinitionproperty).
 
 	**Returns:** string.
 
@@ -399,7 +399,7 @@
 	This period can be customized in two places:
 
 	* At the application level within Inventory Service: Playtime Item Grants. This will automatically apply to all "playtimegenerator" items that do not specify any overrides.
-	*In an individual "playtimegenerator" item definition. The settings would take precedence over any application-level settings.
+	* In an individual "playtimegenerator" item definition. The settings would take precedence over any application-level settings.
 
 	Only item definitions which are marked as "playtime item generators" can be spawned.
 	Typically this function should be called at the end of a game or level or match or any point of significance in the game in which an item drop could occur. The granularity of the playtime generator settings is in minutes, so calling it more frequently than minutes is not useful and will be rate limited in the Steam client. The Steam servers will perform playtime accounting to prevent too-frequent drops. The servers will also manage adding the item to the players inventory.

@@ -256,7 +256,7 @@
 
 	The lobby Steam ID can be obtained either from a search with [requestLobbyList](/functions/matchmaking/#requestlobbylist) joining on a friend, or from an invite.
 
-	Triggers a [lobby_joined](/signals/matchmaking/#) callback for other users.
+	Triggers a [lobby_joined](/signals/matchmaking/#lobby_joined) callback for other users.
 
 	**Returns:** void
 
@@ -310,7 +310,7 @@
 
 	**Returns:** void
 
-	**Note:** To filter the results you _must_ call the addRequestLobbyList* functions before calling this. The filters are cleared on each call to this function.
+	**Note:** To filter the results you _must_ call the **addRequestLobbyList** functions before calling this. The filters are cleared on each call to this function.
 
 	**Note:** If [addRequestLobbyListDistanceFilter](/functions/matchmaking/#addrequestlobbylistdistancefilter) is not called, **k_ELobbyDistanceFilterDefault** will be used, which will only find matches in the same or nearby regions.
 
@@ -343,7 +343,7 @@
 
 	This can only be set by the owner of the lobby. Lobby members should use [setLobbyMemberData](/functions/matchmaking/#setlobbymemberdata) instead.
 
-	Each user in the lobby will be receive notification of the lobby data change via a [lobby_data_update](/signals/matchmaking/#) callback, and any new users joining will receive any existing data.
+	Each user in the lobby will be receive notification of the lobby data change via a [lobby_data_update](/signals/matchmaking/#lobby_data_update) callback, and any new users joining will receive any existing data.
 
 	This will only send the data if it has changed. There is a slight delay before sending the data so you can call this repeatedly to set all the data you need to and it will automatically be batched up and sent after the last sequential call.
 	

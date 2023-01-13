@@ -53,7 +53,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## lobby_created
 
 !!! function "lobby_created"
-	Result of our request to create a Lobby. At this point, the lobby has been joined and is ready for use.
+	Result of our request to create a lobby. At this point, the lobby has been joined and is ready for use.
 
 	**Returns:**
 
@@ -95,7 +95,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## lobby_invite
 
 !!! function "lobby_invite"
-	Someone has invited you to join a Lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.
+	Someone has invited you to join a lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.
 
 	**Returns:**
 

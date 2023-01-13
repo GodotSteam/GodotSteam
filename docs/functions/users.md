@@ -121,7 +121,7 @@
 !!! function "getDurationControl()"
 	Retrieves anti indulgence / duration control for current user / game combination.
 
-	Triggers a [duration_control(/signals/users/#duration_control) call result.
+	Triggers a [duration_control](/signals/users/#duration_control) call result.
 	
 	**Returns:** void
 
@@ -307,7 +307,7 @@
 !!! function "loggedOn()"
 	Checks if the current user's Steam client is connected to the Steam servers.
 
-	If it's not then no real-time services provided by the Steamworks API will be enabled. The Steam client will automatically be trying to recreate the connection as often as possible. When the connection is restored a [steam_server_connected(/signals/users/#steam_server_connected) callback will be posted.
+	If it's not then no real-time services provided by the Steamworks API will be enabled. The Steam client will automatically be trying to recreate the connection as often as possible. When the connection is restored a [steam_server_connected](/signals/users/#steam_server_connected) callback will be posted.
 
 	You usually don't need to check for this yourself. All of the API calls that rely on this will check internally. Forcefully disabling stuff when the player loses access is usually not a very good experience for the player and you could be preventing them from accessing APIs that do not need a live connection to Steam.
 
@@ -393,7 +393,7 @@
 !!! function "terminateGameConnection( ```uint32``` server_ip, ```uint32``` server_port )"
 	Notify the game server that we are disconnecting.
 
-	This needs to occur when the game client leaves the specified game server, needs to match with the [initiateGameConnection](/functions/users/#) call.
+	This needs to occur when the game client leaves the specified game server, needs to match with the [initiateGameConnection](/functions/users/#initiategameconnection) call.
 
 	**Returns:** void
 

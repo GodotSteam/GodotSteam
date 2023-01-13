@@ -160,7 +160,7 @@
 
 	**Returns:** uint64_t
 
-	**Note:**  You must call [getClanCount](/functions/friends/#) before calling this.
+	**Note:**  You must call [getClanCount](/functions/friends/#getclancount) before calling this.
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#GetClanByIndex){ .md-button .md-button--store target="_blank" }
@@ -567,7 +567,7 @@
 
 	A Steam image handle which is used with [getImageSize](/functions/friends/#getimagesize) and [getImageRGBA](/functions/friends/#getimagergba).
 
-	**Note:** This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call [requestUserInformation](/functions/friends/#) to cache the avatar locally.
+	**Note:** This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call [requestUserInformation](/functions/friends/#requestuserinformation) to cache the avatar locally.
 
  	---
  	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#GetLargeFriendAvatar){ .md-button .md-button--store target="_blank" }
@@ -703,7 +703,7 @@
 
 ## getUserFriendsGroups
 
-!!! function "getUserFriendsGroups()""
+!!! function "getUserFriendsGroups()"
 	Get list of friends groups (tags) the user has created. This is not to be confused with Steam groups.
 
 	**Returns:** array
@@ -717,10 +717,6 @@
 	* id (int16) as friend group ID
 	* name (string)
 	* members (int)
-
- 	---
- 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](){ .md-button .md-button--store target="_blank" }
-			getUserFriendsGroups()
 
 ## getUserRestrictions
 
@@ -970,7 +966,7 @@
 ## requestUserInformation
 
 !!! function "requestUserInformation( ```uint64_t``` steam_id, ```bool``` require_name_only )"
-	Requests information about a user - persona name & avatar; if bRequireNameOnly is set, then the avatar of a user isn't downloaded. 
+	Requests information about a user - persona name & avatar; if require_name_only is set, then the avatar of a user isn't downloaded. 
 
 	**Returns:** bool
 

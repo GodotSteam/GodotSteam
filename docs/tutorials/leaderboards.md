@@ -94,7 +94,7 @@ Steam.downloadLeaderboardEntriesForUsers( user_array, leaderboard_handle )
 
 Just like uploading, downloading scores does not require a leaderboard handle to be included if you are using the internally stored one.  You will noticed, as I mentioned above, that ***downloadLeaderboardEntriesForUsers()*** only takes an array of users' Steam IDs as it's other argument whereas ***downloadLeaderboardEntries()*** has quite a few others; which we will cover right now.
 
-The first argument the index of entries you are starting with; this is usually 1 for your first request. The second argument is the last index to retrieve; there isn't a listed cap to this number but make it something you can display easily like 10 or so.  The third argument is the type of data request; <a href="https://partner.steamgames.com/doc/api/ISteamUserStats#ELeaderboardDataRequest" target="_blank">you can read more details about it in the SDK documentation</a>. For a quick overview:
+The first argument the index of entries you are starting with; this is usually 1 for your first request. The second argument is the last index to retrieve; there isn't a listed cap to this number but make it something you can display easily like 10 or so.  The third argument is the type of data request; [you can read more details about it in the SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#ELeaderboardDataRequest){ target="_blank" }. For a quick overview:
 
 - 0 - Used for a sequential range by leaderboard rank.
 - 1 - Used to get entries relative to the user's entry. You may want to use negatives for the start to get entries before the user's.

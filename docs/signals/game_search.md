@@ -38,7 +38,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## request_players_for_game_result
 
 !!! function "request_players_for_game_result"
-	Callback from [requestPlayersForGame](), one of these will be sent per player followed by additional callbacks when players accept or decline the game.
+	Callback from [requestPlayersForGame](/functions/game_search/#requestplayersforgame), one of these will be sent per player followed by additional callbacks when players accept or decline the game.
 
 	**Returns:**
 

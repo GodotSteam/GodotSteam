@@ -8,8 +8,8 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 !!! function "active_beacons_updated"
 	Notification that the list of active beacons visible to the current user has changed.
-	
-	**Returns:** nothing
+
+	**Returns:** void
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteamparties#ActiveBeaconsUpdated_t){ .md-button .md-button--store target="_blank" }
@@ -18,8 +18,8 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 !!! function "available_beacon_locations_updated"
 	Notification that the list of available locations for posting a beacon has been updated. 
-	
-	**Returns:** nothing
+
+	**Returns:** void
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteamparties#AvailableBeaconLocationsUpdated_t){ .md-button .md-button--store target="_blank" }

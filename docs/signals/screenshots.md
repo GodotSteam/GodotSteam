@@ -20,7 +20,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## screenshot_requested
 
 !!! function "screenshot_requested"
-	A screenshot has been requested by the user from the Steam screenshot hotkey. This will only be called if hookScreenshots has been enabled, in which case Steam will not take the screenshot itself.
+	A screenshot has been requested by the user from the Steam screenshot hotkey. This will only be called if [hookScreenshots](/functions/screenshots/#hookscreenshots) has been enabled, in which case Steam will not take the screenshot itself.
 
 	**Returns:** nothing
 

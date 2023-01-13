@@ -21,7 +21,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## add_ugc_dependency_result
 
 !!! function "add_ugc_dependency_result"
-	The result of a call to AddDependency.
+	The result of a call to [addDependency](/functions/ugc/#adddependency).
 
 	**Returns:**
 

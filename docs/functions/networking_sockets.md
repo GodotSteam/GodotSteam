@@ -426,7 +426,7 @@
 ## getListenSocketAddress
 
 !!! function "getListenSocketAddress( ```uint32``` socket )"
-	Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
+	Returns local IP and port that a listen socket created using [CreateListenSocketIP](/functions/networkign_sockets/#createlistensocketip) is bound to.
 
 	**Returns:** bool
 

@@ -107,7 +107,7 @@
 ## getSecondsSinceAppActive
 
 !!! function "getSecondsSinceAppActive()"
-	Returns the number of seconds since the application was active./li>
+	Returns the number of seconds since the application was active.
 
 	**Returns:** int
 

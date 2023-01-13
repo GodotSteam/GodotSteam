@@ -234,7 +234,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## join_game_requested
 
 !!! function "join_game_requested"
-	Called when the user tries to join a game from their friends list or after a user accepts an invite by a friend with [inviteUserToGame](/functions/friends/#joingamerequested).
+	Called when the user tries to join a game from their friends list or after a user accepts an invite by a friend with [inviteUserToGame](/functions/friends/#inviteusertogame).
 
 	Emits signal in response to receiving a Steam invite.
 
@@ -316,7 +316,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 !!! function "request_clan_officer_list"
 	Marks the return of a request officer list call.
 	
-	Emits signal in response to function [requestClanOfficerList].
+	Emits signal in response to function [requestClanOfficerList](/functions/friends/#requestclanoffierlist).
 
 	**Returns:**
 

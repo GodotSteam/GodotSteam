@@ -94,8 +94,8 @@ There are a few things you'll need to start working with the module, regardless 
 !!! guide "How-To Guides"
 	Based on what you want to work with, use one of these how-to guides to continue on.
 
-	[Module How-To](howto-module){ .md-button .md-button--primary }
-	[Server How-To](howto-gdnative){ .md-button .md-button--primary }
+	[Module How-To](howto_module){ .md-button .md-button--primary }
+	[Server How-To](howto_gdnative){ .md-button .md-button--primary }
 
 </div>
 

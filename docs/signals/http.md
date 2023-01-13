@@ -18,7 +18,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* body_zize (uint32)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamHTTP#HTTPRequestCompleted_t" target="_blank">
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamHTTP#HTTPRequestCompleted_t){ .md-button .md-button--store target="_blank" }
 
 ## http_request_data_received
 
@@ -33,7 +33,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* bytes_received (uint32)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamHTTP#HTTPRequestDataReceived_t" target="_blank">
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamHTTP#HTTPRequestDataReceived_t){ .md-button .md-button--store target="_blank" }
 
 ## http_request_headers_received
 
@@ -46,4 +46,4 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* context_value (uint64_t)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamHTTP#HTTPRequestHeadersReceived_t" target="_blank">
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamHTTP#HTTPRequestHeadersReceived_t){ .md-button .md-button--store target="_blank" }

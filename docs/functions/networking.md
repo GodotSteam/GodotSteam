@@ -7,11 +7,11 @@
 !!! function "acceptP2PSessionWithUser( ```uint64_t``` steam_id_remote )"
 	This allows the game to specify accept an incoming packet. This needs to be called before a real connection is established to a remote host, the game will get a chance to say whether or not the remote user is allowed to talk to them.
 
-	When a remote user that you haven't sent a packet to recently, tries to first send you a packet, your game will receive a callback [p2p_session_request](/signals/networking/#). This callback contains the Steam ID of the user who wants to send you a packet. In response to this callback, you'll want to see if it's someone you want to talk to (for example, if they're in a lobby with you), and if so, accept the connection; otherwise if you don't want to talk to the user, just ignore the request. If the user continues to send you packets, another [p2p_session_request](/signals/networking/#) will be posted periodically. If you've called <strong>sendP2PPacket</strong> on the other user, this implicitly accepts the session request.
+	When a remote user that you haven't sent a packet to recently, tries to first send you a packet, your game will receive a callback [p2p_session_request](/signals/networking/#p2p_session_request). This callback contains the Steam ID of the user who wants to send you a packet. In response to this callback, you'll want to see if it's someone you want to talk to (for example, if they're in a lobby with you), and if so, accept the connection; otherwise if you don't want to talk to the user, just ignore the request. If the user continues to send you packets, another [p2p_session_request](/signals/networking/#p2p_session_request) will be posted periodically. If you've called <strong>sendP2PPacket</strong> on the other user, this implicitly accepts the session request.
 
 	**Returns:** bool
 
-	**Note:** This call should only be made in response to a [p2p_session_request](/signals/networking/#) callback.
+	**Note:** This call should only be made in response to a [p2p_session_request](/signals/networking/#p2p_session_request) callback.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworking#AcceptP2PSessionWithUser){ .md-button .md-button--store target="_blank" }

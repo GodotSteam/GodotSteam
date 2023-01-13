@@ -34,7 +34,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## new_launch_url_parameters
 
 !!! function "new_launch_url_parameters"
-    Triggered after the user executes a steam url with command line or query parameters such as ```steam://run/(app_id)//?param1=value1;param2=value2;param3=value3;``` while the game is already running. The new params can be queried with <strong>getLaunchCommandLine</strong> and <strong>getLaunchQueryParam</strong>.
+    Triggered after the user executes a steam url with command line or query parameters such as ```steam://run/(app_id)//?param1=value1;param2=value2;param3=value3;``` while the game is already running. The new params can be queried with [getLaunchCommandLine](/functions/apps/#getlaunchcommandline) and [getLaunchQueryParam](/functions/apps/#getlaunchqueryparam).
     
     **Returns:** nothing
 

@@ -84,7 +84,7 @@
 
 * Added: new enums for Community Profile item types and properties in Friends class
 * Added: new functions hasEquippedProfileItem, getProfileItemPropertyString, and getProfileItemPropertyInt in Friends class
-* Added: new callbacks/signals _equipped_profile_items_changed_ and _equipped_profile_items_ in Friends class
+* Added: new callbacks/signals equipped_profile_items_changed and equipped_profile_items in Friends class
 * Added: new networking identity types
 * Added: new functions setXboxPairwiseID, getXboxPairwiseID, setPSNID, getPSNID, setStadiaID, and getStadiaID to Networking Types class
 * Changed: minor correction to createListenSocketP2P in attempt to fix possible crash
@@ -154,7 +154,7 @@
 * Fixed: lobby_message callback data, thanks to kongo555
 * Fixed: missing default value for getAvailableP2PPacketSize, readP2PPacket, sendP2PPacket
 * Fixed: getAnalogActionData so the return dictionary has the right keys
-* Fixed: getUserSteamFriends, getUserSteamGroups to give the correct [Steam](/GodotSteam/Classes/classSteam/) ID back
+* Fixed: getUserSteamFriends, getUserSteamGroups to give the correct Steam ID back
 * Fixed: getFriendGamePlayed using wrong key name in return dictionary
 * Fixed: toIdentityString to provide the correct string data
 * Fixed: parseIdentityString to properly parse back the string data
@@ -179,7 +179,7 @@
 **Version 3.12 Changes**
 
 * Added: missing D_METHOD to all functions, should show the right argument names in-editor
-* Added: Input origin enums for PS5 and [Steam](/GodotSteam/Classes/classSteam/) Deck
+* Added: Input origin enums for PS5 and Steam Deck
 * Added: Input Types, Input Glyph Style, Input Glyph Size, and Input Configuration Enable Type enums
 * Added: getConnectionRealTimeStatus, configureConnectionLanes, connectP2PCustomSignaling, receivedP2PCustomSignal, getCertificateRequest, setCertificate, resetIdentity, runNetworkingCallbacks, beginAsyncRequestFakeIP, getFakeIP, createListenScoketP2PFakeIP, getRemoveFakeIPForConnection, and createFakeUDPPort functions and callback to NetworkingSockets class
 * Added: dismissFloatingGamepadTextInput function to Utils class
@@ -243,7 +243,7 @@
 
 **Version 3.10 Changes**
 
-* Added: various [Steam](/GodotSteam/Classes/classSteam/) Deck specific functions, thanks to EIREXE
+* Added: various Steam Deck specific functions, thanks to EIREXE
 * Added: new AppLists class of functions and callbacks
 * Added: new or missing App functions, callbacks, and enums
 * Added: OverlayToWebPageMode enum and unread_chat_messages_changed callback for Friends class
@@ -362,7 +362,7 @@
 * Added: Networking Sockets class - all functions, enums, structs, and callbacks (still beta in Steamworks)
 * Added: Networking Utils class - all functions, enums, structs, and callbacks (still beta in Steamworks)
 * Added: Game Search callbacks, enums, and functions
-* Added: missing [Steam](/GodotSteam/Classes/classSteam/) Parties functions
+* Added: missing Steam Parties functions
 * Changed: bIOFailure argument naming in godotsteam.cpp to ioFailure
 * Fixed: issue where Cyrillic characters did not display correctly or at all
 * Fixed: call result for JoinParty, was previously callback
@@ -441,13 +441,13 @@
 
 **Version 3.3 Changes**
 
-* Added: all [Steam](/GodotSteam/Classes/classSteam/) Input functions; used to be [Steam](/GodotSteam/Classes/classSteam/) Controller
-* Added: all [Steam](/GodotSteam/Classes/classSteam/) Input constants
+* Added: all Steam Input functions; used to be Steam Controller
+* Added: all Steam Input constants
 * Added: new Apps functions
 * Added: missing Friends functions
 * Added: missing Screenshots functions
 * Added: all missing Screenshot constants
-* Changed: removed [Steam](/GodotSteam/Classes/classSteam/) Controller as it is now depreciated
+* Changed: removed Steam Controller as it is now depreciated
 * Changed: split up call results and callbacks in [godotsteam.h] for editing ease
 * Changed: user_stats_received to current_stats_received for requestCurrentStats callback / signal
 * Changed: sorted Apps and Friends functions alphabetically like Steamworks Docs to find new functions easier
@@ -496,11 +496,11 @@
 **Version 3.0.1 Changes**
 
 * Added: MacOS C++ rule back in for compiling
-* Added: all missing [Steam](/GodotSteam/Classes/classSteam/) Utils functions (except depreciated or non-relevant functions)
-* Added: additional ENUMS for [Steam](/GodotSteam/Classes/classSteam/) Utils
-* Added: missing failure conditions for some [Steam](/GodotSteam/Classes/classSteam/) Utils functions
+* Added: all missing Steam Utils functions (except depreciated or non-relevant functions)
+* Added: additional ENUMS for Steam Utils
+* Added: missing failure conditions for some Steam Utils functions
 * Changed: output for getFriendGamePlayed to show game information even if no valid lobby
-* Changed: order of previous [Steam](/GodotSteam/Classes/classSteam/) Utils functions to be alphabetical with new ones
+* Changed: order of previous Steam Utils functions to be alphabetical with new ones
 * Changed: gamepad_text_input_dismissed callback
 * Fixed: lobby_message bug, thanks to pull request from Frostings
 
@@ -515,7 +515,7 @@
 * Changed: organization of cpp and h files for better readability
 * Changed: signal lobby_message_received to lobby_message
 * Changed: server_connect and server_disconnected renamed to steam_server_connect and steam_server_disconnected respectively
-* Changed: leaderboard_loaded, leaderboard_uploaded, and _leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively
+* Changed: leaderboard_loaded, leaderboard_uploaded, and \_leaderboard_entries_loaded renamed to leaderboard_find_result, leaderboard_score_uploaded, and leaderboard_scores_downloaded respectively
 * Changed: workshop_item_created, workshop_item_installed, and item_updated renamed to item_created, item_installed, and workshop_item_updated respectively
 * Changed: renamed workshop to UGC to match Steamworks
 * Fixed: addFavoriteGame and getItemInstallInfo functions
@@ -535,9 +535,9 @@
 * Changed: dictionary term 'ret' to 'success' in getImageRGBA and getImageSize
 * Changed: dictionary term 'buf' to 'buffer' in getImageRGBA
 * Changed: getFriendAvatar to getPlayerAvatar
-* Changed: avatar_loaded now sends back [Steam](/GodotSteam/Classes/classSteam/) ID of avatar by avencherus
+* Changed: avatar_loaded now sends back Steam ID of avatar by avencherus
 * Fixed: lots of fixes by marcelofg55
-* Fixed: issue with avatar and [Steam](/GodotSteam/Classes/classSteam/) ID on Linux compile
+* Fixed: issue with avatar and Steam ID on Linux compile
 * Fixed: join_requested signal by Fischer96 (requires further work)
 * Fixed: getImageRGBA
 * Fixed: getDownloadedLeaderboardEntry returning wrong SteamID by marcelofg55
@@ -556,7 +556,7 @@
 **Version 2.8.1 Changes**
 
 * Added: additional missing lobby signals
-* Fixed: various lobby functions due to incorrect [Steam](/GodotSteam/Classes/classSteam/) lobby ID
+* Fixed: various lobby functions due to incorrect Steam lobby ID
 * Fixed: some bind methods
 * Fixed: config.py still using env
 * Fixed: location of core Godot includes
@@ -586,14 +586,14 @@
 **Version 2.6.0 Changes**
 
 * Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
-* Added: [Steam](/GodotSteam/Classes/classSteam/) controller functionality (courtesy of marcelofg55)
+* Added: Steam controller functionality (courtesy of marcelofg55)
 * Added: more workshop functionality
 * Changed: various small maintenance changes
 
 **Version 2.5.0 Changes**
 
 * Added: getFileNameAndSize, getQuota, getSyncPlatforms functions
-* Changed: small corrections with [Steam](/GodotSteam/Classes/classSteam/) ID variable
+* Changed: small corrections with Steam ID variable
 * Fixed: small things with getQuota
 
 **Version 2.4.1 Changes**
@@ -610,7 +610,7 @@
 
 * Added: more Screenshot features
 * Added: notes for callback
-* Fixed: types in _validate_auth_ticket_response
+* Fixed: types in \_validate_auth_ticket_response
 
 **Version 2.3.0 Changes**
 
@@ -637,10 +637,6 @@
 
 **Version 2.0.0 Changes**
 
-* Added: Remote Storage functionality for [Steam](/GodotSteam/Classes/classSteam/) Cloud, thanks to marcelofg55
+* Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55
 * Added: new functions to documentation
-* Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher / 
-
--------------------------------
-
-Updated on 2022-11-24 at 12:17:42 -0600
+* Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher

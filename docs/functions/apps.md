@@ -124,7 +124,7 @@
 
     **Return:** void
 
-    **Notes:** Triggers a [file_details_result callback.](/signals/apps/file_details_result)
+    **Notes:** Triggers a [file_details_result callback.](/signals/apps/#file_details_result)
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamApps#GetFileDetails){ .md-button .md-button--store target="_blank" }
@@ -168,7 +168,7 @@
 
     **Returns:** void
 
-    **Note:** Triggers a [dlc_installed callback.](/signals/apps/dlc_installed)
+    **Note:** Triggers a [dlc_installed callback.](/signals/apps/#dlc_installed)
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamApps#InstallDLC){ .md-button .md-button--store target="_blank" }

@@ -11,7 +11,7 @@
 
 	**Returns:** bool
 
-	True if sufficiently recent data is already available. False< if sufficiently recent data is not available. In this case, ping measurement is initiated, if it is not already active. (You cannot restart a measurement already in progress.)
+	True if sufficiently recent data is already available. False if sufficiently recent data is not available. In this case, ping measurement is initiated, if it is not already active. (You cannot restart a measurement already in progress.)
  
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#CheckPingDataUpToDate){ .md-button .md-button--store target="_blank" }
@@ -41,8 +41,8 @@
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeBetweenTwoLocations){ .md-button .md-button--store target="_blank" }
 
 !!! function "estimatePingTimeFromLocalHost( ```PoolByteArray``` location )"
-	Same as [estimatePingTimeBetweenTwoLocations](/functions/networking_utils#estimatepingtimebetweentwolocations), but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.
-	In rare cases this might return a slightly different estimate than combining [getLocalPingLocation](/functions/networking_utils#getlocalpinglocation) with [estimatePingTimeBetweenTwoLocations](/functions/networking_utils#estimatepingtimebetweentwolocations). That's because this function uses a slightly more complete set of information about what route would be taken.
+	Same as [estimatePingTimeBetweenTwoLocations](/functions/networking_utils/#estimatepingtimebetweentwolocations), but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.
+	In rare cases this might return a slightly different estimate than combining [getLocalPingLocation](/functions/networking_utils/#getlocalpinglocation) with [estimatePingTimeBetweenTwoLocations](/functions/networking_utils/#estimatepingtimebetweentwolocations). That's because this function uses a slightly more complete set of information about what route would be taken.
 
 	**Returns:** int
 
@@ -56,7 +56,7 @@
 
 	For values to pass to config_value, [check the SDK's listing.](https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetworkingConfigValue){ target="_blank" }
 
-	For values to pass to scope_type, [check the SDK's listing.]https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetworkingConfigScope){ target="_blank" }
+	For values to pass to scope_type, [check the SDK's listing.](https://partner.steamgames.com/doc/api/steamnetworkingtypes#ESteamNetworkingConfigScope){ target="_blank" }
 
 	**Returns:** dictionary
 
@@ -214,7 +214,7 @@
 ## parsePingLocationString
 
 !!! function "parsePingLocationString( ```string``` location_string )"
-	Parse back SteamNetworkPingLocation_t string. Returns false if we couldn't understand the string.
+	Parse back location_string string. Returns false if we couldn't understand the string.
 
 	**Returns:** dictionary
 
@@ -261,7 +261,7 @@
 !!! function "setConfigValue( ```int``` setting, ```int``` scope_type, ```int``` data_type )"
 	Set a configuration value.
 
-	Currently not enabled. Use [setConnectionConfigValue](/functions/networking_utils/#setconnectionconfigvalue) or [setGlobalConfigValue]/functions/networking_utils/#setglobalconfigvalue) functions.
+	Currently not enabled. Use [setConnectionConfigValue](/functions/networking_utils/#setconnectionconfigvalue) or [setGlobalConfigValue](/functions/networking_utils/#setglobalconfigvalue) functions.
 
 	**Returns:** bool
 

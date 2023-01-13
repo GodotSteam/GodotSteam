@@ -366,6 +366,14 @@ html .md-footer-meta.md-typeset a:is(:focus, :hover) {
 	height:1.2rem;
 	width:auto
 }
+.md-nav__title {
+	color:#ffffff;
+	display:block;
+	font-weight:700;
+	overflow:hidden;
+	padding:0 .6rem;
+	text-overflow:ellipsis
+}
 .md-nav__title .md-nav__button.md-logo :-webkit-any(img, svg) {
 	fill:currentcolor;
 	display:block;
@@ -401,8 +409,9 @@ html .md-footer-meta.md-typeset a:is(:focus, :hover) {
 	object-fit:contain;
 	width:auto
 }
-.md-nav__link--passed {
-	color: #fffffff;
+.md-nav__link--passed,
+.md-nav__link[for] {
+	color: #adadad;
 }
 .md-nav__item .md-nav__link--active {
 	color: #478cbf;

@@ -116,7 +116,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## html_js_alert
 
 !!! function "html_js_alert"
-	Called when the browser wants to display a Javascript alert dialog, call [jsDialogResponse</strong> when the user dismisses this dialog; or right away to ignore it.
+	Called when the browser wants to display a Javascript alert dialog, call [jsDialogResponse](/functions/html_surface/#jsdialogresponse) when the user dismisses this dialog; or right away to ignore it.
 
 	**Returns:**
 
@@ -129,7 +129,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## html_js_confirm
 
 !!! function "html_js_confirm"
-	Called when the browser wants to display a Javascript confirmation dialog, call [jsDialogResponse</strong> when the user dismisses this dialog; or right away to ignore it.
+	Called when the browser wants to display a Javascript confirmation dialog, call [jsDialogResponse](/functions/html_surface/#jsdialogresponse) when the user dismisses this dialog; or right away to ignore it.
 
 	**Returns:**
 

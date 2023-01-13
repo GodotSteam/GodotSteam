@@ -230,7 +230,7 @@
 !!! function "downloadItem( ```uint64_t``` published_file_id, ```bool``` high_priority )"
 	Download new or update already installed item.
 
-	If the return value is true then register and wait for the callback [item_downloaded](/signals/ugc/#item_downloaded) before calling [getItemInstallInfo](/functions/ugc/#) or accessing the workshop item on disk.
+	If the return value is true then register and wait for the callback [item_downloaded](/signals/ugc/#item_downloaded) before calling [getItemInstallInfo](/functions/ugc/#getiteminstallinfo) or accessing the workshop item on disk.
 
 	If the user is not subscribed to the item (e.g. a Game Server using anonymous login), the workshop item will be downloaded and cached temporarily.
 
@@ -457,7 +457,7 @@
 
 	Retrieve the number of tags for an individual workshop item after receiving a querying UGC call result.
 
-	You can then call [getQueryUGCTag](/functions/ugc/#) to get the tag name or [getQueryUGCTagDisplayName](/functions/ugc/#) to get the localized tag string (if any).
+	You can then call [getQueryUGCTag](/functions/ugc/#getqueryugctag) to get the tag name or [getQueryUGCTagDisplayName](/functions/ugc/#getqueryugctagdisplayname) to get the localized tag string (if any).
 
 	**Returns:** uint32
 

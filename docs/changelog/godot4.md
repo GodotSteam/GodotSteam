@@ -33,7 +33,7 @@
 
 **Version 4.1.3 Changes**
 
-* Fixed: config.py and SCsub so that Linux compiling will link [Steam](/GodotSteam/Classes/classSteam/) correctly
+* Fixed: config.py and SCsub so that Linux compiling will link Steam correctly
 
 **Version 4.1.2 Changes**
 
@@ -51,8 +51,4 @@
 
 **Version 4.0 Changes**
 
-* Added: Initial build, highly experimental! 
-
--------------------------------
-
-Updated on 2022-11-24 at 12:17:42 -0600
+* Added: Initial build, highly experimental!

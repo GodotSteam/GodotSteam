@@ -5,7 +5,7 @@
 ## clearUserAchievement
 
 !!! function "clearUserAchievement( ```uint64_t``` steam_id, ```string``` name )"
-	Resets the unlock status of an achievement for the specified user. This is primarily only ever used for testing. You must have called [requestUserStats](/functions/game-server-stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this. This call only modifies Steam's in-memory state and is very cheap. To submit the stats to the server you must call [storeUserStats](/functions/game-server-stats/#storeuserstats).
+	Resets the unlock status of an achievement for the specified user. This is primarily only ever used for testing. You must have called [requestUserStats](/functions/game_server_stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this. This call only modifies Steam's in-memory state and is very cheap. To submit the stats to the server you must call [storeUserStats](/functions/game_server_stats/#storeuserstats).
 
 	**Returns:** bool
 
@@ -56,7 +56,7 @@
 !!! function "serverRequestUserStats( ```uint64_t``` steam_id )"
 	Asynchronously downloads stats and achievements for the specified user from the server. These stats will only be auto-updated for clients currently playing on the server. For other users you'll need to call this function again to refresh any data.
 
-	Triggers a [stats_received](/signals/game-server-stats/#stats_received) call result.
+	Triggers a [stats_received](/signals/game_server_stats/#stats_received) call result.
 
 	**Returns:** void
 
@@ -76,7 +76,7 @@
 ## setUserStatFloat
 
 !!! function "setUserStatFloat( ```uint64_t``` steam_id, ```string``` name, ```float``` stat )"
-	Sets / updates the value of a given stat for the specified user. You must have called [requestUserStats](/functions/game-server-stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this. This call only modifies Steam's in-memory state and is very cheap. To submit the stats to the server you must call [storeUserStats](/functions/game-server-stats/#storeuserstats).
+	Sets / updates the value of a given stat for the specified user. You must have called [requestUserStats](/functions/game_server_stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this. This call only modifies Steam's in-memory state and is very cheap. To submit the stats to the server you must call [storeUserStats](/functions/game_server_stats/#storeuserstats).
 
 	**Returns:** bool
 
@@ -89,7 +89,7 @@
 ## setUserStatInt()
 
 !!! function "setUserStatInt( ```uint64_t``` steam_id, ```string``` name, ```int``` stat )"
-	Sets / updates the value of a given stat for the specified user. You must have called [requestUserStats](/functions/game-server-stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this. This call only modifies Steam's in-memory state and is very cheap. To submit the stats to the server you must call [storeUserStats](/functions/game-server-stats/#storeuserstats).
+	Sets / updates the value of a given stat for the specified user. You must have called [requestUserStats](/functions/game_server_stats/#requestuserstats) and it needs to return successfully via its callback prior to calling this. This call only modifies Steam's in-memory state and is very cheap. To submit the stats to the server you must call [storeUserStats](/functions/game_server_stats/#storeuserstats).
 
 	**Returns:** bool
 
@@ -103,7 +103,7 @@
 !!! function "storeUserStats( ```uint64_t``` steam_id )"
 	Send the changed stats and achievements data to the server for permanent storage for the specified user. If this fails then nothing is sent to the server. It's advisable to keep trying until the call is successful. This call can be rate limited. Call frequency should be on the order of minutes, rather than seconds. You should only be calling this during major state changes such as the end of a round, the map changing, or the user leaving a server. If you have stats or achievements that you have saved locally but haven't uploaded with this function when your application process ends then this function will automatically be called. You can find additional debug information written to the ```%steam_install%\logs\stats_log.txt``` file.
 
-	Triggers a [stats_stored](/signals/game-server-stats/#stats_stored) callback.
+	Triggers a [stats_stored](/signals/game_server_stats/#stats_stored) callback.
 
 	**Returns:** void
 

@@ -53,7 +53,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## ip_country
 
 !!! function "ip_country"
-	Called when the country of the user changed. The country should be updated with getIPCountry.
+	Called when the country of the user changed. The country should be updated with [getIPCountry](/functions/utils/#getipcountry).
 
 	**Returns:** nothing
 
@@ -78,6 +78,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	Called when a SteamAPICall_t has completed (or failed)
 
 	**Returns:**
+
 	* async_call (uint64_t)
 	* callback (int)
 	* parameter (uint32)

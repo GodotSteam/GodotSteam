@@ -33,7 +33,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## inventory_full_update
 
 !!! function "inventory_full_update"
-	Triggered when GetAllItems successfully returns a result which is newer / fresher than the last known result. (It will not trigger if the inventory hasn't changed, or if results from two overlapping calls are reversed in flight and the earlier result is already known to be stale/out-of-date.) The regular [inventory_result_ready](/signals/inventory/#inventory_result_ready) callback will still be triggered immediately afterwards; this is an additional notification for your convenience.
+	Triggered when [getAllItems](/functions/inventory/#getallitems) successfully returns a result which is newer / fresher than the last known result. (It will not trigger if the inventory hasn't changed, or if results from two overlapping calls are reversed in flight and the earlier result is already known to be stale/out-of-date.) The regular [inventory_result_ready](/signals/inventory/#inventory_result_ready) callback will still be triggered immediately afterwards; this is an additional notification for your convenience.
 
 	**Returns:**
 

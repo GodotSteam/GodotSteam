@@ -49,7 +49,7 @@
 
 ## getActiveActionSetLayers
 
-!!! function "getActiveActionSetLayers( ```uint64_t``` input_handle)
+!!! function "getActiveActionSetLayers( ```uint64_t``` input_handle)"
 	Fill an array with all of the currently active action set layers for a specified controller handle.
 
 	**Returns:** array
@@ -66,7 +66,7 @@
 
 	**Returns:** uint64_t
 
-   ---
+	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#GetActiveActionSetLayers){ .md-button .md-button--store target="_blank" }
  
 ## getActionOriginFromXboxOrigin
@@ -87,6 +87,7 @@
 	**Returns:** dictionary 
 
 	Contains the following keys:
+
 	* mode (int)
 	* x (float)
 	* y (float)
@@ -116,7 +117,7 @@
 
 	Contains a list of handles (int).
 
-   ---
+	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#GetAnalogActionOrigins){ .md-button .md-button--store target="_blank" }
 
 ## getConnectedControllers
@@ -148,7 +149,7 @@
 
 	**Returns:** uint64_t
 
-   ---
+	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#GetCurrentActionSet){ .md-button .md-button--store target="_blank" }
 
 ## getDeviceBindingRevision
@@ -360,7 +361,7 @@
 
 	**Returns:** int
 
-   ---
+	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#TranslateActionOrigin){ .md-button .md-button--store target="_blank" }
 
 ## triggerHapticPulse
@@ -384,7 +385,7 @@
 
 	**Note:** Currently only the VSC supports haptic pulses. This API call will be ignored for incompatible controller models. This is a more user-friendly function to call than TriggerHapticPulse as it can generate pulse patterns long enough to be actually noticed by the user. Changing the usDurationMicroSec and usOffMicroSec parameters will change the "texture" of the haptic pulse.
 
-   ---
+	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#TriggerRepeatedHapticPulse){ .md-button .md-button--store target="_blank" }
 
 ## triggerVibration

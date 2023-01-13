@@ -24,8 +24,8 @@
 
 * Added: persona_state_change callback
 * Changed: getFriendAvatar to getPlayerAvatar
-* Changed: avatar_loaded now sends back [Steam](/GodotSteam/Classes/classSteam/) ID of avatar by avencherus
-* Fixed: issue with avatar and [Steam](/GodotSteam/Classes/classSteam/) ID on Linux compile
+* Changed: avatar_loaded now sends back Steam ID of avatar by avencherus
+* Fixed: issue with avatar and Steam ID on Linux compile
 * Fixed: join_requested signal by Fischer96 (requires further work)
 
 **Version 1.9.1 Changes**
@@ -59,7 +59,7 @@
 **Version 1.7.0 Changes**
 
 * Added: getCurrentBetaName, addScreenshotToLibrary, and setLocation (courtesy of marcelofg55)
-* Added: [Steam](/GodotSteam/Classes/classSteam/) controller functionality (courtesy of marcelofg55)
+* Added: Steam controller functionality (courtesy of marcelofg55)
 * Added: more workshop functionality
 * Changed: various small maintenance changes
 * Fixed: compiling error on Linux
@@ -67,7 +67,7 @@
 **Version 1.6.0 Changes**
 
 * Added: getFileNameAndSize, getQuota, getSyncPlatforms functions
-* Changed: small corrections with [Steam](/GodotSteam/Classes/classSteam/) ID variable
+* Changed: small corrections with Steam ID variable
 * Fixed: small things with getQuota
 
 **Version 1.5.1 Changes**
@@ -105,7 +105,7 @@
 
 **Version 1.2.0 Changes**
 
-* Added: Remote Storage functionality for [Steam](/GodotSteam/Classes/classSteam/) Cloud, thanks to marcelofg55
+* Added: Remote Storage functionality for Steam Cloud, thanks to marcelofg55
 * Added: new functions to documentation
 * Changed: SCsub file to include "no-pie" fix for Ubuntu 16.10 and higher
 
@@ -115,7 +115,3 @@
 * Added: Pre-compiled engines and templates for Windows
 * Added: change log to documentation
 * Changed: minor things in godotsteam.cpp 
-
--------------------------------
-
-Updated on 2022-11-24 at 12:17:42 -0600

@@ -44,7 +44,7 @@
 **Version 3.3 Changes**
 
 * Added: missing D_METHOD to all functions, should show the right argument names in-editor
-* Added: Input origin enums for PS5 and [Steam](/GodotSteam/Classes/classSteam/) Deck
+* Added: Input origin enums for PS5 and Steam Deck
 * Added: Input Types, Input Glyph Style, Input Glyph Size, and Input Configuration Enable Type enums
 * Added: getConnectionRealTimeStatus, configureConnectionLanes, connectP2PCustomSignaling, receivedP2PCustomSignal, getCertificateRequest, setCertificate, resetIdentity, runNetworkingCallbacks, beginAsyncRequestFakeIP, getFakeIP, createListenScoketP2PFakeIP, getRemoveFakeIPForConnection, and createFakeUDPPort functions and callback to NetworkingSockets class
 * Added: dismissFloatingGamepadTextInput function to Utils class
@@ -89,7 +89,7 @@
 
 **Version 3.1**
 
-* Added: various [Steam](/GodotSteam/Classes/classSteam/) Deck specific functions, thanks to EIREXE
+* Added: various Steam Deck specific functions, thanks to EIREXE
 * Added: new AppLists class of functions and callbacks
 * Added: new or missing App functions, callbacks, and enums
 * Added: OverlayToWebPageMode enum and unread_chat_messages_changed callback for Friends class
@@ -145,147 +145,3 @@
 * Added: GodotSteam GDNative documentation
 * Changed: SConstruct file from GDNative to support architecture recognition or accept bit arguement in SCONS
 * Bugs: Windows does not work for compiling yet, waiting for GDNative update
-
-</section> [__](#)
-
- <nav id="menu"> <header class="major"> 
-## Menu
-
- </header> 
-
-* 
-[Introduction](index.html)
-
-* How-To's 
-    * [How-To Godot 2, 3, 4](howto-module.html)
-    * [How-To GDNative](howto-gdnative.html)
-* Functions 
-    * [Main](functions-main.html)
-    * [Apps](functions-apps.html)
-    * [App Lists](functions-apps-list.html)
-    * [Friends](functions-friends.html)
-    * [Game Search](functions-game-search.html)
-    * [Game Server](functions-game-server.html)
-    * [Game Server Stats](functions-game-server-stats.html)
-    * [HTML Surface](functions-html-surface.html)
-    * [HTTP](functions-http.html)
-    * [Input](functions-input.html)
-    * [Inventory](functions-inventory.html)
-    * [Matchmaking](functions-matchmaking.html)
-    * [Matchmaking Servers](functions-matchmaking-servers.html)
-    * [Music](functions-music.html)
-    * [Music Remote](functions-music-remote.html)
-    * [Networking](functions-networking.html)
-    * [Networking Messages](functions-networking-messages.html)
-    * [Networking Sockets](functions-networking-sockets.html)
-    * [Networking Types](functions-networking-types.html)
-    * [Networking Utils](functions-networking-utils.html)
-    * [Parental Settings](functions-parental-settings.html)
-    * [Parties](functions-parties.html)
-    * [Remote Play](functions-remote-play.html)
-    * [Remote Storage](functions-remote-storage.html)
-    * [Screenshots](functions-screenshots.html)
-    * [UGC](functions-ugc.html)
-    * [User](functions-user.html)
-    * [User Stats](functions-user-stats.html)
-    * [Utils](functions-utils.html)
-    * [Video](functions-video.html)
-* Signals 
-    * [Main](signals-main.html)
-    * [Apps](signals-apps.html)
-    * [Apps List](signals-apps-list.html)
-    * [Friends](signals-friends.html)
-    * [Game Search](signals-game-search.html)
-    * [Game Server](signals-game-server.html)
-    * [Game Server Stats](signals-game-server-stats.html)
-    * [HTML Surface](signals-html-surface.html)
-    * [HTTP](signals-http.html)
-    * [Input](signals-input.html)
-    * [Inventory](signals-inventory.html)
-    * [Matchmaking](signals-matchmaking.html)
-    * [Matchmaking Servers](signals-matchmaking-servers.html)
-    * [Music Remote](signals-music-remote.html)
-    * [Networking](signals-networking.html)
-    * [Networking Sockets](signals-networking-sockets.html)
-    * [Networking Utils](signals-networking-utils.html)
-    * [Parental Settings](signals-parental-settings.html)
-    * [Parties](signals-parties.html)
-    * [Remote Play](signals-remote-play.html)
-    * [Remote Storage](signals-remote-storage.html)
-    * [Screenshots](signals-screenshots.html)
-    * [UGC](signals-ugc.html)
-    * [User](signals-user.html)
-    * [User Stats](signals-user-stats.html)
-    * [Utils](signals-utils.html)
-    * [Video](signals-video.html)
-* Godot 3.x Tutorials 
-    * [Initializing Steam](tutorials-initializing.html)
-    * [Stats and Achievements](tutorials-stats-achievements.html)
-    * [Leaderboards](tutorials-leaderboards.html)
-    * [Avatars](tutorials-avatars.html)
-    * [Lobbies / P2P Networking](tutorials-lobbies-p2p.html)
-    * [Authentication](tutorials-authentication.html)
-    * [Mac Exporting](tutorials-mac-export.html)
-    * [Achievement Icons](tutorials-achievement-icons.html)
-    * [Auto-Matchmaking](tutorials-auto-matchmaking.html)
-    * [Rich Presence](tutorials-rich-presence.html)
-    * [Linux Caveats](tutorials-linux-caveats.html)
-    * [Exporting and Shipping](tutorials-exporting-shipping.html)
-    * [Common Issues](tutorials-common-issues.html)
-    * [Remove Steam](tutorials-remove-steam.html)
-* [Games Using GodotSteam](games.html)
-* [To-Do](https://github.com/Gramps/GodotSteam/projects/1.html)
-* Change Log 
-    * [Godot 4.x](changelog-godot4.html)
-    * [Godot 3.x](changelog-godot3.html)
-    * [Godot 2.x](changelog-godot2.html)
-    * [GDNative](changelog-gdnative.html)
-    * [Server](changelog-server.html)
-* [Contributors](contributors.html)
-
- </nav> <section> <header class="major"> 
-## Stuck? Need Help?
-
- </header> 
-
-Navigating Steamworks can be confusing sometimes. If you run across any problems, there's a few ways to get it ironed out.
-
-
-
-* 
-[__&nbsp;&nbsp;Send A Support E-Mail](mailto:godotsteam@coaguco.com)
-
-* [__&nbsp;&nbsp;Chat With Us On Discord](https://discord.gg/SJRSq6K)
-
- </section> <section> <header class="major"> 
-## Donate
-
- </header> 
-
-If C++ is not your bag but you're feeling generous, you can support the project with your pocket change using either button below!
-
-
-
-* 
-[__&nbsp;&nbsp;with Github Sponsors](https://github.com/sponsors/Gramps)
-
-* [__&nbsp;&nbsp;with Patreon](https://patreon.com/coaguco)
-* [__&nbsp;&nbsp;with Paypal](https://www.paypal.me/sithlordkyle)
-
- </section> <footer> 
-
-* 
-
-Godot Engine by [Juan Linietsky, Ariel Manzur and contributors](https://godotengine.org)
-
-* Steamworks API by [Valve Corporation](https://valvesoftware.com)
-* GodotSteam by [GP Garcia](https://coaguco.com) and contributors
-* Site Template by [HTML5UP](https://html5up.net)
-
- </footer> <footer id="footer" class="copyright"> 2022  GP Garcia & CoaguCo Industries </footer>   
-
-<script src="js/jquery.min.js"></script> <script src="js/browser.min.js"></script> <script src="js/breakpoints.min.js"></script> <script src="js/util.js"></script> <script src="js/main.js"></script> <script src="js/godotsteam.js"></script> </body> </html> 
-
--------------------------------
-
-Updated on 2022-11-24 at 12:17:42 -0600

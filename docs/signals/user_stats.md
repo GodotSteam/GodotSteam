@@ -7,7 +7,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## current_stats_received
 
 !!! function "current_stats_received"
-	Called when the latest stats and achievements for the local user have been received from the server; in response to function [requestCurrentStats](/functions/user_stats/#currentstatsreceived).
+	Called when the latest stats and achievements for the local user have been received from the server; in response to function [requestCurrentStats](/functions/user_stats/#requestcurrentstats).
 
 	**Returns:**
 
@@ -57,9 +57,6 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardFindResult_t){ .md-button .md-button--store target="_blank" }
 
----
-[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoresDownloaded_t){ .md-button .md-button--store target="_blank" }
-
 ## leaderboard_scores_downloaded
 
 !!! function "leaderboard_scores_downloaded"
@@ -70,7 +67,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* message (string)
 		* this_handle (uint64_t)
 		* leaderboard_entries_array (array)
-			* entryDict (dictionary)
+			* entry_dict (dictionary)
 				* score (int)
 				* steam_id (uint64_t)
 				* global_rank (int)
@@ -78,7 +75,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 				* details (array)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoreUploaded_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoresDownloaded_t){ .md-button .md-button--store target="_blank" }
 
 ## leaderboard_score_uploaded
 
@@ -95,7 +92,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* global_rank_prev (int)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardUGCSet_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoreUploaded_t){ .md-button .md-button--store target="_blank" }
 
 ## leaderboard_ugc_set
 
@@ -107,7 +104,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* leaderboard_handle (uint64_t)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#NumberOfCurrentPlayers_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardUGCSet_t){ .md-button .md-button--store target="_blank" }
 
 ## number_of_current_players
 
@@ -120,7 +117,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* players (int32)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#UserAchievementStored_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#NumberOfCurrentPlayers_t){ .md-button .md-button--store target="_blank" }
 
 ## user_achievement_stored
 
@@ -136,7 +133,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* max_progress (uint32_t)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#UserStatsReceived_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#UserAchievementStored_t){ .md-button .md-button--store target="_blank" }
 
 ## user_stats_received
 
@@ -148,6 +145,9 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* game (uint64_t)
 	* result (uint32_t)
 	* user (uint64_t) as Steam ID
+
+	---
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#UserStatsReceived_t){ .md-button .md-button--store target="_blank" }
 
 ## user_stats_stored
 
