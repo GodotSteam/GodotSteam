@@ -670,6 +670,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2069260/Somnipathy/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Snowyland -->
+<figure class="game" markdown>
+[![Spaceship Hunters](https://steamcdn-a.akamaihd.net/steam/apps/1731730/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1731730/Snowyland/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1731730/Snowyland/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Spaceship Hunters -->
 <figure class="game" markdown>
 [![Spaceship Hunters](https://steamcdn-a.akamaihd.net/steam/apps/1819290/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1819290/Spaceship_Hunters){ target="_blank" }

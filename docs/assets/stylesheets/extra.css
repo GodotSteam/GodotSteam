@@ -409,9 +409,11 @@ html .md-footer-meta.md-typeset a:is(:focus, :hover) {
 	object-fit:contain;
 	width:auto
 }
-.md-nav__link--passed,
-.md-nav__link[for] {
+.md-nav__link--passed {
 	color: #adadad;
+}
+.md-nav__link[for] {
+	color: #ffffff;
 }
 .md-nav__item .md-nav__link--active {
 	color: #478cbf;
@@ -870,9 +872,25 @@ html .md-footer-meta.md-typeset a:is(:focus, :hover) {
 .md-typeset summary {
 	background-color:rgba(68,138,255,.1);
 }
-
-
-
+.md-typeset [type=checkbox]:checked+.task-list-indicator:before {
+ background-color:#478CBF;
+ -webkit-mask-image:var(--md-tasklist-icon--checked);
+ mask-image:var(--md-tasklist-icon--checked)
+}
+.md-typeset .tabbed-labels>label {
+ border-bottom:.1rem solid #adadad;
+ border-radius:.1rem .1rem 0 0;
+ color:#adadad;
+ cursor:pointer;
+ flex-shrink:0;
+ font-size:.64rem;
+ font-weight:700;
+ padding:.78125em 1.25em .625em;
+ scroll-margin-inline-start:1rem;
+ transition:background-color .25s,color .25s;
+ white-space:nowrap;
+ width:auto
+}
 div.branch-grid {
   display: flex;
   flex-wrap: wrap;
