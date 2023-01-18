@@ -6,6 +6,7 @@
 /////////////////////////////////////////////////
 //
 // Turn off MSVC-only warning about strcpy
+#include <cstdint>
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable:4996)
@@ -25,13 +26,21 @@
 #include "steam/isteamdualsense.h"
 
 // Include Godot headers
-#include "Godot.hpp"
-#include "Object.hpp"
-#include "Texture.hpp"
-#include "String.hpp"
-#include "Reference.hpp"
-#include "Dictionary.hpp"
-#include "IP.hpp"
+
+#include <gdextension_interface.h>
+#include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/classes/global_constants.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+
+//#include "godot_cpp/godot.hpp"
+//#include "core/object.hpp"
+//#include "Texture.hpp"
+//#include "String.hpp"
+//#include "Reference.hpp"
+//#include "Dictionary.hpp"
+//#include "IP.hpp"
 //#include "core/method_bind_ext.gen.inc"
 
 // Include some system headers
@@ -39,8 +48,8 @@
 
 namespace godot {
 
-	class Steam: public Reference {
-		GODOT_CLASS(Steam, Reference);
+	class Steam: public RefCounted {
+		GDCLASS(Steam, RefCounted);
 
 		public:
 			/////////////////////////////////////////
@@ -485,7 +494,6 @@ namespace godot {
 			};
 
 			// Used by Godot for GDNative
-			static void _register_methods();
 			void _init(){ }
 
 			// Steamworks
@@ -583,10 +591,10 @@ namespace godot {
 			int getFriendRichPresenceKeyCount(uint64_t friend_id);
 			String getFriendRichPresenceKeyByIndex(uint64_t friend_id, int key);		
 			int getFriendsGroupCount();
-			int16 getFriendsGroupIDByIndex(int16 friend_group);
-			int getFriendsGroupMembersCount(int16 friend_group);
-			Array getFriendsGroupMembersList(int16 friend_group, int member_count);
-			String getFriendsGroupName(int16 friend_group);
+			int16 getFriendsGroupIDByIndex(int32 friend_group);
+			int getFriendsGroupMembersCount(int32 friend_group);
+			Array getFriendsGroupMembersList(int32 friend_group, int member_count);
+			String getFriendsGroupName(int32 friend_group);
 			int getFriendSteamLevel(uint64_t steam_id);
 			int getLargeFriendAvatar(uint64_t steam_id);
 			int getMediumFriendAvatar(uint64_t steam_id);
@@ -684,7 +692,7 @@ namespace godot {
 			bool deferHTTPRequest(uint32 request_handle);
 			float getHTTPDownloadProgressPct(uint32 request_handle);
 			bool getHTTPRequestWasTimedOut(uint32 request_handle);
-			PoolByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
+			PackedByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 			uint32 getHTTPResponseBodySize(uint32 request_handle);
 			uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String& header_name);
 			uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String& header_name, uint32 buffer_size);
@@ -733,7 +741,7 @@ namespace godot {
 			String getInputTypeForHandle(uint64_t input_handle);
 			Dictionary getMotionData(uint64_t input_handle);
 			int getRemotePlaySessionID(uint64_t input_handle);
-			uint16 getSessionInputConfigurationSettings();
+			uint32 getSessionInputConfigurationSettings();
 			String getStringForActionOrigin(int origin);
 			String getStringForAnalogActionName(uint64_t action_handle);
 			String getStringForDigitalActionName(uint64_t action_handle);
@@ -749,22 +757,22 @@ namespace godot {
 			int translateActionOrigin(int destination_input, int source_origin);
 			void triggerHapticPulse(uint64_t input_handle, int target_pad, int duration);
 			void triggerRepeatedHapticPulse(uint64_t input_handle, int target_pad, int duration, int offset, int repeat, int flags);
-			void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String& gain_db, uint8 other_intensity, const String& other_gain_db);
-			void triggerVibration(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed);
-			void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
+            void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, int intensity, const String& gain_db, int other_intensity, const String& other_gain_db);
+			void triggerVibration(uint64_t input_handle, uint32_t left_speed, uint32_t right_speed);
+			void triggerVibrationExtended(uint64_t input_handle, uint32_t left_speed, uint32_t right_speed, uint32_t left_trigger_speed, uint32_t right_trigger_speed);
 			bool setInputActionManifestFilePath(const String& manifest_path);
 			void setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, int effect_mode, int position, int amplitude, int frequency);
 			bool waitForData(bool wait_forever, uint32 timeout);
 
 			// Inventory ////////////////////////////
 			int32 addPromoItem(uint32 item);
-			int32 addPromoItems(PoolIntArray items);
+			int32 addPromoItems(PackedInt32Array items);
 			bool checkResultSteamID(uint64_t steam_id_expected, int32 this_inventory_handle = 0);
 			int32 consumeItem(uint64_t item_consume, uint32 quantity);
-			int32 deserializeResult(PoolByteArray buffer);
+			int32 deserializeResult(PackedByteArray buffer);
 			void destroyResult(int32 this_inventory_handle = 0);
-			int32 exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
-			int32 generateItems(const PoolIntArray items, const uint32 quantity);
+			int32 exchangeItems(const PackedInt32Array output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
+			int32 generateItems(const PackedInt32Array items, const uint32 quantity);
 			int32 getAllItems();
 			String getItemDefinitionProperty(uint32 definition, const String& name);
 			int32 getItemsByID(const uint64_t id_array, uint32 count);
@@ -780,7 +788,7 @@ namespace godot {
 			void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 			void requestPrices();
 			String serializeResult(int32 this_inventory_handle = 0);
-			void startPurchase(const PoolIntArray items, const uint32 quantity);
+			void startPurchase(const PackedInt32Array items, const uint32 quantity);
 			int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 			int32 triggerItemDrop(uint32 definition);
 			void startUpdateProperties();
@@ -793,8 +801,8 @@ namespace godot {
 
 			// Matchmaking //////////////////////////
 			Array getFavoriteGames();
-			int addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
-			bool removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
+			int addFavoriteGame(uint32 ip, uint32 port, uint32 query_port, uint32 flags, uint32 last_played);
+			bool removeFavoriteGame(uint32 app_id, uint32 ip, uint32 port, uint32 query_port, uint32 flags);
 			void requestLobbyList();
 			void addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, int comparison_type);
 			void addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, int comparison_type);
@@ -816,7 +824,7 @@ namespace godot {
 			void setLobbyMemberData(uint64_t steam_lobby_id, const String& key, const String& value);
 			bool sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body);
 			bool requestLobbyData(uint64_t steam_lobby_id);
-			void setLobbyGameServer(uint64_t steam_lobby_id, const String& server_ip, uint16 server_port, uint64_t steam_id_game_server);
+			void setLobbyGameServer(uint64_t steam_lobby_id, const String& server_ip, uint32 server_port, uint64_t steam_id_game_server);
 			Dictionary getLobbyGameServer(uint64_t steam_lobby_id);
 			bool setLobbyMemberLimit(uint64_t steam_lobby_id, int max_members);
 			int getLobbyMemberLimit(uint64_t steam_lobby_id);
@@ -831,8 +839,8 @@ namespace godot {
 			int getServerCount(uint64_t server_list_request);
 			Dictionary getServerDetails(uint64_t server_list_request, int server);
 			bool isRefreshing(uint64_t server_list_request);
-			int pingServer(const String& ip, uint16 port);
-			int playerDetails(const String& ip, uint16 port);
+			int pingServer(const String& ip, uint32 port);
+			int playerDetails(const String& ip, uint32 port);
 			void refreshQuery(uint64_t server_list_request);
 			void refreshServer(uint64_t server_list_request, int server);
 			void releaseRequest(uint64_t server_list_request);
@@ -842,7 +850,7 @@ namespace godot {
 			void requestInternetServerList(uint32 app_id, Array filters);
 			void requestLANServerList(uint32 app_id);
 			void requestSpectatorServerList(uint32 app_id, Array filters);
-			int serverRules(const String& ip, uint16 port);
+			int serverRules(const String& ip, uint32 port);
 
 			// Music ////////////////////////////////
 			bool musicIsEnabled();
@@ -879,9 +887,9 @@ namespace godot {
 			bool setCurrentQueueEntry(int id);
 			bool setDisplayName(const String& name);
 			bool setPlaylistEntry(int id, int position, const String& entry_text);
-			bool setPNGIcon64x64(PoolByteArray icon);
+			bool setPNGIcon64x64(PackedByteArray icon);
 			bool setQueueEntry(int id, int position, const String& entry_text);
-			bool updateCurrentEntryCoverArt(PoolByteArray art);
+			bool updateCurrentEntryCoverArt(PackedByteArray art);
 			bool updateCurrentEntryElapsedSeconds(int seconds);
 			bool updateCurrentEntryText(const String& text);
 			bool updateLooped(bool looped);
@@ -897,7 +905,7 @@ namespace godot {
 			Dictionary getP2PSessionState(uint64_t steam_id_remote);
 			uint32_t getAvailableP2PPacketSize(int channel = 0);
 			Dictionary readP2PPacket(uint32_t packet, int channel = 0);
-			bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, int send_type, int channel = 0);
+			bool sendP2PPacket(uint64_t steam_id_remote, const PackedByteArray data, int send_type, int channel = 0);
 
 			// Networking Messages //////////////////
 			bool acceptSessionWithUser(const String& identity_reference);
@@ -905,7 +913,7 @@ namespace godot {
 			bool closeSessionWithUser(const String& identity_reference);
 			Dictionary getSessionConnectionInfo(const String& identity_reference, bool get_connection, bool get_status);
 			Array receiveMessagesOnChannel(int channel, int max_messages);
-			int sendMessageToUser(const String& identity_reference, const PoolByteArray data, int flags, int channel);
+			int sendMessageToUser(const String& identity_reference, const PackedByteArray data, int flags, int channel);
 
 			// Networking Sockets ///////////////////
 			int acceptConnection(uint32 connection);
@@ -936,7 +944,7 @@ namespace godot {
 //			int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
 //			int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 			uint32 getHostedDedicatedServerPOPId();
-			uint16 getHostedDedicatedServerPort();
+			uint32 getHostedDedicatedServerPort();
 			bool getListenSocketAddress(uint32 socket);
 			String getIdentity();
 			Dictionary getRemoteFakeIPForConnection(uint32 connection);
@@ -946,9 +954,9 @@ namespace godot {
 //			Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
 			void resetIdentity(const String& this_identity);
 			void runNetworkingCallbacks();
-			void sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags);
-			Dictionary sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags);
-			Dictionary setCertificate(const PoolByteArray& certificate);		
+			void sendMessages(int messages, const PackedByteArray data, uint32 connection_handle, int flags);
+			Dictionary sendMessageToConnection(uint32 connection_handle, const PackedByteArray data, int flags);
+			Dictionary setCertificate(const PackedByteArray& certificate);		
 			bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
 			void setConnectionName(uint32 peer, const String& name);
 
@@ -974,14 +982,14 @@ namespace godot {
 			bool isIPv6AllZeros(const String& reference_name);
 			bool parseIdentityString(const String& reference_name, const String& string_to_parse);
 			bool parseIPAddressString(const String& reference_name, const String& string_to_parse);
-			bool setGenericBytes(const String& reference_name, uint8 data);
+			bool setGenericBytes(const String& reference_name, int data);
 			bool setGenericString(const String& reference_name, const String& this_string);
 			bool setIdentityIPAddr(const String& reference_name, const String& ip_address_name);
 			void setIdentityLocalHost(const String& reference_name);
 			void setIdentitySteamID64(const String& reference_name, uint64_t steam_id);
-			void setIPv4(const String& reference_name, uint32 ip, uint16 port);
-			void setIPv6(const String& reference_name, uint8 ipv6, uint16 port);
-			void setIPv6LocalHost(const String& reference_name, uint16 port = 0);
+			void setIPv4(const String& reference_name, uint32 ip, uint32 port);
+			void setIPv6(const String& reference_name, uint32 ipv6, uint32 port);
+			void setIPv6LocalHost(const String& reference_name, uint32 port = 0);
 			void setPSNID(const String& reference_name, uint64_t psn_id);
 			void setStadiaID(const String& reference_name, uint64_t stadia_id);
 			bool setXboxPairwiseID(const String& reference_name, const String& xbox_id);
@@ -991,9 +999,9 @@ namespace godot {
 
 			// Networking Utils /////////////////////
 			bool checkPingDataUpToDate(float max_age_in_seconds);
-			String convertPingLocationToString(PoolByteArray location);
-			int estimatePingTimeBetweenTwoLocations(PoolByteArray location1, PoolByteArray location2);
-			int estimatePingTimeFromLocalHost(PoolByteArray location);
+			String convertPingLocationToString(PackedByteArray location);
+			int estimatePingTimeBetweenTwoLocations(PackedByteArray location1, PackedByteArray location2);
+			int estimatePingTimeFromLocalHost(PackedByteArray location);
 			Dictionary getConfigValue(int config_value, int scope_type, uint32_t connection_handle);
 			Dictionary getConfigValueInfo(int config_value);
 			int getDirectPingToPOP(uint32 pop_id);
@@ -1053,12 +1061,12 @@ namespace godot {
 			Dictionary fileRead(const String& file, int32_t data_to_read);
 			void fileReadAsync(const String& file, uint32 offset, uint32_t data_to_read);
 			void fileShare(const String& file);
-			bool fileWrite(const String& file, PoolByteArray data, int32 size = 0);
-			void fileWriteAsync(const String& file, PoolByteArray data, int32 size = 0);
+			bool fileWrite(const String& file, PackedByteArray data, int32 size = 0);
+			void fileWriteAsync(const String& file, PackedByteArray data, int32 size = 0);
 			bool fileWriteStreamCancel(uint64_t write_handle);
 			bool fileWriteStreamClose(uint64_t write_handle);
 			uint64_t fileWriteStreamOpen(const String& file);
-			bool fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray data);
+			bool fileWriteStreamWriteChunk(uint64_t write_handle, PackedByteArray data);
 			int32 getCachedUGCCount();
 			uint64_t getCachedUGCHandle(int32 content);
 			int32_t getFileCount();
@@ -1077,7 +1085,7 @@ namespace godot {
 			bool setSyncPlatforms(const String& file, int platform);
 			void ugcDownload(uint64_t content, uint32 priority);
 			void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
-			PoolByteArray ugcRead(uint64_t content, int32 data_size, uint32 offset, int action);
+			PackedByteArray ugcRead(uint64_t content, int32 data_size, uint32 offset, int action);
 
 			// Screenshots //////////////////////////
 			uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnail_filename, int width, int height);
@@ -1088,7 +1096,7 @@ namespace godot {
 			bool tagPublishedFile(uint32_t screenshot, uint64_t file_id);
 			bool tagUser(uint32_t screenshot, uint64_t steam_id);
 			void triggerScreenshot();
-			uint32_t writeScreenshot(const PoolByteArray& rgb, int width, int height);
+			uint32_t writeScreenshot(const PackedByteArray& rgb, int width, int height);
 
 			// UGC //////////////////////////////////
 			void addAppDependency(uint64_t published_file_id, uint32_t app_id);
@@ -1175,9 +1183,9 @@ namespace godot {
 
 			// Users ////////////////////////////////
 			void advertiseGame(const String& server_ip, int port);
-			int beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
+			int beginAuthSession(PackedByteArray ticket, int ticket_size, uint64_t steam_id);
 			void cancelAuthTicket(uint32_t auth_ticket);
-			Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
+			Dictionary decompressVoice(const PackedByteArray& voice, uint32 voice_size, uint32 sample_rate);
 			void endAuthSession(uint64_t steam_id);
 			Dictionary getAuthSessionTicket();
 			Dictionary getAvailableVoice();
@@ -1188,7 +1196,7 @@ namespace godot {
 			uint64_t getSteamID();
 			Dictionary getVoice();
 			uint32 getVoiceOptimalSampleRate();
-			Dictionary initiateGameConnection(uint64_t server_id, uint32 server_ip, uint16 server_port, bool secure);
+			Dictionary initiateGameConnection(uint64_t server_id, uint32 server_ip, uint32 server_port, bool secure);
 			bool isBehindNAT();
 			bool isPhoneIdentifying();
 			bool isPhoneRequiringVerification();
@@ -1200,7 +1208,7 @@ namespace godot {
 			void startVoiceRecording();
 			bool setDurationControlOnlineState(int new_state);
 			void stopVoiceRecording();
-			void terminateGameConnection(uint32 server_ip, uint16 server_port);
+			void terminateGameConnection(uint32 server_ip, uint32 server_port);
 			int userHasLicenseForApp(uint64_t steam_id, uint32_t app_id);
 
 			// User Stats ///////////////////////////
@@ -1248,7 +1256,7 @@ namespace godot {
 			bool setStatInt(const String& name, int value);
 			bool storeStats();
 			bool updateAvgRateStat(const String& name, float this_session, double session_length);
-			void uploadLeaderboardScore(int score, bool keep_best = false, PoolIntArray details = PoolIntArray(), uint64_t this_leaderboard = 0);
+			void uploadLeaderboardScore(int score, bool keep_best = false, PackedInt32Array details = PackedInt32Array(), uint64_t this_leaderboard = 0);
 			Array getLeaderboardEntries();
 
 			// Utils ////////////////////////////////
@@ -1338,7 +1346,7 @@ namespace godot {
 			SteamNetworkingIdentity networking_identity;
 			SteamNetworkingIdentity game_server;
 	//		SteamDatagramHostedAddress hosted_address;
-			PoolByteArray routing_blob;
+			PackedByteArray routing_blob;
 	//		SteamDatagramRelayAuthTicket relay_auth_ticket;
 			std::map<String, SteamNetworkingIdentity> networking_identities;
 			std::map<String, SteamNetworkingIPAddr> ip_addresses;
