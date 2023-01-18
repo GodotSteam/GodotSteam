@@ -1,5 +1,5 @@
 # GodotSteam for GDNative
-Steam API for the Godot game engine (version 4.x). For the Windows, Linux, and Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
