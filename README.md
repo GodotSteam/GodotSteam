@@ -1,17 +1,16 @@
 # GodotSteam for Godot Engine
-Steam API for the Godot game engine (version 4.x). For the Windows, Linux, and Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
+- [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
 
 Documentation
 ----------
-[Documentation is available here](https://gramps.github.io/GodotSteam/) and [is mirrored on and exported from CoaguCo's site](https://coaguco.com/godotsteam).
-
-You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
+[Documentation is available here](https://godotsteam.com/). You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
 Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
@@ -42,7 +41,7 @@ You can [download pre-compiled versions _(currently v4.1.5)_ of this repo here](
 - Fixed: getSessionConnectionInfo using old networking struct
 - Removed: unused networking stricts
 
-[You can read more change-logs here](https://gramps.github.io/GodotSteam/changelog-godot4.html).
+[You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
 Known Issues
 ----------
@@ -55,7 +54,7 @@ Known Issues
 By far the easiest way to use GodotSteam is to download our pre-compiled editors and templates; especially good for folks who don't want to set up the tools for compiling and just want to get going.
 - Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
 - Everything you need should be included.
-  - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html).
+  - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](https://godotsteam.com/tutorials/linux_caveats).
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
@@ -73,14 +72,14 @@ For those of you who are comfortable compiling or want to give it a shot, here a
   - Please see "Known Issues" above about versions.
 
 
-##### 2. Setting Up the SDK
+#### 2. Setting Up the SDK
 Move the following from the unzipped Steamworks SDK to the **/modules/godotsteam/sdk/** folder:
 ````
     sdk/public/
     sdk/redistributable_bin/
 ````
 
-##### 3. Double-Checking Folder / File Structure
+#### 3. Double-Checking Folder / File Structure
 The repo's directory contents should now look like this:
 ````
     godotsteam/sdk/public/*
@@ -95,7 +94,7 @@ The repo's directory contents should now look like this:
 
 You can also just put the godotsteam directory where ever you like and just apply the ````custom_modules=.../path/to/dir/godotsteam```` flag in SCONS when compiling.  Make sure the ````custom_modules=```` flag points to where the godotsteam folder is located.
 
-##### 4. Compiling Time
+#### 4. Compiling Time
 Recompile for your platform:
   - For editors: ````scons platform=<your platform> tools=yes target=editor````
   - For debug templates: ````scons platform=<your platform> tools=no target=template_debug````
@@ -149,18 +148,18 @@ Lack of the **Steam API .dll/.so/.dylib**, for your respective OS, or the **stea
   export LD_PRELOAD=~/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so;
   export LD_PRELOAD=~/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so;
   ```
-  This can be done in an .sh file that runs these before running your executable.  This issue may not arise for all users and can also just be done by the user in a terminal separately.  You can [read more about it in our Linux Caveats doc](https://gramps.github.io/GodotSteam/tutorials-linux-caveats.html).
+  This can be done in an .sh file that runs these before running your executable.  This issue may not arise for all users and can also just be done by the user in a terminal separately.  You can [read more about it in our Linux Caveats doc](https://godotsteam.com/tutorials/linux_caveats/).
 
-##### 6. Good To Go
+#### 6. Good To Go
 
-From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to [read the Steamworks API documentation](https://partner.steamgames.com/doc/home) to see what all is available and [cross-reference with GodotSteam's documentation](https://gramps.github.io/GodotSteam/).
+From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to [read the Steamworks API documentation](https://partner.steamgames.com/doc/home) to see what all is available and [cross-reference with GodotSteam's documentation](https://godotsteam.com/).
 
-##### 7. Shipping Your Game
+#### 7. Shipping Your Game
 When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.
 
 Donate
 -------------
-Pull-requests are the best way to help the project out but you can also donate through [Patreon](https://patreon.com/coaguco) or [Paypal](https://www.paypal.me/sithlordkyle)!
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 -------------
