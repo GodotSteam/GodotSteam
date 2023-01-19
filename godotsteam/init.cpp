@@ -1,15 +1,22 @@
 #include "godotsteam.h"
 
-extern "C" void GDN_EXPORT godot_gdnative_init(godot_gdnative_init_options *o){
-	godot::Godot::gdnative_init(o);
+extern "C" void GDE_EXPORT godot_steam_terminate(godot::ModuleInitializationLevel level){
 }
 
-extern "C" void GDN_EXPORT godot_gdnative_terminate(godot_gdnative_terminate_options *o){
-	godot::Godot::gdnative_terminate(o);
+extern "C" void GDE_EXPORT godot_steam_initalizer(godot::ModuleInitializationLevel level) {
+    if (level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) return;
+    
+    godot::ClassDB::register_class<godot::Steam>();
 }
 
-extern "C" void GDN_EXPORT godot_nativescript_init(void *handle){
-	godot::Godot::nativescript_init(handle);
-	
-	godot::register_class<godot::Steam>();
+extern "C" GDExtensionBool GDE_EXPORT godot_steam_init(const GDExtensionInterface *p_interface,
+                                            GDExtensionClassLibraryPtr p_library,
+                                            GDExtensionInitialization *r_initialization) {
+    godot::GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
+
+	init_obj.register_initializer(godot_steam_initalizer);
+	init_obj.register_terminator(godot_steam_terminate);
+	init_obj.set_minimum_library_initialization_level(godot::MODULE_INITIALIZATION_LEVEL_SCENE);
+
+    return init_obj.init();
 }
