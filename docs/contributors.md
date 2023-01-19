@@ -41,6 +41,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- shuriken1812
 	- troykinsella
 	- xsellier
+	- vaartis
 	- VictorienXP
 	- yeonghoey
 
@@ -69,6 +70,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- Simone Mändl
 	- Ranoller
 	- René Habermann
+	- Ricardo Sernaglia
 	- RosenX
 	- Shine Right Studio
 	- Thorsten Schleinzer

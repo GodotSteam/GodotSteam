@@ -675,6 +675,8 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![Spaceship Hunters](https://steamcdn-a.akamaihd.net/steam/apps/1731730/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1731730/Snowyland/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1731730/Snowyland/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/publisher/donniegamestudio){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/donniegamestudio){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Spaceship Hunters -->
