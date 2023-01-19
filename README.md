@@ -16,7 +16,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-This is not functional currently.  This branch is serving as a starting point for making the GDExtension version functional.  Currently it does not compile as the SConstruct file needs tweaking; though most of the actual GodotSteam stuff is completed.  Please feel free to make changes and submit pull requests!
+We currently do not have an in-depth how-to for this branch but it is coming.  However, it is functional thanks to the great work of @vaaris!  Since this is still an early work-in-progress, please except bugs and do not use this for production.  All pull requests are welcome!
 
 Donate
 ---
