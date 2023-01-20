@@ -1,4 +1,4 @@
-name: Build Releases
+name: Build Godot4 Releases
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
       GODOT_TAG:
         description: 'godot beta tag'
         required: true
-        default: "beta14"
+        default: 'beta14'
       VERSION_TAG:
         description: 'godot version used in 351 411 etc format'
         required: true
@@ -18,7 +18,7 @@ on:
       ZIP_TAG:
         description: 'filename in g351-s155-gs3183 format'
         required: true
-        default: "g4b14-s155-gs415"
+        default: 'g4b14-s155-gs415'
 
 jobs:
   env-setup:
@@ -43,7 +43,7 @@ jobs:
 
   build-linux-editor:
     needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
+    uses: ./.github/workflows/build-g4-linux-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
@@ -58,7 +58,7 @@ jobs:
 
   build-linux-release-template:
     needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
+    uses: ./.github/workflows/build-g4-linux-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
@@ -73,7 +73,7 @@ jobs:
 
   build-linux-debug-template:
     needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
+    uses: ./.github/workflows/build-g4-linux-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
