@@ -24,7 +24,7 @@ jobs:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
           token: ${{ secrets.steamworks_sdk_repo_token }}
-          ref: ${{ STEAMWORKS_SDK_TAG }}
+          ref: "sdk-1.55"
       - name: Copy Steamworks
         run: |
           cp -r steamworks/public godotsteam/sdk
