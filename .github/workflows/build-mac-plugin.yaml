@@ -52,6 +52,7 @@ jobs:
           ls -al bin/osx
           cd bin/osx 
           mv libgodotsteam.dylib libgodotsteam-${{ matrix.architecture }}.dylib
+          cd ..
       - name: Upload macOS dylib
         uses: actions/upload-artifact@v3
         with:
