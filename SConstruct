@@ -111,7 +111,10 @@ if env['target'] in ('debug', 'd'):
 else:
     cpp_library += '.release'
 
-cpp_library += '.' + str(bits)
+if env['platform'] == 'osx' and env['macos_arch'] == 'x86_64':
+    cpp_library += '.' + 'x86_64'
+else:
+    cpp_library += '.' + str(bits)
 
 # make sure our binding library is properly includes
 env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/', cpp_bindings_path + 'include/core/', cpp_bindings_path + 'include/gen/', 'godotsteam/sdk/public'])

@@ -38,6 +38,7 @@ jobs:
           cd godot-cpp
           scons platform=osx macos_arch=${{ matrix.architecture }} generate_bindings=yes target=release
           ls -al
+          ls -al bin/osx
           echo "Done building godot-cpp, and showing output"
           cd ..
           mkdir bin
