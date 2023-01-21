@@ -44,13 +44,13 @@ jobs:
       # Checkout Godot4 beta
       - name: Download Godot 4 beta
         run: |
-          set URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
-          curl ${URLVAR} -o godot4.tar.xz
+          set "URLVAR"="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
+          curl %URLVAR% -o godot4.tar.xz
           7z x godot4.tar.xz
-          rm godot4.tar.xz
+          del /f "godot4.tar.xz"
           7z x *.tar
-          rm *.tar
-          mv godot* godot
+          del /f "*.tar"
+          move "godot*" "godot"
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
