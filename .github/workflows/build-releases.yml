@@ -43,7 +43,7 @@ jobs:
 
   build-linux-editor:
     needs: [env-setup]
-    uses: ./.github/workflows/build-g4-linux-artifact.yml
+    uses: ./.github/workflows/build-linux-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
@@ -58,7 +58,7 @@ jobs:
 
   build-linux-release-template:
     needs: [env-setup]
-    uses: ./.github/workflows/build-g4-linux-artifact.yml
+    uses: ./.github/workflows/build-linux-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
@@ -73,7 +73,7 @@ jobs:
 
   build-linux-debug-template:
     needs: [env-setup]
-    uses: ./.github/workflows/build-g4-linux-artifact.yml
+    uses: ./.github/workflows/build-linux-artifact.yml
     with:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}

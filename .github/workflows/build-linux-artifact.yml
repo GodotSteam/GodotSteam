@@ -46,7 +46,7 @@ jobs:
           URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
           curl ${URLVAR} -o godot4.tar.xz
           tar -xvf godot4.tar.xz
-          mv godot-* godot
+          mv godot* godot
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
