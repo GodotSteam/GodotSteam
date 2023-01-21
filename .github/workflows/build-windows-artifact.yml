@@ -44,7 +44,7 @@ jobs:
       # Checkout Godot4 beta
       - name: Download Godot 4 beta
         run: |
-          URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
+          set URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
           curl ${URLVAR} -o godot4.tar.xz
           7z x godot4.tar.xz
           rm godot4.tar.xz
