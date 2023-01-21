@@ -68,12 +68,12 @@ jobs:
       - name: Download x86_64
         uses: actions/download-artifact@v3
         with:
-          name: libgodotsteam-x86_64.dylib
+          name: macos-plugin-x86_64
           path: dylibs
       - name: Download arm64
         uses: actions/download-artifact@v3
         with:
-          name: libgodotsteam-arm64.dylib
+          name: macos-plugin-arm64
           path: dylibs
       - name: Bundle together
         run: |
