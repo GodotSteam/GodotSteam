@@ -46,11 +46,12 @@ jobs:
         run: |
           $URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
           curl $URLVAR -o godot4.tar.xz
-          7z x godot4.tar.xz
-          del /f "godot4.tar.xz"
-          7z x *.tar
-          del /f "*.tar"
-          move "godot*" "godot"
+          $workingdir=Get-Location
+          7z x $workingdir\godot4.tar.xz
+          rm $workingdir\godot4.tar.xz
+          7z x $workingdir\*.tar
+          rm $workingdir\*.tar
+          mv $workingdir\godot* $workingdir\godot
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
