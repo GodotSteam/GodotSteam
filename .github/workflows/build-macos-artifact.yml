@@ -30,8 +30,8 @@ on:
 
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-20.04
+  build-macos:
+    runs-on: macos-latest
     
     steps:
       # Checkout Godot
@@ -67,36 +67,48 @@ jobs:
           ref: ${{ inputs.steamworks_sdk_tag }}
       - name: Copy Steamworks
         run: |
-          mkdir godot/modules/godotsteam/sdk/public
           cp -r steamworks/public godot/modules/godotsteam/sdk
           cp -r steamworks/redistributable_bin godot/modules/godotsteam/sdk
           ls -la godot/modules/godotsteam/sdk
-      - name: Install Build Requirements
+      - name: Install Build Tools
         run: |
-          # Apparently Azure repositories are terribly unreliable, so copy out the list from Godot itself
-          sudo rm -f /etc/apt/sources.list.d/*
-          sudo cp -f godot/misc/ci/sources.list /etc/apt/sources.list
-          sudo apt-get update
-          # The actual dependencies
-          sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev \
-              libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev \
-              libdbus-1-dev libudev-dev libxi-dev libxrandr-dev yasm xvfb wget unzip \
-              llvm libspeechd-dev speech-dispatcher fontconfig libfontconfig-dev
-      - name: Build Linux Editor
+          brew install scons yasm
+      - name: Build MacOS
         working-directory: "godot"
         run: |
           scons ${{ inputs.build_params }}
           mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
-          ls -la bin
-      - name: Upload Linux Build
+      - name: Upload MacOS Build
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
+          if-no-files-found: error
           retention-days: 1
-      - name: Upload Linux Steam File
+      - name: Upload MacOS Steam Dylib
         uses: actions/upload-artifact@v3
         with:
-          name: linux-libsteam-api-so
-          path: godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so
+          name: macos-libsteam-api-dylib
+          path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
+          if-no-files-found: error
+          retention-days: 1
+      - name: Zip the MacOS Apps
+        run: |
+          pushd godot/misc/dist
+          zip -r ./macos_tools.zip ./macos_tools.app/
+          zip -r ./macos_template.zip ./macos_template.app/
+          popd
+      - name: Upload MacOS Tool App
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-tool-app
+          path: godot/misc/dist/macos_tools.zip
+          if-no-files-found: error
+          retention-days: 1
+      - name: Upload MacOS Template App
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-template-app
+          path: godot/misc/dist/macos_template.zip
+          if-no-files-found: error
           retention-days: 1
