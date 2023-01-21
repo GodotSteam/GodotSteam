@@ -50,6 +50,8 @@ jobs:
         run: |
           ls -al
           ls -al bin/osx
+          cd bin/osx 
+          mv libgodotsteam.dylib libgodotsteam-${{ matrix.architecture }}.dylib
       - name: Upload macOS dylib
         uses: actions/upload-artifact@v3
         with:
@@ -76,3 +78,8 @@ jobs:
         run: |
           cd dylibs
           lipo libgodotsteam-x86_64.dylib libgodotsteam-arm64.dylib -output libgodotsteam.dylib -create
+      - uses: actions/upload-artifact@v3
+        name: Upload final dylib
+        with:
+          name: macos-plugin-universal
+          path: dylibs/libgodotsteam.dylib

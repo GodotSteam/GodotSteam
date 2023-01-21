@@ -111,8 +111,11 @@ if env['target'] in ('debug', 'd'):
 else:
     cpp_library += '.release'
 
-if env['platform'] == 'osx' and env['macos_arch'] == 'x86_64':
-    cpp_library += '.' + 'x86_64'
+if env['platform'] == 'osx':
+    if env['macos_arch'] == 'x86_64':
+        cpp_library += '.' + 'x86_64'
+    else:
+        cpp_library += '.' + 'arm64'
 else:
     cpp_library += '.' + str(bits)
 
