@@ -377,7 +377,7 @@ jobs:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-#   create-macos-bundle:
+  create-macos-bundle:
     needs: [build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
     runs-on: macos-latest
     steps:
