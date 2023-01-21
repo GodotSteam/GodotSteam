@@ -13,6 +13,7 @@ opts.Add(EnumVariable('p', "Compilation target, alias for 'platform'", '', ['', 
 opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
 opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'bin/'))
 opts.Add(PathVariable('target_name', 'The library name.', 'godotsteam', PathVariable.PathAccept))
+opts.Add(EnumVariable('macos_arch', "Compilation architecture", 'arm64', ['x86_64', 'arm64']))
 
 # Local dependency paths, adapt them to your setup
 godot_headers_path = "godot-cpp/godot-headers/"
@@ -51,12 +52,18 @@ if env['platform'] == '':
 if env['platform'] == "osx":
     env['target_path'] += 'osx/'
     cpp_library += '.osx'
+    if env["macos_arch"] == "x86_64":
+        env.Append(CCFLAGS = ['-g','-O2', '-arch', 'x86_64', '-std=c++17'])
+        env.Append(LINKFLAGS = ['-arch', 'x86_64'])
+    else: # Default to ARM since M1/M2 is the future for mac
+        env.Append(CCFLAGS = ['-g','-O2', '-arch', 'arm64', '-std=c++17'])
+        env.Append(LINKFLAGS = ['-arch', 'arm64'])
+
     if env['target'] in ('debug', 'd'):
-        env.Append(CCFLAGS=['-g', '-O2', '-arch', 'x86_64', '-arch', 'arm64', '-std=c++17'])
-        env.Append(LINKFLAGS=['-arch', 'x86_64', '-arch', 'arm64'])
+        env.Append(CCFLAGS = ['-g','-O2', '-std=c++17'])
     else:
-        env.Append(CCFLAGS=['-g', '-O3', '-arch', 'x86_64', '-arch', 'arm64', '-std=c++17'])
-        env.Append(LINKFLAGS=['-arch', 'x86_64', '-arch', 'arm64'])
+        env.Append(CCFLAGS=['-g', '-O3', '-std=c++17'])
+    
     # Set the correct Steam library
     steam_lib_path += "/osx"
     steamworks_library = 'libsteam_api.dylib'
@@ -104,7 +111,13 @@ if env['target'] in ('debug', 'd'):
 else:
     cpp_library += '.release'
 
-cpp_library += '.' + str(bits)
+if env['platform'] == 'osx':
+    if env['macos_arch'] == 'x86_64':
+        cpp_library += '.' + 'x86_64'
+    else:
+        cpp_library += '.' + 'arm64'
+else:
+    cpp_library += '.' + str(bits)
 
 # make sure our binding library is properly includes
 env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/', cpp_bindings_path + 'include/core/', cpp_bindings_path + 'include/gen/', 'godotsteam/sdk/public'])
