@@ -347,9 +347,9 @@ jobs:
           path: files
       - name: Create MacOS Bundle
         run: |
-          sudo lipo -create godot.macos.editor.x86_64 godot.macos.editor.arm64 -output godot.macos.editor.universal
-          sudo lipo -create godot.macos.template_release.x86_64 godot.macos.template_release.arm64 -output godot.macos.template_release.universal
-          sudo lipo -create godot.macos.template_debug.x86_64 godot.macos.template_debug.arm64 -output godot.macos.template_debug.universal
+          sudo lipo -create files/godot.macos.editor.x86_64 files/godot.macos.editor.arm64 -output files/godot.macos.editor.universal
+          sudo lipo -create files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 -output files/godot.macos.template_release.universal
+          sudo lipo -create files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64 -output files/godot.macos.template_debug.universal
           unzip files/macos_tools.zip -d files
           unzip files/macos_template.zip -d files
           mv files/macos_tools.app files/GodotEditor.app
