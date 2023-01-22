@@ -48,8 +48,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.x11.opt.tools.64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor.64"
+      binary_name: "godot.linuxbsd.editor.x86_64"
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor.x86_64"
       build_params: "-j4 platform=linuxbsd production=yes tools=yes target=editor bits=64"
       artifact_name: "linux-editor"
     secrets:
@@ -63,8 +63,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.x11.opt.64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-template.64"
+      binary_name: "godot.linuxbsd.template_release.x86_64"
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-template.x86_64"
       build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_release bits=64"
       artifact_name: "linux-release-template"
     secrets:
@@ -78,8 +78,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.x11.opt.debug.64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-template.64"
+      binary_name: "godot.linuxbsd.template_debug.x86_64"
+      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-template.x86_64"
       build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_debug bits=64"
       artifact_name: "linux-debug-template"
     secrets:
@@ -113,6 +113,7 @@ jobs:
       - name: Create Linux Bundle
         run: |
           echo "480" >> files/steam_appid.txt
+          echo "TODO" >> files/godotsteam.sh
           zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
       # - name: Upload bundle to release
       #   uses: svenstaro/upload-release-action@v2
@@ -130,8 +131,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.tools.64.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-editor-64bit.exe"
+      binary_name: godot.windows.editor.x86_64.exe
+      export_name: "win64-${{ needs.env-setup.outputs.version_tag }}-editor.exe"
       build_params: "-j4 platform=windows production=yes tools=yes target=editor debug_symbols=no"
       artifact_name: "win64-editor"
     secrets:
@@ -145,8 +146,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.64.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-template-64bit.exe"
+      binary_name: godot.windows.template_release.x86_64.exe
+      export_name: "win64-${{ needs.env-setup.outputs.version_tag }}-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=template_release debug_symbols=no"
       artifact_name: "win64-release-template"
     secrets:
@@ -160,8 +161,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.debug.64.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-debug-template-64bit.exe"
+      binary_name: godot.windows.template_debug.x86_64.exe
+      export_name: "win64-${{ needs.env-setup.outputs.version_tag }}-debug-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=template_debug debug_symbols=no"
       artifact_name: "win64-debug-template"
     secrets:
@@ -202,88 +203,6 @@ jobs:
       #     file: win64-${{ env.ZIP_TAG }}.zip
       #     repo_token: ${{ secrets.GITHUB_TOKEN }}
       #     tag: ${{ github.ref }}
-          
-################# Win32 Builds #################
-  
-  build-win32-editor:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.tools.32.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-editor-32bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=yes target=editor debug_symbols=no bits=32"
-      artifact_name: "win32-editor"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
-
-  build-win32-release-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.32.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-template-32bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=template_release debug_symbols=no bits=32"
-      artifact_name: "win32-release-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
-
-  build-win32-debug-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
-      godot_tag: ${{needs.env-setup.outputs.godot_tag}}
-      version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: godot.windows.opt.debug.32.exe
-      export_name: "windows-${{ needs.env-setup.outputs.version_tag }}-debug-template-32bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=template_debug debug_symbols=no bits=32"
-      artifact_name: "win32-debug-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
-
-  create-win32-bundle:
-    needs: [build-win32-editor, build-win32-release-template, build-win32-debug-template]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Windows Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-editor
-          path: files
-      - name: Download Windows Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-release-template
-          path: files
-      - name: Download Windows Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-debug-template
-          path: files
-      - name: Download Windows 32 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_32
-          path: files
-      - name: Create Windows Bundle
-        run: |
-          echo "480" >> files/steam_appid.txt
-          zip -j win32-${{ env.ZIP_TAG }}.zip files/*
-#       # - name: Upload bundle to release
-#       #   uses: svenstaro/upload-release-action@v2
-#       #   with:
-#       #     file: win32-${{ env.ZIP_TAG }}.zip
-#       #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-#       #     tag: ${{ github.ref }}
 
 # ################# MacOS Universal Builds #################
 
@@ -294,8 +213,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.macos.tools.x86_64"
-      export_name: "godot.macos.tools.x86_64"
+      binary_name: "godot.macos.editor.x86_64"
+      export_name: "godot.macos.editor.x86_64"
       build_params: "-j6 platform=macos arch=x86_64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-editor-x86_64"
     secrets:
@@ -309,8 +228,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.macos.opt.x86_64"
-      export_name: "godot.macos.opt.x86_64"
+      binary_name: "godot.macos.template_release.x86_64"
+      export_name: "godot.macos.template_release.x86_64"
       build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-release-template-x86_64"
     secrets:
@@ -324,8 +243,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.macos.opt.debug.x86_64"
-      export_name: "godot.macos.opt.debug.x86_64"
+      binary_name: "godot.macos.template_debug.x86_64"
+      export_name: "godot.macos.template_debug.x86_64"
       build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-debug-template-x86_64"
     secrets:
@@ -339,8 +258,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.macos.tools.arm64"
-      export_name: "godot.macos.tools.arm64"
+      binary_name: "godot.macos.editor.arm64"
+      export_name: "godot.macos.editor.arm64"
       build_params: "-j6 platform=macos arch=arm64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-editor-arm64"
     secrets:
@@ -354,8 +273,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.macos.opt.arm64"
-      export_name: "godot.macos.opt.arm64"
+      binary_name: "godot.macos.template_release.arm64"
+      export_name: "godot.macos.template_release.arm64"
       build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-release-template-arm64"
     secrets:
@@ -369,8 +288,8 @@ jobs:
       steamworks_sdk_tag: ${{needs.env-setup.outputs.steamworks_sdk_tag}}
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
-      binary_name: "godot.macos.opt.debug.arm64"
-      export_name: "godot.macos.opt.debug.arm64"
+      binary_name: "godot.macos.template_debug.arm64"
+      export_name: "godot.macos.template_debug.arm64"
       build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu)"
       artifact_name: "macos-debug-template-arm64"
     secrets:
@@ -428,37 +347,37 @@ jobs:
           path: files
       - name: Create MacOS Bundle
         run: |
-          lipo -create files/godot.macos.tools.x86_64 files/godot.macos.tools.arm64 -output files/godot.macos.tools.universal
-          lipo -create files/godot.macos.opt.x86_64 files/godot.macos.opt.arm64 -output files/godot.macos.opt.universal
-          lipo -create files/godot.macos.opt.debug.x86_64 files/godot.macos.opt.debug.arm64 -output files/godot.macos.opt.debug.universal
+          sudo lipo -create godot.macos.editor.x86_64 godot.macos.editor.arm64 -output godot.macos.editor.universal
+          sudo lipo -create godot.macos.template_release.x86_64 godot.macos.template_release.arm64 -output godot.macos.template_release.universal
+          sudo lipo -create godot.macos.template_debug.x86_64 godot.macos.template_debug.arm64 -output godot.macos.template_debug.universal
           unzip files/macos_tools.zip -d files
           unzip files/macos_template.zip -d files
           mv files/macos_tools.app files/GodotEditor.app
           mkdir files/GodotEditor.app/Contents/MacOS
-          mv files/godot.macos.tools.universal files/GodotEditor.app/Contents/MacOS/godot
+          mv files/godot.macos.editor.universal files/GodotEditor.app/Contents/MacOS/godot
           cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
           chmod +x files/GodotEditor.app/Contents/MacOS/godot
           echo "480" | sudo tee files/steam_appid.txt
           mv files/steam_appid.txt files/GodotEditor.app/Contents/MacOS/steam_appid.txt
           mkdir files/macos_template.app/Contents/MacOS
-          mv files/godot.macos.opt.universal files/macos_template.app/Contents/MacOS/godot_macos_release.64
-          mv files/godot.macos.opt.debug.universal files/macos_template.app/Contents/MacOS/godot_macos_release_debug.64
+          mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
+          mv files/godot.macos.tempalte_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
           cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
           chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
           pushd files
           zip -r ./macos.zip ./macos_template.app
           zip -r ../macos-${{ env.ZIP_TAG }}-universal.zip ./macos.zip ./GodotEditor.app
           popd
-      - name: Upload bundle to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: macos-${{ env.ZIP_TAG }}-universal.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+      # - name: Upload bundle to release
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: macos-${{ env.ZIP_TAG }}-universal.zip
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag: ${{ github.ref }}
 
 ################ Create Template Bundles #################
   create-templates-bundle:
-    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-win32-release-template, build-win32-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
+    needs: [build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
     runs-on: macos-latest
     steps:
       - name: Download Windows 64 Bit Release Template
@@ -475,21 +394,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: win_steam_api_64
-          path: files
-      - name: Download Windows 32 Bit Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-release-template
-          path: files
-      - name: Download Windows 32 Bit Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win32-debug-template
-          path: files
-      - name: Download Windows 32 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_32
           path: files
       - name: Download Linux Release Template
         uses: actions/download-artifact@v3
@@ -538,14 +442,14 @@ jobs:
           path: files
       - name: Create Template Bundle
         run: |
-          lipo -create files/godot.macos.opt.x86_64 files/godot.macos.opt.arm64 -output files/godot.macos.opt.universal
-          lipo -create files/godot.macos.opt.debug.x86_64 files/godot.macos.opt.debug.arm64 -output files/godot.macos.opt.debug.universal
-          rm files/godot.macos.opt.x86_64 files/godot.macos.opt.arm64 files/godot.macos.opt.debug.x86_64 files/godot.macos.opt.debug.arm64
+          lipo -create files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 -output files/godot.macos.template_release.universal
+          lipo -create files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64 -output files/godot.macos.template_debug.universal
+          rm files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64
           unzip files/macos_template.zip -d files
           rm -r files/macos_template.zip
           mkdir files/macos_template.app/Contents/MacOS
-          mv files/godot.macos.opt.universal files/macos_template.app/Contents/MacOS/godot_macos_release.64
-          mv files/godot.macos.opt.debug.universal files/macos_template.app/Contents/MacOS/godot_macos_release_debug.64
+          mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
+          mv files/godot.macos.template_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
           cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
           chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
           pushd files
