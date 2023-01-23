@@ -32,6 +32,8 @@ jobs:
       steamworks_sdk_tag: ${{ github.event.inputs.STEAMWORKS_SDK_TAG }}
       godot_tag: ${{ github.event.inputs.GODOT_TAG }}
       version_tag: ${{ github.event.inputs.VERSION_TAG }}
+      zip_tag: ${{ github.event.inputs.ZIP_TAG }}
+      release_title: ${{ github.event.inputs.RELEASE_TITLE }}
     steps:
       - id: set-steamworks-sdk-tag
         run: |    
