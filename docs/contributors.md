@@ -55,6 +55,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- Dillon Joel Steyl
 	- eflake
 	- Elgenzay
+	- Garrett Steffen
 	- Hung-Fan Liu
 	- Jez
 	- John Flickinger
