@@ -19,6 +19,10 @@ on:
         description: 'Filename in g4b14-s155-gs415 format.'
         required: true
         default: 'g4b14-s155-gs415'
+      RELEASE_TITLE:
+        description: 'The name of the Github release.'
+        required: true
+        default: 'Godot 4 Beta 14 - Steamworks 1.55 - GodotSteam 4.1.5'
 
 jobs:
   env-setup:
@@ -38,6 +42,12 @@ jobs:
       - id: set-version-tag
         run: |    
           echo "version_tag=${{ env.VERSION_TAG }}" >> $GITHUB_OUTPUT
+      - id: set-zip-tag
+        run: |    
+          echo "zip_tag=${{ env.ZIP_TAG }}" >> $GITHUB_OUTPUT
+      - id: set-release-title
+        run: |    
+          echo "release_title=${{ env.RELEASE_TITLE }}" >> $GITHUB_OUTPUT
 
 ################# Linux 64 Builds #################
 
@@ -113,14 +123,33 @@ jobs:
       - name: Create Linux Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          echo "TODO" >> files/godotsteam.sh
+
+          echo -e '#!/bin/bash\n' >> files/godotsteam.sh
+          echo -e "HELP_STRING=\"-v - Run Godot with the --verbose option.\"" >> files/godotsteam.sh
+          echo -e "verbose=\"\"\n" >> files/godotsteam.sh
+          echo "while getopts hv flag" >> files/godotsteam.sh
+          echo "do" >> files/godotsteam.sh
+          echo -e "  case \"\${flag}\" in" >> files/godotsteam.sh
+          echo "    h) help=" >> files/godotsteam.sh
+          echo -e "      echo \$HELP_STRING" >> files/godotsteam.sh
+          echo "      exit" >> files/godotsteam.sh
+          echo "    ;;" >> files/godotsteam.sh
+          echo "    v) verbose=--verbose;;" >> files/godotsteam.sh
+          echo "  esac" >> files/godotsteam.sh
+          echo -e "done\n" >> files/godotsteam.sh
+          echo "export LD_LIBRARY_PATH=\"\$PWD/\"" >> files/godotsteam.sh
+          echo -n "./linux-" >> files/godotsteam.sh
+          echo -n ${{ env.ZIP_TAG }} >> files/godotsteam.sh
+          echo -n "-editor.x86_64 \$verbose" >> files/godotsteam.sh
+
           zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
-      # - name: Upload bundle to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     file: linux64-${{ env.ZIP_TAG }}.zip
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     tag: ${{ github.ref }}
+      - name: Upload Win64 bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux64-${{ env.ZIP_TAG }}.zip
+          path: linux64-${{ env.ZIP_TAG }}.zip
+          if-no-files-found: error
+          retention-days: 1
 
 ################# Win64 Builds #################
   
@@ -197,12 +226,13 @@ jobs:
         run: |
           echo "480" >> files/steam_appid.txt
           zip -j win64-${{ env.ZIP_TAG }}.zip files/*
-      # - name: Upload bundle to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     file: win64-${{ env.ZIP_TAG }}.zip
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     tag: ${{ github.ref }}
+      - name: Upload Win64 bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: win64-${{ env.ZIP_TAG }}.zip
+          path: win64-${{ env.ZIP_TAG }}.zip
+          if-no-files-found: error
+          retention-days: 1
 
 # ################# MacOS Universal Builds #################
 
@@ -368,12 +398,13 @@ jobs:
           zip -r ./macos.zip ./macos_template.app
           zip -r ../macos-${{ env.ZIP_TAG }}-universal.zip ./macos.zip ./GodotEditor.app
           popd
-      # - name: Upload bundle to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     file: macos-${{ env.ZIP_TAG }}-universal.zip
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     tag: ${{ github.ref }}
+      - name: Upload MacOS bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-${{ env.ZIP_TAG }}-universal.zip
+          path: macos-${{ env.ZIP_TAG }}-universal.zip
+          if-no-files-found: error
+          retention-days: 1
 
 ################ Create Template Bundles #################
   create-templates-bundle:
@@ -457,9 +488,81 @@ jobs:
           popd
           rm -r files/macos_template.app/
           zip -j godotsteam-${{ env.VERSION_TAG }}-templates.zip files/*
-      # - name: Upload bundle to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     file: godotsteam-${{ env.VERSION_TAG }}-templates.zip
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     tag: ${{ github.ref }}
+        - name: Upload template bundle artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+            path: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+            if-no-files-found: error
+            retention-days: 1
+
+################ Create Release and upload artifacts #################
+  create-release:
+    needs: [create-templates-bundle, create-linux-bundle, create-macos-bundle, create-win64-bundle]
+    runs-on: macos-latest
+    steps:
+    - name: Create release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: true
+        prerelease: false
+        release_name: ${{ env.RELEASE_TITLE }}
+        tag_name: ${{ github.ref }}
+        body: |
+              'These pre-compiles are built with the latest Godot Engine 4 ${{ env.GODOT_TAG }} and linked against Steamworks 1.55. There is nothing new other than these just being built with the latest beta.
+
+              Available for Windows, Linux and Mac.
+
+              Zips now include the relevant Steam API dll or so files as well as a steam_appid.txt with 480 in it, which you can change to your game''s app ID or use it as is.'
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+  upload-release:
+    needs: [create-release]
+    runs-on: macos-latest
+    steps:
+    - name: Download Win64 bundle
+        uses: actions/download-artifact@v3
+        with:
+          name: win64-${{ env.ZIP_TAG }}.zip
+          path: files
+    - name: Download Linux bundle
+      uses: actions/download-artifact@v3
+      with:
+        name: linux64-${{ env.ZIP_TAG }}.zip
+        path: files
+    - name: Download Macos bundle
+      uses: actions/download-artifact@v3
+      with:
+        name: macos-${{ env.ZIP_TAG }}-universal.zip
+        path: files
+    - name: Download Template bundle
+      uses: actions/download-artifact@v3
+      with:
+        name: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+        path: files
+    - name: Upload Win64 bundle to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: win64-${{ env.ZIP_TAG }}.zip
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+    - name: Upload Linux bundle to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: linux64-${{ env.ZIP_TAG }}.zip
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+    - name: Upload MacOS bundle to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: macos-${{ env.ZIP_TAG }}-universal.zip
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+    - name: Upload template bundle to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
