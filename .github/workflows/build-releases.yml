@@ -393,7 +393,7 @@ jobs:
           mv files/steam_appid.txt files/GodotEditor.app/Contents/MacOS/steam_appid.txt
           mkdir files/macos_template.app/Contents/MacOS
           mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
-          mv files/godot.macos.tempalte_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
+          mv files/godot.macos.template_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
           cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
           chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
           pushd files
