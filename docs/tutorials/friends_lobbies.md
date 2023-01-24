@@ -18,7 +18,7 @@ var steam_id: int = Steam.getFriendByIndex(index, Steam.FRIEND_FLAG_IMMEDIATE)
 ```
 Inside of the loop we'll call `Steam.getFriendByIndex` to get the Steam ID of our friend at this index.
 
-Note: you must use the same flag as the flag used inside of `Steam.getFriendCount`.
+Note: you must use the same flag as the flag used inside of `Steam.getFriendCount`. [List of friend flags.](https://godotsteam.com/enums/friends/#friendflags)
 
 ```gdscript
 var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
@@ -44,28 +44,56 @@ Here's the fields and possible values inside this dictionary:
 ## Putting it all together
 
 ```gdscript
-# get a dictionary of lobbies with friends
-# key-value pair: lobby_id -> Array<steam_id>
 func get_lobbies_with_friends() -> Dictionary:
-  var results = {}
-  var num_of_friends: int = Steam.getFriendCount()
-  for i in range(0, num_of_friends):
+  var results: Dictionary = {}
+
+  for i in range(0, Steam.getFriendCount()):
     var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
     var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
-    if game_info.has("lobby"):
-      var app_id: int = game_info.id
-      var lobby = game_info.lobby
+    
+    if game_info.empty():
+      # This friend is not playing a game
+      continue
+    else:
+      # They are playing a game, check if it's the same game as ours
+      var app_id: int = game_info['id']
+      var lobby = game_info['lobby']
       if app_id != Steam.getAppID() or lobby is String:
+        # Either not in this game, or not in a lobby
         continue
+      
       if not results.has(lobby):
         results[lobby] = []
       results[lobby].append(steam_id)
+  
   return results
 ```
 
-If you would rather get back a dictionary of `friend_id -> lobby_id` you can replace the three lines after `continue` with `results[steam_id] = lobby`.
+If you would rather get back a dictionary of `friend_id -> lobby_id` you can instead use:
 
-It's important to not run this every frame, but it is important to refresh periodically. (Probably, I'm not sure how expensive this is.)
+```gdscript
+func get_friends_in_lobbies() -> Dictionary:
+  var results: Dictionary = {}
+
+  for i in range(0, Steam.getFriendCount()):
+    var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
+    var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
+    
+    if game_info.empty():
+      # This friend is not playing a game
+      continue
+    else:
+      # They are playing a game, check if it's the same game as ours
+      var app_id: int = game_info['id']
+      var lobby = game_info['lobby']
+      if app_id != Steam.getAppID() or lobby is String:
+        # Either not in this game, or not in a lobby
+        continue
+      
+      results[steam_id] = lobby
+  
+  return results
+```
 
 From here you can create your UI however you like, and simply call `Steam.joinLobby(lobby_id)` when the user has made a selection.
 
@@ -73,7 +101,7 @@ From here you can create your UI however you like, and simply call `Steam.joinLo
 
 ## Checking if a friend is still in a lobby
 
-In the case that you are not running `get_lobbies_with_friends()` every frame, there's a small chance a user might click on a lobby a friend has since left, or worse, a lobby that no longer exists.
+In the likely case that you are not running `get_lobbies_with_friends()` every frame, there's a small chance a user might click on a lobby a friend has since left, or worse, a lobby that no longer exists.
 
 This is a little check you can do before joining the lobby:
 
@@ -81,13 +109,13 @@ This is a little check you can do before joining the lobby:
 # check if a friend is in a lobby
 func is_a_friend_still_in_lobby(steam_id: int, lobby_id: int) -> bool:
   var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
-  if not game_info.has("lobby"):
+  if game_info.empty():
     return false
+  # They are in a game
   var app_id: int = game_info.id
   var lobby = game_info.lobby
-  if app_id != Steam.getAppID() or lobby is String or lobby != lobby_id:
-    return false
-  return true
+  # Return true if they are in the same game and have the same lobby_id
+  return app_id == Steam.getAppID() and lobby is int and lobby == lobby_id
 ```
 
 ---
