@@ -10,3 +10,9 @@ windows.debug.x86_64 = "bin/libgodotsteam.windows.template_debug.x86_64.dll"
 windows.release.x86_64 = "bin/libgodotsteam.windows.template_release.x86_64.dll"
 linux.debug.x86_64 = "bin/libgodotsteam.linux.template_debug.x86_64.so"
 linux.release.x86_64 = "bin/libgodotsteam.linux.template_release.x86_64.so"
+
+[dependencies]
+macos.debug = { "bin/libsteam_api.dylib": "" }
+windows.x86_32 = { "bin/steam_api.lib": "" }
+windows.x86_64 = { "bin/steam_api64.lib": "" }
+linux.x86_64 = { "bin/libsteam_api.so": "" }
