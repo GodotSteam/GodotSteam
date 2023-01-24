@@ -20,16 +20,20 @@ jobs:
       steamworks_sdk_tag: ${{ steps.set-steamworks-sdk-tag.outputs.steamworks_sdk_tag }}
       godot_tag: ${{ steps.set-godot-tag.outputs.godot_tag }}
       version_tag: ${{ steps.set-version-tag.outputs.version_tag }}
+      zip_tag: ${{ steps.set-version-tag.outputs.zip_tag }}
     steps:
       - id: set-steamworks-sdk-tag
         run: |    
-          echo "::set-output name=steamworks_sdk_tag::${{ env.STEAMWORKS_SDK_TAG }}"
+          echo "steamworks_sdk_tag=${{ env.STEAMWORKS_SDK_TAG }}" >> $GITHUB_OUTPUT
       - id: set-godot-tag
         run: |    
-          echo "::set-output name=godot_tag::${{ env.GODOT_TAG }}"
+          echo "godot_tag=${{ env.GODOT_TAG }}" >> $GITHUB_OUTPUT
       - id: set-version-tag
         run: |    
-          echo "::set-output name=version_tag::${{ env.VERSION_TAG }}"
+          echo "version_tag=${{ env.VERSION_TAG }}" >> $GITHUB_OUTPUT
+      - id: set-zip-tag
+        run: |    
+          echo "zip_tag=${{ env.ZIP_TAG }}" >> $GITHUB_OUTPUT
 
 ################# Linux 64 Builds #################
 
