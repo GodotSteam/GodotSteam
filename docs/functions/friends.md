@@ -327,7 +327,7 @@
 
 ## getFriendCount
 
-!!! function "getFriendCount()"
+!!! function "getFriendCount( ```int``` friend_flags )"
 	Gets the number of users the client knows about who meet a specified criteria. (Friends, blocked, users on the same server, etc). This can be used to iterate over all of the users by calling [getFriendByIndex](/functions/friends/#getfriendbyindex) to get the Steam IDs of each user.
 
 	**Returns:** int
