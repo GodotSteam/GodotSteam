@@ -490,13 +490,13 @@ jobs:
           popd
           rm -r files/macos_template.app/
           zip -j godotsteam-${{ env.VERSION_TAG }}-templates.zip files/*
-        - name: Upload template bundle artifact
-          uses: actions/upload-artifact@v3
-          with:
-            name: godotsteam-${{ env.VERSION_TAG }}-templates.zip
-            path: godotsteam-${{ env.VERSION_TAG }}-templates.zip
-            if-no-files-found: error
-            retention-days: 1
+      - name: Upload template bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+          path: godotsteam-${{ env.VERSION_TAG }}-templates.zip
+          if-no-files-found: error
+          retention-days: 1
 
 ################ Create Release and upload artifacts #################
   create-release:
@@ -512,11 +512,11 @@ jobs:
         release_name: ${{ env.RELEASE_TITLE }}
         tag_name: ${{ github.ref }}
         body: |
-              'These pre-compiles are built with the latest Godot Engine 4 ${{ env.GODOT_TAG }} and linked against Steamworks 1.55. There is nothing new other than these just being built with the latest beta.
+          'These pre-compiles are built with the latest Godot Engine 4 ${{ env.GODOT_TAG }} and linked against Steamworks 1.55. There is nothing new other than these just being built with the latest beta.
 
-              Available for Windows, Linux and Mac.
+          Available for Windows, Linux and Mac.
 
-              Zips now include the relevant Steam API dll or so files as well as a steam_appid.txt with 480 in it, which you can change to your game''s app ID or use it as is.'
+          Zips now include the relevant Steam API dll or so files as well as a steam_appid.txt with 480 in it, which you can change to your game''s app ID or use it as is.'
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
@@ -525,25 +525,21 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: Download Win64 bundle
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-${{ env.ZIP_TAG }}.zip
-          path: files
+      uses: actions/download-artifact@v3
+      with:
+        name: win64-${{ env.ZIP_TAG }}.zip
     - name: Download Linux bundle
       uses: actions/download-artifact@v3
       with:
         name: linux64-${{ env.ZIP_TAG }}.zip
-        path: files
     - name: Download Macos bundle
       uses: actions/download-artifact@v3
       with:
         name: macos-${{ env.ZIP_TAG }}-universal.zip
-        path: files
     - name: Download Template bundle
       uses: actions/download-artifact@v3
       with:
         name: godotsteam-${{ env.VERSION_TAG }}-templates.zip
-        path: files
     - name: Upload Win64 bundle to release
       uses: svenstaro/upload-release-action@v2
       with:
