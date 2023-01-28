@@ -103,6 +103,7 @@ nav:
     - Leaderboards: 'tutorials/leaderboards.md'
     - Linux Caveats: 'tutorials/linux_caveats.md'
     - Lobbies / P2P Networking: 'tutorials/lobbies_p2p.md'
+    - Friends Lobbies: 'tutorials/friends_lobbies.md'
     - Mac Exporting: 'tutorials/mac_export.md'
     - Rich Presence: 'tutorials/rich_presence.md'
     - Remove Steam: 'tutorials/remove_steam.md'
