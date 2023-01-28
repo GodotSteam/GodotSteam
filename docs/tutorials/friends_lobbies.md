@@ -1,4 +1,4 @@
-# Tutorials - Getting a list of lobbies friends are in
+# Tutorials - Friends' Lobbies
 
 In this quick tutorial we will cover how to get a dictionary of lobbies to friends that are visible to the user. This was created as it's a pretty common feature for multiplayer games.
 
