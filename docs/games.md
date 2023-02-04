@@ -29,6 +29,17 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/kogeume){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- AETHERIS -->
+<figure class="game" markdown>
+[![AETHERIS](https://steamcdn-a.akamaihd.net/steam/apps/1786010/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1786010/AETHERIS/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1786010/AETHERIS/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/wildwitsgames){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://wildwits.games/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-instagram: ](https://www.instagram.com/wildwitsgames/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-linkedin ](https://www.linkedin.com/company/wild-wits-games/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Ailin: Traps and Treasures -->
 <figure class="game" markdown>
 [![Ailin: Traps and Treasures](https://steamcdn-a.akamaihd.net/steam/apps/2083630/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2083630/Ailin_Traps_and_Treasures/){ target="_blank" }
@@ -154,6 +165,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/466800/The_Dope_Game/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-firefox-browser: ](https://coaguco.com/games/dope){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- Dream Catcher -->
+<figure class="game" markdown>
+[![Dream Catcher](https://steamcdn-a.akamaihd.net/steam/apps/2285180/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2285180/Dream_Catcher/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2285180/Dream_Catcher/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Final Hope: The Plot -->
