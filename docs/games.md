@@ -37,7 +37,7 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/wildwitsgames){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-firefox-browser: ](https://wildwits.games/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-instagram: ](https://www.instagram.com/wildwitsgames/){ target="_blank" .md-button .md-button--store }
-[ :fontawesome-brands-linkedin ](https://www.linkedin.com/company/wild-wits-games/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-linkedin: ](https://www.linkedin.com/company/wild-wits-games/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Ailin: Traps and Treasures -->
