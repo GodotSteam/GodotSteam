@@ -172,6 +172,7 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![Dream Catcher](https://steamcdn-a.akamaihd.net/steam/apps/2285180/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2285180/Dream_Catcher/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2285180/Dream_Catcher/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/indigoblin){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Final Hope: The Plot -->
@@ -723,6 +724,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![Subcube](https://steamcdn-a.akamaihd.net/steam/apps/873830/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/873830/Subcube/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/873830/Subcube/){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- Super Mando -->
+<figure class="game" markdown>
+[![Super Mando](https://steamcdn-a.akamaihd.net/steam/apps/2145320/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2145320/Super_Mando/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2145320/Super_Mando/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://paponga.com/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Swing Lord -->
