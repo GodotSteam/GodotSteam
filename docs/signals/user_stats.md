@@ -86,10 +86,11 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 	* success (uint8)
 	* this_handle (uint64_t)
-	* score (int32)
-	* score_changed (uint8)
-	* global_rank_new (int)
-	* global_rank_prev (int)
+	* this_score (dictionary)
+		* score (int32)
+		* score_changed (uint8)
+		* global_rank_new (int)
+		* global_rank_prev (int)
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoreUploaded_t){ .md-button .md-button--store target="_blank" }
