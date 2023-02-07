@@ -10728,11 +10728,18 @@ void Steam::leaderboard_score_uploaded(LeaderboardScoreUploaded_t *call_data, bo
 	else{
 		uint64_t this_handle = call_data->m_hSteamLeaderboard;
 		uint8 success = call_data->m_bSuccess;
+		// Create dictionary since Godot will not allow more than six properties to be sent back
+		Dictionary this_score;
 		int32 score = call_data->m_nScore;
 		uint8 score_changed = call_data->m_bScoreChanged;
 		int global_rank_new = call_data->m_nGlobalRankNew;
 		int global_rank_prev = call_data->m_nGlobalRankPrevious;
-		emit_signal("leaderboard_score_uploaded", success, this_handle, score, score_changed, global_rank_new, global_rank_prev);
+		// Populate dictionary
+		this_score["score"] = score;
+		this_score["score_changed"] = score_changed;
+		this_score["global_rank_new"] = global_rank_new;
+		this_score["global_rank_prev"] = global_rank_prev;
+		emit_signal("leaderboard_score_uploaded", success, this_handle, this_score);
 	}
 }
 
@@ -11825,7 +11832,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("global_stats_received", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::STRING, "result")));
 	ADD_SIGNAL(MethodInfo("leaderboard_find_result", PropertyInfo(Variant::INT, "leaderboard_handle"), PropertyInfo(Variant::INT, "found")));
 	ADD_SIGNAL(MethodInfo("leaderboard_scores_downloaded", PropertyInfo(Variant::STRING, "message"), PropertyInfo(Variant::ARRAY, "leaderboard_entries")));
-	ADD_SIGNAL(MethodInfo("leaderboard_score_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::BOOL, "score_changed"), PropertyInfo(Variant::INT, "global_rank_new"), PropertyInfo(Variant::INT, "global_rank_previous")));
+	ADD_SIGNAL(MethodInfo("leaderboard_score_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "this_handle"), PropertyInfo(Variant::DICTIONARY, "this_score")));
 	ADD_SIGNAL(MethodInfo("leaderboard_ugc_set", PropertyInfo(Variant::INT, "leaderboard_handle"), PropertyInfo(Variant::STRING, "result")));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::INT, "success"), PropertyInfo(Variant::INT, "players")));
 	ADD_SIGNAL(MethodInfo("user_achievement_stored", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::BOOL, "group_achieve"), PropertyInfo(Variant::STRING, "achievement_name"), PropertyInfo(Variant::INT, "current_progress"), PropertyInfo(Variant::INT, "max_progress")));

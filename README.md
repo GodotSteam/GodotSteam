@@ -18,6 +18,12 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v3.18.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.18.4 Changes**
+- Added: process to create godotsteam.sh file for Github Actions, thanks to _SapphireMH_
+- Changed: friend_flags can now be passed to some functions, thanks to _polyrain_
+- Fixed: leaderboard_score_uploaded failing to compile due to passing back 6 variables, now passes score data as dictionary
+- Fixed: missing property info for leaderboard_score_uploaded
+
 **Version 3.18.3 Changes**
 - Added: networking type message constants
 - Added: more descriptions and tutorial links to in-editor docs
