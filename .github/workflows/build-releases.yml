@@ -10,7 +10,7 @@ env:
   STEAMWORKS_SDK_TAG: "sdk-1.55"
   GODOT_TAG: "3.5.1-stable"
   VERSION_TAG: "351"
-  ZIP_TAG: "g351-s155-gs3183"
+  ZIP_TAG: "g351-s155-gs3184"
 
 jobs:
   env-setup:
