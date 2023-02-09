@@ -119,6 +119,16 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-youtube: ](https://www.youtube.com/channel/UCXeHZLFETcYHjZdJe-b8gUA){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Chicken Fight -->
+<figure class="game" markdown>
+[![Chicken Fight](https://steamcdn-a.akamaihd.net/steam/apps/2159470/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2159470/Chicken_Fight/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2159470/Chicken_Fight/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/LightBulbEngine){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.gg/CXWc7ar6Xp){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/@lightbulbengine/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Commuter -->
 <figure class="game" markdown>
 [![commuter](https://steamcdn-a.akamaihd.net/steam/apps/1802500/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1802500/Commuter/){ target="_blank" }
@@ -512,6 +522,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![Paralyzed](https://steamcdn-a.akamaihd.net/steam/apps/1412500/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1412500/Paralyzed/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1412500/Paralyzed/){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- Paranoia Party -->
+<figure class="game" markdown>
+[![Paranoia Party](https://steamcdn-a.akamaihd.net/steam/apps/2255140/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2255140/Paranoia_Party/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2255140/Paranoia_Party/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- PISTOLA -->
