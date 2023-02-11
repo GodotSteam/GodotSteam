@@ -64,6 +64,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1694380/Am_Madness/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Beaver Clicker -->
+<figure class="game" markdown>
+[![Beaver Clicker](https://steamcdn-a.akamaihd.net/steam/apps/1718240/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1718240/Beaver_Clicker/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1718240/Beaver_Clicker/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.gg/wgUAfhwzb7){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Berserker: A Viking Board Game -->
 <figure class="game" markdown>
 [![Berserker: A Viking Board Game](https://steamcdn-a.akamaihd.net/steam/apps/2073010/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2073010/Berserker_A_Viking_Board_Game/){ target="_blank" }
