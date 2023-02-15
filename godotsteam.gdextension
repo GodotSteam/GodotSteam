@@ -4,9 +4,12 @@ entry_symbol = "godot_steam_init"
 [libraries]
 macos.debug = "bin/libgodotsteam.macos.template_debug.framework"
 macos.release = "bin/libgodotsteam.macos.template_release.framework"
-windows.debug.x86_32 = "bin/libgodotsteam.windows.template_debug.x86_32.dll"
-windows.release.x86_32 = "bin/libgodotsteam.windows.template_release.x86_32.dll"
-windows.debug.x86_64 = "bin/libgodotsteam.windows.template_debug.x86_64.dll"
-windows.release.x86_64 = "bin/libgodotsteam.windows.template_release.x86_64.dll"
+windows.debug.x86_64 = "bin/godotsteam.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "bin/godotsteam.windows.template_release.x86_64.dll"
 linux.debug.x86_64 = "bin/libgodotsteam.linux.template_debug.x86_64.so"
 linux.release.x86_64 = "bin/libgodotsteam.linux.template_release.x86_64.so"
+
+[dependencies]
+macos.universal = { "bin/libsteam_api.dylib": "" }
+windows.x86_64 = { "bin/steam_api64.dll": "" }
+linux.x86_64 = { "bin/libsteam_api.so": "" }

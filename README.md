@@ -16,7 +16,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-We currently do not have an in-depth how-to for this branch but it is coming.  However, it is functional thanks to the great work of @vaaris!  Since this is still an early work-in-progress, please except bugs and do not use this for production.  All pull requests are welcome!
+We currently do not have an in-depth how-to for this branch but it is coming.  However, it is functional thanks to the great work of @vaartis!  Since this is still an early work-in-progress, please except bugs and do not use this for production.  All pull requests are welcome!
 
 Donate
 ---

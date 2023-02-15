@@ -12,10 +12,6 @@ opts.Add(PathVariable('target_name', 'The library name.', 'godotsteam', PathVari
 
 # Local dependency paths, adapt them to your setup
 steam_lib_path = "godotsteam/sdk/redistributable_bin"
-steam_lib = "steam_api"
-
-# only support 64 at this time..
-bits = 64
 
 # Updates the environment with the option variables.
 opts.Update(env)
@@ -42,25 +38,25 @@ elif env['platform'] in ('linuxbsd', 'linux'):
 elif env['platform'] == "windows":
     # This makes sure to keep the session environment variables on windows,
     # that way you can run scons in a vs 2017 prompt and it will find all the required tools
-    env.Append(ENV=os.environ)
+    # env.Append(ENV=os.environ)
 
     # Set correct Steam library
     steam_lib_path += "/win64"
-    steamworks_library = 'steam_api64.lib'
-    steam_lib = "steam_api64.lib"
-    if env["CC"] == "cl":
-        env.Append(LINKFLAGS=[ steam_lib ])
+    steamworks_library = 'steam_api64.dll'
 
 # make sure our binding library is properly includes
 env.Append(LIBPATH=[steam_lib_path])
 env.Append(CPPPATH=['godotsteam/sdk/public'])
-env.Append(LIBS=[steamworks_library])
+env.Append(LIBS=[
+    steamworks_library.replace(".dll", "")
+])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=['godotsteam/'])
 sources = Glob('godotsteam/*.cpp')
 
 library = env.SharedLibrary(target=env['target_path'] + env['target_name'] + env["suffix"] + env["SHLIBSUFFIX"], source=sources)
+env.Depends(library, Command("bin/" + steamworks_library, steam_lib_path + "/" + steamworks_library, Copy("$TARGET", "$SOURCE")))
 
 Default(library)
 
