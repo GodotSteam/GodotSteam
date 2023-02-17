@@ -57,6 +57,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- Elgenzay
 	- Garrett Steffen
 	- Hung-Fan Liu
+	- [Jayden Sipe](https://jaydensipe.github.io/)
 	- Jez
 	- John Flickinger
 	- John H Wright
