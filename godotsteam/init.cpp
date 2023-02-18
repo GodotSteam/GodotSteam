@@ -4,7 +4,7 @@ extern "C" void GDE_EXPORT godot_steam_terminate(godot::ModuleInitializationLeve
 }
 
 extern "C" void GDE_EXPORT godot_steam_initalizer(godot::ModuleInitializationLevel level) {
-    if (level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) return;
+    if (level != godot::MODULE_INITIALIZATION_LEVEL_SERVERS) return;
     
     godot::ClassDB::register_class<godot::Steam>();
 }
@@ -16,7 +16,7 @@ extern "C" GDExtensionBool GDE_EXPORT godot_steam_init(const GDExtensionInterfac
 
 	init_obj.register_initializer(godot_steam_initalizer);
 	init_obj.register_terminator(godot_steam_terminate);
-	init_obj.set_minimum_library_initialization_level(godot::MODULE_INITIALIZATION_LEVEL_SCENE);
+	init_obj.set_minimum_library_initialization_level(godot::MODULE_INITIALIZATION_LEVEL_SERVERS);
 
     return init_obj.init();
 }
