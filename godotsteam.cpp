@@ -7627,11 +7627,15 @@ Dictionary Steam::decompressVoice(const PoolByteArray& voice, uint32 voice_size,
 	if(SteamUser() != NULL){
 		uint32 written = 0;
 		PoolByteArray outputBuffer;
-		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, &outputBuffer, outputBuffer.size(), &written, sample_rate);
+		outputBuffer.resize(20480); // 20KiB buffer
+	
+		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, outputBuffer.write().ptr(), outputBuffer.size(), &written, sample_rate);
 		if(result == 0){
 			decompressed["uncompressed"] = outputBuffer;
 			decompressed["size"] = written;
-		}
+		} 
+		
+		decompressed["result"] = result; // Include result for debugging
 	}
 	return decompressed;
 }
@@ -7728,8 +7732,12 @@ Dictionary Steam::getVoice(){
 	Dictionary voice_data;
 	if(SteamUser() != NULL){
 		uint32 written = 0;
-		uint8 buffer[1024];
-		int result = SteamUser()->GetVoice(true, &buffer, 1024, &written, false, NULL, 0, NULL, 0);
+		PoolByteArray buffer = PoolByteArray();
+		buffer.resize(8192); // Steam suggests 8Kb of buffer space per call
+	
+		int result = SteamUser()->GetVoice(true, buffer.write().ptr(), 8192, &written, false, NULL, 0, NULL, 0);
+		buffer.resize(written); 
+
 		// Add the data to the dictionary
 		voice_data["result"] = result;
 		voice_data["written"] = written;
