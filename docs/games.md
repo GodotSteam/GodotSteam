@@ -438,6 +438,8 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![Love Exalt 8372](https://steamcdn-a.akamaihd.net/steam/apps/2295280/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2295280?utm_source=godotsteam){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2295280?utm_source=godotsteam){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/team_veki){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-itch-io: ](https://teamveki.itch.io/love-exalt-8372){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Luck Be A Landlord -->
