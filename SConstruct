@@ -74,6 +74,7 @@ elif env['platform'] in ('linuxbsd', 'linux'):
     cpp_library += '.linux'
     env.Append(CCFLAGS=['-fPIC'])
     env.Append(CXXFLAGS=['-std=c++17'])
+    env.Append(RPATH=env.Literal('\\$$ORIGIN'))
     if env['target'] in ('debug', 'd'):
         env.Append(CCFLAGS=['-g3', '-Og'])
     else:
