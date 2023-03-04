@@ -109,23 +109,6 @@ jobs:
       - name: Create Linux Bundle
         run: |
           echo "480" >> files/steam_appid.txt
-          echo -e '#!/bin/bash\n' >> files/godotsteam.sh
-          echo -e "HELP_STRING=\"-v - Run Godot with the --verbose option.\"" >> files/godotsteam.sh
-          echo -e "verbose=\"\"\n" >> files/godotsteam.sh
-          echo "while getopts hv flag" >> files/godotsteam.sh
-          echo "do" >> files/godotsteam.sh
-          echo -e "  case \"\${flag}\" in" >> files/godotsteam.sh
-          echo "    h) help=" >> files/godotsteam.sh
-          echo -e "      echo \$HELP_STRING" >> files/godotsteam.sh
-          echo "      exit" >> files/godotsteam.sh
-          echo "    ;;" >> files/godotsteam.sh
-          echo "    v) verbose=--verbose;;" >> files/godotsteam.sh
-          echo "  esac" >> files/godotsteam.sh
-          echo -e "done\n" >> files/godotsteam.sh
-          echo "export LD_LIBRARY_PATH=\"\$PWD/\"" >> files/godotsteam.sh
-          echo -n "./linux-" >> files/godotsteam.sh
-          echo -n ${{ env.ZIP_TAG }} >> files/godotsteam.sh
-          echo -n "-editor.x86_64 \$verbose" >> files/godotsteam.sh
           zip -j linux64-${{ env.ZIP_TAG }}.zip files/*
       - name: Upload bundle to release
         uses: svenstaro/upload-release-action@v2
