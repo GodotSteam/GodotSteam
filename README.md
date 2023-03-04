@@ -54,7 +54,6 @@ Known Issues
 By far the easiest way to use GodotSteam is to download our pre-compiled editors and templates; especially good for folks who don't want to set up the tools for compiling and just want to get going.
 - Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
 - Everything you need should be included.
-  - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](https://godotsteam.com/tutorials/linux_caveats).
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
