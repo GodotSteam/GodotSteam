@@ -31,8 +31,10 @@ Here is a list of all the great contributors, both those who have provided code 
 	- MartinAppDev
 	- mashumafi
 	- MichaelBelousov
+	- mikix
 	- pixelriot
 	- polyrain
+	- profour
 	- qarmin
 	- Ralian
 	- raulsntos
