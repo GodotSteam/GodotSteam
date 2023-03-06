@@ -20,6 +20,7 @@ You can [download pre-compiled versions _(currently v4.1.5)_ of this repo here](
 
 **Version 4.1.6 Changes**
 - Fixed: options array size for new Networking classes and memory leaks, _thanks to profour_
+- Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
 
 **Version 4.1.5 Changes**
 - Added: networking type message constants
