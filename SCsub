@@ -8,7 +8,7 @@ env.Append(CPPPATH=["%s/sdk/public/" % module_path])
 # If compiling Linux
 if env["platform"]== "linuxbsd" or env["platform"] == "server":
 	env.Append(LIBS=["steam_api"])
-	env.Append(RPATH=["."])
+	env.Append(RPATH=env.Literal('\\$$ORIGIN'))
 	if env['arch'] == "x86_32":
 		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux32" % module_path])
 	else: # 64 bit
