@@ -17,6 +17,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.5.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.5.2 Changes**
+- Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
+
 **Version 3.5.1 Changes:**
 - Changed: createSteamID function to use proper 64-bit int
 - Changed: brought the plug-in version up to speed with the module version
