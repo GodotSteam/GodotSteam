@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v4.1.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 4.1.6 Changes**
+- Fixed: options array size for new Networking classes and memory leaks, _thanks to profour_
+
 **Version 4.1.5 Changes**
 - Added: networking type message constants
 - Added: more descriptions and tutorial links to in-editor docs
