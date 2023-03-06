@@ -4551,9 +4551,8 @@ uint32 Steam::createListenSocketIP(const String& ip_reference, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	const SteamNetworkingConfigValue_t *these_options = new SteamNetworkingConfigValue_t[sizeof(options)];
-	these_options = convertOptionsArray(options);
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], sizeof(options), these_options);
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], options.size(), these_options);
 	delete[] these_options;
 	return listen_socket;
 }
@@ -4563,7 +4562,9 @@ uint32 Steam::createListenSocketP2P(int virtual_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, options.size(), these_options);
+	delete[] these_options;
 	return listen_socket;
 }
 
@@ -4572,7 +4573,10 @@ uint32 Steam::connectP2P(const String& identity_reference, int virtual_port, Arr
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->ConnectP2P(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->ConnectP2P(networking_identities[identity_reference.utf8().get_data()], virtual_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 //! Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
@@ -4580,7 +4584,10 @@ uint32 Steam::connectToHostedDedicatedServer(const String& identity_reference, i
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 //! Accept an incoming connection that has been received on a listen socket.
@@ -4946,7 +4953,10 @@ uint32 Steam::createHostedDedicatedServerListenSocket(int port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 // Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)
@@ -5122,7 +5132,11 @@ uint32 Steam::createListenSocketP2PFakeIP(int fake_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, sizeof(options), convertOptionsArray(options));
+	
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 // If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
@@ -5411,7 +5425,7 @@ String Steam::toIdentityString(const String& reference_name){
 // Helper function to turn an array of options into an array of SteamNetworkingConfigValue_t structs
 const SteamNetworkingConfigValue_t* Steam::convertOptionsArray(Array options){
 	// Get the number of option arrays in the array.
-	int options_size = sizeof(options);
+	int options_size = options.size();
 	// Create the array for options.
 	SteamNetworkingConfigValue_t *option_array = new SteamNetworkingConfigValue_t[options_size];
 	// If there are options
