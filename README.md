@@ -18,6 +18,9 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v3.18.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.18.5 Changes**
+- Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
+
 **Version 3.18.4 Changes**
 - Added: process to create godotsteam.sh file for Github Actions, thanks to _SapphireMH_
 - Changed: friend_flags can now be passed to some functions, thanks to _polyrain_
