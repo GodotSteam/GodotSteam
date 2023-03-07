@@ -4608,7 +4608,7 @@ Dictionary Steam::createSocketPair(bool loopback, const String& identity_referen
 		// Populate the dictionary
 		connection_pair["success"] = success;
 		connection_pair["connection1"] = connection1;
-		connection_pair["connect2"] = connection2;
+		connection_pair["connection2"] = connection2;
 	}
 	return connection_pair;
 }

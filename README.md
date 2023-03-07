@@ -20,6 +20,7 @@ You can [download pre-compiled versions _(currently v3.18.3)_ of this repo here]
 
 **Version 3.18.5 Changes**
 - Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
+- Fixed: typo in returned dictionary for createSocketPair
 
 **Version 3.18.4 Changes**
 - Added: process to create godotsteam.sh file for Github Actions, thanks to _SapphireMH_
