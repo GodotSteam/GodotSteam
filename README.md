@@ -16,34 +16,12 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v4.1.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 4.1.6 Changes**
+**Version 4.2 Changes**
+- Added: various backports from Godot 3.x branch
 - Fixed: options array size for new Networking classes and memory leaks, _thanks to profour_
 - Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
-
-**Version 4.1.5 Changes**
-- Added: networking type message constants
-- Added: more descriptions and tutorial links to in-editor docs
-- Added: avatar_image_loaded callback to get raw response from Steamworks
-- Changed: brought 4.x branch up-to-speed with master / 3.x branch
-- Changed: enums now bound with BIND_ENUM_CONSTANT, _thanks to raulsntos_
-- Changed: bitwise enums now bound with BIND_ENUM_BITWISE_CONSTANT, _thanks to raulsntos_
-- Changed: platform of 'osx' to new 'macos'
-- Fixed: platform of 'osx' not being recognized so the module doesn't get added
-- Fixed: microtransaction_auth_response spelling for callback
-- Fixed: getLobbyData not returning UTF-8 encoded string
-- Fixed: sendLobbyChatMsg truncating non-English strings
-- Fixed: filterText truncating input; thanks to _tcoxon_
-- Removed: MarketingMessageFlags as they don't exist in the header files
-
-**Version 4.1.4 Changes**
-- Changed: layout to make Git cloning easier
-- Changed: submitItemUpdate to use null if no notes are passed, _thanks to mashumafi_
-- Fixed: incorrect use of io failure
-- Fixed: DEFVAL type mismatch, _thanks to raulsntos_
-- Fixed: getSessionConnectionInfo using old networking struct
-- Removed: unused networking stricts
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
