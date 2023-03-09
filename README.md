@@ -16,40 +16,14 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.18.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.19)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 3.18.5 Changes**
+**Version 3.19 Changes**
+- Changed: various backports from godot4 branch
+- Fixed: various lobby list functions now return the server_list_request handle
 - Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
 - Fixed: typo in returned dictionary for createSocketPair
-
-**Version 3.18.4 Changes**
-- Added: process to create godotsteam.sh file for Github Actions, thanks to _SapphireMH_
-- Changed: friend_flags can now be passed to some functions, thanks to _polyrain_
-- Fixed: leaderboard_score_uploaded failing to compile due to passing back 6 variables, now passes score data as dictionary
-- Fixed: missing property info for leaderboard_score_uploaded
-
-**Version 3.18.3 Changes**
-- Added: networking type message constants
-- Added: more descriptions and tutorial links to in-editor docs
-- Fixed: getLobbyData not returning UTF-8 encoded string
-- Fixed: sendLobbyChatMsg truncating non-English strings
-- Removed: MarketingMessageFlags as they don't exist in the header files
-
-**Version 3.18.2 Changes**
-- Changed: minor internal variable names
-- Fixed: filterText truncating input; thanks to _tcoxon_
-
-**Version 3.18.1 Changes**
-- Added: link to SDK placeholder
-- Added: more descriptions to in-editor docs
-- Fixed: some regressions that made their way into 3.18
-
-**Version 3.18 Changes**
-- Added: avatar_image_loaded callback to get raw response from Steamworks
-- Changed: project layout to be Git clone friendly
-- Fixed: getSessionConnectionInfo using old networking struct
-- Fixed: incorrectly named io_failure for steamworks_error signal, thanks to _raulsntos_
-- Removed: unused networking stricts
+- Fixed: requestInternetServerList causing crashes
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot3/).
 

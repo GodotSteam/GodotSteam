@@ -347,10 +347,10 @@ Steam* Steam::get_singleton(){
 }
 
 // Creating a Steam ID for internal use
-CSteamID Steam::createSteamID(uint64_t steam_id, int account_type){
+CSteamID Steam::createSteamID(uint64_t steam_id, AccountType account_type){
 	CSteamID converted_steam_id;
-	if(account_type < 0 || account_type >= k_EAccountTypeMax){
-		account_type = 1;
+	if(account_type < 0 || account_type >= AccountType(k_EAccountTypeMax)){
+		account_type = ACCOUNT_TYPE_INDIVIDUAL;
 	}
 	converted_steam_id.Set(steam_id, k_EUniversePublic, EAccountType(account_type));
 	return converted_steam_id;
@@ -1114,21 +1114,21 @@ String Steam::getFriendPersonaNameHistory(uint64_t steam_id, int name_history){
 }
 
 //! Returns the current status of the specified user.
-int Steam::getFriendPersonaState(uint64_t steam_id){
+Steam::PersonaState Steam::getFriendPersonaState(uint64_t steam_id){
 	if(SteamFriends() == NULL){
-		return 0;
+		return PERSONA_STATE_OFFLINE;
 	}
 	CSteamID user_id = (uint64)steam_id;
-	return SteamFriends()->GetFriendPersonaState(user_id);
+	return PersonaState(SteamFriends()->GetFriendPersonaState(user_id));
 }
 
 //! Returns a relationship to a user.
-int Steam::getFriendRelationship(uint64_t steam_id){
+Steam::FriendRelationship Steam::getFriendRelationship(uint64_t steam_id){
 	if(SteamFriends() == NULL){
-		return 0;
+		return FRIEND_RELATION_NONE;
 	}
 	CSteamID user_id = (uint64)steam_id;
-	return SteamFriends()->GetFriendRelationship(user_id);
+	return FriendRelationship(SteamFriends()->GetFriendRelationship(user_id));
 }
 
 //! Get a Rich Presence value from a specified friend (typically only used for debugging).
@@ -1239,11 +1239,11 @@ String Steam::getPersonaName(){
 }
 
 //! Gets the status of the current user.
-int Steam::getPersonaState(){
+Steam::PersonaState Steam::getPersonaState(){
 	if(SteamFriends() == NULL){
-		return 0;
+		return PERSONA_STATE_OFFLINE;
 	}
-	return SteamFriends()->GetPersonaState();
+	return PersonaState(SteamFriends()->GetPersonaState());
 }
 
 //! Get player's avatar.
@@ -1294,16 +1294,15 @@ String Steam::getPlayerNickname(uint64_t steam_id){
 }
 
 // Returns a string property for a user's equipped profile item.
-String Steam::getProfileItemPropertyString(uint64_t steam_id, int item_type, int item_property){
+String Steam::getProfileItemPropertyString(uint64_t steam_id, CommunityProfileItemType item_type, CommunityProfileItemProperty item_property){
 	if(SteamFriends() == NULL){
 		return "";
 	}
 	CSteamID user_id = (uint64)steam_id;
 	return String::utf8(SteamFriends()->GetProfileItemPropertyString(user_id, (ECommunityProfileItemType)item_type, (ECommunityProfileItemProperty)item_property));
 }
-
 // Returns an unsigned integer property for a user's equipped profile item.
-uint32 Steam::getProfileItemPropertyInt(uint64_t steam_id, int item_type, int item_property){
+uint32 Steam::getProfileItemPropertyInt(uint64_t steam_id, CommunityProfileItemType item_type, CommunityProfileItemProperty item_property){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
@@ -1411,7 +1410,7 @@ Array Steam::getUserSteamGroups(){
 }
 
 // After calling RequestEquippedProfileItems, you can use this function to check if the user has a type of profile item equipped or not.
-bool Steam::hasEquippedProfileItem(uint64_t steam_id, int item_type){
+bool Steam::hasEquippedProfileItem(uint64_t steam_id, CommunityProfileItemType item_type){
 	if(SteamFriends() == NULL){
 		return false;
 	}
@@ -1723,7 +1722,7 @@ int Steam::cancelRequestPlayersForGame(){
 }
 
 //! Submit a result for one player. does not end the game. ullUniqueGameID continues to describe this game.
-int Steam::submitPlayerResult(uint64_t game_id, uint64_t player_id, int player_result){
+int Steam::submitPlayerResult(uint64_t game_id, uint64_t player_id, PlayerResult player_result){
 	if(SteamGameSearch() == NULL){
 		return 9;
 	}
@@ -1902,7 +1901,7 @@ void Steam::loadURL(const String& url, const String& post_data, uint32 this_hand
 }
 
 //! Tells an HTML surface that a mouse button has been double clicked. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseDoubleClick(int mouse_button, uint32 this_handle){
+void Steam::mouseDoubleClick(HTMLMouseButton mouse_button, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
 		// If no handle is passed use internal one
 		if(this_handle == 0){
@@ -1913,7 +1912,7 @@ void Steam::mouseDoubleClick(int mouse_button, uint32 this_handle){
 }
 
 //! Tells an HTML surface that a mouse button has been pressed. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseDown(int mouse_button, uint32 this_handle){
+void Steam::mouseDown(HTMLMouseButton mouse_button, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
 		// If no handle is passed use internal one
 		if(this_handle == 0){
@@ -1935,7 +1934,7 @@ void Steam::mouseMove(int x, int y, uint32 this_handle){
 }
 
 //! Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to MouseMove.
-void Steam::mouseUp(int mouse_button, uint32 this_handle){
+void Steam::mouseUp(HTMLMouseButton mouse_button, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
 		// If no handle is passed use internal one
 		if(this_handle == 0){
@@ -2117,7 +2116,7 @@ uint32_t Steam::createCookieContainer(bool allow_responses_to_modify){
 }
 
 //! Initializes a new HTTP request.
-uint32_t Steam::createHTTPRequest(int request_method, const String& absolute_url){
+uint32_t Steam::createHTTPRequest(HTTPMethod request_method, const String& absolute_url){
 	if(SteamHTTP() != NULL){
 		return SteamHTTP()->CreateHTTPRequest((EHTTPMethod)request_method, absolute_url.utf8().get_data());
 	}
@@ -2361,11 +2360,11 @@ uint64_t Steam::getActionSetHandle(const String& action_set_name){
 }
 
 //! Get an action origin that you can use in your glyph look up table or passed into GetGlyphForActionOrigin or GetStringForActionOrigin.
-int Steam::getActionOriginFromXboxOrigin(uint64_t input_handle, int origin){
+Steam::InputActionOrigin Steam::getActionOriginFromXboxOrigin(uint64_t input_handle, int origin){
 	if(SteamInput() == NULL){
-		return 0;
+		return INPUT_ACTION_ORIGIN_NONE;
 	}
-	return SteamInput()->GetActionOriginFromXboxOrigin((InputHandle_t)input_handle, (EXboxOrigin)origin);
+	return InputActionOrigin(SteamInput()->GetActionOriginFromXboxOrigin((InputHandle_t)input_handle, (EXboxOrigin)origin));
 }
 
 //! Fill an array with all of the currently active action set layers for a specified controller handle.
@@ -2509,8 +2508,8 @@ int Steam::getGamepadIndexForController(uint64_t input_handle){
 }
 
 //! Get a local path to art for on-screen glyph for a particular origin.
-String Steam::getGlyphForActionOrigin(int origin){
-	if(SteamInput() == NULL || origin < 0 || origin > k_EInputActionOrigin_MaximumPossibleValue){
+String Steam::getGlyphForActionOrigin(InputActionOrigin origin){
+	if(SteamInput() == NULL || origin < 0 || origin > InputActionOrigin(k_EInputActionOrigin_MaximumPossibleValue)){
 		return "";
 	}
 	return SteamInput()->GetGlyphForActionOrigin_Legacy((EInputActionOrigin)origin);
@@ -2596,7 +2595,7 @@ int Steam::getRemotePlaySessionID(uint64_t input_handle){
 }
 
 //! Returns a localized string (from Steam's language setting) for the specified origin.
-String Steam::getStringForActionOrigin(int origin){
+String Steam::getStringForActionOrigin(InputActionOrigin origin){
 	if(SteamInput() == NULL){
 		return "";
 	}
@@ -2649,7 +2648,7 @@ void Steam::stopAnalogActionMomentum(uint64_t input_handle, uint64_t action){
 }
 
 //! Get the equivalent origin for a given controller type or the closest controller type that existed in the SDK you built into your game if eDestinationInputType is k_ESteamInputType_Unknown. This action origin can be used in your glyph look up table or passed into GetGlyphForActionOrigin or GetStringForActionOrigin.
-int Steam::translateActionOrigin(int destination_input, int source_origin){
+int Steam::translateActionOrigin(SteamInputType destination_input, InputActionOrigin source_origin){
 	if(SteamInput() == NULL){
 		return 0;
 	}
@@ -2686,7 +2685,7 @@ bool Steam::setInputActionManifestFilePath(const String& manifest_path){
 }
 
 // Set the trigger effect for a DualSense controller
-void Steam::setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, int effect_mode, int position, int amplitude, int frequency){
+void Steam::setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, SCEPadTriggerEffectMode effect_mode, int position, int amplitude, int frequency){
 	if(SteamInput() != NULL){
 		ScePadTriggerEffectParam these_parameters;
 		memset(&these_parameters, 0, sizeof(these_parameters));
@@ -2753,7 +2752,7 @@ void Steam::enableDeviceCallbacks(){
 //}
 
 //! Get a local path to a PNG file for the provided origin's glyph. 
-String Steam::getGlyphPNGForActionOrigin(int origin, int size, uint32 flags){
+String Steam::getGlyphPNGForActionOrigin(InputActionOrigin origin, GlyphSize size, uint32 flags){
 	if(SteamInput() == NULL){
 		return "";
 	}
@@ -2761,7 +2760,7 @@ String Steam::getGlyphPNGForActionOrigin(int origin, int size, uint32 flags){
 }
 
 //! Get a local path to a SVG file for the provided origin's glyph. 
-String Steam::getGlyphSVGForActionOrigin(int origin, uint32 flags){
+String Steam::getGlyphSVGForActionOrigin(InputActionOrigin origin, uint32 flags){
 	if(SteamInput() == NULL){
 		return "";
 	}
@@ -3357,14 +3356,14 @@ void Steam::requestLobbyList(){
 }
 
 //! Adds a string comparison filter to the next RequestLobbyList call.
-void Steam::addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, int comparison_type){
+void Steam::addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, LobbyComparison comparison_type){
 	if(SteamMatchmaking() != NULL){
 		SteamMatchmaking()->AddRequestLobbyListStringFilter(key_to_match.utf8().get_data(), value_to_match.utf8().get_data(), (ELobbyComparison)comparison_type);
 	}
 }
 
 //! Adds a numerical comparison filter to the next RequestLobbyList call.
-void Steam::addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, int comparison_type){
+void Steam::addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, LobbyComparison comparison_type){
 	if(SteamMatchmaking() != NULL){
 		SteamMatchmaking()->AddRequestLobbyListNumericalFilter(key_to_match.utf8().get_data(), value_to_match, (ELobbyComparison)comparison_type);
 	}
@@ -3385,9 +3384,20 @@ void Steam::addRequestLobbyListFilterSlotsAvailable(int slots_available){
 }
 
 //! Sets the distance for which we should search for lobbies (based on users IP address to location map on the Steam backed).
-void Steam::addRequestLobbyListDistanceFilter(int distance_filter){
+void Steam::addRequestLobbyListDistanceFilter(LobbyDistanceFilter distance_filter){
 	if(SteamMatchmaking() != NULL){
-		SteamMatchmaking()->AddRequestLobbyListDistanceFilter((ELobbyDistanceFilter)distance_filter);
+		if(distance_filter == 1){
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterDefault);
+		}
+		else if(distance_filter == 2){
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
+		}
+		else if(distance_filter == 3){
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterWorldwide);
+		}
+		else{
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterClose);
+		}
 	}
 }
 
@@ -3399,7 +3409,7 @@ void Steam::addRequestLobbyListResultCountFilter(int max_results){
 }
 
 //! Create a lobby on the Steam servers, if private the lobby will not be returned by any RequestLobbyList() call.
-void Steam::createLobby(int lobby_type, int max_members){
+void Steam::createLobby(LobbyType lobby_type, int max_members){
 	if(SteamMatchmaking() != NULL){
 		SteamAPICall_t api_call = SteamMatchmaking()->CreateLobby((ELobbyType)lobby_type, max_members);
 		callResultCreateLobby.Set(api_call, this, &Steam::lobby_created);
@@ -3523,7 +3533,6 @@ bool Steam::sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body
 		return false;
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
-//	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), message_body.size() + 1);
 	return SteamMatchmaking()->SendLobbyChatMsg(lobby_id, message_body.utf8().get_data(), strlen(message_body.utf8().get_data()) + 1);
 }
 
@@ -3610,7 +3619,7 @@ int Steam::getLobbyMemberLimit(uint64_t steam_lobby_id){
 }
 
 //! Updates which type of lobby it is.
-bool Steam::setLobbyType(uint64_t steam_lobby_id, int lobby_type){
+bool Steam::setLobbyType(uint64_t steam_lobby_id, LobbyType lobby_type){
 	if(SteamMatchmaking() == NULL){
 		return false;
 	}
@@ -3653,9 +3662,13 @@ bool Steam::setLobbyOwner(uint64_t steam_lobby_id, uint64_t steam_id_new_owner){
 /////////////////////////////////////////////////
 //
 //! Cancel an outstanding server list request.
-void Steam::cancelQuery(uint64_t server_list_request){
+void Steam::cancelQuery(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->CancelQuery((HServerListRequest)server_list_request);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->CancelQuery((HServerListRequest)this_server_list_request);
 	}
 }
 
@@ -3667,20 +3680,28 @@ void Steam::cancelServerQuery(int server_query){
 }
 
 //! Gets the number of servers in the given list.
-int Steam::getServerCount(uint64_t server_list_request){
+int Steam::getServerCount(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() == NULL){
 		return 0;
 	}
-	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)server_list_request);
+	// If no request list handle was passed, use the internal one
+	if(this_server_list_request == 0){
+		this_server_list_request = (uint64)server_list_request;
+	}
+	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)this_server_list_request);
 }
 
 //! Get the details of a given server in the list.
-Dictionary Steam::getServerDetails(uint64_t server_list_request, int server){
+Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request){
 	// Create a dictionary to populate
 	Dictionary game_server;
 	if(SteamMatchmakingServers() != NULL){
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
 		gameserveritem_t* server_item = new gameserveritem_t;
-		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)server_list_request, server);
+		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
 		// Populate the dictionary
 		game_server["ping"] = server_item->m_nPing;
 		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
@@ -3704,11 +3725,15 @@ Dictionary Steam::getServerDetails(uint64_t server_list_request, int server){
 }
 
 //! Returns true if the list is currently refreshing its server list.
-bool Steam::isRefreshing(uint64_t server_list_request){
+bool Steam::isRefreshing(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() == NULL){
 		return false;
 	}
-	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)server_list_request);
+	// If no request list handle was passed, use the internal one
+	if(this_server_list_request == 0){
+		this_server_list_request = (uint64)server_list_request;
+	}
+	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)this_server_list_request);
 }
 
 //! Queries an individual game servers directly via IP/Port to request an updated ping time and other details from the server.
@@ -3754,28 +3779,41 @@ int Steam::playerDetails(const String& ip, uint16 port){
 }
 
 //! Ping every server in your list again but don't update the list of servers. Query callback installed when the server list was requested will be used again to post notifications and RefreshComplete, so the callback must remain valid until another RefreshComplete is called on it or the request is released with ReleaseRequest( hRequest ).
-void Steam::refreshQuery(uint64_t server_list_request){
+void Steam::refreshQuery(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->RefreshQuery((HServerListRequest)server_list_request);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->RefreshQuery((HServerListRequest)this_server_list_request);
 	}
 }
 
 //! Refresh a single server inside of a query (rather than all the servers).
-void Steam::refreshServer(uint64_t server_list_request, int server){
+void Steam::refreshServer(int server, uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->RefreshServer((HServerListRequest)server_list_request, server);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->RefreshServer((HServerListRequest)this_server_list_request, server);
 	}
 }
 
 //! Releases the asynchronous request object and cancels any pending query on it if there's a pending query in progress.
-void Steam::releaseRequest(uint64_t server_list_request){
+void Steam::releaseRequest(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->ReleaseRequest((HServerListRequest)server_list_request);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->ReleaseRequest((HServerListRequest)this_server_list_request);
 	}
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestFavoritesServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestFavoritesServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3804,10 +3842,12 @@ void Steam::requestFavoritesServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestFriendsServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestFriendsServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3836,10 +3876,12 @@ void Steam::requestFriendsServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestHistoryServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestHistoryServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3868,10 +3910,12 @@ void Steam::requestHistoryServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestInternetServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestInternetServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3900,17 +3944,21 @@ void Steam::requestInternetServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestLANServerList(uint32 app_id){
+uint64_t Steam::requestLANServerList(uint32 app_id){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		server_list_request = SteamMatchmakingServers()->RequestLANServerList((AppId_t)app_id, server_list_response);
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestSpectatorServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3939,6 +3987,7 @@ void Steam::requestSpectatorServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request the list of rules that the server is running (See ISteamGameServer::SetKeyValue() to set the rules server side)
@@ -3984,11 +4033,11 @@ bool Steam::musicIsPlaying(){
 }
 
 // Gets the current status of the Steam Music player
-int Steam::getPlaybackStatus(){
+Steam::AudioPlaybackStatus Steam::getPlaybackStatus(){
 	if(SteamMusic() == NULL){
-		return 0;
+		return AUDIO_PLAYBACK_UNDEFINED;
 	}
-	return SteamMusic()->GetPlaybackStatus();
+	return AudioPlaybackStatus(SteamMusic()->GetPlaybackStatus());
 }
 
 //! Get the volume level of the music.
@@ -4276,7 +4325,7 @@ bool Steam::updateLooped(bool looped){
 }
 
 //! Update the current playback status; 0 - undefined, 1 - playing, 2 - paused, 3 - idle.
-bool Steam::updatePlaybackStatus(int status){
+bool Steam::updatePlaybackStatus(AudioPlaybackStatus status){
 	if(SteamMusicRemote() == NULL){
 		return false;
 	}
@@ -4394,7 +4443,7 @@ Dictionary Steam::readP2PPacket(uint32_t packet, int channel){
 }
 
 //! Sends a P2P packet to the specified user.
-bool Steam::sendP2PPacket(uint64_t steam_id_remote, PoolByteArray data, int send_type, int channel){
+bool Steam::sendP2PPacket(uint64_t steam_id_remote, PoolByteArray data, P2PSend send_type, int channel){
 	if (SteamNetworking() == NULL) {
 		return false;
 	}
@@ -4537,9 +4586,8 @@ uint32 Steam::createListenSocketIP(const String& ip_reference, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	const SteamNetworkingConfigValue_t *these_options = new SteamNetworkingConfigValue_t[sizeof(options)];
-	these_options = convertOptionsArray(options);
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], sizeof(options), these_options);
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], options.size(), these_options);
 	delete[] these_options;
 	return listen_socket;
 }
@@ -4549,7 +4597,9 @@ uint32 Steam::createListenSocketP2P(int virtual_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, options.size(), these_options);
+	delete[] these_options;
 	return listen_socket;
 }
 
@@ -4566,7 +4616,10 @@ uint32 Steam::connectToHostedDedicatedServer(const String& identity_reference, i
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 //! Accept an incoming connection that has been received on a listen socket.
@@ -4850,19 +4903,19 @@ String Steam::getIdentity(){
 }
 
 //! Indicate our desire to be ready participate in authenticated communications. If we are currently not ready, then steps will be taken to obtain the necessary certificates. (This includes a certificate for us, as well as any CA certificates needed to authenticate peers.)
-int Steam::initAuthentication(){
+Steam::NetworkingAvailability Steam::initAuthentication(){
 	if(SteamNetworkingSockets() == NULL){
-		return 0;
+		return NETWORKING_AVAILABILITY_UNKNOWN;
 	}
-	return SteamNetworkingSockets()->InitAuthentication();
+	return NetworkingAvailability(SteamNetworkingSockets()->InitAuthentication());
 }
 
 //! Query our readiness to participate in authenticated communications. A SteamNetAuthenticationStatus_t callback is posted any time this status changes, but you can use this function to query it at any time.
-int Steam::getAuthenticationStatus(){
+Steam::NetworkingAvailability Steam::getAuthenticationStatus(){
 	if(SteamNetworkingSockets() == NULL){
-		return 0;
+		return NETWORKING_AVAILABILITY_UNKNOWN;
 	}
-	return SteamNetworkingSockets()->GetAuthenticationStatus(NULL);
+	return NetworkingAvailability(SteamNetworkingSockets()->GetAuthenticationStatus(NULL));
 }
 
 // Call this when you receive a ticket from your backend / matchmaking system. Puts the ticket into a persistent cache, and optionally returns the parsed ticket.
@@ -4932,7 +4985,10 @@ uint32 Steam::createHostedDedicatedServerListenSocket(int port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 // Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)
@@ -5108,7 +5164,11 @@ uint32 Steam::createListenSocketP2PFakeIP(int fake_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, sizeof(options), convertOptionsArray(options));
+	
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 // If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
@@ -5397,7 +5457,7 @@ String Steam::toIdentityString(const String& reference_name){
 // Helper function to turn an array of options into an array of SteamNetworkingConfigValue_t structs
 const SteamNetworkingConfigValue_t* Steam::convertOptionsArray(Array options){
 	// Get the number of option arrays in the array.
-	int options_size = sizeof(options);
+	int options_size = options.size();
 	// Create the array for options.
 	SteamNetworkingConfigValue_t *option_array = new SteamNetworkingConfigValue_t[options_size];
 	// If there are options
@@ -5448,11 +5508,11 @@ void Steam::initRelayNetworkAccess(){
 }
 
 //! Fetch current status of the relay network.  If you want more details, you can pass a non-NULL value.
-int Steam::getRelayNetworkStatus(){
+Steam::NetworkingAvailability Steam::getRelayNetworkStatus(){
 	if(SteamNetworkingUtils() == NULL){
-		return 0;
+		return NETWORKING_AVAILABILITY_UNKNOWN;
 	}
-	return SteamNetworkingUtils()->GetRelayNetworkStatus(NULL);
+	return NetworkingAvailability(SteamNetworkingUtils()->GetRelayNetworkStatus(NULL));
 }
 
 //! Return location info for the current host. Returns the approximate age of the data, in seconds, or -1 if no data is available.
@@ -5606,7 +5666,7 @@ Array Steam::getPOPList(){
 //}
 
 // Get a configuration value.
-Dictionary Steam::getConfigValue(int config_value, int scope_type, uint32_t connection_handle){
+Dictionary Steam::getConfigValue(NetworkingConfigValue config_value, NetworkingConfigScope scope_type, uint32_t connection_handle){
 	Dictionary config_info;
 	if(SteamNetworkingUtils() != NULL){
 		ESteamNetworkingConfigDataType data_type;
@@ -5623,7 +5683,7 @@ Dictionary Steam::getConfigValue(int config_value, int scope_type, uint32_t conn
 }
 
 //! Returns info about a configuration value.
-Dictionary Steam::getConfigValueInfo(int config_value){
+Dictionary Steam::getConfigValueInfo(NetworkingConfigValue config_value){
 	Dictionary config_info;
 	if(SteamNetworkingUtils() != NULL){
 		ESteamNetworkingConfigDataType data_type;
@@ -5638,38 +5698,38 @@ Dictionary Steam::getConfigValueInfo(int config_value){
 }
 
 // The following functions are handy shortcuts for common use cases.
-bool Steam::setGlobalConfigValueInt32(int config, int32 value){
+bool Steam::setGlobalConfigValueInt32(NetworkingConfigValue config, int32 value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
 	return SteamNetworkingUtils()->SetGlobalConfigValueInt32((ESteamNetworkingConfigValue)config, value);
 }
-bool Steam::setGlobalConfigValueFloat(int config, float value){
+bool Steam::setGlobalConfigValueFloat(NetworkingConfigValue config, float value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
 	return SteamNetworkingUtils()->SetGlobalConfigValueFloat((ESteamNetworkingConfigValue)config, value);
 }
-bool Steam::setGlobalConfigValueString(int config, const String& value){
+bool Steam::setGlobalConfigValueString(NetworkingConfigValue config, const String& value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
 	return SteamNetworkingUtils()->SetGlobalConfigValueString((ESteamNetworkingConfigValue)config, value.utf8().get_data());
 }
-bool Steam::setConnectionConfigValueInt32(uint32 connection, int config, int32 value){
+bool Steam::setConnectionConfigValueInt32(uint32 connection, NetworkingConfigValue config, int32 value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
 	return SteamNetworkingUtils()->SetConnectionConfigValueInt32(connection, (ESteamNetworkingConfigValue)config, value);
 }
-bool Steam::setConnectionConfigValueFloat(uint32 connection, int config, float value){
+bool Steam::setConnectionConfigValueFloat(uint32 connection, NetworkingConfigValue config, float value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
 	return SteamNetworkingUtils()->SetConnectionConfigValueFloat(connection, (ESteamNetworkingConfigValue)config, value);
 }
 
-bool Steam::setConnectionConfigValueString(uint32 connection, int config, const String& value){
+bool Steam::setConnectionConfigValueString(uint32 connection, NetworkingConfigValue config, const String& value){
 	if(SteamNetworkingUtils() == NULL){
 		return false;
 	}
@@ -5718,14 +5778,14 @@ bool Steam::isAppInBlockList(uint32 app_id){
 	return SteamParentalSettings()->BIsAppInBlockList((AppId_t)app_id);
 }
 
-bool Steam::isFeatureBlocked(int feature){
+bool Steam::isFeatureBlocked(ParentalFeature feature){
 	if(SteamParentalSettings() == NULL){
 		return false;
 	}
 	return SteamParentalSettings()->BIsFeatureBlocked((EParentalFeature)feature);
 }
 
-bool Steam::isFeatureInBlockList(int feature){
+bool Steam::isFeatureInBlockList(ParentalFeature feature){
 	if(SteamParentalSettings() == NULL){
 		return false;
 	}
@@ -5765,7 +5825,7 @@ Array Steam::getAvailableBeaconLocations(uint32 max){
 }
 
 //! Create a beacon. You can only create one beacon at a time. Steam will display the beacon in the specified location, and let up to unOpenSlots users "follow" the beacon to your party.
-void Steam::createBeacon(uint32 open_slots, uint64_t location, int type, const String& connect_string, const String& metadata){
+void Steam::createBeacon(uint32 open_slots, uint64_t location, SteamPartyBeaconLocationType type, const String& connect_string, const String& metadata){
 	if(SteamParties() != NULL){
 		// Add data to the beacon location struct
 		SteamPartyBeaconLocation_t *beacon_data = new SteamPartyBeaconLocation_t;
@@ -5852,7 +5912,7 @@ void Steam::joinParty(uint64_t beacon_id){
 }
 
 //! Query general metadata for the given beacon location. For instance the Name, or the URL for an icon if the location type supports icons (for example, the icon for a Steam Chat Room Group).
-String Steam::getBeaconLocationData(uint64_t location_id, int location_type, int location_data){
+String Steam::getBeaconLocationData(uint64_t location_id, SteamPartyBeaconLocationType location_type, SteamPartyBeaconLocationData location_data){
 	String beacon_location_data = "";
 	if(SteamParties() != NULL){
 		char *beacon_data = new char[2048];
@@ -6254,7 +6314,7 @@ void Steam::ugcDownloadToLocation(uint64_t content, const String& location, uint
 }
 
 //! After download, gets the content of the file. 
-PoolByteArray Steam::ugcRead(uint64_t content, int32 data_size, uint32 offset, int action){
+PoolByteArray Steam::ugcRead(uint64_t content, int32 data_size, uint32 offset, UGCReadAction action){
 	PoolByteArray file_contents;
 	file_contents.resize(data_size);
 	if(SteamRemoteStorage() != NULL){
@@ -6316,7 +6376,7 @@ uint32_t Steam::addScreenshotToLibrary(const String& filename, const String& thu
 }
 
 //! Adds a VR screenshot to the user's Steam screenshot library from disk in the supported type.
-uint32_t Steam::addVRScreenshotToLibrary(int type, const String& filename, const String& vr_filename){
+uint32_t Steam::addVRScreenshotToLibrary(VRScreenshotType type, const String& filename, const String& vr_filename){
 	if(SteamScreenshots() == NULL){
 		return 0;
 	}
@@ -6426,7 +6486,7 @@ bool Steam::addItemKeyValueTag(uint64_t update_handle, const String& key, const 
 }
 
 //! Adds an additional preview file for the item.
-bool Steam::addItemPreviewFile(uint64_t query_handle, const String& preview_file, int type){
+bool Steam::addItemPreviewFile(uint64_t query_handle, const String& preview_file, ItemPreviewType type){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -6522,7 +6582,7 @@ bool Steam::initWorkshopForGameServer(uint32_t workshop_depot_id){
 }
 
 //! Creates a new workshop item with no content attached yet.
-void Steam::createItem(uint32 app_id, int file_type){
+void Steam::createItem(uint32 app_id, WorkshopFileType file_type){
 	if(SteamUGC() != NULL){
 		SteamAPICall_t api_call = SteamUGC()->CreateItem((AppId_t)app_id, (EWorkshopFileType)file_type);
 		callResultItemCreate.Set(api_call, this, &Steam::item_created);
@@ -6530,7 +6590,7 @@ void Steam::createItem(uint32 app_id, int file_type){
 }
 
 //! Query for all matching UGC. You can use this to list all of the available UGC for your app.
-uint64_t Steam::createQueryAllUGCRequest(int query_type, int matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page){
+uint64_t Steam::createQueryAllUGCRequest(UGCQuery query_type, UGCMatchingUGCType matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
@@ -6657,7 +6717,7 @@ uint64_t Steam::createQueryUGCDetailsRequest(Array published_file_ids){
 }
 
 //! Query UGC associated with a user. You can use this to list the UGC the user is subscribed to amongst other things.
-uint64_t Steam::createQueryUserUGCRequest(uint64_t steam_id, int list_type, int matching_ugc_type, int sort_order, uint32_t creator_id, uint32_t consumer_id, uint32 page){
+uint64_t Steam::createQueryUserUGCRequest(uint64_t steam_id, UserUGCList list_type, UGCMatchingUGCType matching_ugc_type, UserUGCListSortOrder sort_order, uint32_t creator_id, uint32_t consumer_id, uint32 page){
 	if(SteamUGC() == NULL){
 		return 0;
 	}
@@ -7020,7 +7080,7 @@ Dictionary Steam::getQueryUGCResult(uint64_t query_handle, uint32 index){
 }
 
 //! Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
-Dictionary Steam::getQueryUGCStatistic(uint64_t query_handle, uint32 index, int stat_type){
+Dictionary Steam::getQueryUGCStatistic(uint64_t query_handle, uint32 index, ItemStatistic stat_type){
 	Dictionary ugcStat;
 	if(SteamUGC() == NULL){
 		return ugcStat;
@@ -7304,7 +7364,7 @@ bool Steam::setItemUpdateLanguage(uint64_t update_handle, const String& language
 }
 
 //! Sets the visibility of an item.
-bool Steam::setItemVisibility(uint64_t update_handle, int visibility){
+bool Steam::setItemVisibility(uint64_t update_handle, RemoteStoragePublishedFileVisibility visibility){
 	if(SteamUGC() == NULL){
 		return false;
 	}
@@ -7606,12 +7666,12 @@ void Steam::advertiseGame(const String& server_ip, int port){
 }
 
 //! Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.
-int Steam::beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id){
+Steam::BeginAuthSessionResult Steam::beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id){
 	if(SteamUser() == NULL){
-		return -1;
+		return BeginAuthSessionResult(-1);
 	}
 	CSteamID auth_steam_id = createSteamID(steam_id);
-	return SteamUser()->BeginAuthSession(ticket.read().ptr(), ticket_size, auth_steam_id);
+	return BeginAuthSessionResult(SteamUser()->BeginAuthSession(ticket.read().ptr(), ticket_size, auth_steam_id));
 }
 
 //! Cancels an auth ticket.
@@ -7900,7 +7960,7 @@ bool Steam::clearAchievement(const String& name){
 }
 
 //! Request all rows for friends of user.
-void Steam::downloadLeaderboardEntries(int start, int end, int type, uint64_t this_leaderboard){
+void Steam::downloadLeaderboardEntries(int start, int end, LeaderboardDataRequest type, uint64_t this_leaderboard){
 	if(SteamUserStats() != NULL){
 		// If no leaderboard is passed, use internal one
 		if(this_leaderboard == 0){
@@ -7941,7 +8001,7 @@ void Steam::findLeaderboard(const String& name){
 }
 
 //! Gets a leaderboard by name, it will create it if it's not yet created.
-void Steam::findOrCreateLeaderboard(const String& name, int sort_method, int display_type){
+void Steam::findOrCreateLeaderboard(const String& name, LeaderboardSortMethod sort_method, LeaderboardDisplayType display_type){
 	if(SteamUserStats() != NULL){
 		SteamAPICall_t api_call = SteamUserStats()->FindOrCreateLeaderboard(name.utf8().get_data(), (ELeaderboardSortMethod)sort_method, (ELeaderboardDisplayType)display_type);
 		callResultFindLeaderboard.Set(api_call, this, &Steam::leaderboard_find_result);
@@ -8451,7 +8511,7 @@ Array Steam::getLeaderboardEntries(){
 /////////////////////////////////////////////////
 //
 //! Filters the provided input message and places the filtered result into pchOutFilteredText.
-String Steam::filterText(int context, uint64_t steam_id, const String& message){
+String Steam::filterText(TextFilteringContext context, uint64_t steam_id, const String& message){
 	String new_message = "";
 	if(SteamUtils() != NULL){
 		auto utf8_input = message.utf8();
@@ -8687,7 +8747,7 @@ void Steam::setVRHeadsetStreamingEnabled(bool enabled){
 }
 
 //! Activates the Big Picture text input dialog which only supports gamepad input.
-bool Steam::showGamepadTextInput(int input_mode, int line_input_mode, const String& description, uint32 max_text, const String& preset_text){
+bool Steam::showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String& description, uint32 max_text, const String& preset_text){
 	if(SteamUtils() == NULL){
 		return false;
 	}
@@ -8711,7 +8771,7 @@ bool Steam::showGamepadTextInput(int input_mode, int line_input_mode, const Stri
 
 //! Opens a floating keyboard over the game content and sends OS keyboard keys directly to the game.
 //! The text field position is specified in pixels relative the origin of the game window and is used to position the floating keyboard in a way that doesn't cover the text field
-bool Steam::showFloatingGamepadTextInput(int input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height) {
+bool Steam::showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height) {
 	if(SteamUtils() == NULL){
 		return false;
 	}
@@ -11169,12 +11229,12 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("cancelQuery", "server_list_request"), &Steam::cancelQuery);
 	ClassDB::bind_method(D_METHOD("cancelServerQuery", "server_query"), &Steam::cancelServerQuery);
 	ClassDB::bind_method(D_METHOD("getServerCount", "server_list_request"), &Steam::getServerCount);
-	ClassDB::bind_method(D_METHOD("getServerDetails", "server_list_request", "server"), &Steam::getServerDetails);
+	ClassDB::bind_method(D_METHOD("getServerDetails", "server", "server_list_request"), &Steam::getServerDetails);
 	ClassDB::bind_method(D_METHOD("isRefreshing", "server_list_request"), &Steam::isRefreshing);
 	ClassDB::bind_method(D_METHOD("pingServer", "ip", "port"), &Steam::pingServer);
 	ClassDB::bind_method(D_METHOD("playerDetails", "ip", "port"), &Steam::playerDetails);
 	ClassDB::bind_method(D_METHOD("refreshQuery", "server_list_request"), &Steam::refreshQuery);
-	ClassDB::bind_method(D_METHOD("refreshServer", "server_list_request", "server"), &Steam::refreshServer);
+	ClassDB::bind_method(D_METHOD("refreshServer", "server", "server_list_request"), &Steam::refreshServer);
 	ClassDB::bind_method(D_METHOD("releaseRequest", "server_list_request"), &Steam::releaseRequest);
 	ClassDB::bind_method(D_METHOD("requestFavoritesServerList", "app_id", "filters"), &Steam::requestFavoritesServerList);
 	ClassDB::bind_method(D_METHOD("requestFriendsServerList", "app_id", "filters"), &Steam::requestFriendsServerList);
@@ -11984,18 +12044,18 @@ void Steam::_bind_methods(){
 	/////////////////////////////////////////////
 	//
 	// ACCOUNT TYPE /////////////////////////////
-	BIND_CONSTANT(ACCOUNT_TYPE_INVALID);												// 0
-	BIND_CONSTANT(ACCOUNT_TYPE_INDIVIDUAL);												// 1
-	BIND_CONSTANT(ACCOUNT_TYPE_MULTISEAT);												// 2
-	BIND_CONSTANT(ACCOUNT_TYPE_GAME_SERVER);											// 3
-	BIND_CONSTANT(ACCOUNT_TYPE_ANON_GAME_SERVER);										// 4
-	BIND_CONSTANT(ACCOUNT_TYPE_PENDING);												// 5
-	BIND_CONSTANT(ACCOUNT_TYPE_CONTENT_SERVER);											// 6
-	BIND_CONSTANT(ACCOUNT_TYPE_CLAN);													// 7
-	BIND_CONSTANT(ACCOUNT_TYPE_CHAT);													// 8
-	BIND_CONSTANT(ACCOUNT_TYPE_CONSOLE_USER);											// 9
-	BIND_CONSTANT(ACCOUNT_TYPE_ANON_USER);												// 10
-	BIND_CONSTANT(ACCOUNT_TYPE_MAX);													// 11
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INVALID);											// 0
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INDIVIDUAL);										// 1
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MULTISEAT);											// 2
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_GAME_SERVER);										// 3
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_ANON_GAME_SERVER);									// 4
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_PENDING);											// 5
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CONTENT_SERVER);									// 6
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CLAN);												// 7
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CHAT);												// 8
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CONSOLE_USER);										// 9
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_ANON_USER);											// 10
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MAX);												// 11
 
 	// APP OWNERSHIP FLAGS //////////////////////
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_NONE);											// 0x0000
@@ -12020,11 +12080,11 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(APP_OWNERSHIP_FLAGS_SITE_LICENSE);									// 0x40000
 
 	// APP RELEASE STATE ////////////////////////
-	BIND_CONSTANT(APP_RELEASE_STATE_UNKNOWN);											// 0
-	BIND_CONSTANT(APP_RELEASE_STATE_UNAVAILABLE);										// 1
-	BIND_CONSTANT(APP_RELEASE_STATE_PRERELEASE);										// 2
-	BIND_CONSTANT(APP_RELEASE_STATE_PRELOAD_ONLY);										// 3
-	BIND_CONSTANT(APP_RELEASE_STATE_RELEASED);											// 4
+	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_UNKNOWN);										// 0
+	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_UNAVAILABLE);									// 1
+	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_PRERELEASE);									// 2
+	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_PRELOAD_ONLY);									// 3
+	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_RELEASED);										// 4
 
 	// APP TYPE /////////////////////////////////
 	BIND_CONSTANT(APP_TYPE_INVALID);													// 0x000
@@ -12047,67 +12107,67 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(APP_TYPE_DEPOT_ONLY);													// 0X80000000
 
 	// AUTH SESSION RESPONSE ////////////////////
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_OK);											// 0
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM);					// 1
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED);							// 2
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_VAC_BANNED);									// 3
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE);							// 4
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_VAC_CHECK_TIMEDOUT);							// 5
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED);							// 6
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED);				// 7
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID);							// 8
-	BIND_CONSTANT(AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN);							// 9
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_OK);										// 0
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM);				// 1
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED);					// 2
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_VAC_BANNED);								// 3
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE);						// 4
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_VAC_CHECK_TIMEDOUT);						// 5
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED);						// 6
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED);			// 7
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID);						// 8
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN);						// 9
 
 	// BEGIN AUTH SESSION RESULT ////////////////
-	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_OK);										// 0
-	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET);							// 1
-	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST);							// 2
-	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_VERSION);							// 3
-	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH);								// 4
-	BIND_CONSTANT(BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET);							// 5
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_OK);									// 0
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET);						// 1
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST);					// 2
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_VERSION);						// 3
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH);						// 4
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET);						// 5
 
 	// BROADCAST UPLOAD RESULT //////////////////
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_NONE);										// 0
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_OK);											// 1
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_INIT_FAILED);									// 2
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_FRAME_FAILED);								// 3
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_TIME_OUT);									// 4
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_BANDWIDTH_EXCEEDED);							// 5
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_LOW_FPS);										// 6
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_KEYFRAMES);							// 7
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_NO_CONNECTION);								// 8
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_RELAY_FAILED);								// 9
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_SETTINGS_CHANGED);							// 10
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_AUDIO);								// 11
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND);								// 12
-	BIND_CONSTANT(BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND);							// 13
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NONE);									// 0
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_OK);										// 1
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_INIT_FAILED);							// 2
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_FRAME_FAILED);							// 3
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TIME_OUT);								// 4
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_BANDWIDTH_EXCEEDED);						// 5
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_LOW_FPS);								// 6
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_KEYFRAMES);						// 7
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NO_CONNECTION);							// 8
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_RELAY_FAILED);							// 9
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_SETTINGS_CHANGED);						// 10
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_AUDIO);							// 11
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND);							// 12
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND);						// 13
 
 	// CHAT ENTRY TYPE //////////////////////////
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_INVALID);												// 0
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_CHAT_MSG);											// 1
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_TYPING);												// 2
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_INVITE_GAME);											// 3
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_EMOTE);												// 4
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_LEFT_CONVERSATION);									// 6
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_ENTERED);												// 7
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_WAS_KICKED);											// 8
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_WAS_BANNED);											// 9
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_DISCONNECTED);										// 10
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_HISTORICAL_CHAT);										// 11
-	BIND_CONSTANT(CHAT_ENTRY_TYPE_LINK_BLOCKED);										// 14
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_INVALID);										// 0
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_CHAT_MSG);										// 1
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_TYPING);											// 2
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_INVITE_GAME);									// 3
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_EMOTE);											// 4
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LEFT_CONVERSATION);								// 6
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_ENTERED);										// 7
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_WAS_KICKED);										// 8
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_WAS_BANNED);										// 9
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_DISCONNECTED);									// 10
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_HISTORICAL_CHAT);								// 11
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LINK_BLOCKED);									// 14
 
 	// CHAT ROOM ENTER RESPONSE /////////////////
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_SUCCESS);									// 1
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST);								// 2
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED);								// 3
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_FULL);										// 4
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_ERROR);										// 5
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_BANNED);										// 6
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_LIMITED);									// 7
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED);								// 8
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN);								// 9
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU);							// 10
-	BIND_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER);							// 11
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_SUCCESS);								// 1
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST);							// 2
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED);							// 3
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_FULL);									// 4
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_ERROR);									// 5
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_BANNED);								// 6
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_LIMITED);								// 7
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED);							// 8
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN);							// 9
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU);					// 10
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER);					// 11
 
 	// CHAT STEAM ID INSTANCE FLAGS /////////////
 	BIND_CONSTANT(CHAT_ACCOUNT_INSTANCE_MASK);											// 0X00000FFF
@@ -12116,208 +12176,208 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_INSTANCE_FLAG_MMS_LOBBY);										// ((k_unSteamAccountInstanceMask + 1) >> 3)
 
 	// DENY REASON //////////////////////////////
-	BIND_CONSTANT(DENY_INVALID);														// 0
-	BIND_CONSTANT(DENY_INVALID_VERSION);												// 1
-	BIND_CONSTANT(DENY_GENERIC);														// 2
-	BIND_CONSTANT(DENY_NOT_LOGGED_ON);													// 3
-	BIND_CONSTANT(DENY_NO_LICENSE);														// 4
-	BIND_CONSTANT(DENY_CHEATER);														// 5
-	BIND_CONSTANT(DENY_LOGGED_IN_ELSEWHERE);											// 6
-	BIND_CONSTANT(DENY_UNKNOWN_TEXT);													// 7
-	BIND_CONSTANT(DENY_INCOMPATIBLE_ANTI_CHEAT);										// 8
-	BIND_CONSTANT(DENY_MEMORY_CORRUPTION);												// 9
-	BIND_CONSTANT(DENY_INCOMPATIBLE_SOFTWARE);											// 10
-	BIND_CONSTANT(DENY_STEAM_CONNECTION_LOST);											// 11
-	BIND_CONSTANT(DENY_STEAM_CONNECTION_ERROR);											// 12
-	BIND_CONSTANT(DENY_STEAM_RESPONSE_TIMED_OUT);										// 13
-	BIND_CONSTANT(DENY_STEAM_VALIDATION_STALLED);										// 14
-	BIND_CONSTANT(DENY_STEAM_OWNER_LEFT_GUEST_USER);									// 15
+	BIND_ENUM_CONSTANT(DENY_INVALID);													// 0
+	BIND_ENUM_CONSTANT(DENY_INVALID_VERSION);											// 1
+	BIND_ENUM_CONSTANT(DENY_GENERIC);													// 2
+	BIND_ENUM_CONSTANT(DENY_NOT_LOGGED_ON);												// 3
+	BIND_ENUM_CONSTANT(DENY_NO_LICENSE);												// 4
+	BIND_ENUM_CONSTANT(DENY_CHEATER);													// 5
+	BIND_ENUM_CONSTANT(DENY_LOGGED_IN_ELSEWHERE);										// 6
+	BIND_ENUM_CONSTANT(DENY_UNKNOWN_TEXT);												// 7
+	BIND_ENUM_CONSTANT(DENY_INCOMPATIBLE_ANTI_CHEAT);									// 8
+	BIND_ENUM_CONSTANT(DENY_MEMORY_CORRUPTION);											// 9
+	BIND_ENUM_CONSTANT(DENY_INCOMPATIBLE_SOFTWARE);										// 10
+	BIND_ENUM_CONSTANT(DENY_STEAM_CONNECTION_LOST);										// 11
+	BIND_ENUM_CONSTANT(DENY_STEAM_CONNECTION_ERROR);									// 12
+	BIND_ENUM_CONSTANT(DENY_STEAM_RESPONSE_TIMED_OUT);									// 13
+	BIND_ENUM_CONSTANT(DENY_STEAM_VALIDATION_STALLED);									// 14
+	BIND_ENUM_CONSTANT(DENY_STEAM_OWNER_LEFT_GUEST_USER);								// 15
 
 	// GAME ID TYPE /////////////////////////////
-	BIND_CONSTANT(GAME_TYPE_APP);														// 0
-	BIND_CONSTANT(GAME_TYPE_GAME_MOD);													// 1
-	BIND_CONSTANT(GAME_TYPE_SHORTCUT);													// 2
-	BIND_CONSTANT(GAME_TYPE_P2P);														// 3
+	BIND_ENUM_CONSTANT(GAME_TYPE_APP);													// 0
+	BIND_ENUM_CONSTANT(GAME_TYPE_GAME_MOD);												// 1
+	BIND_ENUM_CONSTANT(GAME_TYPE_SHORTCUT);												// 2
+	BIND_ENUM_CONSTANT(GAME_TYPE_P2P);													// 3
 
 	// LAUNCH OPTION TYPE ///////////////////////
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_NONE);												// 0
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_DEFAULT);											// 1
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_SAFE_MODE);										// 2
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_MULTIPLAYER);										// 3
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_CONFIG);											// 4
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR);											// 5
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_SERVER);											// 6
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_EDITOR);											// 7
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_MANUAL);											// 8
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_BENCHMARK);										// 9
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OPTION1);											// 10
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OPTION2);											// 11
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OPTION3);											// 12
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OCULUS_VR);										// 13
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY);									// 14
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_OS_VR);											// 15
-	BIND_CONSTANT(LAUNCH_OPTION_TYPE_DIALOG);											// 1000
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_NONE);										// 0
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_DEFAULT);										// 1
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_SAFE_MODE);									// 2
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_MULTIPLAYER);									// 3
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_CONFIG);										// 4
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR);										// 5
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_SERVER);										// 6
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_EDITOR);										// 7
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_MANUAL);										// 8
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_BENCHMARK);									// 9
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPTION1);										// 10
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPTION2);										// 11
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPTION3);										// 12
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OCULUS_VR);									// 13
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY);								// 14
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OS_VR);										// 15
+	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_DIALOG);										// 1000
 
 	// NOTIFICATION POSITION ////////////////////
-	BIND_CONSTANT(POSITION_TOP_LEFT);													// 0
-	BIND_CONSTANT(POSITION_TOP_RIGHT);													// 1
-	BIND_CONSTANT(POSITION_BOTTOM_LEFT);												// 2
-	BIND_CONSTANT(POSITION_BOTTOM_RIGHT);												// 3
+	BIND_ENUM_CONSTANT(POSITION_TOP_LEFT);												// 0
+	BIND_ENUM_CONSTANT(POSITION_TOP_RIGHT);												// 1
+	BIND_ENUM_CONSTANT(POSITION_BOTTOM_LEFT);											// 2
+	BIND_ENUM_CONSTANT(POSITION_BOTTOM_RIGHT);											// 3
 
 	// RESULT ///////////////////////////////////
-	BIND_CONSTANT(RESULT_OK);															// 1
-	BIND_CONSTANT(RESULT_FAIL);															// 2
-	BIND_CONSTANT(RESULT_NO_CONNECTION);												// 3
-	BIND_CONSTANT(RESULT_INVALID_PASSWORD);												// 5
-	BIND_CONSTANT(RESULT_LOGGED_IN_ELSEWHERE);											// 6
-	BIND_CONSTANT(RESULT_INVALID_PROTOCOL_VER);											// 7
-	BIND_CONSTANT(RESULT_INVALID_PARAM);												// 8
-	BIND_CONSTANT(RESULT_FILE_NOT_FOUND);												// 9
-	BIND_CONSTANT(RESULT_BUSY);															// 10
-	BIND_CONSTANT(RESULT_INVALID_STATE);												// 11
-	BIND_CONSTANT(RESULT_INVALID_NAME);													// 12
-	BIND_CONSTANT(RESULT_INVALID_EMAIL);												// 13
-	BIND_CONSTANT(RESULT_DUPLICATE_NAME);												// 14
-	BIND_CONSTANT(RESULT_ACCESS_DENIED);												// 15
-	BIND_CONSTANT(RESULT_TIMEOUT);														// 16
-	BIND_CONSTANT(RESULT_BANNED);														// 17
-	BIND_CONSTANT(RESULT_ACCOUNT_NOT_FOUND);											// 18
-	BIND_CONSTANT(RESULT_INVALID_STEAM_ID);												// 19
-	BIND_CONSTANT(RESULT_SERVICE_UNAVAILABLE);											// 20
-	BIND_CONSTANT(RESULT_NOT_LOGGED_ON);												// 21
-	BIND_CONSTANT(RESULT_PENDING);														// 22
-	BIND_CONSTANT(RESULT_ENCRYPTION_FAILURE);											// 23
-	BIND_CONSTANT(RESULT_INSUFFICIENT_PRIVILEGE);										// 24
-	BIND_CONSTANT(RESULT_LIMIT_EXCEEDED);												// 25
-	BIND_CONSTANT(RESULT_REVOKED);														// 26
-	BIND_CONSTANT(RESULT_EXPIRED);														// 27
-	BIND_CONSTANT(RESULT_ALREADY_REDEEMED);												// 28
-	BIND_CONSTANT(RESULT_DUPLICATE_REQUEST);											// 29
-	BIND_CONSTANT(RESULT_ALREADY_OWNED);												// 30
-	BIND_CONSTANT(RESULT_IP_NOT_FOUND);													// 31
-	BIND_CONSTANT(RESULT_PERSIST_FAILED);												// 32
-	BIND_CONSTANT(RESULT_LOCKING_FAILED);												// 33
-	BIND_CONSTANT(RESULT_LOG_ON_SESSION_REPLACED);										// 34
-	BIND_CONSTANT(RESULT_CONNECT_FAILED);												// 35
-	BIND_CONSTANT(RESULT_HANDSHAKE_FAILED);												// 36
-	BIND_CONSTANT(RESULT_IO_FAILURE);													// 37
-	BIND_CONSTANT(RESULT_REMOTE_DISCONNECT);											// 38
-	BIND_CONSTANT(RESULT_SHOPPING_CART_NOT_FOUND);										// 39
-	BIND_CONSTANT(RESULT_BLOCKED);														// 40
-	BIND_CONSTANT(RESULT_IGNORED);														// 41
-	BIND_CONSTANT(RESULT_NO_MATCH);														// 42
-	BIND_CONSTANT(RESULT_ACCOUNT_DISABLED);												// 43
-	BIND_CONSTANT(RESULT_SERVICE_READ_ONLY);											// 44
-	BIND_CONSTANT(RESULT_ACCOUNT_NOT_FEATURED);											// 45
-	BIND_CONSTANT(RESULT_ADMINISTRATOR_OK);												// 46
-	BIND_CONSTANT(RESULT_CONTENT_VERSION);												// 47
-	BIND_CONSTANT(RESULT_TRY_ANOTHER_CM);												// 48
-	BIND_CONSTANT(RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION);							// 49
-	BIND_CONSTANT(RESULT_ALREADY_LOGGED_IN_ELSEWHERE);									// 50
-	BIND_CONSTANT(RESULT_SUSPENDED);													// 51
-	BIND_CONSTANT(RESULT_CANCELLED);													// 52
-	BIND_CONSTANT(RESULT_DATA_CORRUPTION);												// 53
-	BIND_CONSTANT(RESULT_DISK_FULL);													// 54
-	BIND_CONSTANT(RESULT_REMOTE_CALL_FAILED);											// 55
-	BIND_CONSTANT(RESULT_PASSWORD_UNSET);												// 56
-	BIND_CONSTANT(RESULT_EXTERNAL_ACCOUNT_UNLINKED);									// 57
-	BIND_CONSTANT(RESULT_PSN_TICKET_INVALID);											// 58
-	BIND_CONSTANT(RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED);								// 59
-	BIND_CONSTANT(RESULT_REMOTE_FILE_CONFLICT);											// 60
-	BIND_CONSTANT(RESULT_ILLEGAL_PASSWORD);												// 61
-	BIND_CONSTANT(RESULT_SAME_AS_PREVIOUS_VALUE);										// 62
-	BIND_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED);										// 63
-	BIND_CONSTANT(RESULT_CANNOT_USE_OLD_PASSWORD);										// 64
-	BIND_CONSTANT(RESULT_INVALID_LOGIN_AUTH_CODE);										// 65
-	BIND_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_NO_MAIL);								// 66
-	BIND_CONSTANT(RESULT_HARDWARE_NOT_CAPABLE_OF_IPT);									// 67
-	BIND_CONSTANT(RESULT_IPT_INIT_ERROR);												// 68
-	BIND_CONSTANT(RESULT_PARENTAL_CONTROL_RESTRICTED);									// 69
-	BIND_CONSTANT(RESULT_FACEBOOK_QUERY_ERROR);											// 70
-	BIND_CONSTANT(RESULT_EXPIRED_LOGIN_AUTH_CODE);										// 71
-	BIND_CONSTANT(RESULT_IP_LOGIN_RESTRICTION_FAILED);									// 72
-	BIND_CONSTANT(RESULT_ACCOUNT_LOCKED_DOWN);											// 73
-	BIND_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_VERIFIED_EMAIL_REQUIRED);				// 74
-	BIND_CONSTANT(RESULT_NO_MATCHING_URL);												// 75
-	BIND_CONSTANT(RESULT_BAD_RESPONSE);													// 76
-	BIND_CONSTANT(RESULT_REQUIRE_PASSWORD_REENTRY);										// 77
-	BIND_CONSTANT(RESULT_VALUE_OUT_OF_RANGE);											// 78
-	BIND_CONSTANT(RESULT_UNEXPECTED_ERROR);												// 79
-	BIND_CONSTANT(RESULT_DISABLED);														// 80
-	BIND_CONSTANT(RESULT_INVALID_CEG_SUBMISSION);										// 81
-	BIND_CONSTANT(RESULT_RESTRICTED_DEVICE);											// 82
-	BIND_CONSTANT(RESULT_REGION_LOCKED);												// 83
-	BIND_CONSTANT(RESULT_RATE_LIMIT_EXCEEDED);											// 84
-	BIND_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR);							// 85
-	BIND_CONSTANT(RESULT_ITEM_DELETED);													// 86
-	BIND_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE);								// 87
-	BIND_CONSTANT(RESULT_TWO_FACTOR_CODE_MISMATCH);										// 88
-	BIND_CONSTANT(RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH);							// 89
-	BIND_CONSTANT(RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS);						// 90
-	BIND_CONSTANT(RESULT_NOT_MODIFIED);													// 91
-	BIND_CONSTANT(RESULT_NO_MOBILE_DEVICE);												// 92
-	BIND_CONSTANT(RESULT_TIME_NOT_SYNCED);												// 93
-	BIND_CONSTANT(RESULT_SMS_CODE_FAILED);												// 94
-	BIND_CONSTANT(RESULT_ACCOUNT_LIMIT_EXCEEDED);										// 95
-	BIND_CONSTANT(RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED);								// 96
-	BIND_CONSTANT(RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED);								// 97
-	BIND_CONSTANT(RESULT_REFUND_TO_WALLET);												// 98
-	BIND_CONSTANT(RESULT_EMAIL_SEND_FAILURE);											// 99
-	BIND_CONSTANT(RESULT_NOT_SETTLED);													// 100
-	BIND_CONSTANT(RESULT_NEED_CAPTCHA);													// 101
-	BIND_CONSTANT(RESULT_GSLT_DENIED);													// 102
-	BIND_CONSTANT(RESULT_GS_OWNER_DENIED);												// 103
-	BIND_CONSTANT(RESULT_INVALID_ITEM_TYPE);											// 104
-	BIND_CONSTANT(RESULT_IP_BANNED);													// 105
-	BIND_CONSTANT(RESULT_GSLT_EXPIRED);													// 106
-	BIND_CONSTANT(RESULT_INSUFFICIENT_FUNDS);											// 107
-	BIND_CONSTANT(RESULT_TOO_MANY_PENDING);												// 108
+	BIND_ENUM_CONSTANT(RESULT_OK);														// 1
+	BIND_ENUM_CONSTANT(RESULT_FAIL);													// 2
+	BIND_ENUM_CONSTANT(RESULT_NO_CONNECTION);											// 3
+	BIND_ENUM_CONSTANT(RESULT_INVALID_PASSWORD);										// 5
+	BIND_ENUM_CONSTANT(RESULT_LOGGED_IN_ELSEWHERE);										// 6
+	BIND_ENUM_CONSTANT(RESULT_INVALID_PROTOCOL_VER);									// 7
+	BIND_ENUM_CONSTANT(RESULT_INVALID_PARAM);											// 8
+	BIND_ENUM_CONSTANT(RESULT_FILE_NOT_FOUND);											// 9
+	BIND_ENUM_CONSTANT(RESULT_BUSY);													// 10
+	BIND_ENUM_CONSTANT(RESULT_INVALID_STATE);											// 11
+	BIND_ENUM_CONSTANT(RESULT_INVALID_NAME);											// 12
+	BIND_ENUM_CONSTANT(RESULT_INVALID_EMAIL);											// 13
+	BIND_ENUM_CONSTANT(RESULT_DUPLICATE_NAME);											// 14
+	BIND_ENUM_CONSTANT(RESULT_ACCESS_DENIED);											// 15
+	BIND_ENUM_CONSTANT(RESULT_TIMEOUT);													// 16
+	BIND_ENUM_CONSTANT(RESULT_BANNED);													// 17
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FOUND);										// 18
+	BIND_ENUM_CONSTANT(RESULT_INVALID_STEAM_ID);										// 19
+	BIND_ENUM_CONSTANT(RESULT_SERVICE_UNAVAILABLE);										// 20
+	BIND_ENUM_CONSTANT(RESULT_NOT_LOGGED_ON);											// 21
+	BIND_ENUM_CONSTANT(RESULT_PENDING);													// 22
+	BIND_ENUM_CONSTANT(RESULT_ENCRYPTION_FAILURE);										// 23
+	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_PRIVILEGE);									// 24
+	BIND_ENUM_CONSTANT(RESULT_LIMIT_EXCEEDED);											// 25
+	BIND_ENUM_CONSTANT(RESULT_REVOKED);													// 26
+	BIND_ENUM_CONSTANT(RESULT_EXPIRED);													// 27
+	BIND_ENUM_CONSTANT(RESULT_ALREADY_REDEEMED);										// 28
+	BIND_ENUM_CONSTANT(RESULT_DUPLICATE_REQUEST);										// 29
+	BIND_ENUM_CONSTANT(RESULT_ALREADY_OWNED);											// 30
+	BIND_ENUM_CONSTANT(RESULT_IP_NOT_FOUND);											// 31
+	BIND_ENUM_CONSTANT(RESULT_PERSIST_FAILED);											// 32
+	BIND_ENUM_CONSTANT(RESULT_LOCKING_FAILED);											// 33
+	BIND_ENUM_CONSTANT(RESULT_LOG_ON_SESSION_REPLACED);									// 34
+	BIND_ENUM_CONSTANT(RESULT_CONNECT_FAILED);											// 35
+	BIND_ENUM_CONSTANT(RESULT_HANDSHAKE_FAILED);										// 36
+	BIND_ENUM_CONSTANT(RESULT_IO_FAILURE);												// 37
+	BIND_ENUM_CONSTANT(RESULT_REMOTE_DISCONNECT);										// 38
+	BIND_ENUM_CONSTANT(RESULT_SHOPPING_CART_NOT_FOUND);									// 39
+	BIND_ENUM_CONSTANT(RESULT_BLOCKED);													// 40
+	BIND_ENUM_CONSTANT(RESULT_IGNORED);													// 41
+	BIND_ENUM_CONSTANT(RESULT_NO_MATCH);												// 42
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_DISABLED);										// 43
+	BIND_ENUM_CONSTANT(RESULT_SERVICE_READ_ONLY);										// 44
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FEATURED);									// 45
+	BIND_ENUM_CONSTANT(RESULT_ADMINISTRATOR_OK);										// 46
+	BIND_ENUM_CONSTANT(RESULT_CONTENT_VERSION);											// 47
+	BIND_ENUM_CONSTANT(RESULT_TRY_ANOTHER_CM);											// 48
+	BIND_ENUM_CONSTANT(RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION);						// 49
+	BIND_ENUM_CONSTANT(RESULT_ALREADY_LOGGED_IN_ELSEWHERE);								// 50
+	BIND_ENUM_CONSTANT(RESULT_SUSPENDED);												// 51
+	BIND_ENUM_CONSTANT(RESULT_CANCELLED);												// 52
+	BIND_ENUM_CONSTANT(RESULT_DATA_CORRUPTION);											// 53
+	BIND_ENUM_CONSTANT(RESULT_DISK_FULL);												// 54
+	BIND_ENUM_CONSTANT(RESULT_REMOTE_CALL_FAILED);										// 55
+	BIND_ENUM_CONSTANT(RESULT_PASSWORD_UNSET);											// 56
+	BIND_ENUM_CONSTANT(RESULT_EXTERNAL_ACCOUNT_UNLINKED);								// 57
+	BIND_ENUM_CONSTANT(RESULT_PSN_TICKET_INVALID);										// 58
+	BIND_ENUM_CONSTANT(RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED);							// 59
+	BIND_ENUM_CONSTANT(RESULT_REMOTE_FILE_CONFLICT);									// 60
+	BIND_ENUM_CONSTANT(RESULT_ILLEGAL_PASSWORD);										// 61
+	BIND_ENUM_CONSTANT(RESULT_SAME_AS_PREVIOUS_VALUE);									// 62
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED);									// 63
+	BIND_ENUM_CONSTANT(RESULT_CANNOT_USE_OLD_PASSWORD);									// 64
+	BIND_ENUM_CONSTANT(RESULT_INVALID_LOGIN_AUTH_CODE);									// 65
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_NO_MAIL);							// 66
+	BIND_ENUM_CONSTANT(RESULT_HARDWARE_NOT_CAPABLE_OF_IPT);								// 67
+	BIND_ENUM_CONSTANT(RESULT_IPT_INIT_ERROR);											// 68
+	BIND_ENUM_CONSTANT(RESULT_PARENTAL_CONTROL_RESTRICTED);								// 69
+	BIND_ENUM_CONSTANT(RESULT_FACEBOOK_QUERY_ERROR);									// 70
+	BIND_ENUM_CONSTANT(RESULT_EXPIRED_LOGIN_AUTH_CODE);									// 71
+	BIND_ENUM_CONSTANT(RESULT_IP_LOGIN_RESTRICTION_FAILED);								// 72
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOCKED_DOWN);										// 73
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_VERIFIED_EMAIL_REQUIRED);			// 74
+	BIND_ENUM_CONSTANT(RESULT_NO_MATCHING_URL);											// 75
+	BIND_ENUM_CONSTANT(RESULT_BAD_RESPONSE);											// 76
+	BIND_ENUM_CONSTANT(RESULT_REQUIRE_PASSWORD_REENTRY);								// 77
+	BIND_ENUM_CONSTANT(RESULT_VALUE_OUT_OF_RANGE);										// 78
+	BIND_ENUM_CONSTANT(RESULT_UNEXPECTED_ERROR);										// 79
+	BIND_ENUM_CONSTANT(RESULT_DISABLED);												// 80
+	BIND_ENUM_CONSTANT(RESULT_INVALID_CEG_SUBMISSION);									// 81
+	BIND_ENUM_CONSTANT(RESULT_RESTRICTED_DEVICE);										// 82
+	BIND_ENUM_CONSTANT(RESULT_REGION_LOCKED);											// 83
+	BIND_ENUM_CONSTANT(RESULT_RATE_LIMIT_EXCEEDED);										// 84
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR);					// 85
+	BIND_ENUM_CONSTANT(RESULT_ITEM_DELETED);											// 86
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE);							// 87
+	BIND_ENUM_CONSTANT(RESULT_TWO_FACTOR_CODE_MISMATCH);								// 88
+	BIND_ENUM_CONSTANT(RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH);						// 89
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS);					// 90
+	BIND_ENUM_CONSTANT(RESULT_NOT_MODIFIED);											// 91
+	BIND_ENUM_CONSTANT(RESULT_NO_MOBILE_DEVICE);										// 92
+	BIND_ENUM_CONSTANT(RESULT_TIME_NOT_SYNCED);											// 93
+	BIND_ENUM_CONSTANT(RESULT_SMS_CODE_FAILED);											// 94
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LIMIT_EXCEEDED);									// 95
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED);							// 96
+	BIND_ENUM_CONSTANT(RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED);							// 97
+	BIND_ENUM_CONSTANT(RESULT_REFUND_TO_WALLET);										// 98
+	BIND_ENUM_CONSTANT(RESULT_EMAIL_SEND_FAILURE);										// 99
+	BIND_ENUM_CONSTANT(RESULT_NOT_SETTLED);												// 100
+	BIND_ENUM_CONSTANT(RESULT_NEED_CAPTCHA);											// 101
+	BIND_ENUM_CONSTANT(RESULT_GSLT_DENIED);												// 102
+	BIND_ENUM_CONSTANT(RESULT_GS_OWNER_DENIED);											// 103
+	BIND_ENUM_CONSTANT(RESULT_INVALID_ITEM_TYPE);										// 104
+	BIND_ENUM_CONSTANT(RESULT_IP_BANNED);												// 105
+	BIND_ENUM_CONSTANT(RESULT_GSLT_EXPIRED);											// 106
+	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_FUNDS);										// 107
+	BIND_ENUM_CONSTANT(RESULT_TOO_MANY_PENDING);										// 108
 
 	// UNIVERSE /////////////////////////////////
-	BIND_CONSTANT(UNIVERSE_INVALID);													// 0
-	BIND_CONSTANT(UNIVERSE_PUBLIC);														// 1
-	BIND_CONSTANT(UNIVERSE_BETA);														// 2
-	BIND_CONSTANT(UNIVERSE_INTERNAL);													// 3
-	BIND_CONSTANT(UNIVERSE_DEV);														// 4
-	BIND_CONSTANT(UNIVERSE_MAX);														// 5
+	BIND_ENUM_CONSTANT(UNIVERSE_INVALID);												// 0
+	BIND_ENUM_CONSTANT(UNIVERSE_PUBLIC);												// 1
+	BIND_ENUM_CONSTANT(UNIVERSE_BETA);													// 2
+	BIND_ENUM_CONSTANT(UNIVERSE_INTERNAL);												// 3
+	BIND_ENUM_CONSTANT(UNIVERSE_DEV);													// 4
+	BIND_ENUM_CONSTANT(UNIVERSE_MAX);													// 5
 
 	// USER HAS LICENSE FOR APP RESULT //////////
-	BIND_CONSTANT(USER_HAS_LICENSE_RESULT_HAS_LICENSE);									// 0
-	BIND_CONSTANT(USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE);						// 1
-	BIND_CONSTANT(USER_HAS_LICENSE_RESULT_NO_AUTH);										// 2
+	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_HAS_LICENSE);							// 0
+	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE);					// 1
+	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_NO_AUTH);								// 2
 
 	// VOICE RESULT /////////////////////////////
-	BIND_CONSTANT(VOICE_RESULT_OK);														// 0
-	BIND_CONSTANT(VOICE_RESULT_NOT_INITIALIZED);										// 1
-	BIND_CONSTANT(VOICE_RESULT_NOT_RECORDING);											// 2
-	BIND_CONSTANT(VOICE_RESULT_NO_DATE);												// 3
-	BIND_CONSTANT(VOICE_RESULT_BUFFER_TOO_SMALL);										// 4
-	BIND_CONSTANT(VOICE_RESULT_DATA_CORRUPTED);											// 5
-	BIND_CONSTANT(VOICE_RESULT_RESTRICTED);												// 6
+	BIND_ENUM_CONSTANT(VOICE_RESULT_OK);												// 0
+	BIND_ENUM_CONSTANT(VOICE_RESULT_NOT_INITIALIZED);									// 1
+	BIND_ENUM_CONSTANT(VOICE_RESULT_NOT_RECORDING);										// 2
+	BIND_ENUM_CONSTANT(VOICE_RESULT_NO_DATE);											// 3
+	BIND_ENUM_CONSTANT(VOICE_RESULT_BUFFER_TOO_SMALL);									// 4
+	BIND_ENUM_CONSTANT(VOICE_RESULT_DATA_CORRUPTED);									// 5
+	BIND_ENUM_CONSTANT(VOICE_RESULT_RESTRICTED);										// 6
 
 	// VR HMD TYPE
-	BIND_CONSTANT(VR_HMD_TYPE_NONE);													// -1
-	BIND_CONSTANT(VR_HMD_TYPE_UNKNOWN);													// 0
-	BIND_CONSTANT(VR_HMD_TYPE_HTC_DEV);													// 1
-	BIND_CONSTANT(VR_HMD_TYPE_HTC_VIVEPRE);												// 2
-	BIND_CONSTANT(VR_HMD_TYPE_HTC_VIVE);												// 3
-	BIND_CONSTANT(VR_HMD_TYPE_HTC_UNKNOWN);												// 20
-	BIND_CONSTANT(VR_HMD_TYPE_OCULUS_DK1);												// 21
-	BIND_CONSTANT(VR_HMD_TYPE_OCULUS_DK2);												// 22
-	BIND_CONSTANT(VR_HMD_TYPE_OCULUS_RIFT);												// 23
-	BIND_CONSTANT(VR_HMD_TYPE_OCULUS_UNKNOWN);											// 40
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_NONE);												// -1
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_UNKNOWN);											// 0
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_DEV);											// 1
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_VIVEPRE);										// 2
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_VIVE);											// 3
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_UNKNOWN);										// 20
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_DK1);											// 21
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_DK2);											// 22
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_RIFT);										// 23
+	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_UNKNOWN);										// 40
 
 	// REGISTER ACTIVATION CODE RESULTS//////////
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_OK);											// 0
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_FAIL);											// 1
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_REGISTERED);							// 2
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_TIMEOUT);										// 3
-	BIND_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_OWNED);								// 4
+	BIND_ENUM_CONSTANT(ACTIVATION_CODE_RESULT_OK);										// 0
+	BIND_ENUM_CONSTANT(ACTIVATION_CODE_RESULT_FAIL);									// 1
+	BIND_ENUM_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_REGISTERED);						// 2
+	BIND_ENUM_CONSTANT(ACTIVATION_CODE_RESULT_TIMEOUT);									// 3
+	BIND_ENUM_CONSTANT(ACTIVATION_CODE_RESULT_ALREADY_OWNED);							// 4
 
 	// AVATAR ///////////////////////////////////
-	BIND_CONSTANT(AVATAR_SMALL);														// 1
-	BIND_CONSTANT(AVATAR_MEDIUM);														// 2
-	BIND_CONSTANT(AVATAR_LARGE);														// 3
+	BIND_ENUM_CONSTANT(AVATAR_SMALL);													// 1
+	BIND_ENUM_CONSTANT(AVATAR_MEDIUM);													// 2
+	BIND_ENUM_CONSTANT(AVATAR_LARGE);													// 3
 
 	// FRIEND FLAGS ENUM ////////////////////////
 	BIND_CONSTANT(FRIEND_FLAG_NONE);													// 0X00
@@ -12334,24 +12394,24 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(FRIEND_FLAG_ALL);														// 0XFFFF
 
 	// FRIEND RELATIONSHIP //////////////////////
-	BIND_CONSTANT(FRIEND_RELATION_NONE);												// 0
-	BIND_CONSTANT(FRIEND_RELATION_BLOCKED);												// 1
-	BIND_CONSTANT(FRIEND_RELATION_REQUEST_RECIPIENT);									// 2
-	BIND_CONSTANT(FRIEND_RELATION_FRIEND);												// 3
-	BIND_CONSTANT(FRIEND_RELATION_REQUEST_INITIATOR);									// 4
-	BIND_CONSTANT(FRIEND_RELATION_IGNORED);												// 5
-	BIND_CONSTANT(FRIEND_RELATION_IGNORED_FRIEND);										// 6
-	BIND_CONSTANT(FRIEND_RELATION_SUGGESTED);											// 7
-	BIND_CONSTANT(FRIEND_RELATION_MAX);													// 8
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_NONE);											// 0
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_BLOCKED);										// 1
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_REQUEST_RECIPIENT);								// 2
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_FRIEND);											// 3
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_REQUEST_INITIATOR);								// 4
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_IGNORED);										// 5
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_IGNORED_FRIEND);									// 6
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_SUGGESTED);										// 7
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_MAX);											// 8
 
 	// OVERLAY TO STORE FLAG ////////////////////
-	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);											// 0
-	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);									// 1
-	BIND_CONSTANT(OVERLAY_TO_STORE_FLAG_AND_TO_CART_AND_SHOW);							// 2
+	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);										// 0
+	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);								// 1
+	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_AND_TO_CART_AND_SHOW);						// 2
 
 	// OVERLAY TO WEB PAGE MODE /////////////////
-	BIND_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_DEFAULT);									// 0
-	BIND_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_MODAL);										// 1
+	BIND_ENUM_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_DEFAULT);								// 0
+	BIND_ENUM_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_MODAL);									// 1
 
 	// PERSONA CHANGE ///////////////////////////
 	BIND_CONSTANT(PERSONA_CHANGE_NAME);													// 0X0001
@@ -12370,14 +12430,14 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(PERSONA_CHANGE_STEAM_LEVEL);											// 0X2000
 
 	// PERSONA STATE ////////////////////////////
-	BIND_CONSTANT(PERSONA_STATE_OFFLINE);												// 0
-	BIND_CONSTANT(PERSONA_STATE_ONLINE);												// 1
-	BIND_CONSTANT(PERSONA_STATE_BUSY);													// 2
-	BIND_CONSTANT(PERSONA_STATE_AWAY);													// 3
-	BIND_CONSTANT(PERSONA_STATE_SNOOZE);												// 4
-	BIND_CONSTANT(PERSONA_STATE_LOOKING_TO_TRADE);										// 5
-	BIND_CONSTANT(PERSONA_STATE_LOOKING_TO_PLAY);										// 6
-	BIND_CONSTANT(PERSONA_STATE_MAX);													// 7
+	BIND_ENUM_CONSTANT(PERSONA_STATE_OFFLINE);											// 0
+	BIND_ENUM_CONSTANT(PERSONA_STATE_ONLINE);											// 1
+	BIND_ENUM_CONSTANT(PERSONA_STATE_BUSY);												// 2
+	BIND_ENUM_CONSTANT(PERSONA_STATE_AWAY);												// 3
+	BIND_ENUM_CONSTANT(PERSONA_STATE_SNOOZE);											// 4
+	BIND_ENUM_CONSTANT(PERSONA_STATE_LOOKING_TO_TRADE);									// 5
+	BIND_ENUM_CONSTANT(PERSONA_STATE_LOOKING_TO_PLAY);									// 6
+	BIND_ENUM_CONSTANT(PERSONA_STATE_MAX);												// 7
 
 	// USER RESTRICTION /////////////////////////
 	BIND_CONSTANT(USER_RESTRICTION_NONE);												// 0
@@ -12390,22 +12450,22 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(USER_RESTRICTION_TRADING);											// 64
 
 	// GAME SEARCH ERROR CODE ///////////////////
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_OK);											// 1
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS);					// 2
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS);						// 3
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER);								// 4
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE);							// 5
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID);						// 6
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_OFFLINE);										// 7
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED);								// 8
-	BIND_CONSTANT(GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR);								// 9
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_OK);										// 1
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS);				// 2
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS);					// 3
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER);						// 4
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE);						// 5
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID);					// 6
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_OFFLINE);									// 7
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED);							// 8
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR);							// 9
 
 	// GAME SEARCH PLAYER RESULT ////////////////
-	BIND_CONSTANT(PLAYER_RESULT_FAILED_TO_CONNECT);										// 1
-	BIND_CONSTANT(PLAYER_RESULT_ABANDONED);												// 2
-	BIND_CONSTANT(PLAYER_RESULT_KICKED);												// 3
-	BIND_CONSTANT(PLAYER_RESULT_INCOMPLETE);											// 4
-	BIND_CONSTANT(PLAYER_RESULT_COMPLETED);	
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_FAILED_TO_CONNECT);								// 1
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_ABANDONED);										// 2
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_KICKED);											// 3
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_INCOMPLETE);										// 4
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_COMPLETED);
 
 	// HTML KEY MODIFIERS ///////////////////////
 	BIND_CONSTANT(HTML_KEY_MODIFIER_NONE);												// 0
@@ -12414,510 +12474,510 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(HTML_KEY_MODIFIER_SHIFT_DOWN);										// (1<<2)
 
 	// HTML MOUSE BUTTON ////////////////////////
-	BIND_CONSTANT(HTML_MOUSE_BUTTON_LEFT);												// 0
-	BIND_CONSTANT(HTML_MOUSE_BUTTON_RIGHT);												// 1
-	BIND_CONSTANT(HTML_MOUSE_BUTTON_MIDDLE);											// 2
+	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_LEFT);											// 0
+	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_RIGHT);										// 1
+	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_MIDDLE);										// 2
 
 	// MOUSE CURSOR /////////////////////////////
-	BIND_CONSTANT(DC_USER);																// 0
-	BIND_CONSTANT(DC_NONE);																// 1
-	BIND_CONSTANT(DC_ARROW);															// 2
-	BIND_CONSTANT(DC_IBEAM);															// 3
-	BIND_CONSTANT(DC_HOUR_GLASS);														// 4
-	BIND_CONSTANT(DC_WAIT_ARROW);														// 5
-	BIND_CONSTANT(DC_CROSSHAIR);														// 6
-	BIND_CONSTANT(DC_UP);																// 7
-	BIND_CONSTANT(DC_SIZE_NW);															// 8
-	BIND_CONSTANT(DC_SIZE_SE);															// 9
-	BIND_CONSTANT(DC_SIZE_NE);															// 10
-	BIND_CONSTANT(DC_SIZE_SW);															// 11
-	BIND_CONSTANT(DC_SIZE_W);															// 12
-	BIND_CONSTANT(DC_SIZE_E);															// 13
-	BIND_CONSTANT(DC_SIZE_N);															// 14
-	BIND_CONSTANT(DC_SIZE_S);															// 15
-	BIND_CONSTANT(DC_SIZE_WE);															// 16
-	BIND_CONSTANT(DC_SIZE_NS);															// 17
-	BIND_CONSTANT(DC_SIZE_ALL);															// 18
-	BIND_CONSTANT(DC_NO);																// 19
-	BIND_CONSTANT(DC_HAND);																// 20
-	BIND_CONSTANT(DC_BLANK);															// 21
-	BIND_CONSTANT(DC_MIDDLE_PAN);														// 22
-	BIND_CONSTANT(DC_NORTH_PAN);														// 23
-	BIND_CONSTANT(DC_NORTH_EAST_PAN);													// 24
-	BIND_CONSTANT(DC_EAST_PAN);															// 25
-	BIND_CONSTANT(DC_SOUTH_EAST_PAN);													// 26
-	BIND_CONSTANT(DC_SOUTH_PAN);														// 27
-	BIND_CONSTANT(DC_SOUTH_WEST_PAN);													// 28
-	BIND_CONSTANT(DC_WEST_PAN);															// 29
-	BIND_CONSTANT(DC_NORTH_WEST_PAN);													// 30
-	BIND_CONSTANT(DC_ALIAS);															// 31
-	BIND_CONSTANT(DC_CELL);																// 32
-	BIND_CONSTANT(DC_COL_RESIZE);														// 33
-	BIND_CONSTANT(DC_COPY_CUR);															// 34
-	BIND_CONSTANT(DC_VERTICAL_TEXT);													// 35
-	BIND_CONSTANT(DC_ROW_RESIZE);														// 36
-	BIND_CONSTANT(DC_ZOOM_IN);															// 37
-	BIND_CONSTANT(DC_ZOOM_OUT);															// 38
-	BIND_CONSTANT(DC_HELP);																// 39
-	BIND_CONSTANT(DC_CUSTOM);															// 40
-	BIND_CONSTANT(DC_LAST);																// 41
+	BIND_ENUM_CONSTANT(DC_USER);														// 0
+	BIND_ENUM_CONSTANT(DC_NONE);														// 1
+	BIND_ENUM_CONSTANT(DC_ARROW);														// 2
+	BIND_ENUM_CONSTANT(DC_IBEAM);														// 3
+	BIND_ENUM_CONSTANT(DC_HOUR_GLASS);													// 4
+	BIND_ENUM_CONSTANT(DC_WAIT_ARROW);													// 5
+	BIND_ENUM_CONSTANT(DC_CROSSHAIR);													// 6
+	BIND_ENUM_CONSTANT(DC_UP);															// 7
+	BIND_ENUM_CONSTANT(DC_SIZE_NW);														// 8
+	BIND_ENUM_CONSTANT(DC_SIZE_SE);														// 9
+	BIND_ENUM_CONSTANT(DC_SIZE_NE);														// 10
+	BIND_ENUM_CONSTANT(DC_SIZE_SW);														// 11
+	BIND_ENUM_CONSTANT(DC_SIZE_W);														// 12
+	BIND_ENUM_CONSTANT(DC_SIZE_E);														// 13
+	BIND_ENUM_CONSTANT(DC_SIZE_N);														// 14
+	BIND_ENUM_CONSTANT(DC_SIZE_S);														// 15
+	BIND_ENUM_CONSTANT(DC_SIZE_WE);														// 16
+	BIND_ENUM_CONSTANT(DC_SIZE_NS);														// 17
+	BIND_ENUM_CONSTANT(DC_SIZE_ALL);													// 18
+	BIND_ENUM_CONSTANT(DC_NO);															// 19
+	BIND_ENUM_CONSTANT(DC_HAND);														// 20
+	BIND_ENUM_CONSTANT(DC_BLANK);														// 21
+	BIND_ENUM_CONSTANT(DC_MIDDLE_PAN);													// 22
+	BIND_ENUM_CONSTANT(DC_NORTH_PAN);													// 23
+	BIND_ENUM_CONSTANT(DC_NORTH_EAST_PAN);												// 24
+	BIND_ENUM_CONSTANT(DC_EAST_PAN);													// 25
+	BIND_ENUM_CONSTANT(DC_SOUTH_EAST_PAN);												// 26
+	BIND_ENUM_CONSTANT(DC_SOUTH_PAN);													// 27
+	BIND_ENUM_CONSTANT(DC_SOUTH_WEST_PAN);												// 28
+	BIND_ENUM_CONSTANT(DC_WEST_PAN);													// 29
+	BIND_ENUM_CONSTANT(DC_NORTH_WEST_PAN);												// 30
+	BIND_ENUM_CONSTANT(DC_ALIAS);														// 31
+	BIND_ENUM_CONSTANT(DC_CELL);														// 32
+	BIND_ENUM_CONSTANT(DC_COL_RESIZE);													// 33
+	BIND_ENUM_CONSTANT(DC_COPY_CUR);													// 34
+	BIND_ENUM_CONSTANT(DC_VERTICAL_TEXT);												// 35
+	BIND_ENUM_CONSTANT(DC_ROW_RESIZE);													// 36
+	BIND_ENUM_CONSTANT(DC_ZOOM_IN);														// 37
+	BIND_ENUM_CONSTANT(DC_ZOOM_OUT);													// 38
+	BIND_ENUM_CONSTANT(DC_HELP);														// 39
+	BIND_ENUM_CONSTANT(DC_CUSTOM);														// 40
+	BIND_ENUM_CONSTANT(DC_LAST);														// 41
 
 	// HTTP METHOD //////////////////////////////
-	BIND_CONSTANT(HTTP_METHOD_INVALID);													// 0
-	BIND_CONSTANT(HTTP_METHOD_GET);														// 1
-	BIND_CONSTANT(HTTP_METHOD_HEAD);													// 2
-	BIND_CONSTANT(HTTP_METHOD_POST);													// 3
-	BIND_CONSTANT(HTTP_METHOD_PUT);														// 4
-	BIND_CONSTANT(HTTP_METHOD_DELETE);													// 5
-	BIND_CONSTANT(HTTP_METHOD_OPTIONS);													// 6
-	BIND_CONSTANT(HTTP_METHOD_PATCH);													// 7
+	BIND_ENUM_CONSTANT(HTTP_METHOD_INVALID);											// 0
+	BIND_ENUM_CONSTANT(HTTP_METHOD_GET);												// 1
+	BIND_ENUM_CONSTANT(HTTP_METHOD_HEAD);												// 2
+	BIND_ENUM_CONSTANT(HTTP_METHOD_POST);												// 3
+	BIND_ENUM_CONSTANT(HTTP_METHOD_PUT);												// 4
+	BIND_ENUM_CONSTANT(HTTP_METHOD_DELETE);												// 5
+	BIND_ENUM_CONSTANT(HTTP_METHOD_OPTIONS);											// 6
+	BIND_ENUM_CONSTANT(HTTP_METHOD_PATCH);												// 7
 
 	// HTTP STATUS CODE /////////////////////////
-	BIND_CONSTANT(HTTP_STATUS_CODE_INVALID);											// 0
-	BIND_CONSTANT(HTTP_STATUS_CODE_100_CONTINUE);										// 100
-	BIND_CONSTANT(HTTP_STATUS_CODE_101_SWITCHING_PROTOCOLS);							// 101
-	BIND_CONSTANT(HTTP_STATUS_CODE_200_OK);												// 200
-	BIND_CONSTANT(HTTP_STATUS_CODE_201_CREATED);										// 201
-	BIND_CONSTANT(HTTP_STATUS_CODE_202_ACCEPTED);										// 202
-	BIND_CONSTANT(HTTP_STATUS_CODE_203_NON_AUTHORITATIVE);								// 203
-	BIND_CONSTANT(HTTP_STATUS_CODE_204_NO_CONTENT);										// 204
-	BIND_CONSTANT(HTTP_STATUS_CODE_205_RESET_CONTENT);									// 205
-	BIND_CONSTANT(HTTP_STATUS_CODE_206_PARTIAL_CONTENT);								// 206
-	BIND_CONSTANT(HTTP_STATUS_CODE_300_MULTIPLE_CHOICES);								// 300
-	BIND_CONSTANT(HTTP_STATUS_CODE_301_MOVED_PERMANENTLY);								// 301
-	BIND_CONSTANT(HTTP_STATUS_CODE_302_FOUND);											// 302
-	BIND_CONSTANT(HTTP_STATUS_CODE_303_SEE_OTHER);										// 303
-	BIND_CONSTANT(HTTP_STATUS_CODE_304_NOT_MODIFIED);									// 304
-	BIND_CONSTANT(HTTP_STATUS_CODE_305_USE_PROXY);										// 305
-	BIND_CONSTANT(HTTP_STATUS_CODE_307_TEMPORARY_REDIRECT);								// 307
-	BIND_CONSTANT(HTTP_STATUS_CODE_400_BAD_REQUEST);									// 400
-	BIND_CONSTANT(HTTP_STATUS_CODE_401_UNAUTHORIZED);									// 401
-	BIND_CONSTANT(HTTP_STATUS_CODE_402_PAYMENT_REQUIRED);								// 402
-	BIND_CONSTANT(HTTP_STATUS_CODE_403_FORBIDDEN);										// 403
-	BIND_CONSTANT(HTTP_STATUS_CODE_404_NOT_FOUND);										// 404
-	BIND_CONSTANT(HTTP_STATUS_CODE_405_METHOD_NOT_ALLOWED);								// 405
-	BIND_CONSTANT(HTTP_STATUS_CODE_406_NOT_ACCEPTABLE);									// 406
-	BIND_CONSTANT(HTTP_STATUS_CODE_407_PROXY_AUTH_REQUIRED);							// 407
-	BIND_CONSTANT(HTTP_STATUS_CODE_408_REQUEST_TIMEOUT);								// 408
-	BIND_CONSTANT(HTTP_STATUS_CODE_409_CONFLICT);										// 409
-	BIND_CONSTANT(HTTP_STATUS_CODE_410_GONE);											// 410
-	BIND_CONSTANT(HTTP_STATUS_CODE_411_LENGTH_REQUIRED);								// 411
-	BIND_CONSTANT(HTTP_STATUS_CODE_412_PRECONDITION_FAILED);							// 412
-	BIND_CONSTANT(HTTP_STATUS_CODE_413_REQUEST_ENTITY_TOO_LARGE);						// 413
-	BIND_CONSTANT(HTTP_STATUS_CODE_414_REQUEST_URI_TOO_LONG);							// 414
-	BIND_CONSTANT(HTTP_STATUS_CODE_415_UNSUPPORTED_MEDIA_TYPE);							// 415
-	BIND_CONSTANT(HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE);				// 416
-	BIND_CONSTANT(HTTP_STATUS_CODE_417_EXPECTATION_FAILED);								// 417
-	BIND_CONSTANT(HTTP_STATUS_CODE_4XX_UNKNOWN);										// 418
-	BIND_CONSTANT(HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS);								// 429
-	BIND_CONSTANT(HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR);							// 500
-	BIND_CONSTANT(HTTP_STATUS_CODE_501_NOT_IMPLEMENTED);								// 501
-	BIND_CONSTANT(HTTP_STATUS_CODE_502_BAD_GATEWAY);									// 502
-	BIND_CONSTANT(HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE);							// 503
-	BIND_CONSTANT(HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT);								// 504
-	BIND_CONSTANT(HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED);						// 505
-	BIND_CONSTANT(HTTP_STATUS_CODE_5XX_UNKNOWN);										// 599
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_INVALID);										// 0
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_100_CONTINUE);									// 100
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_101_SWITCHING_PROTOCOLS);						// 101
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_200_OK);										// 200
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_201_CREATED);									// 201
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_202_ACCEPTED);									// 202
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_203_NON_AUTHORITATIVE);							// 203
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_204_NO_CONTENT);								// 204
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_205_RESET_CONTENT);								// 205
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_206_PARTIAL_CONTENT);							// 206
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_300_MULTIPLE_CHOICES);							// 300
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_301_MOVED_PERMANENTLY);							// 301
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_302_FOUND);										// 302
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_303_SEE_OTHER);									// 303
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_304_NOT_MODIFIED);								// 304
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_305_USE_PROXY);									// 305
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_307_TEMPORARY_REDIRECT);						// 307
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_400_BAD_REQUEST);								// 400
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_401_UNAUTHORIZED);								// 401
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_402_PAYMENT_REQUIRED);							// 402
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_403_FORBIDDEN);									// 403
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_404_NOT_FOUND);									// 404
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_405_METHOD_NOT_ALLOWED);						// 405
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_406_NOT_ACCEPTABLE);							// 406
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_407_PROXY_AUTH_REQUIRED);						// 407
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_408_REQUEST_TIMEOUT);							// 408
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_409_CONFLICT);									// 409
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_410_GONE);										// 410
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_411_LENGTH_REQUIRED);							// 411
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_412_PRECONDITION_FAILED);						// 412
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_413_REQUEST_ENTITY_TOO_LARGE);					// 413
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_414_REQUEST_URI_TOO_LONG);						// 414
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_415_UNSUPPORTED_MEDIA_TYPE);					// 415
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE);			// 416
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_417_EXPECTATION_FAILED);						// 417
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_4XX_UNKNOWN);									// 418
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS);							// 429
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR);						// 500
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_501_NOT_IMPLEMENTED);							// 501
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_502_BAD_GATEWAY);								// 502
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE);						// 503
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT);							// 504
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED);				// 505
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_5XX_UNKNOWN);									// 599
 
 	// INPUT ACTION ORIGIN //////////////////////
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_NONE);											// 0
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_A);												// 1
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_B);												// 2
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_X);												// 3
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_Y);												// 4
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_BUMPER);										// 5
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_BUMPER);									// 6
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFTGRIP);										// 7
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHTGRIP);										// 8
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_START);											// 9
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_BACK);											// 10
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_TOUCH);									// 11
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_SWIPE);									// 12
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_CLICK);									// 13
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_NORTH);								// 14
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_SOUTH);								// 15
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_WEST);								// 16
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_EAST);								// 17
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_TOUCH);									// 18
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_SWIPE);									// 19
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_CLICK);									// 20
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_NORTH);							// 21
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_SOUTH);							// 22
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_WEST);								// 23
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_EAST);								// 24
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_TRIGGER_PULL);								// 25
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_TRIGGER_CLICK);								// 26
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_PULL);								// 27
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_CLICK);								// 28
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_MOVE);									// 29
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_CLICK);								// 30
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_NORTH);							// 31
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_SOUTH);							// 32
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_WEST);							// 33
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_EAST);							// 34
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_MOVE);										// 35
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_PITCH);										// 36
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_YAW);										// 37
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_ROLL);										// 38
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED0);						// 39
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED1);						// 40
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED2);						// 41
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED3);						// 42
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED4);						// 43
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED5);						// 44
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED6);						// 45
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED7);						// 46
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED8);						// 47
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED9);						// 48
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED10);						// 49
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_X);											// 50
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CIRCLE);										// 51
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_TRIANGLE);									// 52
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SQUARE);										// 53
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_BUMPER);									// 54
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_BUMPER);								// 55
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_OPTIONS);										// 56
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SHARE);										// 57
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_TOUCH);								// 58
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_SWIPE);								// 59
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_CLICK);								// 60
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_NORTH);							// 61
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_SOUTH);							// 62
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_WEST);							// 63
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_EAST);							// 64
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_TOUCH);								// 65
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_SWIPE);								// 66
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_CLICK);								// 67
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_NORTH);						// 68
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_SOUTH);						// 69
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_WEST);							// 70
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_EAST);							// 71
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_TOUCH);							// 72
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_SWIPE);							// 73
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_CLICK);							// 74
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_NORTH);						// 75
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_SOUTH);						// 76
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_WEST);						// 77
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_EAST);						// 78
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_PULL);							// 79
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_CLICK);							// 80
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_PULL);							// 81
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_CLICK);							// 82
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_MOVE);								// 83
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_CLICK);							// 84
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_NORTH);						// 85
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_SOUTH);						// 86
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_WEST);						// 87
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_EAST);						// 88
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_MOVE);							// 89
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_CLICK);							// 90
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_NORTH);						// 91
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_SOUTH);						// 92
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_WEST);						// 93
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_EAST);						// 94
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_NORTH);									// 95
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_SOUTH);									// 96
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_WEST);									// 97
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_EAST);									// 98
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_MOVE);									// 99
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_PITCH);									// 100
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_YAW);									// 101
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_ROLL);									// 102
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED0);									// 103
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED1);									// 104
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED2);									// 105
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED3);									// 106
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED4);									// 107
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED5);									// 108
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED6);									// 109
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED7);									// 110
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED8);									// 111
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED9);									// 112
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED10);									// 113
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_A);										// 114
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_B);										// 115
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_X);										// 116
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_Y);										// 117
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_BUMPER);							// 118
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_BUMPER);							// 119
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_MENU);									// 120
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_VIEW);									// 121
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_PULL);						// 122
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_CLICK);						// 123
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_PULL);						// 124
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_CLICK);					// 125
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_MOVE);						// 126
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_CLICK);						// 127
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_NORTH);					// 128
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_SOUTH);					// 129
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_WEST);					// 130
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_EAST);					// 131
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_MOVE);						// 132
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_CLICK);						// 133
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_NORTH);					// 134
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_SOUTH);					// 135
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_WEST);					// 136
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_EAST);					// 137
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_NORTH);								// 138
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_SOUTH);								// 139
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_WEST);								// 140
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_EAST);								// 141
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED0);								// 142
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED1);								// 143
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED2);								// 144
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED3);								// 145
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED4);								// 146
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED5);								// 147
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED6);								// 148
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED7);								// 149
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED8);								// 150
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED9);								// 151
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED10);								// 152
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_A);										// 153
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_B);										// 154
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_X);										// 155
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_Y);										// 156
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_BUMPER);							// 157
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_BUMPER);							// 158
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_START);									// 159
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_BACK);									// 160
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_PULL);						// 161
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_CLICK);						// 162
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_PULL);						// 163
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_CLICK);					// 164
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_MOVE);						// 165
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_CLICK);						// 166
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_NORTH);					// 167
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_SOUTH);					// 168
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_WEST);					// 169
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_EAST);					// 170
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_MOVE);						// 171
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_CLICK);						// 172
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_NORTH);					// 173
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_SOUTH);					// 174
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_WEST);					// 175
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_EAST);					// 176
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_NORTH);								// 177
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_SOUTH);								// 178
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_WEST);								// 179
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_EAST);								// 180
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED0);								// 181
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED1);								// 182
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED2);								// 183
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED3);								// 184
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED4);								// 185
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED5);								// 186
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED6);								// 187
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED7);								// 188
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED8);								// 189
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED9);								// 190
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED10);								// 191
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_A);										// 192
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_B);										// 193
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_X);										// 194
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_Y);										// 195
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_BUMPER);								// 196
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_BUMPER);								// 197
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PLUS);										// 198
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_MINUS);									// 199
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_CAPTURE);									// 200
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_PULL);						// 201
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_CLICK);						// 202
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_PULL);						// 203
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_CLICK);						// 204
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_MOVE);							// 205
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_CLICK);							// 206
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_NORTH);					// 207
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_SOUTH);					// 208
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_WEST);						// 209
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_EAST);						// 210
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_MOVE);							// 211
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_CLICK);						// 212
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_NORTH);					// 213
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_SOUTH);					// 214
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_WEST);					// 215
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_EAST);					// 216
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_NORTH);								// 217
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_SOUTH);								// 218
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_WEST);								// 219
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_EAST);								// 220
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_MOVE);							// 221
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_PITCH);							// 222
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_YAW);								// 223
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_ROLL);							// 224
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED0);								// 225
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED1);								// 226
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED2);								// 227
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED3);								// 228
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED4);								// 229
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED5);								// 230
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED6);								// 231
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED7);								// 232
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED8);								// 233
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED9);								// 234
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED10);								// 235
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_OPTION);										// 242
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CREATE);										// 243
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_MUTE);										// 244
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_TOUCH);								// 245
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_SWIPE);								// 246
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_CLICK);								// 247
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADNORTH);							// 248
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADSOUTH);							// 249
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADWEST);							// 250
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADEAST);							// 251
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_TOUCH);								// 252
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_SWIPE);								// 253
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_CLICK);								// 254
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADNORTH);							// 255
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADSOUTH);							// 256
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADWEST);							// 257
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADEAST);							// 258
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_TOUCH);								// 259
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_SWIPE);								// 260
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_CLICK);								// 261
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADNORTH);							// 262
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADSOUTH);							// 263
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADWEST);							// 264
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADEAST);							// 265
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_PULL);							// 266
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_CLICK);							// 267
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_PULL);							// 268
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_CLICK);							// 269
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_MOVE);								// 270
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_CLICK);								// 271
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADNORTH);							// 272
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADSOUTH);							// 273
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADWEST);							// 274
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADEAST);							// 275
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_MOVE);								// 276
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_CLICK);							// 277
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADNORTH);						// 278
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADSOUTH);						// 279
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADWEST);							// 280
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADEAST);							// 281
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_NORTH);									// 282
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_SOUTH);									// 283
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_WEST);									// 284
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_EAST);									// 285
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_MOVE);									// 286
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_PITCH);									// 287
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_YAW);									// 288
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_ROLL);									// 289
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_MOVE);									// 290
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED1);									// 291
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED2);									// 292
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED3);									// 293
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED4);									// 294
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED5);									// 295
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED6);									// 296
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED7);									// 297
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED8);									// 298
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED9);									// 299
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED10);									// 300
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED11);									// 301
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED12);									// 302
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED13);									// 303
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED14);									// 304
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED15);									// 305
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED16);									// 306
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED17);									// 307
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED18);									// 308
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED19);									// 309
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED20);									// 310
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_A);										// 311
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_B);										// 312
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_X);										// 313
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_Y);										// 314
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L1);									// 315
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R1);									// 316
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_MENU);									// 317
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_VIEW);									// 318
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_TOUCH);							// 319
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_SWIPE);							// 320
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_CLICK);							// 321
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADNORTH);						// 322
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADSOUTH);						// 323
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADWEST);						// 324
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADEAST);						// 325
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_TOUCH);						// 326
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_SWIPE);						// 327
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_CLICK);						// 328
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADNORTH);					// 329
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADSOUTH);					// 330
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADWEST);						// 331
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADEAST);						// 332
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2_SOFTPULL);							// 333
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2);									// 334
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2_SOFTPULL);							// 335
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2);									// 336
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_MOVE);						// 337
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L3);									// 338
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADNORTH);					// 339
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADSOUTH);					// 340
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADWEST);					// 341
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADEAST);					// 342
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_TOUCH);						// 343
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_MOVE);						// 344
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R3);									// 345
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADNORTH);					// 346
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADSOUTH);					// 347
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADWEST);					// 348
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADEAST);					// 349
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_TOUCH);						// 350
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L4);									// 351
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R4);									// 352
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L5);									// 353
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R5);									// 354
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_MOVE);								// 355
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_NORTH);							// 356
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_SOUTH);							// 357
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_WEST);								// 358
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_EAST);								// 359
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_MOVE);								// 360
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_PITCH);							// 361
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_YAW);								// 362
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_ROLL);								// 363
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED1);								// 364
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED2);								// 365
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED3);								// 366
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED4);								// 367
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED5);								// 368
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED6);								// 369
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED7);								// 370
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED8);								// 371
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED9);								// 372
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED10);							// 373
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED11);							// 374
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED12);							// 375
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED13);							// 376
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED14);							// 377
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED15);							// 378
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED16);							// 379
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED17);							// 380
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED18);							// 381
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED19);							// 382
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED20);							// 383
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_COUNT);											// 384
-	BIND_CONSTANT(INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE);							// 32767
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_NONE);										// 0
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_A);											// 1
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_B);											// 2
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_X);											// 3
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_Y);											// 4
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_BUMPER);								// 5
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_BUMPER);								// 6
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFTGRIP);									// 7
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHTGRIP);									// 8
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_START);										// 9
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_BACK);										// 10
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_TOUCH);								// 11
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_SWIPE);								// 12
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_CLICK);								// 13
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_NORTH);						// 14
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_SOUTH);						// 15
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_WEST);							// 16
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_EAST);							// 17
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_TOUCH);							// 18
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_SWIPE);							// 19
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_CLICK);							// 20
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_NORTH);						// 21
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_SOUTH);						// 22
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_WEST);						// 23
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_EAST);						// 24
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_TRIGGER_PULL);							// 25
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_TRIGGER_CLICK);							// 26
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_PULL);							// 27
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_CLICK);						// 28
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_MOVE);							// 29
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_CLICK);							// 30
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_NORTH);						// 31
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_SOUTH);						// 32
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_WEST);						// 33
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_EAST);						// 34
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_MOVE);									// 35
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_PITCH);									// 36
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_YAW);									// 37
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_ROLL);									// 38
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED0);					// 39
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED1);					// 40
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED2);					// 41
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED3);					// 42
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED4);					// 43
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED5);					// 44
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED6);					// 45
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED7);					// 46
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED8);					// 47
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED9);					// 48
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED10);				// 49
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_X);										// 50
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CIRCLE);									// 51
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_TRIANGLE);								// 52
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SQUARE);									// 53
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_BUMPER);							// 54
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_BUMPER);							// 55
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_OPTIONS);								// 56
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SHARE);									// 57
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_TOUCH);							// 58
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_SWIPE);							// 59
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_CLICK);							// 60
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_NORTH);					// 61
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_SOUTH);					// 62
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_WEST);						// 63
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_EAST);						// 64
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_TOUCH);						// 65
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_SWIPE);						// 66
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_CLICK);						// 67
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_NORTH);					// 68
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_SOUTH);					// 69
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_WEST);					// 70
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_EAST);					// 71
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_TOUCH);						// 72
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_SWIPE);						// 73
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_CLICK);						// 74
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_NORTH);					// 75
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_SOUTH);					// 76
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_WEST);					// 77
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_EAST);					// 78
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_PULL);						// 79
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_CLICK);						// 80
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_PULL);						// 81
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_CLICK);					// 82
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_MOVE);						// 83
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_CLICK);						// 84
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_NORTH);					// 85
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_SOUTH);					// 86
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_WEST);					// 87
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_EAST);					// 88
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_MOVE);						// 89
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_CLICK);						// 90
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_NORTH);					// 91
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_SOUTH);					// 92
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_WEST);					// 93
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_EAST);					// 94
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_NORTH);								// 95
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_SOUTH);								// 96
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_WEST);								// 97
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_EAST);								// 98
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_MOVE);								// 99
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_PITCH);								// 100
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_YAW);								// 101
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_ROLL);								// 102
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED0);								// 103
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED1);								// 104
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED2);								// 105
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED3);								// 106
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED4);								// 107
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED5);								// 108
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED6);								// 109
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED7);								// 110
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED8);								// 111
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED9);								// 112
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED10);								// 113
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_A);									// 114
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_B);									// 115
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_X);									// 116
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_Y);									// 117
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_BUMPER);						// 118
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_BUMPER);						// 119
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_MENU);								// 120
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_VIEW);								// 121
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_PULL);					// 122
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_CLICK);				// 123
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_PULL);				// 124
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_CLICK);				// 125
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_MOVE);					// 126
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_CLICK);					// 127
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_NORTH);				// 128
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_SOUTH);				// 129
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_WEST);				// 130
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_EAST);				// 131
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_MOVE);					// 132
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_CLICK);					// 133
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_NORTH);			// 134
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_SOUTH);			// 135
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_WEST);				// 136
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_EAST);				// 137
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_NORTH);						// 138
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_SOUTH);						// 139
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_WEST);							// 140
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_EAST);							// 141
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED0);							// 142
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED1);							// 143
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED2);							// 144
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED3);							// 145
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED4);							// 146
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED5);							// 147
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED6);							// 148
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED7);							// 149
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED8);							// 150
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED9);							// 151
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED10);						// 152
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_A);									// 153
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_B);									// 154
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_X);									// 155
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_Y);									// 156
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_BUMPER);						// 157
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_BUMPER);						// 158
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_START);								// 159
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_BACK);								// 160
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_PULL);					// 161
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_CLICK);				// 162
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_PULL);				// 163
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_CLICK);				// 164
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_MOVE);					// 165
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_CLICK);					// 166
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_NORTH);				// 167
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_SOUTH);				// 168
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_WEST);				// 169
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_EAST);				// 170
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_MOVE);					// 171
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_CLICK);					// 172
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_NORTH);			// 173
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_SOUTH);			// 174
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_WEST);				// 175
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_EAST);				// 176
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_NORTH);						// 177
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_SOUTH);						// 178
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_WEST);							// 179
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_EAST);							// 180
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED0);							// 181
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED1);							// 182
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED2);							// 183
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED3);							// 184
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED4);							// 185
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED5);							// 186
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED6);							// 187
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED7);							// 188
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED8);							// 189
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED9);							// 190
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED10);						// 191
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_A);									// 192
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_B);									// 193
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_X);									// 194
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_Y);									// 195
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_BUMPER);							// 196
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_BUMPER);						// 197
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PLUS);								// 198
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_MINUS);								// 199
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_CAPTURE);								// 200
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_PULL);					// 201
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_CLICK);					// 202
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_PULL);					// 203
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_CLICK);					// 204
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_MOVE);						// 205
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_CLICK);					// 206
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_NORTH);				// 207
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_SOUTH);				// 208
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_WEST);				// 209
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_EAST);				// 210
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_MOVE);					// 211
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_CLICK);					// 212
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_NORTH);				// 213
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_SOUTH);				// 214
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_WEST);				// 215
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_EAST);				// 216
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_NORTH);							// 217
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_SOUTH);							// 218
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_WEST);							// 219
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_EAST);							// 220
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_MOVE);						// 221
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_PITCH);						// 222
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_YAW);						// 223
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_ROLL);						// 224
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED0);							// 225
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED1);							// 226
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED2);							// 227
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED3);							// 228
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED4);							// 229
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED5);							// 230
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED6);							// 231
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED7);							// 232
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED8);							// 233
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED9);							// 234
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED10);							// 235
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_OPTION);									// 242
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CREATE);									// 243
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_MUTE);									// 244
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_TOUCH);							// 245
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_SWIPE);							// 246
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_CLICK);							// 247
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADNORTH);						// 248
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADSOUTH);						// 249
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADWEST);						// 250
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADEAST);						// 251
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_TOUCH);							// 252
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_SWIPE);							// 253
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_CLICK);							// 254
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADNORTH);						// 255
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADSOUTH);						// 256
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADWEST);						// 257
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADEAST);						// 258
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_TOUCH);						// 259
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_SWIPE);						// 260
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_CLICK);						// 261
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADNORTH);					// 262
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADSOUTH);					// 263
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADWEST);						// 264
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADEAST);						// 265
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_PULL);						// 266
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_CLICK);						// 267
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_PULL);						// 268
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_CLICK);						// 269
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_MOVE);							// 270
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_CLICK);						// 271
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADNORTH);					// 272
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADSOUTH);					// 273
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADWEST);						// 274
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADEAST);						// 275
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_MOVE);						// 276
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_CLICK);						// 277
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADNORTH);					// 278
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADSOUTH);					// 279
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADWEST);					// 280
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADEAST);					// 281
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_NORTH);								// 282
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_SOUTH);								// 283
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_WEST);								// 284
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_EAST);								// 285
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_MOVE);								// 286
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_PITCH);								// 287
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_YAW);								// 288
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_ROLL);								// 289
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_MOVE);								// 290
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED1);								// 291
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED2);								// 292
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED3);								// 293
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED4);								// 294
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED5);								// 295
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED6);								// 296
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED7);								// 297
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED8);								// 298
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED9);								// 299
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED10);								// 300
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED11);								// 301
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED12);								// 302
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED13);								// 303
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED14);								// 304
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED15);								// 305
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED16);								// 306
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED17);								// 307
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED18);								// 308
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED19);								// 309
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED20);								// 310
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_A);								// 311
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_B);								// 312
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_X);								// 313
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_Y);								// 314
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L1);								// 315
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R1);								// 316
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_MENU);								// 317
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_VIEW);								// 318
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_TOUCH);					// 319
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_SWIPE);					// 320
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_CLICK);					// 321
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADNORTH);				// 322
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADSOUTH);				// 323
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADWEST);					// 324
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADEAST);					// 325
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_TOUCH);					// 326
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_SWIPE);					// 327
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_CLICK);					// 328
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADNORTH);				// 329
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADSOUTH);				// 330
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADWEST);				// 331
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADEAST);				// 332
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2_SOFTPULL);						// 333
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2);								// 334
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2_SOFTPULL);						// 335
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2);								// 336
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_MOVE);					// 337
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L3);								// 338
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADNORTH);				// 339
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADSOUTH);				// 340
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADWEST);				// 341
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADEAST);				// 342
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_TOUCH);					// 343
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_MOVE);					// 344
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R3);								// 345
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADNORTH);				// 346
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADSOUTH);				// 347
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADWEST);				// 348
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADEAST);				// 349
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_TOUCH);					// 350
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L4);								// 351
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R4);								// 352
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L5);								// 353
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R5);								// 354
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_MOVE);						// 355
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_NORTH);						// 356
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_SOUTH);						// 357
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_WEST);						// 358
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_EAST);						// 359
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_MOVE);						// 360
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_PITCH);						// 361
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_YAW);							// 362
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_ROLL);						// 363
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED1);						// 364
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED2);						// 365
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED3);						// 366
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED4);						// 367
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED5);						// 368
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED6);						// 369
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED7);						// 370
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED8);						// 371
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED9);						// 372
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED10);						// 373
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED11);						// 374
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED12);						// 375
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED13);						// 376
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED14);						// 377
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED15);						// 378
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED16);						// 379
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED17);						// 380
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED18);						// 381
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED19);						// 382
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED20);						// 383
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_COUNT);										// 384
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE);						// 32767
 
 	// STEAM INPUT TYPE /////////////////////////
-	BIND_CONSTANT(INPUT_TYPE_UNKNOWN);													// 0
-	BIND_CONSTANT(INPUT_TYPE_STEAM_CONTROLLER);											// 1
-	BIND_CONSTANT(INPUT_TYPE_XBOX360_CONTROLLER);										// 2
-	BIND_CONSTANT(INPUT_TYPE_XBOXONE_CONTROLLER);										// 3
-	BIND_CONSTANT(INPUT_TYPE_GENERIC_XINPUT);											// 4
-	BIND_CONSTANT(INPUT_TYPE_PS4_CONTROLLER);											// 5
-	BIND_CONSTANT(INPUT_TYPE_APPLE_MFI_CONTROLLER);										// 6
-	BIND_CONSTANT(INPUT_TYPE_ANDROID_CONTROLLER);										// 7
-	BIND_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_PAIR);										// 8
-	BIND_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_SINGLE);										// 9
-	BIND_CONSTANT(INPUT_TYPE_SWITCH_PRO_CONTROLLER);									// 10
-	BIND_CONSTANT(INPUT_TYPE_MOBILE_TOUCH);												// 11
-	BIND_CONSTANT(INPUT_TYPE_PS3_CONTROLLER);											// 12
-	BIND_CONSTANT(INPUT_TYPE_PS5_CONTROLLER);											// 13
-	BIND_CONSTANT(INPUT_TYPE_STEAM_DECK_CONTROLLER);									// 14
-	BIND_CONSTANT(INPUT_TYPE_COUNT);													// 15
-	BIND_CONSTANT(INPUT_TYPE_MAXIMUM_POSSIBLE_VALUE);									// 255
+	BIND_ENUM_CONSTANT(INPUT_TYPE_UNKNOWN);												// 0
+	BIND_ENUM_CONSTANT(INPUT_TYPE_STEAM_CONTROLLER);									// 1
+	BIND_ENUM_CONSTANT(INPUT_TYPE_XBOX360_CONTROLLER);									// 2
+	BIND_ENUM_CONSTANT(INPUT_TYPE_XBOXONE_CONTROLLER);									// 3
+	BIND_ENUM_CONSTANT(INPUT_TYPE_GENERIC_XINPUT);										// 4
+	BIND_ENUM_CONSTANT(INPUT_TYPE_PS4_CONTROLLER);										// 5
+	BIND_ENUM_CONSTANT(INPUT_TYPE_APPLE_MFI_CONTROLLER);								// 6
+	BIND_ENUM_CONSTANT(INPUT_TYPE_ANDROID_CONTROLLER);									// 7
+	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_PAIR);									// 8
+	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_SINGLE);								// 9
+	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_PRO_CONTROLLER);								// 10
+	BIND_ENUM_CONSTANT(INPUT_TYPE_MOBILE_TOUCH);										// 11
+	BIND_ENUM_CONSTANT(INPUT_TYPE_PS3_CONTROLLER);										// 12
+	BIND_ENUM_CONSTANT(INPUT_TYPE_PS5_CONTROLLER);										// 13
+	BIND_ENUM_CONSTANT(INPUT_TYPE_STEAM_DECK_CONTROLLER);								// 14
+	BIND_ENUM_CONSTANT(INPUT_TYPE_COUNT);												// 15
+	BIND_ENUM_CONSTANT(INPUT_TYPE_MAXIMUM_POSSIBLE_VALUE);								// 255
 
 	// CONFIGURATION ENABLE TYPE ////////////////
 	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_NONE);								// 0x0000
@@ -12927,10 +12987,10 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH);								// 0x0008
 	
 	// GLYPH SIZE ///////////////////////////////
-	BIND_CONSTANT(INPUT_GLYPH_SIZE_SMALL);												// 0
-	BIND_CONSTANT(INPUT_GLYPH_SIZE_MEDIUM);												// 1
-	BIND_CONSTANT(INPUT_GLYPH_SIZE_LARGE);												// 2
-	BIND_CONSTANT(INPUT_GLYPH_SIZE_COUNT);												// 3
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_SMALL);											// 0
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_MEDIUM);										// 1
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_LARGE);											// 2
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_COUNT);											// 3
 
 	// GLYPH STYLE //////////////////////////////
 	BIND_CONSTANT(INPUT_GLYPH_STYLE_KNOCKOUT);											// 0x0
@@ -12952,229 +13012,229 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(CHAT_MEMBER_STATE_CHANGE_BANNED);										// 0X0010
 
 	// LOBBY COMPARISON /////////////////////////
-	BIND_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN);								// -2
-	BIND_CONSTANT(LOBBY_COMPARISON_LESS_THAN);											// -1
-	BIND_CONSTANT(LOBBY_COMPARISON_EQUAL);												// 0
-	BIND_CONSTANT(LOBBY_COMPARISON_GREATER_THAN);										// 1
-	BIND_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN);								// 2
-	BIND_CONSTANT(LOBBY_COMPARISON_NOT_EQUAL);											// 3
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN);							// -2
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_LESS_THAN);										// -1
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL);											// 0
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_GREATER_THAN);									// 1
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN);							// 2
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_NOT_EQUAL);										// 3
 
 	// LOBBY DISTANCE FILTER ////////////////////
-	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_CLOSE);											// 0
-	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_DEFAULT);										// 1
-	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_FAR);											// 2
-	BIND_CONSTANT(LOBBY_DISTANCE_FILTER_WORLDWIDE);										// 3
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_CLOSE);									// 0
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_DEFAULT);									// 1
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_FAR);										// 2
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_WORLDWIDE);								// 3
 
 	// LOBBY TYPE ///////////////////////////////
-	BIND_CONSTANT(LOBBY_TYPE_PRIVATE);													// 0
-	BIND_CONSTANT(LOBBY_TYPE_FRIENDS_ONLY);												// 1
-	BIND_CONSTANT(LOBBY_TYPE_PUBLIC);													// 2
-	BIND_CONSTANT(LOBBY_TYPE_INVISIBLE);												// 3
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_PRIVATE);												// 0
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_FRIENDS_ONLY);										// 1
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_PUBLIC);												// 2
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_INVISIBLE);											// 3
 
 	// MATCHMAKING SERVER RESPONSE //////////////
-	BIND_CONSTANT(SERVER_RESPONDED);													// 0
-	BIND_CONSTANT(SERVER_FAILED_TO_RESPOND);											// 1
-	BIND_CONSTANT(NO_SERVERS_LISTED_ON_MASTER_SERVER);									// 2
+	BIND_ENUM_CONSTANT(SERVER_RESPONDED);												// 0
+	BIND_ENUM_CONSTANT(SERVER_FAILED_TO_RESPOND);										// 1
+	BIND_ENUM_CONSTANT(NO_SERVERS_LISTED_ON_MASTER_SERVER);								// 2
 
 	// AUDIO PLAYBACK STATUS ////////////////////
-	BIND_CONSTANT(AUDIO_PLAYBACK_UNDEFINED);											// 0
-	BIND_CONSTANT(AUDIO_PLAYBACK_PLAYING);												// 1
-	BIND_CONSTANT(AUDIO_PLAYBACK_PAUSED);												// 2
-	BIND_CONSTANT(AUDIO_PLAYBACK_IDLE);													// 3
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_UNDEFINED);										// 0
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_PLAYING);											// 1
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_PAUSED);											// 2
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_IDLE);											// 3
 
 	// P2P SEND /////////////////////////////////
-	BIND_CONSTANT(P2P_SEND_UNRELIABLE);													// 0
-	BIND_CONSTANT(P2P_SEND_UNRELIABLE_NO_DELAY);										// 1
-	BIND_CONSTANT(P2P_SEND_RELIABLE);													// 2
-	BIND_CONSTANT(P2P_SEND_RELIABLE_WITH_BUFFERING);									// 3
+	BIND_ENUM_CONSTANT(P2P_SEND_UNRELIABLE);											// 0
+	BIND_ENUM_CONSTANT(P2P_SEND_UNRELIABLE_NO_DELAY);									// 1
+	BIND_ENUM_CONSTANT(P2P_SEND_RELIABLE);												// 2
+	BIND_ENUM_CONSTANT(P2P_SEND_RELIABLE_WITH_BUFFERING);								// 3
 
 	// P2P SESSION ERROR ////////////////////////
-	BIND_CONSTANT(P2P_SESSION_ERROR_NONE);												// 0
-	BIND_CONSTANT(P2P_SESSION_ERROR_NOT_RUNNING_APP);									// 1
-	BIND_CONSTANT(P2P_SESSION_ERROR_NO_RIGHTS_TO_APP);									// 2
-	BIND_CONSTANT(P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON);							// 3
-	BIND_CONSTANT(P2P_SESSION_ERROR_TIMEOUT);											// 4
-	BIND_CONSTANT(P2P_SESSION_ERROR_MAX);												// 5
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NONE);											// 0
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NOT_RUNNING_APP);								// 1
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NO_RIGHTS_TO_APP);								// 2
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON);					// 3
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_TIMEOUT);										// 4
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_MAX);											// 5
 
 	// SNET SOCKET CONNECTION TYPE //////////////
-	BIND_CONSTANT(NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED);							// 0
-	BIND_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP);										// 1
-	BIND_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP_RELAY);								// 2
+	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED);						// 0
+	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP);									// 1
+	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP_RELAY);							// 2
 
 	// SNET SOCKET STATE ////////////////////////
-	BIND_CONSTANT(NET_SOCKET_STATE_INVALID);											// 0
-	BIND_CONSTANT(NET_SOCKET_STATE_CONNECTED);											// 1
-	BIND_CONSTANT(NET_SOCKET_STATE_INITIATED);											// 10
-	BIND_CONSTANT(NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND);								// 11
-	BIND_CONSTANT(NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES);							// 12
-	BIND_CONSTANT(NET_SOCKET_STATE_CHALLENGE_HANDSHAKE);								// 15
-	BIND_CONSTANT(NET_SOCKET_STATE_DISCONNECTING);										// 21
-	BIND_CONSTANT(NET_SOCKET_STATE_LOCAL_DISCONNECT);									// 22
-	BIND_CONSTANT(NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT);								// 23
-	BIND_CONSTANT(NET_SOCKET_STATE_REMOTE_END_DISCONNECTED);							// 24
-	BIND_CONSTANT(NET_SOCKET_STATE_BROKEN);												// 25
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_INVALID);										// 0
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_CONNECTED);										// 1
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_INITIATED);										// 10
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND);							// 11
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES);					// 12
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_CHALLENGE_HANDSHAKE);							// 15
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_DISCONNECTING);									// 21
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_LOCAL_DISCONNECT);								// 22
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT);						// 23
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_REMOTE_END_DISCONNECTED);						// 24
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_BROKEN);										// 25
 
 	// NETWORKING CONFIGURATION VALUE ///////////
-	BIND_CONSTANT(NETWORKING_CONFIG_INVALID);											// 0
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND);								// 2
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV);								// 3
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_SEND);								// 4
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_RECV);								// 5
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_SEND);							// 6
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_RECV);							// 7
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_TIME);							// 8
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_SEND);								// 26
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_REVC);								// 27
-	BIND_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_TIME_MAX);							// 28
-	BIND_CONSTANT(NETWORKING_CONFIG_TIMEOUT_INITIAL);									// 24
-	BIND_CONSTANT(NETWORKING_CONFIG_TIMEOUT_CONNECTED);									// 25
-	BIND_CONSTANT(NETWORKING_CONFIG_SEND_BUFFER_SIZE);									// 9
-	BIND_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MIN);										// 10
-	BIND_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MAX);										// 11
-	BIND_CONSTANT(NETWORKING_CONFIG_NAGLE_TIME);										// 12
-	BIND_CONSTANT(NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH);								// 23
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL_INITIAL);		// 19
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL);				// 20
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE);			// 21
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET);							// 22
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER);					// 29
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS);					// 30
-	BIND_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR);						// 31
-	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT);									// 13
-	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE);							// 14
-	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_MESSAGE);									// 15
-	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_GAPS);								// 16
-	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_P2P_RENDEZVOUS);							// 17
-	BIND_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_SRD_RELAY_PINGS);							// 18
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_INVALID);										// 0
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND);						// 2
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV);						// 3
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_SEND);							// 4
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_RECV);							// 5
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_SEND);						// 6
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_RECV);						// 7
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_TIME);						// 8
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_SEND);							// 26
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_REVC);							// 27
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_TIME_MAX);						// 28
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_INITIAL);								// 24
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_CONNECTED);							// 25
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_BUFFER_SIZE);								// 9
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MIN);								// 10
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MAX);								// 11
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_NAGLE_TIME);									// 12
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH);						// 23
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL_INITIAL);	// 19
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL);			// 20
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE);	// 21
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET);						// 22
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER);				// 29
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS);				// 30
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR);					// 31
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT);							// 13
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE);						// 14
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_MESSAGE);							// 15
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_GAPS);						// 16
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_P2P_RENDEZVOUS);						// 17
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_SRD_RELAY_PINGS);					// 18
 
 	// NETWORKING GET CONFIGURATION VALUE RESULT
-	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_VALUE);								// -1
-	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_SCOPE_OBJ);							// -2
-	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BUFFER_TOO_SMALL);						// -3
-	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK);										// 1
-	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK_INHERITED);							// 2
-	BIND_CONSTANT(NETWORKING_GET_CONFIG_VALUE_FORCE_32BIT);								// 0X7FFFFFFF
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_VALUE);							// -1
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_SCOPE_OBJ);						// -2
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BUFFER_TOO_SMALL);					// -3
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK);									// 1
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK_INHERITED);						// 2
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_FORCE_32BIT);						// 0X7FFFFFFF
 	
 	// NETWORKING CONNECTION STATE //////////////
-	BIND_CONSTANT(CONNECTION_STATE_NONE);												// 0
-	BIND_CONSTANT(CONNECTION_STATE_CONNECTING);											// 1
-	BIND_CONSTANT(CONNECTION_STATE_FINDING_ROUTE);										// 2
-	BIND_CONSTANT(CONNECTION_STATE_CONNECTED);											// 3
-	BIND_CONSTANT(CONNECTION_STATE_CLOSED_BY_PEER);										// 4
-	BIND_CONSTANT(CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY);							// 5
-	BIND_CONSTANT(CONNECTION_STATE_FIN_WAIT);											// -1
-	BIND_CONSTANT(CONNECTION_STATE_LINGER);												// -2
-	BIND_CONSTANT(CONNECTION_STATE_DEAD);												// -3
-	BIND_CONSTANT(CONNECTION_STATE_FORCE32BIT);											// 0X7FFFFFFF
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_NONE);											// 0
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_CONNECTING);									// 1
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_FINDING_ROUTE);									// 2
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_CONNECTED);										// 3
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_CLOSED_BY_PEER);								// 4
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY);						// 5
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_FIN_WAIT);										// -1
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_LINGER);										// -2
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_DEAD);											// -3
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_FORCE32BIT);									// 0X7FFFFFFF
 
 	// NETWORKING CONNECTION END ////////////////
-	BIND_CONSTANT(CONNECTION_END_INVALID);												// 0
-	BIND_CONSTANT(CONNECTION_END_APP_MIN);												// 1000
-	BIND_CONSTANT(CONNECTION_END_MAX);													// 1999
-	BIND_CONSTANT(CONNECTION_END_APP_EXCEPTION_MIN);									// 2000
-	BIND_CONSTANT(CONNECTION_END_APP_EXCEPTION_MAX);									// 2999
-	BIND_CONSTANT(CONNECTION_END_LOCAL_MIN);											// 3000
-	BIND_CONSTANT(CONNECTION_END_LOCAL_OFFLINE_MODE);									// 3001
-	BIND_CONSTANT(CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY);						// 3002
-	BIND_CONSTANT(CONNECTION_END_LOCAL_HOSTED_sERVER_PRIMARY_RELAY);					// 3003
-	BIND_CONSTANT(CONNECTION_END_LOCAL_NETWORK_CONFIG);									// 3004
-	BIND_CONSTANT(CONNECTION_END_LOCAL_RIGHTS);											// 3005
-	BIND_CONSTANT(CONNECTION_END_LOCAL_MAX);											// 3999
-	BIND_CONSTANT(CONNECTION_END_REMOVE_MIN);											// 4000
-	BIND_CONSTANT(CONNECTION_END_REMOTE_TIMEOUT);										// 4001
-	BIND_CONSTANT(CONNECTION_END_REMOTE_BAD_CRYPT);										// 4002
-	BIND_CONSTANT(CONNECTION_END_REMOTE_BAD_CERT);										// 4003
-	BIND_CONSTANT(CONNECTION_END_REMOTE_NOT_LOGGED_IN);									// 4004
-	BIND_CONSTANT(CONNECTION_END_REMOTE_NOT_RUNNING_APP);								// 4005
-	BIND_CONSTANT(CONNECTION_END_BAD_PROTOCOL_VERSION);									// 4006
-	BIND_CONSTANT(CONNECTION_END_REMOTE_MAX);											// 4999
-	BIND_CONSTANT(CONNECTION_END_MISC_MIN);												// 5000
-	BIND_CONSTANT(CONNECTION_END_MISC_GENERIC);											// 5001
-	BIND_CONSTANT(CONNECTION_END_MISC_INTERNAL_ERROR);									// 5002
-	BIND_CONSTANT(CONNECTION_END_MISC_TIMEOUT);											// 5003
-	BIND_CONSTANT(CONNECTION_END_MISC_RELAY_CONNECTIVITY);								// 5004
-	BIND_CONSTANT(CONNECTION_END_MISC_STEAM_CONNECTIVITY);								// 5005
-	BIND_CONSTANT(CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT);						// 5006
-	BIND_CONSTANT(CONNECTION_END_MISC_MAX);												// 5999
+	BIND_ENUM_CONSTANT(CONNECTION_END_INVALID);											// 0
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_MIN);											// 1000
+	BIND_ENUM_CONSTANT(CONNECTION_END_MAX);												// 1999
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_MIN);								// 2000
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_MAX);								// 2999
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MIN);										// 3000
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_OFFLINE_MODE);								// 3001
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY);					// 3002
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_HOSTED_sERVER_PRIMARY_RELAY);				// 3003
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_NETWORK_CONFIG);							// 3004
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_RIGHTS);									// 3005
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MAX);										// 3999
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOVE_MIN);										// 4000
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_TIMEOUT);									// 4001
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_BAD_CRYPT);								// 4002
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_BAD_CERT);									// 4003
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_NOT_LOGGED_IN);							// 4004
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_NOT_RUNNING_APP);							// 4005
+	BIND_ENUM_CONSTANT(CONNECTION_END_BAD_PROTOCOL_VERSION);							// 4006
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_MAX);										// 4999
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_MIN);										// 5000
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_GENERIC);									// 5001
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_INTERNAL_ERROR);								// 5002
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_TIMEOUT);									// 5003
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_RELAY_CONNECTIVITY);							// 5004
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_STEAM_CONNECTIVITY);							// 5005
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT);				// 5006
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_MAX);										// 5999
 
 	// NETWORKING IDENTITY TYPE /////////////////
-	BIND_CONSTANT(IDENTITY_TYPE_INVALID);												// 0
-	BIND_CONSTANT(IDENTITY_TYPE_STEAMID);												// 16
-	BIND_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);											// 1
-	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);										// 2
-	BIND_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);											// 3
-	BIND_CONSTANT(IDENTITY_TYPE_UNKNOWN_TYPE);											// 4
-	BIND_CONSTANT(IDENTITY_TYPE_XBOX_PAIRWISE);											// 17
-	BIND_CONSTANT(IDENTITY_TYPE_SONY_PSN);												// 18
-	BIND_CONSTANT(IDENTITY_TYPE_GOOGLE_STADIA);											// 19 
-	BIND_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);											// 0X7FFFFFFF
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_INVALID);											// 0
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_STEAMID);											// 16
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);										// 1
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);									// 2
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);									// 3
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_UNKNOWN_TYPE);										// 4
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_XBOX_PAIRWISE);									// 17
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_SONY_PSN);											// 18
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GOOGLE_STADIA);									// 19 
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);										// 0X7FFFFFFF
 
 	// NETWORKING SOCKET DEBUG OUTPUT ///////////
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE);							// 0
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG);								// 1
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR);							// 2
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT);						// 3
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING);							// 4
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG);								// 5
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE);							// 6
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG);							// 7
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING);						// 8
-	BIND_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT);						// 0X7FFFFFFF
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE);						// 0
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG);						// 1
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR);						// 2
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT);					// 3
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING);					// 4
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG);						// 5
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE);					// 6,
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG);						// 7
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING);					// 8
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT);				// 0X7FFFFFFF
 	
 	// NETWORKING AVAILABILITY //////////////////
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_CANNOT_TRY);									// -102
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_FAILED);										// -101
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_PREVIOUSLY);									// -100
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_NEVER_TRIED);									// 1
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_WAITING);										// 2
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_ATTEMPTING);									// 3
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_CURRENT);										// 100
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_UNKNOWN);										// 0
-	BIND_CONSTANT(NETWORKING_AVAILABILITY_FORCE_32BIT);									// 0X7FFFFFFF
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_CANNOT_TRY);								// -102
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_FAILED);									// -101
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_PREVIOUSLY);								// -100
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_NEVER_TRIED);							// 1
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_WAITING);								// 2
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_ATTEMPTING);								// 3
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_CURRENT);								// 100
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_UNKNOWN);								// 0
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_FORCE_32BIT);							// 0X7FFFFFFF
 
 	// NETWORKING CONFIGURATION SCOPE ///////////
-	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_GLOBAL);										// 1
-	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_SOCKETS_INTERFACE);							// 2
-	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_LISTEN_SOCKET);								// 3
-	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_CONNECTION);									// 4
-	BIND_CONSTANT(NETWORKING_CONFIG_SCOPE_FORCE_32BIT);									// 0X7FFFFFFF
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_GLOBAL);									// 1
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_SOCKETS_INTERFACE);						// 2
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_LISTEN_SOCKET);							// 3
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_CONNECTION);								// 4
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_FORCE_32BIT);							// 0X7FFFFFFF
 
 	// NETWORKING CONFIGURATION DATA TYPE ///////
-	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_INT32);										// 1
-	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_INT64);										// 2
-	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FLOAT);										// 3
-	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_STRING);										// 4
-	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FUNCTION_PTR);									// 5
-	BIND_CONSTANT(NETWORKING_CONFIG_TYPE_FORCE_32BIT);									// 0x7fffffff
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_INT32);									// 1
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_INT64);									// 2
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FLOAT);									// 3
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_STRING);									// 4
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FUNCTION_PTR);							// 5
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FORCE_32BIT);								// 0x7fffffff
 
 	// PARENTAL SETTINGS ////////////////////////
-	BIND_CONSTANT(FEATURE_INVALID);														// 0
-	BIND_CONSTANT(FEATURE_STORE);														// 1
-	BIND_CONSTANT(FEATURE_COMMUNITY);													// 2
-	BIND_CONSTANT(FEATURE_PROFILE);														// 3
-	BIND_CONSTANT(FEATURE_FRIENDS);														// 4
-	BIND_CONSTANT(FEATURE_NEWS);														// 5
-	BIND_CONSTANT(FEATURE_TRADING);														// 6
-	BIND_CONSTANT(FEATURE_SETTINGS);													// 7
-	BIND_CONSTANT(FEATURE_CONSOLE);														// 8
-	BIND_CONSTANT(FEATURE_BROWSER);														// 9
-	BIND_CONSTANT(FEATURE_PARENTAL_SETUP);												// 10
-	BIND_CONSTANT(FEATURE_LIBRARY);														// 11
-	BIND_CONSTANT(FEATURE_TEST);														// 12
-	BIND_CONSTANT(FEATURE_SITE_LICENSE);												// 13
-	BIND_CONSTANT(FEATURE_MAX);
+	BIND_ENUM_CONSTANT(FEATURE_INVALID);												// 0
+	BIND_ENUM_CONSTANT(FEATURE_STORE);													// 1
+	BIND_ENUM_CONSTANT(FEATURE_COMMUNITY);												// 2
+	BIND_ENUM_CONSTANT(FEATURE_PROFILE);												// 3
+	BIND_ENUM_CONSTANT(FEATURE_FRIENDS);												// 4
+	BIND_ENUM_CONSTANT(FEATURE_NEWS);													// 5
+	BIND_ENUM_CONSTANT(FEATURE_TRADING);												// 6
+	BIND_ENUM_CONSTANT(FEATURE_SETTINGS);												// 7
+	BIND_ENUM_CONSTANT(FEATURE_CONSOLE);												// 8
+	BIND_ENUM_CONSTANT(FEATURE_BROWSER);												// 9
+	BIND_ENUM_CONSTANT(FEATURE_PARENTAL_SETUP);											// 10
+	BIND_ENUM_CONSTANT(FEATURE_LIBRARY);												// 11
+	BIND_ENUM_CONSTANT(FEATURE_TEST);													// 12
+	BIND_ENUM_CONSTANT(FEATURE_SITE_LICENSE);											// 13
+	BIND_ENUM_CONSTANT(FEATURE_MAX);
 
 	// STEAM PARTY BEACON LOCATION TYPE /////////
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID);								// 0
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP);							// 1
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_TYPE_MAX);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID);						// 0
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP);						// 1
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_TYPE_MAX);
 
 	// STEAM PARTY BEACON LOCATION DATA /////////
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA);									// 0
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_NAME);								// 1
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL);
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM);
-	BIND_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA);								// 0
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_NAME);							// 1
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE);
 
 	// REMOTE STORAGE PLATFORM //////////////////
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_NONE);										// 0
@@ -13186,83 +13246,83 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(REMOTE_STORAGE_PLATFORM_ALL);											// 0XFFFFFFFF
 
 	// REMOTE STORAGE PUBLISHED FILE VISIBILITY /
-	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PUBLIC);							// 0
-	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_FRIENDS_ONLY);						// 1
-	BIND_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PRIVATE);							// 2
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PUBLIC);						// 0
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_FRIENDS_ONLY);				// 1
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PRIVATE);						// 2
 
 	// UGC READ ACTION //////////////////////////
-	BIND_CONSTANT(UGC_READ_CONTINUE_READING_UNTIL_FINISHED);							// 0
-	BIND_CONSTANT(UGC_READ_CONTINUE_READING);											// 1
-	BIND_CONSTANT(UGC_READ_CLOSE);														// 2
+	BIND_ENUM_CONSTANT(UGC_READ_CONTINUE_READING_UNTIL_FINISHED);						// 0
+	BIND_ENUM_CONSTANT(UGC_READ_CONTINUE_READING);										// 1
+	BIND_ENUM_CONSTANT(UGC_READ_CLOSE);													// 2
 
 	// WORKSHOP ENUMERATION TYPE ////////////////
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE);							// 0
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT);									// 1
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_TRENDING);									// 2
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS);						// 3
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS);							// 4
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS);						// 5
-	BIND_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS);				// 6
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE);						// 0
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT);								// 1
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_TRENDING);								// 2
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS);					// 3
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS);						// 4
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS);					// 5
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS);			// 6
 
 	// WORKSHOP FILE ACTION /////////////////////
-	BIND_CONSTANT(WORKSHOP_FILE_ACTION_PLAYED);											// 0
-	BIND_CONSTANT(WORKSHOP_FILE_ACTION_COMPLETED);										// 1
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_ACTION_PLAYED);									// 0
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_ACTION_COMPLETED);									// 1
 
 	// WORKSHOP FILE TYPE ///////////////////////
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_FIRST);											// 0
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_COMMUNITY);										// 0
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MICROTRANSACTION);									// 1
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_COLLECTION);										// 2
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_ART);												// 3
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_VIDEO);											// 4
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_SCREENSHOT);										// 5
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_GAME);												// 6
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_SOFTWARE);											// 7
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_CONCEPT);											// 8
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_WEB_GUIDE);										// 9
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE);									// 10
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MERCH);											// 11
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_CONTROLLER_BINDING);								// 12
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);							// 13
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);										// 14
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);								// 15
-	BIND_CONSTANT(WORKSHOP_FILE_TYPE_MAX);												// 16
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_FIRST);										// 0
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_COMMUNITY);									// 0
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MICROTRANSACTION);							// 1
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_COLLECTION);									// 2
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_ART);											// 3
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_VIDEO);										// 4
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_SCREENSHOT);									// 5
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME);										// 6
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_SOFTWARE);									// 7
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CONCEPT);										// 8
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_WEB_GUIDE);									// 9
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE);							// 10
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MERCH);										// 11
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CONTROLLER_BINDING);							// 12
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);					// 13
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);									// 14
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);							// 15
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MAX);											// 16
 
 	// WORKSHOP VIDEO PROVIDER //////////////////
-	BIND_CONSTANT(WORKSHOP_VIDEO_PROVIDER_NONE);										// 0
-	BIND_CONSTANT(WORKSHOP_VIDEO_PROVIDER_YOUTUBE);										// 1
+	BIND_ENUM_CONSTANT(WORKSHOP_VIDEO_PROVIDER_NONE);									// 0
+	BIND_ENUM_CONSTANT(WORKSHOP_VIDEO_PROVIDER_YOUTUBE);								// 1
 
 	// WORKSHOP VOTE ////////////////////////////
-	BIND_CONSTANT(WORKSHOP_VOTE_UNVOTED);												// 0
-	BIND_CONSTANT(WORKSHOP_VOTE_FOR);													// 1
-	BIND_CONSTANT(WORKSHOP_VOTE_AGAINST);												// 2
-	BIND_CONSTANT(WORKSHOP_VOTE_LATER);													// 3
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_UNVOTED);											// 0
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_FOR);												// 1
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_AGAINST);											// 2
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_LATER);											// 3
 
 	// LOCAL FILE CHANGES ///////////////////////
-	BIND_CONSTANT(LOCAL_FILE_CHANGE_INVALID);											// 0
-	BIND_CONSTANT(LOCAL_FILE_CHANGE_FILE_UPDATED);										// 1
-	BIND_CONSTANT(LOCAL_FILE_CHANGE_FILE_DELETED);										// 2
-
+	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_INVALID);										// 0
+	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_FILE_UPDATED);									// 1
+	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_FILE_DELETED);									// 2
+	
 	// FILE PATH TYPES //////////////////////////
-	BIND_CONSTANT(FILE_PATH_TYPE_INVALID);												// 0
-	BIND_CONSTANT(FILE_PATH_TYPE_ABSOLUTE);												// 1
-	BIND_CONSTANT(FILE_PATH_TYPE_API_FILENAME);											// 2
+	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_INVALID);											// 0
+	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_ABSOLUTE);										// 1
+	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_API_FILENAME);									// 2
 
 	// VR SCREENSHOT TYPE ///////////////////////
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_NONE);												// 0
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO);												// 1
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_STEREO);											// 2
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO_CUBE_MAP);									// 3
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_MONO_PANORAMA);									// 4
-	BIND_CONSTANT(VR_SCREENSHOT_TYPE_STEREO_PANORAMA);									// 5
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_NONE);										// 0
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO);										// 1
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_STEREO);										// 2
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO_CUBE_MAP);								// 3
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO_PANORAMA);								// 4
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_STEREO_PANORAMA);								// 5
 
 	// ITEM REVIEW TYPE /////////////////////////
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_IMAGE);												// 0
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO);										// 1
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);											// 2
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);					// 3
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);							// 4
-	BIND_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);										// 255
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_IMAGE);										// 0
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO);								// 1
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);									// 2
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);				// 3
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);						// 4
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);									// 255
 
 	// ITEM STATE ///////////////////////////////
 	BIND_CONSTANT(ITEM_STATE_NONE);														// 0
@@ -13274,195 +13334,195 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ITEM_STATE_DOWNLOAD_PENDING);											// 32
 
 	// ITEM STATISTIC ///////////////////////////
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);									// 0
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);										// 1
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);										// 2
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS);								// 3
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FAVORITES);									// 4
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS);									// 5
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS);								// 6
-	BIND_CONSTANT(ITEM_STATISTIC_REPORT_SCORE);											// 7
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED);									// 8
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS);								// 9
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_COMMENTS);											// 10
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);				// 11
-	BIND_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);				// 12
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);								// 0
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);									// 1
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);									// 2
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS);						// 3
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FAVORITES);							// 4
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS);							// 5
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS);						// 6
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_REPORT_SCORE);									// 7
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED);								// 8
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS);							// 9
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_COMMENTS);									// 10
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);			// 11
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);		// 12
 
 	// ITEM UPDATE STATUS ///////////////////////
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_INVALID);											// 0
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);									// 1
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);								// 2
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_CONTENT);								// 3
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);							// 4
-	BIND_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);								// 5
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_INVALID);										// 0
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);							// 1
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);							// 2
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_CONTENT);							// 3
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);						// 4
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);							// 5
 
 	// UGC MATCHING UGC TYPE ////////////////////
-	BIND_CONSTANT(UGC_MATCHINGUGCTYPE_ITEMS);											// 0
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);										// 1
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);							// 2
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_COLLECTIONS);									// 3
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ARTWORK);										// 4
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_VIDEOS);										// 5
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_SCREENSHOTS);									// 6
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL_GUIDES);									// 7
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_WEB_GUIDES);									// 8
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES);								// 9
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME);								// 10
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS);							// 11
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);							// 12
-	BIND_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);											// ~0
+	BIND_ENUM_CONSTANT(UGC_MATCHINGUGCTYPE_ITEMS);										// 0
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);								// 1
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);						// 2
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_COLLECTIONS);								// 3
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ARTWORK);									// 4
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_VIDEOS);									// 5
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_SCREENSHOTS);								// 6
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL_GUIDES);								// 7
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_WEB_GUIDES);								// 8
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES);						// 9
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME);							// 10
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS);						// 11
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);						// 12
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);										// ~0
 
 	// UGC QUERY ////////////////////////////////
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);											// 0
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);								// 1
-	BIND_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);				// 2
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TREND);											// 3
-	BIND_CONSTANT(UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);			// 4
-	BIND_CONSTANT(UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);				// 5
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED);								// 6
-	BIND_CONSTANT(UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE);		// 7
-	BIND_CONSTANT(UGC_QUERY_NOT_YET_RATED);												// 8
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC);									// 9
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_VOTES_UP);										// 10
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TEXT_SEARCH);										// 11
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS);						// 12
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_TREND);									// 13
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME);									// 14
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND);							// 15
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME);						// 16
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);							// 17
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);						// 18
-	BIND_CONSTANT(UGC_QUERY_RANKED_BY_LAST_UPDATED_DATE);								// 19
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);										// 0
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);							// 1
+	BIND_ENUM_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);			// 2
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TREND);										// 3
+	BIND_ENUM_CONSTANT(UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);		// 4
+	BIND_ENUM_CONSTANT(UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);		// 5
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED);							// 6
+	BIND_ENUM_CONSTANT(UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE);	// 7
+	BIND_ENUM_CONSTANT(UGC_QUERY_NOT_YET_RATED);										// 8
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC);							// 9
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_VOTES_UP);									// 10
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TEXT_SEARCH);								// 11
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS);					// 12
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_TREND);								// 13
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME);								// 14
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND);						// 15
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME);					// 16
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);					// 17
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);					// 18
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LAST_UPDATED_DATE);							// 19
 
 	// USER UGC LIST ////////////////////////////
-	BIND_CONSTANT(USER_UGC_LIST_PUBLISHED);												// 0
-	BIND_CONSTANT(USER_UGC_LIST_VOTED_ON);												// 1
-	BIND_CONSTANT(USER_UGC_LIST_VOTED_UP);												// 2
-	BIND_CONSTANT(USER_UGC_LIST_VOTED_DOWN);											// 3
-	BIND_CONSTANT(USER_UGC_LIST_FAVORITED);												// 5
-	BIND_CONSTANT(USER_UGC_LIST_SUBSCRIBED);											// 6
-	BIND_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);										// 7
-	BIND_CONSTANT(USER_UGC_LIST_FOLLOWED);												// 8
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_PUBLISHED);										// 0
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_ON);											// 1
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_UP);											// 2
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_DOWN);										// 3
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_FAVORITED);										// 5
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_SUBSCRIBED);										// 6
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);									// 7
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_FOLLOWED);											// 8
 
 	// USER UGC LIST ORT ORDER //////////////////
-	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);								// 0
-	BIND_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);								// 1
-	BIND_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);										// 2
-	BIND_CONSTANT(USERUGCLISTSORTORDER_LASTUPDATEDDESC);								// 3
-	BIND_CONSTANT(USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC);							// 4
-	BIND_CONSTANT(USERUGCLISTSORTORDER_VOTESCOREDESC);									// 5
-	BIND_CONSTANT(USERUGCLISTSORTORDER_FORMODERATION);									// 6
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);							// 0
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);							// 1
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);									// 2
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_LASTUPDATEDDESC);							// 3
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC);						// 4
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_VOTESCOREDESC);								// 5
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_FORMODERATION);								// 6
 
 	// FAILURE TYPE /////////////////////////////
-	BIND_CONSTANT(FAILURE_FLUSHED_CALLBACK_QUEUE);										// 0
-	BIND_CONSTANT(FAILURE_PIPE_FAIL);													// 1
+	BIND_ENUM_CONSTANT(FAILURE_FLUSHED_CALLBACK_QUEUE);									// 0
+	BIND_ENUM_CONSTANT(FAILURE_PIPE_FAIL);												// 1
 
 	// DURATION CONTROL PROGRESS ////////////////
-	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_FULL);										// 0
-	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_HALF);										// 1
-	BIND_CONSTANT(DURATION_CONTROL_PROGRESS_NONE);										// 2
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_FULL);									// 0
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_HALF);									// 1
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_NONE);									// 2
 
 	// DURATION CONTROL NOTIFICATION ////////////
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);									// 0
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_1_HOUR);								// 1
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_3_HOURS);								// 3
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS);							// 3
-	BIND_CONSTANT(DURATION_CONTROL_NOTIFICATION_NO_PROGRESS);							// 4
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);								// 0
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_1_HOUR);							// 1
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_3_HOURS);							// 3
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS);					// 3
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NO_PROGRESS);						// 4
 
 	// LEADERBOARD DATA REQUEST /////////////////
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);										// 0
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);							// 1
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);									// 2
-	BIND_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);										// 3
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);								// 0
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);					// 1
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);								// 2
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);									// 3
 
 	// LEADERBOARD DISPLAY TYPE /////////////////
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NONE);										// 0
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NUMERIC);									// 1
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);								// 2
-	BIND_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);							// 3
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NONE);									// 0
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NUMERIC);								// 1
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);							// 2
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);						// 3
 
 	// LEADERBOARD SORT METHOD //////////////////
-	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_NONE);										// 0
-	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_ASCENDING);									// 1
-	BIND_CONSTANT(LEADERBOARD_SORT_METHOD_DESCENDING);									// 2
+	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_NONE);									// 0
+	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_ASCENDING);								// 1
+	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_DESCENDING);								// 2
 
 	// LEADERBOARD UPLOAD SCORE METHOD //////////
-	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD);										// 0
-	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST);							// 1
-	BIND_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE);						// 2
+	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD);								// 0
+	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST);						// 1
+	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE);					// 2
 
 	// STEAM USER STAT TYPE /////////////////////
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_INVALID);										// 0
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_INT);											// 1
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_FLOAT);											// 2
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_AVGRATE);										// 3
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_ACHIEVEMENTS);									// 4
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS);								// 5
-	BIND_CONSTANT(STEAM_USER_STAT_TYPE_MAX);
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_INVALID);									// 0
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_INT);										// 1
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_FLOAT);										// 2
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_AVGRATE);									// 3
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_ACHIEVEMENTS);								// 4
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS);							// 5
+	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_MAX);
 
 	// CHECK FILE SIGNATURE /////////////////////
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_INVALID_SIGNATURE);								// 0
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_VALID_SIGNATURE);								// 1
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_FILE_NOT_FOUND);									// 2
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP);				// 3
-	BIND_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE);				// 4
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_INVALID_SIGNATURE);							// 0
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_VALID_SIGNATURE);							// 1
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_FILE_NOT_FOUND);							// 2
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP);			// 3
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE);			// 4
 
 	// GAMEPAD TEXT INPUT LINE MODE /////////////
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE);							// 0
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES);							// 1
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE);						// 0
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES);					// 1
 
 	// GAMEPAD TEXT INPUT MODE //////////////////
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);										// 0
-	BIND_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);									// 1
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);									// 0
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);								// 1
 
 	// FLOATING GAMEPAD TEXT INPUT MODE /////////
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);						// 0
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);						// 1
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);								// 2
-	BIND_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);							// 3
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);					// 0
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);				// 1
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);							// 2
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);						// 3
 
 	// STEAM API CALL FAILURE ///////////////////
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NONE);											// -1
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);									// 0
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);								// 1
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);								// 2
-	BIND_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);							// 3
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_NONE);									// -1
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);								// 0
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);							// 1
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);							// 2
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);						// 3
 
 	// TEXT FILTERING CONTEXT ///////////////////
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);										// 0
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);									// 1
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);											// 2
-	BIND_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);											// 3
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);									// 0
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);							// 1
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);									// 2
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);									// 3
 
 	// PROFILE ITEM TYPES
-	BIND_CONSTANT(PROFILE_ITEM_TYPE_ANIMATED_AVATAR);									// 0
-	BIND_CONSTANT(PROFILE_ITEM_TYPE_AVATAR_FRAME);										// 1
-	BIND_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_MODIFIER);									// 2
-	BIND_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_BACKGROUND);								// 3
-	BIND_CONSTANT(PROFILE_ITEM_TYPE_MINI_PROFILE_BACKGROUND);							// 4
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_ANIMATED_AVATAR);								// 0
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_AVATAR_FRAME);									// 1
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_MODIFIER);								// 2
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_BACKGROUND);							// 3
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_MINI_PROFILE_BACKGROUND);						// 4
 	
 	// PROFILE ITEM PROPERTIES
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_SMALL);									// 0
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_LARGE);									// 1
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_INTERNAL_NAME);									// 2
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_TITLE);											// 3
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_DESCRIPTION);									// 4
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_APP_ID);										// 5
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_TYPE_ID);										// 6
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_CLASS);											// 7
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM);									// 8
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4);										// 9
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM_SMALL);								// 10
-	BIND_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4_SMALL);								// 11
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_SMALL);								// 0
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_LARGE);								// 1
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_INTERNAL_NAME);							// 2
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_TITLE);									// 3
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_DESCRIPTION);								// 4
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_APP_ID);									// 5
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_TYPE_ID);									// 6
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_CLASS);									// 7
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM);								// 8
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4);								// 9
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM_SMALL);							// 10
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4_SMALL);							// 11
 
 	// DUALSENSE PAD TRIGGER EFFECT MODES
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_OFF);											// 0
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_FEEDBACK);									// 1
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_WEAPON);										// 2
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_VIBRATION);									// 3
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK);					// 4
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK);								// 5
-	BIND_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION);					// 6
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_OFF);									// 0
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_FEEDBACK);								// 1
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_WEAPON);									// 2
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_VIBRATION);								// 3
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK);				// 4
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK);							// 5
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION);			// 6
 }
 
 Steam::~Steam(){
