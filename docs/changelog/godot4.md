@@ -6,6 +6,12 @@
 
 ------
 
+**Version 4.2 Changes**
+
+* Added: various backports from Godot 3.x branch
+* Fixed: options array size for new Networking classes and memory leaks, _thanks to profour_
+* Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
+
 **Version 4.1.5 Changes**
 
 * Added: networking type message constants

@@ -6,6 +6,14 @@
 
 ------
 
+**Version 3.19 Changes**
+
+* Changed: various backports from godot4 branch
+* Fixed: various lobby list functions now return the server_list_request handle
+* Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
+* Fixed: typo in returned dictionary for createSocketPair
+* Fixed: requestInternetServerList causing crashes
+
 **Version 3.18.5 Changes**
 
 * Fixed: createListenSocketP2P

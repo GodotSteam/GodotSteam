@@ -4,10 +4,12 @@
 
 ## cancelQuery
 
-!!! function "cancelQuery( ```uint64_t``` server_list_request )"
+!!! function "cancelQuery( ```uint64_t``` server_list_request = 0 )"
 	Cancel an outstanding server list request.
 
 	You should call this to cancel any in-progress requests before destructing a callback object that may have been passed to one of the below request calls. Not doing so may result in a crash when a callback occurs on the destructed object. Canceling a query does not release the allocated request handle. The request handle must be released using [releaseRequest](/functions/matchmaking_servers/#releaserequest).
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** void
 
@@ -28,8 +30,10 @@
 
 ## getServerCount
 
-!!! function "getServerCount( ```uint64_t``` server_list_request )"
+!!! function "getServerCount( ```uint64_t``` server_list_request = 0 )"
 	Gets the number of servers in the given list. This is used for iterating with [getServerDetails](/functions/matchmaking_servers/#getserverdetails).
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** int
 
@@ -38,10 +42,12 @@
 
 ## getServerDetails
 
-!!! function "getServerDetails( ```uint64_t``` server_list_request, ```int``` server )"
+!!! function "getServerDetails( ```int``` server, ```uint64_t``` server_list_request = 0 )"
 	Get the details of a given server in the list.
 
 	You can get the valid range of index values by calling [getServerCount](/functions/matchmaking_servers/#getservercount). You will also receive index values in [server_responded](/signals/matchmaking_servers/#server_responded) callbacks.
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** dictionary
 
@@ -67,8 +73,10 @@
 
 ## isRefreshing
 
-!!! function "isRefreshing( ```uint64_t``` server_list_request )"
+!!! function "isRefreshing( ```uint64_t``` server_list_request = 0 )"
 	Checks if the server list request is currently refreshing.
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** bool
 	
@@ -105,10 +113,12 @@
 
 ## refreshQuery
 
-!!! function "refreshQuery( ```uint64_t``` server_list_request )"
+!!! function "refreshQuery( ```uint64_t``` server_list_request = 0 )"
 	Ping every server in your list again but don't update the list of servers.
 
 	The query callback installed when the server list was requested will be used again to post notifications and [refresh_complete](/signals/matchmaking_servers/#refresh_complete) will be called again, so the callback must remain valid until it completes or the request is released with [releaseRequest](/functions/matchmaking_servers/#releaserequest).
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** void
 
@@ -117,10 +127,12 @@
 
 ## refreshServer
 
-!!! function "refreshServer( ```uint64_t``` server_list_request, ```int``` server )"
+!!! function "refreshServer( ```int``` server, ```uint64_t``` server_list_request = 0 )"
 	Refreshes a single server inside of a query.
 
 	If you want to refresh all of the servers then you should use [refreshQuery](/functions/matchmaking_servers/#refreshquery).
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** void
 
@@ -129,8 +141,10 @@
 
 ## releaseRequest
 
-!!! function "releaseRequest( ```uint64_t``` server_list_request )"
+!!! function "releaseRequest( ```uint64_t``` server_list_request = 0 )"
 	Releases the asynchronous server list request object and cancels any pending query on it if there's a pending query in progress.
+
+	You can pass a *server_list_request* handle or, if you do not, it will use the last internally stored one.
 
 	**Returns:** void
 
@@ -144,7 +158,7 @@
 
 	[See MatchMakingKeyValuePair_t for more information.](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#MatchMakingKeyValuePair_t){ target="_blank" }
 
-	**Returns:** void
+	**Returns:** uint64_t
 	
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#RequestFavoritesServerList){ .md-button .md-button--store target="_blank" }
@@ -156,7 +170,7 @@
 
 	[See MatchMakingKeyValuePair_t for more information.](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#MatchMakingKeyValuePair_t){ target="_blank" }
 
-	**Returns:** int
+	**Returns:** uint64_t
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#RequestFriendsServerList){ .md-button .md-button--store target="_blank" }
@@ -168,7 +182,7 @@
 
 	[See MatchMakingKeyValuePair_t for more information.](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#MatchMakingKeyValuePair_t){ target="_blank" }
 	
-	**Returns:** int
+	**Returns:** uint64_t
 	
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#RequestHistoryServerList){ .md-button .md-button--store target="_blank" }
@@ -180,7 +194,7 @@
 
 	[See MatchMakingKeyValuePair_t for more information.](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#MatchMakingKeyValuePair_t){ target="_blank" }
 
-	**Returns:** int
+	**Returns:** uint64_t
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#RequestInternetServerList){ .md-button .md-button--store target="_blank" }
@@ -192,7 +206,7 @@
 	
 	[See MatchMakingKeyValuePair_t for more information.](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#MatchMakingKeyValuePair_t){ target="_blank" }
 
-	**Returns:** int
+	**Returns:** uint64_t
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#RequestLANServerList){ .md-button .md-button--store target="_blank" }
@@ -204,7 +218,7 @@
 	
 	[See MatchMakingKeyValuePair_t for more information.](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#MatchMakingKeyValuePair_t){ target="_blank" }
 
-	**Returns:** int
+	**Returns:** uint64_t
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmakingServers#RequestSpectatorServerList){ .md-button .md-button--store target="_blank" }
