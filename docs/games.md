@@ -879,6 +879,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-solid-microphone: ](https://coaguco.com/coagucast/episode/9){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Vlobs -->
+<figure class="game" markdown>
+[![Vlobs](https://steamcdn-a.akamaihd.net/steam/apps/2253080/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2253080/Vlobs/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2253080/Vlobs/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://www.lostminds.com/vlobs/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Wager -->
 <figure class="game" markdown>
 [![Wager](https://steamcdn-a.akamaihd.net/steam/apps/1750810/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1750810/Wager/){ target="_blank" }
