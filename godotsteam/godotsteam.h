@@ -570,7 +570,7 @@ namespace godot {
 			uint64_t getFriendByIndex(int friend_number, int friend_flags);
 			uint32 getFriendCoplayGame(uint64_t friend_id);
 			int getFriendCoplayTime(uint64_t friend_id);
-			int getFriendCount();
+			int getFriendCount(int friend_flags);
 			int getFriendCountFromSource(uint64_t source_id);
 			uint64_t getFriendFromSourceByIndex(uint64_t source_id, int friend_number);
 			Dictionary getFriendGamePlayed(uint64_t steam_id);
@@ -826,22 +826,22 @@ namespace godot {
 			bool setLobbyOwner(uint64_t steam_lobby_id, uint64_t steam_id_new_owner);
 
 			// Matchmaking Servers //////////////////
-			void cancelQuery(uint64_t server_list_request);
+			void cancelQuery(uint64_t server_list_request = 0);
 			void cancelServerQuery(int server_query);
-			int getServerCount(uint64_t server_list_request);
-			Dictionary getServerDetails(uint64_t server_list_request, int server);
-			bool isRefreshing(uint64_t server_list_request);
+			int getServerCount(uint64_t server_list_request = 0);
+			Dictionary getServerDetails(int server, uint64_t server_list_request = 0);
+			bool isRefreshing(uint64_t server_list_request = 0);
 			int pingServer(const String& ip, uint16 port);
 			int playerDetails(const String& ip, uint16 port);
-			void refreshQuery(uint64_t server_list_request);
-			void refreshServer(uint64_t server_list_request, int server);
-			void releaseRequest(uint64_t server_list_request);
-			void requestFavoritesServerList(uint32 app_id, Array filters);
-			void requestFriendsServerList(uint32 app_id, Array filters);
-			void requestHistoryServerList(uint32 app_id, Array filters);
-			void requestInternetServerList(uint32 app_id, Array filters);
-			void requestLANServerList(uint32 app_id);
-			void requestSpectatorServerList(uint32 app_id, Array filters);
+			void refreshQuery(uint64_t server_list_request = 0);
+			void refreshServer(int server, uint64_t server_list_request = 0);
+			void releaseRequest(uint64_t server_list_request = 0);
+			uint64_t requestFavoritesServerList(uint32 app_id, Array filters);
+			uint64_t requestFriendsServerList(uint32 app_id, Array filters);
+			uint64_t requestHistoryServerList(uint32 app_id, Array filters);
+			uint64_t requestInternetServerList(uint32 app_id, Array filters);
+			uint64_t requestLANServerList(uint32 app_id);
+			uint64_t requestSpectatorServerList(uint32 app_id, Array filters);
 			int serverRules(const String& ip, uint16 port);
 
 			// Music ////////////////////////////////

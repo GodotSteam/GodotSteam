@@ -998,11 +998,11 @@ int Steam::getFriendCoplayTime(uint64_t friend_id){
 }
 
 //! Get number of friends user has.
-int Steam::getFriendCount(){
+int Steam::getFriendCount(int friend_flags){
 	if(SteamFriends() == NULL){
 		return 0;
 	}
-	return SteamFriends()->GetFriendCount(0x04);
+	return SteamFriends()->GetFriendCount(friend_flags);
 }
 
 //! Iterators for getting users in a chat room, lobby, game server or clan.
@@ -3370,7 +3370,18 @@ void Steam::addRequestLobbyListFilterSlotsAvailable(int slots_available){
 //! Sets the distance for which we should search for lobbies (based on users IP address to location map on the Steam backed).
 void Steam::addRequestLobbyListDistanceFilter(int distance_filter){
 	if(SteamMatchmaking() != NULL){
-		SteamMatchmaking()->AddRequestLobbyListDistanceFilter((ELobbyDistanceFilter)distance_filter);
+		if(distance_filter == 1){
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterDefault);
+		}
+		else if(distance_filter == 2){
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
+		}
+		else if(distance_filter == 3){
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterWorldwide);
+		}
+		else{
+			SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterClose);
+		}
 	}
 }
 
@@ -3628,9 +3639,13 @@ bool Steam::setLobbyOwner(uint64_t steam_lobby_id, uint64_t steam_id_new_owner){
 /////////////////////////////////////////////////
 //
 //! Cancel an outstanding server list request.
-void Steam::cancelQuery(uint64_t server_list_request){
+void Steam::cancelQuery(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->CancelQuery((HServerListRequest)server_list_request);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->CancelQuery((HServerListRequest)this_server_list_request);
 	}
 }
 
@@ -3642,20 +3657,28 @@ void Steam::cancelServerQuery(int server_query){
 }
 
 //! Gets the number of servers in the given list.
-int Steam::getServerCount(uint64_t server_list_request){
+int Steam::getServerCount(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() == NULL){
 		return 0;
 	}
-	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)server_list_request);
+	// If no request list handle was passed, use the internal one
+	if(this_server_list_request == 0){
+		this_server_list_request = (uint64)server_list_request;
+	}
+	return SteamMatchmakingServers()->GetServerCount((HServerListRequest)this_server_list_request);
 }
 
 //! Get the details of a given server in the list.
-Dictionary Steam::getServerDetails(uint64_t server_list_request, int server){
+Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request){
 	// Create a dictionary to populate
 	Dictionary game_server;
 	if(SteamMatchmakingServers() != NULL){
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
 		gameserveritem_t* server_item = new gameserveritem_t;
-		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)server_list_request, server);
+		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
 		// Populate the dictionary
 		game_server["ping"] = server_item->m_nPing;
 		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
@@ -3679,11 +3702,15 @@ Dictionary Steam::getServerDetails(uint64_t server_list_request, int server){
 }
 
 //! Returns true if the list is currently refreshing its server list.
-bool Steam::isRefreshing(uint64_t server_list_request){
+bool Steam::isRefreshing(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() == NULL){
 		return false;
 	}
-	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)server_list_request);
+	// If no request list handle was passed, use the internal one
+	if(this_server_list_request == 0){
+		this_server_list_request = (uint64)server_list_request;
+	}
+	return SteamMatchmakingServers()->IsRefreshing((HServerListRequest)this_server_list_request);
 }
 
 //! Queries an individual game servers directly via IP/Port to request an updated ping time and other details from the server.
@@ -3715,28 +3742,41 @@ int Steam::playerDetails(const String& ip, uint16 port){
 }
 
 //! Ping every server in your list again but don't update the list of servers. Query callback installed when the server list was requested will be used again to post notifications and RefreshComplete, so the callback must remain valid until another RefreshComplete is called on it or the request is released with ReleaseRequest( hRequest ).
-void Steam::refreshQuery(uint64_t server_list_request){
+void Steam::refreshQuery(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->RefreshQuery((HServerListRequest)server_list_request);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->RefreshQuery((HServerListRequest)this_server_list_request);
 	}
 }
 
 //! Refresh a single server inside of a query (rather than all the servers).
-void Steam::refreshServer(uint64_t server_list_request, int server){
+void Steam::refreshServer(int server, uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->RefreshServer((HServerListRequest)server_list_request, server);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->RefreshServer((HServerListRequest)this_server_list_request, server);
 	}
 }
 
 //! Releases the asynchronous request object and cancels any pending query on it if there's a pending query in progress.
-void Steam::releaseRequest(uint64_t server_list_request){
+void Steam::releaseRequest(uint64_t this_server_list_request){
 	if(SteamMatchmakingServers() != NULL){
-		SteamMatchmakingServers()->ReleaseRequest((HServerListRequest)server_list_request);
+		// If no request list handle was passed, use the internal one
+		if(this_server_list_request == 0){
+			this_server_list_request = (uint64)server_list_request;
+		}
+		SteamMatchmakingServers()->ReleaseRequest((HServerListRequest)this_server_list_request);
 	}
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestFavoritesServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestFavoritesServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3765,10 +3805,12 @@ void Steam::requestFavoritesServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestFriendsServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestFriendsServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3797,10 +3839,12 @@ void Steam::requestFriendsServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestHistoryServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestHistoryServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3829,10 +3873,12 @@ void Steam::requestHistoryServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestInternetServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestInternetServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3861,17 +3907,21 @@ void Steam::requestInternetServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestLANServerList(uint32 app_id){
+uint64_t Steam::requestLANServerList(uint32 app_id){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		server_list_request = SteamMatchmakingServers()->RequestLANServerList((AppId_t)app_id, server_list_response);
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
-void Steam::requestSpectatorServerList(uint32 app_id, Array filters){
+uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters){
+	server_list_request = 0;
 	if(SteamMatchmakingServers() != NULL){
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t* filters_array = new MatchMakingKeyValuePair_t[filter_size];
@@ -3900,6 +3950,7 @@ void Steam::requestSpectatorServerList(uint32 app_id, Array filters){
 		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
 	}
+	return (uint64)server_list_request;
 }
 
 //! Request the list of rules that the server is running (See ISteamGameServer::SetKeyValue() to set the rules server side)
@@ -4491,9 +4542,8 @@ uint32 Steam::createListenSocketIP(const String& ip_reference, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	const SteamNetworkingConfigValue_t *these_options = new SteamNetworkingConfigValue_t[sizeof(options)];
-	these_options = convertOptionsArray(options);
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], sizeof(options), these_options);
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], options.size(), these_options);
 	delete[] these_options;
 	return listen_socket;
 }
@@ -4503,7 +4553,9 @@ uint32 Steam::createListenSocketP2P(int virtual_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, options.size(), these_options);
+	delete[] these_options;
 	return listen_socket;
 }
 
@@ -4520,7 +4572,10 @@ uint32 Steam::connectToHostedDedicatedServer(const String& identity_reference, i
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 //! Accept an incoming connection that has been received on a listen socket.
@@ -4562,7 +4617,7 @@ Dictionary Steam::createSocketPair(bool loopback, const String& identity_referen
 		// Populate the dictionary
 		connection_pair["success"] = success;
 		connection_pair["connection1"] = connection1;
-		connection_pair["connect2"] = connection2;
+		connection_pair["connection2"] = connection2;
 	}
 	return connection_pair;
 }
@@ -4886,7 +4941,10 @@ uint32 Steam::createHostedDedicatedServerListenSocket(int port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 // Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)
@@ -5062,7 +5120,10 @@ uint32 Steam::createListenSocketP2PFakeIP(int fake_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, sizeof(options), convertOptionsArray(options));
+	const SteamNetworkingConfigValue_t *these_options = convertOptionsArray(options);
+	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, options.size(), these_options);
+	delete[] these_options;
+	return listen_socket;
 }
 
 // If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
@@ -5341,7 +5402,7 @@ String Steam::toIdentityString(const String& reference_name){
 // Helper function to turn an array of options into an array of SteamNetworkingConfigValue_t structs
 const SteamNetworkingConfigValue_t* Steam::convertOptionsArray(Array options){
 	// Get the number of option arrays in the array.
-	int options_size = sizeof(options);
+	int options_size = options.size();
 	// Create the array for options.
 	SteamNetworkingConfigValue_t *option_array = new SteamNetworkingConfigValue_t[options_size];
 	// If there are options
@@ -7564,11 +7625,13 @@ Dictionary Steam::decompressVoice(const PoolByteArray& voice, uint32 voice_size,
 	if(SteamUser() != NULL){
 		uint32 written = 0;
 		PoolByteArray outputBuffer;
-		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, &outputBuffer, outputBuffer.size(), &written, sample_rate);
+		outputBuffer.resize(20480); // 20KiB buffer
+		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, outputBuffer.write().ptr(), outputBuffer.size(), &written, sample_rate);
 		if(result == 0){
 			decompressed["uncompressed"] = outputBuffer;
 			decompressed["size"] = written;
 		}
+		decompressed["result"] = result; // Include result for debugging
 	}
 	return decompressed;
 }
@@ -7665,8 +7728,10 @@ Dictionary Steam::getVoice(){
 	Dictionary voice_data;
 	if(SteamUser() != NULL){
 		uint32 written = 0;
-		uint8 buffer[1024];
-		int result = SteamUser()->GetVoice(true, &buffer, 1024, &written, false, NULL, 0, NULL, 0);
+		PoolByteArray buffer = PoolByteArray();
+		buffer.resize(8192); // Steam suggests 8Kb of buffer space per call
+		int result = SteamUser()->GetVoice(true, buffer.write().ptr(), 8192, &written, false, NULL, 0, NULL, 0);
+		buffer.resize(written); 
 		// Add the data to the dictionary
 		voice_data["result"] = result;
 		voice_data["written"] = written;
@@ -10669,11 +10734,18 @@ void Steam::leaderboard_score_uploaded(LeaderboardScoreUploaded_t *call_data, bo
 	else{
 		uint64_t this_handle = call_data->m_hSteamLeaderboard;
 		uint8 success = call_data->m_bSuccess;
+		// Create dictionary since Godot will not allow more than six properties to be sent back
+		Dictionary this_score;
 		int32 score = call_data->m_nScore;
 		uint8 score_changed = call_data->m_bScoreChanged;
 		int global_rank_new = call_data->m_nGlobalRankNew;
 		int global_rank_prev = call_data->m_nGlobalRankPrevious;
-		emit_signal("leaderboard_score_uploaded", success, this_handle, score, score_changed, global_rank_new, global_rank_prev);
+		// Populate dictionary
+		this_score["score"] = score;
+		this_score["score_changed"] = score_changed;
+		this_score["global_rank_new"] = global_rank_new;
+		this_score["global_rank_prev"] = global_rank_prev;
+		emit_signal("leaderboard_score_uploaded", success, this_handle, this_score);
 	}
 }
 
