@@ -27,7 +27,7 @@ Known Issues
 
 Quick How-To
 ----------
-For complete instructions on how to build the GDNative version of GodotSteam, [please refer to our documentation 'How-To GDNative'](https://godotsteam.com/howto_gdnative/)  It will have the most up-to-date information.
+For complete instructions on how to build the GDNative version of GodotSteam, [please refer to our documentation's 'How-To GDNative' section.](https://godotsteam.com/howto_gdnative/)  It will have the most up-to-date information.
 
 Usage
 ----------
