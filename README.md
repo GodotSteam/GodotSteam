@@ -3,8 +3,10 @@ An open-source and fully functional Steamworks SDK / API module and plug-in for 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
+- [Server](https://github.com/Gramps/GodotSteam/tree/server)
+- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
+- [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
 
 Documentation
 ----------
