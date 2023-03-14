@@ -731,6 +731,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2011750/Silver_Lines/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- SKIP -->
+<figure class="game" markdown>
+[![SKIP](https://steamcdn-a.akamaihd.net/steam/apps/2330090/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2330090/SKIP/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2330090/SKIP/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Somnipathy -->
 <figure class="game" markdown>
 [![Somnipathy](https://steamcdn-a.akamaihd.net/steam/apps/2069260/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2069260/Somnipathy/){ target="_blank" }
@@ -867,6 +874,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1797140/UFOTOFU_HEX/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-firefox-browser: ](https://inflo.games/projects/ufotofuhex/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-twitter: ](https://twitter.com/inflogamescoop){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- Unforgettable Voyage -->
+<figure class="game" markdown>
+[![Unforgettable Voyage](https://steamcdn-a.akamaihd.net/steam/apps/2149560/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2149560/Unforgettable_Voyage//){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2149560/Unforgettable_Voyage/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Virtual Cottage -->
