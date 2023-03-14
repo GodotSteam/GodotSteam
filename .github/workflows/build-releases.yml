@@ -4,25 +4,25 @@ on:
   workflow_dispatch:
     inputs:
       STEAMWORKS_SDK_TAG:
-        description: 'Steamworks sdk tag to be used.'
+        description: 'Steamworks SDK tag to be used.'
         required: true
         default: 'sdk-1.55'
       GODOT_TAG:
-        description: 'Godot beta tag.'
+        description: 'Godot version tag.'
         required: true
-        default: 'beta14'
+        default: '4.0-stable'
       VERSION_TAG:
-        description: 'Godot version used in g4b14 format.'
+        description: 'GodotSteam version tag.'
         required: true
-        default: 'g4b14'
+        default: 'gs42'
       ZIP_TAG:
-        description: 'Filename in g4b14-s155-gs415 format.'
+        description: 'Filename format.'
         required: true
-        default: 'g4b14-s155-gs415'
+        default: 'g4-s155-gs42'
       RELEASE_TITLE:
         description: 'The name of the Github release.'
         required: true
-        default: 'Godot 4 Beta 14 - Steamworks 1.55 - GodotSteam 4.1.5'
+        default: 'Godot 4 - Steamworks 1.55 - GodotSteam 4.2'
 
 jobs:
   env-setup:
@@ -61,7 +61,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.linuxbsd.editor.x86_64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-editor.x86_64"
+      export_name: "linux-${{ needs.env-setup.outputs.godot_tag }}-editor.x86_64"
       build_params: "-j4 platform=linuxbsd production=yes tools=yes target=editor bits=64"
       artifact_name: "linux-editor"
     secrets:
@@ -76,7 +76,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.linuxbsd.template_release.x86_64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-template.x86_64"
+      export_name: "linux-${{ needs.env-setup.outputs.godot_tag }}-template.x86_64"
       build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_release bits=64"
       artifact_name: "linux-release-template"
     secrets:
@@ -91,7 +91,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: "godot.linuxbsd.template_debug.x86_64"
-      export_name: "linux-${{ needs.env-setup.outputs.version_tag }}-debug-template.x86_64"
+      export_name: "linux-${{ needs.env-setup.outputs.godot_tag }}-debug-template.x86_64"
       build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_debug bits=64"
       artifact_name: "linux-debug-template"
     secrets:
@@ -144,7 +144,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.editor.x86_64.exe
-      export_name: "win64-${{ needs.env-setup.outputs.version_tag }}-editor.exe"
+      export_name: "win64-${{ needs.env-setup.outputs.godot_tag }}-editor.exe"
       build_params: "-j4 platform=windows production=yes tools=yes target=editor debug_symbols=no"
       artifact_name: "win64-editor"
     secrets:
@@ -159,7 +159,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.template_release.x86_64.exe
-      export_name: "win64-${{ needs.env-setup.outputs.version_tag }}-template.exe"
+      export_name: "win64-${{ needs.env-setup.outputs.godot_tag }}-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=template_release debug_symbols=no"
       artifact_name: "win64-release-template"
     secrets:
@@ -174,7 +174,7 @@ jobs:
       godot_tag: ${{needs.env-setup.outputs.godot_tag}}
       version_tag: ${{needs.env-setup.outputs.version_tag}}
       binary_name: godot.windows.template_debug.x86_64.exe
-      export_name: "win64-${{ needs.env-setup.outputs.version_tag }}-debug-template.exe"
+      export_name: "win64-${{ needs.env-setup.outputs.godot_tag }}-debug-template.exe"
       build_params: "-j4 platform=windows production=yes tools=no target=template_debug debug_symbols=no"
       artifact_name: "win64-debug-template"
     secrets:
