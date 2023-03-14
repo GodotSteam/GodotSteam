@@ -15,7 +15,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* session_error (uint8_t)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](ttps://partner.steamgames.com/doc/api/ISteamNetworking#P2PSessionConnectFail_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworking#P2PSessionConnectFail_t){ .md-button .md-button--store target="_blank" }
 
 ## p2p_session_request
 
@@ -27,4 +27,4 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* steam_id_remote (uint64_t)
 
 	---
-	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](ttps://partner.steamgames.com/doc/api/ISteamNetworking#P2PSessionRequest_t){ .md-button .md-button--store target="_blank" }
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworking#P2PSessionRequest_t){ .md-button .md-button--store target="_blank" }

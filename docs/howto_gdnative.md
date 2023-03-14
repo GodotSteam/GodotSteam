@@ -1,7 +1,12 @@
 # How-To GDNative
 
+## Please Note
 
----------
+If you are using the GDNative version of GodotSteam, make sure **not to download or use the module version** in tandem; it will cause a lot of problems.  The two are not compatible with each other.
+
+This also means you cannot use the GodotSteam templates for exporting; you must use the normal Godot templates.
+
+---
 ## 1a. Downloading
 
 Just like the module version, the easiest way to use GodotSteam is downloading the plug-in and installing it into your project.
@@ -13,7 +18,7 @@ Just like the module version, the easiest way to use GodotSteam is downloading t
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
--------
+---
 ## 1b. Compile Yourself
 
 For those of you who are comfortable compiling or want to give it a shot, here are some steps to follow.
@@ -36,7 +41,7 @@ For those of you who are comfortable compiling or want to give it a shot, here a
   scons platform=<your platform> generate_bindings=yes target=release
 ````
 
--------
+---
 ## 2. Setting Up the SDK
 
 Move the following from the unzipped Steamworks SDK to the **/godotsteam/sdk** folder:
@@ -45,7 +50,7 @@ Move the following from the unzipped Steamworks SDK to the **/godotsteam/sdk** f
     sdk/redistributable_bin/
 ````
 
--------
+---
 ## 3. Double-Checking Folder / File Structure
 
 The compiling directory contents should now look like this:
@@ -75,7 +80,7 @@ The compiling directory contents should now look like this:
   LICENSE.txt
 ````
 
--------
+---
 ## 4. Compiling Time
 
 === "Windows users using VS"
@@ -115,7 +120,7 @@ The compiling directory contents should now look like this:
     scons platform=<your platform> production=yes target=release
     ````
 
--------
+---
 ## 5. Altogether Now
 
 Copy the **/win64**, **/linuxbsd**, or **/osx** folder from within the **GDNative/bin/** folder then place it into the **/addons/godotsteam/** folder inside your **game's project folder**. Then you will want to copy the matching Steam API file and put it in with the corresponding platform's folder.
@@ -213,7 +218,7 @@ Save the scene as **steam.tscn** and place it where ever you want.  Now navigate
 
 Done!
 
--------
+---
 ## 6. Usage
 
 Now you should be able to call functions from **Steam** like you would normally with the **GodotSteam module**.  They will, however, have to be added to your **steam.gd** script like this:
@@ -240,9 +245,9 @@ Make sure to create a file called **steam_appid.txt** and place it with your edi
 
 The documentation for GodotSteam should apply to GodotSteam GDNative as they are built from the same code and have all the same functions; generally speaking.
 
--------
-## 7. Shipping Your Game
+---
+## 7. Exporting / Shipping Your Game
 
-You should be able to export your game with the normal Godot templates.
+For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](/tutorials/exporting_shipping/)
 
-When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.
+That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember. When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.

@@ -92,7 +92,7 @@ nav:
     - Users: 'enums/users.md'
     - User Stats: 'enums/user_stats.md'
     - Utils: 'enums/utils.md'
-  - Godot 3.x Tutorials:
+  - Tutorials:
     - Achievement Icons: 'tutorials/achievement_icons.md'
     - Authentication: 'tutorials/authentication.md'
     - Auto-Matchmaking: 'tutorials/auto_matchmaking.md'

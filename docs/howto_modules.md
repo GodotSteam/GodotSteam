@@ -10,7 +10,6 @@ By far the easiest way to use GodotSteam is to download our pre-compiled editors
 - [x] Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases){ target="_blank" } and unpack it.
 - [x] Alternatively you can download and install the [GDNative plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1045){ target="_blank" }.
 - [x] Everything you need should be included.
-    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](/tutorials/linux_caveats/){ target="_blank" }.
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
@@ -143,6 +142,8 @@ Lack of the **Steam API .dll/.so/.dylib**, for your respective OS, or the **stea
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to [read the Steamworks API documentation](https://partner.steamgames.com/doc/home){ target="_blank" } to see what all is available and cross-reference with GodotSteam's documentation.
 
 ------
-## 7. Shipping Your Game
+## 7. Exporting / Shipping Your Game
 
-When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.
+For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](/tutorials/exporting_shipping/)
+
+That being said, here is a quick run-down of things to remember. When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.

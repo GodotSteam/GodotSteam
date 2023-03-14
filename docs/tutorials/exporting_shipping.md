@@ -2,6 +2,8 @@
 
 This topic comes up a lot and _also_ trips folks up a lot; so this tutorial is here to help.  Exporting and shipping your game with GodotSteam is pretty easy once you get the flow down. This tutorial assumes you are downloading pre-compiled versions of the GodotSteam templates instead of compiling them; however, it will obviously work the same with the ones you compile yourself.
 
+Please note that if you are using the GDNative version of GodotSteam, this tutorial does not apply to you.  You will need to use the normal Godot templates either installed throught the normal editor or downloaded from their site.  Using the GodotSteam templates with the GDNative version will cause you a lot of issues.
+
 ---
 
 ## Exporting
@@ -64,4 +66,4 @@ On the next screen you will want to click on the "Install From File" button and 
 
 ![Install From File](/assets/images/export-ship1-2.png){ loading=lazy }
 
-At the time of writing, I am not sure how the editor decides which templates to use if you have both the regular Godot templates _and_ the custom GodotSteam templates installed.  If anyone does, [please feel free to reach out.](mailto:hello@godotsteam.com)
+Despite "installing" the templates, you will still have to select them in the custom template fields during export; which is why this step is optional.

@@ -24,26 +24,41 @@ var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
 
 This buffer contains the actual image data for our icon. However, as this buffer is simply binary data, we need to load it into an Image so that Godot can use it as a Texture:
 
-````
-var SIZE: int = 32
-var ICON: Image = Image.new()
-var ICON_TEXTURE: ImageTexture = ImageTexture.new()
+=== "Godot 2.x, 3.x"
+	````
+	var SIZE: int = 32
+	var ICON: Image = Image.new()
+	var ICON_TEXTURE: ImageTexture = ImageTexture.new()
 
-````
+	````
+=== "Godot 4.x"
+	````
+	var SIZE: int = 32
+	````
 
 The size variable can be whatever you want; for our example we will use 32 (32 pixels by 32 pixels).
 
 Now that we've made our Image and Texture objects, we can load the buffer data into the Image. Note the format we use (RGBA8); this is the format the data in the buffer takes when we receive it from Steam, and so in order for Godot to know how to make sense of it, we need to ensure it is correct:
 
-````
-ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
-````
+=== "Godot 2.x, 3.x"
+	````
+	ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
+	````
+=== "Godot 4.x"
+	````
+	var ICON: Image = Image.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
+	````
 
 Now that all the pixels are set in the right places, we can create the texture:
 
-````	
-ICON_TEXTURE.create_from_image(ICON)
-````
+=== "Godot 2.x, 3.x"
+	````
+	ICON_TEXTURE.create_from_image(ICON)
+	````
+=== "Godot 4.x"
+	````
+	var ICON_TEXTURE: ImageTexture = ImageTexture.create_from_image(ICON)
+	````
 
 Finally we can display the icon.  Using the previous ICON_TEXTURE, we can place this icon on our waiting sprite:
 
@@ -57,27 +72,47 @@ get_node("Sprite").set_texture(ICON_TEXTURE)
 
 Our complete example should look something like this:
 
-````
-# Set up some icon variables
-var SIZE: int = 32
+=== "Godot 2.x, 3.x"
+	````
+	# Set up some icon variables
+	var SIZE: int = 32
 
-# Get the image's handle
-var HANDLE: int = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
+	# Get the image's handle
+	var HANDLE: int = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
 
-# Get the image data
-var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
+	# Get the image data
+	var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
 
-#Create the image and texture for loading
-var ICON: Image = Image.new()
-var ICON_TEXTURE: ImageTexture = ImageTexture.new()
-ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
+	#Create the image and texture for loading
+	var ICON: Image = Image.new()
+	var ICON_TEXTURE: ImageTexture = ImageTexture.new()
+	ICON.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
 
-# Apply it to the texture
-ICON_TEXTURE.create_from_image(ICON)
+	# Apply it to the texture
+	ICON_TEXTURE.create_from_image(ICON)
 
-# Display it on a sprite node
-get_node("Sprite").set_texture(ICON_TEXTURE)
-````
+	# Display it on a sprite node
+	get_node("Sprite").set_texture(ICON_TEXTURE)
+	````
+=== "Godot 4.x"
+	````
+	# Set up some icon variables
+	var SIZE: int = 32
+
+	# Get the image's handle
+	var HANDLE: int = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
+
+	# Get the image data
+	var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
+
+	#Create the image and texture for loading
+	var ICON: Image = Image.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGBA8, buffer)
+
+	# Apply it to the texture
+	var ICON_TEXTURE: ImageTexture = ImageTexture.create_from_image(ICON)
+
+	get_node("Sprite").set_texture(ICON_TEXTURE)
+	````
 
 ---
 

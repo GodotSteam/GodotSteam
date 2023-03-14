@@ -70,7 +70,7 @@ func _check_Command_Line() -> void:
 	if ARGUMENTS.size() > 0:
 
 		# A Steam connection argument exists
-		if ARGUMENT[0] == "+connect_lobby":
+		if ARGUMENTS[0] == "+connect_lobby":
 		
 			# Lobby invite exists so try to connect to it
 			if int(ARGUMENTS[1]) > 0:
