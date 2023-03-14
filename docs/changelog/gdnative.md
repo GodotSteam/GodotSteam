@@ -4,6 +4,10 @@
 
 ------
 
+**Version 3.6 Changes**
+
+* Changed: brought the plug-in version up to speed with the module version
+
 **Version 3.5.1 Changes**
 
 * Changed: createSteamID function to use proper 64-bit int
