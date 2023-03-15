@@ -6558,9 +6558,13 @@ bool Steam::addRequiredTagGroup(uint64_t query_handle, Array tag_array){
 		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
 		tags->m_ppStrings = new const char*[tag_array.size()];
 		uint32 strCount = tag_array.size();
+		// Needed to ensure the CharStrings are still alive when submitted
+		Vector<CharString> tag_char_strs;
 		for (uint32 i=0; i < strCount; i++) {
 			String str = (String)tag_array[i];
-			tags->m_ppStrings[i] = str.utf8().get_data();
+			CharString char_str = str.utf8();
+			tag_char_strs.push_back(char_str);
+			tags->m_ppStrings[i] = char_str.get_data();
 		}
 		tags->m_nNumStrings = tag_array.size();
 		added_tag_group = SteamUGC()->AddRequiredTagGroup(handle, tags);
@@ -7330,9 +7334,13 @@ bool Steam::setItemTags(uint64_t update_handle, Array tag_array){
 		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
 		tags->m_ppStrings = new const char*[tag_array.size()];
 		uint32 strCount = tag_array.size();
+		// Needed to ensure the CharStrings are still alive when submitted
+		Vector<CharString> tag_char_strs;
 		for (uint32 i=0; i < strCount; i++) {
 			String str = (String)tag_array[i];
-			tags->m_ppStrings[i] = str.utf8().get_data();
+			CharString char_str = str.utf8();
+			tag_char_strs.push_back(char_str);
+			tags->m_ppStrings[i] = char_str.get_data();
 		}
 		tags->m_nNumStrings = tag_array.size();
 		tags_set = SteamUGC()->SetItemTags(handle, tags);
