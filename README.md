@@ -18,6 +18,9 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v3.19)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.19.1 Changes**
+- Fixed: issue with UGC tags occasionally getting lost upon update, _thanks to EIREXE_
+
 **Version 3.19 Changes**
 - Changed: various backports from godot4 branch
 - Fixed: various lobby list functions now return the server_list_request handle
