@@ -311,6 +311,16 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-discord: ](https://discord.gg/hTtTpGVHCU){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Hexes -->
+<figure class="game" markdown>
+[![Hexes](https://steamcdn-a.akamaihd.net/steam/apps/1977770/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1977770/Hexes/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1977770/Hexes/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://elektri.ca){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/Learyt_Tekuzo){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-facebook: ](https://www.facebook.com/elektricanada){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Hot Tiles -->
 <figure class="game" markdown>
 [![Hot Tiles](https://steamcdn-a.akamaihd.net/steam/apps/1365540/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1365540/Hot_Tiles/){ target="_blank" }
