@@ -27,7 +27,8 @@ You can [download pre-compiled versions _(currently v4.2)_ of this repo here](ht
 
 Known Issues
 ----------
-- Since Godot 4 is still in beta, this should not be used for production!
+- Steam overlay will not work when running your game from the editor if you are using Forward+ as the renderer.  It does work with Compatibility though.
+  - Your exported project will work perfectly fine in the Steam client, however.
 - **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.
 
 "Quick" How-To
