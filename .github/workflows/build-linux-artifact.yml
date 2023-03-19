@@ -7,9 +7,6 @@ on:
       godot_tag:
         required: true
         type: string
-      version_tag:
-        required: true
-        type: string
       binary_name:
         required: true
         type: string
@@ -35,20 +32,12 @@ jobs:
     
     steps:
       # Checkout Godot
-      # - name: Checkout Godot
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: "godotengine/godot"
-      #     path: "godot"
-      #     ref: ${{ inputs.godot_tag }}
-      # Checkout Godot4 beta
-      - name: Download Godot 4 beta
-        run: |
-          URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
-          curl ${URLVAR} -o godot4.tar.xz
-          tar -xvf godot4.tar.xz
-          rm godot4.tar.xz
-          mv godot* godot
+      - name: Checkout Godot
+        uses: actions/checkout@v3
+        with:
+          repository: "godotengine/godot"
+          path: "godot"
+          ref: ${{ inputs.godot_tag }}
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
@@ -73,15 +62,14 @@ jobs:
           ls -la godot/modules/godotsteam/sdk
       - name: Install Build Requirements
         run: |
-          # Apparently Azure repositories are terribly unreliable, so copy out the list from Godot itself
-          sudo rm -f /etc/apt/sources.list.d/*
-          sudo cp -f godot/misc/ci/sources.list /etc/apt/sources.list
+          sudo add-apt-repository ppa:kisak/kisak-mesa
           sudo apt-get update
           # The actual dependencies
           sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev \
               libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev \
               libdbus-1-dev libudev-dev libxi-dev libxrandr-dev yasm xvfb wget unzip \
               llvm libspeechd-dev speech-dispatcher fontconfig libfontconfig-dev
+          sudo apt-get install -qq mesa-vulkan-drivers
       - name: Build Linux Editor
         working-directory: "godot"
         run: |
