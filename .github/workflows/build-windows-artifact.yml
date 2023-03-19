@@ -7,9 +7,6 @@ on:
       godot_tag:
         required: true
         type: string
-      version_tag:
-        required: true
-        type: string
       binary_name:
         required: true
         type: string
@@ -30,7 +27,7 @@ on:
 
 
 jobs:
-  build-linux:
+  build-windows:
     runs-on: windows-latest
     
     steps:
@@ -89,11 +86,4 @@ jobs:
           name: win_steam_api_64
           path: |
             godot/modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll
-          retention-days: 1
-      - name: Upload Windows 32 bit Steam File
-        uses: actions/upload-artifact@v3
-        with:
-          name: win_steam_api_32
-          path: |
-            godot/modules/godotsteam/sdk/redistributable_bin/steam_api.dll
           retention-days: 1
