@@ -1,5 +1,5 @@
 # GodotSteam for GDExtension
-An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and (soon) Mac platforms. 
 
 Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
@@ -28,7 +28,7 @@ Known Issues
 Quick How-To
 ---
 Obtain the plugin through one of two ways:
-- Visit the Godot Asset Library either through the website or in the editor and search for GodotSteam.
+- Visit the [Godot Asset Library[(https://godotengine.org/asset-library/asset/7469) either through the website or in the editor and search for GodotSteam.
 - Download this repo and unzip it into the base of your game project.
 
 You will need to add the steam_appid.txt file with 480 or your game's app ID to where ever you have your Godot editor.  It should just work without having to do anything else.
