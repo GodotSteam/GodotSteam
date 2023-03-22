@@ -1,0 +1,15 @@
+[configuration]
+entry_symbol = "godotsteam_init"
+
+[libraries]
+macos.debug = "res://addons/godotsteam/osx/libgodotsteam.macos.template_debug.framework"
+macos.release = "res://addons/godotsteam/osx/libgodotsteam.macos.template_release.framework"
+windows.debug.x86_64 = "res://addons/godotsteam/win64/godotsteam.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/godotsteam/win64/godotsteam.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://addons/godotsteam/linux/libgodotsteam.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/godotsteam/linux/libgodotsteam.linux.template_release.x86_64.so"
+
+[dependencies]
+macos.universal = { "res://addons/godotsteam/osx/libsteam_api.dylib": "" }
+windows.x86_64 = { "res://addons/godotsteam/win64/steam_api64.dll": "" }
+linux.x86_64 = { "res://addons/godotsteam/linux/libsteam_api.so": "" }
