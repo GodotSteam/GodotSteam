@@ -88,6 +88,9 @@ pre {
 .admonition a.md-button {
 	text-align: center !important;
 }
+.admonition-title {
+	text-align: left !important;
+}
 @media (hover:none) {
 	.md-typeset abbr {
  		position:relative

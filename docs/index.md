@@ -98,6 +98,18 @@ Just download and go with either pre-compiled module-enable editors / templates 
 	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/gdnative-plugin){ .md-button .md-button--primary target="_blank" }
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdnative-plugin){ .md-button .md-button--primary target="_blank" }
 
+!!! compile "GDExtension Plug-in - Godot Asset Library"
+	Get integrating Steamworks into your game with the GDExtension plug-in via Godot Asset Library
+
+	[Get Yours](https://godotengine.org/asset-library/asset/7469){ .md-button .md-button--primary target="_blank" }
+
+!!! source "GDExtension Plug-In - GitHub Pre-compile" 
+	Drops right into your game so you can start tinkering; versions 3.4.5 to 3.5.2
+
+	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/gdextension-plugin){ .md-button .md-button--primary target="_blank" }
+	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdextension-plugin){ .md-button .md-button--primary target="_blank" }
+
+
 </div>
 
 ---
