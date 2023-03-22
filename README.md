@@ -1,4 +1,4 @@
-# GodotSteam for GDNative
+# GodotSteam for GDExtension
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
@@ -16,7 +16,21 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-We currently do not have an in-depth how-to for this branch but it is coming.  However, it is functional thanks to the great work of @vaartis!  Since this is still an early work-in-progress, please except bugs and do not use this for production.  All pull requests are welcome!
+You can [download pre-compiled versions _(currently v4.2)_ of this repo here.](https://github.com/Gramps/GodotSteam/releases)
+
+Version 4.2 Changes
+
+- Changed: code so it works like a singleton / module
+- Changed: brought this version up-to-speed with the 4.x module version
+- Fixed: weird issues with uint8/uint16 bindings
+
+Known Issues
+---
+- Overlay will not work in the editor but will work in export projects when uploaded to Steam.  This seems to a limitation with Vulkan currently.
+
+Quick How-To
+---
+For complete instructions on how to build the GDExtension version of GodotSteam, [please refer to our documentation's 'How-To GDExtension' section.](https://godotsteam.com/howto_gdextension/) It will have the most up-to-date information.
 
 Donate
 ---
