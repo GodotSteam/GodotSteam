@@ -10,6 +10,7 @@ nav:
   - How-To's:
     - How-To Godot 2, 3, 4: 'howto_modules.md'
     - How-To GDNative: 'howto_gdnative.md'
+    - How-To GDExtension: 'howto_gdextension.md'
   - Functions:
     - Main: 'functions/main.md'
     - App Lists: 'functions/app_lists.md'

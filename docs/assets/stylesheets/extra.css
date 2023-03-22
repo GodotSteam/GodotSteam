@@ -82,6 +82,12 @@ pre {
 .md-typeset pre>code:hover {
 	scrollbar-color:var(--md-accent-fg-color) transparent;
 }
+.admonition {
+	text-align: center !important;
+}
+.admonition a.md-button {
+	text-align: center !important;
+}
 @media (hover:none) {
 	.md-typeset abbr {
  		position:relative

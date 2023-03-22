@@ -34,13 +34,13 @@ Roll up your sleeves and build your own versions of GodotSteam.  It does also re
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdnative){ .md-button .md-button--primary target="_blank" }
 
 !!! source "Godot Engine 4.x"
-	Currently experimental branch for the beta Godot 4; versions 4.0
+	Fully working module to compile into Godot Engine; versions 4.0 to 4.0.1
 
 	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/godot4){ .md-button .md-button--primary target="_blank" }
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/godot4){ .md-button .md-button--primary target="_blank" }
 
 !!! source "GDExtension"
-	The successor of GDNative, fresh for Godot 4; versions 4.0
+	The successor of GDNative, fresh for Godot 4; versions 4.0 to 4.0.1
 
 	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/gdextension){ .md-button .md-button--primary target="_blank" }
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdextension){ .md-button .md-button--primary target="_blank" }
@@ -112,6 +112,8 @@ If you are downloading our pre-compiles or using the GDNative plugin, or have fi
 
 	[Module How-To](howto_modules){ .md-button .md-button--primary }
 	[GDNative How-To](howto_gdnative){ .md-button .md-button--primary }
+	
+	[GDExtension How-To](howto_gdextension){ .md-button .md-button--primary }
 
 !!! example "GodotSteam Example Project"
 	A working example of some GodotSteam features based on current tutorials
