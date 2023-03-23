@@ -92,7 +92,9 @@ The compiling directory contents should now look like this:
 ---
 ## 4. Compiling Time
 
-The Visual Studio instructions carried over from GDNative probably do not work anymore so they were removed.  If anyoen would like to contribute new ones, please feel free to do so!
+Before compiling, create a `bin` directory in the GDExtension folder. This is where the compiled binaries will be placed.
+
+The Visual Studio instructions carried over from GDNative probably do not work anymore so they were removed.  If anyone would like to contribute new ones, please feel free to do so!
 
 === "Windows PowerShell"
     Just open the powershell or VS command prompt and run:
@@ -101,12 +103,20 @@ The Visual Studio instructions carried over from GDNative probably do not work a
     scons platform=windows target=template_release
     scons platform=windows target=template_debug
     ````
-=== "Linux and Mac users"
+=== "Linux"
     Just run terminal from within the **GDExtension** folder and run:
 
     ````
-    scons platform=<your platform> target=template_release
-    scons platform=<your platform> target=template_debug
+    scons platform=linux target=template_release
+    scons platform=linux target=template_debug
+    ````
+
+    You can also replace `platform=linux` with `platform=linuxbsd`.
+=== "macOS"
+    Run the following from a terminal within the **GDExtension** folder:
+    ````
+    scons platform=macos target=template_release
+    scons platform=macos target=template_debug
     ````
 
 ---
@@ -133,8 +143,8 @@ Sound a little confusing? It should look a little something like this:
 === "For Mac"
     Nothing extra for Mac, just this.
     ````
-    /addons/godotsteam/osx/libgodotsteam.macos.template_debug.framework
-    /addons/godotsteam/osx/libgodotsteam.macos.template_release.framework
+    /addons/godotsteam/osx/libgodotsteam.macos.template_debug.universal.dylib
+    /addons/godotsteam/osx/libgodotsteam.macos.template_release.universal.dylib
     /addons/godotsteam/osx/libsteam_api.dylib
     ````
 
@@ -147,13 +157,19 @@ That's it!  Done!
 
 Now you should be able to call functions from **Steam** like you would normally with the **GodotSteam module**:
 ````
-  Steam.steamInit()
-  name = Steam.getPersonaName()
-  country = Steam.getIPCountry()
-  running = Steam.isSteamRunning()
-
-  func setAchievement(achieve):
-    Steam.setAchievement(achieve)
+func _ready():
+	Steam.steamInit()
+	var isRunning = Steam.isSteamRunning()
+	
+	if (!isRunning):
+		print("Steam is not running.")
+		return
+		
+	print("Steam is running.")
+	
+	var id = Steam.getSteamID()
+	var name = Steam.getFriendPersonaName(id)
+	print("Your steam name: " + str(name))
 ````
 
 Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder.  You'll need this to run the game from the editor.
