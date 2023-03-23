@@ -16,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.2.1 Changes**
+- Added: compiled dylib files for OSX, _thanks to definitelyokay_
+- Fixed: names of OSX files in the godotsteam.gdextension file
 
 **Version 4.2 Changes**
 - Changed: brought the plug-in version up to speed with the module version
