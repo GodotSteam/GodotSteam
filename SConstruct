@@ -25,7 +25,7 @@ opts.Update(env)
 # - LINKFLAGS are for linking flags
 
 # Check our platform specifics
-if env['platform'] == "osx":
+if env['platform'] == "macos":
     # Set the correct Steam library
     steam_lib_path += "/osx"
     steamworks_library = 'libsteam_api.dylib'
