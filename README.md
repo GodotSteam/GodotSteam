@@ -16,7 +16,18 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.2.3 Changes**
+- Added: new return values for _overlay_toggled_; this will break compatibility with this
+- Added: new Input and Parental Settings enums
+- Added: new UGC Content Descriptor ID enums
+- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
+- Added: new signal _filter_text_dictionary_changed_
+- Changed: getAuthSessionTicket now uses networking identities
+- Changed: gamepad_text_input_dismissed now passes back the app ID
+- Changed: Steam Input max analog and digital actions values
+- Removed: ERegisterActivationCodeResult due to removal in SDK
 
 **Version 4.2.2 Changes**
 - Changed: names of all godotsteam dll/so/dylib files to be less verbose
