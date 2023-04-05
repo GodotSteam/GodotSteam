@@ -7,9 +7,6 @@ on:
       godot_tag:
         required: true
         type: string
-      version_tag:
-        required: true
-        type: string
       binary_name:
         required: true
         type: string
@@ -35,23 +32,12 @@ jobs:
     
     steps:
       # Checkout Godot
-      # - name: Checkout Godot
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: "godotengine/godot"
-      #     path: "godot"
-      #     ref: ${{ inputs.godot_tag }}
-      # Checkout Godot4 beta
-      - name: Download Godot 4 beta
-        run: |
-          $URLVAR="https://downloads.tuxfamily.org/godotengine/4.0/${{ github.event.inputs.GODOT_TAG }}/godot-4.0-${{ github.event.inputs.GODOT_TAG }}.tar.xz"
-          curl $URLVAR -o godot4.tar.xz
-          $workingdir=Get-Location
-          7z x $workingdir\godot4.tar.xz
-          rm $workingdir\godot4.tar.xz
-          7z x $workingdir\*.tar
-          rm $workingdir\*.tar
-          mv $workingdir\godot* $workingdir\godot
+      - name: Checkout Godot
+        uses: actions/checkout@v3
+        with:
+          repository: "godotengine/godot"
+          path: "godot"
+          ref: ${{ inputs.godot_tag }}
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
