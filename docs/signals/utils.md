@@ -26,6 +26,17 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUtils#CheckFileSignature_t){ .md-button .md-button--store target="_blank" }
 
+## filter_text_dictionary_changed
+
+!!! function "filter_text_dictionary_changed"
+	Sent when the text filtering dictionary has changed languages.
+
+	**Returns:**
+
+	* language (int)
+
+	
+
 ## floating_gamepad_text_input_dismissed
 
 !!! function "floating_gamepad_text_input_dismissed"
@@ -46,6 +57,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* submitted (bool)
 	* text (string)
 	* length (uint32)
+	* app_id (uint32_t)
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUtils#GamepadTextInputDismissed_t){ .md-button .md-button--store target="_blank" }

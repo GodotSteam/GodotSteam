@@ -116,6 +116,7 @@ nav:
     - Godot 4.x: 'changelog/godot4.md'
     - Godot 3.x: 'changelog/godot3.md'
     - Godot 2.x: 'changelog/godot2.md'
+    - GDExtension: 'changelog/gdextension.md'
     - GDNative: 'changelog/gdnative.md'
     - Server: 'changelog/server.md'
   - Contributors:

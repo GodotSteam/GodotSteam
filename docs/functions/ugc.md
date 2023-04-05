@@ -14,6 +14,15 @@
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUGC#AddAppDependency){ .md-button .md-button--store target="_blank" }
 
+## addContentDescriptor
+
+!!! function "addContentDescriptor( ```uint64_t``` update_handle, ```int``` descriptor_id )"
+	Add a content descriptor to a piece of UGC.
+
+	**Returns:** bool
+
+	**Note:** Valve has no documentation on this function currently.
+
 ## addDependency
 
 !!! function "addDependency( ```int``` published_file_id, ```int``` child_published_file_id )"
@@ -384,6 +393,31 @@
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUGC#GetQueryUGCChildren){ .md-button .md-button--store target="_blank" }
 
+
+## getQueryUGCContentDescriptors
+
+!!! function "getQueryUGCContentDescriptors( ```uint64_t``` query_handle, ```uint32``` index, ```uint32_t``` max_entries )"
+	Get an UGC item's content descriptors for mature content.
+
+	**Returns:** dictionary
+
+	Contains the following keys:
+
+	* result (uint32_t)
+	* handle (uint64_t)
+	* index (uint32)
+	* descriptors (array)
+
+	Descriptors array will contain a list of integers that correspond to the following UGC enums for descriptors:
+
+	* Nudity or sexual content - 1
+	* Frequent violence or gore - 2
+	* Adult only sexual content - 3
+	* Gratuitous sexual content - 4
+	* Any mature content - 5
+
+	**Note:** Valve does not have any documentation covering this function at this time.
+
 ## getQueryUGCKeyValueTag
 
 !!! function "getQueryUGCKeyValueTag( ```uint64_t``` query_handle, ```uint32``` index, ```uint32``` key_value_tag_index )"
@@ -627,6 +661,15 @@
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUGC#RemoveAppDependency){ .md-button .md-button--store target="_blank" }
+
+## removeContentDescriptor
+
+!!! function "removeContentDescriptor( ```uint64_t``` update_handle, ```int``` descriptor_id )"
+	Removes a mature content descriptor from a piece of UGC.
+
+	**Returns:** bool
+
+	**Notes:** Valve has no documentation on this function currently.
 
 ## removeDependency
 

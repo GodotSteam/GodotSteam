@@ -4,7 +4,23 @@
 
 **Note:** when Godot 4.x goes stable, this branch will become the godot3 branch and godot4 will become master.
 
-------
+---
+
+**Version 3.19.2 Changes**
+
+- Added: new return values for _overlay_toggled_; this will break compatibility with this
+- Added: new Input and Parental Settings enums
+- Added: new UGC Content Descriptor ID enums
+- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
+- Added: new signal _filter_text_dictionary_changed_
+- Changed: getAuthSessionTicket now uses networking identities
+- Changed: gamepad_text_input_dismissed now passes back the app ID
+- Changed: Steam Input max analog and digital actions values
+- Removed: ERegisterActivationCodeResult due to removal in SDK
+
+**Version 3.19.1 Changes**
+
+- Fixed: issue with UGC tags occasionally getting lost upon update, _thanks to EIREXE_
 
 **Version 3.19 Changes**
 

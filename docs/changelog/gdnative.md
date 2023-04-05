@@ -4,6 +4,17 @@
 
 ------
 
+**Version 3.6.1 Changes**
+
+- Added: new return values for _overlay_toggled_; this will break compatibility with this
+- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
+- Added: new signal _filter_text_dictionary_changed_
+- Changed: getAuthSessionTicket now uses networking identities
+- Changed: gamepad_text_input_dismissed now passes back the app ID
+- Changed: Steam Input max analog and digital actions values
+- Fixed: lobby_match_list callback, but it now passes back the lobby count too
+- Removed: ERegisterActivationCodeResult due to removal in SDK
+
 **Version 3.6 Changes**
 
 * Changed: brought the plug-in version up to speed with the module version

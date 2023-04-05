@@ -145,6 +145,8 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 	* lobbies (array)
 
+	**Notes:** With the GDNative plug-in, this callback will also send back the lobby count as an integer; this fixes a very strange issue with GDNative mangling the lobbies array.
+
     ------
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyMatchList_t){ .md-button .md-button--store target="_blank" }
 

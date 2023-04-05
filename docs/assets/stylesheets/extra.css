@@ -85,6 +85,9 @@ pre {
 .admonition {
 	text-align: center !important;
 }
+.admonition.function {
+	text-align: left !important;
+}
 .admonition a.md-button {
 	text-align: center !important;
 }

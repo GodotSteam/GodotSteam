@@ -294,6 +294,8 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	**Returns:**
 
 	* toggled (bool)
+	* user_initiated (bool)
+	* app_id (int)
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#GameOverlayActivated_t){ .md-button .md-button--store target="_blank" }
