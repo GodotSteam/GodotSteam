@@ -16,7 +16,16 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.6)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.6.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.6.1 Changes**
+- Added: new return values for _overlay_toggled_; this will break compatibility with this
+- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
+- Added: new signal _filter_text_dictionary_changed_
+- Changed: getAuthSessionTicket now uses networking identities
+- Changed: gamepad_text_input_dismissed now passes back the app ID
+- Changed: Steam Input max analog and digital actions values
+- Removed: ERegisterActivationCodeResult due to removal in SDK
 
 **Version 3.6 Changes**
 - Changed: brought the plug-in version up to speed with the module version
@@ -29,6 +38,9 @@ Known Issues
 Quick How-To
 ----------
 For complete instructions on how to build the GDNative version of GodotSteam, [please refer to our documentation's 'How-To GDNative' section.](https://godotsteam.com/howto_gdnative/)  It will have the most up-to-date information.
+
+
+Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/Gramps/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1045) and skip compiling it yourself!
 
 Usage
 ----------

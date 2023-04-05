@@ -66,10 +66,10 @@ using namespace godot;
 #define HTTPREQUEST_INVALID_HANDLE 0
 
 // Define Input constants
-#define INPUT_MAX_ANALOG_ACTIONS 16
+#define INPUT_MAX_ANALOG_ACTIONS 24
 #define INPUT_MAX_ANALOG_ACTION_DATA 1.0f
 #define INPUT_MAX_COUNT 16
-#define INPUT_MAX_DIGITAL_ACTIONS 128
+#define INPUT_MAX_DIGITAL_ACTIONS 256
 #define INPUT_MAX_ORIGINS 8
 #define INPUT_MIN_ANALOG_ACTION_DATA -1.0f
 
@@ -318,6 +318,7 @@ Steam::Steam():
 	callbackSteamShutdown(this, &Steam::steam_shutdown),
 	callbackAppResumingFromSuspend(this, &Steam::app_resuming_from_suspend),
 	callbackFloatingGamepadTextInputDismissed(this, &Steam::floating_gamepad_text_input_dismissed),
+	callbackFilterTextDictionaryChanged(this, &Steam::filter_text_dictionary_changed),
 
 	// Video callbacks //////////////////////////
 	callbackGetOPFSettingsResult(this, &Steam::get_opf_settings_result),
@@ -6401,6 +6402,13 @@ void Steam::addAppDependency(uint64_t published_file_id, uint32_t app_id){
 	}
 }
 
+bool Steam::addContentDescriptor(uint64_t update_handle, int descriptor_id){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	return SteamUGC()->AddContentDescriptor((UGCUpdateHandle_t)update_handle, (EUGCContentDescriptorID)descriptor_id);
+}
+
 //! Adds a workshop item as a dependency to the specified item. If the nParentPublishedFileID item is of type k_EWorkshopFileTypeCollection, than the nChildPublishedFileID is simply added to that collection.
 //! Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the m_unNumChildren member variable of the SteamUGCDetails_t struct and GetQueryUGCChildren.
 void Steam::addDependency(uint64_t published_file_id, uint64_t child_published_file_id){
@@ -6904,6 +6912,26 @@ Dictionary Steam::getQueryUGCChildren(uint64_t query_handle, uint32 index, uint3
 	return children;
 }
 
+Dictionary Steam::getQueryUGCContentDescriptors(uint64_t query_handle, uint32 index, uint32_t max_entries){
+	Dictionary descriptors;
+	if(SteamUGC() != NULL){
+		UGCQueryHandle_t handle = (uint64_t)query_handle;
+		PoolVector<uint64_t> vec;
+		vec.resize(max_entries);
+		uint32_t result = SteamUGC()->GetQueryUGCContentDescriptors(handle, index, (EUGCContentDescriptorID*)vec.write().ptr(), max_entries);
+		Array descriptor_array;
+		descriptor_array.resize(max_entries);
+		for(uint32_t i = 0; i < max_entries; i++){
+			descriptor_array[i] = vec[i];
+		}
+		descriptors["result"] = result;
+		descriptors["handle"] = (uint64_t)handle;
+		descriptors["index"] = index;
+		descriptors["descriptors"] = descriptor_array;
+	}
+	return descriptors;
+}
+
 //! Retrieve the details of a key-value tag associated with an individual workshop item after receiving a querying UGC call result.
 Dictionary Steam::getQueryUGCKeyValueTag(uint64_t query_handle, uint32 index, uint32 key_value_tag_index){
 	Dictionary tag;
@@ -7157,6 +7185,13 @@ void Steam::removeAppDependency(uint64_t published_file_id, uint32_t app_id){
 		SteamAPICall_t api_call = SteamUGC()->RemoveAppDependency(file_id, app);
 		callResultRemoveAppDependency.Set(api_call, this, &Steam::remove_app_dependency_result);
 	}
+}
+
+bool Steam::removeContentDescriptor(uint64_t update_handle, int descriptor_id){
+	if(SteamUGC() == NULL){
+		return false;
+	}
+	return SteamUGC()->RemoveContentDescriptor((UGCUpdateHandle_t)update_handle, (EUGCContentDescriptorID)descriptor_id);
 }
 
 //! Removes a workshop item as a dependency from the specified item.
@@ -7645,14 +7680,15 @@ void Steam::endAuthSession(uint64_t steam_id){
 }
 
 //! Get the authentication ticket data.
-Dictionary Steam::getAuthSessionTicket(){
+Dictionary Steam::getAuthSessionTicket(const String& identity_reference){
 	// Create the dictionary to use
 	Dictionary auth_ticket;
 	if(SteamUser() != NULL){
+		const SteamNetworkingIdentity identity = networking_identities[identity_reference.utf8().get_data()];
 		uint32_t ticket_size = 1024;
 		PoolByteArray buffer;
 		buffer.resize(ticket_size);
-		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
+		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size, &identity);
 		// Add this data to the dictionary
 		auth_ticket["id"] = id;
 		auth_ticket["buffer"] = buffer;
@@ -8934,11 +8970,13 @@ void Steam::join_requested(GameLobbyJoinRequested_t* call_data){
 
 //! Posted when the Steam Overlay activates or deactivates. The game can use this to be pause or resume single player games.
 void Steam::overlay_toggled(GameOverlayActivated_t* call_data){
+	bool user_initiated = call_data->m_bUserInitiated;
+	uint32_t app_id = call_data->m_nAppID;
 	if(call_data->m_bActive){
-		emit_signal("overlay_toggled", true);
+		emit_signal("overlay_toggled", true, user_initiated, app_id);
 	}
 	else{
-		emit_signal("overlay_toggled", false);
+		emit_signal("overlay_toggled", false, user_initiated, app_id);
 	}
 }
 
@@ -9908,14 +9946,16 @@ void Steam::user_stats_unloaded(UserStatsUnloaded_t* call_data){
 //
 //! Called when the big picture gamepad text input has been closed.
 void Steam::gamepad_text_input_dismissed(GamepadTextInputDismissed_t* call_data){
+	bool was_submitted = call_data->m_bSubmitted;
 	const uint32 buffer_length = 1024+1;
 	char *text = new char[buffer_length];
 	uint32 length = buffer_length;
-	if(call_data->m_bSubmitted){
+	uint32_t app_id = call_data->m_unAppID;
+	if(was_submitted){
 		SteamUtils()->GetEnteredGamepadTextInput(text, buffer_length);
 		length = SteamUtils()->GetEnteredGamepadTextLength();
 	}
-	emit_signal("gamepad_text_input_dismissed", call_data->m_bSubmitted, String(text));
+	emit_signal("gamepad_text_input_dismissed", was_submitted, String::utf8(text, (int)length), app_id);
 	delete[] text;
 }
 
@@ -9952,6 +9992,13 @@ void Steam::app_resuming_from_suspend(AppResumingFromSuspend_t *call_data) {
 void Steam::floating_gamepad_text_input_dismissed(FloatingGamepadTextInputDismissed_t *call_data) {
 	emit_signal("floating_gamepad_text_input_dismissed");
 }
+
+// The text filtering dictionary has changed, obviously.
+void Steam::filter_text_dictionary_changed(FilterTextDictionaryChanged_t *call_data){
+	int language = call_data->m_eLanguage;
+	emit_signal("filter_text_dictionary_changed", language);
+}
+
 
 // VIDEO CALLBACKS //////////////////////////////
 //
@@ -11657,7 +11704,7 @@ void Steam::_register_methods(){
 	register_signal<Steam>("connected_clan_chat_message", "chat", GODOT_VARIANT_TYPE_DICTIONARY);
 	register_signal<Steam>("_connected_friend_chat_message", "chat", GODOT_VARIANT_TYPE_DICTIONARY);
 	register_signal<Steam>("join_requested", "lobby_id", GODOT_VARIANT_TYPE_INT, "connect_string", GODOT_VARIANT_TYPE_STRING);
-	register_signal<Steam>("overlay_toggled", "active", GODOT_VARIANT_TYPE_BOOL);
+	register_signal<Steam>("overlay_toggled", "active", GODOT_VARIANT_TYPE_BOOL, "user_initiated", GODOT_VARIANT_TYPE_BOOL, "app_id", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("join_game_requested", "user", GODOT_VARIANT_TYPE_INT, "connect", GODOT_VARIANT_TYPE_STRING);
 	register_signal<Steam>("change_server_requested", "server", GODOT_VARIANT_TYPE_STRING, "password", GODOT_VARIANT_TYPE_STRING);
 	register_signal<Steam>("join_clan_chat_complete", "chat_id", GODOT_VARIANT_TYPE_INT, "response", GODOT_VARIANT_TYPE_INT);
@@ -11844,13 +11891,14 @@ void Steam::_register_methods(){
 
 	// UTILITY SIGNALS //////////////////////////
 	register_signal<Steam>("check_file_signature", "signature", GODOT_VARIANT_TYPE_STRING);
-	register_signal<Steam>("gamepad_text_input_dismissed", "submitted", GODOT_VARIANT_TYPE_BOOL, "entered_text", GODOT_VARIANT_TYPE_STRING);
+	register_signal<Steam>("gamepad_text_input_dismissed", "submitted", GODOT_VARIANT_TYPE_BOOL, "entered_text", GODOT_VARIANT_TYPE_STRING, "app_id", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("ip_country", godot::Dictionary());
 	register_signal<Steam>("low_power", "power", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("steam_api_call_completed", "asyn_call", GODOT_VARIANT_TYPE_INT, "callback", GODOT_VARIANT_TYPE_INT, "parameter", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("steam_shutdown", godot::Dictionary());
 	register_signal<Steam>("app_resuming_from_suspend", godot::Dictionary());
 	register_signal<Steam>("floating_gamepad_text_input_dismissed", godot::Dictionary());
+	register_signal<Steam>("filter_text_dictionary_changed", "language", GODOT_VARIANT_TYPE_INT);
 
 	// VIDEO SIGNALS ////////////////////////////
 	register_signal<Steam>("get_opf_settings_result", "result", GODOT_VARIANT_TYPE_INT, "app_id", GODOT_VARIANT_TYPE_INT);
