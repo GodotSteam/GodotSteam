@@ -52,6 +52,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- Avencherus
 	- Charles Maddock
 	- columbiacolles
+	- d4rkd0s
 	- David Wery
 	- David-AW
 	- Dillon Joel Steyl
@@ -69,6 +70,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- Kent Jofur
 	- Kodera Software
 	- Martin Eigel
+	- Michael Macha
 	- Mike King
 	- MudbuG
 	- Nicholas Orlowski
