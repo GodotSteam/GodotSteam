@@ -14,7 +14,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.6.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.6.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.6.2 Changes**
+- Fixed: problem with new _getQueryUGCContentDescriptors_
+- Fixed: issue with libc6 for older systems
 
 **Version 3.6.1 Changes**
 - Added: new return values for _overlay_toggled_; this will break compatibility with this
