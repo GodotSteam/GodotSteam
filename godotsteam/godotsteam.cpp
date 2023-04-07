@@ -6916,13 +6916,13 @@ Dictionary Steam::getQueryUGCContentDescriptors(uint64_t query_handle, uint32 in
 	Dictionary descriptors;
 	if(SteamUGC() != NULL){
 		UGCQueryHandle_t handle = (uint64_t)query_handle;
-		PoolVector<uint64_t> vec;
-		vec.resize(max_entries);
-		uint32_t result = SteamUGC()->GetQueryUGCContentDescriptors(handle, index, (EUGCContentDescriptorID*)vec.write().ptr(), max_entries);
+		PoolIntArray descriptor_list;
+		descriptor_list.resize(max_entries);
+		uint32_t result = SteamUGC()->GetQueryUGCContentDescriptors(handle, index, (EUGCContentDescriptorID*)descriptor_list.write().ptr(), max_entries);
 		Array descriptor_array;
 		descriptor_array.resize(max_entries);
 		for(uint32_t i = 0; i < max_entries; i++){
-			descriptor_array[i] = vec[i];
+			descriptor_array[i] = descriptor_list[i];
 		}
 		descriptors["result"] = result;
 		descriptors["handle"] = (uint64_t)handle;
@@ -9955,7 +9955,7 @@ void Steam::gamepad_text_input_dismissed(GamepadTextInputDismissed_t* call_data)
 		SteamUtils()->GetEnteredGamepadTextInput(text, buffer_length);
 		length = SteamUtils()->GetEnteredGamepadTextLength();
 	}
-	emit_signal("gamepad_text_input_dismissed", was_submitted, String::utf8(text, (int)length), app_id);
+	emit_signal("gamepad_text_input_dismissed", was_submitted, String(text), app_id);
 	delete[] text;
 }
 
