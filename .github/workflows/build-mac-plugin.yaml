@@ -1,7 +1,7 @@
 on: push
 
 env:
-  STEAMWORKS_SDK_TAG: "sdk-1.55"
+  STEAMWORKS_SDK_TAG: "sdk-1.56"
 
 jobs:
   build_macos:
