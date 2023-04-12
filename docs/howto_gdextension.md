@@ -158,7 +158,6 @@ That's it!  Done!
 Now you should be able to call functions from **Steam** like you would normally with the **GodotSteam module**:
 ````
 func _ready():
-<<<<<<< HEAD
     Steam.steamInit()
     var isRunning = Steam.isSteamRunning()
     
@@ -171,20 +170,6 @@ func _ready():
     var id = Steam.getSteamID()
     var name = Steam.getFriendPersonaName(id)
     print("Your steam name: " + str(name))
-=======
-	Steam.steamInit()
-	var isRunning = Steam.isSteamRunning()
-	
-	if (!isRunning):
-		print("Steam is not running.")
-		return
-		
-	print("Steam is running.")
-	
-	var id = Steam.getSteamID()
-	var name = Steam.getFriendPersonaName(id)
-	print("Your steam name: " + str(name))
->>>>>>> 0cac02ff7588f28c5554f133bae8b5902ae33d10
 ````
 
 Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder.  You'll need this to run the game from the editor.

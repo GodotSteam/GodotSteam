@@ -392,6 +392,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-firefox-browser: ](https://coaguco.com/games/into){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Jurl -->
+<figure class="game" markdown>
+[![Jurl](https://steamcdn-a.akamaihd.net/steam/apps/2368940/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2368940/Jurl/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2368940/Jurl/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- KinitoPET -->
 <figure class="game" markdown>
 [![KinitoPET](https://steamcdn-a.akamaihd.net/steam/apps/2075070/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2075070/KinitoPET/){ target="_blank" }
