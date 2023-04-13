@@ -5,8 +5,8 @@ One of the more requested tutorials is multiplayer lobbies and P2P networking th
 
 Additionally, you can check out this video tutorial put together by DawnsCrow Games. Also JDare has a repo, GodotSteamHL, designed to streamline Steam's networking functionality (lobbies and P2P) which should serve as a handy guide and/or useful script.
 
-- [Video Tutorial by DawnsCrow Games](https://youtu.be/si50G3S1XGU"){ target="_blank" }
-- [GodotSteamHL by JDare](https://github.com/JDare/GodotSteamHL"){ target="_blank" }
+- [Video Tutorial by DawnsCrow Games](https://youtu.be/si50G3S1XGU){ target="_blank" }
+- [GodotSteamHL by JDare](https://github.com/JDare/GodotSteamHL){ target="_blank" }
 
 I highly suggest you read through [Valve's networking documentations](https://partner.steamgames.com/doc/features/multiplayer/networking){ target="_blank" }; it also contains some links to other articles about networking which should prove helpful.  Here are some additional networking article resources to check out:
 
