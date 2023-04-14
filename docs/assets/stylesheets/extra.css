@@ -976,6 +976,10 @@ div.start-grid div.admonition a {
   vertical-align: top;
   text-align: left;
 }
+.md-typeset .admonition.contributors1,
+.md-typeset .admonition.contributors2 {
+	text-align: left !important;
+}
 .md-typeset .admonition.contributors1 {
   margin-right: 1.4em;
 }
