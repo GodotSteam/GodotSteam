@@ -1172,7 +1172,7 @@ class Steam: public Object {
 		void cancelAuthTicket(uint32_t auth_ticket);
 		Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
 		void endAuthSession(uint64_t steam_id);
-		Dictionary getAuthSessionTicket();
+		Dictionary getAuthSessionTicket(const String &identity_reference);
 		Dictionary getAvailableVoice();
 		void getDurationControl();
 		Dictionary getEncryptedAppTicket();

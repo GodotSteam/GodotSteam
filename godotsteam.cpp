@@ -7717,14 +7717,15 @@ void Steam::endAuthSession(uint64_t steam_id){
 }
 
 //! Get the authentication ticket data.
-Dictionary Steam::getAuthSessionTicket(){
+Dictionary Steam::getAuthSessionTicket(const String &identity_reference){
 	// Create the dictionary to use
 	Dictionary auth_ticket;
 	if(SteamUser() != NULL){
 		uint32_t ticket_size = 1024;
 		PoolByteArray buffer;
 		buffer.resize(ticket_size);
-		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
+		const SteamNetworkingIdentity identity = networking_identities[identity_reference.utf8().get_data()];
+		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.ptrw(), ticket_size, &ticket_size, &identity);
 		// Add this data to the dictionary
 		auth_ticket["id"] = id;
 		auth_ticket["buffer"] = buffer;
