@@ -408,6 +408,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/kinitopet){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- KIRO II - The Wizards Guild -->
+<figure class="game" markdown>
+[![KIRO II - The Wizards Guild](https://steamcdn-a.akamaihd.net/steam/apps/2219370/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2219370/KIRO_II_The_Wizards_Guild){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2219370/KIRO_II_The_Wizards_Guild){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Knights Rubbish -->
 <figure class="game" markdown>
 [![Knights Rubbish](https://steamcdn-a.akamaihd.net/steam/apps/980440/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/980440/Knights_Rubbish/){ target="_blank" }
@@ -748,6 +755,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2011750/Silver_Lines/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Sisypush -->
+<figure class="game" markdown>
+[![Sisypush](https://steamcdn-a.akamaihd.net/steam/apps/2219240/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2219240/Sisypush/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2219240/Sisypush/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- SKIP -->
 <figure class="game" markdown>
 [![SKIP](https://steamcdn-a.akamaihd.net/steam/apps/2330090/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2330090/SKIP/){ target="_blank" }
@@ -941,6 +955,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/WatchYourDuck){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-youtube: ](https://www.youtube.com/channel/UCNwjouAYcqohKF0D6b0Fobg){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-discord: ](https://discord.gg/rFMvF53Dbk){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- Wizard's Way Out -->
+<figure class="game" markdown>
+[![Wizard's Way Out](https://steamcdn-a.akamaihd.net/steam/apps/2341410/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2341410/Wizards_Way_Out/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2341410/Wizards_Way_Out/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- Woodland Empire -->

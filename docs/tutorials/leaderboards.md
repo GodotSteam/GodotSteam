@@ -104,8 +104,11 @@ The first argument the index of entries you are starting with; this is usually 1
 After you request leaderboard entries, you should receive a **leaderboard_scores_downloaded** callback which will trigger our ***_leaderboard_Scores_Downloaded()*** function.  That function should look similar to this:
 
 ````
-func _leaderboard_Scores_Downloaded(message: string, result: Array) -> void:
+func _leaderboard_Scores_Downloaded(message: string, leaderboard_handle: int, result: Array) -> void:
 	print("Scores downloaded message: "+str(message)
+
+	# Save this for later leaderboard interactions, if you want
+	var LEADERBOARD_HANDLE: int = leaderboard_handle
 
 	# Add logic to display results
 	for R in result:
