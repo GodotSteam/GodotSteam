@@ -760,6 +760,9 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![Sisypush](https://steamcdn-a.akamaihd.net/steam/apps/2219240/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2219240/Sisypush/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2219240/Sisypush/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/CentiGames){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/RJANDG9GWn){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-mastodon: ](https://mastodon.gamedev.place/@centigames){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- SKIP -->
