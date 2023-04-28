@@ -2,7 +2,7 @@
 
 In this tutorial, we will cover the basic initialization of Steamworks in your game; as well as getting callbacks globally.  [Check out the common issues tutorial if](/tutorials/common_issues/) you have issues getting things to work too.
 
-Please note, this tutorial is only valid for the module version of GodotSteam; the GDNative version will already have these functions present.
+Please note, this tutorial is only valid for the module and GDExtension versions of GodotSteam; the GDNative version will already have these functions present.
 
 ---
 
