@@ -883,6 +883,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/LogicalProgres3){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- TETRAGUN -->
+<figure class="game" markdown>
+[![TETRAGUN](https://steamcdn-a.akamaihd.net/steam/apps/1664580/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1664580/Terra_Ventura/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1656310/TETRAGUN/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Tower Tactics: Liberation -->
 <figure class="game" markdown>
 [![Tower Tactics: Liberation](https://steamcdn-a.akamaihd.net/steam/apps/1709900/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1709900/Tower_Tactics_Liberation){ target="_blank" }
