@@ -34,13 +34,13 @@ Roll up your sleeves and build your own versions of GodotSteam.  It does also re
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdnative){ .md-button .md-button--primary target="_blank" }
 
 !!! source "Godot Engine 4.x"
-	Fully working module to compile into Godot Engine; versions 4.0 to 4.0.1
+	Fully working module to compile into Godot Engine; versions 4.0 to 4.0.2
 
 	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/godot4){ .md-button .md-button--primary target="_blank" }
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/godot4){ .md-button .md-button--primary target="_blank" }
 
 !!! source "GDExtension"
-	The successor of GDNative, fresh for Godot 4; versions 4.0 to 4.0.1
+	The successor of GDNative, fresh for Godot 4; versions 4.0 to 4.0.2
 
 	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/gdextension){ .md-button .md-button--primary target="_blank" }
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdextension){ .md-button .md-button--primary target="_blank" }
@@ -104,7 +104,7 @@ Just download and go with either pre-compiled module-enable editors / templates 
 	[Get Yours](https://godotengine.org/asset-library/asset/7469){ .md-button .md-button--primary target="_blank" }
 
 !!! source "GDExtension Plug-In - GitHub Pre-compile" 
-	Drops right into your game so you can start tinkering; versions 3.4.5 to 3.5.2
+	Drops right into your game so you can start tinkering; versions 4.0 to 4.0.2
 
 	[Get the tar](https://github.com/Gramps/GodotSteam/tarball/gdextension-plugin){ .md-button .md-button--primary target="_blank" }
 	[Get the zip](https://github.com/Gramps/GodotSteam/zipball/gdextension-plugin){ .md-button .md-button--primary target="_blank" }
