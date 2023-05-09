@@ -77,7 +77,7 @@
 
 ## getAuthSessionTicket
 
-!!! function "getAuthSessionTicket()"
+!!! function "getAuthSessionTicket( network_identity )"
 	Retrieve an authentication ticket to be sent to the entity who wishes to authenticate you.
 
 	After calling this you can send the ticket to the entity where they can then call [beginAuthSession](/functions/users/#beginauthsession) to verify this entities integrity.
@@ -93,6 +93,8 @@
 	* id (uint32_t)
 	* buffer (PoolByteArray)
 	* size (uint32_t)
+
+	**Notes:** As of Steamworks SDK 1.57, you need to pass a network identity that was created with our Networking Tools class.  While this is optional in the SDK, currently it is required in GodotSteam 3.19+ until we make it optional.
 
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#GetAuthSessionTicket){ .md-button .md-button--store target="_blank" }
