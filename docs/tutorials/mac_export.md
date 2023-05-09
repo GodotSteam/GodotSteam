@@ -2,6 +2,15 @@
 
 This comes up sometimes so I figured I would cover it.  However, as you can notice by scanning the page, it is short and sweet.  When exporting for OSX, there are a few minor modifications you must make to the app's ZIP file.
 
+
+---
+
+## Beware Codesign
+
+One option you need to make sure is disabled is Codesign.  For some users, it makes the game unable to talk to Steam and results in the "Steam not running" error.  Just check for this during export:
+
+![Codesign Fail](/assets/images/mac-caveats1.png){ loading=lazy }
+
 ---
 
 ## App Icon
