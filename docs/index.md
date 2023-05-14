@@ -101,7 +101,7 @@ Just download and go with either pre-compiled module-enable editors / templates 
 !!! compile "GDExtension Plug-in - Godot Asset Library"
 	Get integrating Steamworks into your game with the GDExtension plug-in via Godot Asset Library
 
-	[Get Yours](https://godotengine.org/asset-library/asset/7469){ .md-button .md-button--primary target="_blank" }
+	[Get Yours](https://godotengine.org/asset-library/asset/1768){ .md-button .md-button--primary target="_blank" }
 
 !!! source "GDExtension Plug-In - GitHub Pre-compile" 
 	Drops right into your game so you can start tinkering; versions 4.0 to 4.0.2

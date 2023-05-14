@@ -12,7 +12,7 @@ This also means you cannot use the GodotSteam templates for exporting; you must 
 Just like the module version, the easiest way to use GodotSteam is downloading the plug-in and installing it into your project.
 
 - [x] Download the [pre-compiled plug-in from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
-- [x] Alternatively you can download and install the [GDExtension plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/7469).
+- [x] Alternatively you can download and install the [GDExtension plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1768).
 - [x] Everything you need should be included.
     - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](/tutorials/linux_caveats/).
 
