@@ -245,6 +245,8 @@ Make sure to create a file called **steam_appid.txt** and place it with your edi
 
 The documentation for GodotSteam should apply to GodotSteam GDNative as they are built from the same code and have all the same functions; generally speaking.
 
+**Note:** GDNative on Windows has some odd glitch with setRichPresence where sometimes the key is sent as the value; this bug does not exist in the Linux or OSX versions of GodotSteam GDNative nor in any versions of the GodotSteam module nor any versions of the GodotSteam GDExtension.  In this case it is deemed unfixable.
+
 ---
 ## 7. Exporting / Shipping Your Game
 
