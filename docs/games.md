@@ -207,6 +207,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/indigoblin){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Ends -->
+<figure class="game" markdown>
+[![Ends](https://steamcdn-a.akamaihd.net/steam/apps/2256260/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2256260/Ends/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2256260/Ends/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Final Hope: The Plot -->
 <figure class="game" markdown>
 [![Final Hope: The Plot](https://steamcdn-a.akamaihd.net/steam/apps/1339030/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1339030/Final_Hope_The_Plot/){ target="_blank" }
