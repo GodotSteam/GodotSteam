@@ -7,7 +7,7 @@ on:
         description: 'Steamworks SDK Github tag:'
         required: true
         type: string
-        default: 'sdk-1.55'
+        default: 'sdk-1.57'
       godot_tag:
         description: 'Godot Github tag:'
         required: true
@@ -17,7 +17,7 @@ on:
         description: 'GodotSteam version number:'
         required: true
         type: string
-        default: '3.19'
+        default: '3.19.3'
 
 jobs:
   env-setup:

@@ -9989,7 +9989,7 @@ void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t* call_data){
 	int result = call_data->m_eResult;
 	int ticket_size = call_data->m_cubTicket;
 	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
-	emit_signal("get_ticket_for_web_api", "auth_ticket", "result", "ticket_size", "ticket_buffer");
+	emit_signal("get_ticket_for_web_api", auth_ticket, result, ticket_size, ticket_buffer);
 }
 
 //! Called when the callback system for this client is in an error state (and has flushed pending callbacks). When getting this message the client should disconnect from Steam, reset any stored Steam state and reconnect. This usually occurs in the rare event the Steam client has some kind of fatal error.
@@ -11682,8 +11682,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("cancelAuthTicket", "auth_ticket"), &Steam::cancelAuthTicket);
 	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "voice_size", "sample_rate"), &Steam::decompressVoice);
 	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &Steam::endAuthSession);
-	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "identity_reference"), &Steam::getAuthSessionTicket, DEFVAL(NULL));
-	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "identity_reference"), &Steam::getAuthTicketForWebApi, DEFVAL(NULL));
+	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "identity_reference"), &Steam::getAuthSessionTicket, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "identity_reference"), &Steam::getAuthTicketForWebApi, DEFVAL(""));
 	ClassDB::bind_method("getAvailableVoice", &Steam::getAvailableVoice);
 	ClassDB::bind_method("getDurationControl", &Steam::getDurationControl);
 	ClassDB::bind_method("getEncryptedAppTicket", &Steam::getEncryptedAppTicket);
