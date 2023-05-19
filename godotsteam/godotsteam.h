@@ -1181,7 +1181,8 @@ namespace godot {
 			void cancelAuthTicket(uint32_t auth_ticket);
 			Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
 			void endAuthSession(uint64_t steam_id);
-			Dictionary getAuthSessionTicket(const String& identity_reference);
+			Dictionary getAuthSessionTicket(const String& identity_reference = "");
+			uint32 getAuthTicketForWebApi(const String& service_identity = "");
 			Dictionary getAvailableVoice();
 			void getDurationControl();
 			Dictionary getEncryptedAppTicket();
@@ -1444,6 +1445,7 @@ namespace godot {
 			STEAM_CALLBACK(Steam, input_device_connected, SteamInputDeviceConnected_t, callbackInputDeviceConnected);
 			STEAM_CALLBACK(Steam, input_device_disconnected, SteamInputDeviceDisconnected_t, callbackInputDeviceDisconnected);
 			STEAM_CALLBACK(Steam, input_configuration_loaded, SteamInputConfigurationLoaded_t, callbackInputConfigurationLoaded);
+			STEAM_CALLBACK(Steam, input_gamepad_slot_change, SteamInputGamepadSlotChange_t, callbackInputGamePadSlotChange);
 
 			// Inventory callbacks //////////////////
 			STEAM_CALLBACK(Steam, inventory_definition_update, SteamInventoryDefinitionUpdate_t, callbackInventoryDefinitionUpdate);
@@ -1521,6 +1523,7 @@ namespace godot {
 			STEAM_CALLBACK(Steam, client_game_server_deny, ClientGameServerDeny_t, callbackClientGameServerDeny);
 			STEAM_CALLBACK(Steam, game_web_callback, GameWebCallback_t, callbackGameWebCallback);
 			STEAM_CALLBACK(Steam, get_auth_session_ticket_response, GetAuthSessionTicketResponse_t, callbackGetAuthSessionTicketResponse);
+			STEAM_CALLBACK(Steam, get_ticket_for_web_api, GetTicketForWebApiResponse_t, callbackGetTicketForWebApiResponse);
 			STEAM_CALLBACK(Steam, ipc_failure, IPCFailure_t, callbackIPCFailure);
 			STEAM_CALLBACK(Steam, licenses_updated, LicensesUpdated_t, callbackLicensesUpdated);
 			STEAM_CALLBACK(Steam, microtransaction_auth_response, MicroTxnAuthorizationResponse_t, callbackMicrotransactionAuthResponse);

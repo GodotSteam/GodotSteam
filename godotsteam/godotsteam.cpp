@@ -220,6 +220,7 @@ Steam::Steam():
 	callbackInputDeviceConnected(this, &Steam::input_device_connected),
 	callbackInputDeviceDisconnected(this, &Steam::input_device_disconnected),
 	callbackInputConfigurationLoaded(this, &Steam::input_configuration_loaded),
+	callbackInputGamePadSlotChange(this, &Steam::input_gamepad_slot_change),
 
 	// Inventory callbacks //////////////////////
 	callbackInventoryDefinitionUpdate(this, &Steam::inventory_definition_update),
@@ -297,6 +298,7 @@ Steam::Steam():
 	callbackClientGameServerDeny(this, &Steam::client_game_server_deny),
 	callbackGameWebCallback(this, &Steam::game_web_callback),
 	callbackGetAuthSessionTicketResponse(this, &Steam::get_auth_session_ticket_response),
+	callbackGetTicketForWebApiResponse(this, &Steam::get_ticket_for_web_api),
 	callbackIPCFailure(this, &Steam::ipc_failure),
 	callbackLicensesUpdated(this, &Steam::licenses_updated),
 	callbackMicrotransactionAuthResponse(this, &Steam::microtransaction_auth_response),
@@ -7684,17 +7686,39 @@ Dictionary Steam::getAuthSessionTicket(const String& identity_reference){
 	// Create the dictionary to use
 	Dictionary auth_ticket;
 	if(SteamUser() != NULL){
-		const SteamNetworkingIdentity identity = networking_identities[identity_reference.utf8().get_data()];
+		uint32_t id = 0;
 		uint32_t ticket_size = 1024;
 		PoolByteArray buffer;
 		buffer.resize(ticket_size);
-		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size, &identity);
+		// If no reference is passed, just use NULL
+		// Not pretty but will work for now
+		if(identity_reference  != ""){
+			const SteamNetworkingIdentity identity = networking_identities[identity_reference.utf8().get_data()];
+			id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size, &identity);
+		}
+		else{
+			id = SteamUser()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size, NULL);
+		}		
 		// Add this data to the dictionary
 		auth_ticket["id"] = id;
 		auth_ticket["buffer"] = buffer;
 		auth_ticket["size"] = ticket_size;
 	}
 	return auth_ticket;
+}
+
+// Request a ticket which will be used for webapi "ISteamUserAuth\AuthenticateUserTicket" pchIdentity is an optional input parameter to identify the service the ticket will be sent to the ticket will be returned in callback GetTicketForWebApiResponse_t
+uint32 Steam::getAuthTicketForWebApi(const String& service_identity){
+	uint32 auth_ticket_handle = 0;
+	if(SteamUser() != NULL){
+		if(service_identity != ""){
+			auth_ticket_handle = SteamUser()->GetAuthTicketForWebApi(service_identity.utf8().get_data());
+		}
+		else{
+			auth_ticket_handle = SteamUser()->GetAuthTicketForWebApi(NULL);
+		}
+	}
+	return auth_ticket_handle;
 }
 
 //! Checks to see if there is captured audio data available from GetVoice, and gets the size of the data.
@@ -9426,6 +9450,16 @@ void Steam::input_configuration_loaded(SteamInputConfigurationLoaded_t* call_dat
 	emit_signal("input_configuration_loaded", app_id, device_handle, config_data);
 }
 
+// Called when controller gamepad slots change - on Linux/macOS these slots are shared for all running apps.
+void Steam::input_gamepad_slot_change(SteamInputGamepadSlotChange_t* call_data){
+	uint32_t app_id = call_data->m_unAppID;
+	uint64_t device_handle = call_data->m_ulDeviceHandle;
+	int device_type = call_data->m_eDeviceType;
+	int old_gamepad_slot = call_data->m_nOldGamepadSlot;
+	int new_gamepad_slot = call_data->m_nNewGamepadSlot;
+	emit_signal("input_gamepad_slot_change", app_id, device_handle, device_type, old_gamepad_slot, new_gamepad_slot);
+}
+
 // INVENTORY CALLBACKS //////////////////////////
 //
 //! This callback is triggered whenever item definitions have been updated, which could be in response to LoadItemDefinitions or any time new item definitions are available (eg, from the dynamic addition of new item types while players are still in-game).
@@ -9861,6 +9895,15 @@ void Steam::get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* cal
 	emit_signal("get_auth_session_ticket_response", auth_ticket, result);
 }
 
+// Result when creating an webapi ticket from GetAuthTicketForWebApi.
+void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t* call_data){
+	uint32 auth_ticket = call_data->m_hAuthTicket;
+	int result = call_data->m_eResult;
+	int ticket_size = call_data->m_cubTicket;
+	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
+	emit_signal("get_ticket_for_web_api", auth_ticket, result, ticket_size, ticket_buffer);
+}
+
 //! Called when the callback system for this client is in an error state (and has flushed pending callbacks). When getting this message the client should disconnect from Steam, reset any stored Steam state and reconnect. This usually occurs in the rare event the Steam client has some kind of fatal error.
 void Steam::ipc_failure(IPCFailure_t *call_data){
 	uint8 type = call_data->m_eFailureType;
@@ -10225,7 +10268,7 @@ void Steam::lobby_match_list(LobbyMatchList_t *call_data, bool io_failure){
 			uint64_t lobby = lobby_id.ConvertToUint64();
 			lobbies.append(lobby);
 		}
-		emit_signal("lobby_match_list", lobbies);
+		emit_signal("lobby_match_list", lobbies, lobby_count);
 	}
 }
 
@@ -11564,6 +11607,7 @@ void Steam::_register_methods(){
 	register_method("decompressVoice", &Steam::decompressVoice);
 	register_method("endAuthSession", &Steam::endAuthSession);
 	register_method("getAuthSessionTicket", &Steam::getAuthSessionTicket);
+	register_method("getAuthTicketForWebApi", &Steam::getAuthTicketForWebApi);
 	register_method("getAvailableVoice", &Steam::getAvailableVoice);
 	register_method("getDurationControl", &Steam::getDurationControl);
 	register_method("getEncryptedAppTicket", &Steam::getEncryptedAppTicket);
@@ -11758,6 +11802,7 @@ void Steam::_register_methods(){
 	register_signal<Steam>("input_device_connected", "input_handle", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("input_device_disconnected", "input_handle", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("input_configuration_loaded", "app_id", GODOT_VARIANT_TYPE_INT, "device_handle", GODOT_VARIANT_TYPE_INT, "config_data", GODOT_VARIANT_TYPE_DICTIONARY);
+	register_signal<Steam>("input_gamepad_slot_change", "app_id", GODOT_VARIANT_TYPE_INT, "device_handle", GODOT_VARIANT_TYPE_INT, "device_type", GODOT_VARIANT_TYPE_INT, "old_gamepad_slot", GODOT_VARIANT_TYPE_INT, "new_gamepad_slot", GODOT_VARIANT_TYPE_INT);
 
 	// INVENTORY SIGNALS ////////////////////////
 	register_signal<Steam>("inventory_definition_update", "definitions", GODOT_VARIANT_TYPE_ARRAY);
@@ -11866,6 +11911,7 @@ void Steam::_register_methods(){
 	register_signal<Steam>("encrypted_app_ticket_response", "result", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("game_web_callback", "url", GODOT_VARIANT_TYPE_STRING);
 	register_signal<Steam>("get_auth_session_ticket_response", "auth_ticket", GODOT_VARIANT_TYPE_INT, "result", GODOT_VARIANT_TYPE_INT);
+	register_signal<Steam>("get_ticket_for_web_api", "auth_ticket", GODOT_VARIANT_TYPE_INT, "result",  GODOT_VARIANT_TYPE_INT, "ticket_size", GODOT_VARIANT_TYPE_INT, "ticket_buffer",  GODOT_VARIANT_TYPE_ARRAY);
 	register_signal<Steam>("ipc_failure", godot::Dictionary());
 	register_signal<Steam>("licenses_updated", godot::Dictionary());
 	register_signal<Steam>("microstransaction_auth_response", "app_id", GODOT_VARIANT_TYPE_INT, "order_id", GODOT_VARIANT_TYPE_INT, "authorized", GODOT_VARIANT_TYPE_BOOL);
