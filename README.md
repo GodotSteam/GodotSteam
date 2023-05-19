@@ -16,7 +16,13 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.19.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.19.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.19.3 Changes**
+- Added: new Input callback _input_gamepad_slot_change_
+- Added: new User callback _get_ticket_for_web_api_
+- Added: new User function _getAuthTicketForWebApi_
+- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
 
 **Version 3.19.2 Changes**
 - Added: new return values for _overlay_toggled_; this will break compatibility with this
