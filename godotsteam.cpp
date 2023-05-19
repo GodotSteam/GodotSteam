@@ -12005,7 +12005,7 @@ void Steam::_bind_methods(){
 
 	// UTILITY SIGNALS //////////////////////////
 	ADD_SIGNAL(MethodInfo("check_file_signature", PropertyInfo(Variant::STRING, "signature")));
-	ADD_SIGNAL(MethodInfo("gamepad_text_input_dismissed", PropertyInfo(Variant::BOOL, "submitted"), PropertyInfo(Variant::STRING, "entered_text")));
+	ADD_SIGNAL(MethodInfo("gamepad_text_input_dismissed", PropertyInfo(Variant::BOOL, "submitted"), PropertyInfo(Variant::STRING, "entered_text"), PropertyInfo(Variant::INT, "app_id")));
 	ADD_SIGNAL(MethodInfo("ip_country"));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
 	ADD_SIGNAL(MethodInfo("steam_api_call_completed", PropertyInfo(Variant::INT, "async_call"), PropertyInfo(Variant::INT, "callback"), PropertyInfo(Variant::INT, "parameter")));
