@@ -25,6 +25,7 @@ func _ready() -> void:
 	IS_OWNED = Steam.isSubscribed()
 	IS_FREE_WEEKEND = Steam.isSubscribedFromFreeWeekend()
 
+
 func _process(_delta: float) -> void:
 	# Get callbacks
 	Steam.run_callbacks()
