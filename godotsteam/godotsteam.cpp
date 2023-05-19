@@ -229,6 +229,7 @@ Steam::Steam():
 	callbackInputDeviceConnected(this, &Steam::input_device_connected),
 	callbackInputDeviceDisconnected(this, &Steam::input_device_disconnected),
 	callbackInputConfigurationLoaded(this, &Steam::input_configuration_loaded),
+	callbackInputGamePadSlotChange(this, &Steam::input_gamepad_slot_change),
 
 	// Inventory callbacks //////////////////////
 	callbackInventoryDefinitionUpdate(this, &Steam::inventory_definition_update),
@@ -306,6 +307,7 @@ Steam::Steam():
 	callbackClientGameServerDeny(this, &Steam::client_game_server_deny),
 	callbackGameWebCallback(this, &Steam::game_web_callback),
 	callbackGetAuthSessionTicketResponse(this, &Steam::get_auth_session_ticket_response),
+	callbackGetTicketForWebApiResponse(this, &Steam::get_ticket_for_web_api),
 	callbackIPCFailure(this, &Steam::ipc_failure),
 	callbackLicensesUpdated(this, &Steam::licenses_updated),
 	callbackMicrotransactionAuthResponse(this, &Steam::microtransaction_auth_response),
@@ -1786,13 +1788,13 @@ void Steam::createBrowser(const String& user_agent, const String& user_css){
 }
 
 //! Run a javascript script in the currently loaded page.
-void Steam::executeJavascript(const String& script, uint32 this_handle){
+void Steam::executeJavascript(const String& javascript, uint32 this_handle){
 	if(SteamHTMLSurface() != NULL){
 		// If no handle is passed use internal one
 		if(this_handle == 0){
 			this_handle = browser_handle;
 		}
-		SteamHTMLSurface()->ExecuteJavascript(this_handle, script.utf8().get_data());
+		SteamHTMLSurface()->ExecuteJavascript(this_handle, javascript.utf8().get_data());
 	}
 }
 
@@ -5809,13 +5811,13 @@ Array Steam::getAvailableBeaconLocations(uint32 max){
 }
 
 //! Create a beacon. You can only create one beacon at a time. Steam will display the beacon in the specified location, and let up to unOpenSlots users "follow" the beacon to your party.
-void Steam::createBeacon(uint32 open_slots, uint64_t location, SteamPartyBeaconLocationType type, const String& connect_string, const String& metadata){
+void Steam::createBeacon(uint32 open_slots, uint64_t location, SteamPartyBeaconLocationType type, const String& connect_string, const String& beacon_metadata){
 	if(SteamParties() != NULL){
 		// Add data to the beacon location struct
 		SteamPartyBeaconLocation_t *beacon_data = new SteamPartyBeaconLocation_t;
 		beacon_data->m_eType = (ESteamPartyBeaconLocationType)type;
 		beacon_data->m_ulLocationID = location;
-		SteamAPICall_t api_call = SteamParties()->CreateBeacon(open_slots, beacon_data, connect_string.utf8().get_data(), metadata.utf8().get_data());
+		SteamAPICall_t api_call = SteamParties()->CreateBeacon(open_slots, beacon_data, connect_string.utf8().get_data(), beacon_metadata.utf8().get_data());
 		callResultCreateBeacon.Set(api_call, this, &Steam::create_beacon);
 		delete beacon_data;
 	}
@@ -5875,13 +5877,13 @@ Dictionary Steam::getBeaconDetails(uint64_t beacon_id){
 	if(SteamParties() != NULL){
 		CSteamID owner;
 		SteamPartyBeaconLocation_t location;
-		char metadata[STEAM_LARGE_BUFFER_SIZE];
-		if(SteamParties()->GetBeaconDetails(beacon_id, &owner, &location, metadata, STEAM_LARGE_BUFFER_SIZE)){
+		char beacon_metadata[STEAM_LARGE_BUFFER_SIZE];
+		if(SteamParties()->GetBeaconDetails(beacon_id, &owner, &location, beacon_metadata, STEAM_LARGE_BUFFER_SIZE)){
 			details["beacon_id"] = beacon_id;
 			details["owner_id"] = (uint64_t)owner.ConvertToUint64();
 			details["type"] = location.m_eType;
 			details["location_id"] = (uint64_t)location.m_ulLocationID;
-			details["metadata"] = metadata;
+			details["metadata"] = beacon_metadata;
 		}
 	}
 	return details;
@@ -6998,12 +7000,12 @@ String Steam::getQueryUGCMetadata(uint64_t query_handle, uint32 index){
 	String query_ugc_metadata = "";
 	if(SteamUGC() != NULL){
 		UGCQueryHandle_t handle = (uint64_t)query_handle;
-		char *metadata = new char[5000];
-		bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)metadata, 5000);
+		char *ugc_metadata = new char[5000];
+		bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char*)ugc_metadata, 5000);
 		if(success){
-			query_ugc_metadata = metadata;
+			query_ugc_metadata = ugc_metadata;
 		}
-		delete[] metadata;
+		delete[] ugc_metadata;
 	}
 	return query_ugc_metadata;
 }
@@ -7722,17 +7724,38 @@ Dictionary Steam::getAuthSessionTicket(const String& identity_reference){
 	// Create the dictionary to use
 	Dictionary auth_ticket;
 	if(SteamUser() != NULL){
-		const SteamNetworkingIdentity identity = networking_identities[identity_reference.utf8().get_data()];
+		uint32_t id = 0;
 		uint32_t ticket_size = 1024;
 		PackedByteArray buffer;
 		buffer.resize(ticket_size);
-		uint32_t id = SteamUser()->GetAuthSessionTicket(buffer.ptrw(), ticket_size, &ticket_size, &identity);
-		// Add this data to the dictionary
+		// If no reference is passed, just use NULL
+		// Not pretty but will work for now
+		if(identity_reference != ""){
+			const SteamNetworkingIdentity identity = networking_identities[identity_reference.utf8().get_data()];
+			id = SteamUser()->GetAuthSessionTicket(buffer.ptrw(), ticket_size, &ticket_size, &identity);
+		}
+		else{
+			id = SteamUser()->GetAuthSessionTicket(buffer.ptrw(), ticket_size, &ticket_size, NULL);
+		}
 		auth_ticket["id"] = id;
 		auth_ticket["buffer"] = buffer;
 		auth_ticket["size"] = ticket_size;
 	}
 	return auth_ticket;
+}
+
+// Request a ticket which will be used for webapi "ISteamUserAuth\AuthenticateUserTicket" pchIdentity is an optional input parameter to identify the service the ticket will be sent to the ticket will be returned in callback GetTicketForWebApiResponse_t
+uint32 Steam::getAuthTicketForWebApi(const String& service_identity){
+	uint32 auth_ticket_handle = 0;
+	if(SteamUser() != NULL){
+		if(service_identity != ""){
+			auth_ticket_handle = SteamUser()->GetAuthTicketForWebApi(service_identity.utf8().get_data());
+		}
+		else{
+			auth_ticket_handle = SteamUser()->GetAuthTicketForWebApi(NULL);
+		}
+	}
+	return auth_ticket_handle;
 }
 
 //! Checks to see if there is captured audio data available from GetVoice, and gets the size of the data.
@@ -9474,6 +9497,16 @@ void Steam::input_configuration_loaded(SteamInputConfigurationLoaded_t* call_dat
 	emit_signal("input_configuration_loaded", app_id, device_handle, config_data);
 }
 
+// Called when controller gamepad slots change - on Linux/macOS these slots are shared for all running apps.
+void Steam::input_gamepad_slot_change(SteamInputGamepadSlotChange_t* call_data){
+	uint32_t app_id = call_data->m_unAppID;
+	uint64_t device_handle = call_data->m_ulDeviceHandle;
+	int device_type = call_data->m_eDeviceType;
+	int old_gamepad_slot = call_data->m_nOldGamepadSlot;
+	int new_gamepad_slot = call_data->m_nNewGamepadSlot;
+	emit_signal("input_gamepad_slot_change", app_id, device_handle, device_type, old_gamepad_slot, new_gamepad_slot);
+}
+
 // INVENTORY CALLBACKS //////////////////////////
 //
 //! This callback is triggered whenever item definitions have been updated, which could be in response to LoadItemDefinitions or any time new item definitions are available (eg, from the dynamic addition of new item types while players are still in-game).
@@ -9907,6 +9940,15 @@ void Steam::get_auth_session_ticket_response(GetAuthSessionTicketResponse_t* cal
 	uint32 auth_ticket = call_data->m_hAuthTicket;
 	int result = call_data->m_eResult;
 	emit_signal("get_auth_session_ticket_response", auth_ticket, result);
+}
+
+// Result when creating an webapi ticket from GetAuthTicketForWebApi.
+void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t* call_data){
+	uint32 auth_ticket = call_data->m_hAuthTicket;
+	int result = call_data->m_eResult;
+	int ticket_size = call_data->m_cubTicket;
+	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
+	emit_signal("get_ticket_for_web_api", "auth_ticket", "result", "ticket_size", "ticket_buffer");
 }
 
 //! Called when the callback system for this client is in an error state (and has flushed pending callbacks). When getting this message the client should disconnect from Steam, reset any stored Steam state and reconnect. This usually occurs in the rare event the Steam client has some kind of fatal error.
@@ -11440,7 +11482,7 @@ void Steam::_bind_methods(){
 	// PARTIES BIND METHODS /////////////////////
 	ClassDB::bind_method(D_METHOD("cancelReservation", "beacon_id", "steam_id"), &Steam::cancelReservation);
 	ClassDB::bind_method(D_METHOD("changeNumOpenSlots", "beacon_id", "open_slots"), &Steam::changeNumOpenSlots);
-	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location_id", "type", "connect_string", "metadata"), &Steam::createBeacon);
+	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location_id", "type", "connect_string", "beacon_metadata"), &Steam::createBeacon);
 	ClassDB::bind_method(D_METHOD("destroyBeacon", "beacon_id"), &Steam::destroyBeacon);
 	ClassDB::bind_method(D_METHOD("getAvailableBeaconLocations", "max"), &Steam::getAvailableBeaconLocations);
 	ClassDB::bind_method(D_METHOD("getBeaconByIndex", "index"), &Steam::getBeaconByIndex);
@@ -11556,7 +11598,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("setCloudFileNameFilter", "update_handle", "match_cloud_filename"), &Steam::setCloudFileNameFilter);
 	ClassDB::bind_method(D_METHOD("setItemContent", "update_handle", "content_folder"), &Steam::setItemContent);
 	ClassDB::bind_method(D_METHOD("setItemDescription", "update_handle", "description"), &Steam::setItemDescription);
-	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "metadata"), &Steam::setItemMetadata);
+	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "ugc_metadata"), &Steam::setItemMetadata);
 	ClassDB::bind_method(D_METHOD("setItemPreview", "update_handle", "preview_file"), &Steam::setItemPreview);
 	ClassDB::bind_method(D_METHOD("setItemTags", "update_handle", "tag_array"), &Steam::setItemTags);
 	ClassDB::bind_method(D_METHOD("setItemTitle", "update_handle", "title"), &Steam::setItemTitle);
@@ -11597,7 +11639,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("cancelAuthTicket", "auth_ticket"), &Steam::cancelAuthTicket);
 	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "voice_size", "sample_rate"), &Steam::decompressVoice);
 	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &Steam::endAuthSession);
-	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "identity_reference"), &Steam::getAuthSessionTicket);
+	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "identity_reference"), &Steam::getAuthSessionTicket, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "identity_reference"), &Steam::getAuthTicketForWebApi, DEFVAL(""));
 	ClassDB::bind_method(D_METHOD("getAvailableVoice"), &Steam::getAvailableVoice);
 	ClassDB::bind_method(D_METHOD("getDurationControl"), &Steam::getDurationControl);
 	ClassDB::bind_method(D_METHOD("getEncryptedAppTicket"), &Steam::getEncryptedAppTicket);
@@ -11791,6 +11834,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("input_device_connected", PropertyInfo(Variant::INT, "input_handle")));
 	ADD_SIGNAL(MethodInfo("input_device_disconnected", PropertyInfo(Variant::INT, "input_handle")));
 	ADD_SIGNAL(MethodInfo("input_configuration_loaded", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "device_handle"), PropertyInfo(Variant::DICTIONARY, "config_data")));
+	ADD_SIGNAL(MethodInfo("input_gamepad_slot_change", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "device_handle"), PropertyInfo(Variant::INT, "device_type"), PropertyInfo(Variant::INT, "old_gamepad_slot"), PropertyInfo(Variant::INT, "new_gamepad_slot")));
 
 	// INVENTORY SIGNALS ////////////////////////
 	ADD_SIGNAL(MethodInfo("inventory_definition_update", PropertyInfo(Variant::ARRAY, "definitions")));
@@ -11903,6 +11947,7 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("encrypted_app_ticket_response", PropertyInfo(Variant::STRING, "result")));
 	ADD_SIGNAL(MethodInfo("game_web_callback", PropertyInfo(Variant::STRING, "url")));
 	ADD_SIGNAL(MethodInfo("get_auth_session_ticket_response", PropertyInfo(Variant::INT, "auth_ticket"), PropertyInfo(Variant::INT, "result")));
+	ADD_SIGNAL(MethodInfo("get_ticket_for_web_api", PropertyInfo(Variant::INT, "auth_ticket"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "ticket_size"), PropertyInfo(Variant::ARRAY, "ticket_buffer")));
 	ADD_SIGNAL(MethodInfo("ipc_failure", PropertyInfo(Variant::INT, "type")));
 	ADD_SIGNAL(MethodInfo("licenses_updated"));
 	ADD_SIGNAL(MethodInfo("microtransaction_auth_response", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "order_id"), PropertyInfo(Variant::BOOL, "authorized")));

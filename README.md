@@ -16,9 +16,16 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.3)_ of this repo here.](https://github.com/Gramps/GodotSteam/releases)
+You can [download pre-compiled versions _(currently v4.2.4)_ of this repo here.](https://github.com/Gramps/GodotSteam/releases)
 
-**Version 4.2.1 Changes**
+**Version 4.2.4 Changes**
+- Added: new Input callback input_gamepad_slot_change
+- Added: new User callback get_ticket_for_web_api
+- Added: new User function getAuthTicketForWebApi
+- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
+- Changed: some internal variable names to fix compiling warnings and conflicts
+
+**Version 4.2.3 Changes**
 - Added: new return values for _overlay_toggled_; this will break compatibility with this
 - Added: new Input and Parental Settings enums
 - Added: new UGC Content Descriptor ID enums
@@ -29,10 +36,15 @@ You can [download pre-compiled versions _(currently v4.2.3)_ of this repo here.]
 - Changed: Steam Input max analog and digital actions values
 - Removed: ERegisterActivationCodeResult due to removal in SDK
 
+**Version 4.2.2 Changes**
+- Changed: names of all godotsteam dll/so/dylib files to be less verbose
+
+**Version 4.2.1 Changes**
+- Added: compiled dylib files for OSX, _thanks to definitelyokay_
+- Fixed: names of OSX files in the godotsteam.gdextension file
+
 **Version 4.2 Changes**
-- Changed: code so it works like a singleton / module
-- Changed: brought this version up-to-speed with the 4.x module version
-- Fixed: weird issues with uint8/uint16 bindings
+- Changed: brought the plug-in version up to speed with the module version
 
 Known Issues
 ---

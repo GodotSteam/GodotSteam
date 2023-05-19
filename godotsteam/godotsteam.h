@@ -644,7 +644,7 @@ class Steam: public Object {
 		void allowStartRequest(bool allowed, uint32 this_handle = 0);
 		void copyToClipboard(uint32 this_handle = 0);
 		void createBrowser(const String& user_agent, const String& user_css);
-		void executeJavascript(const String& script, uint32 this_handle = 0);
+		void executeJavascript(const String& javascript, uint32 this_handle = 0);
 		void find(const String& search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
 		void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 		void goBack(uint32 this_handle = 0);
@@ -1023,7 +1023,7 @@ class Steam: public Object {
 		// Parties //////////////////////////////
 		void cancelReservation(uint64_t beacon_id, uint64_t steam_id);
 		void changeNumOpenSlots(uint64_t beacon_id, uint32 open_slots);
-		void createBeacon(uint32 open_slots, uint64_t location_id, SteamPartyBeaconLocationType type, const String& connect_string, const String& metadata);
+		void createBeacon(uint32 open_slots, uint64_t location_id, SteamPartyBeaconLocationType type, const String& connect_string, const String& beacon_metadata);
 		bool destroyBeacon(uint64_t beacon_id);
 		Array getAvailableBeaconLocations(uint32 max);
 		uint64_t getBeaconByIndex(uint32 index);
@@ -1140,7 +1140,7 @@ class Steam: public Object {
 		bool setCloudFileNameFilter(uint64_t update_handle, const String& match_cloud_filename);
 		bool setItemContent(uint64_t update_handle, const String& content_folder);
 		bool setItemDescription(uint64_t update_handle, const String& description);
-		bool setItemMetadata(uint64_t update_handle, const String& metadata);
+		bool setItemMetadata(uint64_t update_handle, const String& ugc_metadata);
 		bool setItemPreview(uint64_t update_handle, const String& preview_file);
 		bool setItemTags(uint64_t update_handle, Array tag_array);
 		bool setItemTitle(uint64_t update_handle, const String& title);
@@ -1181,7 +1181,8 @@ class Steam: public Object {
 		void cancelAuthTicket(uint32_t auth_ticket);
 		Dictionary decompressVoice(const PackedByteArray& voice, uint32 voice_size, uint32 sample_rate);
 		void endAuthSession(uint64_t steam_id);
-		Dictionary getAuthSessionTicket(const String& identity_reference);
+		Dictionary getAuthSessionTicket(const String& identity_reference = "");
+		uint32 getAuthTicketForWebApi(const String& service_identity = "");
 		Dictionary getAvailableVoice();
 		void getDurationControl();
 		Dictionary getEncryptedAppTicket();
@@ -1306,10 +1307,6 @@ class Steam: public Object {
 		// HTML Surface
 		uint32 browser_handle;
 
-		// HTTP
-		uint32 cookie_handle;
-		uint32 request_handle;
-
 		// Inventory
 		SteamInventoryUpdateHandle_t inventory_update_handle;
 		SteamInventoryResult_t inventory_handle;
@@ -1322,7 +1319,6 @@ class Steam: public Object {
 
 		// Matchmaking Server
 		HServerListRequest server_list_request;
-		HServerQuery server_query = HSERVERQUERY_INVALID;
 		ISteamMatchmakingServerListResponse* server_list_response;
 		ISteamMatchmakingPingResponse *ping_response;
 		ISteamMatchmakingPlayersResponse *player_response;
@@ -1333,11 +1329,9 @@ class Steam: public Object {
 
 		// Networking Sockets
 		uint32 network_connection;
-		uint32 listen_socket;
 		uint32 network_poll_group;
 		uint64_t networking_microseconds = 0;
 		SteamNetworkingIdentity networking_identity;
-		SteamNetworkingIdentity game_server;
 //		SteamDatagramHostedAddress hosted_address;
 		PackedByteArray routing_blob;
 //		SteamDatagramRelayAuthTicket relay_auth_ticket;
@@ -1347,16 +1341,12 @@ class Steam: public Object {
 		// Parties
 		uint64 party_beacon_id;
 
-		// Remote Play
-		uint32 session_id;
-
 		// Remote Storage
 		uint64_t write_stream_handle = 0;
 
 		// User stats
 		int number_achievements = 0;
 		bool stats_initialized = false;
-		uint64 ugc_handle;
 
 		// Utils
 		uint64_t api_handle = 0;
@@ -1444,6 +1434,7 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, input_device_connected, SteamInputDeviceConnected_t, callbackInputDeviceConnected);
 		STEAM_CALLBACK(Steam, input_device_disconnected, SteamInputDeviceDisconnected_t, callbackInputDeviceDisconnected);
 		STEAM_CALLBACK(Steam, input_configuration_loaded, SteamInputConfigurationLoaded_t, callbackInputConfigurationLoaded);
+		STEAM_CALLBACK(Steam, input_gamepad_slot_change, SteamInputGamepadSlotChange_t, callbackInputGamePadSlotChange);
 
 		// Inventory callbacks //////////////////
 		STEAM_CALLBACK(Steam, inventory_definition_update, SteamInventoryDefinitionUpdate_t, callbackInventoryDefinitionUpdate);
@@ -1521,6 +1512,7 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, client_game_server_deny, ClientGameServerDeny_t, callbackClientGameServerDeny);
 		STEAM_CALLBACK(Steam, game_web_callback, GameWebCallback_t, callbackGameWebCallback);
 		STEAM_CALLBACK(Steam, get_auth_session_ticket_response, GetAuthSessionTicketResponse_t, callbackGetAuthSessionTicketResponse);
+		STEAM_CALLBACK(Steam, get_ticket_for_web_api, GetTicketForWebApiResponse_t, callbackGetTicketForWebApiResponse);
 		STEAM_CALLBACK(Steam, ipc_failure, IPCFailure_t, callbackIPCFailure);
 		STEAM_CALLBACK(Steam, licenses_updated, LicensesUpdated_t, callbackLicensesUpdated);
 		STEAM_CALLBACK(Steam, microtransaction_auth_response, MicroTxnAuthorizationResponse_t, callbackMicrotransactionAuthResponse);
