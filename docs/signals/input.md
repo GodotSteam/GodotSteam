@@ -37,3 +37,16 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	**Returns:**
 
 	* input_handle (uint64_t)
+
+## input_gamepad_slot_change
+
+!!! function "input_gamepad_slot_change"
+	Called when controller gamepad slots change. On Linux / macOS these slots are shared for all running apps.
+
+	**Returns:**
+
+	* app_id (uint32_t)
+	* device_handle (uint64_t)
+	* device_type (int)
+	* old_gamepad_slot (int)
+	* new_gamepad_slot (int)

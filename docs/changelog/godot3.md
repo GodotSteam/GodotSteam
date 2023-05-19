@@ -6,6 +6,13 @@
 
 ---
 
+**Version 3.19.3 Changes**
+
+- Added: new Input callback _input_gamepad_slot_change_
+- Added: new User callback _get_ticket_for_web_api_
+- Added: new User function _getAuthTicketForWebApi_
+- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
+
 **Version 3.19.2 Changes**
 
 - Added: new return values for _overlay_toggled_; this will break compatibility with this

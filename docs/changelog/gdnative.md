@@ -4,6 +4,14 @@
 
 ------
 
+**Version 3.6.2 Changes**
+
+- Added: new Input callback _input_gamepad_slot_change_
+- Added: new User callback _get_ticket_for_web_api_
+- Added: new User function _getAuthTicketForWebApi_
+- Fixed: lobby_match_list callback, but no sends the lobby count along with the lobby list array (only in GDNative due to weird GDNative bug)
+- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
+
 **Version 3.6.1 Changes**
 
 - Added: new return values for _overlay_toggled_; this will break compatibility with this

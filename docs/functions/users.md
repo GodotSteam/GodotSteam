@@ -77,7 +77,7 @@
 
 ## getAuthSessionTicket
 
-!!! function "getAuthSessionTicket( network_identity )"
+!!! function "getAuthSessionTicket( ```string``` network_identity )"
 	Retrieve an authentication ticket to be sent to the entity who wishes to authenticate you.
 
 	After calling this you can send the ticket to the entity where they can then call [beginAuthSession](/functions/users/#beginauthsession) to verify this entities integrity.
@@ -94,10 +94,24 @@
 	* buffer (PoolByteArray)
 	* size (uint32_t)
 
-	**Notes:** As of Steamworks SDK 1.57, you need to pass a network identity that was created with our Networking Tools class.  While this is optional in the SDK, currently it is required in GodotSteam 3.19+ until we make it optional.
+	**Notes:** As of Steamworks SDK 1.57, you need to pass a network identity that was created with our Networking Tools class.  However, this is optional and defaults to NULL.
 
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#GetAuthSessionTicket){ .md-button .md-button--store target="_blank" }
+
+## getAuthTicketForWebApi
+
+!!! function "getAuthTicketForWebApi( ```string``` service_identity )"
+	Request a ticket which will be used for webapi "ISteamUserAuth\AuthenticateUserTicket"; **service_identity** is an optional input parameter to identify the service the ticket will be sent to the ticket will be returned in callback [get_ticket_for_web_api](/signals/users/#get_ticket_for_web_api).
+
+	Triggers a [get_ticket_for_web_api](/signals/users/#get_ticket_for_web_api) callback.
+
+	**Returns:** auth_ticket_handle (uint32)
+
+	**Notes:** The ```service_identity``` is not a network identity used by or created with GodotSteam's Networking Tools class.
+
+	---
+    [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#GetAuthTicketForWebApi){ .md-button .md-button--store target="_blank" }
 
 ## getAvailableVoice
 

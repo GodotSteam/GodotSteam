@@ -74,6 +74,18 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#GetAuthSessionTicketResponse_t){ .md-button .md-button--store target="_blank" }
 
+## get_ticket_for_web_api
+
+!!! function "get_ticket_for_web_api"
+	Result when creating an web API ticket from GetAuthTicketForWebApi.
+
+	**Returns:**
+
+	* auth_ticket (uint32)
+	* result (int)
+	* ticket_size (int)
+	* ticket_buffer (uint8)
+
 ## ipc_failure
 
 !!! function "ipc_failure"
