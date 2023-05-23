@@ -512,6 +512,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/zevergames){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Moonatics -->
+<figure class="game" markdown>
+[![Moonatics](https://steamcdn-a.akamaihd.net/steam/apps/2003450/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2003450/Moonatics/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2003450/Moonatics/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/moonatics_game){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Mutagenic -->
 <figure class="game" markdown>
 [![Mutagenic](https://steamcdn-a.akamaihd.net/steam/apps/2082560/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2082560/Mutagenic/){ target="_blank" }
@@ -892,7 +900,7 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 
 <!-- TETRAGUN -->
 <figure class="game" markdown>
-[![TETRAGUN](https://steamcdn-a.akamaihd.net/steam/apps/1664580/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1664580/Terra_Ventura/){ target="_blank" }
+[![TETRAGUN](https://steamcdn-a.akamaihd.net/steam/apps/1656310/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1656310/TETRAGUN/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1656310/TETRAGUN/){ target="_blank" .md-button .md-button--store }
 </figure>
