@@ -13,6 +13,8 @@ By far the easiest way to use GodotSteam is to download our pre-compiled editors
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
+Do not that OSX users will need to open the downloaded **GodotEditor.app** and navigate to **/Contents/MacOS** then open the **steam_appid.txt** and add your app ID here; or keep it as 480 if you don't have an app ID yet.
+
 ------
 ## 1b. Compile Yourself
 

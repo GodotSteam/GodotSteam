@@ -1,12 +1,12 @@
 # Exporting and Shipping
 
-This topic comes up a lot and _also_ trips folks up a lot; so this tutorial is here to help.  Exporting and shipping your game with GodotSteam is pretty easy once you get the flow down. This tutorial assumes you are downloading pre-compiled versions of the GodotSteam templates instead of compiling them; however, it will obviously work the same with the ones you compile yourself.
+This topic comes up a lot and _also_ trips folks up a lot; so this tutorial is here to help.
 
-Please note that if you are using the GDNative version of GodotSteam, this tutorial does not apply to you.  You will need to use the normal Godot templates either installed throught the normal editor or downloaded from their site.  Using the GodotSteam templates with the GDNative version will cause you a lot of issues.
+Exporting and shipping your game with GodotSteam is pretty easy once you get the flow down. This tutorial assumes you are downloading pre-compiled versions of the GodotSteam templates instead of compiling them; however, it will obviously work the same with the ones you compile yourself.
 
 ---
 
-## Exporting
+## Exporting For Modules / Pre-Compiles
 
 To being our export process, first click on the "Project" button in the top menu then select "Export..." from the drop-down.
 
@@ -34,22 +34,44 @@ If you do not, your executable will crash since we are not using debug-release t
 
 ---
 
+## Exporting For GDNative / GDExtension
+
+If you are using the **GDNative or GDExtension** version of GodotSteam, you will need to use the **normal Godot templates** either installed throught the normal editor or downloaded from their site.  Using the GodotSteam templates with the GDNative or GDExtension version will cause you a lot of issues.
+
+Also take note of any additional files Godot exports for you like the godotsteam.dll / libgodotsteam.so / libgodotsteam.dylib because these must also be shipped with your game.
+
+---
+
 ## Shipping
 
 For Windows and Linux, shipping is relatively simple.  You just need your game's executable, any accompanying .pck file, and the Steamworks API file.
 
-- For Windows, use the steam_api.dll for 32-bit and steam_api64.dll for 64-bit.
-- For Linux, make sure you use the libsteam_api.so file from the correct folder (I am not sure why Valve did not differentiate, in naming, between 32 and 64-bit files for Linux, but they do not).
+=== "Windows"
+	Use the **steam_api.dll** for 32-bit or **steam_api64.dll** for 64-bit.
+=== "Linux"
+	Make sure you use the **libsteam_api.so** file from the _correct_ folder.  I am not sure why Valve did not differentiate, in naming, between 32 and 64-bit files for Linux, but they do not.
+=== "OSX"
+	The Steamworks redistributables are already included in your app directory so there's not thing else to add.
 
 Your exported game's directory should look something like this:
 
 ![Export Folder](/assets/images/export-ship3-1.png){ loading=lazy }
 
+At this point, you are ready to upload your game to Steam!  [You can read more about that process on the offical Steamworks SDK documentation.](https://partner.steamgames.com/doc/sdk/uploading){ target="_blank" }  And, as usual, if you run into any issues, please contact us on the project's Github issues page or the Discord server.
+
+Let's also touch on some other small things next.
+
+### No steam_appid.txt Needed
+
 You will notice that the _steam_appid.txt_ is not included. This file is **only** used for running your game _outside_ of the Steam client so that it knows which game you are playing.  When run _through_ the Steam client, Steam is aware of what game you are playing, thus it is not necessary.  You can ship the steam_appid.txt will your game but it is not necessary or recommended.
+
+### OSX Differences
 
 As for OSX, there are a few extra steps beyond these since OSX games / apps are contained in an .app folder.  Instead of going over it again, you can [read more about the process in the Max Exporting tutorial.](/tutorials/mac_export/)
 
-At this point, you are ready to upload your game to Steam!  [You can read more about that process on the offical Steamworks SDK documentation.](https://partner.steamgames.com/doc/sdk/uploading){ target="_blank" }  And, as usual, if you run into any issues, please contact us on the project's Github issues page or the Discord server.
+### GDNative / GDExtension Caveats
+
+As mentioned earlier, you will also need to include the godotsteam.dll / libgodotsteam.so / libgodotsteam.dylib file that was extracted during the exporting process.
 
 ---
 

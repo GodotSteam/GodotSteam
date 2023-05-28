@@ -20,9 +20,14 @@ You may pass it either **Steam.AVATAR_SMALL**, **Steam.AVATAR_MEDIUM**, or **Ste
 
 To retrieve the avatar data buffer, you'll need to hook the signal for the callback:
 
-````
-Steam.connect("avatar_loaded", self, "loaded_avatar")
-````
+=== "Godot 2.x, 3.x"
+	````
+	Steam.connect("avatar_loaded", self, "loaded_avatar")
+	````
+=== "Godot 4.x"
+	````
+	Steam.avatar_loaded.connect(loaded_avatar)
+	````
 
 This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  If you have read the [Achievement Icons tutorial](/tutorials/achievement_icons/), this should all look pretty familiar.  Our **loaded_avatar** function will look something like this:
 
@@ -31,12 +36,15 @@ This will return the user's Steam ID, the avatar's size, and the data buffer for
 	func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 		print("Avatar for user: "+str(id))
 		print("Size: "+str(size))
+
 		# Create the image and texture for loading
 		AVATAR = Image.new()
 		var AVATAR_TEXTURE: ImageTexture = ImageTexture.new()
 		AVATAR.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
+
 		# Apply it to the texture
 		AVATAR_TEXTURE.create_from_image(AVATAR)
+
 		# Set it
 		$Sprite.set_texture(AVATAR_TEXTURE)
 	````
@@ -45,10 +53,13 @@ This will return the user's Steam ID, the avatar's size, and the data buffer for
 	func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
 		print("Avatar for user: "+str(id))
 		print("Size: "+str(size))
+
 		# Create the image and texture for loading
 	    var AVATAR: Image = Image.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
+
     	# Apply it to the texture
     	var AVATAR_TEXTURE: ImageTexture = ImageTexture.create_from_image(AVATAR)
+
 		# Set it
 		$Sprite.set_texture(AVATAR_TEXTURE)
 	````

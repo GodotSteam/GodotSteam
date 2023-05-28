@@ -7,11 +7,18 @@ This tutorial will cover setting up leaderboards for your games.  [You can check
 
 First, let's get our signals set up.
 
-````
-Steam.connect("leaderboard_find_result", self, "_leaderboard_Find_Result")
-Steam.connect("leaderboard_score_uploaded", self, "_leaderboard_Score_Uploaded")
-Steam.connect("leaderboard_scores_downloaded", self, "_leaderboard_Scores_Downloaded")
-````
+=== "Godot 2.x, 3.x"
+	````
+	Steam.connect("leaderboard_find_result", self, "_leaderboard_Find_Result")
+	Steam.connect("leaderboard_score_uploaded", self, "_leaderboard_Score_Uploaded")
+	Steam.connect("leaderboard_scores_downloaded", self, "_leaderboard_Scores_Downloaded")
+	````
+=== "Godot 4.x"
+	````
+	Steam.leaderboard_find_result.connect(_leaderboard_Find_Result)
+	Steam.leaderboard_score_uploaded.connect(_leaderboard_Score_Uploaded)
+	Steam.leaderboard_scores_downloaded.connect(_leaderboard_Scores_Downloaded)
+	````
 
 We'll go over each signal and related function in order.  First, you'll need to pass your leaderboard's Steamworks back-end name to the ***findLeaderboard()*** function like so:
 
@@ -53,10 +60,12 @@ Steam.uploadLeaderboardScore( score, keep_best, details, handle )
 ````
 
 The first argument is, obviously, the score. The second is if you want the score to update regardless of whether it is better than the current score for the user. The third are details which must be integers; they essentially can be anything but [here is what Valve says about it.](https://partner.steamgames.com/doc/api/ISteamUserStats#UploadLeaderboardScore){ target="_blank" }  The fourth is the leaderboard handle we are updating.  You do not have to pass the handle though, if you want to use the internally stored one.
+
+
 Once you pass a score to Steam, you should receive a callback from **leaderboard_score_uploaded**.  This will trigger our ***_leaderboard_Score_Uploaded()*** function:
 
 ````
-func _leaderboard_Score_Uploaded(success: int, score: int, score_changed: int, new_rank: int, prev_rank:int) -> void:
+func _leaderboard_Score_Uploaded(success: int, this_handle: int, this_score: Dictionary) -> void:
 	if success == 1:
 		print("Successfully uploaded scores!")
 		# Add additional logic to use other variables passed back
@@ -64,7 +73,7 @@ func _leaderboard_Score_Uploaded(success: int, score: int, score_changed: int, n
 		print("Failed to upload scores!")
 ````		
 
-For the most part you are just looking for a success of 1 to tell that it worked.  However, you may with to use the additional variables passed back by the signal for logic in your game:
+For the most part you are just looking for a success of 1 to tell that it worked.  However, you may with to use the additional variables passed back by the signal for logic in your game.  They are contained in the dictionary called **this_score** which contains these keys:
 
 - **score:** the new score as it stands
 - **score_changed:** if the score was changed (0 if false, 1 if true)

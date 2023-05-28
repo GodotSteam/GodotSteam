@@ -137,14 +137,14 @@ func _initialize_Steam() -> void:
 		print("Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
 		get_tree().quit()
 
-IS_ONLINE = Steam.loggedOn()
-STEAM_ID = Steam.getSteamID()
-IS_OWNED = Steam.isSubscribed()
+	IS_ONLINE = Steam.loggedOn()
+	STEAM_ID = Steam.getSteamID()
+	IS_OWNED = Steam.isSubscribed()
 
-# Check if account owns the game
-if IS_OWNED == false:
-	logging.error("User does not own this game")
-	get_tree().quit()
+	# Check if account owns the game
+	if IS_OWNED == false:
+		logging.error("User does not own this game")
+		get_tree().quit()
 ````
 
 ---

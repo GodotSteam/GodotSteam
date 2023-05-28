@@ -8,41 +8,78 @@ In this tutorial we will talk about authenticating users with Steam. You will ne
 
 First, in both your clients and server, you'll want to set two variables: **TICKET** and **CLIENT_TICKETS**.  You will keep the local client's ticket dictionary in, obviously, **TICKET** and a list of all connected clients in your **CLIENT_TICKETS** array.  More on that later.  Now, we'll set up the signals for authentication callbacks and their respective functions:
 
-````
-# Set up some variables
-var TICKET: Dictionary		# Your auth ticket
-var CLIENT_TICKETS: Array	# Array of clients tickets
+=== "Godot 2.x, 3.x"
+	````
+	# Set up some variables
+	var TICKET: Dictionary		# Your auth ticket
+	var CLIENT_TICKETS: Array	# Array of clients tickets
 
-func _ready() -> void:
-	Steam.connect("get_auth_session_ticket_response", self, "_get_Auth_Session_Ticket_Response")
-	Steam.connect("validate_auth_ticket_response", self, "_validate_Auth_Ticket_Response")
+	func _ready() -> void:
+		Steam.connect("get_auth_session_ticket_response", self, "_get_Auth_Session_Ticket_Response")
+		Steam.connect("validate_auth_ticket_response", self, "_validate_Auth_Ticket_Response")
 
-# Callback from getting the auth ticket from Steam
-func _get_Auth_Session_Ticket_Response(auth_ticket: int, result: int) -> void:
-	print("Auth session result: "+str(result))
-	print("Auth session ticket handle: "+str(auth_ticket))
+	# Callback from getting the auth ticket from Steam
+	func _get_Auth_Session_Ticket_Response(auth_ticket: int, result: int) -> void:
+		print("Auth session result: "+str(result))
+		print("Auth session ticket handle: "+str(auth_ticket))
 
 
-# Callback from attempting to validate the auth ticket
-func _validate_Auth_Ticket_Response(authID: int, response: int, ownerID: int) -> void:
-	print("Ticket Owner: "+str(authID))
+	# Callback from attempting to validate the auth ticket
+	func _validate_Auth_Ticket_Response(authID: int, response: int, ownerID: int) -> void:
+		print("Ticket Owner: "+str(authID))
 
-	# Make the response more verbose, highly unnecessary but good for this example
-	var VERBOSE_RESPONSE: String
-	match response:
-		0: VERBOSE_RESPONSE = "Steam has verified the user is online, the ticket is valid and ticket has not been reused."
-		1: VERBOSE_RESPONSE = "The user in question is not connected to Steam."
-		2: VERBOSE_RESPONSE = "The user doesn't have a license for this App ID or the ticket has expired."
-		3: VERBOSE_RESPONSE = "The user is VAC banned for this game."
-		4: VERBOSE_RESPONSE = "The user account has logged in elsewhere and the session containing the game instance has been disconnected."
-		5: VERBOSE_RESPONSE = "VAC has been unable to perform anti-cheat checks on this user."
-		6: VERBOSE_RESPONSE = "The ticket has been canceled by the issuer."
-		7: VERBOSE_RESPONSE = "This ticket has already been used, it is not valid."
-		8: VERBOSE_RESPONSE = "This ticket is not from a user instance currently connected to steam."
-		9: VERBOSE_RESPONSE = "The user is banned for this game. The ban came via the web api and not VAC."
-	print("Auth response: "+str(VERBOSE_RESPONSE))
-	print("Game owner ID: "+str(ownerID))
-````
+		# Make the response more verbose, highly unnecessary but good for this example
+		var VERBOSE_RESPONSE: String
+		match response:
+			0: VERBOSE_RESPONSE = "Steam has verified the user is online, the ticket is valid and ticket has not been reused."
+			1: VERBOSE_RESPONSE = "The user in question is not connected to Steam."
+			2: VERBOSE_RESPONSE = "The user doesn't have a license for this App ID or the ticket has expired."
+			3: VERBOSE_RESPONSE = "The user is VAC banned for this game."
+			4: VERBOSE_RESPONSE = "The user account has logged in elsewhere and the session containing the game instance has been disconnected."
+			5: VERBOSE_RESPONSE = "VAC has been unable to perform anti-cheat checks on this user."
+			6: VERBOSE_RESPONSE = "The ticket has been canceled by the issuer."
+			7: VERBOSE_RESPONSE = "This ticket has already been used, it is not valid."
+			8: VERBOSE_RESPONSE = "This ticket is not from a user instance currently connected to steam."
+			9: VERBOSE_RESPONSE = "The user is banned for this game. The ban came via the web api and not VAC."
+		print("Auth response: "+str(VERBOSE_RESPONSE))
+		print("Game owner ID: "+str(ownerID))
+	````
+=== "Godot 4.x"
+	````
+	# Set up some variables
+	var TICKET: Dictionary		# Your auth ticket
+	var CLIENT_TICKETS: Array	# Array of clients tickets
+
+	func _ready() -> void:
+		Steam.get_auth_session_ticket_response.connect(_get_Auth_Session_Ticket_Response)
+		Steam.validate_auth_ticket_response.connect(_validate_Auth_Ticket_Response)
+
+	# Callback from getting the auth ticket from Steam
+	func _get_Auth_Session_Ticket_Response(auth_ticket: int, result: int) -> void:
+		print("Auth session result: "+str(result))
+		print("Auth session ticket handle: "+str(auth_ticket))
+
+
+	# Callback from attempting to validate the auth ticket
+	func _validate_Auth_Ticket_Response(authID: int, response: int, ownerID: int) -> void:
+		print("Ticket Owner: "+str(authID))
+
+		# Make the response more verbose, highly unnecessary but good for this example
+		var VERBOSE_RESPONSE: String
+		match response:
+			0: VERBOSE_RESPONSE = "Steam has verified the user is online, the ticket is valid and ticket has not been reused."
+			1: VERBOSE_RESPONSE = "The user in question is not connected to Steam."
+			2: VERBOSE_RESPONSE = "The user doesn't have a license for this App ID or the ticket has expired."
+			3: VERBOSE_RESPONSE = "The user is VAC banned for this game."
+			4: VERBOSE_RESPONSE = "The user account has logged in elsewhere and the session containing the game instance has been disconnected."
+			5: VERBOSE_RESPONSE = "VAC has been unable to perform anti-cheat checks on this user."
+			6: VERBOSE_RESPONSE = "The ticket has been canceled by the issuer."
+			7: VERBOSE_RESPONSE = "This ticket has already been used, it is not valid."
+			8: VERBOSE_RESPONSE = "This ticket is not from a user instance currently connected to steam."
+			9: VERBOSE_RESPONSE = "The user is banned for this game. The ban came via the web api and not VAC."
+		print("Auth response: "+str(VERBOSE_RESPONSE))
+		print("Game owner ID: "+str(ownerID))
+	````
 
 Our ***_get_Auth_Session_Ticket_Response()*** function will send back the auth ticket's handle and whether getting the ticket was successful (returns a 1) or not (anything else).  You can add logic for success or failure based on your game's needs.  If successful, you'll probably want to send you new ticket to the server or other clients for validation at this point.
 
@@ -57,6 +94,8 @@ First you'll want to get an auth ticket from Steam and pass it to your **TICKET*
 ````
 TICKET = Steam.getAuthSessionTicket()
 ````
+
+This function also has an optional **identity** you can pass to it but defaults to **null**.  This identity can correspond to one of your networking identities set up with the [Networking Tools](/functions/networking_types/) class.
 
 Now that you have your auth ticket, you'll want to pass it along to the server or other clients for validation.
 

@@ -17,21 +17,36 @@ Unless you choose to turn it off by passing **false** to the ***steamInit()*** f
 
 To retrieve the data from the resulting callback, you need to connect the **current_stats_received**callback to a function like so:
 
-````
-Steam.connect("current_stats_received", self, "_steam_Stats_Ready", [], CONNECT_ONESHOT)
-````
+=== "Godot 2.x, 3.x"
+	````
+	Steam.connect("current_stats_received", self, "_steam_Stats_Ready", [], CONNECT_ONESHOT)
+	````
+=== "Godot 4.x"
+	````
+	Steam.current_stats_received.connect(_steam_Stats_Ready)
+	````
 
 You'll notice that **CONNECT_ONESHOT** is passed along to prevent this from firing more than once.  This is because that signal is sent any time stats are updated or received and will run the ***_steam_Stats_Ready()*** again.  In my use-cases this is not desirable, but it may be in yours. If you don't mind the ***_steam_Stats_Ready()*** firing each time, depending on your function's logic, feel free to omit that part like so:
 
-````
-Steam.connect("current_stats_received", self, "_steam_Stats_Ready")
-````
+=== "Godot 2.x, 3.x"
+	````
+	Steam.connect("current_stats_received", self, "_steam_Stats_Ready")
+	````
+=== "Godot 4.x"
+	````
+	Steam.current_stats_received.connect(_steam_Stats_Ready)
+	````
 
 If you do keep the **CONNECT_ONESHOT**as I do, I suggest calling for Steam stat updates with ***requestUserStats()***and pass with it the user's Steam ID.  This function will work with any user: local or remote. You'll also want to connect it's signal in a similar manner:
 
-````
-Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
-````
+=== "Godot 2.x, 3.x"
+	````
+	Steam.connect("user_stats_received", self, "_steam_Stats_Ready")
+	````
+=== "Godot 4.x"
+	````
+	Steam.user_stats_received.connect(_steam_Stats_Ready)
+	````
 
 It can be connected to the same function as ***requestCurrentStats()*** as they send the same data back.  For our example, here is the ***_steam_Stats_Ready()*** function we listed in the connected signals:
 

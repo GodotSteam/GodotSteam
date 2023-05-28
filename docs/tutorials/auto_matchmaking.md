@@ -31,6 +31,7 @@ For our purposes, we will create a button named "Auto Matchmake" and connect a *
 func _on_Auto_Matchmake_pressed() -> void:
 	# Set the matchmaking process over
 	MATCHMAKE_PHASE = 0
+
 	# Start the loop!
 	_matchmaking_Loop()
 ````			

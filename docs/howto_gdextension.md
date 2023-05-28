@@ -172,6 +172,8 @@ func _ready():
     print("Your steam name: " + str(name))
 ````
 
+Note that you **do not** have to enable this in the editor for the extension to work; it is just always present.
+
 Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder.  You'll need this to run the game from the editor.
 
 The documentation for GodotSteam modules should apply to GodotSteam GDExtension as they are built from the same code and have all the same functions; generally speaking.
@@ -181,4 +183,8 @@ The documentation for GodotSteam modules should apply to GodotSteam GDExtension 
 
 For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](/tutorials/exporting_shipping/)
 
-That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember. When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.
+That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember.
+
+When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so) as well as the **exported GodotSteam file .dll/.so/.dylib** (godotsteam.dll, libgodotsteam.so, and/or libgodotsteam.dylib).
+
+*Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.

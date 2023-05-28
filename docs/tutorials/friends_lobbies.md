@@ -6,7 +6,7 @@ We will break down the different steam functions to call first before looking at
 
 ---
 
-## Functions explained
+## Functions Explained
 
 ````
 var number_of_friends: int = Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)
@@ -44,7 +44,7 @@ Here's the fields and possible values inside this dictionary:
 
 ---
 
-## Putting it all together
+## Putting It All Together
 
 ````
 func get_lobbies_with_friends() -> Dictionary:
@@ -102,7 +102,7 @@ From here you can create your UI however you like, and simply call `Steam.joinLo
 
 ---
 
-## Checking if a friend is still in a lobby
+## Checking If A Friend Is Still In A Lobby
 
 In the likely case that you are not running `get_lobbies_with_friends()` every frame, there's a small chance a user might click on a lobby a friend has since left, or worse, a lobby that no longer exists.
 

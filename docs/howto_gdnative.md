@@ -252,4 +252,8 @@ The documentation for GodotSteam should apply to GodotSteam GDNative as they are
 
 For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](/tutorials/exporting_shipping/)
 
-That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember. When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).  *Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.
+That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember.
+
+When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).
+
+*Do not* include the steam_appid.txt or any .lib files as they are unnecessary; however, they won't hurt anything.

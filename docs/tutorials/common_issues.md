@@ -14,7 +14,17 @@ For Windows users, when creating the steam_appid.txt file you need to watch out 
 
 This can have quite a few causes but a common one is not having your depots or packages set up correctly.  Check out this [page in the official Steamworks SDK documentation for more on how to do it.](https://partner.steamgames.com/doc/store/application/packages){ target="_blank" }
 
-------
+---
+
+## Parse Error
+
+Some people get `Parse Error: The identifier Steam isn't declared in the current scope`.  If you get this error, one of the following is the cause:
+
+- Either you're not using a pre-compiled editor
+- You didn't actually include GodotSteam in your build when compiling
+- You're using a non-GodotSteam template when exporting from a GodotSteam-enabled editor
+
+---
 
 ## Achievements Not Working
 

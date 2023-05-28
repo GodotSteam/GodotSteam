@@ -83,7 +83,7 @@ pre {
 	scrollbar-color:var(--md-accent-fg-color) transparent;
 }
 .admonition {
-	text-align: center !important;
+	text-align: left !important;
 }
 .admonition.function {
 	text-align: left !important;
@@ -976,6 +976,27 @@ div.start-grid div.admonition a {
   vertical-align: top;
   text-align: left;
 }
+
+.md-typeset .admonition.compile,
+.md-typeset .admonition.example,
+.md-typeset .admonition.guide,
+.md-typeset .admonition.server,
+.md-typeset .admonition.source,
+.md-typeset .admonition.steam {
+	display: block !important;
+	min-width: 100% !important;
+	text-align: left !important;
+}
+
+.md-typeset .admonition.compile a,
+.md-typeset .admonition.example a,
+.md-typeset .admonition.guide a,
+.md-typeset .admonition.server a,
+.md-typeset .admonition.source a,
+.md-typeset .admonition.steam a {
+  margin-right: 2em;	
+}
+
 .md-typeset .admonition.contributors1,
 .md-typeset .admonition.contributors2 {
 	text-align: left !important;

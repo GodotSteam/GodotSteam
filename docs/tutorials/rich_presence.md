@@ -53,6 +53,16 @@ There are additional tags you can set which are [covered in detail in the SDK do
 
 ---
 
+## Weird Bug In GDNative
+
+A weird bug exists in the **Windows version of GDNative**, both in GodotSteam and Samsfacee's plug-in.  Sometimes the `setRichPresence` function will send the key as the value.  It isn't consistent but happens enough to be noticeable and a pain.
+
+Please note this bug *does not exist* in the pre-compiled module versions nor GDExtension version or the GDNative versions for Linux or OSX.
+
+This behavior definitely seems to be a GDNative problem so we can't really fix it on our and an issue has been submitted to the Godot Github page.
+
+---
+
 And that's a quick run-down on how to set your rich presence for your game!
 
 [To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/Gramps/GodotSteam/tree/example){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
