@@ -63,7 +63,7 @@ jobs:
       godot_tag: ${{ inputs.godot_tag }}
       binary_name: "godot.x11.opt.tools.64"
       export_name: "linux-${{ needs.env-setup.outputs.godot_version }}-editor.64"
-      build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64"
+      build_params: "-j4 platform=x11 production=yes tools=yes target=release_debug bits=64 warnings=extra"
       artifact_name: "linux-editor"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -77,7 +77,7 @@ jobs:
       godot_tag: ${{ inputs.godot_tag }}
       binary_name: "godot.x11.opt.64"
       export_name: "linux-${{ needs.env-setup.outputs.godot_version }}-template.64"
-      build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64"
+      build_params: "-j4 platform=x11 production=yes tools=no target=release bits=64 warnings=extra"
       artifact_name: "linux-release-template"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -91,7 +91,7 @@ jobs:
       godot_tag: ${{ inputs.godot_tag }}
       binary_name: "godot.x11.opt.debug.64"
       export_name: "linux-${{ needs.env-setup.outputs.godot_version }}-debug-template.64"
-      build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64"
+      build_params: "-j4 platform=x11 production=yes tools=no target=release_debug bits=64 warnings=extra"
       artifact_name: "linux-debug-template"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -143,7 +143,7 @@ jobs:
       godot_tag: ${{ inputs.godot_tag }}
       binary_name: godot.windows.opt.tools.64.exe
       export_name: "windows-${{ needs.env-setup.outputs.godot_version }}-editor-64bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no"
+      build_params: "-j4 platform=windows production=yes tools=yes target=release_debug debug_symbols=no warnings=extra"
       artifact_name: "win64-editor"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -157,7 +157,7 @@ jobs:
       godot_tag: ${{ inputs.godot_tag }}
       binary_name: godot.windows.opt.64.exe
       export_name: "windows-${{ needs.env-setup.outputs.godot_version }}-template-64bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no"
+      build_params: "-j4 platform=windows production=yes tools=no target=release debug_symbols=no warnings=extra"
       artifact_name: "win64-release-template"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -171,7 +171,7 @@ jobs:
       godot_tag: ${{ inputs.godot_tag }}
       binary_name: godot.windows.opt.debug.64.exe
       export_name: "windows-${{ needs.env-setup.outputs.godot_version }}-debug-template-64bit.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no"
+      build_params: "-j4 platform=windows production=yes tools=no target=release_debug debug_symbols=no warnings=extra"
       artifact_name: "win64-debug-template"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -221,7 +221,7 @@ jobs:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
       export_name: "godot.osx.tools.x86_64"
-      build_params: "-j6 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
+      build_params: "-j6 p=osx arch=x86_64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-editor-x86_64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -233,7 +233,7 @@ jobs:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
       export_name: "godot.osx.opt.x86_64"
-      build_params: "-j6 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
+      build_params: "-j6 p=osx arch=x86_64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-release-template-x86_64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -245,7 +245,7 @@ jobs:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
       export_name: "godot.osx.opt.debug.x86_64"
-      build_params: "-j6 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
+      build_params: "-j6 p=osx arch=x86_64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-debug-template-x86_64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -257,7 +257,7 @@ jobs:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
       export_name: "godot.osx.tools.arm64"
-      build_params: "-j6 p=osx arch=arm64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu)"
+      build_params: "-j6 p=osx arch=arm64 production=yes tools=yes --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-editor-arm64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -269,7 +269,7 @@ jobs:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
       export_name: "godot.osx.opt.arm64"
-      build_params: "-j6 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu)"
+      build_params: "-j6 p=osx arch=arm64 production=yes tools=no target=release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-release-template-arm64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
@@ -281,7 +281,7 @@ jobs:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
       export_name: "godot.osx.opt.debug.arm64"
-      build_params: "-j6 p=osx arch=arm64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu)"
+      build_params: "-j6 p=osx arch=arm64 production=yes tools=no target=release_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-debug-template-arm64"
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
