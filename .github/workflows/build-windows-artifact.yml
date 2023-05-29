@@ -65,9 +65,7 @@ jobs:
           EXIT 0
       - name: Install Build Requirements
         run: |
-          python --version
-          python -m pip install scons
-          scons --version
+          python -m pip install scons==4.4.0
           
       - name: Build Windows
         working-directory: "godot"
