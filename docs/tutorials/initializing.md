@@ -151,4 +151,4 @@ func _initialize_Steam() -> void:
 
 This covers the initialization and basic set-up.
 
-[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/Gramps/GodotSteam/tree/example){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

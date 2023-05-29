@@ -11,7 +11,7 @@ This also means you cannot use the GodotSteam templates for exporting; you must 
 
 Just like the module version, the easiest way to use GodotSteam is downloading the plug-in and installing it into your project.
 
-- [x] Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases) and unpack it.
+- [x] Download the [pre-compiled editor from the Release section](https://github.com/CoaguCo-Industries/GodotSteam/releases) and unpack it.
 - [x] Alternatively you can download and install the [GDNative plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1045).
 - [x] Everything you need should be included.
     - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](/tutorials/linux_caveats/).
@@ -28,7 +28,7 @@ For those of you who are comfortable compiling or want to give it a shot, here a
 - [x] Acquire the GodotSteam GDNative source either by downloading it or cloning the repo:
     - Download this repository then unpack it into the **GDNative** folder.
     - Alternatively, clone this repository into your **GDNative** folder:
-        - Use ````git clone -b gdnative https://github.com/Gramps/GodotSteam.git````
+        - Use ````git clone -b gdnative https://github.com/CoaguCo-Industries/GodotSteam.git````
 - [x] Download the [Steamworks SDK](https://partner.steamgames.com); this requires a Steam developer account.
 - [x] Download the [Godot cpp](https://github.com/godotengine/godot-cpp), the 3.5 branch.
     - Unpack the **godot_cpp** into the **GDNative** folder.

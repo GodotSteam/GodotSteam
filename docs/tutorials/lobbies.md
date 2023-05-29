@@ -85,7 +85,7 @@ func _check_Command_Line() -> void:
 
 This is important if the player is accepting a Steam invite or right-clicks a friend's name then selects 'Join Game' or 'Join Lobby' and doesn't have the game open. Doing either action will launch the game with the additional command ````+connect_lobby <Steam Lobby ID>````. Sadly Godot doesn't really understand this command argument so our ***_check_Command_Line()*** function has to be written to work within those constraints.
 
-Additionally, you'll need to add the appropriate scene name to your Steamworks launch options on the Steamworks website. You'll want to add the full scene path (res://your-scene.tscn) on the **Arguments** line in your launch option. [You can read more about that, with details, in this link.](https://github.com/Gramps/GodotSteam/issues/100){ target="_blank" } Big thanks to **Antokolos** for answering this issue and providing a solid example.
+Additionally, you'll need to add the appropriate scene name to your Steamworks launch options on the Steamworks website. You'll want to add the full scene path (res://your-scene.tscn) on the **Arguments** line in your launch option. [You can read more about that, with details, in this link.](https://github.com/CoaguCo-Industries/GodotSteam/issues/100){ target="_blank" } Big thanks to **Antokolos** for answering this issue and providing a solid example.
 
 ---
 
@@ -437,10 +437,10 @@ First is this [video tutorial put together by **DawnsCrow Games**](https://youtu
 
 Second is [**JDare**'s has a repo, **GodotSteamHL**](https://github.com/JDare/GodotSteamHL){ target="_blank" }, designed to streamline Steam's networking functionality (lobbies and P2P) which should serve as a handy guide and/or useful script.
 
-I highly suggest you [check out the Example branch of the repo](https://github.com/Gramps/GodotSteam/tree/example){ target="_blank" }, specifically the **/src/examples/lobby.tscn** which will have the full working code and test interface for this tutorial.
+I highly suggest you [check out the Example branch of the repo](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ target="_blank" }, specifically the **/src/examples/lobby.tscn** which will have the full working code and test interface for this tutorial.
 
 ---
 
 That concludes the lobby tutorial.  At this point you may want to [check out the P2P tutorial which compliments this one](/tutorials/p2p).  Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
 
-[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/Gramps/GodotSteam/tree/example){ { target="_blank" } } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ { target="_blank" } } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

@@ -7,7 +7,7 @@ Here we provide a, hopefully, thorough explanation of how to set-up, build, and 
 
 By far the easiest way to use GodotSteam is to download our pre-compiled editors and templates; especially good for folks who don't want to set up the tools for compiling and just want to get going.
 
-- [x] Download the [pre-compiled editor from the Release section](https://github.com/Gramps/GodotSteam/releases){ target="_blank" } and unpack it.
+- [x] Download the [pre-compiled editor from the Release section](https://github.com/CoaguCo-Industries/GodotSteam/releases){ target="_blank" } and unpack it.
 - [x] Alternatively you can download and install the [GDNative plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1045){ target="_blank" }.
 - [x] Everything you need should be included.
 
@@ -23,10 +23,10 @@ For those of you who are comfortable compiling or want to give it a shot, here a
 - [x] Set your system up for [compiling based on Godot's recommendations / required tools.](https://docs.godotengine.org/en/stable/development/compiling/index.html){ target="_blank" }
 - [x] Download and unpack the [Godot source 3.x](https://github.com/godotengine/godot){ target="_blank" }.
 - [x] Acquire the GodotSteam source either by downloading it or cloning the repo:
-    * [Download this repository](https://github.com/Gramps/GodotSteam){ target="_blank" } then unpack it into a folder called **godotsteam** inside your Godot Engine source code **/modules** folder.
+    * [Download this repository](https://github.com/CoaguCo-Industries/GodotSteam){ target="_blank" } then unpack it into a folder called **godotsteam** inside your Godot Engine source code **/modules** folder.
         * You will have to create the **godotsteam** folder and it must be named exactly this.
     * Alternatively, clone this repository into your Godot Engine source code **/modules** folder
-        * Use ````git clone https://github.com/Gramps/GodotSteam.git godotsteam````
+        * Use ````git clone https://github.com/CoaguCo-Industries/GodotSteam.git godotsteam````
 - [x] Download and unpack the [Steamworks SDK 1.55](https://partner.steamgames.com){ target="_blank" }.
     * This requires a Steam developer account.
 

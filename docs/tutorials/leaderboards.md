@@ -1,5 +1,5 @@
 # Tutorials - Leaderboards
-This tutorial will cover setting up leaderboards for your games.  [You can check out the example project on Github to see a somewhat working version.](https://github.com/Gramps/GodotSteam/tree/example){ target="_blank" }
+This tutorial will cover setting up leaderboards for your games.  [You can check out the example project on Github to see a somewhat working version.](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ target="_blank" }
 
 ---
 
@@ -136,4 +136,4 @@ The message is just a basic message to inform you to the status the download; wh
 
 I will add more to this tutorial at a later date with other functions but this should cover all the basics for working with leaderboards.
 
-[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/Gramps/GodotSteam/tree/example){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

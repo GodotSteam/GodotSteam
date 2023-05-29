@@ -3,7 +3,7 @@ site_url: https://godotsteam.com
 site_description: An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.
 site_author: GP Garcia
 copyright: Copyright &copy; 2015-2023 GP Garcia | CoaguCo Industries
-repo_url: https://github.com/Gramps/GodotSteam/
+repo_url: https://github.com/CoaguCo-Industries/GodotSteam
 repo_name: GodotSteam
 nav:
   - Introduction: 'index.md'
@@ -114,7 +114,7 @@ nav:
     - Stats and Achievements: 'tutorials/stats_achievements.md'
     - Workshop: 'tutorials/workshop.md'
   - Games Using GodotSteam: 'games.md'
-  - To-Do: 'https://github.com/users/Gramps/projects/1'
+  - To-Do: 'https://github.com/orgs/CoaguCo-Industries/projects/2'
   - Change-Logs:
     - Godot 4.x: 'changelog/godot4.md'
     - Godot 3.x: 'changelog/godot3.md'
