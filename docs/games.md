@@ -64,6 +64,16 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1694380/Am_Madness/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Barkelona -->
+<figure class="game" markdown>
+[![Barkelona](https://steamcdn-a.akamaihd.net/steam/apps/2434300/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2434300/Barkelona/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2434300/Barkelona){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-itch-io: ](https://hoodmentality.itch.io/barkelona){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-facebook: ](https://www.facebook.com/people/Barkelona/100092625319820/){ target="_blank" .md-button .md-button--store }
+</figure>
+
+
 <!-- Beaver Clicker -->
 <figure class="game" markdown>
 [![Beaver Clicker](https://steamcdn-a.akamaihd.net/steam/apps/1718240/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1718240/Beaver_Clicker/){ target="_blank" }
@@ -862,6 +872,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/oliver_joyce){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-youtube: ](https://www.youtube.com/whiskeybarrelstudios/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-discord: ](https://discord.com/invite/swordsandsandals){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- TailQuest: Defense -->
+<figure class="game" markdown>
+[![TailQuest: Defense](https://steamcdn-a.akamaihd.net/steam/apps/824090/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/824090/TailQuest_Defense/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/824090/TailQuest_Defense/){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- TD Worlds -->
