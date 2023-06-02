@@ -879,6 +879,7 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [![TailQuest: Defense](https://steamcdn-a.akamaihd.net/steam/apps/824090/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/824090/TailQuest_Defense/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/824090/TailQuest_Defense/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://kivnao.games){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- TD Worlds -->
