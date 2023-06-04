@@ -483,7 +483,7 @@ jobs:
       with:
         file: win64-${{ needs.env-setup.outputs.zip_tag }}.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ needs.env-setup.outputs.zip_tag }}
+        tag: ${{ inputs.godotsteam_version }}
         release_name: ${{ needs.env-setup.outputs.release_title }}
         prerelease: false
         body: |
@@ -497,16 +497,16 @@ jobs:
       with:
         file: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ needs.env-setup.outputs.zip_tag }}
+        tag: ${{ inputs.godotsteam_version }}
     - name: Upload MacOS bundle to release
       uses: svenstaro/upload-release-action@v2
       with:
         file: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ needs.env-setup.outputs.zip_tag }}
+        tag: ${{ inputs.godotsteam_version }}
     - name: Upload template bundle to release
       uses: svenstaro/upload-release-action@v2
       with:
         file: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ needs.env-setup.outputs.zip_tag }}
+        tag: ${{ inputs.godotsteam_version }}
