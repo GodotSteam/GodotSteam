@@ -1,0 +1,3818 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.">
+      
+      
+        <meta name="author" content="GP Garcia">
+      
+      
+        <link rel="canonical" href="https://godotsteam.com/enums/main/">
+      
+      
+        <link rel="prev" href="../../signals/video/">
+      
+      
+        <link rel="next" href="../apps/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+    
+    
+      
+        <title>Main - GodotSteam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.26e3688c.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#enums-main" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GodotSteam" class="md-header__button md-logo" aria-label="GodotSteam" data-md-component="logo">
+      
+  <img src="../../assets/images/inverted-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GodotSteam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Main
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/CoaguCo-Industries/GodotSteam" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GodotSteam
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GodotSteam" class="md-nav__button md-logo" aria-label="GodotSteam" data-md-component="logo">
+      
+  <img src="../../assets/images/inverted-logo.png" alt="logo">
+
+    </a>
+    GodotSteam
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/CoaguCo-Industries/GodotSteam" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GodotSteam
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          How-To's
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          How-To's
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto_modules/" class="md-nav__link">
+        How-To Godot 2, 3, 4
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto_gdnative/" class="md-nav__link">
+        How-To GDNative
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto_gdextension/" class="md-nav__link">
+        How-To GDExtension
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Functions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Functions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/main/" class="md-nav__link">
+        Main
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/app_lists/" class="md-nav__link">
+        App Lists
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/apps/" class="md-nav__link">
+        Apps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/friends/" class="md-nav__link">
+        Friends
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/game_search/" class="md-nav__link">
+        Game Search
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/game_server/" class="md-nav__link">
+        Game Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/game_server_stats/" class="md-nav__link">
+        Game Server Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/html_surface/" class="md-nav__link">
+        HTML Surface
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/http/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/input/" class="md-nav__link">
+        Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/inventory/" class="md-nav__link">
+        Inventory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/matchmaking/" class="md-nav__link">
+        Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/matchmaking_servers/" class="md-nav__link">
+        Matchmaking Servers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/music_remote/" class="md-nav__link">
+        Music Remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/networking/" class="md-nav__link">
+        Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/networking_messages/" class="md-nav__link">
+        Networking Messages
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/networking_sockets/" class="md-nav__link">
+        Networking Sockets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/networking_types/" class="md-nav__link">
+        Networking Types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/networking_utils/" class="md-nav__link">
+        Networking Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/parental_settings/" class="md-nav__link">
+        Parental Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/parties/" class="md-nav__link">
+        Parties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/remote_play/" class="md-nav__link">
+        Remote Play
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/remote_storage/" class="md-nav__link">
+        Remote Storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/screenshots/" class="md-nav__link">
+        Screenshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/ugc/" class="md-nav__link">
+        UGC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/users/" class="md-nav__link">
+        Users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/user_stats/" class="md-nav__link">
+        User Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/utils/" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/video/" class="md-nav__link">
+        Video
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Signals
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Signals
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/main/" class="md-nav__link">
+        Main
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/app_lists/" class="md-nav__link">
+        App Lists
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/apps/" class="md-nav__link">
+        Apps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/friends/" class="md-nav__link">
+        Friends
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/game_search/" class="md-nav__link">
+        Game Search
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/game_server/" class="md-nav__link">
+        Game Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/game_server_stats/" class="md-nav__link">
+        Game Server Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/html_surface/" class="md-nav__link">
+        HTML Surface
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/http/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/input/" class="md-nav__link">
+        Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/inventory/" class="md-nav__link">
+        Inventory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/matchmaking/" class="md-nav__link">
+        Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/matchmaking_servers/" class="md-nav__link">
+        Matchmaking Servers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/music_remote/" class="md-nav__link">
+        Music Remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/networking/" class="md-nav__link">
+        Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/networking_sockets/" class="md-nav__link">
+        Networking Sockets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/networking_utils/" class="md-nav__link">
+        Networking Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/parental_settings/" class="md-nav__link">
+        Parental Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/parties/" class="md-nav__link">
+        Parties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/remote_play/" class="md-nav__link">
+        Remote Play
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/remote_storage/" class="md-nav__link">
+        Remote Storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/screenshots/" class="md-nav__link">
+        Screenshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/ugc/" class="md-nav__link">
+        UGC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/user/" class="md-nav__link">
+        Users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/user_stats/" class="md-nav__link">
+        User Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/utils/" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/video/" class="md-nav__link">
+        Video
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          Enums
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Enums
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Main
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Main
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#accounttype" class="md-nav__link">
+    AccountType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appownershipflags" class="md-nav__link">
+    AppOwnershipFlags
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appreleasestate" class="md-nav__link">
+    AppReleaseState
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apptype" class="md-nav__link">
+    AppType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authsessionresponse" class="md-nav__link">
+    AuthSessionResponse
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beginauthsessionresult" class="md-nav__link">
+    BeginAuthSessionResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#broadcastuploadresult" class="md-nav__link">
+    BroadcastUploadResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatentrytype" class="md-nav__link">
+    ChatEntryType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatroomenterresponse" class="md-nav__link">
+    ChatRoomEnterResponse
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatsteamidinstanceflags" class="md-nav__link">
+    ChatSteamIDInstanceFlags
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#denyreason" class="md-nav__link">
+    DenyReason
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gameidtype" class="md-nav__link">
+    GameIDType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launchoptiontype" class="md-nav__link">
+    LaunchOptionType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notificationposition" class="md-nav__link">
+    NotificationPosition
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result" class="md-nav__link">
+    Result
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#universe" class="md-nav__link">
+    Universe
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#userhaslicenseforappresult" class="md-nav__link">
+    UserHasLicenseForAppResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#voiceresult" class="md-nav__link">
+    VoiceResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vrhmdtype" class="md-nav__link">
+    VRHMDType
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apps/" class="md-nav__link">
+        Apps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../friends/" class="md-nav__link">
+        Friends
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../game_search/" class="md-nav__link">
+        Game Search
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../html_surface/" class="md-nav__link">
+        HTML Surface
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
+        Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inventory/" class="md-nav__link">
+        Inventory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matchmaking/" class="md-nav__link">
+        Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matchmaking_servers/" class="md-nav__link">
+        Matchmaking Servers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking_sockets/" class="md-nav__link">
+        Networking Sockets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking_utils/" class="md-nav__link">
+        Networking Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parental_settings/" class="md-nav__link">
+        Parental Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parties/" class="md-nav__link">
+        Parties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote_storage/" class="md-nav__link">
+        Remote Storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screenshots/" class="md-nav__link">
+        Screenshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ugc/" class="md-nav__link">
+        UGC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../users/" class="md-nav__link">
+        Users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user_stats/" class="md-nav__link">
+        User Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/achievement_icons/" class="md-nav__link">
+        Achievement Icons
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/authentication/" class="md-nav__link">
+        Authentication
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/auto_matchmaking/" class="md-nav__link">
+        Auto-Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/avatars/" class="md-nav__link">
+        Avatars
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/c-sharp/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/common_issues/" class="md-nav__link">
+        Common Issues
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/exporting_shipping/" class="md-nav__link">
+        Exporting and Shipping
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/friends_lobbies/" class="md-nav__link">
+        Friends' Lobbies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/initializing/" class="md-nav__link">
+        Initializing Steam
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/leaderboards/" class="md-nav__link">
+        Leaderboards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/linux_caveats/" class="md-nav__link">
+        Linux Caveats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/lobbies/" class="md-nav__link">
+        Lobbies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/mac_caveats/" class="md-nav__link">
+        Mac Caveats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/mac_export/" class="md-nav__link">
+        Mac Exporting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/p2p/" class="md-nav__link">
+        P2P Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/remove_steam/" class="md-nav__link">
+        Remove Steam
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/rich_presence/" class="md-nav__link">
+        Rich Presence
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/stats_achievements/" class="md-nav__link">
+        Stats and Achievements
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/workshop/" class="md-nav__link">
+        Workshop
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../games/" class="md-nav__link">
+        Games Using GodotSteam
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/orgs/CoaguCo-Industries/projects/2" class="md-nav__link">
+        To-Do
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          Change-Logs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Change-Logs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/godot4/" class="md-nav__link">
+        Godot 4.x
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/godot3/" class="md-nav__link">
+        Godot 3.x
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/godot2/" class="md-nav__link">
+        Godot 2.x
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/gdextension/" class="md-nav__link">
+        GDExtension
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/gdnative/" class="md-nav__link">
+        GDNative
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/server/" class="md-nav__link">
+        Server
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          Contributors
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Contributors
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/" class="md-nav__link">
+        Contributor List
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribute_rules/" class="md-nav__link">
+        Contributing Code
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#accounttype" class="md-nav__link">
+    AccountType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appownershipflags" class="md-nav__link">
+    AppOwnershipFlags
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appreleasestate" class="md-nav__link">
+    AppReleaseState
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apptype" class="md-nav__link">
+    AppType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authsessionresponse" class="md-nav__link">
+    AuthSessionResponse
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beginauthsessionresult" class="md-nav__link">
+    BeginAuthSessionResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#broadcastuploadresult" class="md-nav__link">
+    BroadcastUploadResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatentrytype" class="md-nav__link">
+    ChatEntryType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatroomenterresponse" class="md-nav__link">
+    ChatRoomEnterResponse
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatsteamidinstanceflags" class="md-nav__link">
+    ChatSteamIDInstanceFlags
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#denyreason" class="md-nav__link">
+    DenyReason
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gameidtype" class="md-nav__link">
+    GameIDType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launchoptiontype" class="md-nav__link">
+    LaunchOptionType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notificationposition" class="md-nav__link">
+    NotificationPosition
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result" class="md-nav__link">
+    Result
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#universe" class="md-nav__link">
+    Universe
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#userhaslicenseforappresult" class="md-nav__link">
+    UserHasLicenseForAppResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#voiceresult" class="md-nav__link">
+    VoiceResult
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vrhmdtype" class="md-nav__link">
+    VRHMDType
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="enums-main">Enums - Main</h1>
+<h2 id="accounttype">AccountType</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACCOUNT_TYPE_INVALID</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_INDIVIDUAL</td>
+<td>1</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_MULTISEAT</td>
+<td>2</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_GAME_SERVER</td>
+<td>3</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_ANON_GAME_SERVER</td>
+<td>4</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_PENDING</td>
+<td>5</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_CONTENT_SERVER</td>
+<td>6</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_CLAN</td>
+<td>7</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_CHAT</td>
+<td>8</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_CONSOLE_USER</td>
+<td>9</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_ANON_USER</td>
+<td>10</td>
+</tr>
+<tr>
+<td>ACCOUNT_TYPE_MAX</td>
+<td>11</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appownershipflags">AppOwnershipFlags</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_NONE</td>
+<td>0x0000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_OWNS_LICENSE</td>
+<td>0x0001</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_FREE_LICENSE</td>
+<td>0x0002</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_REGION_RESTRICTED</td>
+<td>0x0004</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LOW_VIOLENCE</td>
+<td>0x0008</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_INVALID_PLATFORM</td>
+<td>0x0010</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_SHARED_LICENSE</td>
+<td>0x0020</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_FREE_WEEKEND</td>
+<td>0x0040</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_RETAIL_LICENSE</td>
+<td>0x0080</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LICENSE_LOCKED</td>
+<td>0x0100</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LICENSE_PENDING</td>
+<td>0x0200</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LICENSE_EXPIRED</td>
+<td>0x0400</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LICENSE_PERMANENT</td>
+<td>0x0800</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LICENSE_RECURRING</td>
+<td>0x1000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_LICENSE_CANCELED</td>
+<td>0x2000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_AUTO_GRANT</td>
+<td>0x4000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_PENDING_GIFT</td>
+<td>0x8000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_RENTAL_NOT_ACTIVATED</td>
+<td>0x10000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_RENTAL</td>
+<td>0x20000</td>
+</tr>
+<tr>
+<td>APP_OWNERSHIP_FLAGS_SITE_LICENSE</td>
+<td>0x40000</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appreleasestate">AppReleaseState</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>APP_RELEASE_STATE_UNKNOWN</td>
+<td>0</td>
+</tr>
+<tr>
+<td>APP_RELEASE_STATE_UNAVAILABLE</td>
+<td>1</td>
+</tr>
+<tr>
+<td>APP_RELEASE_STATE_PRERELEASE</td>
+<td>2</td>
+</tr>
+<tr>
+<td>APP_RELEASE_STATE_PRELOAD_ONLY</td>
+<td>3</td>
+</tr>
+<tr>
+<td>APP_RELEASE_STATE_RELEASED</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="apptype">AppType</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>APP_TYPE_INVALID</td>
+<td>0x000</td>
+</tr>
+<tr>
+<td>APP_TYPE_GAME</td>
+<td>0x001</td>
+</tr>
+<tr>
+<td>APP_TYPE_APPLICATION</td>
+<td>0x002</td>
+</tr>
+<tr>
+<td>APP_TYPE_TOOL</td>
+<td>0x004</td>
+</tr>
+<tr>
+<td>APP_TYPE_DEMO</td>
+<td>0x008</td>
+</tr>
+<tr>
+<td>APP_TYPE_MEDIA_DEPRECATED</td>
+<td>0x010</td>
+</tr>
+<tr>
+<td>APP_TYPE_DLC</td>
+<td>0x020</td>
+</tr>
+<tr>
+<td>APP_TYPE_GUIDE</td>
+<td>0x040</td>
+</tr>
+<tr>
+<td>APP_TYPE_DRIVER</td>
+<td>0x080</td>
+</tr>
+<tr>
+<td>APP_TYPE_CONFIG</td>
+<td>0x100</td>
+</tr>
+<tr>
+<td>APP_TYPE_HARDWARE</td>
+<td>0x200</td>
+</tr>
+<tr>
+<td>APP_TYPE_FRANCHISE</td>
+<td>0x400</td>
+</tr>
+<tr>
+<td>APP_TYPE_VIDEO</td>
+<td>0x800</td>
+</tr>
+<tr>
+<td>APP_TYPE_PLUGIN</td>
+<td>0x1000</td>
+</tr>
+<tr>
+<td>APP_TYPE_MUSIC</td>
+<td>0x2000</td>
+</tr>
+<tr>
+<td>APP_TYPE_SERIES</td>
+<td>0x4000</td>
+</tr>
+<tr>
+<td>APP_TYPE_SHORTCUT</td>
+<td>0x40000000</td>
+</tr>
+<tr>
+<td>APP_TYPE_DEPOT_ONLY</td>
+<td>0X80000000</td>
+</tr>
+</tbody>
+</table>
+<h2 id="authsessionresponse">AuthSessionResponse</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AUTH_SESSION_RESPONSE_OK</td>
+<td>0</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM</td>
+<td>1</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED</td>
+<td>2</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_VAC_BANNED</td>
+<td>3</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE</td>
+<td>4</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_VAC_CHECK_TIMEDOUT</td>
+<td>5</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED</td>
+<td>6</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED</td>
+<td>7</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID</td>
+<td>8</td>
+</tr>
+<tr>
+<td>AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN</td>
+<td>9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="beginauthsessionresult">BeginAuthSessionResult</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BEGIN_AUTH_SESSION_RESULT_OK</td>
+<td>0</td>
+</tr>
+<tr>
+<td>BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET</td>
+<td>1</td>
+</tr>
+<tr>
+<td>BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST</td>
+<td>2</td>
+</tr>
+<tr>
+<td>BEGIN_AUTH_SESSION_RESULT_INVALID_VERSION</td>
+<td>3</td>
+</tr>
+<tr>
+<td>BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH</td>
+<td>4</td>
+</tr>
+<tr>
+<td>BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="broadcastuploadresult">BroadcastUploadResult</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_NONE</td>
+<td>0</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_OK</td>
+<td>1</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_INIT_FAILED</td>
+<td>2</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_FRAME_FAILED</td>
+<td>3</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_TIME_OUT</td>
+<td>4</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_BANDWIDTH_EXCEEDED</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_LOW_FPS</td>
+<td>6</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_MISSING_KEYFRAMES</td>
+<td>7</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_NO_CONNECTION</td>
+<td>8</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_RELAY_FAILED</td>
+<td>9</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_SETTINGS_CHANGED</td>
+<td>10</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_MISSING_AUDIO</td>
+<td>11</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND</td>
+<td>12</td>
+</tr>
+<tr>
+<td>BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<h2 id="chatentrytype">ChatEntryType</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHAT_ENTRY_TYPE_INVALID</td>
+<td>0</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_CHAT_MSG</td>
+<td>1</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_TYPING</td>
+<td>2</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_INVITE_GAME</td>
+<td>3</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_EMOTE</td>
+<td>4</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_LEFT_CONVERSATION</td>
+<td>6</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_ENTERED</td>
+<td>7</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_WAS_KICKED</td>
+<td>8</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_WAS_BANNED</td>
+<td>9</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_DISCONNECTED</td>
+<td>10</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_HISTORICAL_CHAT</td>
+<td>11</td>
+</tr>
+<tr>
+<td>CHAT_ENTRY_TYPE_LINK_BLOCKED</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<h2 id="chatroomenterresponse">ChatRoomEnterResponse</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_SUCCESS</td>
+<td>1</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST</td>
+<td>2</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED</td>
+<td>3</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_FULL</td>
+<td>4</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_ERROR</td>
+<td>5</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_BANNED</td>
+<td>6</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_LIMITED</td>
+<td>7</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED</td>
+<td>8</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN</td>
+<td>9</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU</td>
+<td>10</td>
+</tr>
+<tr>
+<td>CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER</td>
+<td>11</td>
+</tr>
+</tbody>
+</table>
+<h2 id="chatsteamidinstanceflags">ChatSteamIDInstanceFlags</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHAT_ACCOUNT_INSTANCE_MASK</td>
+<td>0X00000FFF</td>
+</tr>
+<tr>
+<td>CHAT_INSTANCE_FLAG_CLAN</td>
+<td>((k_unSteamAccountInstanceMask + 1) &gt;&gt; 1)</td>
+</tr>
+<tr>
+<td>CHAT_INSTANCE_FLAG_LOBBY</td>
+<td>((k_unSteamAccountInstanceMask + 1) &gt;&gt; 2)</td>
+</tr>
+<tr>
+<td>CHAT_INSTANCE_FLAG_MMS_LOBBY</td>
+<td>((k_unSteamAccountInstanceMask + 1) &gt;&gt; 3)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="denyreason">DenyReason</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DENY_INVALID</td>
+<td>0</td>
+</tr>
+<tr>
+<td>DENY_INVALID_VERSION</td>
+<td>1</td>
+</tr>
+<tr>
+<td>DENY_GENERIC</td>
+<td>2</td>
+</tr>
+<tr>
+<td>DENY_NOT_LOGGED_ON</td>
+<td>3</td>
+</tr>
+<tr>
+<td>DENY_NO_LICENSE</td>
+<td>4</td>
+</tr>
+<tr>
+<td>DENY_CHEATER</td>
+<td>5</td>
+</tr>
+<tr>
+<td>DENY_LOGGED_IN_ELSEWHERE</td>
+<td>6</td>
+</tr>
+<tr>
+<td>DENY_UNKNOWN_TEXT</td>
+<td>7</td>
+</tr>
+<tr>
+<td>DENY_INCOMPATIBLE_ANTI_CHEAT</td>
+<td>8</td>
+</tr>
+<tr>
+<td>DENY_MEMORY_CORRUPTION</td>
+<td>9</td>
+</tr>
+<tr>
+<td>DENY_INCOMPATIBLE_SOFTWARE</td>
+<td>10</td>
+</tr>
+<tr>
+<td>DENY_STEAM_CONNECTION_LOST</td>
+<td>11</td>
+</tr>
+<tr>
+<td>DENY_STEAM_CONNECTION_ERROR</td>
+<td>12</td>
+</tr>
+<tr>
+<td>DENY_STEAM_RESPONSE_TIMED_OUT</td>
+<td>13</td>
+</tr>
+<tr>
+<td>DENY_STEAM_VALIDATION_STALLED</td>
+<td>14</td>
+</tr>
+<tr>
+<td>DENY_STEAM_OWNER_LEFT_GUEST_USER</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gameidtype">GameIDType</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GAME_TYPE_APP</td>
+<td>0</td>
+</tr>
+<tr>
+<td>GAME_TYPE_GAME_MOD</td>
+<td>1</td>
+</tr>
+<tr>
+<td>GAME_TYPE_SHORTCUT</td>
+<td>2</td>
+</tr>
+<tr>
+<td>GAME_TYPE_P2P</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="launchoptiontype">LaunchOptionType</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LAUNCH_OPTION_TYPE_NONE</td>
+<td>0</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_DEFAULT</td>
+<td>1</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_SAFE_MODE</td>
+<td>2</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_MULTIPLAYER</td>
+<td>3</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_CONFIG</td>
+<td>4</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OPEN_VR</td>
+<td>5</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_SERVER</td>
+<td>6</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_EDITOR</td>
+<td>7</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_MANUAL</td>
+<td>8</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_BENCHMARK</td>
+<td>9</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OPTION1</td>
+<td>10</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OPTION2</td>
+<td>11</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OPTION3</td>
+<td>12</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OCULUS_VR</td>
+<td>13</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY</td>
+<td>14</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_OS_VR</td>
+<td>15</td>
+</tr>
+<tr>
+<td>LAUNCH_OPTION_TYPE_DIALOG</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notificationposition">NotificationPosition</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POSITION_TOP_LEFT</td>
+<td>0</td>
+</tr>
+<tr>
+<td>POSITION_TOP_RIGHT</td>
+<td>1</td>
+</tr>
+<tr>
+<td>POSITION_BOTTOM_LEFT</td>
+<td>2</td>
+</tr>
+<tr>
+<td>POSITION_BOTTOM_RIGHT</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="result">Result</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RESULT_OK</td>
+<td>1</td>
+</tr>
+<tr>
+<td>RESULT_FAIL</td>
+<td>2</td>
+</tr>
+<tr>
+<td>RESULT_NO_CONNECTION</td>
+<td>3</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_PASSWORD</td>
+<td>5</td>
+</tr>
+<tr>
+<td>RESULT_LOGGED_IN_ELSEWHERE</td>
+<td>6</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_PROTOCOL_VER</td>
+<td>7</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_PARAM</td>
+<td>8</td>
+</tr>
+<tr>
+<td>RESULT_FILE_NOT_FOUND</td>
+<td>9</td>
+</tr>
+<tr>
+<td>RESULT_BUSY</td>
+<td>10</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_STATE</td>
+<td>11</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_NAME</td>
+<td>12</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_EMAIL</td>
+<td>13</td>
+</tr>
+<tr>
+<td>RESULT_DUPLICATE_NAME</td>
+<td>14</td>
+</tr>
+<tr>
+<td>RESULT_ACCESS_DENIED</td>
+<td>15</td>
+</tr>
+<tr>
+<td>RESULT_TIMEOUT</td>
+<td>16</td>
+</tr>
+<tr>
+<td>RESULT_BANNED</td>
+<td>17</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_NOT_FOUND</td>
+<td>18</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_STEAM_ID</td>
+<td>19</td>
+</tr>
+<tr>
+<td>RESULT_SERVICE_UNAVAILABLE</td>
+<td>20</td>
+</tr>
+<tr>
+<td>RESULT_NOT_LOGGED_ON</td>
+<td>21</td>
+</tr>
+<tr>
+<td>RESULT_PENDING</td>
+<td>22</td>
+</tr>
+<tr>
+<td>RESULT_ENCRYPTION_FAILURE</td>
+<td>23</td>
+</tr>
+<tr>
+<td>RESULT_INSUFFICIENT_PRIVILEGE</td>
+<td>24</td>
+</tr>
+<tr>
+<td>RESULT_LIMIT_EXCEEDED</td>
+<td>25</td>
+</tr>
+<tr>
+<td>RESULT_REVOKED</td>
+<td>26</td>
+</tr>
+<tr>
+<td>RESULT_EXPIRED</td>
+<td>27</td>
+</tr>
+<tr>
+<td>RESULT_ALREADY_REDEEMED</td>
+<td>28</td>
+</tr>
+<tr>
+<td>RESULT_DUPLICATE_REQUEST</td>
+<td>29</td>
+</tr>
+<tr>
+<td>RESULT_ALREADY_OWNED</td>
+<td>30</td>
+</tr>
+<tr>
+<td>RESULT_IP_NOT_FOUND</td>
+<td>31</td>
+</tr>
+<tr>
+<td>RESULT_PERSIST_FAILED</td>
+<td>32</td>
+</tr>
+<tr>
+<td>RESULT_LOCKING_FAILED</td>
+<td>33</td>
+</tr>
+<tr>
+<td>RESULT_LOG_ON_SESSION_REPLACED</td>
+<td>34</td>
+</tr>
+<tr>
+<td>RESULT_CONNECT_FAILED</td>
+<td>35</td>
+</tr>
+<tr>
+<td>RESULT_HANDSHAKE_FAILED</td>
+<td>36</td>
+</tr>
+<tr>
+<td>RESULT_IO_FAILURE</td>
+<td>37</td>
+</tr>
+<tr>
+<td>RESULT_REMOTE_DISCONNECT</td>
+<td>38</td>
+</tr>
+<tr>
+<td>RESULT_SHOPPING_CART_NOT_FOUND</td>
+<td>39</td>
+</tr>
+<tr>
+<td>RESULT_BLOCKED</td>
+<td>40</td>
+</tr>
+<tr>
+<td>RESULT_IGNORED</td>
+<td>41</td>
+</tr>
+<tr>
+<td>RESULT_NO_MATCH</td>
+<td>42</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_DISABLED</td>
+<td>43</td>
+</tr>
+<tr>
+<td>RESULT_SERVICE_READ_ONLY</td>
+<td>44</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_NOT_FEATURED</td>
+<td>45</td>
+</tr>
+<tr>
+<td>RESULT_ADMINISTRATOR_OK</td>
+<td>46</td>
+</tr>
+<tr>
+<td>RESULT_CONTENT_VERSION</td>
+<td>47</td>
+</tr>
+<tr>
+<td>RESULT_TRY_ANOTHER_CM</td>
+<td>48</td>
+</tr>
+<tr>
+<td>RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION</td>
+<td>49</td>
+</tr>
+<tr>
+<td>RESULT_ALREADY_LOGGED_IN_ELSEWHERE</td>
+<td>50</td>
+</tr>
+<tr>
+<td>RESULT_SUSPENDED</td>
+<td>51</td>
+</tr>
+<tr>
+<td>RESULT_CANCELLED</td>
+<td>52</td>
+</tr>
+<tr>
+<td>RESULT_DATA_CORRUPTION</td>
+<td>53</td>
+</tr>
+<tr>
+<td>RESULT_DISK_FULL</td>
+<td>54</td>
+</tr>
+<tr>
+<td>RESULT_REMOTE_CALL_FAILED</td>
+<td>55</td>
+</tr>
+<tr>
+<td>RESULT_PASSWORD_UNSET</td>
+<td>56</td>
+</tr>
+<tr>
+<td>RESULT_EXTERNAL_ACCOUNT_UNLINKED</td>
+<td>57</td>
+</tr>
+<tr>
+<td>RESULT_PSN_TICKET_INVALID</td>
+<td>58</td>
+</tr>
+<tr>
+<td>RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED</td>
+<td>59</td>
+</tr>
+<tr>
+<td>RESULT_REMOTE_FILE_CONFLICT</td>
+<td>60</td>
+</tr>
+<tr>
+<td>RESULT_ILLEGAL_PASSWORD</td>
+<td>61</td>
+</tr>
+<tr>
+<td>RESULT_SAME_AS_PREVIOUS_VALUE</td>
+<td>62</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LOG_ON_DENIED</td>
+<td>63</td>
+</tr>
+<tr>
+<td>RESULT_CANNOT_USE_OLD_PASSWORD</td>
+<td>64</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_LOGIN_AUTH_CODE</td>
+<td>65</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LOG_ON_DENIED_NO_MAIL</td>
+<td>66</td>
+</tr>
+<tr>
+<td>RESULT_HARDWARE_NOT_CAPABLE_OF_IPT</td>
+<td>67</td>
+</tr>
+<tr>
+<td>RESULT_IPT_INIT_ERROR</td>
+<td>68</td>
+</tr>
+<tr>
+<td>RESULT_PARENTAL_CONTROL_RESTRICTED</td>
+<td>69</td>
+</tr>
+<tr>
+<td>RESULT_FACEBOOK_QUERY_ERROR</td>
+<td>70</td>
+</tr>
+<tr>
+<td>RESULT_EXPIRED_LOGIN_AUTH_CODE</td>
+<td>71</td>
+</tr>
+<tr>
+<td>RESULT_IP_LOGIN_RESTRICTION_FAILED</td>
+<td>72</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LOCKED_DOWN</td>
+<td>73</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LOG_ON_DENIED_VERIFIED_EMAIL_REQUIRED</td>
+<td>74</td>
+</tr>
+<tr>
+<td>RESULT_NO_MATCHING_URL</td>
+<td>75</td>
+</tr>
+<tr>
+<td>RESULT_BAD_RESPONSE</td>
+<td>76</td>
+</tr>
+<tr>
+<td>RESULT_REQUIRE_PASSWORD_REENTRY</td>
+<td>77</td>
+</tr>
+<tr>
+<td>RESULT_VALUE_OUT_OF_RANGE</td>
+<td>78</td>
+</tr>
+<tr>
+<td>RESULT_UNEXPECTED_ERROR</td>
+<td>79</td>
+</tr>
+<tr>
+<td>RESULT_DISABLED</td>
+<td>80</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_CEG_SUBMISSION</td>
+<td>81</td>
+</tr>
+<tr>
+<td>RESULT_RESTRICTED_DEVICE</td>
+<td>82</td>
+</tr>
+<tr>
+<td>RESULT_REGION_LOCKED</td>
+<td>83</td>
+</tr>
+<tr>
+<td>RESULT_RATE_LIMIT_EXCEEDED</td>
+<td>84</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR</td>
+<td>85</td>
+</tr>
+<tr>
+<td>RESULT_ITEM_DELETED</td>
+<td>86</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE</td>
+<td>87</td>
+</tr>
+<tr>
+<td>RESULT_TWO_FACTOR_CODE_MISMATCH</td>
+<td>88</td>
+</tr>
+<tr>
+<td>RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH</td>
+<td>89</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS</td>
+<td>90</td>
+</tr>
+<tr>
+<td>RESULT_NOT_MODIFIED</td>
+<td>91</td>
+</tr>
+<tr>
+<td>RESULT_NO_MOBILE_DEVICE</td>
+<td>92</td>
+</tr>
+<tr>
+<td>RESULT_TIME_NOT_SYNCED</td>
+<td>93</td>
+</tr>
+<tr>
+<td>RESULT_SMS_CODE_FAILED</td>
+<td>94</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_LIMIT_EXCEEDED</td>
+<td>95</td>
+</tr>
+<tr>
+<td>RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED</td>
+<td>96</td>
+</tr>
+<tr>
+<td>RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED</td>
+<td>97</td>
+</tr>
+<tr>
+<td>RESULT_REFUND_TO_WALLET</td>
+<td>98</td>
+</tr>
+<tr>
+<td>RESULT_EMAIL_SEND_FAILURE</td>
+<td>99</td>
+</tr>
+<tr>
+<td>RESULT_NOT_SETTLED</td>
+<td>100</td>
+</tr>
+<tr>
+<td>RESULT_NEED_CAPTCHA</td>
+<td>101</td>
+</tr>
+<tr>
+<td>RESULT_GSLT_DENIED</td>
+<td>102</td>
+</tr>
+<tr>
+<td>RESULT_GS_OWNER_DENIED</td>
+<td>103</td>
+</tr>
+<tr>
+<td>RESULT_INVALID_ITEM_TYPE</td>
+<td>104</td>
+</tr>
+<tr>
+<td>RESULT_IP_BANNED</td>
+<td>105</td>
+</tr>
+<tr>
+<td>RESULT_GSLT_EXPIRED</td>
+<td>106</td>
+</tr>
+<tr>
+<td>RESULT_INSUFFICIENT_FUNDS</td>
+<td>107</td>
+</tr>
+<tr>
+<td>RESULT_TOO_MANY_PENDING</td>
+<td>108</td>
+</tr>
+</tbody>
+</table>
+<h2 id="universe">Universe</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNIVERSE_INVALID</td>
+<td>0</td>
+</tr>
+<tr>
+<td>UNIVERSE_PUBLIC</td>
+<td>1</td>
+</tr>
+<tr>
+<td>UNIVERSE_BETA</td>
+<td>2</td>
+</tr>
+<tr>
+<td>UNIVERSE_INTERNAL</td>
+<td>3</td>
+</tr>
+<tr>
+<td>UNIVERSE_DEV</td>
+<td>4</td>
+</tr>
+<tr>
+<td>UNIVERSE_MAX</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="userhaslicenseforappresult">UserHasLicenseForAppResult</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>USER_HAS_LICENSE_RESULT_HAS_LICENSE</td>
+<td>0</td>
+</tr>
+<tr>
+<td>USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE</td>
+<td>1</td>
+</tr>
+<tr>
+<td>USER_HAS_LICENSE_RESULT_NO_AUTH</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="voiceresult">VoiceResult</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VOICE_RESULT_OK</td>
+<td>0</td>
+</tr>
+<tr>
+<td>VOICE_RESULT_NOT_INITIALIZED</td>
+<td>1</td>
+</tr>
+<tr>
+<td>VOICE_RESULT_NOT_RECORDING</td>
+<td>2</td>
+</tr>
+<tr>
+<td>VOICE_RESULT_NO_DATE</td>
+<td>3</td>
+</tr>
+<tr>
+<td>VOICE_RESULT_BUFFER_TOO_SMALL</td>
+<td>4</td>
+</tr>
+<tr>
+<td>VOICE_RESULT_DATA_CORRUPTED</td>
+<td>5</td>
+</tr>
+<tr>
+<td>VOICE_RESULT_RESTRICTED</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="vrhmdtype">VRHMDType</h2>
+<table>
+<thead>
+<tr>
+<th>Enumerator</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VR_HMD_TYPE_NONE</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_UNKNOWN</td>
+<td>0</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_HTC_DEV</td>
+<td>1</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_HTC_VIVEPRE</td>
+<td>2</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_HTC_VIVE</td>
+<td>3</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_HTC_UNKNOWN</td>
+<td>20</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_OCULUS_DK1</td>
+<td>21</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_OCULUS_DK2</td>
+<td>22</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_OCULUS_RIFT</td>
+<td>23</td>
+</tr>
+<tr>
+<td>VR_HMD_TYPE_OCULUS_UNKNOWN</td>
+<td>40</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2015-2023 GP Garcia | CoaguCo Industries
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Gramps/GodotSteam" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.gamedev.place/@coaguco" target="_blank" rel="noopener me" title="mastodon.gamedev.place" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M433 179.11c0-97.2-63.71-125.7-63.71-125.7-62.52-28.7-228.56-28.4-290.48 0 0 0-63.72 28.5-63.72 125.7 0 115.7-6.6 259.4 105.63 289.1 40.51 10.7 75.32 13 103.33 11.4 50.81-2.8 79.32-18.1 79.32-18.1l-1.7-36.9s-36.31 11.4-77.12 10.1c-40.41-1.4-83-4.4-89.63-54a102.54 102.54 0 0 1-.9-13.9c85.63 20.9 158.65 9.1 178.75 6.7 56.12-6.7 105-41.3 111.23-72.9 9.8-49.8 9-121.5 9-121.5zm-75.12 125.2h-46.63v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.33V197c0-58.5-64-56.6-64-6.9v114.2H90.19c0-122.1-5.2-147.9 18.41-175 25.9-28.9 79.82-30.8 103.83 6.1l11.6 19.5 11.6-19.5c24.11-37.1 78.12-34.8 103.83-6.1 23.71 27.3 18.4 53 18.4 175z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/coaguco" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:hello@godotsteam.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480v-83.6c0-4 1.5-7.8 4.2-10.7l167.6-182.9c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8l-88.3-44.2C7.1 311.3.3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      
+    
+  </body>
+</html>

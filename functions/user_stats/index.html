@@ -1,0 +1,3373 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.">
+      
+      
+        <meta name="author" content="GP Garcia">
+      
+      
+        <link rel="canonical" href="https://godotsteam.com/functions/user_stats/">
+      
+      
+        <link rel="prev" href="../users/">
+      
+      
+        <link rel="next" href="../utils/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+    
+    
+      
+        <title>User Stats - GodotSteam</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.26e3688c.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#functions-user-stats" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GodotSteam" class="md-header__button md-logo" aria-label="GodotSteam" data-md-component="logo">
+      
+  <img src="../../assets/images/inverted-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GodotSteam
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              User Stats
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/CoaguCo-Industries/GodotSteam" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GodotSteam
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GodotSteam" class="md-nav__button md-logo" aria-label="GodotSteam" data-md-component="logo">
+      
+  <img src="../../assets/images/inverted-logo.png" alt="logo">
+
+    </a>
+    GodotSteam
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/CoaguCo-Industries/GodotSteam" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GodotSteam
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          How-To's
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          How-To's
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto_modules/" class="md-nav__link">
+        How-To Godot 2, 3, 4
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto_gdnative/" class="md-nav__link">
+        How-To GDNative
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto_gdextension/" class="md-nav__link">
+        How-To GDExtension
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Functions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Functions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../main/" class="md-nav__link">
+        Main
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../app_lists/" class="md-nav__link">
+        App Lists
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apps/" class="md-nav__link">
+        Apps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../friends/" class="md-nav__link">
+        Friends
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../game_search/" class="md-nav__link">
+        Game Search
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../game_server/" class="md-nav__link">
+        Game Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../game_server_stats/" class="md-nav__link">
+        Game Server Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../html_surface/" class="md-nav__link">
+        HTML Surface
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
+        Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inventory/" class="md-nav__link">
+        Inventory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matchmaking/" class="md-nav__link">
+        Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matchmaking_servers/" class="md-nav__link">
+        Matchmaking Servers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../music_remote/" class="md-nav__link">
+        Music Remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking_messages/" class="md-nav__link">
+        Networking Messages
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking_sockets/" class="md-nav__link">
+        Networking Sockets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking_types/" class="md-nav__link">
+        Networking Types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking_utils/" class="md-nav__link">
+        Networking Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parental_settings/" class="md-nav__link">
+        Parental Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parties/" class="md-nav__link">
+        Parties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote_play/" class="md-nav__link">
+        Remote Play
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote_storage/" class="md-nav__link">
+        Remote Storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screenshots/" class="md-nav__link">
+        Screenshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ugc/" class="md-nav__link">
+        UGC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../users/" class="md-nav__link">
+        Users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          User Stats
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        User Stats
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#attachleaderboardugc" class="md-nav__link">
+    attachLeaderboardUGC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clearachievement" class="md-nav__link">
+    clearAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#downloadleaderboardentries" class="md-nav__link">
+    downloadLeaderboardEntries
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#downloadleaderboardentriesforusers" class="md-nav__link">
+    downloadLeaderboardEntriesForUsers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findleaderboard" class="md-nav__link">
+    findLeaderboard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findorcreateleaderboard" class="md-nav__link">
+    findOrCreateLeaderboard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievement" class="md-nav__link">
+    getAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementachievedpercent" class="md-nav__link">
+    getAchievementAchievedPercent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementandunlocktime" class="md-nav__link">
+    getAchievementAndUnlockTime
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementdisplayattribute" class="md-nav__link">
+    getAchievementDisplayAttribute
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementicon" class="md-nav__link">
+    getAchievementIcon
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementname" class="md-nav__link">
+    getAchievementName
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementprogresslimitsfloat" class="md-nav__link">
+    getAchievementProgressLimitsFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementprogresslimitsint" class="md-nav__link">
+    getAchievementProgressLimitsInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatfloat" class="md-nav__link">
+    getGlobalStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatint" class="md-nav__link">
+    getGlobalStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatfloathistory" class="md-nav__link">
+    getGlobalStatFloatHistory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatinthistory" class="md-nav__link">
+    getGlobalStatIntHistory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboarddisplaytype" class="md-nav__link">
+    getLeaderboardDisplayType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardentries" class="md-nav__link">
+    getLeaderboardEntries
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardentrycount" class="md-nav__link">
+    getLeaderboardEntryCount
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardname" class="md-nav__link">
+    getLeaderboardName
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardsortmethod" class="md-nav__link">
+    getLeaderboardSortMethod
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getmostachievedachievementinfo" class="md-nav__link">
+    getMostAchievedAchievementInfo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getnextmostachievedachievementinfo" class="md-nav__link">
+    getNextMostAchievedAchievementInfo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getnumachievements" class="md-nav__link">
+    getNumAchievements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getnumberofcurrentplayers" class="md-nav__link">
+    getNumberOfCurrentPlayers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getstatfloat" class="md-nav__link">
+    getStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getstatint" class="md-nav__link">
+    getStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserachievement" class="md-nav__link">
+    getUserAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserachievementandunlocktime" class="md-nav__link">
+    getUserAchievementAndUnlockTime
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserstatfloat" class="md-nav__link">
+    getUserStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserstatint" class="md-nav__link">
+    getUserStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indicateachievementprogress" class="md-nav__link">
+    indicateAchievementProgress
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestcurrentstats" class="md-nav__link">
+    requestCurrentStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestglobalachievementpercentages" class="md-nav__link">
+    requestGlobalAchievementPercentages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestglobalstats" class="md-nav__link">
+    requestGlobalStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestuserstats" class="md-nav__link">
+    requestUserStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resetallstats" class="md-nav__link">
+    resetAllStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setachievement" class="md-nav__link">
+    setAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setleaderboarddetailsmax" class="md-nav__link">
+    setLeaderboardDetailsMax
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setstatfloat" class="md-nav__link">
+    setStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setstatint" class="md-nav__link">
+    setStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storestats" class="md-nav__link">
+    storeStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updateavgratestat" class="md-nav__link">
+    updateAvgRateStat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uploadleaderboardscore" class="md-nav__link">
+    uploadLeaderboardScore
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../video/" class="md-nav__link">
+        Video
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Signals
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Signals
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/main/" class="md-nav__link">
+        Main
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/app_lists/" class="md-nav__link">
+        App Lists
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/apps/" class="md-nav__link">
+        Apps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/friends/" class="md-nav__link">
+        Friends
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/game_search/" class="md-nav__link">
+        Game Search
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/game_server/" class="md-nav__link">
+        Game Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/game_server_stats/" class="md-nav__link">
+        Game Server Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/html_surface/" class="md-nav__link">
+        HTML Surface
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/http/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/input/" class="md-nav__link">
+        Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/inventory/" class="md-nav__link">
+        Inventory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/matchmaking/" class="md-nav__link">
+        Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/matchmaking_servers/" class="md-nav__link">
+        Matchmaking Servers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/music_remote/" class="md-nav__link">
+        Music Remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/networking/" class="md-nav__link">
+        Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/networking_sockets/" class="md-nav__link">
+        Networking Sockets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/networking_utils/" class="md-nav__link">
+        Networking Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/parental_settings/" class="md-nav__link">
+        Parental Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/parties/" class="md-nav__link">
+        Parties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/remote_play/" class="md-nav__link">
+        Remote Play
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/remote_storage/" class="md-nav__link">
+        Remote Storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/screenshots/" class="md-nav__link">
+        Screenshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/ugc/" class="md-nav__link">
+        UGC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/user/" class="md-nav__link">
+        Users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/user_stats/" class="md-nav__link">
+        User Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/utils/" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../signals/video/" class="md-nav__link">
+        Video
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          Enums
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Enums
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/main/" class="md-nav__link">
+        Main
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/apps/" class="md-nav__link">
+        Apps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/friends/" class="md-nav__link">
+        Friends
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/game_search/" class="md-nav__link">
+        Game Search
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/html_surface/" class="md-nav__link">
+        HTML Surface
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/http/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/input/" class="md-nav__link">
+        Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/inventory/" class="md-nav__link">
+        Inventory
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/matchmaking/" class="md-nav__link">
+        Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/matchmaking_servers/" class="md-nav__link">
+        Matchmaking Servers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/networking/" class="md-nav__link">
+        Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/networking_sockets/" class="md-nav__link">
+        Networking Sockets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/networking_utils/" class="md-nav__link">
+        Networking Utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/parental_settings/" class="md-nav__link">
+        Parental Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/parties/" class="md-nav__link">
+        Parties
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/remote_storage/" class="md-nav__link">
+        Remote Storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/screenshots/" class="md-nav__link">
+        Screenshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/ugc/" class="md-nav__link">
+        UGC
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/users/" class="md-nav__link">
+        Users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/user_stats/" class="md-nav__link">
+        User Stats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/utils/" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/achievement_icons/" class="md-nav__link">
+        Achievement Icons
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/authentication/" class="md-nav__link">
+        Authentication
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/auto_matchmaking/" class="md-nav__link">
+        Auto-Matchmaking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/avatars/" class="md-nav__link">
+        Avatars
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/c-sharp/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/common_issues/" class="md-nav__link">
+        Common Issues
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/exporting_shipping/" class="md-nav__link">
+        Exporting and Shipping
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/friends_lobbies/" class="md-nav__link">
+        Friends' Lobbies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/initializing/" class="md-nav__link">
+        Initializing Steam
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/leaderboards/" class="md-nav__link">
+        Leaderboards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/linux_caveats/" class="md-nav__link">
+        Linux Caveats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/lobbies/" class="md-nav__link">
+        Lobbies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/mac_caveats/" class="md-nav__link">
+        Mac Caveats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/mac_export/" class="md-nav__link">
+        Mac Exporting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/p2p/" class="md-nav__link">
+        P2P Networking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/remove_steam/" class="md-nav__link">
+        Remove Steam
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/rich_presence/" class="md-nav__link">
+        Rich Presence
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/stats_achievements/" class="md-nav__link">
+        Stats and Achievements
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/workshop/" class="md-nav__link">
+        Workshop
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../games/" class="md-nav__link">
+        Games Using GodotSteam
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/orgs/CoaguCo-Industries/projects/2" class="md-nav__link">
+        To-Do
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          Change-Logs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Change-Logs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/godot4/" class="md-nav__link">
+        Godot 4.x
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/godot3/" class="md-nav__link">
+        Godot 3.x
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/godot2/" class="md-nav__link">
+        Godot 2.x
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/gdextension/" class="md-nav__link">
+        GDExtension
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/gdnative/" class="md-nav__link">
+        GDNative
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/server/" class="md-nav__link">
+        Server
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          Contributors
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Contributors
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/" class="md-nav__link">
+        Contributor List
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribute_rules/" class="md-nav__link">
+        Contributing Code
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#attachleaderboardugc" class="md-nav__link">
+    attachLeaderboardUGC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clearachievement" class="md-nav__link">
+    clearAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#downloadleaderboardentries" class="md-nav__link">
+    downloadLeaderboardEntries
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#downloadleaderboardentriesforusers" class="md-nav__link">
+    downloadLeaderboardEntriesForUsers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findleaderboard" class="md-nav__link">
+    findLeaderboard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findorcreateleaderboard" class="md-nav__link">
+    findOrCreateLeaderboard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievement" class="md-nav__link">
+    getAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementachievedpercent" class="md-nav__link">
+    getAchievementAchievedPercent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementandunlocktime" class="md-nav__link">
+    getAchievementAndUnlockTime
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementdisplayattribute" class="md-nav__link">
+    getAchievementDisplayAttribute
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementicon" class="md-nav__link">
+    getAchievementIcon
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementname" class="md-nav__link">
+    getAchievementName
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementprogresslimitsfloat" class="md-nav__link">
+    getAchievementProgressLimitsFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getachievementprogresslimitsint" class="md-nav__link">
+    getAchievementProgressLimitsInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatfloat" class="md-nav__link">
+    getGlobalStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatint" class="md-nav__link">
+    getGlobalStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatfloathistory" class="md-nav__link">
+    getGlobalStatFloatHistory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getglobalstatinthistory" class="md-nav__link">
+    getGlobalStatIntHistory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboarddisplaytype" class="md-nav__link">
+    getLeaderboardDisplayType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardentries" class="md-nav__link">
+    getLeaderboardEntries
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardentrycount" class="md-nav__link">
+    getLeaderboardEntryCount
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardname" class="md-nav__link">
+    getLeaderboardName
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getleaderboardsortmethod" class="md-nav__link">
+    getLeaderboardSortMethod
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getmostachievedachievementinfo" class="md-nav__link">
+    getMostAchievedAchievementInfo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getnextmostachievedachievementinfo" class="md-nav__link">
+    getNextMostAchievedAchievementInfo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getnumachievements" class="md-nav__link">
+    getNumAchievements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getnumberofcurrentplayers" class="md-nav__link">
+    getNumberOfCurrentPlayers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getstatfloat" class="md-nav__link">
+    getStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getstatint" class="md-nav__link">
+    getStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserachievement" class="md-nav__link">
+    getUserAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserachievementandunlocktime" class="md-nav__link">
+    getUserAchievementAndUnlockTime
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserstatfloat" class="md-nav__link">
+    getUserStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getuserstatint" class="md-nav__link">
+    getUserStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indicateachievementprogress" class="md-nav__link">
+    indicateAchievementProgress
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestcurrentstats" class="md-nav__link">
+    requestCurrentStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestglobalachievementpercentages" class="md-nav__link">
+    requestGlobalAchievementPercentages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestglobalstats" class="md-nav__link">
+    requestGlobalStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requestuserstats" class="md-nav__link">
+    requestUserStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resetallstats" class="md-nav__link">
+    resetAllStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setachievement" class="md-nav__link">
+    setAchievement
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setleaderboarddetailsmax" class="md-nav__link">
+    setLeaderboardDetailsMax
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setstatfloat" class="md-nav__link">
+    setStatFloat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setstatint" class="md-nav__link">
+    setStatInt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storestats" class="md-nav__link">
+    storeStats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updateavgratestat" class="md-nav__link">
+    updateAvgRateStat
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uploadleaderboardscore" class="md-nav__link">
+    uploadLeaderboardScore
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="functions-user-stats">Functions - User Stats</h1>
+<hr />
+<h2 id="attachleaderboardugc">attachLeaderboardUGC</h2>
+<div class="admonition function">
+<p class="admonition-title">attachLeaderboardUGC( <code>uint64_t</code> ugc_handle, <code>uint64_t</code> this_leaderboard )</p>
+<p>If no this_leaderboard is passed, then the function will use the last internally-stored handle.</p>
+<p>Attaches a piece of user generated content the current user's entry on a leaderboard.</p>
+<p>This content could be a replay of the user achieving the score or a ghost to race against. The attached handle will be available when the entry is retrieved and can be accessed by other users using <a href="/functions/user_stats/#getdownloadedleaderboardentry">getDownloadedLeaderboardEntry</a>. To create and download user generated content see the documentation for the Steam Workshop.</p>
+<p>Once attached, the content will be available even if the underlying Cloud file is changed or deleted by the user.</p>
+<p>You must call <a href="/functions/user_stats/#findleaderboard">findLeaderboard</a> or <a href="/functions/user_stats/#findorcreateleaderboard">findOrCreateLeaderboard</a> to get a leaderboard handle prior to calling this function.</p>
+<p>Triggers a <a href="/signals/user_stats/#leaderboard_ugc_set">leaderboard_ugc_set</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#AttachLeaderboardUGC" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="clearachievement">clearAchievement</h2>
+<div class="admonition function">
+<p class="admonition-title">clearAchievement( <code>string</code> name )</p>
+<p>Resets the unlock status of an achievement.</p>
+<p>This is primarily only ever used for testing.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call <a href="/functions/user_stats/#storestats">storeStats</a>.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#ClearAchievement" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="downloadleaderboardentries">downloadLeaderboardEntries</h2>
+<div class="admonition function">
+<p class="admonition-title">downloadLeaderboardEntries( <code>int</code> start, <code>int</code> end, <code>int</code> type, <code>uint64_t</code> this_leaderboard )</p>
+<p>If no leaderboard_handle is passed, then the function will use the last internally-stored handle.</p>
+<p>Fetches a series of leaderboard entries for a specified leaderboard.</p>
+<p>You can ask for more entries than exist, then this will return as many as do exist.</p>
+<p>If you want to download entries for an arbitrary set of users, such as all of the users on a server then you can use <a href="/functions/user_stats/#downloadleaderboardentriesforusers">downloadLeaderboardEntriesForUsers</a> which takes an array of Steam IDs.</p>
+<p>You must call <a href="/functions/user_stats/#findleaderboard">findLeaderboard</a> or <a href="/functions/user_stats/#findorcreateleaderboard">findOrCreateLeaderboard</a> to get a leaderboard handle prior to calling this function.</p>
+<p>Triggers a <a href="/signals/user_stats/#leaderboard_scores_downloaded">leaderboard_scores_downloaded</a> call result.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#DownloadLeaderboardEntriesForUsers" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="downloadleaderboardentriesforusers">downloadLeaderboardEntriesForUsers</h2>
+<div class="admonition function">
+<p class="admonition-title">downloadLeaderboardEntriesForUsers( <code>array</code> users_id, <code>uint64_t</code> this_leaderboard )</p>
+<p>If no leaderboard_handle is passed, then the function will use the last internally-stored handle.</p>
+<p>Fetches leaderboard entries for an arbitrary set of users on a specified leaderboard.</p>
+<p>A maximum of 100 users can be downloaded at a time, with only one outstanding call at a time. If a user doesn't have an entry on the specified leaderboard, they won't be included in the result.</p>
+<p>If you want to download entries based on their ranking or friends of the current user then you should use <a href="/functions/user_stats/#downloadleaderboardentries">downloadLeaderboardEntries</a>.</p>
+<p>You must call <a href="/functions/user_stats/#findleaderboard">findLeaderboard</a> or <a href="/functions/user_stats/#findorcreateleaderboard">findOrCreateLeaderboard</a> to get a leaderboard handle prior to calling this function.</p>
+<p>Triggers a <a href="/signals/user_stats/#leaderboard_scores_downloaded">leaderboard_scores_downloaded</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#DownloadLeaderboardEntries" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="findleaderboard">findLeaderboard</h2>
+<div class="admonition function">
+<p class="admonition-title">findLeaderboard( <code>string</code> name )</p>
+<p>Gets a leaderboard by name.</p>
+<p>You must call either this or <a href="/functions/user_stats/#findorcreateleaderboard">findOrCreateLeaderboard</a> to obtain the leaderboard handle which is valid for the game session for each leaderboard you wish to access prior to calling any other Leaderboard functions.</p>
+<p>Triggers a <a href="/signals/user_stats/#leaderboard_find_result">leaderboard_find_result</a> call result.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#FindLeaderboard" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="findorcreateleaderboard">findOrCreateLeaderboard</h2>
+<div class="admonition function">
+<p class="admonition-title">findOrCreateLeaderboard( <code>string</code> name, <code>int</code> sort_method, <code>int</code> display_type )</p>
+<p>Gets a leaderboard by name, it will create it if it's not yet created.</p>
+<p>You must call either this or <a href="/functions/user_stats/#findleaderboard">findLeaderboard</a> to obtain the leaderboard handle which is valid for the game session for each leaderboard you wish to access prior to calling any other Leaderboard functions.</p>
+<p>Leaderboards created with this function will not automatically show up in the Steam Community. You must manually set the Community Name field in the App Admin panel of the Steamworks website. As such it's generally recommended to prefer creating the leaderboards in the App Admin panel on the Steamworks website and using <a href="/functions/user_stats/#findleaderboard">findLeaderboard</a> unless you're expected to have a large amount of dynamically created leaderboards.</p>
+<p>You should never pass 0 for sort_method or 0 for display_type as this is undefined behavior.</p>
+<p>Triggers a <a href="/signals/user_stats/#leaderboard_find_result">leaderboard_find_result</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#FindOrCreateLeaderboard" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievement">getAchievement</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievement( <code>string</code> name )</p>
+<p>Gets the unlock status of the Achievement.</p>
+<p>The equivalent function for other users is <a href="/functions/user_stats/#getuserachievement">getUserAchievement</a>.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>ret (bool)</li>
+<li>achieved (bool)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievement" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievementachievedpercent">getAchievementAchievedPercent</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementAchievedPercent( <code>string</code> name )</p>
+<p>Returns the percentage of users who have unlocked the specified achievement.</p>
+<p>You must have called <a href="/functions/user_stats/#requestglobalachievementpercentages">requestGlobalAchievementPercentages</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>ret (bool)</li>
+<li>percent (float)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementAchievedPercent" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievementandunlocktime">getAchievementAndUnlockTime</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementAndUnlockTime( <code>string</code> name )</p>
+<p>Gets the achievement status, and the time it was unlocked if unlocked.</p>
+<p>If the return value is true, but the unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). The time is provided in Unix epoch format, seconds since January 1, 1970 UTC.</p>
+<p>The equivalent function for other users is <a href="/functions/user_stats/#getuserachievementandunlocktime">getUserAchievementAndUnlockTime</a>.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>retrieve (bool)</li>
+<li>achieved (bool)</li>
+<li>unlocked (uint32)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementAndUnlockTime" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievementdisplayattribute">getAchievementDisplayAttribute</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementDisplayAttribute( <code>string</code> name, <code>string</code> key )</p>
+<p>Get general attributes for an achievement. Currently provides: Name, Description, and Hidden status.</p>
+<p>This receives the value from a dictionary/map keyvalue store, so you must provide one of the following keys:</p>
+<ul>
+<li>name - to retrive the localized achievement name in UTF8</li>
+<li>desc - to retrive the localized achievement description in UTF8</li>
+<li>hidden - for retrieving if an achievement is hidden. Returns "0" when not hidden, "1" when hidden</li>
+</ul>
+<p>This localization is provided based on the games language if it's set, otherwise it checks if a localization is avilable for the users Steam UI Language. If that fails too, then it falls back to english.</p>
+<p><strong>Returns:</strong> string</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementDisplayAttribute" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievementicon">getAchievementIcon</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementIcon( <code>string</code> name )</p>
+<p>Gets the icon for an achievement.</p>
+<p>Triggers a <a href="/signals/user_stats/#user_achievement_icon_fetched">user_achievement_icon_fetched</a> callback.</p>
+<p><strong>Returns:</strong> int</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementIcon" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievementname">getAchievementName</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementName( <code>uint32_t</code> achievement )</p>
+<p>Gets the 'API name' for an achievement index between 0 and <a href="/functions/user_stats/#getnumachievements">getNumAchievements</a>.</p>
+<p>This function must be used in cojunction with <a href="/functions/user_stats/#getnumachievements">getNumAchievements</a> to loop over the list of achievements.</p>
+<p>In general games should not need these functions as they should have the list of achievements compiled into them.</p>
+<p><strong>Returns:</strong> string</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementName" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getachievementprogresslimitsfloat">getAchievementProgressLimitsFloat</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementProgressLimitsFloat( <code>string</code> name )</p>
+<p>For achievements that have related progress stats, use this to query what the bounds of that progress are. You may want this info to selectively call <a href="/functions/user_stats/#indicateachievementprogress">indicateAchievementProgress</a> when appropriate milestones of progress have been made, to show a progress notification to the user.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>name (string)</li>
+<li>min (float)</li>
+<li>max (float)</li>
+</ul>
+</div>
+<h2 id="getachievementprogresslimitsint">getAchievementProgressLimitsInt</h2>
+<div class="admonition function">
+<p class="admonition-title">getAchievementProgressLimitsInt( <code>string</code> name )</p>
+<p>For achievements that have related progress stats, use this to query what the bounds of that progress are. You may want this info to selectively call <a href="/functions/user_stats/#indicateachievementprogress">indicateAchievementProgress</a> when appropriate milestones of progress have been made, to show a progress notification to the user.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>name (string)</li>
+<li>min (int32)</li>
+<li>max (int32)</li>
+</ul>
+</div>
+<h2 id="getglobalstatfloat">getGlobalStatFloat</h2>
+<div class="admonition function">
+<p class="admonition-title">getGlobalStatFloat( <code>string</code> name )</p>
+<p>Gets the lifetime totals for an aggregated stat.</p>
+<p>You must have called <a href="/functions/user_stats/#requestglobalstats">requestGlobalStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p><strong>Returns:</strong> float</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getglobalstatint">getGlobalStatInt</h2>
+<div class="admonition function">
+<p class="admonition-title">getGlobalStatInt( <code>string</code> name )</p>
+<p>Gets the lifetime totals for an aggregated stat.</p>
+<p>You must have called <a href="/functions/user_stats/#">requestGlobalStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p><strong>Returns:</strong> uint64_t</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getglobalstatfloathistory">getGlobalStatFloatHistory</h2>
+<div class="admonition function">
+<p class="admonition-title">getGlobalStatFloatHistory( <code>string</code> name )</p>
+<p>Gets the daily history for an aggregated stat.</p>
+<p><strong>Returns:</strong> float</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStatHistory" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getglobalstatinthistory">getGlobalStatIntHistory</h2>
+<div class="admonition function">
+<p class="admonition-title">getGlobalStatIntHistory( <code>string</code> name )</p>
+<p>Gets the daily history for an aggregated stat.</p>
+<p><strong>Returns:</strong> uint64_t</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetGlobalStatHistory" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a>    </p>
+</div>
+<h2 id="getleaderboarddisplaytype">getLeaderboardDisplayType</h2>
+<div class="admonition function">
+<p class="admonition-title">getLeaderboardDisplayType( <code>uint64_t</code> leaderboard_handle )</p>
+<p>If no leaderboard_handle is passed, then the function will use the last internally-stored handle.</p>
+<p>Get the display type of a leaderboard handle.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>result (int)</li>
+<li>verbal (string)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardDisplayType" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getleaderboardentries">getLeaderboardEntries</h2>
+<div class="admonition function">
+<p class="admonition-title">getLeaderboardEntries()</p>
+<p>Get the currently used leaderboard entries.</p>
+<p><strong>Returns:</strong> array</p>
+<p><strong>Note:</strong> This is a GodotSteam specific function.</p>
+</div>
+<h2 id="getleaderboardentrycount">getLeaderboardEntryCount</h2>
+<div class="admonition function">
+<p class="admonition-title">getLeaderboardEntryCount( <code>uint64_t</code> this_leaderboard )</p>
+<p>If no leaderboard_handle is passed, then the function will use the last internally-stored handle.</p>
+<p>Returns the total number of entries in a leaderboard.</p>
+<p>This is cached on a per leaderboard basis upon the first call to <a href="/functions/user_stats/#findleaderboard">findLeaderboard</a> or <a href="/functions/user_stats/#findorcreateleaderboard">findOrCreateLeaderboard</a> and is refreshed on each successful call to <a href="/functions/user_stats/#downloadleaderboardentries">downloadLeaderboardEntries</a>, <a href="/functions/user_stats/#downloadleaderboardentriesforusers">downloadLeaderboardEntriesForUsers</a>, and <a href="/functions/user_stats/#uploadleaderboardscore">uploadLeaderboardScore</a>.</p>
+<p><strong>Returns:</strong> int</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardEntryCount" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getleaderboardname">getLeaderboardName</h2>
+<div class="admonition function">
+<p class="admonition-title">getLeaderboardName( <code>uint64_t</code> this_leaderboard )</p>
+<p>If no leaderboard_handle is passed, then the function will use the last internally-stored handle.</p>
+<p>Returns the name of a leaderboard handle.</p>
+<p><strong>Returns:</strong> string</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardName" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getleaderboardsortmethod">getLeaderboardSortMethod</h2>
+<div class="admonition function">
+<p class="admonition-title">getLeaderboardSortMethod( <code>uint64_t</code> this_leaderboard )</p>
+<p>If no leaderboard_handle is passed, then the function will use the last internally-stored handle.</p>
+<p>Get the sort order of a leaderboard handle. If no thisLeaderboard handle is passed, then the function will use the last stored internal handle.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>result (int)</li>
+<li>verbal (string)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetLeaderboardSortMethod" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getmostachievedachievementinfo">getMostAchievedAchievementInfo</h2>
+<div class="admonition function">
+<p class="admonition-title">getMostAchievedAchievementInfo()</p>
+<p>Gets the info on the most achieved achievement for the game.</p>
+<p>You must have called <a href="/functions/user_stats/#requestglobalachievementpercentages">requestGlobalAchievementPercentages</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p><strong>Returns:</strong> array</p>
+<ul>
+<li>entry (dictionary)<ul>
+<li>rank (int)</li>
+<li>name (string)</li>
+<li>percent (float)</li>
+<li>achieved (bool)</li>
+</ul>
+</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetMostAchievedAchievementInfo" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getnextmostachievedachievementinfo">getNextMostAchievedAchievementInfo</h2>
+<div class="admonition function">
+<p class="admonition-title">getNextMostAchievedAchievementInfo( <code>int</code> iterator )</p>
+<p>Gets the info on the next most achieved achievement for the game.</p>
+<p>You must have called <a href="/functions/user_stats/#requestglobalachievementpercentages">requestGlobalAchievementPercentages</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>rank (int)</li>
+<li>name (string)</li>
+<li>percent (float)</li>
+<li>achieved (bool)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetNextMostAchievedAchievementInfo" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getnumachievements">getNumAchievements</h2>
+<div class="admonition function">
+<p class="admonition-title">getNumAchievements()</p>
+<p>Get the number of achievements defined in the App Admin panel of the Steamworks website.</p>
+<p>This is used for iterating through all of the achievements with <a href="/functions/user_stats/#getachievementname">getAchievementName</a>.</p>
+<p>In general games should not need these functions because they should have a list of existing achievements compiled into them.</p>
+<p><strong>Returns:</strong> uint32_t</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetNumAchievements" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getnumberofcurrentplayers">getNumberOfCurrentPlayers</h2>
+<div class="admonition function">
+<p class="admonition-title">getNumberOfCurrentPlayers()</p>
+<p>Asynchronously retrieves the total number of players currently playing the current game. Both online and in offline mode.</p>
+<p>Triggers a <a href="/signals/user_stats/#number_of_current_players">number_of_current_players</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetNumberOfCurrentPlayers" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getstatfloat">getStatFloat</h2>
+<div class="admonition function">
+<p class="admonition-title">getStatFloat( <code>string</code> name )</p>
+<p>Gets the current value of the a stat for the current user.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>To receive stats for other users use <a href="/functions/user_stats/#getuserstat">getUserStat</a>.</p>
+<p><strong>Returns:</strong> float</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getstatint">getStatInt</h2>
+<div class="admonition function">
+<p class="admonition-title">getStatInt( <code>string</code> name )</p>
+<p>Gets the current value of the a stat for the current user.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>To receive stats for other users use <a href="/functions/user_stats/#getuserstat">getUserStat</a>.</p>
+<p><strong>Returns:</strong> int</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getuserachievement">getUserAchievement</h2>
+<div class="admonition function">
+<p class="admonition-title">getUserAchievement( <code>uint64_t</code> steam_id, <code>string</code> name )</p>
+<p>Gets the unlock status of the Achievement.</p>
+<p>The equivalent function for the local user is <a href="/functions/user_stats/#getachievement">getAchievement</a>.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>steam_id (uint64_t)</li>
+<li>retrieved (bool)</li>
+<li>name (string)</li>
+<li>achieved (bool)</li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserAchievement" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getuserachievementandunlocktime">getUserAchievementAndUnlockTime</h2>
+<div class="admonition function">
+<p class="admonition-title">getUserAchievementAndUnlockTime( <code>uint64_t</code> steam_id, <code>string</code> name )</p>
+<p>Gets the achievement status, and the time it was unlocked if unlocked.</p>
+<p>If the return value is true, but the unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). The time is provided in Unix epoch format, seconds since January 1, 1970 UTC.</p>
+<p>The equivalent function for the local user is <a href="/functions/user_stats/#getachievementandunlocktime">getAchievementAndUnlockTime</a>.</p>
+<p><strong>Returns:</strong> dictionary</p>
+<p>Contains the following keys:</p>
+<ul>
+<li>retrieved (bool)</li>
+<li>name (string)</li>
+<li>function "achieved (bool)</li>
+<li>unlocked (uint32) </li>
+</ul>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserAchievementAndUnlockTime" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getuserstatfloat">getUserStatFloat</h2>
+<div class="admonition function">
+<p class="admonition-title">getUserStatFloat( <code>uint64_t</code> steam_id, <code>string</code> name )</p>
+<p>Gets the current value of the a stat for the specified user.</p>
+<p>You must have called <a href="/functions/user_stats/#requestuserstats">requestUserStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>The equivalent function for the local user is <a href="/functions/user_stats/#getstat">getStat</a>.</p>
+<p><strong>Returns:</strong> float.</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="getuserstatint">getUserStatInt</h2>
+<div class="admonition function">
+<p class="admonition-title">getUserStatInt( <code>uint64_t</code> steam_id, <code>string</code> name )</p>
+<p>Gets the current value of the a stat for the specified user.</p>
+<p>You must have called <a href="/functions/user_stats/#requestuserstats">requestUserStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>The equivalent function for the local user is <a href="/functions/user_stats/#getstat">getStat</a>.</p>
+<p><strong>Returns:</strong> int</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#GetUserStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="indicateachievementprogress">indicateAchievementProgress</h2>
+<div class="admonition function">
+<p class="admonition-title">indicateAchievementProgress( <code>string</code> name, <code>int</code> currentProgress, <code>int</code> maxProgress )</p>
+<p>Shows the user a pop-up notification with the current progress of an achievement.</p>
+<p>Calling this function will not] set the progress or unlock the achievement, the game must do that manually by calling <a href="/functions/user_stats/#setstats">setStat</a>.</p>
+<p>Triggers a <a href="/signals/user_stats/#user_stats_stored">user_stats_stored</a> callback.</p>
+<p>Triggers a <a href="/signals/user_stats/#user_achievement_stored">user_achievement_stored</a> callback.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#IndicateAchievementProgress" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="requestcurrentstats">requestCurrentStats</h2>
+<div class="admonition function">
+<p class="admonition-title">requestCurrentStats()</p>
+<p>Asynchronously request the user's current stats and achievements from the server.</p>
+<p>You must always call this first to get the initial status of stats and achievements. Only after the resulting callback comes back can you start calling the rest of the stats and achievement functions for the current user.</p>
+<p>The equivalent function for other users is <a href="/functions/user_stats/#requestuserstats">requestUserStats</a>.</p>
+<p>Triggers a <a href="/signals/user_stats/#current_stats_received">current_stats_received</a> callback.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestCurrentStats" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="requestglobalachievementpercentages">requestGlobalAchievementPercentages</h2>
+<div class="admonition function">
+<p class="admonition-title">requestGlobalAchievementPercentages()</p>
+<p>Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>Triggers a <a href="/signals/user_stats/#global_achievement_percentage_ready">global_achievement_percentages_ready</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestGlobalAchievementPercentages" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="requestglobalstats">requestGlobalStats</h2>
+<div class="admonition function">
+<p class="admonition-title">requestGlobalStats( <code>int</code> history_days )</p>
+<p>Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.</p>
+<p>The limit is 60.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this.</p>
+<p>Triggers a <a href="/signals/user_stats/#global_stats_received">global_stats_received</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestGlobalStats" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="requestuserstats">requestUserStats</h2>
+<div class="admonition function">
+<p class="admonition-title">requestUserStats( <code>uint64_t</code> steam_id )</p>
+<p>Asynchronously downloads stats and achievements for the specified user from the server.</p>
+<p>These stats are not automatically updated; you'll need to call this function again to refresh any data that may have change.
+To keep from using too much memory, an least recently used cache (LRU) is maintained and other user's stats will occasionally be unloaded. When this happens a <a href="/signals/user_stats/#user_stats_unloaded">user_stats_unloaded</a> callback is sent. After receiving this callback the user's stats will be unavailable until this function is called again.</p>
+<p>The equivalent function for the local user is <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a>.</p>
+<p>Triggers a <a href="/signals/user_stats/#user_stats_received">user_stats_received</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#RequestUserStats" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="resetallstats">resetAllStats</h2>
+<div class="admonition function">
+<p class="admonition-title">resetAllStats( <code>bool</code> achievements_too )</p>
+<p>Resets the current users stats and, optionally achievements.</p>
+<p>This automatically calls <a href="/functions/user_stats/#storestats">storeStats</a> to persist the changes to the server. This should typically only be used for testing purposes during development. Ensure that you sync up your stats with the new default values provided by Steam after calling this by calling <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a>.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#ResetAllStats" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="setachievement">setAchievement</h2>
+<div class="admonition function">
+<p class="admonition-title">setAchievement( <code>string</code> name )</p>
+<p>Unlocks an achievement.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this!</p>
+<p>You can unlock an achievement multiple times so you don't need to worry about only setting achievements that aren't already set. This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call <a href="/functions/user_stats/#storestats">storeStats</a>.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#SetAchievement" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="setleaderboarddetailsmax">setLeaderboardDetailsMax</h2>
+<div class="admonition function">
+<p class="admonition-title">setLeaderboardDetailsMax( <code>int</code> max )</p>
+<p>Set the maximum number of details to return for leaderboard entries.</p>
+<p><strong>Returns:</strong> int</p>
+<p>The current leaderboard details max value.</p>
+<p><strong>Note:</strong> This is a GodotSteam specific function.</p>
+</div>
+<h2 id="setstatfloat">setStatFloat</h2>
+<div class="admonition function">
+<p class="admonition-title">setStatFloat( <code>string</code> name, <code>float</code> value )</p>
+<p>Sets / updates the float value of a given stat for the current user.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this!</p>
+<p>This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call <a href="/functions/user_stats/#storestats">storeStats</a>.</p>
+<p>If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#SetStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="setstatint">setStatInt</h2>
+<div class="admonition function">
+<p class="admonition-title">setStatInt( <code>string</code> name, <code>int32</code> value )</p>
+<p>Sets / updates the integer value of a given stat for the current user.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this!</p>
+<p>This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call <a href="/functions/user_stats/#storestats">storeStats</a>.</p>
+<p>If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#SetStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="storestats">storeStats</h2>
+<div class="admonition function">
+<p class="admonition-title">storeStats()</p>
+<p>Send the changed stats and achievements data to the server for permanent storage.</p>
+<p>If this fails then nothing is sent to the server. It's advisable to keep trying until the call is successful.</p>
+<p>This call can be rate limited. Call frequency should be on the order of minutes, rather than seconds. You should only be calling this during major state changes such as the end of a round, the map changing, or the user leaving a server. This call is required to display the achievement unlock notification dialog though, so if you have called <a href="/functions/user_stats/#setachievement">setAchievement</a> then it's advisable to call this soon after that.</p>
+<p>If you have stats or achievements that you have saved locally but haven't uploaded with this function when your application process ends then this function will automatically be called.</p>
+<p>You can find additional debug information written to the <code>%steam_install%\logs\stats_log.txt</code> file.</p>
+<p>Triggers a <a href="/signals/user_stats/#user_stats_stored">user_stats_stored</a> callback.</p>
+<p>Triggers a <a href="/signals/user_stats/#user_achievement_stored">user_achievement_stored</a> callback.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#StoreStats" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="updateavgratestat">updateAvgRateStat</h2>
+<div class="admonition function">
+<p class="admonition-title">updateAvgRateStat( <code>string</code> name, <code>float</code> this_session, <code>double</code> session_length )</p>
+<p>Updates an AVGRATE stat with new values.</p>
+<p>You must have called <a href="/functions/user_stats/#requestcurrentstats">requestCurrentStats</a> and it needs to return successfully via its callback prior to calling this!</p>
+<p>This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call <a href="/functions/user_stats/#storestats">storeStats</a>.</p>
+<p>If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.</p>
+<p><strong>Returns:</strong> bool</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#UpdateAvgRateStat" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+<h2 id="uploadleaderboardscore">uploadLeaderboardScore</h2>
+<div class="admonition function">
+<p class="admonition-title">uploadLeaderboardScore( <code>int32</code> score, <code>bool</code> keep_best, <code>array</code> details, <code>uint64_t</code> this_leaderboard )</p>
+<p>If this_leaderboard is not passed, then the function will use the last internally-stored handle.</p>
+<p>Uploads a user score to a specified leaderboard.</p>
+<p>Details are optional game-defined information which outlines how the user got that score. For example if it's a racing style time based leaderboard you could store the timestamps when the player hits each checkpoint. If you have collectibles along the way you could use bit fields as booleans to store the items the player picked up in the playthrough.</p>
+<p>Uploading scores to Steam is rate limited to 10 uploads per 10 minutes and you may only have one outstanding call to this function at a time.</p>
+<p>Triggers a <a href="/signals/user_stats/#leaderboard_score_uploaded">leaderboard_score_uploaded</a> callback.</p>
+<p><strong>Returns:</strong> void</p>
+<hr />
+<p><a class="md-button md-button--store" href="https://partner.steamgames.com/doc/api/ISteamUserStats#UploadLeaderboardScore" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M496 256c0 137-111.2 248-248.4 248-113.8 0-209.6-76.3-239-180.4l95.2 39.3c6.4 32.1 34.9 56.4 68.9 56.4 39.2 0 71.9-32.4 70.2-73.5l84.5-60.2c52.1 1.3 95.8-40.9 95.8-93.5 0-51.6-42-93.5-93.7-93.5s-93.7 42-93.7 93.5v1.2L176.6 279c-15.5-.9-30.7 3.4-43.5 12.1L0 236.1C10.2 108.4 117.1 8 247.6 8 384.8 8 496 119 496 256zM155.7 384.3l-30.5-12.6a52.79 52.79 0 0 0 27.2 25.8c26.9 11.2 57.8-1.6 69-28.4 5.4-13 5.5-27.3.1-40.3-5.4-13-15.5-23.2-28.5-28.6-12.9-5.4-26.7-5.2-38.9-.6l31.5 13c19.8 8.2 29.2 30.9 20.9 50.7-8.3 19.9-31 29.2-50.8 21zm173.8-129.9c-34.4 0-62.4-28-62.4-62.3s28-62.3 62.4-62.3 62.4 28 62.4 62.3-27.9 62.3-62.4 62.3zm.1-15.6c25.9 0 46.9-21 46.9-46.8 0-25.9-21-46.8-46.9-46.8s-46.9 21-46.9 46.8c.1 25.8 21.1 46.8 46.9 46.8z"/></svg></span> Read more in the official Steamworks SDK documentation</a></p>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2015-2023 GP Garcia | CoaguCo Industries
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Gramps/GodotSteam" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.gamedev.place/@coaguco" target="_blank" rel="noopener me" title="mastodon.gamedev.place" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M433 179.11c0-97.2-63.71-125.7-63.71-125.7-62.52-28.7-228.56-28.4-290.48 0 0 0-63.72 28.5-63.72 125.7 0 115.7-6.6 259.4 105.63 289.1 40.51 10.7 75.32 13 103.33 11.4 50.81-2.8 79.32-18.1 79.32-18.1l-1.7-36.9s-36.31 11.4-77.12 10.1c-40.41-1.4-83-4.4-89.63-54a102.54 102.54 0 0 1-.9-13.9c85.63 20.9 158.65 9.1 178.75 6.7 56.12-6.7 105-41.3 111.23-72.9 9.8-49.8 9-121.5 9-121.5zm-75.12 125.2h-46.63v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.33V197c0-58.5-64-56.6-64-6.9v114.2H90.19c0-122.1-5.2-147.9 18.41-175 25.9-28.9 79.82-30.8 103.83 6.1l11.6 19.5 11.6-19.5c24.11-37.1 78.12-34.8 103.83-6.1 23.71 27.3 18.4 53 18.4 175z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/coaguco" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:hello@godotsteam.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480v-83.6c0-4 1.5-7.8 4.2-10.7l167.6-182.9c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8l-88.3-44.2C7.1 311.3.3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      
+    
+  </body>
+</html>
