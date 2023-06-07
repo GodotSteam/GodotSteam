@@ -950,9 +950,18 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/inflogamescoop){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Undergrown -->
+<figure class="game" markdown>
+[![Undergrown](https://steamcdn-a.akamaihd.net/steam/apps/2300950/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2300950/Undergrown/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2300950/Undergrown/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-itch-io: ](https://fakeflxp.itch.io/undergrown){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.gg/8SEaRrccUp){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Unforgettable Voyage -->
 <figure class="game" markdown>
-[![Unforgettable Voyage](https://steamcdn-a.akamaihd.net/steam/apps/2149560/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2149560/Unforgettable_Voyage//){ target="_blank" }
+[![Unforgettable Voyage](https://steamcdn-a.akamaihd.net/steam/apps/2149560/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2149560/Unforgettable_Voyage/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2149560/Unforgettable_Voyage/){ target="_blank" .md-button .md-button--store }
 </figure>
