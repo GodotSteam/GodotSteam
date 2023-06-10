@@ -932,6 +932,16 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/asraworks){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Trash of the Titans -->
+<figure class="game" markdown>
+[![Trash of the Titans](https://steamcdn-a.akamaihd.net/steam/apps/2450400/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2450400/Trash_of_the_Titans){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2450400/Trash_of_the_Titans){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://trash-of-the-titans.manakeep.com/){ target="_blank" .md-button .md-button--store }
+</figure>
+
+
+
 <!-- Turing Complete -->
 <figure class="game" markdown>
 [![Turing Complete](https://steamcdn-a.akamaihd.net/steam/apps/1444480/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1444480/Turing_Complete/){ target="_blank" }
