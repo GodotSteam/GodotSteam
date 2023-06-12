@@ -191,6 +191,15 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/codingapegames){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Disinfection -->
+<figure class="game" markdown>
+[![Disinfection](https://steamcdn-a.akamaihd.net/steam/apps/1921130/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1921130/Disinfection/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1921130/Disinfection/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/EvilTurtleGames){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-mastodon: ](https://mastodon.gamedev.place/@evilturtle){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Dome Keeper -->
 <figure class="game" markdown>
 [![Dome Keeper](https://steamcdn-a.akamaihd.net/steam/apps/1637320/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1637320/Dome_Keeper/){ target="_blank" }
@@ -641,6 +650,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1360130/Power_of_the_Ancients/){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-firefox-browser: ](https://www.cortexcode.com/){ target="_blank" .md-button .md-button--store }
+</figure>
+
+<!-- The Pulse of Evil -->
+<figure class="game" markdown>
+[![The Pulse of Evil](https://steamcdn-a.akamaihd.net/steam/apps/2437890/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2437890/The_Pulse_of_Evil/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2437890/The_Pulse_of_Evil/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/MadNukin){ target="_blank" .md-button .md-button--store }
 </figure>
 
 <!-- PumPum -->
