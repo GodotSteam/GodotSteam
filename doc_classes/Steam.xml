@@ -523,6 +523,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="connectByIPAddress">
+			<return type="int" />
+			<argument index="0" name="ip_address_with_port" type="String" />
+			<argument index="1" name="options" type="Array" />
+			<description>
+			</description>
+		</method>
 		<method name="connectToHostedDedicatedServer">
 			<return type="int" />
 			<argument index="0" name="identity_reference" type="String" />
