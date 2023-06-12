@@ -4614,7 +4614,7 @@ uint32 Steam::connectP2P(const String& identity_reference, int virtual_port, Arr
 	return SteamNetworkingSockets()->ConnectP2P(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
 }
 
-//! Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
+//! Begin connecting to a server listen socket that is identified using an [ip-address]:[port], i.e. 127.0.0.1:27015. Used with createListenSocketIP
 uint32 Steam::connectByIPAddress(const String& ip_address_with_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
 		return 0;
