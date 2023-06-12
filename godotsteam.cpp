@@ -4614,6 +4614,19 @@ uint32 Steam::connectP2P(const String& identity_reference, int virtual_port, Arr
 	return SteamNetworkingSockets()->ConnectP2P(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
 }
 
+//! Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
+uint32 Steam::connectByIPAddress(const String& ip_address_with_port, Array options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	
+	SteamNetworkingIPAddr steamAddr;
+	steamAddr.Clear();
+	steamAddr.ParseString(ip_address_with_port.utf8().get_data());
+
+	return SteamNetworkingSockets()->ConnectByIPAddress(steamAddr, options.size(), convertOptionsArray(options));
+}
+
 //! Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
 uint32 Steam::connectToHostedDedicatedServer(const String& identity_reference, int virtual_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
@@ -11414,6 +11427,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("closeListenSocket", "socket"), &Steam::closeListenSocket);
 	ClassDB::bind_method(D_METHOD("configureConnectionLanes", "connection", "lanes", "priorities", "weights"), &Steam::configureConnectionLanes);
 	ClassDB::bind_method(D_METHOD("connectP2P", "identity_reference", "virtual_port", "options"), &Steam::connectP2P);
+	ClassDB::bind_method(D_METHOD("connectByIPAddress", "ip_address_with_port", "options"), &Steam::connectByIPAddress);
 	ClassDB::bind_method(D_METHOD("connectToHostedDedicatedServer", "identity_reference", "virtual_port", "options"), &Steam::connectToHostedDedicatedServer);
 	ClassDB::bind_method(D_METHOD("createFakeUDPPort", "fake_server_port"), &Steam::createFakeUDPPort);
 	ClassDB::bind_method(D_METHOD("createHostedDedicatedServerListenSocket", "virtual_port", "options"), &Steam::createHostedDedicatedServerListenSocket);

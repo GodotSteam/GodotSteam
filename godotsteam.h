@@ -906,6 +906,7 @@ class Steam: public Object {
 		bool closeListenSocket(uint32 socket);
 		int configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights);
 		uint32 connectP2P(const String& identity_reference, int virtual_port, Array options);
+		uint32 connectByIPAddress(const String& ip_address_with_port, Array options);
 		uint32 connectToHostedDedicatedServer(const String& identity_reference, int virtual_port, Array options);
 		void createFakeUDPPort(int fake_server_port);
 		uint32 createHostedDedicatedServerListenSocket(int virtual_port, Array options);
