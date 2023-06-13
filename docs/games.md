@@ -667,6 +667,16 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1595290/PumPum/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- PsychWorld -->
+<figure class="game" markdown>
+[![PsychWorld](https://steamcdn-a.akamaihd.net/steam/apps/2304350/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2304350/PsychWorld/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2304350/PsychWorld/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.gg/K39E8XCyWn){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/@StaticRainStudios){ target="_blank" .md-button .md-button--store }
+</figure>
+
+
 <!-- Redd's Runaway -->
 <figure class="game" markdown>
 [![Redd's Runaway](https://steamcdn-a.akamaihd.net/steam/apps/1411770/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1411770/Redds_Runaway/){ target="_blank" }
