@@ -1070,6 +1070,17 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/BrainChocolate){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Xion Leak -->
+<figure class="game" markdown>
+[![Xion Leak](https://steamcdn-a.akamaihd.net/steam/apps/1948490/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1948490/Xion_Leak/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1948490/Xion_Leak/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://xionleak.com/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/XionLeak){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/channel/UCb2FKSG2Khl0pvK-imaxDFA/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/ETaJw692mh){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- XOL -->
 <figure class="game" markdown>
 [![XOL](https://steamcdn-a.akamaihd.net/steam/apps/1384840/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1384840/XOL/){ target="_blank" }
