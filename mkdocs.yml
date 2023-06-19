@@ -125,6 +125,7 @@ nav:
   - Contributors:
     - Contributor List: 'contributors.md'
     - Contributing Code: 'contribute_rules.md'
+    - Donating: 'contribute_donations.md'
 theme:
   name: material
   favicon: assets/images/favicon.png

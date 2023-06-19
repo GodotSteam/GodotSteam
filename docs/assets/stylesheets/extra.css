@@ -1093,3 +1093,6 @@ div.start-grid div.admonition a {
 .md-typeset .md-button--store {
   padding: .625em 1em !important;
 }
+a span.twemoji {
+	margin-right: 10px;
+}
