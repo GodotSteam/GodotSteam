@@ -312,6 +312,15 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-twitter: ](https://twitter.com/redkoibox){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Gunmetal Gothic -->
+<figure class="game" markdown>
+[![Gunmetal Gothic](https://steamcdn-a.akamaihd.net/steam/apps/2248150/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2248150/Gunmetal_Gothic/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2248150/Gunmetal_Gothic/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/ynoham){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/@gunmetalgothic){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- HangTogether -->
 <figure class="game" markdown>
 [![HangTogether](https://steamcdn-a.akamaihd.net/steam/apps/1701400/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1701400/HangTogether/){ target="_blank" }

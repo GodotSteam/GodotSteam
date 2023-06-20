@@ -1096,3 +1096,6 @@ div.start-grid div.admonition a {
 a span.twemoji {
 	margin-right: 10px;
 }
+figure.game a span.twemoji {
+	margin-right: 0px !important;
+}
