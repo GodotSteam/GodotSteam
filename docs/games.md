@@ -910,6 +910,13 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-discord: ](https://discord.com/invite/swordsandsandals){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- SkyDribble -->
+<figure class="game" markdown>
+[![SkyDribble](https://steamcdn-a.akamaihd.net/steam/apps/2462380/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2462380/SkyDribble/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2462380/SkyDribble/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- TailQuest: Defense -->
 <figure class="game" markdown>
 [![TailQuest: Defense](https://steamcdn-a.akamaihd.net/steam/apps/824090/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/824090/TailQuest_Defense/){ target="_blank" }
