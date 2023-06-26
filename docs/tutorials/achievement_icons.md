@@ -26,17 +26,17 @@ This buffer contains the actual image data for our icon. However, as this buffer
 
 === "Godot 2.x, 3.x"
 	````
-	var SIZE: int = 32
+	var SIZE: int = 64
 	var ICON: Image = Image.new()
 	var ICON_TEXTURE: ImageTexture = ImageTexture.new()
 
 	````
 === "Godot 4.x"
 	````
-	var SIZE: int = 32
+	var SIZE: int = 64
 	````
 
-The size variable can be whatever you want; for our example we will use 32 (32 pixels by 32 pixels).
+The size variable can be whatever you want; for our example we will use 64 (64 pixels by 64 pixels) or else Gododt will complain when attempting to create the image and cause a failure.
 
 Now that we've made our Image and Texture objects, we can load the buffer data into the Image. Note the format we use (RGBA8); this is the format the data in the buffer takes when we receive it from Steam, and so in order for Godot to know how to make sense of it, we need to ensure it is correct:
 
@@ -75,7 +75,7 @@ Our complete example should look something like this:
 === "Godot 2.x, 3.x"
 	````
 	# Set up some icon variables
-	var SIZE: int = 32
+	var SIZE: int = 64
 
 	# Get the image's handle
 	var HANDLE: int = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
@@ -97,7 +97,7 @@ Our complete example should look something like this:
 === "Godot 4.x"
 	````
 	# Set up some icon variables
-	var SIZE: int = 32
+	var SIZE: int = 64
 
 	# Get the image's handle
 	var HANDLE: int = Steam.getAchievementIcon("ACH_WIN_ONE_GAME")
