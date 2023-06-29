@@ -55,6 +55,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- d4rkd0s
 	- David Wery
 	- David-AW
+	- DeadlyEssence01
 	- Dillon Joel Steyl
 	- Don Piano
 	- eflake
