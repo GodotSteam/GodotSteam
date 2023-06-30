@@ -443,4 +443,4 @@ I highly suggest you [check out the Example branch of the repo](https://github.c
 
 That concludes the lobby tutorial.  At this point you may want to [check out the P2P tutorial which compliments this one](/tutorials/p2p).  Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
 
-[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ { target="_blank" } } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

@@ -1,4 +1,4 @@
-# Tutorials - Common Issues</h1>
+# Tutorials - Common Issues
 
 In this tutorial, we will cover some common pitfalls people find themselves in.  This should help you troubleshoot some of the basics for when things don't seem to be working.
 

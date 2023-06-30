@@ -149,8 +149,10 @@ If you are downloading our pre-compiles or using the GDNative plugin, or have fi
 !!! example "GodotSteam Example Project"
 	A working example of some GodotSteam features based on current tutorials; currently only available for Godot 3.x
 
-	[:fontawesome-solid-file-zipper: Get The TAR](https://github.com/CoaguCo-Industries/GodotSteam/tarball/example){ .md-button .md-button--primary target="_blank" }
-	[:fontawesome-solid-file-zipper: Get The ZIP](https://github.com/CoaguCo-Industries/GodotSteam/zipball/example){ .md-button .md-button--primary target="_blank" }
+	[:fontawesome-solid-code-branch: Get The Source](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project/){ .md-button .md-button--primary target="_blank" }
+	[:simple-godotengine: Godot Asset Library](https://godotengine.org/asset-library/asset/1956){ .md-button .md-button--primary target="_blank" }
+	[:fontawesome-solid-file-zipper: Github Drop-in ZIP](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project/zipball/master){ .md-button .md-button--primary target="_blank" }
+
 
 </div>
 

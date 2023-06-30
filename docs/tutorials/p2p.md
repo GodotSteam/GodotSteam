@@ -385,4 +385,4 @@ Here are some additional networking article resources to check out:
 
 That concludes the P2P tutorial.  At this point you may want to [check out the lobbies tutorial (if you haven't yet) which compliments this one](/tutorials/lobbies).  Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
 
-[To see this tutorial in action, check out the example branch on the GodotSteam Github repo.](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ { target="_blank" } } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
