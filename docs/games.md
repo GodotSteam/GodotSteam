@@ -120,6 +120,15 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/845940/Brickfest/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Burrito Bear -->
+<figure class="game" markdown>
+[![Burrito Bear](https://steamcdn-a.akamaihd.net/steam/apps/1941420/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1941420/Burrito_Bear/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1941420/Burrito_Bear/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.gg/D8KrUYHwyP){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://www.spaceorca.games/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Captain Collision -->
 <figure class="game" markdown>
 [![Captain Collision](https://steamcdn-a.akamaihd.net/steam/apps/1693380/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1693380/Captain_Collision/){ target="_blank" }
