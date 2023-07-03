@@ -10,7 +10,7 @@
 	**Returns:** int
 
     ---
-    [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](Ahttps://partner.steamgames.com/doc/api/ISteamMatchmaking#AddFavoriteGame){ .md-button .md-button--store target="_blank" }
+    [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#AddFavoriteGame){ .md-button .md-button--store target="_blank" }
 
 ## addRequestLobbyListDistanceFilter
 
