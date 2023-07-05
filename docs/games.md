@@ -537,6 +537,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1824080/LUL_inc/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Maces and Dices -->
+<figure class="game" markdown>
+[![Maces and Dices](https://steamcdn-a.akamaihd.net/steam/apps/2434720/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2434720/Maces_and_Dices/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2434720/Maces_and_Dices/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-mastodon: ](https://mastodon.gamedev.place/@nitramiuz){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Martial Law -->
 <figure class="game" markdown>
 [![Martial Law](https://steamcdn-a.akamaihd.net/steam/apps/1712390/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1712390/Martial_Law/){ target="_blank" }
