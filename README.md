@@ -5,6 +5,7 @@ Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
+- [GDExtension 4.0]((https://github.com/Gramps/GodotSteam/tree/gdextension-4.0-plugin))
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
 
