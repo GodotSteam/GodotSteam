@@ -48,6 +48,7 @@ You can [download pre-compiled versions _(currently v4.2.4)_ of this repo here.]
 
 Known Issues
 ---
+- GDExtension for 4.1 is **not** compatible with 4.0.3 or lower. Please check the versions you are using.
 - Overlay will not work in the editor but will work in export projects when uploaded to Steam.  This seems to a limitation with Vulkan currently.
 
 Quick How-To
