@@ -689,6 +689,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-firefox-browser: ](https://www.cortexcode.com/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Prop Game -->
+<figure class="game" markdown>
+[![Prop Game](https://steamcdn-a.akamaihd.net/steam/apps/2479580/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2479580/Prop_Game/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2479580/Prop_Game/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/PropGame_){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- The Pulse of Evil -->
 <figure class="game" markdown>
 [![The Pulse of Evil](https://steamcdn-a.akamaihd.net/steam/apps/2437890/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2437890/The_Pulse_of_Evil/){ target="_blank" }
