@@ -163,9 +163,17 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1883230/Clive_vs_Hives_2/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Collection Quest -->
+<figure class="game" markdown>
+[![Collection Quest](https://steamcdn-a.akamaihd.net/steam/apps/1278090/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1278090/Collection_Quest/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1278090/Collection_Quest/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/channel/UCOc_IzuiLnY4LLDc_VHOj3A){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Comic Company Manager -->
 <figure class="game" markdown>
-[![Comic Company Manage](https://steamcdn-a.akamaihd.net/steam/apps/1612950/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1612950/Comic_Company_Manager/){ target="_blank" }
+[![Comic Company Manager](https://steamcdn-a.akamaihd.net/steam/apps/1612950/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1612950/Comic_Company_Manager/){ target="_blank" }
 
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1612950/Comic_Company_Manager/){ target="_blank" .md-button .md-button--store }
 </figure>
