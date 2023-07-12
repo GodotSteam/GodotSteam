@@ -211,6 +211,8 @@ div#games {
 }
 .md-typeset figure.game {
 	flex-basis: 45%;
+	background-color: #282828;
+	padding:0 .85em;
 }
 .md-typeset table:not([class]) {
 	background-color: #282828;
@@ -1091,7 +1093,7 @@ div.start-grid div.admonition a {
 		  mask-image: var(--md-admonition-icon--guide);
 }
 .md-typeset .md-button--store {
-  padding: .625em 1em !important;
+  padding: .2em .5em !important;
 }
 a span.twemoji {
 	margin-right: 10px;

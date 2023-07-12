@@ -13,6 +13,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- ClockRate
 	- ConnorBP
 	- craftablescience
+	- Deozaan
 	- dsnopek
 	- EIREXE
 	- Fischer96
