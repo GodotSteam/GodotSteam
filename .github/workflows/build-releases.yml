@@ -1,0 +1,274 @@
+name: GDExtension Branch
+on:
+  workflow_dispatch:
+    inputs:
+      steamworks_sdk_tag:
+        description: 'Steamworks SDK Tag:'
+        required: true
+        type: string
+        default: 'sdk-1.57'
+      godot_cpp_tag:
+        description: 'Godot CPP Tag:'
+        required: true
+        type: string
+        default: 'godot-4.1-stable'
+      godotsteam_version:
+        description: 'GodotSteam GDExtension Tag:'
+        required: true
+        type: string
+        default: '4.2.2-gde'
+      release_title:
+        description: 'Github Release Title:'
+        required: true
+        type: string
+        default: 'Godot 4.1 - Steamworks 1.57 - GodotSteam GDExtension 4.2.4'
+
+jobs:
+################# Linux 64 Builds #################
+
+  build-linux-release:
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_cpp_tag: ${{ inputs.godot_cpp_tag }}
+      binary_name: "libgodotsteam.linux.template_release.x86_64.so"
+      export_name: "libgodotsteam.so"
+      build_params: "-j4 platform=x11 target=template_release"
+      artifact_name: "linux-release"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-linux-debug:
+    uses: ./.github/workflows/build-linux-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_cpp_tag: ${{ inputs.godot_cpp_tag }}
+      binary_name: "libgodotsteam.linux.template_debug.x86_64.so"
+      export_name: "libgodotsteam.debug.so"
+      build_params: "-j4 platform=x11 target=template_debug"
+      artifact_name: "linux-debug"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+################# Win64 Builds #################
+
+  build-win64-release:
+    uses: ./.github/workflows/build-windows-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_cpp_tag: ${{ inputs.godot_cpp_tag }}
+      binary_name: "libgodotsteam.windows.release.x86_64.dll"
+      export_name: "godotsteam.dll"
+      build_params: "-j4 platform=windows target=template_release"
+      artifact_name: "windows-release"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-win64-debug:
+    uses: ./.github/workflows/build-windows-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_cpp_tag: ${{ inputs.godot_tag }}
+      binary_name: "libgodotsteam.windows.debug.x86_64.dll"
+      export_name: "godotsteam.debug.dll"
+      build_params: "-j4 platform=windows target=template_debug"
+      artifact_name: "windows-debug"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+# ################# MacOS Universal Builds #################
+
+  build-macos-release-x86_64:
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+      binary_name: "libgodotsteam.macos.release.x86_64.framework"
+      export_name: "libgodotsteam.x86_64.dylib"
+      build_params: "-j6 p=osx arch=x86_64 target=template_release --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "macos-release-x86_64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-macos-debug-x86_64:
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+      binary_name: "libgodotsteam.macos.debug.x86_64.framework"
+      export_name: "libgodotsteam.debug.x86_64.dylib"
+      build_params: "-j6 p=osx arch=x86_64 target=template_debug --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "macos-debug-x86_64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-macos-release-arm64:
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+      binary_name: "libgodotsteam.macos.release.arm64.framework"
+      export_name: "libgodotsteam.arm64.dylib"
+      build_params: "-j6 p=osx arch=arm64 target=template_release --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "macos-release-arm64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build-macos-debug-arm64:
+    uses: ./.github/workflows/build-macos-artifact.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+      binary_name: "libgodotsteam.macos.debug.arm64.framework"
+      export_name: "libgodotsteam.debug.arm64.dylib"
+      build_params: "-j6 p=osx arch=arm64target=template_release --jobs=$(sysctl -n hw.logicalcpu)"
+      artifact_name: "macos-debug-arm64"
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  create-macos-release-universal:
+    needs: [build-macos-release-x86_64, build-macos-release-arm64]
+    runs-on: macos-latest
+    steps:
+      - name: Download MacOS x86_64 Release Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-release-x86_64
+          path: files
+      - name: Download MacOS ARM Release Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-release-arm64
+          path: files
+      # Combine those puppies
+      - name: Create MacOS Universal
+        run: |
+          lipo libgodotsteam-x86_64.dylib libgodotsteam-arm64.dylib -output libgodotsteam.dylib -create
+      - name: Upload MacOS Universal Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-release-plugin-universal
+          path: libgodotsteam.dylib
+          if-no-files-found: error
+          retention-days: 1
+
+  create-macos-debug-universal:
+    needs: [build-macos-debug-x86_64, build-macos-debug-arm64]
+    runs-on: macos-latest
+    steps:
+      - name: Download MacOS x86_64 Debug Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-debug-x86_64
+          path: files
+      - name: Download MacOS ARM Debug Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-debug-arm64
+          path: files
+      # Combine those puppies
+      - name: Create MacOS Universal
+        run: |
+          lipo libgodotsteam-x86_64.debug.dylib libgodotsteam-arm64.debug.dylib -output libgodotsteam.debug.dylib -create
+      - name: Upload MacOS Universal Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-debug-plugin-universal
+          path: libgodotsteam.debug.dylib
+          if-no-files-found: error
+          retention-days: 1
+
+################ Create Bundle and Release #################
+  create-plugin-bundle:
+    needs: [build-linux-release, build-linux-debug, build-windows-release, build-windows-debug, create-macos-release-universal, create-macos-debug-universal]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux Release Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-release
+          path: files/addons/godotsteam/linux/
+      - name: Download Linux Debug Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-debug
+          path: files/addons/godotsteam/linux/
+      - name: Download Linux Steam API SO
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-steam-api-so
+          path: files/addons/godotsteam/linux/
+      - name: Download Windows Release Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-release
+          path: files/addons/godotsteam/windows/
+      - name: Download Windows Debug Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-debug
+          path: files/addons/godotsteam/windows/
+      - name: Download Windows Steam API DLL
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-steam-api-dll
+          path: files/addons/godotsteam/win64/
+      - name: Download Mac Release Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-release-plugin-universal
+          path: files/addons/godotsteam/osx/
+      - name: Download Mac Debug Plug-in
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-debug-plugin-universal
+          path: files/addons/godotsteam/osx/
+      - name: Download Mac Steam API DyLib
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-libsteam-api-dylib
+          path: files/addons/godotsteam/osx/
+      - name: Create Plug-in Bundle
+        run: |
+          echo "480" >> filess/steam_appid.txt
+          zip -j ${{ needs.env-setup.outputs.zip_tag }} files/*
+      - name: Upload Plug-in Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: godotsteam-gdextension-plugin.zip
+          path: godotsteam-gdextension-plugin.zip
+          if-no-files-found: error
+          retention-days: 1
+
+  create-release:
+    needs: [create-plugin-bundle]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Plug-in Bundle
+      uses: actions/download-artifact@v3
+      with:
+        name: godotsteam-gdextension-plugin.zip
+    - name: Upload Plug-in Bundle To Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: godotsteam-gdextension-plugin.zip
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ inputs.godotsteam_version }}
+        release_name: ${{ inputs.release_title }}
+        prerelease: false
+        body: |
+          This the new pre-compiled plug-in for Godot 4.1! This is built on GodotSteam GDExtension 4.2.4 and linked with Steamworks SDK 1.57.
+
+          **Note:** This does not work with Godot 4.0.3 or lower. Please use an earlier release for those versions.
+
+          Just drop the addon folder into the base of your game / project and you are good to go!
+
+          Available for Windows, Linux, and Mac.

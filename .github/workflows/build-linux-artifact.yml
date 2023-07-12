@@ -1,0 +1,78 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_cpp_tag:
+        required: true
+        type: string
+      binary_name:
+        required: true
+        type: string
+      build_params:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      export_name:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  build-linux:
+    runs-on: self-hosted
+    
+    steps:
+      # Checkout GodotSteam GDExtension source
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+       # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+      - name: Copy Steamworks
+        run: |
+          cp -r steamworks/public godotsteam/sdk
+          cp -r steamworks/redistributable_bin godotsteam/sdk
+      # Checkout Godot CPP
+      - name: Checkout Godot CPP
+        run: git clone --recursive -b ${{ inputs.godot_cpp_tag }} https://github.com/godotengine/godot-cpp
+      - name: Compile Godot CPP
+        run: |
+          cd godot-cpp
+          PATH=/opt/x86_64-godot-linux-gnu_sdk-buildroot/bin:$PATH scons ${{ inputs.build_params }}
+          cd ..
+          mkdir bin
+      # Compiling the plug-in
+      - name: Compile Linux plug-in
+        run: |
+          PATH=/opt/x86_64-godot-linux-gnu_sdk-buildroot/bin:$PATH scons ${{ inputs.build_params }}
+          mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
+      # Upload it for bundling
+      - name: Upload Linux plug-in
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: bin/${{ inputs.export_name }}
+          if-no-files-found: error
+          retention-days: 1
+      # Upload Steam API SO for bundling
+      - name: Upload Linux Steam SO
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-steam-api-so
+          path: godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so
+          if-no-files-found: error
+          retention-days: 1
