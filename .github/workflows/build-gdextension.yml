@@ -1,0 +1,199 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+env:
+  BASE_BRANCH: gdextension
+
+jobs:
+  build-gdextension:
+    runs-on: ${{ matrix.opts.runner }}
+    name: ${{ matrix.opts.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        opts:
+          - identifier: linux-debug (x86_64)
+            name: Linux (x86_64) - template_debug
+            runner: ubuntu-20.04
+            target: template_debug
+            platform: linux
+            arch: x86_64
+          - identifier: linux-release (x86_64)
+            name: Linux (x86_64) - template_release
+            runner: ubuntu-20.04
+            target: template_release
+            platform: linux
+            arch: x86_64
+          - identifier: linux-debug (x86_32)
+            name: Linux (x86_32) - template_debug
+            runner: ubuntu-20.04
+            target: template_debug
+            platform: linux
+            arch: x86_32
+          - identifier: linux-release (x86_32)
+            name: Linux (x86_32) - template_release
+            runner: ubuntu-20.04
+            target: template_release
+            platform: linux
+            arch: x86_32
+
+          - identifier: windows-debug (x86_64)
+            name: Windows (x86_64) - template_debug
+            runner: windows-latest
+            target: template_debug
+            platform: windows
+            arch: x86_64
+          - identifier: windows-release (x86_64)
+            name: Windows (x86_64) - template_release
+            runner: windows-latest
+            target: template_release
+            platform: windows
+            arch: x86_64
+          - identifier: windows-debug (x86_32)
+            name: Windows (x86_32) - template_debug
+            runner: windows-latest
+            target: template_debug
+            platform: windows
+            arch: x86_32
+          - identifier: windows-release (x86_32)
+            name: Windows (x86_32) - template_release
+            runner: windows-latest
+            target: template_release
+            platform: windows
+            arch: x86_32
+
+          - identifier: macos-release (universal)
+            name: MacOS (universal) - template_release
+            runner: macos-latest
+            target: template_release
+            platform: macos
+            arch: universal
+          - identifier: macos-debug (universal)
+            name: MacOS (universal) - template_debug
+            runner: macos-latest
+            target: template_debug
+            platform: macos
+            arch: universal
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+
+      - name: Copy Steamworks
+        shell: bash
+        run: |
+          cp -r steamworks/public godotsteam/sdk
+          cp -r steamworks/redistributable_bin godotsteam/sdk
+
+      - name: Install gcc-multilib
+        if: ${{ startsWith(matrix.opts.arch, 'x86_32') && startsWith(matrix.opts.runner,'ubuntu-') }}
+        shell: sh
+        run: |
+          sudo apt-get update
+          sudo apt install gcc-multilib g++-multilib
+      
+      - name: (Linux) Install buildroot x86_64
+        if: ${{ startsWith(matrix.opts.identifier, 'linux-') && contains(matrix.opts.arch, 'x86_64')}}
+        shell: sh
+        run: |
+          sudo apt-get update
+          sudo apt-get install yasm
+          cd /opt
+          curl -LO https://downloads.tuxfamily.org/godotengine/toolchains/linux/2021-02-11/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          tar xf x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          rm -f x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          mv x86_64-godot-linux-gnu_sdk-buildroot buildroot
+          cd buildroot
+          ./relocate-sdk.sh
+      
+      - name: (Linux) Install buildroot x86_32
+        if: ${{ startsWith(matrix.opts.identifier, 'linux-') && contains(matrix.opts.arch, 'x86_32')}}
+        shell: sh
+        run: |
+          sudo apt-get update
+          sudo apt-get install yasm
+          cd /opt
+          curl -LO https://downloads.tuxfamily.org/godotengine/toolchains/linux/2021-02-11/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
+          tar xf i686-godot-linux-gnu_sdk-buildroot.tar.bz2
+          rm -f i686-godot-linux-gnu_sdk-buildroot.tar.bz2
+          mv i686-godot-linux-gnu_sdk-buildroot buildroot
+          cd buildroot
+          ./relocate-sdk.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Set up SCons
+        shell: bash
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install scons
+          scons --version
+      - name: Load .scons_cache directory
+        id: godot-extension-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/.scons_cache/
+          key: ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
+          restore-keys: |
+            ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
+            ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}
+            ${{github.job}}-${{env.BASE_BRANCH}}-${{env.BASE_BRANCH}}
+      - name: Compile extension
+        shell: sh
+        env:
+          SCONS_CACHE: ${{github.workspace}}/.scons_cache/
+          SCONS_CACHE_LIMIT: 7168
+        run: |
+          PATH=/opt/buildroot/bin:$PATH scons target='${{ matrix.opts.target }}' platform='${{ matrix.opts.platform }}' arch='${{ matrix.opts.arch }}' ${{ matrix.opts.args }} -j2
+          ls -la bin/
+      - name: Strip bins
+        if: "!startsWith(matrix.opts.identifier, 'windows-') && startsWith(matrix.opts.arch, 'x86_')"
+        shell: sh
+        run: |
+          strip bin/*
+      - name: Prepare artifact
+        shell: sh
+        run: |
+          mkdir -p project/addons/godotsteam
+          mv bin/* project/addons/godotsteam
+          cp -r godotsteam/sdk/redistributable_bin/* project/addons/godotsteam
+
+          cd project/addons/godotsteam
+          mkdir win32
+          mv *.x86_64.so linux64/ || true
+          mv *.x86_32.so linux32/ || true
+          mv *.framework osx/ || true
+          mv *.x86_64.dll win64/ || true
+          mv *.dll win32/ || true
+          rm -rf *.exp *.lib
+          cd ../../..
+
+          cp -n 'README.md' 'LICENSE.txt' 'godotsteam.gdextension' project/addons/godotsteam
+          echo "480" > project/steam_appid.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: gdextension
+          path: |
+            project/
