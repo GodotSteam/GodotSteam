@@ -65,6 +65,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- Hung-Fan Liu
 	- InkRobert
 	- [Jayden Sipe](https://jaydensipe.github.io/)
+	- Jeroen Heijmans
 	- Jez
 	- John Flickinger
 	- John H Wright
