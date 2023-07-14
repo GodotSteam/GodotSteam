@@ -1,11 +1,10 @@
 # GodotSteam for GDExtension
-An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and (soon) Mac platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows 32/64-bit, Linux 32/64-bit, and Mac uinversal platforms. 
 
 Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [GDExtension 4.0]((https://github.com/Gramps/GodotSteam/tree/gdextension-4.0-plugin))
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
 
@@ -17,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.4)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.2.5 Changes**
+- Added: 32-bit support back in; _thanks to @Trey2k_
+- Fixed: OSX support; _thanks to @Trey2k_
 
 **Version 4.2.4 Changes**
 - Added: new Input callback input_gamepad_slot_change
