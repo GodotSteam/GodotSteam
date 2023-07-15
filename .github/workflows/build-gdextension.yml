@@ -181,6 +181,13 @@ jobs:
 
           cd project/addons/godotsteam
           mkdir win32
+          
+          touch linux64/.gdignore
+          touch linux32/.gdignore
+          touch osx/.gdignore
+          touch win64/.gdignore
+          touch win32/.gdignore
+
           mv *.x86_64.so linux64/ || true
           mv *.x86_32.so linux32/ || true
           mv *.framework osx/ || true
