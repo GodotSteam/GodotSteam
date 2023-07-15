@@ -27,30 +27,30 @@ jobs:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-release:
-    needs: [build-gdextension-release]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download Plug-in Bundle
-      uses: actions/download-artifact@v3
-      with:
-        name: gdextension
-    - name: Prepare Release
-      run: |
-        zip -r gdextension.zip *
-    - name: Upload Plug-in Bundle To Release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: gdextension.zip
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ inputs.godotsteam_version }}
-        release_name: ${{ inputs.release_title }}
-        prerelease: false
-        body: |
-          This the new pre-compiled plug-in for Godot 4.1! This is built on GodotSteam GDExtension 4.2.4 and linked with Steamworks SDK 1.57.
+  # create-release:
+  #   needs: [build-gdextension-release]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Download Plug-in Bundle
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: gdextension
+  #   - name: Prepare Release
+  #     run: |
+  #       zip -r gdextension.zip *
+  #   - name: Upload Plug-in Bundle To Release
+  #     uses: svenstaro/upload-release-action@v2
+  #     with:
+  #       file: gdextension.zip
+  #       repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #       tag: ${{ inputs.godotsteam_version }}
+  #       release_name: ${{ inputs.release_title }}
+  #       prerelease: false
+  #       body: |
+  #         This the new pre-compiled plug-in for Godot 4.1! This is built on GodotSteam GDExtension 4.2.4 and linked with Steamworks SDK 1.57.
 
-          **Note:** This does not work with Godot 4.0.3 or lower. Please use an earlier release for those versions.
+  #         **Note:** This does not work with Godot 4.0.3 or lower. Please use an earlier release for those versions.
 
-          Just drop the addon folder into the base of your game / project and you are good to go!
+  #         Just drop the addon folder into the base of your game / project and you are good to go!
 
-          Available for Windows, Linux, and Mac.
+  #         Available for Windows, Linux, and Mac.

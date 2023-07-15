@@ -188,11 +188,21 @@ jobs:
           touch win64/.gdignore
           touch win32/.gdignore
 
-          mv *.x86_64.so linux64/ || true
-          mv *.x86_32.so linux32/ || true
-          mv *.framework osx/ || true
-          mv *.x86_64.dll win64/ || true
-          mv *.dll win32/ || true
+          mv libgodotsteam.linux.template_debug.x86_32.so linux32/libgodotsteam.debug.x86_32.so || true
+          mv libgodotsteam.linux.template_debug.x86_64.so linux64/libgodotsteam.debug.x86_64.so || true
+          mv libgodotsteam.linux.template_release.x86_32.so linux32/libgodotsteam.x86_32.so || true
+          mv libgodotsteam.linux.template_release.x86_64.so linux64/libgodotsteam.x86_64.so || true
+
+          mv libgodotsteam.macos.template_debug.framework osx/libgodotsteam.debug.framework || true
+          mv libgodotsteam.macos.template_release.framework osx/libgodotsteam.framework || true
+          cp libsteam_api.dylib osx/libgodotsteam.debug.framework/ || true
+          mv libsteam_api.dylib osx/libgodotsteam.framework/ || true
+
+          mv libgodotsteam.windows.template_debug.x86_32.dll win32/libgodotsteam.debug.x86_32.dll || true
+          mv libgodotsteam.windows.template_debug.x86_64.dll win64/libgodotsteam.debug.x86_64.dll || true
+          mv libgodotsteam.windows.template_release.x86_32.dll win32/libgodotsteam.x86_32.dll || true
+          mv libgodotsteam.windows.template_release.x86_64.dll win64/libgodotsteam.x86_64.dll || true
+          
           rm -rf *.exp *.lib
           cd ../../..
 
