@@ -666,6 +666,17 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2255140/Paranoia_Party/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Pincrediball -->
+<figure class="game" markdown>
+[![Pincrediball](https://steamcdn-a.akamaihd.net/steam/apps/2378150/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2378150/Pincrediball){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2378150/Pincrediball){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/pincrediball){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-itch-io: ](https://pincrediball.itch.io/pincrediball){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-mastodon: ](https://mastodon.social/@pincrediball){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://www.pincrediball.com/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- PISTOLA -->
 <figure class="game" markdown>
 [![PISTOLA](https://steamcdn-a.akamaihd.net/steam/apps/1956400/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1956400/PISTOLA/){ target="_blank" }
