@@ -12,7 +12,7 @@ on:
         description: 'Godot Github tag:'
         required: true
         type: string
-        default: '4.0.3-stable'
+        default: '4.1.1-stable'
       godotsteam_version:
         description: 'GodotSteam version number:'
         required: true
@@ -25,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       zip_tag: ${{ steps.set_zip_tag.outputs.zip_tag }}
-      release_title: ${{ steps.set_release_title.outputs.release_title }}
       godot_version: ${{ steps.set_godot_version.outputs.godot_version }}
     steps:
       - name: set_zip_tag
@@ -38,13 +37,6 @@ jobs:
           gtag=${gtag//[.]/}
           tag=g${gtag%-*}-s${sdktag:0-3}-gs${gsver//[.]/}
           echo "zip_tag=${tag}" >> $GITHUB_OUTPUT
-      - name: set_release_title
-        id: set_release_title
-        run: |
-          sdktag=${{ inputs.steamworks_sdk_tag }} 
-          gtag=${{ inputs.godot_tag }}
-          title="Godot ${gtag%-*} - Steamworks ${sdktag:0-4} - GodotSteam ${{ inputs.godotsteam_version }}"
-          echo "release_title=${title}" >> $GITHUB_OUTPUT
       - name: set_godot_version
         id: set_godot_version
         run: |
@@ -456,57 +448,3 @@ jobs:
           path: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
           if-no-files-found: error
           retention-days: 1
-
-################ Create Release and upload artifacts #################
-  create-release:
-    needs: [env-setup, create-templates-bundle, create-linux-bundle, create-macos-bundle, create-win64-bundle]
-    runs-on: macos-latest
-    steps:
-    - name: Download Win64 bundle
-      uses: actions/download-artifact@v3
-      with:
-        name: win64-${{ needs.env-setup.outputs.zip_tag }}.zip
-    - name: Download Linux bundle
-      uses: actions/download-artifact@v3
-      with:
-        name: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
-    - name: Download Macos bundle
-      uses: actions/download-artifact@v3
-      with:
-        name: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
-    - name: Download Template bundle
-      uses: actions/download-artifact@v3
-      with:
-        name: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
-    - name: Upload Win64 bundle to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: win64-${{ needs.env-setup.outputs.zip_tag }}.zip
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ inputs.godotsteam_version }}
-        release_name: ${{ needs.env-setup.outputs.release_title }}
-        prerelease: false
-        body: |
-          These pre-compiles are built with the latest Godot Engine ${{ inputs.godot_tag }} and linked against Steamworks ${{ inputs.steamworks_sdk_tag }}.
-
-          Available for Windows, Linux and Mac.
-
-          Zips now include the relevant Steam API dll or so files as well as a steam_appid.txt with 480 in it, which you can change to your game's app ID or use it as is.
-    - name: Upload Linux bundle to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ inputs.godotsteam_version }}
-    - name: Upload MacOS bundle to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ inputs.godotsteam_version }}
-    - name: Upload template bundle to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ inputs.godotsteam_version }}

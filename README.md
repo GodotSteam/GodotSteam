@@ -16,7 +16,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.2.3 Changes**
+- Changed: version bump for Godot 4.1 and up
 
 **Version 4.2.2 Changes**
 - Added: new Input callback input_gamepad_slot_change
