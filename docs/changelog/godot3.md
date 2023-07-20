@@ -363,10 +363,10 @@
 **Version 3.8.2 Changes**
 
 * Added: different avatar constants
-* Changed: array deletions for Clang, _thanks to thisismike97_
-* Changed: initializing char text, _thanks to thisismike97_
+* Changed: array deletions for Clang, _thanks to SapphireMH_
+* Changed: initializing char text, _thanks to SapphireMH_
 * Fixed: createQueryUserUGCRequest being commented out accidentally
-* Fixed: logic check for setOverlayNotificationPosition, _thanks to thisismike97_
+* Fixed: logic check for setOverlayNotificationPosition, _thanks to SapphireMH_
 * Fixed: UTF8 not being handled correctly in some UGC functions, _thanks to EIREXE_
 
 **Version 3.8.1 Changes**
