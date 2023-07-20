@@ -731,6 +731,17 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1595290/PumPum/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Pusher: Drug Tycoon -->
+<figure class="game" markdown>
+[![Pusher: Drug Tycoon](https://steamcdn-a.akamaihd.net/steam/apps/2497210/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2497210/PUSHER__Drug_Tycoon/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2497210/PUSHER__Drug_Tycoon/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/PusherTycoon){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/aAwxqpWDg3){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](hhttps://www.youtube.com/channel/UCLuszgb_VKRhLCB_0jk0aoA){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://drug-tycoon.com/){ target="_blank" .md-button .md-button--store }
+</figure>
+vz
 <!-- PsychWorld -->
 <figure class="game" markdown>
 [![PsychWorld](https://steamcdn-a.akamaihd.net/steam/apps/2304350/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2304350/PsychWorld/){ target="_blank" }
