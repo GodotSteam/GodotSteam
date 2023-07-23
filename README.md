@@ -2,11 +2,11 @@
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows 32/64-bit, Linux 32/64-bit, and Mac uinversal platforms. 
 
 Additional flavors include:
+- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
-- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
-- [Server](https://github.com/Gramps/GodotSteam/tree/server)
+- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server)
 
 Documentation
 ---
@@ -16,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.5)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2.6)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.2.6 Changes**
+- Changed: updated submodule for Godot 4.1.1
+- Fixed: more stuff in godotsteam.gdextension file
 
 **Version 4.2.5 Changes**
 - Added: 32-bit support back in; _thanks to @Trey2k_

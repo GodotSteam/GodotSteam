@@ -6,7 +6,7 @@ Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
-- [Server](https://github.com/Gramps/GodotSteam/tree/server)
+- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server)
 
 Documentation
 ---
@@ -16,7 +16,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.4)_ of this repo here.](https://github.com/Gramps/GodotSteam/releases)
+You can [download pre-compiled versions _(currently v4.2.5)_ of this repo here.](https://github.com/Gramps/GodotSteam/releases)
+
+**Version 4.2.5 Changes**
+- Changed: updated submodule for Godot 4.1.1
+- Fixed: more stuff in godotsteam.gdextension file
 
 **Version 4.2.4 Changes**
 - Added: new Input callback input_gamepad_slot_change
