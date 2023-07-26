@@ -16,7 +16,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.6)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.2.7)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 4.2.7 Changes**
+- Fixed: more stuff for OSX; _thanks to Campero Tactico (Alberto)_
 
 **Version 4.2.6 Changes**
 - Changed: updated submodule for Godot 4.1.1
