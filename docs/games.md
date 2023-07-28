@@ -146,6 +146,16 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-youtube: ](https://www.youtube.com/channel/UCXeHZLFETcYHjZdJe-b8gUA){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Cat Cafe Manager -->
+<figure class="game" markdown>
+[![Cat Cafe Manager](https://steamcdn-a.akamaihd.net/steam/apps/1354830/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1354830/Cat_Cafe_Manager/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1354830/Cat_Cafe_Manager/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/roostgames){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.gg/uNhAYFV6KH){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://catcafemanager.com){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Chicken Fight -->
 <figure class="game" markdown>
 [![Chicken Fight](https://steamcdn-a.akamaihd.net/steam/apps/2159470/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2159470/Chicken_Fight/){ target="_blank" }
