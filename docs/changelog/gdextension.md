@@ -4,6 +4,11 @@
 
 ---
 
+**Version 4.2.5 Changes**
+
+- Changed: updated submodule for Godot 4.1.1
+- Fixed: more stuff in godotsteam.gdextension file
+
 **Version 4.2.4 Changes**
 
 - Added: new Input callback _input_gamepad_slot_change_

@@ -1096,6 +1096,13 @@ vz
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2149560/Unforgettable_Voyage/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Unnamed Space Idle -->
+<figure class="game" markdown>
+[![Unnamed Space Idle](https://steamcdn-a.akamaihd.net/steam/apps/2471100/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2471100/Unnamed_Space_Idle/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2471100/Unnamed_Space_Idle/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Virtual Cottage -->
 <figure class="game" markdown>
 [![Virtual Cottage](https://steamcdn-a.akamaihd.net/steam/apps/1369320/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1369320/Virtual_Cottage/){ target="_blank" }
