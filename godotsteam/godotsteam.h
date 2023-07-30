@@ -498,10 +498,11 @@ namespace godot {
 			CSteamID createSteamID(uint64_t steam_id);
 
 			// Main /////////////////////////////////
+			bool isSteamRunning();
 			bool restartAppIfNecessary(uint32 app_id);
 			Dictionary steamInit(bool retrieve_stats = true);
-			bool isSteamRunning();
-			void steamworksError(const String& failed_signal);
+			void steamShutdown();
+			void steamworksError(String failed_signal);
 
 			// Apps /////////////////////////////////
 			Array getDLCDataByIndex();
@@ -524,10 +525,10 @@ namespace godot {
 			int32 getDLCCount();
 			Dictionary getDLCDownloadProgress(uint32_t dlc_id);
 			uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
-			void getFileDetails(const String& filename);
+			void getFileDetails(String filename);
 			Array getInstalledDepots(uint32_t app_id);
 			String getLaunchCommandLine();
-			String getLaunchQueryParam(const String& key);
+			String getLaunchQueryParam(String key);
 			void installDLC(uint32_t dlc_id);
 			bool markContentCorrupt(bool missing_files_only);
 			bool setDLCContext(uint32_t app_id);
@@ -541,12 +542,12 @@ namespace godot {
 			int getAppListBuildId(uint32_t app_id);
 
 			// Friends //////////////////////////////
-			void activateGameOverlay(const String& type);
+			void activateGameOverlay(String type);
 			void activateGameOverlayInviteDialog(uint64_t steam_id);
-			void activateGameOverlayInviteDialogConnectString(const String& connect_string);
+			void activateGameOverlayInviteDialogConnectString(String connect_string);
 			void activateGameOverlayToStore(uint32_t app_id = 0);
-			void activateGameOverlayToUser(const String& type, uint64_t steam_id);
-			void activateGameOverlayToWebPage(const String& url);
+			void activateGameOverlayToUser(String type, uint64_t steam_id);
+			void activateGameOverlayToWebPage(String url);
 			void clearRichPresence();
 			bool closeClanChatWindowInSteam(uint64_t chat_id);
 			void downloadClanActivityCounts(uint64_t clan_id, int clans_to_request);
@@ -577,7 +578,7 @@ namespace godot {
 			String getFriendPersonaNameHistory(uint64_t steam_id, int name_history);
 			int getFriendPersonaState(uint64_t steam_id);
 			int getFriendRelationship(uint64_t steam_id);
-			String getFriendRichPresence(uint64_t friend_id, const String& key);
+			String getFriendRichPresence(uint64_t friend_id, String key);
 			int getFriendRichPresenceKeyCount(uint64_t friend_id);
 			String getFriendRichPresenceKeyByIndex(uint64_t friend_id, int key);		
 			int getFriendsGroupCount();
@@ -602,7 +603,7 @@ namespace godot {
 			Array getUserSteamGroups();
 			bool hasEquippedProfileItem(uint64_t steam_id, int item_type);
 			bool hasFriend(uint64_t steam_id, int friend_flags);
-			bool inviteUserToGame(uint64_t friend_id, const String& connect_string);
+			bool inviteUserToGame(uint64_t friend_id, String connect_string);
 			bool isClanChatAdmin(uint64_t chat_id, uint64_t steam_id);
 			bool isClanPublic(uint64_t clan_id);
 			bool isClanOfficialGameGroup(uint64_t clan_id);
@@ -612,28 +613,28 @@ namespace godot {
 			void joinClanChatRoom(uint64_t clan_id);
 			bool leaveClanChatRoom(uint64_t clan_id);
 			bool openClanChatWindowInSteam(uint64_t chat_id);
-			bool registerProtocolInOverlayBrowser(const String& protocol);
-			bool replyToFriendMessage(uint64_t steam_id, const String& message);
+			bool registerProtocolInOverlayBrowser(String protocol);
+			bool replyToFriendMessage(uint64_t steam_id, String message);
 			void requestClanOfficerList(uint64_t clan_id);
 			void requestFriendRichPresence(uint64_t friend_id);
 			bool requestUserInformation(uint64_t steam_id, bool require_name_only);
-			bool sendClanChatMessage(uint64_t chat_id, const String& text);
+			bool sendClanChatMessage(uint64_t chat_id, String text);
 			void setInGameVoiceSpeaking(uint64_t steam_id, bool speaking);
 			bool setListenForFriendsMessages(bool intercept);
-			void setPersonaName(const String& name);
+			void setPersonaName(String name);
 			void setPlayedWith(uint64_t steam_id);
-			bool setRichPresence(const String& key, const String& value);
+			bool setRichPresence(String key, String value);
 
 			// Game Search //////////////////////////
-			int addGameSearchParams(const String& key, const String& values);
+			int addGameSearchParams(String key, String values);
 			int searchForGameWithLobby(uint64_t lobby_id, int player_min, int player_max);
 			int searchForGameSolo(int player_min, int player_max);
 			int acceptGame();
 			int declineGame();
 			String retrieveConnectionDetails(uint64_t host_id);
 			int endGameSearch();
-			int setGameHostParams(const String& key, const String& value);
-			int setConnectionDetails(const String& details, int connection_details);
+			int setGameHostParams(String key, String value);
+			int setConnectionDetails(String details, int connection_details);
 			int requestPlayersForGame(int player_min, int player_max, int max_team_size);
 			int hostConfirmGameStart(uint64_t game_id);
 			int cancelRequestPlayersForGame();
@@ -641,12 +642,12 @@ namespace godot {
 			int endGame(uint64_t game_id);
 
 			// HTML Surface /////////////////////////
-			void addHeader(const String& key, const String& value, uint32 this_handle = 0);
+			void addHeader(String key, String value, uint32 this_handle = 0);
 			void allowStartRequest(bool allowed, uint32 this_handle = 0);
 			void copyToClipboard(uint32 this_handle = 0);
-			void createBrowser(const String& user_agent, const String& user_css);
-			void executeJavascript(const String& script, uint32 this_handle = 0);
-			void find(const String& search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
+			void createBrowser(String user_agent, String user_css);
+			void executeJavascript(String script, uint32 this_handle = 0);
+			void find(String search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
 			void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 			void goBack(uint32 this_handle = 0);
 			void goForward(uint32 this_handle = 0);
@@ -655,7 +656,7 @@ namespace godot {
 			void keyChar(uint32 unicode_char, int key_modifiers, uint32 this_handle = 0);
 			void keyDown(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
 			void keyUp(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
-			void loadURL(const String& url, const String& post_data, uint32 this_handle = 0);
+			void loadURL(String url, String post_data, uint32 this_handle = 0);
 			void mouseDoubleClick(int mouse_button, uint32 this_handle = 0);
 			void mouseDown(int mouse_button, uint32 this_handle = 0);
 			void mouseMove(int x, int y, uint32 this_handle = 0);
@@ -665,7 +666,7 @@ namespace godot {
 			void reload(uint32 this_handle = 0);
 			void removeBrowser(uint32 this_handle = 0);
 			void setBackgroundMode(bool background_mode, uint32 this_handle = 0);
-			void setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool http_only);
+			void setCookie(String hostname, String key, String value, String path, uint32 expires, bool secure, bool http_only);
 			void setHorizontalScroll(uint32 absolute_pixel_scroll, uint32 this_handle = 0);
 			void setKeyFocus(bool has_key_focus, uint32 this_handle = 0);
 			void setPageScaleFactor(float zoom, int point_x, int point_y, uint32 this_handle = 0);
@@ -678,30 +679,30 @@ namespace godot {
 
 			// HTTP /////////////////////////////////
 			uint32_t createCookieContainer( bool allow_responses_to_modify);
-			uint32_t createHTTPRequest(int request_method, const String& absolute_url);
+			uint32_t createHTTPRequest(int request_method, String absolute_url);
 			bool deferHTTPRequest(uint32 request_handle);
 			float getHTTPDownloadProgressPct(uint32 request_handle);
 			bool getHTTPRequestWasTimedOut(uint32 request_handle);
 			PoolByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 			uint32 getHTTPResponseBodySize(uint32 request_handle);
-			uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String& header_name);
-			uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String& header_name, uint32 buffer_size);
+			uint32 getHTTPResponseHeaderSize(uint32 request_handle, String header_name);
+			uint8 getHTTPResponseHeaderValue(uint32 request_handle, String header_name, uint32 buffer_size);
 			uint8 getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
 			bool prioritizeHTTPRequest(uint32 request_handle);
 			bool releaseCookieContainer(uint32 cookie_handle);
 			bool releaseHTTPRequest(uint32 request_handle);
 			bool sendHTTPRequest(uint32 request_handle);
 			bool sendHTTPRequestAndStreamResponse(uint32 request_handle);
-			bool setHTTPCookie(uint32 cookie_handle, const String& host, const String& url, const String& cookie);
+			bool setHTTPCookie(uint32 cookie_handle, String host, String url, String cookie);
 			bool setHTTPRequestAbsoluteTimeoutMS(uint32 request_handle, uint32 milliseconds);
 			bool setHTTPRequestContextValue(uint32 request_handle, uint64_t context_value);
 			bool setHTTPRequestCookieContainer(uint32 request_handle, uint32 cookie_handle);
-			bool setHTTPRequestGetOrPostParameter(uint32 request_handle, const String& name, const String& value);
-			bool setHTTPRequestHeaderValue(uint32 request_handle, const String& header_name, const String& header_value);
+			bool setHTTPRequestGetOrPostParameter(uint32 request_handle, String name, String value);
+			bool setHTTPRequestHeaderValue(uint32 request_handle, String header_name, String header_value);
 			bool setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 timeout_seconds);
-			uint8 setHTTPRequestRawPostBody(uint32 request_handle, const String& content_type, uint32 body_length);
+			uint8 setHTTPRequestRawPostBody(uint32 request_handle, String content_type, uint32 body_length);
 			bool setHTTPRequestRequiresVerifiedCertificate(uint32 request_handle, bool require_verified_certificate);
-			bool setHTTPRequestUserAgentInfo(uint32 request_handle, const String& user_agent_info);
+			bool setHTTPRequestUserAgentInfo(uint32 request_handle, String user_agent_info);
 			
 			// Input ////////////////////////////////
 			void activateActionSet(uint64_t input_handle, uint64_t action_set_handle);
@@ -710,18 +711,18 @@ namespace godot {
 			void deactivateAllActionSetLayers(uint64_t input_handle);
 			void enableDeviceCallbacks();
 	//		void enableActionEventCallbacks();
-			uint64_t getActionSetHandle(const String& action_set_name);
+			uint64_t getActionSetHandle(String action_set_name);
 			int getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
 			Array getActiveActionSetLayers(uint64_t input_handle);
 			Dictionary getAnalogActionData(uint64_t input_handle, uint64_t analog_action_handle);
-			uint64_t getAnalogActionHandle(const String& action_name);
+			uint64_t getAnalogActionHandle(String action_name);
 			Array getAnalogActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t analog_action_handle);
 			Array getConnectedControllers();
 			uint64_t getControllerForGamepadIndex(int index);
 			uint64_t getCurrentActionSet(uint64_t input_handle);
 			Array getDeviceBindingRevision(uint64_t input_handle);
 			Dictionary getDigitalActionData(uint64_t input_handle, uint64_t digital_action_handle);
-			uint64_t getDigitalActionHandle(const String& action_name);
+			uint64_t getDigitalActionHandle(String action_name);
 			Array getDigitalActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t digital_action_handle);
 			int getGamepadIndexForController(uint64_t input_handle);
 			String getGlyphForActionOrigin(int origin);
@@ -747,10 +748,10 @@ namespace godot {
 			int translateActionOrigin(int destination_input, int source_origin);
 			void triggerHapticPulse(uint64_t input_handle, int target_pad, int duration);
 			void triggerRepeatedHapticPulse(uint64_t input_handle, int target_pad, int duration, int offset, int repeat, int flags);
-			void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String& gain_db, uint8 other_intensity, const String& other_gain_db);
+			void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, String gain_db, uint8 other_intensity, String other_gain_db);
 			void triggerVibration(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed);
 			void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
-			bool setInputActionManifestFilePath(const String& manifest_path);
+			bool setInputActionManifestFilePath(String manifest_path);
 			void setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, int effect_mode, int position, int amplitude, int frequency);
 			bool waitForData(bool wait_forever, uint32 timeout);
 
@@ -764,12 +765,12 @@ namespace godot {
 			int32 exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
 			int32 generateItems(const PoolIntArray items, const uint32 quantity);
 			int32 getAllItems();
-			String getItemDefinitionProperty(uint32 definition, const String& name);
+			String getItemDefinitionProperty(uint32 definition, String name);
 			int32 getItemsByID(const uint64_t id_array, uint32 count);
 			uint64_t getItemPrice(uint32 definition);
 			Array getItemsWithPrices(uint32 length);
 			uint32 getNumItemsWithPrices();
-			String getResultItemProperty(uint32 index, const String& name, int32 this_inventory_handle = 0);
+			String getResultItemProperty(uint32 index, String name, int32 this_inventory_handle = 0);
 			Array getResultItems(int32 this_inventory_handle = 0);
 			String getResultStatus(int32 this_inventory_handle = 0);
 			uint32 getResultTimestamp(int32 this_inventory_handle = 0);
@@ -783,20 +784,20 @@ namespace godot {
 			int32 triggerItemDrop(uint32 definition);
 			void startUpdateProperties();
 			int32 submitUpdateProperties(uint64_t this_inventory_update_handle = 0);
-			bool removeProperty(uint64_t item_id, const String& name, uint64_t this_inventory_update_handle = 0);
-			bool setPropertyString(uint64_t item_id, const String& name, const String& value, uint64_t this_inventory_update_handle = 0);
-			bool setPropertyBool(uint64_t item_id, const String& name, bool value, uint64_t this_inventory_update_handle = 0);
-			bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value, uint64_t this_inventory_update_handle = 0);
-			bool setPropertyFloat(uint64_t item_id, const String& name, float value, uint64_t this_inventory_update_handle = 0);
+			bool removeProperty(uint64_t item_id, String name, uint64_t this_inventory_update_handle = 0);
+			bool setPropertyString(uint64_t item_id, String name, String value, uint64_t this_inventory_update_handle = 0);
+			bool setPropertyBool(uint64_t item_id, String name, bool value, uint64_t this_inventory_update_handle = 0);
+			bool setPropertyInt(uint64_t item_id, String name, uint64_t value, uint64_t this_inventory_update_handle = 0);
+			bool setPropertyFloat(uint64_t item_id, String name, float value, uint64_t this_inventory_update_handle = 0);
 
 			// Matchmaking //////////////////////////
 			Array getFavoriteGames();
 			int addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
 			bool removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
 			void requestLobbyList();
-			void addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, int comparison_type);
-			void addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, int comparison_type);
-			void addRequestLobbyListNearValueFilter(const String& key_to_match, int value_to_be_close_to);
+			void addRequestLobbyListStringFilter(String key_to_match, String value_to_match, int comparison_type);
+			void addRequestLobbyListNumericalFilter(String key_to_match, int value_to_match, int comparison_type);
+			void addRequestLobbyListNearValueFilter(String key_to_match, int value_to_be_close_to);
 			void addRequestLobbyListFilterSlotsAvailable(int slots_available);
 			void addRequestLobbyListDistanceFilter(int distance_filter);
 			void addRequestLobbyListResultCountFilter(int max_results);
@@ -806,15 +807,15 @@ namespace godot {
 			bool inviteUserToLobby(uint64_t steam_lobby_id, uint64_t steam_id_invitee);
 			int getNumLobbyMembers(uint64_t steam_lobby_id);
 			uint64_t getLobbyMemberByIndex(uint64_t steam_lobby_id, int member);
-			String getLobbyData(uint64_t steam_lobby_id, const String& key);
-			bool setLobbyData(uint64_t steam_lobby_id, const String& key, const String& value);
+			String getLobbyData(uint64_t steam_lobby_id, String key);
+			bool setLobbyData(uint64_t steam_lobby_id, String key, String value);
 			Dictionary getAllLobbyData(uint64_t steam_lobby_id);
-			bool deleteLobbyData(uint64_t steam_lobby_id, const String& key);
-			String getLobbyMemberData(uint64_t steam_lobby_id, uint64_t steam_id_user, const String& key);
-			void setLobbyMemberData(uint64_t steam_lobby_id, const String& key, const String& value);
-			bool sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body);
+			bool deleteLobbyData(uint64_t steam_lobby_id, String key);
+			String getLobbyMemberData(uint64_t steam_lobby_id, uint64_t steam_id_user, String key);
+			void setLobbyMemberData(uint64_t steam_lobby_id, String key, String value);
+			bool sendLobbyChatMsg(uint64_t steam_lobby_id, String message_body);
 			bool requestLobbyData(uint64_t steam_lobby_id);
-			void setLobbyGameServer(uint64_t steam_lobby_id, const String& server_ip, uint16 server_port, uint64_t steam_id_game_server);
+			void setLobbyGameServer(uint64_t steam_lobby_id, String server_ip, uint16 server_port, uint64_t steam_id_game_server);
 			Dictionary getLobbyGameServer(uint64_t steam_lobby_id);
 			bool setLobbyMemberLimit(uint64_t steam_lobby_id, int max_members);
 			int getLobbyMemberLimit(uint64_t steam_lobby_id);
@@ -829,8 +830,8 @@ namespace godot {
 			int getServerCount(uint64_t server_list_request = 0);
 			Dictionary getServerDetails(int server, uint64_t server_list_request = 0);
 			bool isRefreshing(uint64_t server_list_request = 0);
-			int pingServer(const String& ip, uint16 port);
-			int playerDetails(const String& ip, uint16 port);
+			int pingServer(String ip, uint16 port);
+			int playerDetails(String ip, uint16 port);
 			void refreshQuery(uint64_t server_list_request = 0);
 			void refreshServer(int server, uint64_t server_list_request = 0);
 			void releaseRequest(uint64_t server_list_request = 0);
@@ -840,7 +841,7 @@ namespace godot {
 			uint64_t requestInternetServerList(uint32 app_id, Array filters);
 			uint64_t requestLANServerList(uint32 app_id);
 			uint64_t requestSpectatorServerList(uint32 app_id, Array filters);
-			int serverRules(const String& ip, uint16 port);
+			int serverRules(String ip, uint16 port);
 
 			// Music ////////////////////////////////
 			bool musicIsEnabled();
@@ -870,18 +871,18 @@ namespace godot {
 			bool playlistWillChange();
 			bool queueDidChange();
 			bool queueWillChange();
-			bool registerSteamMusicRemote(const String& name);
+			bool registerSteamMusicRemote(String name);
 			bool resetPlaylistEntries();
 			bool resetQueueEntries();
 			bool setCurrentPlaylistEntry(int id);
 			bool setCurrentQueueEntry(int id);
-			bool setDisplayName(const String& name);
-			bool setPlaylistEntry(int id, int position, const String& entry_text);
+			bool setDisplayName(String name);
+			bool setPlaylistEntry(int id, int position, String entry_text);
 			bool setPNGIcon64x64(PoolByteArray icon);
-			bool setQueueEntry(int id, int position, const String& entry_text);
+			bool setQueueEntry(int id, int position, String entry_text);
 			bool updateCurrentEntryCoverArt(PoolByteArray art);
 			bool updateCurrentEntryElapsedSeconds(int seconds);
-			bool updateCurrentEntryText(const String& text);
+			bool updateCurrentEntryText(String text);
 			bool updateLooped(bool looped);
 			bool updatePlaybackStatus(int status);
 			bool updateShuffled(bool shuffle);
@@ -898,28 +899,28 @@ namespace godot {
 			bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, int send_type, int channel = 0);
 
 			// Networking Messages //////////////////
-			bool acceptSessionWithUser(const String& identity_reference);
-			bool closeChannelWithUser(const String& identity_reference, int channel);
-			bool closeSessionWithUser(const String& identity_reference);
-			Dictionary getSessionConnectionInfo(const String& identity_reference, bool get_connection, bool get_status);
+			bool acceptSessionWithUser(String identity_reference);
+			bool closeChannelWithUser(String identity_reference, int channel);
+			bool closeSessionWithUser(String identity_reference);
+			Dictionary getSessionConnectionInfo(String identity_reference, bool get_connection, bool get_status);
 			Array receiveMessagesOnChannel(int channel, int max_messages);
-			int sendMessageToUser(const String& identity_reference, const PoolByteArray data, int flags, int channel);
+			int sendMessageToUser(String identity_reference, const PoolByteArray data, int flags, int channel);
 
 			// Networking Sockets ///////////////////
 			int acceptConnection(uint32 connection);
 			bool beginAsyncRequestFakeIP(int num_ports);
-			bool closeConnection(uint32 peer, int reason, const String& debug_message, bool linger);
+			bool closeConnection(uint32 peer, int reason, String debug_message, bool linger);
 			bool closeListenSocket(uint32 socket);
 			int configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights);
-			uint32 connectP2P(const String& identity_reference, int virtual_port, Array options);
-			uint32 connectToHostedDedicatedServer(const String& identity_reference, int virtual_port, Array options);
+			uint32 connectP2P(String identity_reference, int virtual_port, Array options);
+			uint32 connectToHostedDedicatedServer(String identity_reference, int virtual_port, Array options);
 			void createFakeUDPPort(int fake_server_port);
 			uint32 createHostedDedicatedServerListenSocket(int virtual_port, Array options);
-			uint32 createListenSocketIP(const String& ip_reference, Array options);
+			uint32 createListenSocketIP(String ip_reference, Array options);
 			uint32 createListenSocketP2P(int virtual_port, Array options);
 			uint32 createListenSocketP2PFakeIP(int fake_port, Array options);
 			uint32 createPollGroup();
-			Dictionary createSocketPair(bool loopback, const String& identity_reference1, const String& identity_reference2);
+			Dictionary createSocketPair(bool loopback, String identity_reference1, String identity_reference2);
 			bool destroyPollGroup(uint32 poll_group);
 //			int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
 			int flushMessagesOnConnection(uint32 connection_handle);
@@ -931,7 +932,7 @@ namespace godot {
 			uint64_t getConnectionUserData(uint32 peer);
 			Dictionary getDetailedConnectionStatus(uint32 connection_handle);
 			Dictionary getFakeIP(int first_port = 0);
-//			int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
+//			int getGameCoordinatorServerLogin(String app_data);	<------ Uses datagram relay structs which were removed from base SDK
 //			int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 			uint32 getHostedDedicatedServerPOPId();
 			uint16 getHostedDedicatedServerPort();
@@ -942,49 +943,49 @@ namespace godot {
 			Array receiveMessagesOnConnection(uint32 connection, int max_messages);
 			Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
 //			Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
-			void resetIdentity(const String& this_identity);
+			void resetIdentity(String this_identity);
 			void runNetworkingCallbacks();
 			void sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags);
 			Dictionary sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags);
-			Dictionary setCertificate(const PoolByteArray& certificate);		
+			Dictionary setCertificate(PoolByteArray certificate);		
 			bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
-			void setConnectionName(uint32 peer, const String& name);
+			void setConnectionName(uint32 peer, String name);
 
 			// Networking Types /////////////////////
-			bool addIdentity(const String& reference_name);
-			bool addIPAddress(const String& reference_name);
-			void clearIdentity(const String& reference_name);
-			void clearIPAddress(const String& reference_name);
-			uint8 getGenericBytes(const String& reference_name);
-			String getGenericString(const String& reference_name);
+			bool addIdentity(String reference_name);
+			bool addIPAddress(String reference_name);
+			void clearIdentity(String reference_name);
+			void clearIPAddress(String reference_name);
+			uint8 getGenericBytes(String reference_name);
+			String getGenericString(String reference_name);
 			Array getIdentities();
-			uint32 getIdentityIPAddr(const String& reference_name);
-			uint64_t getIdentitySteamID64(const String& reference_name);
+			uint32 getIdentityIPAddr(String reference_name);
+			uint64_t getIdentitySteamID64(String reference_name);
 			Array getIPAddresses();
-			uint32 getIPv4(const String& reference_name);
-			uint64_t getPSNID(const String& reference_name);
-			uint64_t getStadiaID(const String& reference_name);
-			String getXboxPairwiseID(const String& reference_name);
-			bool isAddressLocalHost(const String& reference_name);
-			bool isIdentityInvalid(const String& reference_name);
-			bool isIdentityLocalHost(const String& reference_name);
-			bool isIPv4(const String& reference_name);
-			bool isIPv6AllZeros(const String& reference_name);
-			bool parseIdentityString(const String& reference_name, const String& string_to_parse);
-			bool parseIPAddressString(const String& reference_name, const String& string_to_parse);
-			bool setGenericBytes(const String& reference_name, uint8 data);
-			bool setGenericString(const String& reference_name, const String& this_string);
-			bool setIdentityIPAddr(const String& reference_name, const String& ip_address_name);
-			void setIdentityLocalHost(const String& reference_name);
-			void setIdentitySteamID64(const String& reference_name, uint64_t steam_id);
-			void setIPv4(const String& reference_name, uint32 ip, uint16 port);
-			void setIPv6(const String& reference_name, uint8 ipv6, uint16 port);
-			void setIPv6LocalHost(const String& reference_name, uint16 port = 0);
-			void setPSNID(const String& reference_name, uint64_t psn_id);
-			void setStadiaID(const String& reference_name, uint64_t stadia_id);
-			bool setXboxPairwiseID(const String& reference_name, const String& xbox_id);
-			String toIdentityString(const String& reference_name);
-			String toIPAddressString(const String& reference_name, bool with_port);
+			uint32 getIPv4(String reference_name);
+			uint64_t getPSNID(String reference_name);
+			uint64_t getStadiaID(String reference_name);
+			String getXboxPairwiseID(String reference_name);
+			bool isAddressLocalHost(String reference_name);
+			bool isIdentityInvalid(String reference_name);
+			bool isIdentityLocalHost(String reference_name);
+			bool isIPv4(String reference_name);
+			bool isIPv6AllZeros(String reference_name);
+			bool parseIdentityString(String reference_name, String string_to_parse);
+			bool parseIPAddressString(String reference_name, String string_to_parse);
+			bool setGenericBytes(String reference_name, uint8 data);
+			bool setGenericString(String reference_name, String this_string);
+			bool setIdentityIPAddr(String reference_name, String ip_address_name);
+			void setIdentityLocalHost(String reference_name);
+			void setIdentitySteamID64(String reference_name, uint64_t steam_id);
+			void setIPv4(String reference_name, uint32 ip, uint16 port);
+			void setIPv6(String reference_name, uint8 ipv6, uint16 port);
+			void setIPv6LocalHost(String reference_name, uint16 port = 0);
+			void setPSNID(String reference_name, uint64_t psn_id);
+			void setStadiaID(String reference_name, uint64_t stadia_id);
+			bool setXboxPairwiseID(String reference_name, String xbox_id);
+			String toIdentityString(String reference_name);
+			String toIPAddressString(String reference_name, bool with_port);
 			const SteamNetworkingConfigValue_t* convertOptionsArray(Array options);
 
 			// Networking Utils /////////////////////
@@ -1002,14 +1003,14 @@ namespace godot {
 			Array getPOPList();
 			int getRelayNetworkStatus();
 			void initRelayNetworkAccess();
-			Dictionary parsePingLocationString(const String& location_string);
+			Dictionary parsePingLocationString(String location_string);
 			bool setConnectionConfigValueFloat(uint32 connection, int config, float value);
 			bool setConnectionConfigValueInt32(uint32 connection, int config, int32 value);
-			bool setConnectionConfigValueString(uint32 connection, int config, const String& value);
+			bool setConnectionConfigValueString(uint32 connection, int config, String value);
 	//		bool setConfigValue(int setting, int scope_type, uint32_t connection_handle, int data_type, auto value);
 			bool setGlobalConfigValueFloat(int config, float value);		
 			bool setGlobalConfigValueInt32(int config, int32 value);
-			bool setGlobalConfigValueString(int config, const String& value);
+			bool setGlobalConfigValueString(int config, String value);
 
 			// Parental Settings ////////////////////
 			bool isParentalLockEnabled();
@@ -1022,7 +1023,7 @@ namespace godot {
 			// Parties //////////////////////////////
 			void cancelReservation(uint64_t beacon_id, uint64_t steam_id);
 			void changeNumOpenSlots(uint64_t beacon_id, uint32 open_slots);
-			void createBeacon(uint32 open_slots, uint64_t location_id, int type, const String& connect_string, const String& metadata);
+			void createBeacon(uint32 open_slots, uint64_t location_id, int type, String connect_string, String metadata);
 			bool destroyBeacon(uint64_t beacon_id);
 			Array getAvailableBeaconLocations(uint32 max);
 			uint64_t getBeaconByIndex(uint32 index);
@@ -1044,61 +1045,61 @@ namespace godot {
 			// Remote Storage ///////////////////////
 			bool beginFileWriteBatch();
 			bool endFileWriteBatch();
-			bool fileDelete(const String& file);
-			bool fileExists(const String& file);
-			bool fileForget(const String& file);
-			bool filePersisted(const String& file);
-			Dictionary fileRead(const String& file, int32_t data_to_read);
-			void fileReadAsync(const String& file, uint32 offset, uint32_t data_to_read);
-			void fileShare(const String& file);
-			bool fileWrite(const String& file, PoolByteArray data, int32 size = 0);
-			void fileWriteAsync(const String& file, PoolByteArray data, int32 size = 0);
+			bool fileDelete(String file);
+			bool fileExists(String file);
+			bool fileForget(String file);
+			bool filePersisted(String file);
+			Dictionary fileRead(String file, int32_t data_to_read);
+			void fileReadAsync(String file, uint32 offset, uint32_t data_to_read);
+			void fileShare(String file);
+			bool fileWrite(String file, PoolByteArray data, int32 size = 0);
+			void fileWriteAsync(String file, PoolByteArray data, int32 size = 0);
 			bool fileWriteStreamCancel(uint64_t write_handle);
 			bool fileWriteStreamClose(uint64_t write_handle);
-			uint64_t fileWriteStreamOpen(const String& file);
+			uint64_t fileWriteStreamOpen(String file);
 			bool fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray data);
 			int32 getCachedUGCCount();
 			uint64_t getCachedUGCHandle(int32 content);
 			int32_t getFileCount();
 			Dictionary getFileNameAndSize(int file);
-			int32_t getFileSize(const String& file);
-			int64_t getFileTimestamp(const String& file);
+			int32_t getFileSize(String file);
+			int64_t getFileTimestamp(String file);
 			Dictionary getLocalFileChange(int file);
 			uint32_t getLocalFileChangeCount();
 			Dictionary getQuota();
-			Dictionary getSyncPlatforms(const String& file);
+			Dictionary getSyncPlatforms(String file);
 			Dictionary getUGCDetails(uint64_t content);
 			Dictionary getUGCDownloadProgress(uint64_t content);
 			bool isCloudEnabledForAccount();
 			bool isCloudEnabledForApp();
 			void setCloudEnabledForApp(bool enabled);
-			bool setSyncPlatforms(const String& file, int platform);
+			bool setSyncPlatforms(String file, int platform);
 			void ugcDownload(uint64_t content, uint32 priority);
-			void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
+			void ugcDownloadToLocation(uint64_t content, String location, uint32 priority);
 			PoolByteArray ugcRead(uint64_t content, int32 data_size, uint32 offset, int action);
 
 			// Screenshots //////////////////////////
-			uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnail_filename, int width, int height);
-			uint32_t addVRScreenshotToLibrary(int type, const String& filename, const String& vr_filename);
+			uint32_t addScreenshotToLibrary(String filename, String thumbnail_filename, int width, int height);
+			uint32_t addVRScreenshotToLibrary(int type, String filename, String vr_filename);
 			void hookScreenshots(bool hook);
 			bool isScreenshotsHooked();
-			bool setLocation(uint32_t screenshot, const String& location);
+			bool setLocation(uint32_t screenshot, String location);
 			bool tagPublishedFile(uint32_t screenshot, uint64_t file_id);
 			bool tagUser(uint32_t screenshot, uint64_t steam_id);
 			void triggerScreenshot();
-			uint32_t writeScreenshot(const PoolByteArray& rgb, int width, int height);
+			uint32_t writeScreenshot(PoolByteArray rgb, int width, int height);
 
 			// UGC //////////////////////////////////
 			void addAppDependency(uint64_t published_file_id, uint32_t app_id);
 			bool addContentDescriptor(uint64_t update_handle, int descriptor_id);
 			void addDependency(uint64_t published_file_id, uint64_t child_published_file_id);
-			bool addExcludedTag(uint64_t query_handle, const String& tag_name);
-			bool addItemKeyValueTag(uint64_t query_handle, const String& key, const String& value);
-			bool addItemPreviewFile(uint64_t query_handle, const String& preview_file, int type);
-			bool addItemPreviewVideo(uint64_t query_handle, const String& video_id);
+			bool addExcludedTag(uint64_t query_handle, String tag_name);
+			bool addItemKeyValueTag(uint64_t query_handle, String key, String value);
+			bool addItemPreviewFile(uint64_t query_handle, String preview_file, int type);
+			bool addItemPreviewVideo(uint64_t query_handle, String video_id);
 			void addItemToFavorites(uint32_t app_id, uint64_t published_file_id);
-			bool addRequiredKeyValueTag(uint64_t query_handle, const String& key, const String& value);
-			bool addRequiredTag(uint64_t query_handle, const String& tag_name);
+			bool addRequiredKeyValueTag(uint64_t query_handle, String key, String value);
+			bool addRequiredTag(uint64_t query_handle, String tag_name);
 			bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
 			bool initWorkshopForGameServer(uint32_t workshop_depot_id);
 			void createItem(uint32 app_id, int file_type);
@@ -1133,20 +1134,20 @@ namespace godot {
 			bool removeContentDescriptor(uint64_t update_handle, int descriptor_id);
 			void removeDependency(uint64_t published_file_id, uint64_t child_published_file_id);
 			void removeItemFromFavorites(uint32_t app_id, uint64_t published_file_id);
-			bool removeItemKeyValueTags(uint64_t update_handle, const String& key);
+			bool removeItemKeyValueTags(uint64_t update_handle, String key);
 			bool removeItemPreview(uint64_t update_handle, uint32 index);
 			void sendQueryUGCRequest(uint64_t update_handle);
 			bool setAllowCachedResponse(uint64_t update_handle, uint32 max_age_seconds);
-			bool setCloudFileNameFilter(uint64_t update_handle, const String& match_cloud_filename);
-			bool setItemContent(uint64_t update_handle, const String& content_folder);
-			bool setItemDescription(uint64_t update_handle, const String& description);
-			bool setItemMetadata(uint64_t update_handle, const String& metadata);
-			bool setItemPreview(uint64_t update_handle, const String& preview_file);
+			bool setCloudFileNameFilter(uint64_t update_handle, String match_cloud_filename);
+			bool setItemContent(uint64_t update_handle, String content_folder);
+			bool setItemDescription(uint64_t update_handle, String description);
+			bool setItemMetadata(uint64_t update_handle, String metadata);
+			bool setItemPreview(uint64_t update_handle, String preview_file);
 			bool setItemTags(uint64_t update_handle, Array tag_array);
-			bool setItemTitle(uint64_t update_handle, const String& title);
-			bool setItemUpdateLanguage(uint64_t update_handle, const String& language);
+			bool setItemTitle(uint64_t update_handle, String title);
+			bool setItemUpdateLanguage(uint64_t update_handle, String language);
 			bool setItemVisibility(uint64_t update_handle, int visibility);
-			bool setLanguage(uint64_t query_handle, const String& language);
+			bool setLanguage(uint64_t query_handle, String language);
 			bool setMatchAnyTag(uint64_t query_handle, bool match_any_tag);
 			bool setRankedByTrendDays(uint64_t query_handle, uint32 days);
 			bool setReturnAdditionalPreviews(uint64_t query_handle, bool return_additional_previews);
@@ -1157,32 +1158,32 @@ namespace godot {
 			bool setReturnOnlyIDs(uint64_t query_handle, bool return_only_ids);
 			bool setReturnPlaytimeStats(uint64_t query_handle, uint32 days);
 			bool setReturnTotalOnly(uint64_t query_handle, bool return_total_only);
-			bool setSearchText(uint64_t query_handle, const String& search_text);
+			bool setSearchText(uint64_t query_handle, String search_text);
 			void setUserItemVote(uint64_t published_file_id, bool vote_up);
 			uint64_t startItemUpdate(uint32_t app_id, uint64_t file_id);
 			void startPlaytimeTracking(Array published_file_ids);
 			void stopPlaytimeTracking(Array published_file_ids);
 			void stopPlaytimeTrackingForAllItems();
 			void getAppDependencies(uint64_t published_file_id);
-			void submitItemUpdate(uint64_t update_handle, const String& change_note);
+			void submitItemUpdate(uint64_t update_handle, String change_note);
 			void subscribeItem(uint64_t published_file_id);
 			void suspendDownloads(bool suspend);
 			void unsubscribeItem(uint64_t published_file_id);
-			bool updateItemPreviewFile(uint64_t update_handle, uint32 index, const String& preview_file);
-			bool updateItemPreviewVideo(uint64_t update_handle, uint32 index, const String& video_id);
+			bool updateItemPreviewFile(uint64_t update_handle, uint32 index, String preview_file);
+			bool updateItemPreviewVideo(uint64_t update_handle, uint32 index, String video_id);
 			bool showWorkshopEULA();
 			void getWorkshopEULAStatus();
 			bool setTimeCreatedDateRange(uint64_t update_handle, uint32 start, uint32 end);
 			bool setTimeUpdatedDateRange(uint64_t update_handle, uint32 start, uint32 end);
 
 			// Users ////////////////////////////////
-			void advertiseGame(const String& server_ip, int port);
+			void advertiseGame(String server_ip, int port);
 			int beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
 			void cancelAuthTicket(uint32_t auth_ticket);
-			Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
+			Dictionary decompressVoice(PoolByteArray voice, uint32 voice_size, uint32 sample_rate);
 			void endAuthSession(uint64_t steam_id);
-			Dictionary getAuthSessionTicket(const String& identity_reference = "");
-			uint32 getAuthTicketForWebApi(const String& service_identity = "");
+			Dictionary getAuthSessionTicket(String identity_reference = "");
+			uint32 getAuthTicketForWebApi(String service_identity = "");
 			Dictionary getAvailableVoice();
 			void getDurationControl();
 			Dictionary getEncryptedAppTicket();
@@ -1198,8 +1199,8 @@ namespace godot {
 			bool isPhoneVerified();
 			bool isTwoFactorEnabled();
 			bool loggedOn();
-			void requestEncryptedAppTicket(const String& secret);
-			void requestStoreAuthURL(const String& redirect);
+			void requestEncryptedAppTicket(String secret);
+			void requestStoreAuthURL(String redirect);
 			void startVoiceRecording();
 			bool setDurationControlOnlineState(int new_state);
 			void stopVoiceRecording();
@@ -1208,23 +1209,23 @@ namespace godot {
 
 			// User Stats ///////////////////////////
 			void attachLeaderboardUGC(uint64_t ugc_handle, uint64_t this_leaderboard = 0);
-			bool clearAchievement(const String& achievement_name);
+			bool clearAchievement(String achievement_name);
 			void downloadLeaderboardEntries(int start, int end, int type = k_ELeaderboardDataRequestGlobal, uint64_t this_leaderboard = 0);
 			void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard = 0);
-			void findLeaderboard(const String& leaderboard_name);
-			void findOrCreateLeaderboard(const String& leaderboard_name, int sort_method, int display_type);
-			Dictionary getAchievement(const String& achievement_name);
-			Dictionary getAchievementAchievedPercent(const String& achievement_name);
-			Dictionary getAchievementAndUnlockTime(const String& achievement_name);
-			String getAchievementDisplayAttribute(const String& achievement_name, const String& key);
-			int getAchievementIcon(const String& achievement_name);
+			void findLeaderboard(String leaderboard_name);
+			void findOrCreateLeaderboard(String leaderboard_name, int sort_method, int display_type);
+			Dictionary getAchievement(String achievement_name);
+			Dictionary getAchievementAchievedPercent(String achievement_name);
+			Dictionary getAchievementAndUnlockTime(String achievement_name);
+			String getAchievementDisplayAttribute(String achievement_name, String key);
+			int getAchievementIcon(String achievement_name);
 			String getAchievementName(uint32_t achievement);
-			Dictionary getAchievementProgressLimitsInt(const String& achievement_name);
-			Dictionary getAchievementProgressLimitsFloat(const String& achievement_name);
-			uint64_t getGlobalStatInt(const String& stat_name);
-			double getGlobalStatFloat(const String& stat_name);
-			uint64_t getGlobalStatIntHistory(const String& stat_name);
-			double getGlobalStatFloatHistory(const String& stat_name);
+			Dictionary getAchievementProgressLimitsInt(String achievement_name);
+			Dictionary getAchievementProgressLimitsFloat(String achievement_name);
+			uint64_t getGlobalStatInt(String stat_name);
+			double getGlobalStatFloat(String stat_name);
+			uint64_t getGlobalStatIntHistory(String stat_name);
+			double getGlobalStatFloatHistory(String stat_name);
 			Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
 			int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
 			String getLeaderboardName(uint64_t this_leaderboard = 0);
@@ -1233,29 +1234,29 @@ namespace godot {
 			Dictionary getNextMostAchievedAchievementInfo(int iterator);
 			uint32_t getNumAchievements();
 			void getNumberOfCurrentPlayers();
-			float getStatFloat(const String& stat_name);
-			int getStatInt(const String& stat_name);
-			Dictionary getUserAchievement(uint64_t steam_id, const String& name);
-			Dictionary getUserAchievementAndUnlockTime(uint64_t steam_id, const String& name);
-			float getUserStatFloat(uint64_t steam_id, const String& name);
-			int getUserStatInt(uint64_t steam_id, const String& name);
-			bool indicateAchievementProgress(const String& name, int current_progress, int max_progress);
+			float getStatFloat(String stat_name);
+			int getStatInt(String stat_name);
+			Dictionary getUserAchievement(uint64_t steam_id, String name);
+			Dictionary getUserAchievementAndUnlockTime(uint64_t steam_id, String name);
+			float getUserStatFloat(uint64_t steam_id, String name);
+			int getUserStatInt(uint64_t steam_id, String name);
+			bool indicateAchievementProgress(String name, int current_progress, int max_progress);
 			bool requestCurrentStats();
 			void requestGlobalAchievementPercentages();
 			void requestGlobalStats(int history_days);
 			void requestUserStats(uint64_t steam_id);
 			bool resetAllStats(bool achievements_too = true);
-			bool setAchievement(const String& name);
+			bool setAchievement(String name);
 			int setLeaderboardDetailsMax(int max);
-			bool setStatFloat(const String& name, float value);
-			bool setStatInt(const String& name, int value);
+			bool setStatFloat(String name, float value);
+			bool setStatInt(String name, int value);
 			bool storeStats();
-			bool updateAvgRateStat(const String& name, float this_session, double session_length);
+			bool updateAvgRateStat(String name, float this_session, double session_length);
 			void uploadLeaderboardScore(int score, bool keep_best = false, PoolIntArray details = PoolIntArray(), uint64_t this_leaderboard = 0);
 			Array getLeaderboardEntries();
 
 			// Utils ////////////////////////////////
-			String filterText(int context, uint64_t steam_id, const String& message);
+			String filterText(int context, uint64_t steam_id, String message);
 			String getAPICallFailureReason();
 			uint32_t getAppID();
 			int getCurrentBatteryPower();
@@ -1278,7 +1279,7 @@ namespace godot {
 			void setOverlayNotificationInset(int horizontal, int vertical);
 			void setOverlayNotificationPosition(int pos);
 			void setVRHeadsetStreamingEnabled(bool enabled);
-			bool showGamepadTextInput(int input_mode, int line_input_mode, const String& description, uint32 max_text, const String& preset_text);
+			bool showGamepadTextInput(int input_mode, int line_input_mode, String description, uint32 max_text, String preset_text);
 			bool showFloatingGamepadTextInput(int input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
 			void setGameLauncherMode(bool mode);
 			void startVRDashboard();
