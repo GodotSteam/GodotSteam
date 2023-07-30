@@ -29,3 +29,18 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# Get callbacks
 	Steam.run_callbacks()
+
+
+###
+# You can add more functionality here and just call it through GDScript like so: 
+#	Steam._set_Achievements( achievement_name )
+#
+# The corresponding function in this file would be something like:
+#	func _set_Achievement(this_achievement: String) -> void:
+#		print("Setting Steam achievement: "+str(this_achievement))
+#		var WAS_SET: bool = Steam.setAchievement(this_achievement)
+#		print("Steam achievement "+str(this_achievement)+" set: "+str(WAS_SET))
+#		Steam.storeStats()
+#
+# Due to how GDNative works, the functions must either reside here or be called with Steam.Steam. since we are calling this singleton script then the Steamworks class.
+###
