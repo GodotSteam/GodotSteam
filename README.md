@@ -10,36 +10,18 @@ Additional flavors include:
 
 Documentation
 ----------
-[Documentation is available here](https://gramps.github.io/GodotSteam/) and [is mirrored on and exported from CoaguCo's site](https://coaguco.com/godotsteam).
+[Documentation is available here](https://godotsteam.com/).
 
 Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.6.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.7)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 3.6.3 Changes**
-- Added: new Input callback _input_gamepad_slot_change_
-- Added: new User callback _get_ticket_for_web_api_
-- Added: new User function _getAuthTicketForWebApi_
-- Fixed: lobby_match_list callback, but no sends the lobby count along with the lobby list array (only in GDNative due to weird GDNative bug)
-- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
-
-**Version 3.6.2 Changes**
-- Fixed: problem with new _getQueryUGCContentDescriptors_
-- Fixed: issue with libc6 for older systems
-
-**Version 3.6.1 Changes**
-- Added: new return values for _overlay_toggled_; this will break compatibility with this
-- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
-- Added: new signal _filter_text_dictionary_changed_
-- Changed: getAuthSessionTicket now uses networking identities
-- Changed: gamepad_text_input_dismissed now passes back the app ID
-- Changed: Steam Input max analog and digital actions values
-- Removed: ERegisterActivationCodeResult due to removal in SDK
-
-**Version 3.6 Changes**
-- Changed: brought the plug-in version up to speed with the module version
+**Version 3.7 Changes**
+- Added: direct access to Steam shutdown function
+- Changed: testing removing const from some strings that caused issues in GDNative specifically
+- Fixed: issues with Linux achievements due to issues with strings
 
 Known Issues
 ----------
