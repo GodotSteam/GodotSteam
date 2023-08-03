@@ -132,12 +132,12 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	* result (int)
 	* retrying (bool)
 
----
-[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#SteamServerConnectFailure_t){ .md-button .md-button--store target="_blank" }
+	---
+	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#SteamServerConnectFailure_t){ .md-button .md-button--store target="_blank" }
 
 ## steam_server_connected
 
-!!! function "steam_server_conn"
+!!! function "steam_server_connected"
 	Called when a connections to the Steam back-end has been established. This means the Steam client now has a working connection to the Steam servers. Usually this will have occurred before the game has launched, and should only be seen if the user has dropped connection due to a networking issue or a Steam server update.
 
 	**Returns:** nothing

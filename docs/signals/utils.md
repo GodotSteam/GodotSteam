@@ -33,14 +33,12 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 	**Returns:**
 
-	* language (int)
-
-	
+	* language (int)	
 
 ## floating_gamepad_text_input_dismissed
 
 !!! function "floating_gamepad_text_input_dismissed"
-	Sent after the device returns from sleep/suspend mode.
+	Called when the floating keyboard invoked from [showFloatingGamepadTextInput](/functions/utils/#showFloatingGamepadTextInput) has been closed.
 
 	**Returns:** nothing
 
@@ -50,13 +48,12 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## gamepad_text_input_dismissed
 
 !!! function "gamepad_text_input_dismissed"
-	Called when the big picture gamepad text input has been closed.
+	Called when the Big Picture gamepad text input has been closed.
 
 	**Returns:**
 
 	* submitted (bool)
 	* text (string)
-	* length (uint32)
 	* app_id (uint32_t)
 
 	---
@@ -87,7 +84,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## steam_api_call_completed
 
 !!! function "steam_api_call_completed"
-	Called when a SteamAPICall_t has completed (or failed)
+	Called when a SteamAPICall_t has completed or failed.
 
 	**Returns:**
 

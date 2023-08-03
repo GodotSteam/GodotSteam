@@ -9,7 +9,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 !!! function "steamworks_error"
 	Intended to serve as generic error messaging for failed call results.
 	
-	**Returns: **
+	**Returns:**
 
 	* failed_signal (string)
 	* message (string)

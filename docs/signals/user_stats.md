@@ -65,14 +65,14 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	**Returns:**
 
 	* message (string)
-		* this_handle (uint64_t)
-		* leaderboard_entries_array (array)
-			* entry_dict (dictionary)
-				* score (int)
-				* steam_id (uint64_t)
-				* global_rank (int)
-				* ugc_handle (uint64_t)
-				* details (array)
+	* this_handle (uint64_t)
+	* leaderboard_entries_array (array)
+		* entry_dict (dictionary)
+			* score (int)
+			* steam_id (uint64_t)
+			* global_rank (int)
+			* ugc_handle (uint64_t)
+			* details (array)
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardScoresDownloaded_t){ .md-button .md-button--store target="_blank" }
@@ -103,6 +103,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	**Returns:**
 
 	* leaderboard_handle (uint64_t)
+	* result (string)
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#LeaderboardUGCSet_t){ .md-button .md-button--store target="_blank" }
