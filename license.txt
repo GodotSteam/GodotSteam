@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2017 GP Garcia
+Copyright (c) 2017-Current | CoaguCo Industries and GP Garcia
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
