@@ -452,6 +452,8 @@
 !!! function "setPropertyString( ```uint64_t``` item_id, ```string``` name, ```string``` value, ```int32``` this_inventory_update_handle )"
 	Sets a [dynamic property](https://partner.steamgames.com/doc/features/inventory/dynamicproperties){ target="_blank" } for the given item. Supported value types are strings.
 
+	**Returns:** bool
+
 	**Note:** If the argument **this_inventory_update_handle** is omitted, GodotSteam will use the internally stored ID. This is different from **this_inventory_handle** and is stored separately.
 
     ---

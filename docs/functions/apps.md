@@ -5,7 +5,7 @@
 ## getAppBuildId
 
 !!! function "getAppBuildId()"
-    Gets the buildid of this app, may change at any time based on backend updates to the game. 
+    Gets the build ID of this app, may change at any time based on backend updates to the game. 
 
     **Return**: int
 
@@ -161,6 +161,18 @@
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamApps#GetLaunchQueryParam){ .md-button .md-button--store target="_blank" }
 
+## getLeaderboardDisplayType
+
+!!! function "getLeaderboardDisplayType( ```uint64_t``` this_leaderboard )"
+    Returns the display type of a leaderboard handle.
+
+    **Returns:** dictionary
+
+    Contains the following keys:
+
+    * return (int)
+    * verbal (string)
+
 ## installDLC
 
 !!! function "installDLC( ```uint32_t``` dlc_id )"
@@ -195,7 +207,7 @@
 
     True if the user owns the DLC and it's currently installed, otherwise false.
 
-    **Note**: Should only be used for simple client side checks - not intended for granting in-game items
+    **Note**: Should only be used for simple client side checks - not intended for granting in-game items.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamApps#BIsDlcInstalled){ .md-button .md-button--store target="_blank" }

@@ -42,6 +42,8 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## encrypted_app_ticket_response
 
 !!! function "encrypted_app_ticket_response"
+	Called when an encrypted application ticket has been received.
+
 	**Returns:**
 
 	* result (string)

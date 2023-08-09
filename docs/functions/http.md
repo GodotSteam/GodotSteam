@@ -121,7 +121,7 @@
 ## releaseCookieContainer
 
 !!! function "releaseCookieContainer()"
-	Releases a cookie container, freeing the memory allocated within Steam. You _must_ call this when you are done using each [HTTPCookieContainerHandle](/functions/http/#httpcookiecontainerhandle) that you obtained via [createCookieContainer](/functions/http/#createcookiecontainer)!
+	Releases a cookie container, freeing the memory allocated within Steam. You _must_ call this when you are done using each HTTP cookie container handle that you obtained via [createCookieContainer](/functions/http/#createcookiecontainer)!
 
 	**Returns:** bool
 

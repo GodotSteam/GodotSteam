@@ -7,7 +7,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## screenshot_ready
 
 !!! function "screenshot_ready"
-	A screenshot successfully written or otherwise added to the library and can now be tagged.</li>
+	A screenshot successfully written or otherwise added to the library and can now be tagged.
 	
 	**Returns:**
 

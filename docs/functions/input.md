@@ -108,7 +108,7 @@
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#GetAnalogActionHandle){ .md-button .md-button--store target="_blank" }
 
- ## getAnalogActionOrigins
+## getAnalogActionOrigins
 
 !!! function "getAnalogActionOrigins( ```uint64_t``` input_handle, ```uint64_t``` action_set_handle, ```uint64_t``` analog_action_handle )"
 	Get the origin(s) for an analog action within an action set by filling the return array with handles. Use this to display the appropriate on-screen prompt for the action.
@@ -267,6 +267,15 @@
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#GetRemotePlaySessionID){ .md-button .md-button--store target="_blank" }
 
+## getSessionInputConfigurationSettings
+
+!!! function "getSessionInputConfigurationSettings()"
+	Get a bitmask of the Steam Input Configuration types opted in for the current session. Returns ESteamInputConfigurationEnableType values.	
+
+	**Returns:** uint16
+
+	**Note:** user can override the settings from the Steamworks Partner site so the returned values may not exactly match your default configuration.
+
 ## getStringforActionOrigin
 
 !!! function "getStringforActionOrigin( ```int``` origin )"
@@ -299,7 +308,7 @@
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#Shutdown){ .md-button .md-button--store target="_blank" }
 
- ## runFrame
+## runFrame
 
 !!! function "runFrame()"
 	Synchronize API state with the latest Steam Controller inputs available. This is performed automatically by [run_callbacks](/functions/main/#run_callbacks), but for the absolute lowest possible latency, you can call this directly before reading controller state.
@@ -399,3 +408,11 @@
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#TriggerVibration){ .md-button .md-button--store target="_blank" }
+
+## triggerVibrationExtended
+
+!!! function "triggerVibrationExtended( ```uint64_t``` input_handle, ```uint16_t``` left_speed, ```uint16_t``` right_speed, ```uint16_t``` left_trigger_speed, ```uint16_t``` right_trigger_speed )"
+	Trigger a vibration event on supported controllers including Xbox trigger impulse rumble - Steam will translate these commands into haptic pulses for Steam Controllers.
+
+    ---
+    [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/isteaminput#TriggerVibrationExtended){ .md-button .md-button--store target="_blank" }

@@ -40,6 +40,8 @@
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#EstimatePingTimeBetweenTwoLocations){ .md-button .md-button--store target="_blank" }
 
+## estimatePingTimeFromLocalHost
+
 !!! function "estimatePingTimeFromLocalHost( ```PoolByteArray``` location )"
 	Same as [estimatePingTimeBetweenTwoLocations](/functions/networking_utils/#estimatepingtimebetweentwolocations), but assumes that one location is the local host. This is a bit faster, especially if you need to calculate a bunch of these in a loop to find the fastest one.
 	In rare cases this might return a slightly different estimate than combining [getLocalPingLocation](/functions/networking_utils/#getlocalpinglocation) with [estimatePingTimeBetweenTwoLocations](/functions/networking_utils/#estimatepingtimebetweentwolocations). That's because this function uses a slightly more complete set of information about what route would be taken.
@@ -184,18 +186,18 @@
 	
 	**Returns:** int which can be:
 
-	* -102 - cannot try## 
-	* -101 - failed## 
- 	* -100 - previously worked, now there is a problem## 
-	* -10 - retrying## 
-	* 1 - never tried## 
-	* 2 - waiting## 
-	* 3 - attempting## 
-	* 100 - current## 
-	* 0 - unknown## 
+	* -102 - cannot try
+	* -101 - failed
+ 	* -100 - previously worked, now there is a problem
+	* -10 - retrying
+	* 1 - never tried
+	* 2 - waiting
+	* 3 - attempting
+	* 100 - current
+	* 0 - unknown
 
     ---
-    [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetRelayNetworkStatus){ .md-button .md-button--store target="_blank" }## 
+    [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworkingUtils#GetRelayNetworkStatus){ .md-button .md-button--store target="_blank" }
 
 ## initRelayNetworkAccess
 

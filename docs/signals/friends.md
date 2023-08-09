@@ -149,14 +149,12 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 	* result (int)
 	* steam_id (uint64_t)
-		* profile_data (dictionary)
-			* has_avatar_animated (bool)
-			* has_avatar_frame (bool)
-			* has_profile_modifier (bool)
-			* has_profile_background (bool)
-			* has_profile_mini_background (bool)
-
-	**Note:** GodotSteam is using the callback version.
+	* profile_data (dictionary)
+		* avatar_animated (bool)
+		* avatar_frame (bool)
+		* profile_modifier (bool)
+		* profile_background (bool)
+		* profile_mini_background (bool)
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#EquippedProfileItems_t){ .md-button .md-button--store target="_blank" }
@@ -174,8 +172,6 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#EquippedProfileItemsChanged_t){ .md-button .md-button--store target="_blank" }
-
-
 
 ## friend_rich_presence_update
 

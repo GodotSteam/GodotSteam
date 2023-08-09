@@ -776,9 +776,11 @@
 ## hasEquippedProfileItem
 
 !!! function "hasEquippedProfileItem( ```uint64_t``` steam_id, ```int``` item_type )"
-	After calling RequestEquippedProfileItems, you can use this function to check if the user has a type of profile item equipped or not.
+	After calling [requestEquippedProfileItems](/functions/friends/#requestEquippedProfileItems), you can use this function to check if the user has a type of profile item equipped or not.
 
-	**Returns:** bool
+	**Returns:** void
+
+	**Notes:** Triggers a [equipped_profile_items](/signals/friends/#equipped_profile_items) callback.
 
 	---
 	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#BHasEquippedProfileItem){ .md-button .md-button--store target="_blank" }
@@ -966,7 +968,7 @@
 ## requestUserInformation
 
 !!! function "requestUserInformation( ```uint64_t``` steam_id, ```bool``` require_name_only )"
-	Requests information about a user - persona name & avatar; if require_name_only is set, then the avatar of a user isn't downloaded. 
+	Requests information about a user - persona name and avatar; if require_name_only is set, then the avatar of a user isn't downloaded. 
 
 	**Returns:** bool
 

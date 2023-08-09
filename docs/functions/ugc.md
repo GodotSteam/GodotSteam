@@ -74,7 +74,7 @@
 
 	**Returns:** bool
 
-	**Note:** Using 1 or 2 in type are not currently supported with this API. For YouTube videos you should use [addItemPreviewVideo](/functions/ugc/#).
+	**Note:** Using 1 or 2 in type are not currently supported with this API. For YouTube videos you should use [addItemPreviewVideo](/functions/ugc/#additempreviewvideo).
 
 	**Note:** This must be set before you submit the UGC update handle using [submitItemUpdate](/functions/ugc/#submititemupdate).
 

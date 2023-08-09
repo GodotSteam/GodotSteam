@@ -12,9 +12,9 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	**Returns:**
 
 	* result (int)
-	* ip_reference (string) as "fake_ip_identity"
-	* ip (uint32)
-	* ports (uint16)
+	* identity (string) as "fake_ip_identity"
+	* fake_ip (string)
+	* port_list (array)
 
 ## network_authentication_status
 

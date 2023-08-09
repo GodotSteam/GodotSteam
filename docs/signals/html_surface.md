@@ -58,7 +58,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## html_file_open_dialog
 
 !!! function "html_file_open_dialog"
-	Called when a browser surface has received a file open dialog from a ```input type="file"``` click or similar, you must call FileLoadDialogResponse with the file(s) the user selected.
+	Called when a browser surface has received a file open dialog from a ```input type="file"``` click or similar, you must call [fileLoadDialogResponse](/functions/html-surface/#fileLoadDialogResponse) with the file(s) the user selected.
 
 	**Returns:**
 

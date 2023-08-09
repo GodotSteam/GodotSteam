@@ -37,7 +37,7 @@
 
     **Returns:** void
 
-    **Notes:** Triggers a [get_video_result callback.](/signals/video/#get_video_result)
+    **Notes:** Triggers a [get_video_result](/signals/video/#get_video_result) callback.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamVideo#GetVideoURL){ .md-button .md-button--store target="_blank" }

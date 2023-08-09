@@ -118,7 +118,7 @@
 !!! function "getAvailableVoice()"
 	Checks to see if there is captured audio data available from [getVoice](/functions/users/#getvoice), and gets the size of the data.
 
-	Most applications will only use compressed data and should ignore the other parameters, which exist primarily for backwards compatibility. See [getVoice](/functions/users/#) for further explanation of "uncompressed" data.
+	Most applications will only use compressed data and should ignore the other parameters, which exist primarily for backwards compatibility. See [getVoice](/functions/users/#getVoice) for further explanation of "uncompressed" data.
 
 	See [Steam Voice](https://partner.steamgames.com/doc/features/voice){ target="_blank" } for more information.
 	
@@ -230,7 +230,7 @@
 !!! function "getVoiceOptimalSampleRate()"
 	Gets the native sample rate of the Steam voice decoder.
 
-	Using this sample rate for [decompressVoice](/functions/users/#) will perform the least CPU processing. However, the final audio quality will depend on how well the audio device (and/or your application's audio output SDK) deals with lower sample rates. You may find that you get the best audio output quality when you ignore this function and use the native sample rate of your audio output device, which is usually 48000 or 44100.
+	Using this sample rate for [decompressVoice](/functions/users/#decompressVoice) will perform the least CPU processing. However, the final audio quality will depend on how well the audio device (and/or your application's audio output SDK) deals with lower sample rates. You may find that you get the best audio output quality when you ignore this function and use the native sample rate of your audio output device, which is usually 48000 or 44100.
 
 	See [Steam Voice](https://partner.steamgames.com/doc/features/voice){ target="_blank" } for more information.
 

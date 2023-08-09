@@ -38,7 +38,7 @@
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamNetworkingMessages#CloseSessionWithUser){ .md-button .md-button--store target="_blank" }
 
-## getSessionConnectionInfo(
+## getSessionConnectionInfo
 
 !!! function "getSessionConnectionInfo```string``` identity_reference, ```bool``` get_connection, ```bool``` get_status )"
 	Returns information about the latest state of a connection, if any, with the given peer. Primarily intended for debugging purposes, but can also be used to get more detailed failure information.

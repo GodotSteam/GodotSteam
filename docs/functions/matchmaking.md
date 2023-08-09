@@ -329,7 +329,7 @@
 
 	These messages are sent via the Steam back-end, and so the bandwidth available is limited. For higher-volume traffic like voice or game data, you'll want to use the Steam Networking API.
 
-	Triggers a [lobby_message](/signals/matchmaking/#lobby_message).
+	Triggers a [lobby_message](/signals/matchmaking/#lobby_message) callback.
 
 	**Returns:** bool
 

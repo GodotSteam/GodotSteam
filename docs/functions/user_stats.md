@@ -355,13 +355,13 @@
 
 	You must have called [requestGlobalAchievementPercentages](/functions/user_stats/#requestglobalachievementpercentages) and it needs to return successfully via its callback prior to calling this.
 
-	**Returns:** array
+	**Returns:** dictionary
 
-	* entry (dictionary)
-		* rank (int)
-		* name (string)
-		* percent (float)
-		* achieved (bool)
+	Contains the following keys:
+	* rank (int)
+	* name (string)
+	* percent (float)
+	* achieved (bool)
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#GetMostAchievedAchievementInfo){ .md-button .md-button--store target="_blank" }
@@ -474,7 +474,7 @@
 
 	* retrieved (bool)
 	* name (string)
-	* function "achieved (bool)
+	* achieved (bool)
 	* unlocked (uint32)	
 
     ---
@@ -513,7 +513,7 @@
 !!! function "indicateAchievementProgress( ```string``` name, ```int``` currentProgress, ```int``` maxProgress )"
 	Shows the user a pop-up notification with the current progress of an achievement.
 
-	Calling this function will not] set the progress or unlock the achievement, the game must do that manually by calling [setStat](/functions/user_stats/#setstats).
+	Calling this function will not set the progress or unlock the achievement, the game must do that manually by calling [setStat](/functions/user_stats/#setstats).
 
 	Triggers a [user_stats_stored](/signals/user_stats/#user_stats_stored) callback.
 
