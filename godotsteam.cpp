@@ -2565,10 +2565,10 @@ String Steam::getInputTypeForHandle(uint64_t input_handle){
 		return "Android Controller";
 	}
 	else if(inputType == k_ESteamInputType_SwitchJoyConPair){
-		return "Switch Joy Cons (Pair)";
+		return "Switch Jon Cons (Pair)";
 	}
 	else if(inputType == k_ESteamInputType_SwitchJoyConSingle){
-		return "Switch Joy Con (Single)";
+		return "Switch Jon Con (Single)";
 	}
 	else if(inputType == k_ESteamInputType_SwitchProController){
 		return "Switch Pro Controller";
