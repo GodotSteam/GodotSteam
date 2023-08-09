@@ -2,9 +2,22 @@
 
 ### A history of all changes to the **godot4** branch.
 
-**Note:** when Godot 4.x goes stable, this branch will become the master branch and current master branch will become godot3.
-
 ---
+
+**Version 4.3 Changes**
+
+- Added: full GodotSteam documentation into the editor
+- Added: steamShutdown to allow Steamworks to be manually shutdown
+- Added: requestEquippedProfileItems function and equipped_profile_items callback
+- Added: Steam Deck as Steam Input type
+- Changed: all enums are now directly linked to their SDK counterparts
+- Changed: getDigitalActionData returned keys are now state and active
+- Changed: names of some Steam enums to be cleaner and leaner
+- Changed: getAppInstallDir now returns dictionary with absolute path and install size
+- Fixed: some missing enum binds
+- Fixed: missing function argument binds
+- Fixed: get_ticket_for_web_api sending back strings
+- Removed: enums that are not in the SDK but Valve's docs
 
 **Version 4.2.2 Changes**
 
