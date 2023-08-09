@@ -21,11 +21,14 @@ You can [download pre-compiled versions _(currently v3.20)_ of this repo here](h
 **Version 3.20 Changes**
 - Added: full GodotSteam documentation into the editor
 - Added: steamShutdown to allow Steamworks to be manually shutdown
+- Added: requestEquippedProfileItems function and equipped_profile_items callback
+- Added: Steam Deck as Steam Input typ
 - Changed: all enums are now directly linked to their SDK counterparts
 - Changed: getDigitalActionData returned keys are now state and active
 - Changed: names of some Steam enums to be cleaner and leaner
 - Changed: getAppInstallDir now returns dictionary with absolute path and install size
 - Fixed: some missing enum binds
+- Fixed: missing function argument binds
 - Removed: enums that are not in the SDK but Valve's docs
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot3/).
