@@ -11,12 +11,7 @@ on:
         description: 'GodotSteam GDExtension Tag:'
         required: true
         type: string
-        default: '4.2.2-gde'
-      release_title:
-        description: 'Github Release Title:'
-        required: true
-        type: string
-        default: 'Godot 4.1 - Steamworks 1.57 - GodotSteam GDExtension 4.2.4'
+        default: 'v4.3-gde'
 
 jobs:
   build-gdextension-release:
