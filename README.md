@@ -3,10 +3,10 @@ An open-source and fully functional Steamworks SDK / API module and plug-in for 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3)
 - [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
-- [Server](https://github.com/Gramps/GodotSteam/tree/server)
+- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server)
 
 Documentation
 ---
@@ -16,33 +16,21 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 4.2.3 Changes**
-- Changed: version bump for Godot 4.1 and up
-
-**Version 4.2.2 Changes**
-- Added: new Input callback input_gamepad_slot_change
-- Added: new User callback get_ticket_for_web_api
-- Added: new User function getAuthTicketForWebApi
-- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
-- Changed: some internal variable names to fix compiling warnings and conflicts
-
-**Version 4.2.1 Changes**
-- Added: new return values for _overlay_toggled_; this will break compatibility with this
-- Added: new Input and Parental Settings enums
-- Added: new UGC Content Descriptor ID enums
-- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
-- Added: new signal _filter_text_dictionary_changed_
-- Changed: getAuthSessionTicket now uses networking identities
-- Changed: gamepad_text_input_dismissed now passes back the app ID
-- Changed: Steam Input max analog and digital actions values
-- Removed: ERegisterActivationCodeResult due to removal in SDK
-
-**Version 4.2 Changes**
-- Added: various backports from Godot 3.x branch
-- Fixed: options array size for new Networking classes and memory leaks, _thanks to profour_
-- Fixed: need for godotsteam.sh file on some Linux systems, _thanks to mikix_
+**Version 4.3 Changes**
+- Added: full GodotSteam documentation into the editor
+- Added: steamShutdown to allow Steamworks to be manually shutdown
+- Added: requestEquippedProfileItems function and equipped_profile_items callback
+- Added: Steam Deck as Steam Input type
+- Changed: all enums are now directly linked to their SDK counterparts
+- Changed: getDigitalActionData returned keys are now state and active
+- Changed: names of some Steam enums to be cleaner and leaner
+- Changed: getAppInstallDir now returns dictionary with absolute path and install size
+- Fixed: some missing enum binds
+- Fixed: missing function argument binds
+- Fixed: get_ticket_for_web_api sending back strings
+- Removed: enums that are not in the SDK but Valve's docs
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 

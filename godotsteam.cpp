@@ -185,8 +185,7 @@ Steam::Steam():
 	callbackOverlayBrowserProtocol(this, &Steam::overlay_browser_protocol),
 	callbackUnreadChatMessagesChanged(this, &Steam::unread_chat_messages_changed),
 	callbackEquippedProfileItemsChanged(this, &Steam::equipped_profile_items_changed),
-	callbackEquippedProfileItems(this, &Steam::equipped_profile_items),
-
+	
 	// Game Search callbacks ////////////////////
 	callbackSearchForGameProgress(this, &Steam::search_for_game_progress),
 	callbackSearchForGameResult(this, &Steam::search_for_game_result),
@@ -364,6 +363,11 @@ CSteamID Steam::createSteamID(uint64_t steam_id, AccountType account_type){
 ///// MAIN FUNCTIONS
 /////////////////////////////////////////////////
 //
+//! Returns true/false if Steam is running.
+bool Steam::isSteamRunning(void){
+	return SteamAPI_IsSteamRunning();
+}
+
 //! Checks if your executable was launched through Steam and relaunches it through Steam if it wasn't.
 bool Steam::restartAppIfNecessary(uint32 app_id){
 	return SteamAPI_RestartAppIfNecessary((AppId_t)app_id);
@@ -405,9 +409,9 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 	return initialize;
 }
 
-//! Returns true/false if Steam is running.
-bool Steam::isSteamRunning(void){
-	return SteamAPI_IsSteamRunning();
+// Shuts down the Steamworks API, releases pointers and frees memory.
+void Steam::steamShutdown(){
+	SteamAPI_Shutdown();
 }
 
 
@@ -536,14 +540,20 @@ int Steam::getAppBuildId(){
 }
 
 //! Gets the install folder for a specific AppID.
-String Steam::getAppInstallDir(uint32_t app_id){
-	if(SteamApps() == NULL){
-		return "";
+Dictionary Steam::getAppInstallDir(uint32_t app_id){
+	Dictionary app_install;
+	if(SteamApps() != NULL){
+		char buffer[STEAM_BUFFER_SIZE];
+		uint32 install_size = SteamApps()->GetAppInstallDir((AppId_t)app_id, buffer, STEAM_BUFFER_SIZE);
+		String install_directory = buffer;
+		// If we get no install directory, mention a possible cause
+		if(install_directory.is_empty()){
+			install_directory = "Possible wrong app ID or missing depot";
+		}
+		app_install["directory"] = install_directory;
+		app_install["install_size"] = install_size;
 	}
-	char buffer[STEAM_BUFFER_SIZE];
-	SteamApps()->GetAppInstallDir((AppId_t)app_id, buffer, STEAM_BUFFER_SIZE);
-	String app_dir = buffer;
-	return app_dir;
+	return app_install;
 }
 
 //! Gets the Steam ID of the original owner of the current app. If it's different from the current user then it is borrowed.
@@ -1548,6 +1558,15 @@ void Steam::requestClanOfficerList(uint64_t clan_id){
 	}
 }
 
+//! Requests the list of equipped Steam Community profile items for the given user from Steam.
+void Steam::requestEquippedProfileItems(uint64_t steam_id){
+	if(SteamFriends() != NULL){
+		CSteamID user_id = (uint64)steam_id;
+		SteamAPICall_t api_call = SteamFriends()->RequestEquippedProfileItems(user_id);
+		callResultEquippedProfileItems.Set(api_call, this, &Steam::equipped_profile_items);
+	}
+}
+
 //! Requests rich presence for a specific user.
 void Steam::requestFriendRichPresence(uint64_t friend_id){
 	if(SteamFriends() != NULL){
@@ -2476,8 +2495,8 @@ Dictionary Steam::getDigitalActionData(uint64_t input_handle, uint64_t digital_a
 	if(SteamInput() != NULL){
 		data = SteamInput()->GetDigitalActionData((InputHandle_t)input_handle, (ControllerDigitalActionHandle_t)digital_action_handle);
 	}
-	d["bState"] = data.bState;
-	d["bActive"] = data.bActive;
+	d["state"] = data.bState;
+	d["active"] = data.bActive;
 	return d;
 }
 
@@ -2563,6 +2582,9 @@ String Steam::getInputTypeForHandle(uint64_t input_handle){
 	}
 	else if(inputType == k_ESteamInputType_PS5Controller){
 		return "PS5 Controller";
+	}
+	else if(inputType == k_ESteamInputType_SteamDeckController){
+		return "Steam Deck";
 	}
 	else{
 		return "Unknown";
@@ -2652,7 +2674,7 @@ void Steam::stopAnalogActionMomentum(uint64_t input_handle, uint64_t action){
 }
 
 //! Get the equivalent origin for a given controller type or the closest controller type that existed in the SDK you built into your game if eDestinationInputType is k_ESteamInputType_Unknown. This action origin can be used in your glyph look up table or passed into GetGlyphForActionOrigin or GetStringForActionOrigin.
-int Steam::translateActionOrigin(SteamInputType destination_input, InputActionOrigin source_origin){
+int Steam::translateActionOrigin(InputType destination_input, InputActionOrigin source_origin){
 	if(SteamInput() == NULL){
 		return 0;
 	}
@@ -2756,7 +2778,7 @@ void Steam::enableDeviceCallbacks(){
 //}
 
 //! Get a local path to a PNG file for the provided origin's glyph. 
-String Steam::getGlyphPNGForActionOrigin(InputActionOrigin origin, GlyphSize size, uint32 flags){
+String Steam::getGlyphPNGForActionOrigin(InputActionOrigin origin, InputGlyphSize size, uint32 flags){
 	if(SteamInput() == NULL){
 		return "";
 	}
@@ -4622,6 +4644,19 @@ uint32 Steam::connectP2P(const String& identity_reference, int virtual_port, Arr
 	return listen_socket;
 }
 
+//! Begin connecting to a server listen socket that is identified using an [ip-address]:[port], i.e. 127.0.0.1:27015. Used with createListenSocketIP
+uint32 Steam::connectByIPAddress(const String& ip_address_with_port, Array options){
+	if(SteamNetworkingSockets() == NULL){
+		return 0;
+	}
+	
+	SteamNetworkingIPAddr steamAddr;
+	steamAddr.Clear();
+	steamAddr.ParseString(ip_address_with_port.utf8().get_data());
+
+	return SteamNetworkingSockets()->ConnectByIPAddress(steamAddr, options.size(), convertOptionsArray(options));
+}
+
 //! Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
 uint32 Steam::connectToHostedDedicatedServer(const String& identity_reference, int virtual_port, Array options){
 	if(SteamNetworkingSockets() == NULL){
@@ -5836,7 +5871,7 @@ Array Steam::getAvailableBeaconLocations(uint32 max){
 }
 
 //! Create a beacon. You can only create one beacon at a time. Steam will display the beacon in the specified location, and let up to unOpenSlots users "follow" the beacon to your party.
-void Steam::createBeacon(uint32 open_slots, uint64_t location, SteamPartyBeaconLocationType type, const String& connect_string, const String& beacon_metadata){
+void Steam::createBeacon(uint32 open_slots, uint64_t location, PartyBeaconLocationType type, const String& connect_string, const String& beacon_metadata){
 	if(SteamParties() != NULL){
 		// Add data to the beacon location struct
 		SteamPartyBeaconLocation_t *beacon_data = new SteamPartyBeaconLocation_t;
@@ -5923,7 +5958,7 @@ void Steam::joinParty(uint64_t beacon_id){
 }
 
 //! Query general metadata for the given beacon location. For instance the Name, or the URL for an icon if the location type supports icons (for example, the icon for a Steam Chat Room Group).
-String Steam::getBeaconLocationData(uint64_t location_id, SteamPartyBeaconLocationType location_type, SteamPartyBeaconLocationData location_data){
+String Steam::getBeaconLocationData(uint64_t location_id, PartyBeaconLocationType location_type, PartyBeaconLocationData location_data){
 	String beacon_location_data = "";
 	if(SteamParties() != NULL){
 		char *beacon_data = new char[2048];
@@ -8212,7 +8247,7 @@ double Steam::getGlobalStatFloatHistory(const String& name){
 
 //! Returns the display type of a leaderboard handle.
 Dictionary Steam::getLeaderboardDisplayType(uint64_t this_leaderboard){
-	// Create a diciontary to return
+	// Create a dictionary to return
 	Dictionary display;
 	if(SteamUserStats() != NULL){
 		// If no leaderboard is passed, use internal one
@@ -9138,26 +9173,6 @@ void Steam::equipped_profile_items_changed(EquippedProfileItemsChanged_t* call_d
 	emit_signal("equipped_profile_items_changed", steam_id);
 }
 
-// Call from RequestEquippedProfileItems... nice.
-void Steam::equipped_profile_items(EquippedProfileItems_t* call_data){
-	int result = call_data->m_eResult;
-	CSteamID this_steam_id = call_data->m_steamID;
-	uint64_t steam_id = this_steam_id.ConvertToUint64();
-	bool has_animated_avatar = call_data->m_bHasAnimatedAvatar;
-	bool has_avatar_frame = call_data->m_bHasAvatarFrame;
-	bool has_profile_modifier = call_data->m_bHasProfileModifier;
-	bool has_profile_background = call_data->m_bHasProfileBackground;
-	bool has_mini_profile_background = call_data->m_bHasMiniProfileBackground;
-	// Pass all profile data to a dictionary
-	Dictionary profile_data;
-	profile_data["avatar_animated"] = has_animated_avatar;
-	profile_data["avatar_frame"] = has_avatar_frame;
-	profile_data["profile_modifier"] = has_profile_modifier;
-	profile_data["profile_background"] = has_profile_background;
-	profile_data["profile_mini_background"] = has_mini_profile_background;
-	emit_signal("equipped_profile_items", result, steam_id, profile_data);
-}
-
 // GAME SEARCH CALLBACKS ////////////////////////
 //
 //! There are no notes about this in Valve's header files or documentation.
@@ -9980,7 +9995,7 @@ void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t* call_data){
 	int result = call_data->m_eResult;
 	int ticket_size = call_data->m_cubTicket;
 	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
-	emit_signal("get_ticket_for_web_api", "auth_ticket", "result", "ticket_size", "ticket_buffer");
+	emit_signal("get_ticket_for_web_api", auth_ticket, result, ticket_size, ticket_buffer);
 }
 
 //! Called when the callback system for this client is in an error state (and has flushed pending callbacks). When getting this message the client should disconnect from Steam, reset any stored Steam state and reconnect. This usually occurs in the rare event the Steam client has some kind of fatal error.
@@ -10212,6 +10227,31 @@ void Steam::enumerate_following_list(FriendsEnumerateFollowingList_t *call_data,
 			}
 		}
 		emit_signal("enumerate_following_list", message, following);
+	}
+}
+
+// Call from RequestEquippedProfileItems... nice.
+void Steam::equipped_profile_items(EquippedProfileItems_t *call_data, bool io_failure){
+	if(io_failure){
+		steamworksError("equipped_profile_items");
+	}
+	else{
+		int result = call_data->m_eResult;
+		CSteamID this_steam_id = call_data->m_steamID;
+		uint64_t steam_id = this_steam_id.ConvertToUint64();
+		bool has_animated_avatar = call_data->m_bHasAnimatedAvatar;
+		bool has_avatar_frame = call_data->m_bHasAvatarFrame;
+		bool has_profile_modifier = call_data->m_bHasProfileModifier;
+		bool has_profile_background = call_data->m_bHasProfileBackground;
+		bool has_mini_profile_background = call_data->m_bHasMiniProfileBackground;
+		// Pass all profile data to a dictionary
+		Dictionary profile_data;
+		profile_data["avatar_animated"] = has_animated_avatar;
+		profile_data["avatar_frame"] = has_avatar_frame;
+		profile_data["profile_modifier"] = has_profile_modifier;
+		profile_data["profile_background"] = has_profile_background;
+		profile_data["profile_mini_background"] = has_mini_profile_background;
+		emit_signal("equipped_profile_items", result, steam_id, profile_data);
 	}
 }
 
@@ -10990,11 +11030,12 @@ void Steam::_bind_methods(){
 	/////////////////////////////////////////////
 	//
 	// STEAM MAIN BIND METHODS //////////////////
+	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
 	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
-	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
-
+	ClassDB::bind_method("steamShutdown", &Steam::steamShutdown);
+	
 	// APPS BIND METHODS ////////////////////////
 	ClassDB::bind_method("getDLCDataByIndex", &Steam::getDLCDataByIndex);
 	ClassDB::bind_method(D_METHOD("isAppInstalled", "app_id"), &Steam::isAppInstalled);
@@ -11230,7 +11271,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("triggerRepeatedHapticPulse", "input_handle", "target_pad", "duration", "offset", "repeat", "flags"), &Steam::triggerRepeatedHapticPulse);
 	ClassDB::bind_method(D_METHOD("triggerVibration", "input_handle", "left_speed", "right_speed"), &Steam::triggerVibration);
 	ClassDB::bind_method(D_METHOD("setInputActionManifestFilePath", "manifest_path"), &Steam::setInputActionManifestFilePath);
-	ClassDB::bind_method(D_METHOD("setDualSenseTriggerEffect", "input_handle", "parameters"), &Steam::setDualSenseTriggerEffect);
+	ClassDB::bind_method(D_METHOD("setDualSenseTriggerEffect", "input_handle", "parameters", "trigger_mask", "effect_mode", "position", "amplitude", "frequency"), &Steam::setDualSenseTriggerEffect);
 	ClassDB::bind_method(D_METHOD("waitForData", "wait_forever", "timeout"), &Steam::waitForData);
 	ClassDB::bind_method("newDataAvailable", &Steam::newDataAvailable);
 	ClassDB::bind_method("enableDeviceCallbacks", &Steam::enableDeviceCallbacks);
@@ -11250,7 +11291,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("addPromoItems", "items"), &Steam::addPromoItems);
 	ClassDB::bind_method(D_METHOD("checkResultSteamID", "steam_id_expected", "this_inventory_handle"), &Steam::checkResultSteamID, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("consumeItem", "item_consume", "quantity"), &Steam::consumeItem);
-	ClassDB::bind_method(D_METHOD("deserializeResult" "buffer"), &Steam::deserializeResult);
+	ClassDB::bind_method(D_METHOD("deserializeResult", "buffer"), &Steam::deserializeResult);
 	ClassDB::bind_method(D_METHOD("destroyResult", "this_inventory_handle"), &Steam::destroyResult, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("exchangeItems", "output_items", "output_quantity", "input_items", "input_quantity"), &Steam::exchangeItems);
 	ClassDB::bind_method(D_METHOD("generateItems", "items", "quantity"), &Steam::generateItems);
@@ -11403,6 +11444,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("closeListenSocket", "socket"), &Steam::closeListenSocket);
 	ClassDB::bind_method(D_METHOD("configureConnectionLanes", "connection", "lanes", "priorities", "weights"), &Steam::configureConnectionLanes);
 	ClassDB::bind_method(D_METHOD("connectP2P", "identity_reference", "virtual_port", "options"), &Steam::connectP2P);
+	ClassDB::bind_method(D_METHOD("connectByIPAddress", "ip_address_with_port", "options"), &Steam::connectByIPAddress);
 	ClassDB::bind_method(D_METHOD("connectToHostedDedicatedServer", "identity_reference", "virtual_port", "options"), &Steam::connectToHostedDedicatedServer);
 	ClassDB::bind_method(D_METHOD("createFakeUDPPort", "fake_server_port"), &Steam::createFakeUDPPort);
 	ClassDB::bind_method(D_METHOD("createHostedDedicatedServerListenSocket", "virtual_port", "options"), &Steam::createHostedDedicatedServerListenSocket);
@@ -11514,7 +11556,7 @@ void Steam::_bind_methods(){
 	// PARTIES BIND METHODS /////////////////////
 	ClassDB::bind_method(D_METHOD("cancelReservation", "beacon_id", "steam_id"), &Steam::cancelReservation);
 	ClassDB::bind_method(D_METHOD("changeNumOpenSlots", "beacon_id", "open_slots"), &Steam::changeNumOpenSlots);
-	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location_id", "type", "connect_string", "beacon_metadata"), &Steam::createBeacon);
+	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location_id", "type", "connect_string", "metadata"), &Steam::createBeacon);
 	ClassDB::bind_method(D_METHOD("destroyBeacon", "beacon_id"), &Steam::destroyBeacon);
 	ClassDB::bind_method(D_METHOD("getAvailableBeaconLocations", "max"), &Steam::getAvailableBeaconLocations);
 	ClassDB::bind_method(D_METHOD("getBeaconByIndex", "index"), &Steam::getBeaconByIndex);
@@ -11576,7 +11618,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isScreenshotsHooked", &Steam::isScreenshotsHooked);
 	ClassDB::bind_method(D_METHOD("setLocation", "screenshot", "location"), &Steam::setLocation);
 	ClassDB::bind_method(D_METHOD("tagPublishedFile", "screenshot", "file_id"), &Steam::tagPublishedFile);
-	ClassDB::bind_method(D_METHOD("taguser", "screenshot", "steam_id"), &Steam::tagUser);
+	ClassDB::bind_method(D_METHOD("tagUser", "screenshot", "steam_id"), &Steam::tagUser);
 	ClassDB::bind_method("triggerScreenshot", &Steam::triggerScreenshot);
 	ClassDB::bind_method(D_METHOD("writeScreenshot", "rgb", "width", "height"), &Steam::writeScreenshot);
 
@@ -11606,6 +11648,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getNumSubscribedItems", &Steam::getNumSubscribedItems);
 	ClassDB::bind_method(D_METHOD("getQueryUGCAdditionalPreview", "query_handle", "index", "preview_index"), &Steam::getQueryUGCAdditionalPreview);
 	ClassDB::bind_method(D_METHOD("getQueryUGCChildren", "query_handle", "index", "child_count"), &Steam::getQueryUGCChildren);
+	ClassDB::bind_method(D_METHOD("getQueryUGCContentDescriptors", "query_handle", "index", "max_entries"), &Steam::getQueryUGCContentDescriptors);
 	ClassDB::bind_method(D_METHOD("getQueryUGCKeyValueTag", "query_handle", "index", "key_value_tag_index"), &Steam::getQueryUGCKeyValueTag);
 	ClassDB::bind_method(D_METHOD("getQueryUGCMetadata", "query_handle", "index"), &Steam::getQueryUGCMetadata);
 	ClassDB::bind_method(D_METHOD("getQueryUGCNumAdditionalPreviews", "query_handle", "index"), &Steam::getQueryUGCNumAdditionalPreviews);
@@ -11630,7 +11673,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("setCloudFileNameFilter", "update_handle", "match_cloud_filename"), &Steam::setCloudFileNameFilter);
 	ClassDB::bind_method(D_METHOD("setItemContent", "update_handle", "content_folder"), &Steam::setItemContent);
 	ClassDB::bind_method(D_METHOD("setItemDescription", "update_handle", "description"), &Steam::setItemDescription);
-	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "ugc_metadata"), &Steam::setItemMetadata);
+	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "metadata"), &Steam::setItemMetadata);
 	ClassDB::bind_method(D_METHOD("setItemPreview", "update_handle", "preview_file"), &Steam::setItemPreview);
 	ClassDB::bind_method(D_METHOD("setItemTags", "update_handle", "tag_array"), &Steam::setItemTags);
 	ClassDB::bind_method(D_METHOD("setItemTitle", "update_handle", "title"), &Steam::setItemTitle);
@@ -11820,8 +11863,8 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("name_changed", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::BOOL, "local_success"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("overlay_browser_protocol", PropertyInfo(Variant::STRING, "uri")));
 	ADD_SIGNAL(MethodInfo("unread_chat_messages_changed"));
-	ADD_SIGNAL(MethodInfo("equipped_profile_items_changed"));
-	ADD_SIGNAL(MethodInfo("equipped_profile_items"));
+	ADD_SIGNAL(MethodInfo("equipped_profile_items_changed", PropertyInfo(Variant::INT, "steam_id")));
+	ADD_SIGNAL(MethodInfo("equipped_profile_items", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::DICTIONARY, "profile_data")));
 
 	// GAME SEARCH SIGNALS //////////////////////
 	ADD_SIGNAL(MethodInfo("search_for_game_progress", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "search_id"), PropertyInfo(Variant::DICTIONARY, "search_progress")));
@@ -12138,1515 +12181,1642 @@ void Steam::_bind_methods(){
 	// ENUM CONSTANT BINDS //////////////////////
 	/////////////////////////////////////////////
 	//
-	// ACCOUNT TYPE /////////////////////////////
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INVALID);											// 0
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INDIVIDUAL);										// 1
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MULTISEAT);											// 2
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_GAME_SERVER);										// 3
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_ANON_GAME_SERVER);									// 4
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_PENDING);											// 5
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CONTENT_SERVER);									// 6
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CLAN);												// 7
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CHAT);												// 8
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CONSOLE_USER);										// 9
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_ANON_USER);											// 10
-	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MAX);												// 11
+	// AccountType Enums
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INVALID);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INDIVIDUAL);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MULTISEAT);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_GAME_SERVER);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_ANON_GAME_SERVER);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_PENDING);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CONTENT_SERVER);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CLAN);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CHAT);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_CONSOLE_USER);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_ANON_USER);
+	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MAX);
 
-	// APP OWNERSHIP FLAGS //////////////////////
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_NONE);										// 0x0000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_OWNS_LICENSE);								// 0x0001
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_FREE_LICENSE);								// 0x0002
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_REGION_RESTRICTED);							// 0x0004
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LOW_VIOLENCE);								// 0x0008
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_INVALID_PLATFORM);							// 0x0010
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_SHARED_LICENSE);								// 0x0020
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_FREE_WEEKEND);								// 0x0040
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_RETAIL_LICENSE);								// 0x0080
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LICENSE_LOCKED);								// 0x0100
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LICENSE_PENDING);							// 0x0200
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LICENSE_EXPIRED);							// 0x0400
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LICENSE_PERMANENT);							// 0x0800
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LICENSE_RECURRING);							// 0x1000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_LICENSE_CANCELED);							// 0x2000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_AUTO_GRANT);									// 0x4000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_PENDING_GIFT);								// 0x8000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_RENTAL_NOT_ACTIVATED);						// 0x10000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_RENTAL);										// 0x20000
-	BIND_BITFIELD_FLAG(APP_OWNERSHIP_FLAGS_SITE_LICENSE);								// 0x40000
+	// APICallFailure Enums
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_NONE);
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);
+	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);
 
-	// APP RELEASE STATE ////////////////////////
-	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_UNKNOWN);										// 0
-	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_UNAVAILABLE);									// 1
-	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_PRERELEASE);									// 2
-	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_PRELOAD_ONLY);									// 3
-	BIND_ENUM_CONSTANT(APP_RELEASE_STATE_RELEASED);										// 4
+	// AudioPlaybackStatus Enums
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_UNDEFINED);
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_PLAYING);
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_PAUSED);
+	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_IDLE);
 
-	// APP TYPE /////////////////////////////////
-	BIND_BITFIELD_FLAG(APP_TYPE_INVALID);												// 0x000
-	BIND_BITFIELD_FLAG(APP_TYPE_GAME);													// 0x001
-	BIND_BITFIELD_FLAG(APP_TYPE_APPLICATION);											// 0x002
-	BIND_BITFIELD_FLAG(APP_TYPE_TOOL);													// 0x004
-	BIND_BITFIELD_FLAG(APP_TYPE_DEMO);													// 0x008
-	BIND_BITFIELD_FLAG(APP_TYPE_MEDIA_DEPRECATED);										// 0x010
-	BIND_BITFIELD_FLAG(APP_TYPE_DLC);													// 0x020
-	BIND_BITFIELD_FLAG(APP_TYPE_GUIDE);													// 0x040
-	BIND_BITFIELD_FLAG(APP_TYPE_DRIVER);												// 0x080
-	BIND_BITFIELD_FLAG(APP_TYPE_CONFIG);												// 0x100
-	BIND_BITFIELD_FLAG(APP_TYPE_HARDWARE);												// 0x200
-	BIND_BITFIELD_FLAG(APP_TYPE_FRANCHISE);												// 0x400
-	BIND_BITFIELD_FLAG(APP_TYPE_VIDEO);													// 0x800
-	BIND_BITFIELD_FLAG(APP_TYPE_PLUGIN);												// 0x1000
-	BIND_BITFIELD_FLAG(APP_TYPE_MUSIC);													// 0x2000
-	BIND_BITFIELD_FLAG(APP_TYPE_SERIES);												// 0x4000
-	BIND_BITFIELD_FLAG(APP_TYPE_SHORTCUT);												// 0x40000000
-	BIND_BITFIELD_FLAG(APP_TYPE_DEPOT_ONLY);											// 0X80000000
+	// AuthSessionResponse Enums
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_OK);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_VAC_BANNED);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_VAC_CHECK_TIMED_OUT);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN);
+	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_NETWORK_IDENTITY_FAILURE);
 
-	// AUTH SESSION RESPONSE ////////////////////
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_OK);										// 0
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM);				// 1
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED);					// 2
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_VAC_BANNED);								// 3
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE);						// 4
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_VAC_CHECK_TIMEDOUT);						// 5
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED);						// 6
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED);			// 7
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID);						// 8
-	BIND_ENUM_CONSTANT(AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN);						// 9
+	// AvatarSizes Enums
+	BIND_ENUM_CONSTANT(AVATAR_SMALL); 
+	BIND_ENUM_CONSTANT(AVATAR_MEDIUM);
+	BIND_ENUM_CONSTANT(AVATAR_LARGE);
 
-	// BEGIN AUTH SESSION RESULT ////////////////
-	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_OK);									// 0
-	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET);						// 1
-	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST);					// 2
-	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_VERSION);						// 3
-	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH);						// 4
-	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET);						// 5
+	// BeginAuthSessionResult Enums
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_OK);
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET);
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST); 
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_INVALID_VERSION);
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH);
+	BIND_ENUM_CONSTANT(BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET);
 
-	// BROADCAST UPLOAD RESULT //////////////////
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NONE);									// 0
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_OK);										// 1
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_INIT_FAILED);							// 2
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_FRAME_FAILED);							// 3
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TIME_OUT);								// 4
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_BANDWIDTH_EXCEEDED);						// 5
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_LOW_FPS);								// 6
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_KEYFRAMES);						// 7
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NO_CONNECTION);							// 8
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_RELAY_FAILED);							// 9
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_SETTINGS_CHANGED);						// 10
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_AUDIO);							// 11
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND);							// 12
-	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND);						// 13
+	// BroadcastUploadResult Enums
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NONE);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_OK);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_INIT_FAILED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_FRAME_FAILED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TIME_OUT);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_BANDWIDTH_EXCEEDED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_LOW_FPS);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_KEYFRAMES);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NO_CONNECTION);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_RELAY_FAILED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_SETTINGS_CHANGED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_MISSING_AUDIO);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TOO_FAR_BEHIND);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_TRANSCODE_BEHIND);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_NOT_ALLOWED_TO_PLAY);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_BUSY);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_BANNED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_ALREADY_ACTIVE);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_FORCED_OFF);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_AUDIO_BEHIND);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_SHUTDOWN);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_DISCONNECT);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_VIDEO_INIT_FAILED);
+	BIND_ENUM_CONSTANT(BROADCAST_UPLOAD_RESULT_AUDIO_INIT_FAILED);
 
-	// CHAT ENTRY TYPE //////////////////////////
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_INVALID);										// 0
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_CHAT_MSG);										// 1
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_TYPING);											// 2
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_INVITE_GAME);									// 3
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_EMOTE);											// 4
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LEFT_CONVERSATION);								// 6
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_ENTERED);										// 7
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_WAS_KICKED);										// 8
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_WAS_BANNED);										// 9
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_DISCONNECTED);									// 10
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_HISTORICAL_CHAT);								// 11
-	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LINK_BLOCKED);									// 14
+	// ChatEntryType Enums
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_INVALID);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_CHAT_MSG);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_TYPING);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_INVITE_GAME);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_EMOTE);
+	//	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LOBBY_GAME_START);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LEFT_CONVERSATION);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_ENTERED);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_WAS_KICKED);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_WAS_BANNED);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_DISCONNECTED);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_HISTORICAL_CHAT);
+	BIND_ENUM_CONSTANT(CHAT_ENTRY_TYPE_LINK_BLOCKED);
 
-	// CHAT ROOM ENTER RESPONSE /////////////////
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_SUCCESS);								// 1
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST);							// 2
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED);							// 3
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_FULL);									// 4
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_ERROR);									// 5
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_BANNED);								// 6
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_LIMITED);								// 7
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED);							// 8
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN);							// 9
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU);					// 10
-	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER);					// 11
+	// ChatMemberStateChange Enums
+	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_ENTERED);
+	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_LEFT);
+	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_DISCONNECTED);
+	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_KICKED);
+	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_BANNED);
 
-	// CHAT STEAM ID INSTANCE FLAGS /////////////
-	BIND_BITFIELD_FLAG(CHAT_ACCOUNT_INSTANCE_MASK);										// 0X00000FFF
-	BIND_BITFIELD_FLAG(CHAT_INSTANCE_FLAG_CLAN);										// ((k_unSteamAccountInstanceMask + 1) >> 1)
-	BIND_BITFIELD_FLAG(CHAT_INSTANCE_FLAG_LOBBY);										// ((k_unSteamAccountInstanceMask + 1) >> 2)
-	BIND_BITFIELD_FLAG(CHAT_INSTANCE_FLAG_MMS_LOBBY);									// ((k_unSteamAccountInstanceMask + 1) >> 3)
+	// ChatRoomEnterResponse Enums
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_SUCCESS);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_FULL);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_ERROR);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_BANNED);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_LIMITED);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER);
+	BIND_ENUM_CONSTANT(CHAT_ROOM_ENTER_RESPONSE_RATE_LIMIT_EXCEEDED);
 
-	// DENY REASON //////////////////////////////
-	BIND_ENUM_CONSTANT(DENY_INVALID);													// 0
-	BIND_ENUM_CONSTANT(DENY_INVALID_VERSION);											// 1
-	BIND_ENUM_CONSTANT(DENY_GENERIC);													// 2
-	BIND_ENUM_CONSTANT(DENY_NOT_LOGGED_ON);												// 3
-	BIND_ENUM_CONSTANT(DENY_NO_LICENSE);												// 4
-	BIND_ENUM_CONSTANT(DENY_CHEATER);													// 5
-	BIND_ENUM_CONSTANT(DENY_LOGGED_IN_ELSEWHERE);										// 6
-	BIND_ENUM_CONSTANT(DENY_UNKNOWN_TEXT);												// 7
-	BIND_ENUM_CONSTANT(DENY_INCOMPATIBLE_ANTI_CHEAT);									// 8
-	BIND_ENUM_CONSTANT(DENY_MEMORY_CORRUPTION);											// 9
-	BIND_ENUM_CONSTANT(DENY_INCOMPATIBLE_SOFTWARE);										// 10
-	BIND_ENUM_CONSTANT(DENY_STEAM_CONNECTION_LOST);										// 11
-	BIND_ENUM_CONSTANT(DENY_STEAM_CONNECTION_ERROR);									// 12
-	BIND_ENUM_CONSTANT(DENY_STEAM_RESPONSE_TIMED_OUT);									// 13
-	BIND_ENUM_CONSTANT(DENY_STEAM_VALIDATION_STALLED);									// 14
-	BIND_ENUM_CONSTANT(DENY_STEAM_OWNER_LEFT_GUEST_USER);								// 15
+	// ChatSteamIDInstanceFlags Enums
+	BIND_BITFIELD_FLAG(CHAT_ACCOUNT_INSTANCE_MASK);
+	BIND_BITFIELD_FLAG(CHAT_INSTANCE_FLAG_CLAN);
+	BIND_BITFIELD_FLAG(CHAT_INSTANCE_FLAG_LOBBY);
+	BIND_BITFIELD_FLAG(CHAT_INSTANCE_FLAG_MMS_LOBBY);
 
-	// GAME ID TYPE /////////////////////////////
-	BIND_ENUM_CONSTANT(GAME_TYPE_APP);													// 0
-	BIND_ENUM_CONSTANT(GAME_TYPE_GAME_MOD);												// 1
-	BIND_ENUM_CONSTANT(GAME_TYPE_SHORTCUT);												// 2
-	BIND_ENUM_CONSTANT(GAME_TYPE_P2P);													// 3
+	// CheckFileSignature Enums
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_INVALID_SIGNATURE);
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_VALID_SIGNATURE);
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_FILE_NOT_FOUND);
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP);
+	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE);
 
-	// LAUNCH OPTION TYPE ///////////////////////
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_NONE);										// 0
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_DEFAULT);										// 1
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_SAFE_MODE);									// 2
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_MULTIPLAYER);									// 3
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_CONFIG);										// 4
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR);										// 5
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_SERVER);										// 6
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_EDITOR);										// 7
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_MANUAL);										// 8
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_BENCHMARK);									// 9
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPTION1);										// 10
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPTION2);										// 11
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPTION3);										// 12
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OCULUS_VR);									// 13
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OPEN_VR_OVERLAY);								// 14
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_OS_VR);										// 15
-	BIND_ENUM_CONSTANT(LAUNCH_OPTION_TYPE_DIALOG);										// 1000
+	// CommunityProfileItemType Enums
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_ANIMATED_AVATAR);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_AVATAR_FRAME);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_MODIFIER);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_BACKGROUND);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_MINI_PROFILE_BACKGROUND);
 
-	// NOTIFICATION POSITION ////////////////////
-	BIND_ENUM_CONSTANT(POSITION_TOP_LEFT);												// 0
-	BIND_ENUM_CONSTANT(POSITION_TOP_RIGHT);												// 1
-	BIND_ENUM_CONSTANT(POSITION_BOTTOM_LEFT);											// 2
-	BIND_ENUM_CONSTANT(POSITION_BOTTOM_RIGHT);											// 3
+	// CommunityProfileItemProperty Enums
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_SMALL);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_LARGE);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_INTERNAL_NAME);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_TITLE);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_DESCRIPTION);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_APP_ID);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_TYPE_ID);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_CLASS);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM_SMALL);
+	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4_SMALL);
 
-	// RESULT ///////////////////////////////////
-	BIND_ENUM_CONSTANT(RESULT_OK);														// 1
-	BIND_ENUM_CONSTANT(RESULT_FAIL);													// 2
-	BIND_ENUM_CONSTANT(RESULT_NO_CONNECTION);											// 3
-	BIND_ENUM_CONSTANT(RESULT_INVALID_PASSWORD);										// 5
-	BIND_ENUM_CONSTANT(RESULT_LOGGED_IN_ELSEWHERE);										// 6
-	BIND_ENUM_CONSTANT(RESULT_INVALID_PROTOCOL_VER);									// 7
-	BIND_ENUM_CONSTANT(RESULT_INVALID_PARAM);											// 8
-	BIND_ENUM_CONSTANT(RESULT_FILE_NOT_FOUND);											// 9
-	BIND_ENUM_CONSTANT(RESULT_BUSY);													// 10
-	BIND_ENUM_CONSTANT(RESULT_INVALID_STATE);											// 11
-	BIND_ENUM_CONSTANT(RESULT_INVALID_NAME);											// 12
-	BIND_ENUM_CONSTANT(RESULT_INVALID_EMAIL);											// 13
-	BIND_ENUM_CONSTANT(RESULT_DUPLICATE_NAME);											// 14
-	BIND_ENUM_CONSTANT(RESULT_ACCESS_DENIED);											// 15
-	BIND_ENUM_CONSTANT(RESULT_TIMEOUT);													// 16
-	BIND_ENUM_CONSTANT(RESULT_BANNED);													// 17
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FOUND);										// 18
-	BIND_ENUM_CONSTANT(RESULT_INVALID_STEAM_ID);										// 19
-	BIND_ENUM_CONSTANT(RESULT_SERVICE_UNAVAILABLE);										// 20
-	BIND_ENUM_CONSTANT(RESULT_NOT_LOGGED_ON);											// 21
-	BIND_ENUM_CONSTANT(RESULT_PENDING);													// 22
-	BIND_ENUM_CONSTANT(RESULT_ENCRYPTION_FAILURE);										// 23
-	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_PRIVILEGE);									// 24
-	BIND_ENUM_CONSTANT(RESULT_LIMIT_EXCEEDED);											// 25
-	BIND_ENUM_CONSTANT(RESULT_REVOKED);													// 26
-	BIND_ENUM_CONSTANT(RESULT_EXPIRED);													// 27
-	BIND_ENUM_CONSTANT(RESULT_ALREADY_REDEEMED);										// 28
-	BIND_ENUM_CONSTANT(RESULT_DUPLICATE_REQUEST);										// 29
-	BIND_ENUM_CONSTANT(RESULT_ALREADY_OWNED);											// 30
-	BIND_ENUM_CONSTANT(RESULT_IP_NOT_FOUND);											// 31
-	BIND_ENUM_CONSTANT(RESULT_PERSIST_FAILED);											// 32
-	BIND_ENUM_CONSTANT(RESULT_LOCKING_FAILED);											// 33
-	BIND_ENUM_CONSTANT(RESULT_LOG_ON_SESSION_REPLACED);									// 34
-	BIND_ENUM_CONSTANT(RESULT_CONNECT_FAILED);											// 35
-	BIND_ENUM_CONSTANT(RESULT_HANDSHAKE_FAILED);										// 36
-	BIND_ENUM_CONSTANT(RESULT_IO_FAILURE);												// 37
-	BIND_ENUM_CONSTANT(RESULT_REMOTE_DISCONNECT);										// 38
-	BIND_ENUM_CONSTANT(RESULT_SHOPPING_CART_NOT_FOUND);									// 39
-	BIND_ENUM_CONSTANT(RESULT_BLOCKED);													// 40
-	BIND_ENUM_CONSTANT(RESULT_IGNORED);													// 41
-	BIND_ENUM_CONSTANT(RESULT_NO_MATCH);												// 42
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_DISABLED);										// 43
-	BIND_ENUM_CONSTANT(RESULT_SERVICE_READ_ONLY);										// 44
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FEATURED);									// 45
-	BIND_ENUM_CONSTANT(RESULT_ADMINISTRATOR_OK);										// 46
-	BIND_ENUM_CONSTANT(RESULT_CONTENT_VERSION);											// 47
-	BIND_ENUM_CONSTANT(RESULT_TRY_ANOTHER_CM);											// 48
-	BIND_ENUM_CONSTANT(RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION);						// 49
-	BIND_ENUM_CONSTANT(RESULT_ALREADY_LOGGED_IN_ELSEWHERE);								// 50
-	BIND_ENUM_CONSTANT(RESULT_SUSPENDED);												// 51
-	BIND_ENUM_CONSTANT(RESULT_CANCELLED);												// 52
-	BIND_ENUM_CONSTANT(RESULT_DATA_CORRUPTION);											// 53
-	BIND_ENUM_CONSTANT(RESULT_DISK_FULL);												// 54
-	BIND_ENUM_CONSTANT(RESULT_REMOTE_CALL_FAILED);										// 55
-	BIND_ENUM_CONSTANT(RESULT_PASSWORD_UNSET);											// 56
-	BIND_ENUM_CONSTANT(RESULT_EXTERNAL_ACCOUNT_UNLINKED);								// 57
-	BIND_ENUM_CONSTANT(RESULT_PSN_TICKET_INVALID);										// 58
-	BIND_ENUM_CONSTANT(RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED);							// 59
-	BIND_ENUM_CONSTANT(RESULT_REMOTE_FILE_CONFLICT);									// 60
-	BIND_ENUM_CONSTANT(RESULT_ILLEGAL_PASSWORD);										// 61
-	BIND_ENUM_CONSTANT(RESULT_SAME_AS_PREVIOUS_VALUE);									// 62
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED);									// 63
-	BIND_ENUM_CONSTANT(RESULT_CANNOT_USE_OLD_PASSWORD);									// 64
-	BIND_ENUM_CONSTANT(RESULT_INVALID_LOGIN_AUTH_CODE);									// 65
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_NO_MAIL);							// 66
-	BIND_ENUM_CONSTANT(RESULT_HARDWARE_NOT_CAPABLE_OF_IPT);								// 67
-	BIND_ENUM_CONSTANT(RESULT_IPT_INIT_ERROR);											// 68
-	BIND_ENUM_CONSTANT(RESULT_PARENTAL_CONTROL_RESTRICTED);								// 69
-	BIND_ENUM_CONSTANT(RESULT_FACEBOOK_QUERY_ERROR);									// 70
-	BIND_ENUM_CONSTANT(RESULT_EXPIRED_LOGIN_AUTH_CODE);									// 71
-	BIND_ENUM_CONSTANT(RESULT_IP_LOGIN_RESTRICTION_FAILED);								// 72
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOCKED_DOWN);										// 73
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_VERIFIED_EMAIL_REQUIRED);			// 74
-	BIND_ENUM_CONSTANT(RESULT_NO_MATCHING_URL);											// 75
-	BIND_ENUM_CONSTANT(RESULT_BAD_RESPONSE);											// 76
-	BIND_ENUM_CONSTANT(RESULT_REQUIRE_PASSWORD_REENTRY);								// 77
-	BIND_ENUM_CONSTANT(RESULT_VALUE_OUT_OF_RANGE);										// 78
-	BIND_ENUM_CONSTANT(RESULT_UNEXPECTED_ERROR);										// 79
-	BIND_ENUM_CONSTANT(RESULT_DISABLED);												// 80
-	BIND_ENUM_CONSTANT(RESULT_INVALID_CEG_SUBMISSION);									// 81
-	BIND_ENUM_CONSTANT(RESULT_RESTRICTED_DEVICE);										// 82
-	BIND_ENUM_CONSTANT(RESULT_REGION_LOCKED);											// 83
-	BIND_ENUM_CONSTANT(RESULT_RATE_LIMIT_EXCEEDED);										// 84
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR);					// 85
-	BIND_ENUM_CONSTANT(RESULT_ITEM_DELETED);											// 86
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE);							// 87
-	BIND_ENUM_CONSTANT(RESULT_TWO_FACTOR_CODE_MISMATCH);								// 88
-	BIND_ENUM_CONSTANT(RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH);						// 89
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS);					// 90
-	BIND_ENUM_CONSTANT(RESULT_NOT_MODIFIED);											// 91
-	BIND_ENUM_CONSTANT(RESULT_NO_MOBILE_DEVICE);										// 92
-	BIND_ENUM_CONSTANT(RESULT_TIME_NOT_SYNCED);											// 93
-	BIND_ENUM_CONSTANT(RESULT_SMS_CODE_FAILED);											// 94
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LIMIT_EXCEEDED);									// 95
-	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED);							// 96
-	BIND_ENUM_CONSTANT(RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED);							// 97
-	BIND_ENUM_CONSTANT(RESULT_REFUND_TO_WALLET);										// 98
-	BIND_ENUM_CONSTANT(RESULT_EMAIL_SEND_FAILURE);										// 99
-	BIND_ENUM_CONSTANT(RESULT_NOT_SETTLED);												// 100
-	BIND_ENUM_CONSTANT(RESULT_NEED_CAPTCHA);											// 101
-	BIND_ENUM_CONSTANT(RESULT_GSLT_DENIED);												// 102
-	BIND_ENUM_CONSTANT(RESULT_GS_OWNER_DENIED);											// 103
-	BIND_ENUM_CONSTANT(RESULT_INVALID_ITEM_TYPE);										// 104
-	BIND_ENUM_CONSTANT(RESULT_IP_BANNED);												// 105
-	BIND_ENUM_CONSTANT(RESULT_GSLT_EXPIRED);											// 106
-	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_FUNDS);										// 107
-	BIND_ENUM_CONSTANT(RESULT_TOO_MANY_PENDING);										// 108
+	// ControllerHapticLocation Enums
+	BIND_ENUM_CONSTANT(CONTROLLER_HAPTIC_LOCATION_LEFT);
+	BIND_ENUM_CONSTANT(CONTROLLER_HAPTIC_LOCATION_RIGHT);
+	BIND_ENUM_CONSTANT(CONTROLLER_HAPTIC_LOCATION_BOTH);
 
-	// UNIVERSE /////////////////////////////////
-	BIND_ENUM_CONSTANT(UNIVERSE_INVALID);												// 0
-	BIND_ENUM_CONSTANT(UNIVERSE_PUBLIC);												// 1
-	BIND_ENUM_CONSTANT(UNIVERSE_BETA);													// 2
-	BIND_ENUM_CONSTANT(UNIVERSE_INTERNAL);												// 3
-	BIND_ENUM_CONSTANT(UNIVERSE_DEV);													// 4
-	BIND_ENUM_CONSTANT(UNIVERSE_MAX);													// 5
+	// ControllerHapticType Enums
+	BIND_ENUM_CONSTANT(CONTROLLER_HAPTIC_TYPE_OFF);
+	BIND_ENUM_CONSTANT(CONTROLLER_HAPTIC_TYPE_TICK);
+	BIND_ENUM_CONSTANT(CONTROLLER_HAPTIC_TYPE_CLICK);
 
-	// USER HAS LICENSE FOR APP RESULT //////////
-	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_HAS_LICENSE);							// 0
-	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE);					// 1
-	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_NO_AUTH);								// 2
+	// ControllerPad Enums
+	BIND_ENUM_CONSTANT(STEAM_CONTROLLER_PAD_LEFT);
+	BIND_ENUM_CONSTANT(STEAM_CONTROLLER_PAD_RIGHT);
 
-	// VOICE RESULT /////////////////////////////
-	BIND_ENUM_CONSTANT(VOICE_RESULT_OK);												// 0
-	BIND_ENUM_CONSTANT(VOICE_RESULT_NOT_INITIALIZED);									// 1
-	BIND_ENUM_CONSTANT(VOICE_RESULT_NOT_RECORDING);										// 2
-	BIND_ENUM_CONSTANT(VOICE_RESULT_NO_DATE);											// 3
-	BIND_ENUM_CONSTANT(VOICE_RESULT_BUFFER_TOO_SMALL);									// 4
-	BIND_ENUM_CONSTANT(VOICE_RESULT_DATA_CORRUPTED);									// 5
-	BIND_ENUM_CONSTANT(VOICE_RESULT_RESTRICTED);										// 6
+	// DenyReason Enums
+	BIND_ENUM_CONSTANT(DENY_INVALID);
+	BIND_ENUM_CONSTANT(DENY_INVALID_VERSION);
+	BIND_ENUM_CONSTANT(DENY_GENERIC);
+	BIND_ENUM_CONSTANT(DENY_NOT_LOGGED_ON);
+	BIND_ENUM_CONSTANT(DENY_NO_LICENSE);
+	BIND_ENUM_CONSTANT(DENY_CHEATER);
+	BIND_ENUM_CONSTANT(DENY_LOGGED_IN_ELSEWHERE);
+	BIND_ENUM_CONSTANT(DENY_UNKNOWN_TEXT);
+	BIND_ENUM_CONSTANT(DENY_INCOMPATIBLE_ANTI_CHEAT);
+	BIND_ENUM_CONSTANT(DENY_MEMORY_CORRUPTION);
+	BIND_ENUM_CONSTANT(DENY_INCOMPATIBLE_SOFTWARE);
+	BIND_ENUM_CONSTANT(DENY_STEAM_CONNECTION_LOST);
+	BIND_ENUM_CONSTANT(DENY_STEAM_CONNECTION_ERROR);
+	BIND_ENUM_CONSTANT(DENY_STEAM_RESPONSE_TIMED_OUT);
+	BIND_ENUM_CONSTANT(DENY_STEAM_VALIDATION_STALLED);
+	BIND_ENUM_CONSTANT(DENY_STEAM_OWNER_LEFT_GUEST_USER);
 
-	// VR HMD TYPE
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_NONE);												// -1
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_UNKNOWN);											// 0
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_DEV);											// 1
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_VIVEPRE);										// 2
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_VIVE);											// 3
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_HTC_UNKNOWN);										// 20
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_DK1);											// 21
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_DK2);											// 22
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_RIFT);										// 23
-	BIND_ENUM_CONSTANT(VR_HMD_TYPE_OCULUS_UNKNOWN);										// 40
+	// DeviceFormFactor Enums
+	BIND_ENUM_CONSTANT(FORM_FACTOR_UNKNOWN);
+	BIND_ENUM_CONSTANT(FORM_FACTOR_PHONE);
+	BIND_ENUM_CONSTANT(FORM_FACTOR_TABLET);
+	BIND_ENUM_CONSTANT(FORM_FACTOR_COMPUTER);
+	BIND_ENUM_CONSTANT(FORM_FACTOR_TV);
 
-	// AVATAR ///////////////////////////////////
-	BIND_ENUM_CONSTANT(AVATAR_SMALL);													// 1
-	BIND_ENUM_CONSTANT(AVATAR_MEDIUM);													// 2
-	BIND_ENUM_CONSTANT(AVATAR_LARGE);													// 3
+	// DurationControlNotification Enums
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_1_HOUR);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_3_HOURS);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NO_PROGRESS);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_EXIT_SOON_3H);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_EXIT_SOON_5H);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_EXIT_SOON_NIGHT);
 
-	// FRIEND FLAGS ENUM ////////////////////////
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_NONE);												// 0X00
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_BLOCKED);											// 0X01
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_FRIENDSHIP_REQUESTED);								// 0X02
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_IMMEDIATE);											// 0X04
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_CLAN_MEMBER);										// 0X08
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_ON_GAME_SERVER);										// 0X10
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_REQUESTING_FRIENDSHIP);								// 0X80
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_REQUESTING_INFO);									// 0X100
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_IGNORED);											// 0X200
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_IGNORED_FRIEND);										// 0X400
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_CHAT_MEMBER);										// 0X1000
-	BIND_BITFIELD_FLAG(FRIEND_FLAG_ALL);												// 0XFFFF
+	// DurationControlOnlineState Enums
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_ONLINE_STATE_INVALID);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_ONLINE_STATE_OFFLINE);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_ONLINE_STATE_ONLINE);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_ONLINE_STATE_ONLINE_HIGH_PRIORITY);
 
-	// FRIEND RELATIONSHIP //////////////////////
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_NONE);											// 0
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_BLOCKED);										// 1
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_REQUEST_RECIPIENT);								// 2
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_FRIEND);											// 3
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_REQUEST_INITIATOR);								// 4
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_IGNORED);										// 5
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_IGNORED_FRIEND);									// 6
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_SUGGESTED);										// 7
-	BIND_ENUM_CONSTANT(FRIEND_RELATION_MAX);											// 8
+	// DurationControlProgress Enums
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_FULL);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_HALF);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_NONE);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_EXIT_SOON_3H);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_EXIT_SOON_5H);
+	BIND_ENUM_CONSTANT(DURATION_CONTROL_EXIT_SOON_NIGHT);
 
-	// OVERLAY TO STORE FLAG ////////////////////
-	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);										// 0
-	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);								// 1
-	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_AND_TO_CART_AND_SHOW);						// 2
+	// FilePathType Enums
+	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_INVALID);
+	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_ABSOLUTE);
+	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_API_FILENAME);
 
-	// OVERLAY TO WEB PAGE MODE /////////////////
-	BIND_ENUM_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_DEFAULT);								// 0
-	BIND_ENUM_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_MODAL);									// 1
+	// FloatingGamepadTextInputMode Enums
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);
+	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);
 
-	// PERSONA CHANGE ///////////////////////////
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_NAME);											// 0X0001
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_STATUS);											// 0X0002
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_COME_ONLINE);										// 0X0004
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_GONE_OFFLINE);									// 0X0008
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_GAME_PLAYED);										// 0X0010
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_GAME_SERVER);										// 0X0020
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_AVATAR);											// 0X0040
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_JOINED_SOURCE);									// 0X0080
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_LEFT_SOURCE);										// 0X0100
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_RELATIONSHIP_CHANGED);							// 0X0200
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_NAME_FIRST_SET);									// 0X0400
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_FACEBOOK_INFO);									// 0X0800
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_NICKNAME);										// 0X1000
-	BIND_BITFIELD_FLAG(PERSONA_CHANGE_STEAM_LEVEL);										// 0X2000
+	// FriendFlags Enums
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_NONE);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_BLOCKED);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_FRIENDSHIP_REQUESTED);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_IMMEDIATE);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_CLAN_MEMBER);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_ON_GAME_SERVER);
+	//	BIND_BITFIELD_FLAG(FRIEND_FLAG_HAS_PLAYED_WITH);
+	//	BIND_BITFIELD_FLAG(FRIEND_FLAG_FRIEND_OF_FRIEND);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_REQUESTING_FRIENDSHIP);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_REQUESTING_INFO);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_IGNORED);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_IGNORED_FRIEND);
+	//	BIND_BITFIELD_FLAG(FRIEND_FLAG_SUGGESTED);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_CHAT_MEMBER);
+	BIND_BITFIELD_FLAG(FRIEND_FLAG_ALL);
 
-	// PERSONA STATE ////////////////////////////
-	BIND_ENUM_CONSTANT(PERSONA_STATE_OFFLINE);											// 0
-	BIND_ENUM_CONSTANT(PERSONA_STATE_ONLINE);											// 1
-	BIND_ENUM_CONSTANT(PERSONA_STATE_BUSY);												// 2
-	BIND_ENUM_CONSTANT(PERSONA_STATE_AWAY);												// 3
-	BIND_ENUM_CONSTANT(PERSONA_STATE_SNOOZE);											// 4
-	BIND_ENUM_CONSTANT(PERSONA_STATE_LOOKING_TO_TRADE);									// 5
-	BIND_ENUM_CONSTANT(PERSONA_STATE_LOOKING_TO_PLAY);									// 6
-	BIND_ENUM_CONSTANT(PERSONA_STATE_MAX);												// 7
+	// FriendRelationship Enums
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_NONE);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_BLOCKED);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_REQUEST_RECIPIENT);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_FRIEND);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_REQUEST_INITIATOR);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_IGNORED);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_IGNORED_FRIEND);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_SUGGESTED);
+	BIND_ENUM_CONSTANT(FRIEND_RELATION_MAX);
 
-	// USER RESTRICTION /////////////////////////
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_NONE);											// 0
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_UNKNOWN);										// 1
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_ANY_CHAT);										// 2
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_VOICE_CHAT);									// 4
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_GROUP_CHAT);									// 8
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_RATING);										// 16
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_GAME_INVITES);									// 32
-	BIND_BITFIELD_FLAG(USER_RESTRICTION_TRADING);										// 64
+	// GameIDType Enums
+	BIND_ENUM_CONSTANT(GAME_TYPE_APP);
+	BIND_ENUM_CONSTANT(GAME_TYPE_GAME_MOD);
+	BIND_ENUM_CONSTANT(GAME_TYPE_SHORTCUT);
+	BIND_ENUM_CONSTANT(GAME_TYPE_P2P);
 
-	// GAME SEARCH ERROR CODE ///////////////////
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_OK);										// 1
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS);				// 2
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS);					// 3
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER);						// 4
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE);						// 5
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID);					// 6
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_OFFLINE);									// 7
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED);							// 8
-	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR);							// 9
+	// GamepadTextInputLineMode Enums
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE);
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES);
 
-	// GAME SEARCH PLAYER RESULT ////////////////
-	BIND_ENUM_CONSTANT(PLAYER_RESULT_FAILED_TO_CONNECT);								// 1
-	BIND_ENUM_CONSTANT(PLAYER_RESULT_ABANDONED);										// 2
-	BIND_ENUM_CONSTANT(PLAYER_RESULT_KICKED);											// 3
-	BIND_ENUM_CONSTANT(PLAYER_RESULT_INCOMPLETE);										// 4
-	BIND_ENUM_CONSTANT(PLAYER_RESULT_COMPLETED);	
+	// GamepadTextInputMode Enums
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);
+	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);
 
-	// HTML KEY MODIFIERS ///////////////////////
-	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_NONE);											// 0
-	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_ALT_DOWN);										// (1<<0)
-	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_CTRL_DOWN);									// (1<<1)
-	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_SHIFT_DOWN);									// (1<<2)
+	// GameSearchErrorCode Enums
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_OK);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_LOBBY_LEADER);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NO_HOST_AVAILABLE);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_SEARCH_PARAMS_INVALID);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_OFFLINE);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_NOT_AUTHORIZED);
+	BIND_ENUM_CONSTANT(GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR);
 
-	// HTML MOUSE BUTTON ////////////////////////
-	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_LEFT);											// 0
-	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_RIGHT);										// 1
-	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_MIDDLE);										// 2
+	// HTMLKeyModifiers Enums
+	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_NONE);
+	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_ALT_DOWN);
+	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_CTRL_DOWN);
+	BIND_BITFIELD_FLAG(HTML_KEY_MODIFIER_SHIFT_DOWN);
 
-	// MOUSE CURSOR /////////////////////////////
-	BIND_ENUM_CONSTANT(DC_USER);														// 0
-	BIND_ENUM_CONSTANT(DC_NONE);														// 1
-	BIND_ENUM_CONSTANT(DC_ARROW);														// 2
-	BIND_ENUM_CONSTANT(DC_IBEAM);														// 3
-	BIND_ENUM_CONSTANT(DC_HOUR_GLASS);													// 4
-	BIND_ENUM_CONSTANT(DC_WAIT_ARROW);													// 5
-	BIND_ENUM_CONSTANT(DC_CROSSHAIR);													// 6
-	BIND_ENUM_CONSTANT(DC_UP);															// 7
-	BIND_ENUM_CONSTANT(DC_SIZE_NW);														// 8
-	BIND_ENUM_CONSTANT(DC_SIZE_SE);														// 9
-	BIND_ENUM_CONSTANT(DC_SIZE_NE);														// 10
-	BIND_ENUM_CONSTANT(DC_SIZE_SW);														// 11
-	BIND_ENUM_CONSTANT(DC_SIZE_W);														// 12
-	BIND_ENUM_CONSTANT(DC_SIZE_E);														// 13
-	BIND_ENUM_CONSTANT(DC_SIZE_N);														// 14
-	BIND_ENUM_CONSTANT(DC_SIZE_S);														// 15
-	BIND_ENUM_CONSTANT(DC_SIZE_WE);														// 16
-	BIND_ENUM_CONSTANT(DC_SIZE_NS);														// 17
-	BIND_ENUM_CONSTANT(DC_SIZE_ALL);													// 18
-	BIND_ENUM_CONSTANT(DC_NO);															// 19
-	BIND_ENUM_CONSTANT(DC_HAND);														// 20
-	BIND_ENUM_CONSTANT(DC_BLANK);														// 21
-	BIND_ENUM_CONSTANT(DC_MIDDLE_PAN);													// 22
-	BIND_ENUM_CONSTANT(DC_NORTH_PAN);													// 23
-	BIND_ENUM_CONSTANT(DC_NORTH_EAST_PAN);												// 24
-	BIND_ENUM_CONSTANT(DC_EAST_PAN);													// 25
-	BIND_ENUM_CONSTANT(DC_SOUTH_EAST_PAN);												// 26
-	BIND_ENUM_CONSTANT(DC_SOUTH_PAN);													// 27
-	BIND_ENUM_CONSTANT(DC_SOUTH_WEST_PAN);												// 28
-	BIND_ENUM_CONSTANT(DC_WEST_PAN);													// 29
-	BIND_ENUM_CONSTANT(DC_NORTH_WEST_PAN);												// 30
-	BIND_ENUM_CONSTANT(DC_ALIAS);														// 31
-	BIND_ENUM_CONSTANT(DC_CELL);														// 32
-	BIND_ENUM_CONSTANT(DC_COL_RESIZE);													// 33
-	BIND_ENUM_CONSTANT(DC_COPY_CUR);													// 34
-	BIND_ENUM_CONSTANT(DC_VERTICAL_TEXT);												// 35
-	BIND_ENUM_CONSTANT(DC_ROW_RESIZE);													// 36
-	BIND_ENUM_CONSTANT(DC_ZOOM_IN);														// 37
-	BIND_ENUM_CONSTANT(DC_ZOOM_OUT);													// 38
-	BIND_ENUM_CONSTANT(DC_HELP);														// 39
-	BIND_ENUM_CONSTANT(DC_CUSTOM);														// 40
-	BIND_ENUM_CONSTANT(DC_LAST);														// 41
+	// HTMLMouseButton Enums
+	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_LEFT);
+	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_RIGHT);
+	BIND_ENUM_CONSTANT(HTML_MOUSE_BUTTON_MIDDLE);
 
-	// HTTP METHOD //////////////////////////////
-	BIND_ENUM_CONSTANT(HTTP_METHOD_INVALID);											// 0
-	BIND_ENUM_CONSTANT(HTTP_METHOD_GET);												// 1
-	BIND_ENUM_CONSTANT(HTTP_METHOD_HEAD);												// 2
-	BIND_ENUM_CONSTANT(HTTP_METHOD_POST);												// 3
-	BIND_ENUM_CONSTANT(HTTP_METHOD_PUT);												// 4
-	BIND_ENUM_CONSTANT(HTTP_METHOD_DELETE);												// 5
-	BIND_ENUM_CONSTANT(HTTP_METHOD_OPTIONS);											// 6
-	BIND_ENUM_CONSTANT(HTTP_METHOD_PATCH);												// 7
+	// HTTPMethod Enums
+	BIND_ENUM_CONSTANT(HTTP_METHOD_INVALID);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_GET);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_HEAD);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_POST);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_PUT);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_DELETE);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_OPTIONS);
+	BIND_ENUM_CONSTANT(HTTP_METHOD_PATCH);
 
-	// HTTP STATUS CODE /////////////////////////
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_INVALID);										// 0
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_100_CONTINUE);									// 100
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_101_SWITCHING_PROTOCOLS);						// 101
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_200_OK);										// 200
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_201_CREATED);									// 201
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_202_ACCEPTED);									// 202
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_203_NON_AUTHORITATIVE);							// 203
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_204_NO_CONTENT);								// 204
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_205_RESET_CONTENT);								// 205
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_206_PARTIAL_CONTENT);							// 206
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_300_MULTIPLE_CHOICES);							// 300
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_301_MOVED_PERMANENTLY);							// 301
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_302_FOUND);										// 302
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_303_SEE_OTHER);									// 303
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_304_NOT_MODIFIED);								// 304
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_305_USE_PROXY);									// 305
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_307_TEMPORARY_REDIRECT);						// 307
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_400_BAD_REQUEST);								// 400
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_401_UNAUTHORIZED);								// 401
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_402_PAYMENT_REQUIRED);							// 402
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_403_FORBIDDEN);									// 403
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_404_NOT_FOUND);									// 404
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_405_METHOD_NOT_ALLOWED);						// 405
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_406_NOT_ACCEPTABLE);							// 406
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_407_PROXY_AUTH_REQUIRED);						// 407
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_408_REQUEST_TIMEOUT);							// 408
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_409_CONFLICT);									// 409
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_410_GONE);										// 410
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_411_LENGTH_REQUIRED);							// 411
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_412_PRECONDITION_FAILED);						// 412
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_413_REQUEST_ENTITY_TOO_LARGE);					// 413
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_414_REQUEST_URI_TOO_LONG);						// 414
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_415_UNSUPPORTED_MEDIA_TYPE);					// 415
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE);			// 416
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_417_EXPECTATION_FAILED);						// 417
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_4XX_UNKNOWN);									// 418
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS);							// 429
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR);						// 500
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_501_NOT_IMPLEMENTED);							// 501
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_502_BAD_GATEWAY);								// 502
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE);						// 503
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT);							// 504
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED);				// 505
-	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_5XX_UNKNOWN);									// 599
+	// HTTPStatusCode Enums
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_INVALID);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_100_CONTINUE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_101_SWITCHING_PROTOCOLS);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_200_OK);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_201_CREATED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_202_ACCEPTED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_203_NON_AUTHORITATIVE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_204_NO_CONTENT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_205_RESET_CONTENT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_206_PARTIAL_CONTENT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_300_MULTIPLE_CHOICES);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_301_MOVED_PERMANENTLY);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_302_FOUND);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_303_SEE_OTHER);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_304_NOT_MODIFIED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_305_USE_PROXY);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_307_TEMPORARY_REDIRECT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_308_PERMANENT_REDIRECT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_400_BAD_REQUEST);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_401_UNAUTHORIZED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_402_PAYMENT_REQUIRED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_403_FORBIDDEN);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_404_NOT_FOUND);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_405_METHOD_NOT_ALLOWED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_406_NOT_ACCEPTABLE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_407_PROXY_AUTH_REQUIRED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_408_REQUEST_TIMEOUT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_409_CONFLICT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_410_GONE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_411_LENGTH_REQUIRED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_412_PRECONDITION_FAILED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_413_REQUEST_ENTITY_TOO_LARGE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_414_REQUEST_URI_TOO_LONG);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_415_UNSUPPORTED_MEDIA_TYPE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_416_REQUESTED_RANGE_NOT_SATISFIABLE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_417_EXPECTATION_FAILED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_4XX_UNKNOWN);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_429_TOO_MANY_REQUESTS);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_444_CONNECTION_CLOSED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_501_NOT_IMPLEMENTED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_502_BAD_GATEWAY);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_503_SERVICE_UNAVAILABLE);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_504_GATEWAY_TIMEOUT);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_505_HTTP_VERSION_NOT_SUPPORTED);
+	BIND_ENUM_CONSTANT(HTTP_STATUS_CODE_5XX_UNKNOWN);
 
-	// INPUT ACTION ORIGIN //////////////////////
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_NONE);                                       //  0
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_A);                                          //  1
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_B);                                          //  2
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_X);                                          //  3
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_Y);                                          //  4
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_BUMPER);                                //  5
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_BUMPER);                               //  6
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFTGRIP);                                   //  7
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHTGRIP);                                  //  8
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_START);                                      //  9
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_BACK);                                       //  10
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_TOUCH);                             //  11
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_SWIPE);                             //  12
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_CLICK);                             //  13
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_NORTH);                        //  14
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_SOUTH);                        //  15
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_WEST);                         //  16
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_PAD_DPAD_EAST);                         //  17
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_TOUCH);                            //  18
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_SWIPE);                            //  19
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_CLICK);                            //  20
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_NORTH);                       //  21
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_SOUTH);                       //  22
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_WEST);                        //  23
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_PAD_DPAD_EAST);                        //  24
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_TRIGGER_PULL);                          //  25
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_TRIGGER_CLICK);                         //  26
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_PULL);                         //  27
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_RIGHT_TRIGGER_CLICK);                        //  28
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_MOVE);                            //  29
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_CLICK);                           //  30
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_NORTH);                      //  31
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_SOUTH);                      //  32
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_WEST);                       //  33
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_LEFT_STICK_DPAD_EAST);                       //  34
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_MOVE);                                  //  35
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_PITCH);                                 //  36
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_YAW);                                   //  37
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_GYRO_ROLL);                                  //  38
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED0);                 //  39
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED1);                 //  40
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED2);                 //  41
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED3);                 //  42
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED4);                 //  43
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED5);                 //  44
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED6);                 //  45
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED7);                 //  46
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED8);                 //  47
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED9);                 //  48
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAM_CONTROLLER_RESERVED10);                //  49
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_X);                                      //  50
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CIRCLE);                                 //  51
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_TRIANGLE);                               //  52
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SQUARE);                                 //  53
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_BUMPER);                            //  54
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_BUMPER);                           //  55
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_OPTIONS);                                //  56
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SHARE);                                  //  57
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_TOUCH);                         //  58
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_SWIPE);                         //  59
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_CLICK);                         //  60
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_NORTH);                    //  61
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_SOUTH);                    //  62
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_WEST);                     //  63
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_PAD_DPAD_EAST);                     //  64
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_TOUCH);                        //  65
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_SWIPE);                        //  66
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_CLICK);                        //  67
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_NORTH);                   //  68
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_SOUTH);                   //  69
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_WEST);                    //  70
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_PAD_DPAD_EAST);                    //  71
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_TOUCH);                       //  72
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_SWIPE);                       //  73
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_CLICK);                       //  74
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_NORTH);                  //  75
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_SOUTH);                  //  76
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_WEST);                   //  77
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTER_PAD_DPAD_EAST);                   //  78
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_PULL);                      //  79
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_TRIGGER_CLICK);                     //  80
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_PULL);                     //  81
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_TRIGGER_CLICK);                    //  82
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_MOVE);                        //  83
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_CLICK);                       //  84
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_NORTH);                  //  85
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_SOUTH);                  //  86
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_WEST);                   //  87
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFT_STICK_DPAD_EAST);                   //  88
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_MOVE);                       //  89
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_CLICK);                      //  90
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_NORTH);                 //  91
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_SOUTH);                 //  92
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_WEST);                  //  93
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHT_STICK_DPAD_EAST);                  //  94
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_NORTH);                             //  95
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_SOUTH);                             //  96
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_WEST);                              //  97
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_EAST);                              //  98
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_MOVE);                              //  99
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_PITCH);                             //  100
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_YAW);                               //  101
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_ROLL);                              //  102
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED0);                              //  103
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED1);                              //  104
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED2);                              //  105
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED3);                              //  106
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED4);                              //  107
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED5);                              //  108
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED6);                              //  109
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED7);                              //  110
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED8);                              //  111
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED9);                              //  112
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED10);                             //  113
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_A);                                 //  114
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_B);                                 //  115
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_X);                                 //  116
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_Y);                                 //  117
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_BUMPER);                       //  118
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_BUMPER);                      //  119
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_MENU);                              //  120
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_VIEW);                              //  121
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_PULL);                 //  122
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_TRIGGER_CLICK);                //  123
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_PULL);                //  124
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_TRIGGER_CLICK);               //  125
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_MOVE);                   //  126
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_CLICK);                  //  127
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_NORTH);             //  128
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_SOUTH);             //  129
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_WEST);              //  130
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_LEFT_STICK_DPAD_EAST);              //  131
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_MOVE);                  //  132
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_CLICK);                 //  133
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_NORTH);            //  134
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_SOUTH);            //  135
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_WEST);             //  136
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RIGHT_STICK_DPAD_EAST);             //  137
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_NORTH);                        //  138
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_SOUTH);                        //  139
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_WEST);                         //  140
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_DPAD_EAST);                         //  141
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED0);                         //  142
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED1);                         //  143
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED2);                         //  144
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED3);                         //  145
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED4);                         //  146
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED5);                         //  147
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED6);                         //  148
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED7);                         //  149
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED8);                         //  150
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED9);                         //  151
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_ONE_RESERVED10);                        //  152
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_A);                                 //  153
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_B);                                 //  154
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_X);                                 //  155
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_Y);                                 //  156
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_BUMPER);                       //  157
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_BUMPER);                      //  158
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_START);                             //  159
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_BACK);                              //  160
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_PULL);                 //  161
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_TRIGGER_CLICK);                //  162
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_PULL);                //  163
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_TRIGGER_CLICK);               //  164
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_MOVE);                   //  165
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_CLICK);                  //  166
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_NORTH);             //  167
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_SOUTH);             //  168
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_WEST);              //  169
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_LEFT_STICK_DPAD_EAST);              //  170
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_MOVE);                  //  171
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_CLICK);                 //  172
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_NORTH);            //  173
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_SOUTH);            //  174
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_WEST);             //  175
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RIGHT_STICK_DPAD_EAST);             //  176
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_NORTH);                        //  177
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_SOUTH);                        //  178
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_WEST);                         //  179
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_DPAD_EAST);                         //  180
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED0);                         //  181
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED1);                         //  182
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED2);                         //  183
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED3);                         //  184
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED4);                         //  185
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED5);                         //  186
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED6);                         //  187
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED7);                         //  188
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED8);                         //  189
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED9);                         //  190
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX_360_RESERVED10);                        //  191
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_A);                                   //  192
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_B);                                   //  193
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_X);                                   //  194
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_Y);                                   //  195
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_BUMPER);                         //  196
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_BUMPER);                        //  197
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PLUS);                                //  198
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_MINUS);                               //  199
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_CAPTURE);                             //  200
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_PULL);                   //  201
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_TRIGGER_CLICK);                  //  202
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_PULL);                  //  203
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_TRIGGER_CLICK);                 //  204
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_MOVE);                     //  205
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_CLICK);                    //  206
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_NORTH);               //  207
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_SOUTH);               //  208
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_WEST);                //  209
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFT_STICK_DPAD_EAST);                //  210
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_MOVE);                    //  211
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_CLICK);                   //  212
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_NORTH);              //  213
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_SOUTH);              //  214
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_WEST);               //  215
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHT_STICK_DPAD_EAST);               //  216
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_NORTH);                          //  217
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_SOUTH);                          //  218
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_WEST);                           //  219
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_EAST);                           //  220
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_MOVE);                       //  221
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_PITCH);                      //  222
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_YAW);                        //  223
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PRO_GYRO_ROLL);                       //  224
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED0);                           //  225
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED1);                           //  226
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED2);                           //  227
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED3);                           //  228
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED4);                           //  229
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED5);                           //  230
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED6);                           //  231
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED7);                           //  232
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED8);                           //  233
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED9);                           //  234
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED10);                          //  235
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_MOVE);                      //  236
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_PITCH);                     //  237
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_YAW);                       //  238
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_ROLL);                      //  239
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_MOVE);                       //  240
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_PITCH);                      //  241
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_YAW);                        //  242
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_ROLL);                       //  243
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGRIP_LOWER);                      //  244
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGRIP_UPPER);                      //  245
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGRIP_LOWER);                     //  246
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGRIP_UPPER);                     //  247
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_N);                     //  248
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_E);                     //  249
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_S);                     //  250
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_W);                     //  251
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED15);                          //  252
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED16);                          //  253
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED17);                          //  254
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED18);                          //  255
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED19);                          //  256
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED20);                          //  257
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_X);                                      //  258
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CIRCLE);                                 //  259
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_TRIANGLE);                               //  260
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_SQUARE);                                 //  261
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTBUMPER);                             //  262
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTBUMPER);                            //  263
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_OPTION);                                 //  264
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CREATE);                                 //  265
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_MUTE);                                   //  266
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_TOUCH);                          //  267
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_SWIPE);                          //  268
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_CLICK);                          //  269
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADNORTH);                      //  270
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADSOUTH);                      //  271
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADWEST);                       //  272
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADEAST);                       //  273
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_TOUCH);                         //  274
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_SWIPE);                         //  275
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_CLICK);                         //  276
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADNORTH);                     //  277
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADSOUTH);                     //  278
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADWEST);                      //  279
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADEAST);                      //  280
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_TOUCH);                        //  281
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_SWIPE);                        //  282
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_CLICK);                        //  283
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADNORTH);                    //  284
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADSOUTH);                    //  285
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADWEST);                     //  286
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADEAST);                     //  287
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_PULL);                       //  288
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_CLICK);                      //  289
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_PULL);                      //  290
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_CLICK);                     //  291
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_MOVE);                         //  292
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_CLICK);                        //  293
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADNORTH);                    //  294
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADSOUTH);                    //  295
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADWEST);                     //  296
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADEAST);                     //  297
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_MOVE);                        //  298
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_CLICK);                       //  299
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADNORTH);                   //  300
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADSOUTH);                   //  301
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADWEST);                    //  302
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADEAST);                    //  303
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_NORTH);                             //  304
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_SOUTH);                             //  305
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_WEST);                              //  306
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_EAST);                              //  307
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_MOVE);                              //  308
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_PITCH);                             //  309
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_YAW);                               //  310
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_ROLL);                              //  311
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_MOVE);                              //  312
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTGRIP);                               //  313
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTGRIP);                              //  314
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTFN);                                 //  315
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTFN);                                //  316
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED5);                              //  317
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED6);                              //  318
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED7);                              //  319
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED8);                              //  320
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED9);                              //  321
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED10);                             //  322
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED11);                             //  323
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED12);                             //  324
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED13);                             //  325
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED14);                             //  326
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED15);                             //  327
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED16);                             //  328
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED17);                             //  329
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED18);                             //  330
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED19);                             //  331
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED20);                             //  332
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_A);                                //  333
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_B);                                //  334
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_X);                                //  335
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_Y);                                //  336
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L1);                               //  337
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R1);                               //  338
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_MENU);                             //  339
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_VIEW);                             //  340
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_TOUCH);                    //  341
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_SWIPE);                    //  342
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_CLICK);                    //  343
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADNORTH);                //  344
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADSOUTH);                //  345
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADWEST);                 //  346
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADEAST);                 //  347
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_TOUCH);                   //  348
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_SWIPE);                   //  349
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_CLICK);                   //  350
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADNORTH);               //  351
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADSOUTH);				//  352
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADWEST);                //  353
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADEAST);                //  354
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2_SOFTPULL);                      //  355
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2);                               //  356
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2_SOFTPULL);                      //  357
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2);                               //  358
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_MOVE);                   //  359
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L3);                               //  360
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADNORTH);              //  361
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADSOUTH);              //  362
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADWEST);               //  363
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADEAST);               //  364
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_TOUCH);                  //  365
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_MOVE);                  //  366
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R3);                               //  367
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADNORTH);             //  368
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADSOUTH);             //  369
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADWEST);              //  370
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADEAST);              //  371
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_TOUCH);                 //  372
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L4);                               //  373
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R4);                               //  374
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L5);                               //  375
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R5);                               //  376
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_MOVE);                        //  377
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_NORTH);                       //  378
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_SOUTH);                       //  379
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_WEST);                        //  380
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_EAST);                        //  381
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_MOVE);                        //  382
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_PITCH);                       //  383
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_YAW);                         //  384
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_ROLL);                        //  385
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED1);                        //  386
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED2);                        //  387
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED3);                        //  388
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED4);                        //  389
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED5);                        //  390
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED6);                        //  391
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED7);                        //  392
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED8);                        //  393
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED9);                        //  394
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED10);                       //  395
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED11);                       //  396
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED12);                       //  397
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED13);                       //  398
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED14);                       //  399
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED15);                       //  400
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED16);                       //  401
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED17);                       //  402
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED18);                       //  403
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED19);                       //  404
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED20);                       //  405
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_COUNT);                                      //  406
-	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_MAXIMUMPOSSIBLEVALUE);                       //  32767
+	// InputActionEventType Enums
+	BIND_ENUM_CONSTANT(INPUT_ACTION_EVENT_TYPE_DIGITAL_ACTION);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_EVENT_TYPE_ANALOG_ACTION);
 
-	// STEAM INPUT TYPE /////////////////////////
-	BIND_ENUM_CONSTANT(INPUT_TYPE_UNKNOWN);												// 0
-	BIND_ENUM_CONSTANT(INPUT_TYPE_STEAM_CONTROLLER);									// 1
-	BIND_ENUM_CONSTANT(INPUT_TYPE_XBOX360_CONTROLLER);									// 2
-	BIND_ENUM_CONSTANT(INPUT_TYPE_XBOXONE_CONTROLLER);									// 3
-	BIND_ENUM_CONSTANT(INPUT_TYPE_GENERIC_XINPUT);										// 4
-	BIND_ENUM_CONSTANT(INPUT_TYPE_PS4_CONTROLLER);										// 5
-	BIND_ENUM_CONSTANT(INPUT_TYPE_APPLE_MFI_CONTROLLER);								// 6
-	BIND_ENUM_CONSTANT(INPUT_TYPE_ANDROID_CONTROLLER);									// 7
-	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_PAIR);									// 8
-	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_SINGLE);								// 9
-	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_PRO_CONTROLLER);								// 10
-	BIND_ENUM_CONSTANT(INPUT_TYPE_MOBILE_TOUCH);										// 11
-	BIND_ENUM_CONSTANT(INPUT_TYPE_PS3_CONTROLLER);										// 12
-	BIND_ENUM_CONSTANT(INPUT_TYPE_PS5_CONTROLLER);										// 13
-	BIND_ENUM_CONSTANT(INPUT_TYPE_STEAM_DECK_CONTROLLER);								// 14
-	BIND_ENUM_CONSTANT(INPUT_TYPE_COUNT);												// 15
-	BIND_ENUM_CONSTANT(INPUT_TYPE_MAXIMUM_POSSIBLE_VALUE);								// 255
+	// InputActionOrigin Enums
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_NONE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_A);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_B);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_Y);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTGRIP);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTGRIP);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_START);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_BACK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RIGHTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_GYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_GYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_GYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_GYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED0);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMCONTROLLER_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CIRCLE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_TRIANGLE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SQUARE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_OPTIONS);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_SHARE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_CENTERPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RIGHTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_WEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_EAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_GYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_DPAD_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS4_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_A);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_B);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_Y);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_MENU);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_VIEW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_DPAD_WEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_DPAD_EAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_DPAD_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTGRIP_LOWER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_LEFTGRIP_UPPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTGRIP_LOWER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RIGHTGRIP_UPPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_SHARE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOXONE_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_A);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_B);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_Y);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_START);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_BACK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RIGHTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_DPAD_WEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_DPAD_EAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_DPAD_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_XBOX360_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_A);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_B);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_Y);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PLUS);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_MINUS);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_CAPTURE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTSTICK_DPADEAST); 
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_WEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_EAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PROGYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PROGYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PROGYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_PROGYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_DPAD_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGRIP_LOWER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_LEFTGRIP_UPPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGRIP_LOWER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RIGHTGRIP_UPPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_N);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_E);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_S);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_JOYCON_BUTTON_W);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED15);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED16);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED17);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED18);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED19);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_SWITCH_RESERVED20);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CIRCLE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_TRIANGLE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_SQUARE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTBUMPER);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_OPTION);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CREATE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_MUTE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_CENTERPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_PULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTTRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_WEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_EAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_GYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_DPAD_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTGRIP);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTGRIP);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_LEFTFN);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RIGHTFN);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED11);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED12);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED13);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED14);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED15);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED16);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED17);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED18);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED19);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_PS5_RESERVED20);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_A);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_B);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_X);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_Y);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_MENU);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_VIEW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_SWIPE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_CLICK);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTPAD_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2_SOFTPULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2_SOFTPULL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_LEFTSTICK_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADNORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADSOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADWEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_DPADEAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RIGHTSTICK_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_L5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_R5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_WEST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_DPAD_EAST);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_PITCH);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_YAW);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_GYRO_ROLL);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED1);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED2);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED3);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED4);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED5);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED6);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED7);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED8);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED9);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED10);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED11);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED12);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED13);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED14);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED15);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED16);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED17);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED18);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED19);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_STEAMDECK_RESERVED20);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_COUNT);
+	BIND_ENUM_CONSTANT(INPUT_ACTION_ORIGIN_MAXIMUM_POSSIBLE_VALUE);
 
-	// CONFIGURATION ENABLE TYPE ////////////////
-	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_NONE);							// 0x0000
-	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_PLAYSTATION);					// 0x0001
-	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_XBOX);							// 0x0002
-	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_GENERIC);						// 0x0004
-	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH);							// 0x0008
-	
-	// GLYPH SIZE ///////////////////////////////
-	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_SMALL);											// 0
-	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_MEDIUM);										// 1
-	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_LARGE);											// 2
-	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_COUNT);											// 3
+	// InputConfigurationEnableType Enums
+	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_NONE);
+	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_PLAYSTATION);
+	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_XBOX);
+	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_GENERIC);
+	BIND_BITFIELD_FLAG(INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH);
 
-	// GLYPH STYLE //////////////////////////////
-	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_KNOCKOUT);										// 0x0
-	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_LIGHT);										// 0x1
-	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_DARK);											// 0x2
-	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY);							// 0x10
-	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_SOLID_ABXY);									// 0x20
+	// InputGlyphSize Enums
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_SMALL);
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_MEDIUM);
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_LARGE);
+	BIND_ENUM_CONSTANT(INPUT_GLYPH_SIZE_COUNT);
 
-	// STEAM ITEM FLAGS /////////////////////////
-	BIND_BITFIELD_FLAG(STEAM_ITEM_NO_TRADE);											// (1<<0)
-	BIND_BITFIELD_FLAG(STEAM_ITEM_REMOVED);												// (1<<8)
-	BIND_BITFIELD_FLAG(STEAM_ITEM_CONSUMED);											// (1<<9)
+	// InputGlyphStyle Enums
+	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_KNOCKOUT);
+	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_LIGHT);
+	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_DARK);
+	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY);
+	BIND_BITFIELD_FLAG(INPUT_GLYPH_STYLE_SOLID_ABXY);
 
-	// CHAT MEMBER STATE CHANGE /////////////////
-	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_ENTERED);								// 0X0001
-	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_LEFT);									// 0X0002
-	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_DISCONNECTED);							// 0X0004
-	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_KICKED);								// 0X0008
-	BIND_BITFIELD_FLAG(CHAT_MEMBER_STATE_CHANGE_BANNED);								// 0X0010
+	// InputLEDFLag Enums
+	BIND_ENUM_CONSTANT(INPUT_LED_FLAG_SET_COLOR);
+	BIND_ENUM_CONSTANT(INPUT_LED_FLAG_RESTORE_USER_DEFAULT);
 
-	// LOBBY COMPARISON /////////////////////////
-	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN);							// -2
-	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_LESS_THAN);										// -1
-	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL);											// 0
-	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_GREATER_THAN);									// 1
-	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN);							// 2
-	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_NOT_EQUAL);										// 3
+	// InputSourceMode Enums
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_NONE);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_DPAD);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_BUTTONS);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_FOUR_BUTTONS);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_ABSOLUTE_MOUSE);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_RELATIVE_MOUSE);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_JOYSTICK_MOVE);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_JOYSTICK_MOUSE);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_JOYSTICK_CAMERA);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_SCROLL_WHEEL);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_TRIGGER);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_TOUCH_MENU);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_MOUSE_JOYSTICK);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_MOUSE_REGION);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_RADIAL_MENU);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_SINGLE_BUTTON);
+	BIND_ENUM_CONSTANT(INPUT_SOURCE_MODE_SWITCH);
 
-	// LOBBY DISTANCE FILTER ////////////////////
-	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_CLOSE);									// 0
-	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_DEFAULT);									// 1
-	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_FAR);										// 2
-	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_WORLDWIDE);								// 3
+	// InputType Enums
+	BIND_ENUM_CONSTANT(INPUT_TYPE_UNKNOWN);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_STEAM_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_XBOX360_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_XBOXONE_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_GENERIC_XINPUT);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_PS4_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_APPLE_MFI_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_ANDROID_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_PAIR);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_JOYCON_SINGLE);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_SWITCH_PRO_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_MOBILE_TOUCH);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_PS3_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_PS5_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_STEAM_DECK_CONTROLLER);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_COUNT);
+	BIND_ENUM_CONSTANT(INPUT_TYPE_MAXIMUM_POSSIBLE_VALUE);
 
-	// LOBBY TYPE ///////////////////////////////
-	BIND_ENUM_CONSTANT(LOBBY_TYPE_PRIVATE);												// 0
-	BIND_ENUM_CONSTANT(LOBBY_TYPE_FRIENDS_ONLY);										// 1
-	BIND_ENUM_CONSTANT(LOBBY_TYPE_PUBLIC);												// 2
-	BIND_ENUM_CONSTANT(LOBBY_TYPE_INVISIBLE);											// 3
+	// IPType Enums
+	BIND_ENUM_CONSTANT(IP_TYPE_IPV4);
+	BIND_ENUM_CONSTANT(IP_TYPE_IPV6);
 
-	// MATCHMAKING SERVER RESPONSE //////////////
-	BIND_ENUM_CONSTANT(SERVER_RESPONDED);												// 0
-	BIND_ENUM_CONSTANT(SERVER_FAILED_TO_RESPOND);										// 1
-	BIND_ENUM_CONSTANT(NO_SERVERS_LISTED_ON_MASTER_SERVER);								// 2
+	// IPv6ConnectivityProtocol Enums
+	BIND_ENUM_CONSTANT(IPV6_CONNECTIVITY_PROTOCOL_INVALID);
+	BIND_ENUM_CONSTANT(IPV6_CONNECTIVITY_PROTOCOL_HTTP);
+	BIND_ENUM_CONSTANT(IPV6_CONNECTIVITY_PROTOCOL_UDP);
 
-	// AUDIO PLAYBACK STATUS ////////////////////
-	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_UNDEFINED);										// 0
-	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_PLAYING);											// 1
-	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_PAUSED);											// 2
-	BIND_ENUM_CONSTANT(AUDIO_PLAYBACK_IDLE);											// 3
+	// IPv6ConnectivityState Enums
+	BIND_ENUM_CONSTANT(IPV6_CONNECTIVITY_STATE_UNKNOWN);
+	BIND_ENUM_CONSTANT(IPV6_CONNECTIVITY_STATE_GOOD);
+	BIND_ENUM_CONSTANT(IPV6_CONNECTIVITY_STATE_BAD);
 
-	// P2P SEND /////////////////////////////////
-	BIND_ENUM_CONSTANT(P2P_SEND_UNRELIABLE);											// 0
-	BIND_ENUM_CONSTANT(P2P_SEND_UNRELIABLE_NO_DELAY);									// 1
-	BIND_ENUM_CONSTANT(P2P_SEND_RELIABLE);												// 2
-	BIND_ENUM_CONSTANT(P2P_SEND_RELIABLE_WITH_BUFFERING);								// 3
+	// ItemFlags Enums
+	BIND_BITFIELD_FLAG(STEAM_ITEM_NO_TRADE);
+	BIND_BITFIELD_FLAG(STEAM_ITEM_REMOVED);
+	BIND_BITFIELD_FLAG(STEAM_ITEM_CONSUMED);
 
-	// P2P SESSION ERROR ////////////////////////
-	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NONE);											// 0
-	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NOT_RUNNING_APP);								// 1
-	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NO_RIGHTS_TO_APP);								// 2
-	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON);					// 3
-	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_TIMEOUT);										// 4
-	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_MAX);											// 5
+	// ItemPreviewType Enums
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_IMAGE);
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO);
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);
 
-	// SNET SOCKET CONNECTION TYPE //////////////
-	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED);						// 0
-	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP);									// 1
-	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP_RELAY);							// 2
+	// ItemState Enums
+	BIND_BITFIELD_FLAG(ITEM_STATE_NONE);
+	BIND_BITFIELD_FLAG(ITEM_STATE_SUBSCRIBED);
+	BIND_BITFIELD_FLAG(ITEM_STATE_LEGACY_ITEM);
+	BIND_BITFIELD_FLAG(ITEM_STATE_INSTALLED);
+	BIND_BITFIELD_FLAG(ITEM_STATE_NEEDS_UPDATE);
+	BIND_BITFIELD_FLAG(ITEM_STATE_DOWNLOADING);
+	BIND_BITFIELD_FLAG(ITEM_STATE_DOWNLOAD_PENDING);
 
-	// SNET SOCKET STATE ////////////////////////
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_INVALID);										// 0
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_CONNECTED);										// 1
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_INITIATED);										// 10
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND);							// 11
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES);					// 12
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_CHALLENGE_HANDSHAKE);							// 15
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_DISCONNECTING);									// 21
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_LOCAL_DISCONNECT);								// 22
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT);						// 23
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_REMOTE_END_DISCONNECTED);						// 24
-	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_BROKEN);										// 25
+	// ItemStatistic Enums
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FAVORITES);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_REPORT_SCORE);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_COMMENTS);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);
+	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);
 
-	// NETWORKING CONFIGURATION VALUE ///////////
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_INVALID);										// 0
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND);						// 2
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV);						// 3
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_SEND);							// 4
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_RECV);							// 5
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_SEND);						// 6
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_RECV);						// 7
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_TIME);						// 8
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_SEND);							// 26
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_REVC);							// 27
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_TIME_MAX);						// 28
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_INITIAL);								// 24
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_CONNECTED);							// 25
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_BUFFER_SIZE);								// 9
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MIN);								// 10
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MAX);								// 11
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_NAGLE_TIME);									// 12
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH);						// 23
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL_INITIAL);	// 19
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL);			// 20
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE);	// 21
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET);						// 22
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER);				// 29
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS);				// 30
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR);					// 31
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT);							// 13
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE);						// 14
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_MESSAGE);							// 15
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_GAPS);						// 16
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_P2P_RENDEZVOUS);						// 17
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_SRD_RELAY_PINGS);					// 18
+	// ItemUpdateStatus Enums
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_INVALID);
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_CONTENT);
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);
+	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);
 
-	// NETWORKING GET CONFIGURATION VALUE RESULT
-	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_VALUE);							// -1
-	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_SCOPE_OBJ);						// -2
-	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BUFFER_TOO_SMALL);					// -3
-	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK);									// 1
-	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK_INHERITED);						// 2
-	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_FORCE_32BIT);						// 0X7FFFFFFF
-	
-	// NETWORKING CONNECTION STATE //////////////
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_NONE);											// 0
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_CONNECTING);									// 1
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_FINDING_ROUTE);									// 2
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_CONNECTED);										// 3
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_CLOSED_BY_PEER);								// 4
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY);						// 5
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_FIN_WAIT);										// -1
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_LINGER);										// -2
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_DEAD);											// -3
-	BIND_ENUM_CONSTANT(CONNECTION_STATE_FORCE32BIT);									// 0X7FFFFFFF
+	// LeaderboardDataRequest Enums
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);
+	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);
 
-	// NETWORKING CONNECTION END ////////////////
-	BIND_ENUM_CONSTANT(CONNECTION_END_INVALID);											// 0
-	BIND_ENUM_CONSTANT(CONNECTION_END_APP_MIN);											// 1000
-	BIND_ENUM_CONSTANT(CONNECTION_END_MAX);												// 1999
-	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_MIN);								// 2000
-	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_MAX);								// 2999
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MIN);										// 3000
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_OFFLINE_MODE);								// 3001
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY);					// 3002
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_HOSTED_sERVER_PRIMARY_RELAY);				// 3003
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_NETWORK_CONFIG);							// 3004
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_RIGHTS);									// 3005
-	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MAX);										// 3999
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOVE_MIN);										// 4000
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_TIMEOUT);									// 4001
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_BAD_CRYPT);								// 4002
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_BAD_CERT);									// 4003
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_NOT_LOGGED_IN);							// 4004
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_NOT_RUNNING_APP);							// 4005
-	BIND_ENUM_CONSTANT(CONNECTION_END_BAD_PROTOCOL_VERSION);							// 4006
-	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_MAX);										// 4999
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_MIN);										// 5000
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_GENERIC);									// 5001
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_INTERNAL_ERROR);								// 5002
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_TIMEOUT);									// 5003
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_RELAY_CONNECTIVITY);							// 5004
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_STEAM_CONNECTIVITY);							// 5005
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT);				// 5006
-	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_MAX);										// 5999
+	// LeaderboardDisplayType Enums
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NONE);
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NUMERIC);
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);
+	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);
 
-	// NETWORKING IDENTITY TYPE /////////////////
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_INVALID);											// 0
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_STEAMID);											// 16
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);										// 1
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);									// 2
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);									// 3
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_UNKNOWN_TYPE);										// 4
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_XBOX_PAIRWISE);									// 17
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_SONY_PSN);											// 18
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GOOGLE_STADIA);									// 19 
-	BIND_ENUM_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);										// 0X7FFFFFFF
+	// LeaderboardSortMethod Enums
+	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_NONE);
+	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_ASCENDING);
+	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_DESCENDING);
 
-	// NETWORKING SOCKET DEBUG OUTPUT ///////////
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE);						// 0
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG);						// 1
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR);						// 2
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT);					// 3
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING);					// 4
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG);						// 5
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE);					// 6,
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG);						// 7
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING);					// 8
-	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT);				// 0X7FFFFFFF
-	
-	// NETWORKING AVAILABILITY //////////////////
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_CANNOT_TRY);								// -102
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_FAILED);									// -101
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_PREVIOUSLY);								// -100
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_NEVER_TRIED);							// 1
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_WAITING);								// 2
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_ATTEMPTING);								// 3
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_CURRENT);								// 100
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_UNKNOWN);								// 0
-	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_FORCE_32BIT);							// 0X7FFFFFFF
+	// LeaderboardUploadScoreMethod Enums
+	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_NONE);
+	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST);
+	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE);
 
-	// NETWORKING CONFIGURATION SCOPE ///////////
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_GLOBAL);									// 1
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_SOCKETS_INTERFACE);						// 2
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_LISTEN_SOCKET);							// 3
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_CONNECTION);								// 4
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_FORCE_32BIT);							// 0X7FFFFFFF
+	// LobbyComparison Enums
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL_TO_OR_LESS_THAN);
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_LESS_THAN);
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_EQUAL);
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_GREATER_THAN); 
+	BIND_ENUM_CONSTANT(OBBY_COMPARISON_EQUAL_TO_GREATER_THAN);
+	BIND_ENUM_CONSTANT(LOBBY_COMPARISON_NOT_EQUAL)
 
-	// NETWORKING CONFIGURATION DATA TYPE ///////
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_INT32);									// 1
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_INT64);									// 2
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FLOAT);									// 3
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_STRING);									// 4
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FUNCTION_PTR);							// 5
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FORCE_32BIT);								// 0x7fffffff
+	// LobbyDistanceFilter Enums
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_CLOSE);
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_DEFAULT);
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_FAR);
+	BIND_ENUM_CONSTANT(LOBBY_DISTANCE_FILTER_WORLDWIDE);
 
-	// PARENTAL SETTINGS ////////////////////////
-	BIND_ENUM_CONSTANT(FEATURE_INVALID);												// 0
-	BIND_ENUM_CONSTANT(FEATURE_STORE);													// 1
-	BIND_ENUM_CONSTANT(FEATURE_COMMUNITY);												// 2
-	BIND_ENUM_CONSTANT(FEATURE_PROFILE);												// 3
-	BIND_ENUM_CONSTANT(FEATURE_FRIENDS);												// 4
-	BIND_ENUM_CONSTANT(FEATURE_NEWS);													// 5
-	BIND_ENUM_CONSTANT(FEATURE_TRADING);												// 6
-	BIND_ENUM_CONSTANT(FEATURE_SETTINGS);												// 7
-	BIND_ENUM_CONSTANT(FEATURE_CONSOLE);												// 8
-	BIND_ENUM_CONSTANT(FEATURE_BROWSER);												// 9
-	BIND_ENUM_CONSTANT(FEATURE_PARENTAL_SETUP);											// 10
-	BIND_ENUM_CONSTANT(FEATURE_LIBRARY);												// 11
-	BIND_ENUM_CONSTANT(FEATURE_TEST);													// 12
-	BIND_ENUM_CONSTANT(FEATURE_SITE_LICENSE);											// 13
-	BIND_ENUM_CONSTANT(FEATURE_KIOSK_MODE);												// 14
+	// LobbyType Enums
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_PRIVATE);
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_FRIENDS_ONLY);
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_PUBLIC);
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_INVISIBLE);
+	BIND_ENUM_CONSTANT(LOBBY_TYPE_PRIVATE_UNIQUE);
+
+	// LocalFileChange Enums
+	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_INVALID);
+	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_FILE_UPDATED);
+	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_FILE_DELETED);
+
+	// MarketNotAllowedReasonFlags Enums
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_NONE);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_TEMPORARY_FAILURE);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_ACCOUNT_DISABLED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_ACCOUNT_LOCKED_DOWN);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_ACCOUNT_LIMITED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_TRADE_BANNED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_ACCOUNT_NOT_TRUSTED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_STEAM_GUARD_NOT_ENABLED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_STEAM_GAURD_ONLY_RECENTLY_ENABLED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_RECENT_PASSWORD_RESET);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_NEW_PAYMENT_METHOD);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_INVALID_COOKIE);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_USING_NEW_DEVICE);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_RECENT_SELF_REFUND);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_NEW_PAYMENT_METHOD_CANNOT_BE_VERIFIED);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_NO_RECENT_PURCHASES);
+	BIND_ENUM_CONSTANT(MARKET_NOT_ALLOWED_REASON_ACCEPTED_WALLET_GIFT);
+
+	// MatchMakingServerResponse Enums
+	BIND_ENUM_CONSTANT(SERVER_RESPONDED);
+	BIND_ENUM_CONSTANT(SERVER_FAILED_TO_RESPOND);
+	BIND_ENUM_CONSTANT(NO_SERVERS_LISTED_ON_MASTER_SERVER);
+
+	// MouseCursor Enums
+	BIND_ENUM_CONSTANT(DC_USER);
+	BIND_ENUM_CONSTANT(DC_NONE);
+	BIND_ENUM_CONSTANT(DC_ARROW);
+	BIND_ENUM_CONSTANT(DC_IBEAM);
+	BIND_ENUM_CONSTANT(DC_HOUR_GLASS);
+	BIND_ENUM_CONSTANT(DC_WAIT_ARROW);
+	BIND_ENUM_CONSTANT(DC_CROSSHAIR);
+	BIND_ENUM_CONSTANT(DC_UP);
+	BIND_ENUM_CONSTANT(DC_SIZE_NW);
+	BIND_ENUM_CONSTANT(DC_SIZE_SE);
+	BIND_ENUM_CONSTANT(DC_SIZE_NE);
+	BIND_ENUM_CONSTANT(DC_SIZE_SW);
+	BIND_ENUM_CONSTANT(DC_SIZE_W);
+	BIND_ENUM_CONSTANT(DC_SIZE_E);
+	BIND_ENUM_CONSTANT(DC_SIZE_N);
+	BIND_ENUM_CONSTANT(DC_SIZE_S);
+	BIND_ENUM_CONSTANT(DC_SIZE_WE);
+	BIND_ENUM_CONSTANT(DC_SIZE_NS);
+	BIND_ENUM_CONSTANT(DC_SIZE_ALL);
+	BIND_ENUM_CONSTANT(DC_NO);
+	BIND_ENUM_CONSTANT(DC_HAND);
+	BIND_ENUM_CONSTANT(DC_BLANK);
+	BIND_ENUM_CONSTANT(DC_MIDDLE_PAN);
+	BIND_ENUM_CONSTANT(DC_NORTH_PAN);
+	BIND_ENUM_CONSTANT(DC_NORTH_EAST_PAN);
+	BIND_ENUM_CONSTANT(DC_EAST_PAN);
+	BIND_ENUM_CONSTANT(DC_SOUTH_EAST_PAN);
+	BIND_ENUM_CONSTANT(DC_SOUTH_PAN);
+	BIND_ENUM_CONSTANT(DC_SOUTH_WEST_PAN);
+	BIND_ENUM_CONSTANT(DC_WEST_PAN);
+	BIND_ENUM_CONSTANT(DC_NORTH_WEST_PAN);
+	BIND_ENUM_CONSTANT(DC_ALIAS);
+	BIND_ENUM_CONSTANT(DC_CELL);
+	BIND_ENUM_CONSTANT(DC_COL_RESIZE);
+	BIND_ENUM_CONSTANT(DC_COPY_CUR);
+	BIND_ENUM_CONSTANT(DC_VERTICAL_TEXT);
+	BIND_ENUM_CONSTANT(DC_ROW_RESIZE);
+	BIND_ENUM_CONSTANT(DC_ZOOM_IN);
+	BIND_ENUM_CONSTANT(DC_ZOOM_OUT);
+	BIND_ENUM_CONSTANT(DC_HELP);
+	BIND_ENUM_CONSTANT(DC_CUSTOM);
+	BIND_ENUM_CONSTANT(DC_LAST);
+
+	// NetworkingAvailability Enums
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_CANNOT_TRY);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_FAILED);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_PREVIOUSLY);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_RETRYING);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_NEVER_TRIED);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_WAITING);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_ATTEMPTING);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_CURRENT);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_UNKNOWN);
+	BIND_ENUM_CONSTANT(NETWORKING_AVAILABILITY_FORCE_32BIT);
+
+	// NetworkingConfigDataType Enums
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_INT32);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_INT64);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FLOAT); 
+	BIND_ENUM_CONSTANT(ETWORKING_CONFIG_TYPE_STRING);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FUNCTION_PTR);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TYPE_FORCE_32BIT);
+
+	// NetworkingConfigScope Enums
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_GLOBAL);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_SOCKETS_INTERFACE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_LISTEN_SOCKET);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_CONNECTION);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SCOPE_FORCE_32BIT);
+
+	// NetworkingConfigValue Enums
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_INVALID);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_SEND);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LOSS_RECV);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_SEND);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_LAG_RECV);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_SEND);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_RECV);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_REORDER_TIME);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_SEND);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_REVC);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_PACKET_DUP_TIME_MAX);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_PACKET_TRACE_MAX_BYTES);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_SEND_RATE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_SEND_BURST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_RATE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_BURST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CONNECTION_USER_DATA);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_INITIAL);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_CONNECTED);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_BUFFER_SIZE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MIN);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SEND_RATE_MAX);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_NAGLE_TIME);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_MTU_PACKET_SIZE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_MTU_DATA_SIZE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_UNENCRYPTED);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SYMMETRIC_CONNECT);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOCAL_VIRTUAL_PORT);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_DUAL_WIFI_ENABLE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_ENABLE_DIAGNOSTICS_UI);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL_INITIAL);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_CONSEC_PING_TIMEOUT_FAIL);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FAKE_CLUSTER_PING);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_MESSAGE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_GAPS);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_P2P_RENDEZVOUS);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_SRD_RELAY_PINGS);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_CONNECTION_STATUS_CHANGED);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_AUTH_STATUS_CHANGED);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_RELAY_NETWORK_STATUS_CHANGED);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_MESSAGE_SESSION_REQUEST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_MESSAGES_SESSION_FAILED);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_CREATE_CONNECTION_SIGNALING);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CALLBACK_FAKE_IP_RESULT);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_STUN_SERVER_LIST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_ICE_ENABLE);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_ICE_PENALTY);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_SDR_PENALTY);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_SERVER_LIST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_uSER_LIST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_PASS_LIST);
+//	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_LAN_BEACON_PENALTY);		// Commented out in the SDK
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_ICE_IMPLEMENTATION);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_VALUE_FORCE32BIT);
+
+	// NetworkingConnectionEnd Enums
+	BIND_ENUM_CONSTANT(CONNECTION_END_INVALID);
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_MIN);
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_GENERIC);
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_MAX);
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_MIN);
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_GENERIC);
+	BIND_ENUM_CONSTANT(CONNECTION_END_APP_EXCEPTION_MAX);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MIN);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_OFFLINE_MODE);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MANY_RELAY_CONNECTIVITY);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_HOSTED_SERVER_PRIMARY_RELAY);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_NETWORK_CONFIG);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_RIGHTS);
+	BIND_ENUM_CONSTANT(CONNECTION_END_NO_PUBLIC_ADDRESS);
+	BIND_ENUM_CONSTANT(CONNECTION_END_LOCAL_MAX);
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOVE_MIN);
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_TIMEOUT);
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_BAD_CRYPT);
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_BAD_CERT);
+	BIND_ENUM_CONSTANT(CONNECTION_END_BAD_PROTOCOL_VERSION);
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_P2P_ICE_NO_PUBLIC_ADDRESSES);
+	BIND_ENUM_CONSTANT(CONNECTION_END_REMOTE_MAX);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_MIN);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_GENERIC);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_INTERNAL_ERROR);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_TIMEOUT);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_STEAM_CONNECTIVITY);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_NO_RELAY_SESSIONS_TO_CLIENT);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_P2P_RENDEZVOUS);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_P2P_NAT_FIREWALL);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_PEER_SENT_NO_CONNECTION);
+	BIND_ENUM_CONSTANT(CONNECTION_END_MISC_MAX);
+	BIND_ENUM_CONSTANT(CONNECTION_END_FORCE32BIT);
+
+	// NetworkingConnectionState Enums
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_NONE);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_CONNECTING);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_FINDING_ROUTE);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_CONNECTED);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_CLOSED_BY_PEER);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_PROBLEM_DETECTED_LOCALLY);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_FIN_WAIT);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_LINGER);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_DEAD);
+	BIND_ENUM_CONSTANT(CONNECTION_STATE_FORCE_32BIT);
+
+	// NetworkingFakeIPType Enums
+	BIND_ENUM_CONSTANT(FAKE_IP_TYPE_INVALID);
+	BIND_ENUM_CONSTANT(FAKE_IP_TYPE_NOT_FAKE);
+	BIND_ENUM_CONSTANT(FAKE_IP_TYPE_GLOBAL_IPV4);
+	BIND_ENUM_CONSTANT(FAKE_IP_TYPE_LOCAL_IPV4);
+	BIND_ENUM_CONSTANT(FAKE_IP_TYPE_FORCE32BIT);
+
+	// NetworkingGetConfigValueResult Enums
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_VALUE);
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BAD_SCOPE_OBJ);
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_BUFFER_TOO_SMALL);
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK);
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_OK_INHERITED);
+	BIND_ENUM_CONSTANT(NETWORKING_GET_CONFIG_VALUE_FORCE_32BIT);
+
+	// NetworkingIdentityType Enums
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_INVALID);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_STEAMID);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_IP_ADDRESS);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GENERIC_STRING);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GENERIC_BYTES);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_UNKNOWN_TYPE);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_XBOX_PAIRWISE);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_SONY_PSN);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_GOOGLE_STADIA);
+	//	BIND_ENUM_CONSTANT(IDENTITY_TYPE_NINTENDO);
+	//	BIND_ENUM_CONSTANT(IDENTITY_TYPE_EPIC_GS);
+	//	BIND_ENUM_CONSTANT(IDENTITY_TYPE_WEGAME);
+	BIND_ENUM_CONSTANT(IDENTITY_TYPE_FORCE_32BIT);
+
+	// NetworkingSocketsDebugOutputType Enums
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_NONE);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_BUG);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_ERROR);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_IMPORTANT);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_WARNING);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_MSG);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_VERBOSE);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_DEBUG);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_EVERYTHING);
+	BIND_ENUM_CONSTANT(NETWORKING_SOCKET_DEBUG_OUTPUT_TYPE_FORCE_32BIT);
+
+	// NotificationPosition Enums
+	BIND_ENUM_CONSTANT(POSITION_INVALID);
+	BIND_ENUM_CONSTANT(POSITION_TOP_LEFT);
+	BIND_ENUM_CONSTANT(POSITION_TOP_RIGHT);
+	BIND_ENUM_CONSTANT(POSITION_BOTTOM_LEFT);
+	BIND_ENUM_CONSTANT(POSITION_BOTTOM_RIGHT);
+
+	// OverlayToStoreFlag Enums
+	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_NONE);
+	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_ADD_TO_CART);
+	BIND_ENUM_CONSTANT(OVERLAY_TO_STORE_FLAG_AND_TO_CART_AND_SHOW);
+
+	// OverlayToWebPageMode Enums
+	BIND_ENUM_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_DEFAULT);
+	BIND_ENUM_CONSTANT(OVERLAY_TO_WEB_PAGE_MODE_MODAL);
+
+	// P2PSend Enums
+	BIND_ENUM_CONSTANT(P2P_SEND_UNRELIABLE);
+	BIND_ENUM_CONSTANT(P2P_SEND_UNRELIABLE_NO_DELAY);
+	BIND_ENUM_CONSTANT(P2P_SEND_RELIABLE);
+	BIND_ENUM_CONSTANT(P2P_SEND_RELIABLE_WITH_BUFFERING);
+
+	// P2PSessionError Enums
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NONE);
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NOT_RUNNING_APP);
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_NO_RIGHTS_TO_APP);
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON);
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_TIMEOUT);
+	BIND_ENUM_CONSTANT(P2P_SESSION_ERROR_MAX);
+
+	// ParentalFeature Enums
+	BIND_ENUM_CONSTANT(FEATURE_INVALID);
+	BIND_ENUM_CONSTANT(FEATURE_STORE);
+	BIND_ENUM_CONSTANT(FEATURE_COMMUNITY);
+	BIND_ENUM_CONSTANT(FEATURE_PROFILE);
+	BIND_ENUM_CONSTANT(FEATURE_FRIENDS);
+	BIND_ENUM_CONSTANT(FEATURE_NEWS);
+	BIND_ENUM_CONSTANT(FEATURE_TRADING);
+	BIND_ENUM_CONSTANT(FEATURE_SETTINGS);
+	BIND_ENUM_CONSTANT(FEATURE_CONSOLE);
+	BIND_ENUM_CONSTANT(FEATURE_BROWSER);
+	BIND_ENUM_CONSTANT(FEATURE_PARENTAL_SETUP);
+	BIND_ENUM_CONSTANT(FEATURE_LIBRARY);
+	BIND_ENUM_CONSTANT(FEATURE_TEST);
+	BIND_ENUM_CONSTANT(FEATURE_SITE_LICENSE);
+	BIND_ENUM_CONSTANT(FEATURE_KIOSK_MODE);
 	BIND_ENUM_CONSTANT(FEATURE_MAX);
 
-	// STEAM PARTY BEACON LOCATION TYPE /////////
-	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID);						// 0
-	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP);						// 1
-	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_TYPE_MAX);
-
-	// STEAM PARTY BEACON LOCATION DATA /////////
-	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA);								// 0
-	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_NAME);							// 1
+	// PartyBeaconLocationData Enums
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_NAME);
 	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_SMALL);
 	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_MEDIUM);
 	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_DATA_URL_LARGE);
 
-	// REMOTE STORAGE PLATFORM //////////////////
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_NONE);									// 0
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_WINDOWS);								// (1<<0)
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_OSX);									// (1<<1)
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_PS3);									// (1<<2)
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_LINUX);									// (1<<3)
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_RESERVED2);								// (1<<4)
-	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_ALL);									// 0XFFFFFFFF
+	// PartyBeaconLocationType Enums
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_INVALID);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATIONTYPE_CHAT_GROUP);
+	BIND_ENUM_CONSTANT(STEAM_PARTY_BEACON_LOCATION_TYPE_MAX);
 
-	// REMOTE STORAGE PUBLISHED FILE VISIBILITY /
-	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PUBLIC);						// 0
-	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_FRIENDS_ONLY);				// 1
-	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBLITY_PRIVATE);						// 2
+	// PersonaChange Enums
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_NAME);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_STATUS);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_COME_ONLINE);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_GONE_OFFLINE);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_GAME_PLAYED);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_GAME_SERVER);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_AVATAR);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_JOINED_SOURCE);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_LEFT_SOURCE);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_RELATIONSHIP_CHANGED);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_NAME_FIRST_SET);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_FACEBOOK_INFO);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_NICKNAME);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_STEAM_LEVEL);
+	BIND_BITFIELD_FLAG(PERSONA_CHANGE_RICH_PRESENCE);
 
-	// UGC READ ACTION //////////////////////////
-	BIND_ENUM_CONSTANT(UGC_READ_CONTINUE_READING_UNTIL_FINISHED);						// 0
-	BIND_ENUM_CONSTANT(UGC_READ_CONTINUE_READING);										// 1
-	BIND_ENUM_CONSTANT(UGC_READ_CLOSE);													// 2
+	// PersonaState Enums
+	BIND_ENUM_CONSTANT(PERSONA_STATE_OFFLINE);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_ONLINE);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_BUSY);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_AWAY);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_SNOOZE);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_LOOKING_TO_TRADE);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_LOOKING_TO_PLAY);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_INVISIBLE);
+	BIND_ENUM_CONSTANT(PERSONA_STATE_MAX);
 
-	// WORKSHOP ENUMERATION TYPE ////////////////
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE);						// 0
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT);								// 1
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_TRENDING);								// 2
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS);					// 3
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS);						// 4
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS);					// 5
-	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS);			// 6
+	// PlayerResult Enums
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_FAILED_TO_CONNECT);
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_ABANDONED);
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_KICKED);
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_INCOMPLETE);
+	BIND_ENUM_CONSTANT(PLAYER_RESULT_COMPLETED);
 
-	// WORKSHOP FILE ACTION /////////////////////
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_ACTION_PLAYED);									// 0
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_ACTION_COMPLETED);									// 1
+	// RemoteStoragePlatform Enums
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_NONE);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_WINDOWS);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_OSX);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_PS3);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_LINUX);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_SWITCH);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_ANDROID);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_IOS);
+	BIND_BITFIELD_FLAG(REMOTE_STORAGE_PLATFORM_ALL);
 
-	// WORKSHOP FILE TYPE ///////////////////////
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_FIRST);										// 0
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_COMMUNITY);									// 0
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MICROTRANSACTION);							// 1
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_COLLECTION);									// 2
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_ART);											// 3
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_VIDEO);										// 4
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_SCREENSHOT);									// 5
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME);										// 6
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_SOFTWARE);									// 7
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CONCEPT);										// 8
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_WEB_GUIDE);									// 9
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE);							// 10
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MERCH);										// 11
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CONTROLLER_BINDING);							// 12
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);					// 13
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);									// 14
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);							// 15
-	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MAX);											// 16
+	// RemoteStoragePublishedFileVisibility Enums
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBILITY_PUBLIC);
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBILITY_FRIENDS_ONLY);
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBILITY_PRIVATE);
+	BIND_ENUM_CONSTANT(REMOTE_STORAGE_PUBLISHED_VISIBILITY_UNLISTED);
 
-	// WORKSHOP VIDEO PROVIDER //////////////////
-	BIND_ENUM_CONSTANT(WORKSHOP_VIDEO_PROVIDER_NONE);									// 0
-	BIND_ENUM_CONSTANT(WORKSHOP_VIDEO_PROVIDER_YOUTUBE);								// 1
+	// Result Enums
+	BIND_ENUM_CONSTANT(RESULT_NONE);
+	BIND_ENUM_CONSTANT(RESULT_OK);
+	BIND_ENUM_CONSTANT(RESULT_FAIL);
+	BIND_ENUM_CONSTANT(RESULT_NO_CONNECTION);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_PASSWORD);
+	BIND_ENUM_CONSTANT(RESULT_LOGGED_IN_ELSEWHERE);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_PROTOCOL_VER);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_PARAM);
+	BIND_ENUM_CONSTANT(RESULT_FILE_NOT_FOUND);
+	BIND_ENUM_CONSTANT(RESULT_BUSY);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_STATE);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_NAME);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_EMAIL);
+	BIND_ENUM_CONSTANT(RESULT_DUPLICATE_NAME);
+	BIND_ENUM_CONSTANT(RESULT_ACCESS_DENIED);
+	BIND_ENUM_CONSTANT(RESULT_TIMEOUT);
+	BIND_ENUM_CONSTANT(RESULT_BANNED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FOUND);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_STEAMID);
+	BIND_ENUM_CONSTANT(RESULT_SERVICE_UNAVAILABLE);
+	BIND_ENUM_CONSTANT(RESULT_NOT_LOGGED_ON);
+	BIND_ENUM_CONSTANT(RESULT_PENDING);
+	BIND_ENUM_CONSTANT(RESULT_ENCRYPTION_FAILURE);
+	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_PRIVILEGE);
+	BIND_ENUM_CONSTANT(RESULT_LIMIT_EXCEEDED);
+	BIND_ENUM_CONSTANT(RESULT_REVOKED);
+	BIND_ENUM_CONSTANT(RESULT_EXPIRED);
+	BIND_ENUM_CONSTANT(RESULT_ALREADY_REDEEMED);
+	BIND_ENUM_CONSTANT(RESULT_DUPLICATE_REQUEST);
+	BIND_ENUM_CONSTANT(RESULT_ALREADY_OWNED);
+	BIND_ENUM_CONSTANT(RESULT_IP_NOT_FOUND);
+	BIND_ENUM_CONSTANT(RESULT_PERSIST_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_LOCKING_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_LOG_ON_SESSION_REPLACED);
+	BIND_ENUM_CONSTANT(RESULT_CONNECT_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_HANDSHAKE_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_IO_FAILURE);
+	BIND_ENUM_CONSTANT(RESULT_REMOTE_DISCONNECT);
+	BIND_ENUM_CONSTANT(RESULT_SHOPPING_CART_NOT_FOUND);
+	BIND_ENUM_CONSTANT(RESULT_BLOCKED);
+	BIND_ENUM_CONSTANT(RESULT_IGNORED);
+	BIND_ENUM_CONSTANT(RESULT_NO_MATCH);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_DISABLED);
+	BIND_ENUM_CONSTANT(RESULT_SERVICE_READ_ONLY);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FEATURED);
+	BIND_ENUM_CONSTANT(RESULT_ADMINISTRATO_ROK);
+	BIND_ENUM_CONSTANT(RESULT_CONTENT_VERSION);
+	BIND_ENUM_CONSTANT(RESULT_TRY_ANOTHER_CM);
+	BIND_ENUM_CONSTANT(RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION);
+	BIND_ENUM_CONSTANT(RESULT_ALREADY_LOGGED_IN_ELSEWHERE);
+	BIND_ENUM_CONSTANT(RESULT_SUSPENDED);
+	BIND_ENUM_CONSTANT(RESULT_CANCELLED);
+	BIND_ENUM_CONSTANT(RESULT_DATA_CORRUPTION);
+	BIND_ENUM_CONSTANT(RESULT_DISK_FULL);
+	BIND_ENUM_CONSTANT(RESULT_REMOTE_CALL_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_PASSWORD_UNSET);
+	BIND_ENUM_CONSTANT(RESULT_EXTERNAL_ACCOUNT_UNLINKED);
+	BIND_ENUM_CONSTANT(RESULT_PSN_TICKET_INVALID);
+	BIND_ENUM_CONSTANT(RESULT_EXTERNAL_ACCOUNT_ALREADY_LINKED);
+	BIND_ENUM_CONSTANT(RESULT_REMOTE_FILE_CONFLICT);
+	BIND_ENUM_CONSTANT(RESULT_ILLEGAL_PASSWORD);
+	BIND_ENUM_CONSTANT(RESULT_SAME_AS_PREVIOUS_VALUE);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED);
+	BIND_ENUM_CONSTANT(RESULT_CANNOT_USE_OLD_PASSWORD);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_LOG_IN_AUTH_CODE);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_NO_MAIL);
+	BIND_ENUM_CONSTANT(RESULT_HARDWARE_NOT_CAPABLE_OF_IPT);
+	BIND_ENUM_CONSTANT(RESULT_IPT_INIT_ERROR);
+	BIND_ENUM_CONSTANT(RESULT_PARENTAL_CONTROL_RESTRICTED);
+	BIND_ENUM_CONSTANT(RESULT_FACEBOOK_QUERY_ERROR);
+	BIND_ENUM_CONSTANT(RESULT_EXPIRED_LOGIN_AUTH_CODE);
+	BIND_ENUM_CONSTANT(RESULT_IP_LOGIN_RESTRICTION_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOCKED_DOWN);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOG_ON_DENIED_VERIFIED_EMAIL_REQUIRED);
+	BIND_ENUM_CONSTANT(RESULT_NO_MATCHING_URL);
+	BIND_ENUM_CONSTANT(RESULT_BAD_RESPONSE);
+	BIND_ENUM_CONSTANT(RESULT_REQUIRE_PASSWORD_REENTRY);
+	BIND_ENUM_CONSTANT(RESULT_VALUE_OUT_OF_RANGE);
+	BIND_ENUM_CONSTANT(RESULT_UNEXPECTED_ERROR);
+	BIND_ENUM_CONSTANT(RESULT_DISABLED);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_CEG_SUBMISSION);
+	BIND_ENUM_CONSTANT(RESULT_RESTRICTED_DEVICE);
+	BIND_ENUM_CONSTANT(RESULT_REGION_LOCKED);
+	BIND_ENUM_CONSTANT(RESULT_RATE_LIMIT_EXCEEDED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_NEED_TWO_FACTOR);
+	BIND_ENUM_CONSTANT(RESULT_ITEM_DELETED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LOGIN_DENIED_THROTTLE);
+	BIND_ENUM_CONSTANT(RESULT_TWO_FACTOR_CODE_MISMATCH);
+	BIND_ENUM_CONSTANT(RESULT_TWO_FACTOR_ACTIVATION_CODE_MISMATCH);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_ASSOCIATED_TO_MULTIPLE_PARTNERS);
+	BIND_ENUM_CONSTANT(RESULT_NOT_MODIFIED);
+	BIND_ENUM_CONSTANT(RESULT_NO_MOBILE_DEVICE);
+	BIND_ENUM_CONSTANT(RESULT_TIME_NOT_SYNCED);
+	BIND_ENUM_CONSTANT(RESULT_SMS_CODE_FAILED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_LIMIT_EXCEEDED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_ACTIVITY_LIMIT_EXCEEDED);
+	BIND_ENUM_CONSTANT(RESULT_PHONE_ACTIVITY_LIMIT_EXCEEDED);
+	BIND_ENUM_CONSTANT(RESULT_REFUND_TO_WALLET);
+	BIND_ENUM_CONSTANT(RESULT_EMAIL_SEND_FAILURE);
+	BIND_ENUM_CONSTANT(RESULT_NOT_SETTLED);
+	BIND_ENUM_CONSTANT(RESULT_NEED_CAPTCHA);
+	BIND_ENUM_CONSTANT(RESULT_GSLT_DENIED);
+	BIND_ENUM_CONSTANT(RESULT_GS_OWNER_DENIED);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_ITEM_TYPE);
+	BIND_ENUM_CONSTANT(RESULT_IP_BANNED);
+	BIND_ENUM_CONSTANT(RESULT_GSLT_EXPIRED);
+	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_FUNDS);
+	BIND_ENUM_CONSTANT(RESULT_TOO_MANY_PENDING);
+	BIND_ENUM_CONSTANT(RESULT_NO_SITE_LICENSES_FOUND);
+	BIND_ENUM_CONSTANT(RESULT_WG_NETWORK_SEND_EXCEEDED);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_NOT_FRIENDS);
+	BIND_ENUM_CONSTANT(RESULT_LIMITED_USER_ACCOUNT);
+	BIND_ENUM_CONSTANT(RESULT_CANT_REMOVE_ITEM);
+	BIND_ENUM_CONSTANT(RESULT_ACCOUNT_DELETED);
+	BIND_ENUM_CONSTANT(RESULT_EXISTING_USER_CANCELLED_LICENSE);
+	BIND_ENUM_CONSTANT(RESULT_COMMUNITY_COOLDOWN);
+	BIND_ENUM_CONSTANT(RESULT_NO_LAUNCHER_SPECIFIED);
+	BIND_ENUM_CONSTANT(RESULT_MUST_AGREE_TO_SSA);
+	BIND_ENUM_CONSTANT(RESULT_LAUNCHER_MIGRATED);
+	BIND_ENUM_CONSTANT(RESULT_STEAM_REALM_MISMATCH);
+	BIND_ENUM_CONSTANT(RESULT_INVALID_SIGNATURE);
+	BIND_ENUM_CONSTANT(RESULT_PARSE_FAILURE);
+	BIND_ENUM_CONSTANT(RESULT_NO_VERIFIED_PHONE);
+	BIND_ENUM_CONSTANT(RESULT_INSUFFICIENT_BATTERY);
+	BIND_ENUM_CONSTANT(RESULT_CHARGER_REQUIRED);
+	BIND_ENUM_CONSTANT(RESULT_CACHED_CREDENTIAL_INVALID);
+	BIND_ENUM_CONSTANT(RESULT_PHONE_NUMBER_IS_VOIP);
 
-	// WORKSHOP VOTE ////////////////////////////
-	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_UNVOTED);											// 0
-	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_FOR);												// 1
-	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_AGAINST);											// 2
-	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_LATER);											// 3
+	// SCEPadTriggerEffectMode Enums
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_OFF);
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_FEEDBACK);
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_WEAPON);
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_VIBRATION);
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK);
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK);
+	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION);
 
-	// LOCAL FILE CHANGES ///////////////////////
-	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_INVALID);										// 0
-	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_FILE_UPDATED);									// 1
-	BIND_ENUM_CONSTANT(LOCAL_FILE_CHANGE_FILE_DELETED);									// 2
-	
-	// FILE PATH TYPES //////////////////////////
-	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_INVALID);											// 0
-	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_ABSOLUTE);										// 1
-	BIND_ENUM_CONSTANT(FILE_PATH_TYPE_API_FILENAME);									// 2
+	// SocketConnectionType Enums
+	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_NOT_CONNECTED);
+	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP);
+	BIND_ENUM_CONSTANT(NET_SOCKET_CONNECTION_TYPE_UDP_RELAY);
 
-	// VR SCREENSHOT TYPE ///////////////////////
-	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_NONE);										// 0
-	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO);										// 1
-	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_STEREO);										// 2
-	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO_CUBE_MAP);								// 3
-	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO_PANORAMA);								// 4
-	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_STEREO_PANORAMA);								// 5
+	// SocketState Enums
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_INVALID);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_CONNECTED);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_INITIATED);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_LOCAL_CANDIDATE_FOUND);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_RECEIVED_REMOTE_CANDIDATES);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_CHALLENGE_HANDSHAKE);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_DISCONNECTING);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_LOCAL_DISCONNECT);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_TIMEOUT_DURING_CONNECT);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_REMOTE_END_DISCONNECTED);
+	BIND_ENUM_CONSTANT(NET_SOCKET_STATE_BROKEN);
 
-	// ITEM REVIEW TYPE /////////////////////////
-	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_IMAGE);										// 0
-	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_YOUTUBE_VIDEO);								// 1
-	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);									// 2
-	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);				// 3
-	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);						// 4
-	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);									// 255
+	// TextFilteringContext Enums
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);
+	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);
 
-	// ITEM STATE ///////////////////////////////
-	BIND_BITFIELD_FLAG(ITEM_STATE_NONE);												// 0
-	BIND_BITFIELD_FLAG(ITEM_STATE_SUBSCRIBED);											// 1
-	BIND_BITFIELD_FLAG(ITEM_STATE_LEGACY_ITEM);											// 2
-	BIND_BITFIELD_FLAG(ITEM_STATE_INSTALLED);											// 4
-	BIND_BITFIELD_FLAG(ITEM_STATE_NEEDS_UPDATE);										// 8
-	BIND_BITFIELD_FLAG(ITEM_STATE_DOWNLOADING);											// 16
-	BIND_BITFIELD_FLAG(ITEM_STATE_DOWNLOAD_PENDING);									// 32
+	// Universe Enums
+	BIND_ENUM_CONSTANT(UNIVERSE_INVALID);
+	BIND_ENUM_CONSTANT(UNIVERSE_PUBLIC);
+	BIND_ENUM_CONSTANT(UNIVERSE_BETA);
+	BIND_ENUM_CONSTANT(UNIVERSE_INTERNAL);
+	BIND_ENUM_CONSTANT(UNIVERSE_DEV);
+	BIND_ENUM_CONSTANT(UNIVERSE_MAX);
 
-	// ITEM STATISTIC ///////////////////////////
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);								// 0
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_FAVORITES);									// 1
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_FOLLOWERS);									// 2
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_SUBSCRIPTIONS);						// 3
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FAVORITES);							// 4
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_FOLLOWERS);							// 5
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_UNIQUE_WEBSITE_VIEWS);						// 6
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_REPORT_SCORE);									// 7
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED);								// 8
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS);							// 9
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_COMMENTS);									// 10
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SECONDS_PLAYED_DURING_TIME_PERIOD);			// 11
-	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_PLAYTIME_SESSIONS_DURING_TIME_PERIOD);		// 12
+	// UGCContentDescriptorID Enums
+	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_NUDITY_OR_SEXUAL_CONTENT);
+	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_FREQUENT_VIOLENCE_OR_GORE);
+	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_ADULT_ONLY_SEXUAL_CONTENT);
+	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_GRATUITOUS_SEXUAL_CONTENT);
+	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_ANY_MATURE_CONTENT);
 
-	// ITEM UPDATE STATUS ///////////////////////
-	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_INVALID);										// 0
-	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONFIG);							// 1
-	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_PREPARING_CONTENT);							// 2
-	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_CONTENT);							// 3
-	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_UPLOADING_PREVIEW_FILE);						// 4
-	BIND_ENUM_CONSTANT(ITEM_UPDATE_STATUS_COMMITTING_CHANGES);							// 5
+	// UGCMatchingUGCType Enums
+	BIND_ENUM_CONSTANT(UGC_MATCHINGUGCTYPE_ITEMS);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_COLLECTIONS);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ARTWORK);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_VIDEOS);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_SCREENSHOTS);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL_GUIDES);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_WEB_GUIDES);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);
+	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);
 
-	// UGC MATCHING UGC TYPE ////////////////////
-	BIND_ENUM_CONSTANT(UGC_MATCHINGUGCTYPE_ITEMS);										// 0
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_MTX);								// 1
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ITEMS_READY_TO_USE);						// 2
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_COLLECTIONS);								// 3
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ARTWORK);									// 4
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_VIDEOS);									// 5
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_SCREENSHOTS);								// 6
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL_GUIDES);								// 7
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_WEB_GUIDES);								// 8
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_INTEGRATED_GUIDES);						// 9
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_USABLE_IN_GAME);							// 10
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_CONTROLLER_BINDINGS);						// 11
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_GAME_MANAGED_ITEMS);						// 12
-	BIND_ENUM_CONSTANT(UGC_MATCHING_UGC_TYPE_ALL);										// ~0
+	// UGCQuery Enums
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);
+	BIND_ENUM_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TREND);
+	BIND_ENUM_CONSTANT(UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);
+	BIND_ENUM_CONSTANT(UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED);
+	BIND_ENUM_CONSTANT(UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE);
+	BIND_ENUM_CONSTANT(UGC_QUERY_NOT_YET_RATED);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_VOTES_UP);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TEXT_SEARCH);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_TREND);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);
+	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LAST_UPDATED_DATE);
 
-	// UGC QUERY ////////////////////////////////
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_VOTE);										// 0
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PUBLICATION_DATE);							// 1
-	BIND_ENUM_CONSTANT(UGC_QUERY_ACCEPTED_FOR_GAME_RANKED_BY_ACCEPTANCE_DATE);			// 2
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TREND);										// 3
-	BIND_ENUM_CONSTANT(UGC_QUERY_FAVORITED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);		// 4
-	BIND_ENUM_CONSTANT(UGC_QUERY_CREATED_BY_FRIENDS_RANKED_BY_PUBLICATION_DATE);		// 5
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_NUM_TIMES_REPORTED);							// 6
-	BIND_ENUM_CONSTANT(UGC_QUERY_CREATED_BY_FOLLOWED_USERS_RANKED_BY_PUBLICATION_DATE);	// 7
-	BIND_ENUM_CONSTANT(UGC_QUERY_NOT_YET_RATED);										// 8
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_VOTES_ASC);							// 9
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_VOTES_UP);									// 10
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TEXT_SEARCH);								// 11
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_UNIQUE_SUBSCRIPTIONS);					// 12
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_TREND);								// 13
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_TOTAL_PLAYTIME);								// 14
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_AVERAGE_PLAYTIME_TREND);						// 15
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_AVERAGE_PLAYTIME);					// 16
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_PLAYTIME_SESSIONS_TREND);					// 17
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LIFETIME_PLAYTIME_SESSIONS);					// 18
-	BIND_ENUM_CONSTANT(UGC_QUERY_RANKED_BY_LAST_UPDATED_DATE);							// 19
+	// UGCReadAction Enums
+	BIND_ENUM_CONSTANT(UGC_READ_CONTINUE_READING_UNTIL_FINISHED);
+	BIND_ENUM_CONSTANT(UGC_READ_CONTINUE_READING);
+	BIND_ENUM_CONSTANT(UGC_READ_CLOSE);
 
-	// USER UGC LIST ////////////////////////////
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_PUBLISHED);										// 0
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_ON);											// 1
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_UP);											// 2
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_DOWN);										// 3
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_FAVORITED);										// 5
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_SUBSCRIBED);										// 6
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);									// 7
-	BIND_ENUM_CONSTANT(USER_UGC_LIST_FOLLOWED);											// 8
+	// UserHasLicenseForAppResult Enums
+	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_HAS_LICENSE);
+	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE);
+	BIND_ENUM_CONSTANT(USER_HAS_LICENSE_RESULT_NO_AUTH);
 
-	// USER UGC LIST ORT ORDER //////////////////
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);							// 0
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);							// 1
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);									// 2
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_LASTUPDATEDDESC);							// 3
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC);						// 4
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_VOTESCOREDESC);								// 5
-	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_FORMODERATION);								// 6
+	// UserRestriction Enums
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_NONE);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_UNKNOWN);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_ANY_CHAT);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_VOICE_CHAT);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_GROUP_CHAT);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_RATING);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_GAME_INVITES);
+	BIND_BITFIELD_FLAG(USER_RESTRICTION_TRADING);
 
-	// UGC CONTENT DESCRIPTOR ID ////////////////
-	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_NUDITY_OR_SEXUAL_CONTENT);					// 1
-	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_FREQUENT_VIOLENCE_OR_GORE);					// 2
-	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_ADULT_ONLY_SEXUAL_CONTENT);					// 3
-	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_GRATUITOUS_SEXUAL_CONTENT);					// 4
-	BIND_ENUM_CONSTANT(UGCCONTENTDESCRIPTOR_ANY_MATURE_CONTENT);						// 5
+	// UserUGCList Enums
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_PUBLISHED);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_ON);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_UP);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_VOTED_DOWN);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_WILL_VOTE_LATER);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_FAVORITED);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_SUBSCRIBED);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_USED_OR_PLAYED);
+	BIND_ENUM_CONSTANT(USER_UGC_LIST_FOLLOWED);
 
-	// FAILURE TYPE /////////////////////////////
-	BIND_ENUM_CONSTANT(FAILURE_FLUSHED_CALLBACK_QUEUE);									// 0
-	BIND_ENUM_CONSTANT(FAILURE_PIPE_FAIL);												// 1
+	// UserUGCListSortOrder Enums
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERDESC);
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_CREATIONORDERASC);
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_TITLEASC);
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_LASTUPDATEDDESC);
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_SUBSCRIPTIONDATEDESC);
+	BIND_ENUM_CONSTANT(USERUGCLISTSORTORDER_VOTESCOREDESC); 
+	BIND_ENUM_CONSTANT(SERUGCLISTSORTORDER_FORMODERATION);
 
-	// DURATION CONTROL PROGRESS ////////////////
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_FULL);									// 0
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_HALF);									// 1
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_PROGRESS_NONE);									// 2
+	// VoiceResult Enums
+	BIND_ENUM_CONSTANT(VOICE_RESULT_OK);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_NOT_INITIALIZED);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_NOT_RECORDING);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_NO_DATE);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_BUFFER_TOO_SMALL);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_DATA_CORRUPTED);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_RESTRICTED);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_UNSUPPORTED_CODEC);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_RECEIVER_OUT_OF_DATE);
+	BIND_ENUM_CONSTANT(VOICE_RESULT_RECEIVER_DID_NOT_ANSWER);
 
-	// DURATION CONTROL NOTIFICATION ////////////
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);								// 0
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_1_HOUR);							// 1
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_3_HOURS);							// 3
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_HALF_PROGRESS);					// 3
-	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NO_PROGRESS);						// 4
+	// VRScreenshotType Enums
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_NONE);
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO);
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_STEREO);
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO_CUBE_MAP);
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_MONO_PANORAMA);
+	BIND_ENUM_CONSTANT(VR_SCREENSHOT_TYPE_STEREO_PANORAMA);
 
-	// LEADERBOARD DATA REQUEST /////////////////
-	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL);								// 0
-	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_GLOBAL_AROUND_USER);					// 1
-	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_FRIENDS);								// 2
-	BIND_ENUM_CONSTANT(LEADERBOARD_DATA_REQUEST_USERS);									// 3
+	// WorkshopEnumerationType Enums
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RANKED_BY_VOTE);
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT);
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_TRENDING);
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_FAVORITES_OF_FRIENDS);
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_VOTED_BY_FRIENDS);
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_CONTENT_BY_FRIENDS);
+	BIND_ENUM_CONSTANT(WORKSHOP_ENUMERATION_TYPE_RECENT_FROM_FOLLOWED_USERS);
 
-	// LEADERBOARD DISPLAY TYPE /////////////////
-	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NONE);									// 0
-	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_NUMERIC);								// 1
-	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_SECONDS);							// 2
-	BIND_ENUM_CONSTANT(LEADERBOARD_DISPLAY_TYPE_TIME_MILLISECONDS);						// 3
+	// WorkshopFileAction Enums
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_ACTION_PLAYED);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_ACTION_COMPLETED);
 
-	// LEADERBOARD SORT METHOD //////////////////
-	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_NONE);									// 0
-	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_ASCENDING);								// 1
-	BIND_ENUM_CONSTANT(LEADERBOARD_SORT_METHOD_DESCENDING);								// 2
+	// WorkshopFileType Enums
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_FIRST);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_COMMUNITY);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MICROTRANSACTION);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_COLLECTION);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_ART);
+	BIND_ENUM_CONSTANT(wORKSHOP_FILE_TYPE_VIDEO);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_SCREENSHOT);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_SOFTWARE);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CONCEPT);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_WEB_GUIDE);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_INTEGRATED_GUIDE);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MERCH);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CONTROLLER_BINDING);
+	BIND_ENUM_CONSTANT(wORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MAX);
 
-	// LEADERBOARD UPLOAD SCORE METHOD //////////
-	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD);								// 0
-	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_KEEP_BEST);						// 1
-	BIND_ENUM_CONSTANT(LEADERBOARD_UPLOAD_SCORE_METHOD_FORCE_UPDATE);					// 2
+	// WorkshopVideoProvider Enums
+	BIND_ENUM_CONSTANT(WORKSHOP_VIDEO_PROVIDER_NONE);
+	BIND_ENUM_CONSTANT(WORKSHOP_VIDEO_PROVIDER_YOUTUBE);
 
-	// STEAM USER STAT TYPE /////////////////////
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_INVALID);									// 0
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_INT);										// 1
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_FLOAT);										// 2
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_AVGRATE);									// 3
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_ACHIEVEMENTS);								// 4
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_GROUPACHIEVEMENTS);							// 5
-	BIND_ENUM_CONSTANT(STEAM_USER_STAT_TYPE_MAX);
+	// WorkshopVote Enums
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_UNVOTED);
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_FOR);
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_AGAINST);
+	BIND_ENUM_CONSTANT(WORKSHOP_VOTE_LATER);
 
-	// CHECK FILE SIGNATURE /////////////////////
-	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_INVALID_SIGNATURE);							// 0
-	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_VALID_SIGNATURE);							// 1
-	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_FILE_NOT_FOUND);							// 2
-	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_APP);			// 3
-	BIND_ENUM_CONSTANT(CHECK_FILE_SIGNATURE_NO_SIGNATURES_FOUND_FOR_THIS_FILE);			// 4
-
-	// GAMEPAD TEXT INPUT LINE MODE /////////////
-	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_SINGLE_LINE);						// 0
-	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_LINE_MODE_MULTIPLE_LINES);					// 1
-
-	// GAMEPAD TEXT INPUT MODE //////////////////
-	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_NORMAL);									// 0
-	BIND_ENUM_CONSTANT(GAMEPAD_TEXT_INPUT_MODE_PASSWORD);								// 1
-
-	// FLOATING GAMEPAD TEXT INPUT MODE /////////
-	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_SINGLE_LINE);					// 0
-	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_MULTIPLE_LINES);				// 1
-	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_EMAIL);							// 2
-	BIND_ENUM_CONSTANT(FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC);						// 3
-
-	// STEAM API CALL FAILURE ///////////////////
-	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_NONE);									// -1
-	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_STEAM_GONE);								// 0
-	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_NETWORK_FAILURE);							// 1
-	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_INVALID_HANDLE);							// 2
-	BIND_ENUM_CONSTANT(STEAM_API_CALL_FAILURE_MISMATCHED_CALLBACK);						// 3
-
-	// TEXT FILTERING CONTEXT ///////////////////
-	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_UNKNOWN);									// 0
-	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_GAME_CONTENT);							// 1
-	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_CHAT);									// 2
-	BIND_ENUM_CONSTANT(TEXT_FILTERING_CONTEXT_NAME);									// 3
-
-	// PROFILE ITEM TYPES
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_ANIMATED_AVATAR);								// 0
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_AVATAR_FRAME);									// 1
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_MODIFIER);								// 2
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_PROFILE_BACKGROUND);							// 3
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_TYPE_MINI_PROFILE_BACKGROUND);						// 4
-	
-	// PROFILE ITEM PROPERTIES
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_SMALL);								// 0
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_IMAGE_LARGE);								// 1
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_INTERNAL_NAME);							// 2
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_TITLE);									// 3
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_DESCRIPTION);								// 4
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_APP_ID);									// 5
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_TYPE_ID);									// 6
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_CLASS);									// 7
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM);								// 8
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4);								// 9
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_WEBM_SMALL);							// 10
-	BIND_ENUM_CONSTANT(PROFILE_ITEM_PROPERTY_MOVIE_MP4_SMALL);							// 11
-
-	// DUALSENSE PAD TRIGGER EFFECT MODES
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_OFF);									// 0
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_FEEDBACK);								// 1
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_WEAPON);									// 2
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_VIBRATION);								// 3
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK);				// 4
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK);							// 5
-	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION);			// 6
+	// XboxOrigin Enums
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_A);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_B);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_X);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_Y);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_BUMPER);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_BUMPER);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_MENU);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_VIEW);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_TRIGGER_PULL);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_TRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_TRIGGER_PULL);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_TRIGGER_CLICK);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_STICK_MOVE);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_STICK_CLICK);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_STICK_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_STICK_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_STICK_DPAD_WEST);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_LEFT_STICK_DPAD_EAT);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_STICK_MOVE);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_STICK_CLICK);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_STICK_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_STICK_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_STICK_DPAD_WEST);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_RIGHT_STICK_DPAD_EAST);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_DPAD_NORTH);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_DPAD_SOUTH);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_DPAD_WEST);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_DPAD_EAST);
+	BIND_ENUM_CONSTANT(XBOX_ORIGIN_COUNT);
 }
 
 Steam::~Steam(){
