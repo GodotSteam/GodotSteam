@@ -70,6 +70,7 @@ Here is a list of all the great contributors, both those who have provided code 
 	- John Flickinger
 	- John H Wright
 	- Josef Attenberger
+	- Justo Delgado
 	- Kat Hirsch
 	- Kent Jofur
 	- Kodera Software
