@@ -3,7 +3,7 @@ An open-source and fully functional Steamworks SDK / API module and plug-in for 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
+- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
 - [Server](https://github.com/Gramps/GodotSteam/tree/server)
@@ -16,12 +16,18 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.7)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.20)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 3.7 Changes**
-- Added: direct access to Steam shutdown function
-- Changed: testing removing const from some strings that caused issues in GDNative specifically
-- Fixed: issues with Linux achievements due to issues with strings
+**Version 3.20 Changes**
+- Added: steamShutdown to allow Steamworks to be manually shutdown
+- Added: requestEquippedProfileItems function and equipped_profile_items callback
+- Added: Steam Deck as Steam Input type
+- Changed: all enums are now directly linked to their SDK counterparts
+- Changed: getDigitalActionData returned keys are now state and active
+- Changed: names of some Steam enums to be cleaner and leaner
+- Changed: getAppInstallDir now returns dictionary with absolute path and install size
+- Fixed: missing function argument binds
+- Removed: enums that are not in the SDK but Valve's docs
 
 Known Issues
 ----------
