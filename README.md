@@ -18,6 +18,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.20)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 3.20.1 Changes**
+- Fixed: wrong variant type for join_requested
+
 **Version 3.20 Changes**
 - Added: steamShutdown to allow Steamworks to be manually shutdown
 - Added: requestEquippedProfileItems function and equipped_profile_items callback
