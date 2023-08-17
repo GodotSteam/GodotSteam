@@ -825,6 +825,13 @@ vz
 [ :fontawesome-solid-microphone: ](https://coaguco.com/coagucast/episode/7){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Rodolfo Mascarpone y Ramón Cazanuecos: Amenaza en el Molinillo -->
+<figure class="game" markdown>
+[![Rodolfo Mascarpone y Ramón Cazanuecos: Amenaza en el Molinillo](https://steamcdn-a.akamaihd.net/steam/apps/2542580/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2542580/Rodolfo_Mascarpone_y_Ramn_Cazanuecos_Amenaza_en_el_Molinillo/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2542580/Rodolfo_Mascarpone_y_Ramn_Cazanuecos_Amenaza_en_el_Molinillo/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Room Box -->
 <figure class="game" markdown>
 [![Room Box](https://steamcdn-a.akamaihd.net/steam/apps/1874630/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1874630/Room_Box/){ target="_blank" }
@@ -1062,6 +1069,16 @@ vz
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1656310/TETRAGUN/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Touhou: Gensokyo Survivors -->
+<figure class="game" markdown>
+[![TETRAGUN](https://steamcdn-a.akamaihd.net/steam/apps/2349830/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2349830/Touhou_Gensokyo_Survivors/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2349830/Touhou_Gensokyo_Survivors/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/Xeloph){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/EpkPTT6Vvh){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-youtube: ](https://www.youtube.com/@xeloph986){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Tower Tactics: Liberation -->
 <figure class="game" markdown>
 [![Tower Tactics: Liberation](https://steamcdn-a.akamaihd.net/steam/apps/1709900/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1709900/Tower_Tactics_Liberation){ target="_blank" }
@@ -1078,8 +1095,6 @@ vz
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2450400/Trash_of_the_Titans){ target="_blank" .md-button .md-button--store }
 [ :fontawesome-brands-firefox-browser: ](https://trash-of-the-titans.manakeep.com/){ target="_blank" .md-button .md-button--store }
 </figure>
-
-
 
 <!-- Turing Complete -->
 <figure class="game" markdown>

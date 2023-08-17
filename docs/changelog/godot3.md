@@ -4,6 +4,10 @@
 
 ---
 
+**Version 3.20.1 Changes**
+
+- Fixed: wrong variant type for join_requested
+
 **Version 3.20 Changes**
 
 - Added: full GodotSteam documentation into the editor

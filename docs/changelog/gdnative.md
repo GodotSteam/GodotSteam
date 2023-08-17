@@ -4,6 +4,22 @@
 
 ------
 
+**Version 3.20.1 Changes**
+
+- Fixed: wrong variant type for join_requested
+
+**Version 3.20 Changes**
+
+- Added: steamShutdown to allow Steamworks to be manually shutdown
+- Added: requestEquippedProfileItems function and equipped_profile_items callback
+- Added: Steam Deck as Steam Input type
+- Changed: all enums are now directly linked to their SDK counterparts
+- Changed: getDigitalActionData returned keys are now state and active
+- Changed: names of some Steam enums to be cleaner and leaner
+- Changed: getAppInstallDir now returns dictionary with absolute path and install size
+- Fixed: missing function argument binds
+- Removed: enums that are not in the SDK but Valve's docs
+
 **Version 3.6.2 Changes**
 
 - Added: new Input callback _input_gamepad_slot_change_
