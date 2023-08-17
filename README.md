@@ -18,6 +18,9 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v4.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
+**Version 4.3.1 Changes**
+- Fixed: wrong variant type for join_requested
+
 **Version 4.3 Changes**
 - Added: full GodotSteam documentation into the editor
 - Added: steamShutdown to allow Steamworks to be manually shutdown
