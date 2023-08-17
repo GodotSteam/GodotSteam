@@ -11800,7 +11800,7 @@ void Steam::_register_methods(){
 	register_signal<Steam>("connected_chat_leave", "chat_id", GODOT_VARIANT_TYPE_INT, "steam_id", GODOT_VARIANT_TYPE_INT, "kicked", GODOT_VARIANT_TYPE_BOOL, "dropped", GODOT_VARIANT_TYPE_BOOL);
 	register_signal<Steam>("connected_clan_chat_message", "chat", GODOT_VARIANT_TYPE_DICTIONARY);
 	register_signal<Steam>("_connected_friend_chat_message", "chat", GODOT_VARIANT_TYPE_DICTIONARY);
-	register_signal<Steam>("join_requested", "lobby_id", GODOT_VARIANT_TYPE_INT, "connect_string", GODOT_VARIANT_TYPE_STRING);
+	register_signal<Steam>("join_requested", "lobby_id", GODOT_VARIANT_TYPE_INT, "steam_id", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("overlay_toggled", "active", GODOT_VARIANT_TYPE_BOOL, "user_initiated", GODOT_VARIANT_TYPE_BOOL, "app_id", GODOT_VARIANT_TYPE_INT);
 	register_signal<Steam>("join_game_requested", "user", GODOT_VARIANT_TYPE_INT, "connect", GODOT_VARIANT_TYPE_STRING);
 	register_signal<Steam>("change_server_requested", "server", GODOT_VARIANT_TYPE_STRING, "password", GODOT_VARIANT_TYPE_STRING);
