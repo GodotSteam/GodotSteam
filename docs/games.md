@@ -973,6 +973,14 @@ vz
 [ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1791350/Square_n_Balls/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Starveil -->
+<figure class="game" markdown>
+[![Starveil](https://steamcdn-a.akamaihd.net/steam/apps/2357590/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2357590/Starveil/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2357590/Starveil/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/ZE3MtNXaYD){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Subcube -->
 <figure class="game" markdown>
 [![Subcube](https://steamcdn-a.akamaihd.net/steam/apps/873830/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/873830/Subcube/){ target="_blank" }
