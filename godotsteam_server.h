@@ -537,7 +537,7 @@ class SteamServer: public Object {
 		void computeNewPlayerCompatibility(uint64_t steam_id);
 		void setAdvertiseServerActive(bool active);
 		void endAuthSession(uint64_t steam_id);
-		Dictionary getAuthSessionTicket();
+		//Dictionary getAuthSessionTicket();
 		Dictionary getNextOutgoingPacket();
 		Dictionary getPublicIP();
 		uint64_t getSteamID();
@@ -551,6 +551,7 @@ class SteamServer: public Object {
 		void setGameData(const String& data);
 		void setGameDescription(const String& description);
 		void setGameTags(const String& tags);
+		void createLobby(LobbyType lobby_type, int max_members);
 		void setKeyValue(const String& key, const String& value);
 		void setMapName(const String& map);
 		void setMaxPlayerCount(int players_max);
@@ -703,7 +704,7 @@ class SteamServer: public Object {
 
 		// Networking Types /////////////////////
 		bool addIdentity(const String& reference_name);
-		bool addIPAddress(const String& reference_name);
+		bool addIPAddress(const String& reference_name, bool isLocalHost);
 		void clearIdentity(const String& reference_name);
 		void clearIPAddress(const String& reference_name);
 		uint8 getGenericBytes(const String& reference_name);
@@ -1009,6 +1010,10 @@ class SteamServer: public Object {
 		void inventory_request_prices_result(SteamInventoryRequestPricesResult_t *call_data, bool io_failure);
 		CCallResult<SteamServer, SteamInventoryStartPurchaseResult_t> callResultStartPurchase;
 		void inventory_start_purchase_result(SteamInventoryStartPurchaseResult_t *call_data, bool io_failure);
+
+		// Matchmaking call results /////////////
+		CCallResult<SteamServer, LobbyCreated_t> callResultCreateLobby;
+		void lobby_created(LobbyCreated_t *call_data, bool io_failure);
 
 		// Remote Storage call results //////////
 		CCallResult<SteamServer, RemoteStorageFileReadAsyncComplete_t> callResultFileReadAsyncComplete;

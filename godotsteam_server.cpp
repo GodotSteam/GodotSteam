@@ -9,7 +9,6 @@
 #pragma warning(disable:4828)
 #endif
 
-
 /////////////////////////////////////////////////
 ///// HEADER INCLUDES
 /////////////////////////////////////////////////
@@ -219,7 +218,8 @@ bool SteamServer::serverInit(const String& ip, uint16 game_port, uint16 query_po
 		return false;
 	}
 	uint32_t ip4 = *((uint32_t *)address.get_ipv4());
-	if(!SteamGameServer_Init(ip4, game_port, query_port, mode, version_string.utf8().get_data())){
+	uint32 unIP = 0x00000000;
+	if(!SteamGameServer_Init(unIP, game_port, query_port, mode, version_string.utf8().get_data())){
 		return false;
 	}
 	return true;
@@ -715,21 +715,21 @@ void SteamServer::setRegion(const String& region){
 // NOTE: These functions are player list management / authentication.
 //
 // Retrieve ticket to be sent to the entity who wishes to authenticate you (using BeginAuthSession API).
-Dictionary SteamServer::getAuthSessionTicket(){
-	// Create the dictionary to use
-	Dictionary auth_ticket;
-	if(SteamGameServer() != NULL){
-		uint32_t ticket_size = 1024;
-		PoolByteArray buffer;
-		buffer.resize(ticket_size);
-		uint32_t id = SteamGameServer()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
-		// Add this data to the dictionary
-		auth_ticket["id"] = id;
-		auth_ticket["buffer"] = buffer;
-		auth_ticket["size"] = ticket_size;
-	}
-	return auth_ticket;
-}
+// Dictionary SteamServer::getAuthSessionTicket(){
+// 	// Create the dictionary to use
+// 	Dictionary auth_ticket;
+// 	if(SteamGameServer() != NULL){
+// 		uint32_t ticket_size = 1024;
+// 		PoolByteArray buffer;
+// 		buffer.resize(ticket_size);
+// 		uint32_t id = SteamGameServer()->GetAuthSessionTicket(buffer.write().ptr(), ticket_size, &ticket_size);
+// 		// Add this data to the dictionary
+// 		auth_ticket["id"] = id;
+// 		auth_ticket["buffer"] = buffer;
+// 		auth_ticket["size"] = ticket_size;
+// 	}
+// 	return auth_ticket;
+// }
 
 // Authenticate the ticket from the entity Steam ID to be sure it is valid and isn't reused.
 uint32 SteamServer::beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id){
@@ -1878,83 +1878,153 @@ int SteamServer::sendMessageToUser(const String& identity_reference, const PoolB
 }
 
 
+extern void MyStatusChangedFunc(SteamNetConnectionStatusChangedCallback_t* info) {
+    printf("in networking");
+}
+
 /////////////////////////////////////////////////
 ///// NETWORKING SOCKETS
 /////////////////////////////////////////////////
 //
 //! Creates a "server" socket that listens for clients to connect to by calling ConnectByIPAddress, over ordinary UDP (IPv4 or IPv6)
 uint32 SteamServer::createListenSocketIP(const String& ip_reference, Array options){
-	if(SteamNetworkingSockets() == NULL){
-		return 0;
+
+
+	//SteamNetworkingIPAddr steamAddr;
+	//steamAddr.Clear();
+	//steamAddr.ParseString("127.0.0.1:27015");
+
+	SteamNetworkingIPAddr addr;
+	addr.Clear();
+	//addr.SetIPv4(0x7f000001, 27015);
+
+	const char* temp = ip_reference.utf8().get_data();
+		int i = 0;
+	int decCount = 0;
+	uint32_t res = 0;
+	int tempNum = 0;
+	int multiplier = 1;
+	int shiftMultiplier = 1 << 24;
+
+	int lengths[4];
+
+	for (int i = 0; i < 4; i++) {
+		lengths[i] = 0;
 	}
-	const SteamNetworkingConfigValue_t *these_options = new SteamNetworkingConfigValue_t[sizeof(options)];
-	these_options = convertOptionsArray(options);
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketIP(ip_addresses[ip_reference.utf8().get_data()], sizeof(options), these_options);
-	delete[] these_options;
+
+	int currLengthCounter = 0;
+	while (temp[i] != '\0') {
+		if (temp[i] == '.') {
+			currLengthCounter++;
+		}
+		else {
+			lengths[currLengthCounter]++;
+		}
+		i++;
+	}
+
+	i = 0;
+	int prevIndex = 0;
+
+	for (int i = 0; i < lengths[0] - 1; i++) {
+		multiplier = multiplier * 10;
+	}
+
+	int fullNum = 0;
+
+	while (temp[i] != '\0') {
+		if (temp[i] == '.') {
+			res += (shiftMultiplier * tempNum);
+			tempNum = 0;
+			shiftMultiplier = shiftMultiplier >> 8;
+			multiplier = 1;
+			for (int i = 0; i < lengths[decCount+1] - 1; i++) {
+				multiplier = multiplier * 10;
+			}
+			decCount++;
+		}
+		else {
+			fullNum = int(temp[i]) - 48;
+			tempNum += multiplier * fullNum;
+			multiplier /= 10;
+		}
+
+		i++;
+	}
+
+	res += shiftMultiplier * tempNum;
+	
+
+	addr.SetIPv4(res, 27015);
+	//addr.SetIPv4(0xc0a8010c, 27015);
+	addr.m_port = 27015;
+	SteamNetworkingConfigValue_t opt; 
+	opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, MyStatusChangedFunc);
+	uint32 listen_socket = SteamGameServerNetworkingSockets()->CreateListenSocketIP(addr, 0, &opt);
 	return listen_socket;
 }
 
 //! Like CreateListenSocketIP, but clients will connect using ConnectP2P. The connection will be relayed through the Valve network.
 uint32 SteamServer::createListenSocketP2P(int virtual_port, Array options){
-	if(SteamNetworkingSockets() == NULL){
-		return 0;
+	if(SteamGameServerNetworkingSockets() == NULL){
+		return -1;
 	}
-	uint32 listen_socket = SteamNetworkingSockets()->CreateListenSocketP2P(virtual_port, sizeof(options), convertOptionsArray(options));
+	uint32 listen_socket = SteamGameServerNetworkingSockets()->CreateListenSocketP2P(virtual_port, sizeof(options), convertOptionsArray(options));
 	return listen_socket;
 }
 
 //! Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
 uint32 SteamServer::connectP2P(const String& identity_reference, int virtual_port, Array options){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->ConnectP2P(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
+	return SteamGameServerNetworkingSockets()->ConnectP2P(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
 }
 
 //! Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
 uint32 SteamServer::connectToHostedDedicatedServer(const String& identity_reference, int virtual_port, Array options){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
+	return SteamGameServerNetworkingSockets()->ConnectToHostedDedicatedServer(networking_identities[identity_reference.utf8().get_data()], virtual_port, sizeof(options), convertOptionsArray(options));
 }
 
 //! Accept an incoming connection that has been received on a listen socket.
 int SteamServer::acceptConnection(uint32 connection_handle){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->AcceptConnection((HSteamNetConnection)connection_handle);
+	return  SteamGameServerNetworkingSockets()->AcceptConnection((HSteamNetConnection)connection_handle);
 }
 
 //! Disconnects from the remote host and invalidates the connection handle. Any unread data on the connection is discarded.
 bool SteamServer::closeConnection(uint32 peer, int reason, const String& debug_message, bool linger){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return false;
 	}
-	return SteamNetworkingSockets()->CloseConnection((HSteamNetConnection)peer, reason, debug_message.utf8().get_data(), linger);
+	return SteamGameServerNetworkingSockets()->CloseConnection((HSteamNetConnection)peer, reason, debug_message.utf8().get_data(), linger);
 }
 
 //! Destroy a listen socket. All the connections that were accepted on the listen socket are closed ungracefully.
 bool SteamServer::closeListenSocket(uint32 socket){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return false;
 	}
-	return SteamNetworkingSockets()->CloseListenSocket((HSteamListenSocket)socket);
+	return SteamGameServerNetworkingSockets()->CloseListenSocket((HSteamListenSocket)socket);
 }
 
 //! Create a pair of connections that are talking to each other, e.g. a loopback connection. This is very useful for testing, or so that your client/server code can work the same even when you are running a local "server".
 Dictionary SteamServer::createSocketPair(bool loopback, const String& identity_reference1, const String& identity_reference2){
 	// Create a dictionary to populate
 	Dictionary connection_pair;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		// Turn the strings back to structs - Should be a check for failure to parse from string
 		const SteamNetworkingIdentity identity_struct1 = networking_identities[identity_reference1.utf8().get_data()];
 		const SteamNetworkingIdentity identity_struct2 = networking_identities[identity_reference2.utf8().get_data()];
 		// Get connections
 		uint32 connection1 = 0;
 		uint32 connection2 = 0;
-		bool success = SteamNetworkingSockets()->CreateSocketPair(&connection1, &connection2, loopback, &identity_struct1, &identity_struct2);
+		bool success = SteamGameServerNetworkingSockets()->CreateSocketPair(&connection1, &connection2, loopback, &identity_struct1, &identity_struct2);
 		// Populate the dictionary
 		connection_pair["success"] = success;
 		connection_pair["connection1"] = connection1;
@@ -1966,9 +2036,9 @@ Dictionary SteamServer::createSocketPair(bool loopback, const String& identity_r
 //! Send a message to the remote host on the specified connection.
 Dictionary SteamServer::sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags){
 	Dictionary message_response;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		int64 number;
-		int result = SteamNetworkingSockets()->SendMessageToConnection((HSteamNetConnection)connection_handle, data.read().ptr(), data.size(), flags, &number);
+		int result = SteamGameServerNetworkingSockets()->SendMessageToConnection((HSteamNetConnection)connection_handle, data.read().ptr(), data.size(), flags, &number);
 		// Populate the dictionary
 		message_response["result"] = result;
 		message_response["message_number"] = (uint64_t)number;
@@ -1978,7 +2048,7 @@ Dictionary SteamServer::sendMessageToConnection(uint32 connection_handle, const 
 
 //! Send one or more messages without copying the message payload. This is the most efficient way to send messages. To use this function, you must first allocate a message object using ISteamNetworkingUtils::AllocateMessage. (Do not declare one on the stack or allocate your own.)
 void SteamServer::sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags){
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetworkingMessage_t *networkMessage;
 		networkMessage = SteamNetworkingUtils()->AllocateMessage(0);
 		networkMessage->m_pData = (void *)data.read().ptr();
@@ -1986,7 +2056,7 @@ void SteamServer::sendMessages(int messages, const PoolByteArray data, uint32 co
 		networkMessage->m_conn = (HSteamNetConnection)connection_handle;
 		networkMessage->m_nFlags = flags;
 		int64 result;
-		SteamNetworkingSockets()->SendMessages(messages, &networkMessage, &result);
+		SteamGameServerNetworkingSockets()->SendMessages(messages, &networkMessage, &result);
 		// Release the message
 		networkMessage->Release();
 	}
@@ -1994,20 +2064,20 @@ void SteamServer::sendMessages(int messages, const PoolByteArray data, uint32 co
 
 //! Flush any messages waiting on the Nagle timer and send them at the next transmission opportunity (often that means right now).
 int SteamServer::flushMessagesOnConnection(uint32 connection_handle){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->FlushMessagesOnConnection((HSteamNetConnection)connection_handle);
+	return SteamGameServerNetworkingSockets()->FlushMessagesOnConnection((HSteamNetConnection)connection_handle);
 }
 
 //! Fetch the next available message(s) from the connection, if any. Returns the number of messages returned into your array, up to nMaxMessages. If the connection handle is invalid, -1 is returned. If no data is available, 0, is returned.
 Array SteamServer::receiveMessagesOnConnection(uint32 connection_handle, int max_messages){
 	Array messages;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		// Allocate the space for the messages
 		SteamNetworkingMessage_t** connection_messages = new SteamNetworkingMessage_t*[max_messages];
 		// Get the messages
-		int available_messages = SteamNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection_handle, connection_messages, max_messages);
+		int available_messages = SteamGameServerNetworkingSockets()->ReceiveMessagesOnConnection((HSteamNetConnection)connection_handle, connection_messages, max_messages);
 		// Loop through and create the messages as dictionaries then add to the messages array
 		for(int i = 0; i < available_messages; i++){
 			// Create the message dictionary to send back
@@ -2044,36 +2114,36 @@ Array SteamServer::receiveMessagesOnConnection(uint32 connection_handle, int max
 
 //! Create a new poll group.
 uint32 SteamServer::createPollGroup(){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->CreatePollGroup();
+	return SteamGameServerNetworkingSockets()->CreatePollGroup();
 }
 
 //! Destroy a poll group created with CreatePollGroup.
 bool SteamServer::destroyPollGroup(uint32 poll_group){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return false;
 	}
-	return SteamNetworkingSockets()->DestroyPollGroup((HSteamNetPollGroup)poll_group);
+	return SteamGameServerNetworkingSockets()->DestroyPollGroup((HSteamNetPollGroup)poll_group);
 }
 
 //! Assign a connection to a poll group. Note that a connection may only belong to a single poll group. Adding a connection to a poll group implicitly removes it from any other poll group it is in.
 bool SteamServer::setConnectionPollGroup(uint32 connection_handle, uint32 poll_group){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return false;
 	}
-	return SteamNetworkingSockets()->SetConnectionPollGroup((HSteamNetConnection)connection_handle, (HSteamNetPollGroup)poll_group);
+	return SteamGameServerNetworkingSockets()->SetConnectionPollGroup((HSteamNetConnection)connection_handle, (HSteamNetPollGroup)poll_group);
 }
 
 //! Same as ReceiveMessagesOnConnection, but will return the next messages available on any connection in the poll group. Examine SteamNetworkingMessage_t::m_conn to know which connection. (SteamNetworkingMessage_t::m_nConnUserData might also be useful.)
 Array SteamServer::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 	Array messages;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		// Allocate the space for the messages
 		SteamNetworkingMessage_t** poll_messages = new SteamNetworkingMessage_t*[max_messages];
 		// Get the messages
-		int available_messages = SteamNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)poll_group, poll_messages, max_messages);
+		int available_messages = SteamGameServerNetworkingSockets()->ReceiveMessagesOnPollGroup((HSteamNetPollGroup)poll_group, poll_messages, max_messages);
 		// Loop through and create the messages as dictionaries then add to the messages array
 		for(int i = 0; i < available_messages; i++){
 			// Create the message dictionary to send back
@@ -2111,9 +2181,9 @@ Array SteamServer::receiveMessagesOnPollGroup(uint32 poll_group, int max_message
 //! Returns basic information about the high-level state of the connection. Returns false if the connection handle is invalid.
 Dictionary SteamServer::getConnectionInfo(uint32 connection_handle){
 	Dictionary connection_info;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetConnectionInfo_t info;
-		if(SteamNetworkingSockets()->GetConnectionInfo((HSteamNetConnection)connection_handle, &info)){
+		if(SteamGameServerNetworkingSockets()->GetConnectionInfo((HSteamNetConnection)connection_handle, &info)){
 			char identity[STEAM_BUFFER_SIZE];
 			info.m_identityRemote.ToString(identity, STEAM_BUFFER_SIZE);
 			connection_info["identity"] = identity;
@@ -2136,9 +2206,9 @@ Dictionary SteamServer::getConnectionInfo(uint32 connection_handle){
 //! Returns very detailed connection stats in diagnostic text format. Useful for dumping to a log, etc. The format of this information is subject to change.
 Dictionary SteamServer::getDetailedConnectionStatus(uint32 connection){
 	Dictionary connectionStatus;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		char buffer[STEAM_LARGE_BUFFER_SIZE];
-		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
+		int success = SteamGameServerNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
 		// Add data to dictionary
 		connectionStatus["success"] = success;
 		connectionStatus["status"] = buffer;
@@ -2149,16 +2219,16 @@ Dictionary SteamServer::getDetailedConnectionStatus(uint32 connection){
 
 //! Fetch connection user data. Returns -1 if handle is invalid or if you haven't set any userdata on the connection.
 uint64_t SteamServer::getConnectionUserData(uint32 peer){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->GetConnectionUserData((HSteamNetConnection)peer);
+	return SteamGameServerNetworkingSockets()->GetConnectionUserData((HSteamNetConnection)peer);
 }
 
 //! Set a name for the connection, used mostly for debugging
 void SteamServer::setConnectionName(uint32 peer, const String& name){
-	if(SteamNetworkingSockets() != NULL){
-		SteamNetworkingSockets()->SetConnectionName((HSteamNetConnection)peer, name.utf8().get_data());
+	if(SteamGameServerNetworkingSockets() != NULL){
+		SteamGameServerNetworkingSockets()->SetConnectionName((HSteamNetConnection)peer, name.utf8().get_data());
 	}
 }
 
@@ -2166,9 +2236,9 @@ void SteamServer::setConnectionName(uint32 peer, const String& name){
 String SteamServer::getConnectionName(uint32 peer){
 	// Set empty string variable for use
 	String connection_name = "";
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		char name[STEAM_BUFFER_SIZE];
-		if(SteamNetworkingSockets()->GetConnectionName((HSteamNetConnection)peer, name, STEAM_BUFFER_SIZE)){
+		if(SteamGameServerNetworkingSockets()->GetConnectionName((HSteamNetConnection)peer, name, STEAM_BUFFER_SIZE)){
 			connection_name += name;	
 		}
 	}
@@ -2177,19 +2247,19 @@ String SteamServer::getConnectionName(uint32 peer){
 
 //! Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
 bool SteamServer::getListenSocketAddress(uint32 socket){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return false;
 	}
 	SteamNetworkingIPAddr address;
-	return SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
+	return SteamGameServerNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
 }
 
 //! Get the identity assigned to this interface.
 String SteamServer::getIdentity(){
 	String identity_string = "";
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetworkingIdentity this_identity;
-		if(SteamNetworkingSockets()->GetIdentity(&this_identity)){
+		if(SteamGameServerNetworkingSockets()->GetIdentity(&this_identity)){
 			char *this_buffer = new char[128];
 			this_identity.ToString(this_buffer, 128);
 			identity_string = String(this_buffer);
@@ -2201,28 +2271,29 @@ String SteamServer::getIdentity(){
 
 //! Indicate our desire to be ready participate in authenticated communications. If we are currently not ready, then steps will be taken to obtain the necessary certificates. (This includes a certificate for us, as well as any CA certificates needed to authenticate peers.)
 int SteamServer::initAuthentication(){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->InitAuthentication();
+	return SteamGameServerNetworkingSockets()->InitAuthentication();
 }
 
 //! Query our readiness to participate in authenticated communications. A SteamNetAuthenticationStatus_t callback is posted any time this status changes, but you can use this function to query it at any time.
 int SteamServer::getAuthenticationStatus(){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->GetAuthenticationStatus(NULL);
+	return SteamGameServerNetworkingSockets()->GetAuthenticationStatus(NULL);
 }
+
 
 // Call this when you receive a ticket from your backend / matchmaking system. Puts the ticket into a persistent cache, and optionally returns the parsed ticket.
 //Dictionary SteamServer::receivedRelayAuthTicket(){
 //	Dictionary ticket;
-//	if(SteamNetworkingSockets() != NULL){
+//	if(SteamGameServerNetworkingSockets() != NULL){
 //		SteamDatagramRelayAuthTicket parsed_ticket;
 //		PoolByteArray incoming_ticket;
 //		incoming_ticket.resize(512);		
-//		if(SteamNetworkingSockets()->ReceivedRelayAuthTicket(incoming_ticket.write().ptr(), 512, &parsed_ticket)){
+//		if(SteamGameServerNetworkingSockets()->ReceivedRelayAuthTicket(incoming_ticket.write().ptr(), 512, &parsed_ticket)){
 //			char game_server;
 //			parsed_ticket.m_identityGameserver.ToString(&game_server, 128);
 //			ticket["game_server"] = game_server;
@@ -2244,8 +2315,8 @@ int SteamServer::getAuthenticationStatus(){
 // Search cache for a ticket to talk to the server on the specified virtual port. If found, returns the number of seconds until the ticket expires, and optionally the complete cracked ticket. Returns 0 if we don't have a ticket.
 //int SteamServer::findRelayAuthTicketForServer(int port){
 //	int expires_in_seconds = 0;
-//	if(SteamNetworkingSockets() != NULL){
-//		expires_in_seconds = SteamNetworkingSockets()->FindRelayAuthTicketForServer(game_server, port, &relay_auth_ticket);
+//	if(SteamGameServerNetworkingSockets() != NULL){
+//		expires_in_seconds = SteamGameServerNetworkingSockets()->FindRelayAuthTicketForServer(game_server, port, &relay_auth_ticket);
 //	}
 //	return expires_in_seconds;
 //}
@@ -2254,32 +2325,32 @@ int SteamServer::getAuthenticationStatus(){
 
 //! Returns the value of the SDR_LISTEN_PORT environment variable. This is the UDP server your server will be listening on. This will configured automatically for you in production environments.
 uint16 SteamServer::getHostedDedicatedServerPort(){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->GetHostedDedicatedServerPort();
+	return SteamGameServerNetworkingSockets()->GetHostedDedicatedServerPort();
 }
 
 //! Returns 0 if SDR_LISTEN_PORT is not set. Otherwise, returns the data center the server is running in. This will be k_SteamDatagramPOPID_dev in non-production envirionment.
 uint32 SteamServer::getHostedDedicatedServerPOPId(){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->GetHostedDedicatedServerPOPID();
+	return SteamGameServerNetworkingSockets()->GetHostedDedicatedServerPOPID();
 }
 
 // Return info about the hosted server. This contains the PoPID of the server, and opaque routing information that can be used by the relays to send traffic to your server.
 //int SteamServer::getHostedDedicatedServerAddress(){
 //	int result = 2;
-//	if(SteamNetworkingSockets() != NULL){
-//		result = SteamNetworkingSockets()->GetHostedDedicatedServerAddress(&hosted_address);
+//	if(SteamGameServerNetworkingSockets() != NULL){
+//		result = SteamGameServerNetworkingSockets()->GetHostedDedicatedServerAddress(&hosted_address);
 //	}
 //	return result;
 //}
 
 //! Create a listen socket on the specified virtual port. The physical UDP port to use will be determined by the SDR_LISTEN_PORT environment variable. If a UDP port is not configured, this call will fail.
 uint32 SteamServer::createHostedDedicatedServerListenSocket(int port, Array options){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
 	return SteamGameServerNetworkingSockets()->CreateHostedDedicatedServerListenSocket(port, sizeof(options), convertOptionsArray(options));
@@ -2288,13 +2359,13 @@ uint32 SteamServer::createHostedDedicatedServerListenSocket(int port, Array opti
 // Generate an authentication blob that can be used to securely login with your backend, using SteamDatagram_ParseHostedServerLogin. (See steamdatagram_gamecoordinator.h)
 //int SteamServer::getGameCoordinatorServerLogin(const String& app_data){
 //	int result = 2;
-//	if(SteamNetworkingSockets() != NULL){	
+//	if(SteamGameServerNetworkingSockets() != NULL){	
 //		SteamDatagramGameCoordinatorServerLogin *server_login = new SteamDatagramGameCoordinatorServerLogin;
 //		server_login->m_cbAppData = app_data.size();
 //		strcpy(server_login->m_appData, app_data.utf8().get_data());
 //		int signed_blob = k_cbMaxSteamDatagramGameCoordinatorServerLoginSerialized;
 //		routing_blob.resize(signed_blob);
-//		result = SteamNetworkingSockets()->GetGameCoordinatorServerLogin(server_login, &signed_blob, routing_blob.write().ptr());
+//		result = SteamGameServerNetworkingSockets()->GetGameCoordinatorServerLogin(server_login, &signed_blob, routing_blob.write().ptr());
 //		delete server_login;
 //	}
 //	return result;
@@ -2304,10 +2375,10 @@ uint32 SteamServer::createHostedDedicatedServerListenSocket(int port, Array opti
 Dictionary SteamServer::getConnectionRealTimeStatus(uint32 connection, int lanes, bool get_status){
 	// Create the dictionary for returning
 	Dictionary real_time_status;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetConnectionRealTimeStatus_t this_status;
 		SteamNetConnectionRealTimeLaneStatus_t *lanes_array = new SteamNetConnectionRealTimeLaneStatus_t[lanes];
-		int result = SteamNetworkingSockets()->GetConnectionRealTimeStatus((HSteamNetConnection)connection, &this_status, lanes, lanes_array);
+		int result = SteamGameServerNetworkingSockets()->GetConnectionRealTimeStatus((HSteamNetConnection)connection, &this_status, lanes, lanes_array);
 		// Append the status
 		real_time_status["response"] = result;
 		// If the result is good, get more data
@@ -2351,7 +2422,7 @@ Dictionary SteamServer::getConnectionRealTimeStatus(uint32 connection, int lanes
 // Messages within a given lane are always sent in the order they are queued, but messages from different lanes may be sent out of order.
 // Each lane has its own message number sequence.  The first message sent on each lane will be assigned the number 1.
 int SteamServer::configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights) {
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
 	// Convert the priorities array to an int
@@ -2364,7 +2435,7 @@ int SteamServer::configureConnectionLanes(uint32 connection, int lanes, Array pr
 	for(int i = 0; i < lanes; i++){
 		lane_weights[i] = weights[i];
 	}
-	int result = SteamNetworkingSockets()->ConfigureConnectionLanes((HSteamNetConnection)connection, lanes, lane_priorities, lane_weights);
+	int result = SteamGameServerNetworkingSockets()->ConfigureConnectionLanes((HSteamNetConnection)connection, lanes, lane_priorities, lane_weights);
 	delete[] lane_priorities;
 	delete[] lane_weights;
 	return result;
@@ -2373,11 +2444,11 @@ int SteamServer::configureConnectionLanes(uint32 connection, int lanes, Array pr
 // Certificate provision by the application. On Steam, we normally handle all this automatically and you will not need to use these advanced functions.
 Dictionary SteamServer::getCertificateRequest(){
 	Dictionary cert_information;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		int *certificate = new int[512];
 		int cert_size = 0;
 		SteamNetworkingErrMsg error_message;
-		if(SteamNetworkingSockets()->GetCertificateRequest(&cert_size, &certificate, error_message)){
+		if(SteamGameServerNetworkingSockets()->GetCertificateRequest(&cert_size, &certificate, error_message)){
 			cert_information["certificate"] = certificate;
 			cert_information["cert_size"] = cert_size;
 			cert_information["error_message"] = error_message;
@@ -2390,10 +2461,10 @@ Dictionary SteamServer::getCertificateRequest(){
 // Set the certificate. The certificate blob should be the output of SteamDatagram_CreateCert.
 Dictionary SteamServer::setCertificate(const PoolByteArray& certificate){
 	Dictionary certificate_data;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		bool success = false;
 		SteamNetworkingErrMsg error_message;
-		success = SteamNetworkingSockets()->SetCertificate((void*)certificate.read().ptr(), certificate.size(), error_message);
+		success = SteamGameServerNetworkingSockets()->SetCertificate((void*)certificate.read().ptr(), certificate.size(), error_message);
 		if(success){
 			certificate_data["response"] = success;
 			certificate_data["error"] = error_message;
@@ -2406,17 +2477,17 @@ Dictionary SteamServer::setCertificate(const PoolByteArray& certificate){
 // You can pass a specific identity that you want to use, or you can pass NULL, in which case the identity will be invalid until you set it using SetCertificate.
 // NOTE: This function is not actually supported on Steam!  It is included for use on other platforms where the active user can sign out and a new user can sign in.
 void SteamServer::resetIdentity(const String& identity_reference){
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetworkingIdentity resetting_identity = networking_identities[identity_reference.utf8().get_data()];
-		SteamNetworkingSockets()->ResetIdentity(&resetting_identity);
+		SteamGameServerNetworkingSockets()->ResetIdentity(&resetting_identity);
 	}
 }
 
 // Invoke all callback functions queued for this interface. See k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, etc.
 // You don't need to call this if you are using Steam's callback dispatch mechanism (SteamAPI_RunCallbacks and SteamGameserver_RunCallbacks).
 void SteamServer::runNetworkingCallbacks(){
-	if(SteamNetworkingSockets() != NULL){
-		SteamNetworkingSockets()->RunCallbacks();		
+	if(SteamGameServerNetworkingSockets() != NULL){
+		SteamGameServerNetworkingSockets()->RunCallbacks();		
 	}
 }
 
@@ -2425,10 +2496,10 @@ void SteamServer::runNetworkingCallbacks(){
 // Returns false if a request was already in progress, true if a new request was started.
 // A SteamNetworkingFakeIPResult_t will be posted when the request completes.
 bool SteamServer::beginAsyncRequestFakeIP(int num_ports){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return false;
 	}
-	return SteamNetworkingSockets()->BeginAsyncRequestFakeIP(num_ports);
+	return SteamGameServerNetworkingSockets()->BeginAsyncRequestFakeIP(num_ports);
 }
 
 // Return info about the FakeIP and port(s) that we have been assigned, if any.
@@ -2436,9 +2507,9 @@ bool SteamServer::beginAsyncRequestFakeIP(int num_ports){
 Dictionary SteamServer::getFakeIP(int first_port){
 	// Create the return dictionary
 	Dictionary fake_ip;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetworkingFakeIPResult_t fake_ip_result;
-		SteamNetworkingSockets()->GetFakeIP(first_port, &fake_ip_result);
+		SteamGameServerNetworkingSockets()->GetFakeIP(first_port, &fake_ip_result);
 		// Populate the dictionary
 		fake_ip["result"] = fake_ip_result.m_eResult;
 		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
@@ -2455,10 +2526,10 @@ Dictionary SteamServer::getFakeIP(int first_port){
 // Create a listen socket that will listen for P2P connections sent to our FakeIP.
 // A peer can initiate connections to this listen socket by calling ConnectByIPAddress.
 uint32 SteamServer::createListenSocketP2PFakeIP(int fake_port, Array options){
-	if(SteamNetworkingSockets() == NULL){
+	if(SteamGameServerNetworkingSockets() == NULL){
 		return 0;
 	}
-	return SteamNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, sizeof(options), convertOptionsArray(options));
+	return SteamGameServerNetworkingSockets()->CreateListenSocketP2PFakeIP(fake_port, sizeof(options), convertOptionsArray(options));
 }
 
 // If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
@@ -2466,9 +2537,9 @@ uint32 SteamServer::createListenSocketP2PFakeIP(int fake_port, Array options){
 Dictionary SteamServer::getRemoteFakeIPForConnection(uint32 connection){
 	// Create the return dictionary
 	Dictionary this_fake_address;
-	if(SteamNetworkingSockets() != NULL){
+	if(SteamGameServerNetworkingSockets() != NULL){
 		SteamNetworkingIPAddr fake_address;
-		int result = SteamNetworkingSockets()->GetRemoteFakeIPForConnection((HSteamNetConnection)connection, &fake_address);
+		int result = SteamGameServerNetworkingSockets()->GetRemoteFakeIPForConnection((HSteamNetConnection)connection, &fake_address);
 		// Send back the data
 		this_fake_address["result"] = result;
 		this_fake_address["port"] = fake_address.m_port;
@@ -2483,8 +2554,8 @@ Dictionary SteamServer::getRemoteFakeIPForConnection(uint32 connection){
 // This is intended to make it easy to port existing UDP-based code to take advantage of SDR.
 // To create a "client" port (e.g. the equivalent of an ephemeral UDP port) pass -1.
 void SteamServer::createFakeUDPPort(int fake_server_port_index){
-	if(SteamNetworkingSockets() != NULL){
-		SteamNetworkingSockets()->CreateFakeUDPPort(fake_server_port_index);
+	if(SteamGameServerNetworkingSockets() != NULL){
+		SteamGameServerNetworkingSockets()->CreateFakeUDPPort(fake_server_port_index);
 	}
 }
 
@@ -2621,8 +2692,15 @@ uint8 SteamServer::getGenericBytes(const String& reference_name){
 }
 
 // Add a new IP address struct
-bool SteamServer::addIPAddress(const String& reference_name){
-	ip_addresses[reference_name.utf8().get_data()] = SteamNetworkingIPAddr();
+bool SteamServer::addIPAddress(const String& reference_name, bool isLocalHost){
+	SteamNetworkingIPAddr addr;
+	if(isLocalHost){
+		addr.SetIPv6LocalHost();
+	}
+	addr.Clear();
+	addr.SetIPv4(0x7f000001, 27015);
+	//ip_addresses[reference_name.utf8().get_data()] = SteamNetworkingIPAddr();
+	ip_addresses[reference_name.utf8().get_data()] = addr;
 	if(ip_addresses.count(reference_name.utf8().get_data()) > 0){
 		return true;
 	}
@@ -5503,7 +5581,7 @@ void SteamServer::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("computeNewPlayerCompatibility", "steam_id"), &SteamServer::computeNewPlayerCompatibility);
 	ClassDB::bind_method(D_METHOD("setAdvertiseServerActive", "active"), &SteamServer::setAdvertiseServerActive);
 	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &SteamServer::endAuthSession);
-	ClassDB::bind_method("getAuthSessionTicket", &SteamServer::getAuthSessionTicket);
+	//ClassDB::bind_method("getAuthSessionTicket", &SteamServer::getAuthSessionTicket);
 	ClassDB::bind_method("getNextOutgoingPacket", &SteamServer::getNextOutgoingPacket);
 	ClassDB::bind_method("getPublicIP", &SteamServer::getPublicIP);
 	ClassDB::bind_method("getSteamID", &SteamServer::getSteamID);
