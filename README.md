@@ -6,7 +6,7 @@ Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3)
 - [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
 - [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server)
+- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server3)
 
 Documentation
 ---
@@ -45,7 +45,7 @@ Known Issues
 
 Quick How-To
 ---
-For complete instructions on how to build the GDExtension version of GodotSteam, [please refer to our documentation's 'How-To GDExtension' section.](https://godotsteam.com/howto_gdextension/) It will have the most up-to-date information.
+For complete instructions on how to build the GDExtension version of GodotSteam, [please refer to our documentation's 'How-To GDExtension' section.](https://godotsteam.com/howto/gdextension/) It will have the most up-to-date information.
 
 Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/Gramps/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1768) and skip compiling it yourself!
 
