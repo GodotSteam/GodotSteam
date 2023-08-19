@@ -8,9 +8,10 @@ repo_name: GodotSteam
 nav:
   - Introduction: 'index.md'
   - How-To's:
-    - How-To Godot 2, 3, 4: 'howto_modules.md'
-    - How-To GDNative: 'howto_gdnative.md'
-    - How-To GDExtension: 'howto_gdextension.md'
+    - How-To Godot 2, 3, 4: 'howto/modules.md'
+    - How-To GDNative: 'howto/gdnative.md'
+    - How-To GDExtension: 'howto/gdextension.md'
+    - How-To Server: 'howto/server.md'
   - Functions:
     - Main: 'functions/main.md'
     - App Lists: 'functions/app_lists.md'

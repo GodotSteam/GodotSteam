@@ -142,9 +142,11 @@ If you are downloading our pre-compiles or using the GDNative plugin, or have fi
 !!! guide "How-To Guides"
 	Based on what you want to work with, use one of these how-to guides to continue on.
 
-	[:fontawesome-solid-book: Module How-To](howto_modules){ .md-button .md-button--primary }
-	[:fontawesome-solid-book: GDNative How-To](howto_gdnative){ .md-button .md-button--primary }
-	[:fontawesome-solid-book: GDExtension How-To](howto_gdextension){ .md-button .md-button--primary }
+	[:fontawesome-solid-book: Module How-To](howto/modules){ .md-button .md-button--primary }
+	[:fontawesome-solid-book: GDNative How-To](howto/gdnative){ .md-button .md-button--primary }
+	[:fontawesome-solid-book: GDExtension How-To](howto/gdextension){ .md-button .md-button--primary }
+	
+	[:fontawesome-solid-book: Server How-To](howto/server){ .md-button .md-button--primary }
 
 !!! example "GodotSteam Example Project"
 	A working example of some GodotSteam features based on current tutorials; currently only available for Godot 3.x

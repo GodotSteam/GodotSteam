@@ -167,26 +167,48 @@ Once you set all, some, or none of these, you can then call ***requestLobbyList(
 
 In our example code, I do something like this to make buttons for each lobby:
 
-````
-func _on_Lobby_Match_List(lobbies: Array) -> void:
-	for LOBBY in lobbies:
-		# Pull lobby data from Steam, these are specific to our example
-		var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
-		var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
+=== "Godot 2.x, 3.x"
+	````
+	func _on_Lobby_Match_List(lobbies: Array) -> void:
+		for LOBBY in lobbies:
+			# Pull lobby data from Steam, these are specific to our example
+			var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
+			var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
 
-		# Get the current number of members
-		var LOBBY_NUM_MEMBERS: int = Steam.getNumLobbyMembers(LOBBY)
+			# Get the current number of members
+			var LOBBY_NUM_MEMBERS: int = Steam.getNumLobbyMembers(LOBBY)
 
-		# Create a button for the lobby
-		var LOBBY_BUTTON: Button = Button.new()
-		LOBBY_BUTTON.set_text("Lobby ", LOBBY, ": ", LOBBY_NAME, " [", LOBBY_MODE, "] - ", LOBBY_NUM_MEMBERS, " Player(s)")
-		LOBBY_BUTTON.set_size(Vector2(800, 50))
-		LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
-		LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
+			# Create a button for the lobby
+			var LOBBY_BUTTON: Button = Button.new()
+			LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_NUM_MEMBERS)+" Player(s)")
+			LOBBY_BUTTON.set_size(Vector2(800, 50))
+			LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
+			LOBBY_BUTTON.connect("pressed", self, "_join_Lobby", [LOBBY])
 
-		# Add the new lobby to the list
-		$"Lobby Panel/Panel/Scroll/VBox".add_child(LOBBY_BUTTON)
-````
+			# Add the new lobby to the list
+			$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
+	````
+=== "Godot 4.x"
+	````
+	func _on_Lobby_Match_List(lobbies: Array) -> void:
+		for LOBBY in lobbies:
+			# Pull lobby data from Steam, these are specific to our example
+			var LOBBY_NAME: String = Steam.getLobbyData(LOBBY, "name")
+			var LOBBY_MODE: String = Steam.getLobbyData(LOBBY, "mode")
+			
+			# Get the current number of members
+			var LOBBY_NUM_MEMBERS: int = Steam.getNumLobbyMembers(LOBBY)
+
+			# Create a button for the lobby
+			var LOBBY_BUTTON: Button = Button.new()
+			LOBBY_BUTTON.set_text("Lobby "+str(LOBBY)+": "+str(LOBBY_NAME)+" ["+str(LOBBY_MODE)+"] - "+str(LOBBY_NUM_MEMBERS)+" Player(s)")
+			LOBBY_BUTTON.set_size(Vector2(800, 50))
+			LOBBY_BUTTON.set_name("lobby_"+str(LOBBY))
+			LOBBY_BUTTON.connect("pressed", Callable(self, "_join_Lobby").bind(LOBBY))
+
+			# Add the new lobby to the list
+			$Lobbies/Scroll/List.add_child(LOBBY_BUTTON)
+	````
 
 You should now have a way to call lobby lists and display them.
 
