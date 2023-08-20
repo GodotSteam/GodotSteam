@@ -50,7 +50,7 @@ This will return the user's Steam ID, the avatar's size, and the data buffer for
 	````
 === "Godot 4.x"
 	````
-	func _loaded_Avatar(id: int, size: int, buffer: PoolByteArray) -> void:
+	func _loaded_Avatar(id: int, size: int, buffer: PackedByteArray) -> void:
 		print("Avatar for user: "+str(id))
 		print("Size: "+str(size))
 
