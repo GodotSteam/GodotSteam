@@ -29,7 +29,6 @@
 #include "core/object/ref_counted.h"
 #include "core/variant/dictionary.h"
 #include "scene/resources/texture.h"
-//#include "core/method_bind_ext.gen.inc" <---- ????
 
 // Include some system headers
 #include "map"
