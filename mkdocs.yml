@@ -67,7 +67,7 @@ nav:
     - Remote Storage: 'signals/remote_storage.md'
     - Screenshots: 'signals/screenshots.md'
     - UGC: 'signals/ugc.md'
-    - Users: 'signals/user.md'
+    - Users: 'signals/users.md'
     - User Stats: 'signals/user_stats.md'
     - Utils: 'signals/utils.md'
     - Video: 'signals/video.md'
