@@ -14,4 +14,4 @@ Thanks for contributing to the GodotSteam source code! We only have a few minor 
 	=== "Godot 4.x"
 		`scons platform=[your platform] tools=yes target=editor`
 
-So far that's it! Thanks again for helping make the project useful for the community! 
+So far that's it! Thanks again for helping make the project useful for the community!

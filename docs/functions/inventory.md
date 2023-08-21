@@ -143,7 +143,7 @@
 
 	**Note:** Calls to this function are subject to rate limits and may return cached results if called too frequently. It is suggested that you call this function only when you are about to display the user's full inventory, or if you expect that the inventory may have changed.
 
-	**Note:** You must call [destroyResult](/function/inventory/#destroyresult) on the provided inventory result when you are done with it.
+	**Note:** You must call [destroyResult](/functions/inventory/#destroyresult) on the provided inventory result when you are done with it.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamInventory#GetAllItems){ .md-button .md-button--store target="_blank" }

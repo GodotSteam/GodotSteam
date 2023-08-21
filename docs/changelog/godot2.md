@@ -114,4 +114,4 @@
 * Added: getCurrentGameLanguage
 * Added: Pre-compiled engines and templates for Windows
 * Added: change log to documentation
-* Changed: minor things in godotsteam.cpp 
+* Changed: minor things in godotsteam.cpp
