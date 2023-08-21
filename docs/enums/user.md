@@ -1,4 +1,4 @@
-# Enums - Users
+# Enums - User
 
 ## FailureType
 
