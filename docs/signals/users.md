@@ -1,4 +1,4 @@
-# Signals - User
+# Signals - Users
 
 These callbacks require you to run ```Steam.run_callbacks()``` in your ```_process()``` function to receive them.
 
@@ -150,7 +150,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ## steam_server_disconnected
 
 !!! function "steam_server_disconnected"
-	Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching [steam_server_connected](/signals/user/#steam_server_connected) has been posted.
+	Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching [steam_server_connected](/signals/users/#steam_server_connected) has been posted.
 
 	**Returns:** nothing
 

@@ -1,4 +1,4 @@
-#Functions - User
+# Functions - Users
 
 ---
 

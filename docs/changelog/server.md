@@ -58,4 +58,4 @@
 * Added: Apps, HTTP, Inventory, Networking, UGC, and Utils classes
 * Added: related callbacks, call results, constants, and enums
 * Added: headless server platform for linux
-* Fixed: OSX compiling config rules 
+* Fixed: OSX compiling config rules

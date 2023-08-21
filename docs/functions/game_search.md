@@ -112,4 +112,3 @@ These functions are not listed in the official Steamworks SDK documentation but 
 	Submit a result for one player; does not end the game. **game_id** continues to describe this game.
 
 	**Returns:** int
-

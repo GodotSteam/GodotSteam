@@ -20,4 +20,3 @@ error while loading shared libraries: libsteam_api.so: cannot open shared object
 
 This means you forgot to place `libsteam_api.so` next to your executable.
 Remember to include it along with your shipped game, as described in the [Export and Shipping tutorial](/tutorials/exporting_shipping/).
-

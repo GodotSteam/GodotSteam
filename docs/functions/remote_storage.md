@@ -101,7 +101,7 @@
 !!! function "fileReadAsync( ```string``` file, ```uint32``` offset, ```uint32_t``` data_to_read )"
 	Starts an asynchronous read from a file. The offset and amount to read should be valid for the size of the file, as indicated by [getFileSize](/functions/remote_storage/#getfilesize) or [getFileTimestamp](/functions/remote_storage/#getfiletimestamp).
 
-	Triggers a [file_read_async_complete](/signals/parties/#file_read_async_complete) call result.
+	Triggers a [file_read_async_complete](/signals/remote_storage/#file_read_async_complete) call result.
 
 	**Returns:** void
 
@@ -113,7 +113,7 @@
 !!! function "fileShare( ```string``` file )"
 	Share a file.
 
-	Triggers a [file_share_result](/signals/parties/#file_share_result) call result.
+	Triggers a [file_share_result](/signals/remote_storage/#file_share_result) call result.
 
 	**Returns:** void
 
@@ -137,7 +137,7 @@
 !!! function "fileWriteAsync( ```string``` file, ```PoolByteArray``` data )"
 	Creates a new file and asynchronously writes the raw byte data to the Steam Cloud, and then closes the file. If the target file already exists, it is overwritten.
 
-	Triggers a [file_write_async_complete](/signals/parties/#_file_write_async_complete) call result.
+	Triggers a [file_write_async_complete](/signals/remote_storage/#_file_write_async_complete) call result.
 
 	**Returns:** void
 
@@ -264,7 +264,7 @@
 !!! function "getLocalFileChange( ```int``` file )"
 	After calling [getLocalFileChangeCount](/functions/remote_storage/#getlocalfilechangecount), use this method to iterate over the changes. The changes described have already been made to local files. Your application should take appropriate action to reload state from disk, and possibly notify the user.
 	
-	For example: The local system had been suspended, during which time the user played elsewhere and uploaded changes to the Steam Cloud. On resume, Steam downloads those changes to the local system before resuming the application. The application receives an [local_file_changed](/signals/parties/#local_file_changed), and uses [getLocalFileChangeCount](/functions/remote_storage/#getlocalfilechangecount) and [getLocalFileChange](/functions/remote_storage/#getlocalfilechange) to iterate those changes. Depending on the application structure and the nature of the changes, the application could:
+	For example: The local system had been suspended, during which time the user played elsewhere and uploaded changes to the Steam Cloud. On resume, Steam downloads those changes to the local system before resuming the application. The application receives an [local_file_changed](/signals/remote_storage/#local_file_changed), and uses [getLocalFileChangeCount](/functions/remote_storage/#getlocalfilechangecount) and [getLocalFileChange](/functions/remote_storage/#getlocalfilechange) to iterate those changes. Depending on the application structure and the nature of the changes, the application could:
 	
 	* Re-load game progress to resume at exactly the point where the user was when they exited the game on the other device
 	* Notify the user of any synchronized changes that don't require reloading
@@ -286,7 +286,7 @@
 ## getLocalFileChangeCount
 
 !!! function "getLocalFileChangeCount()"
-	When your application receives a [local_file_changed](/signals/parties/#local_file_changed), use this method to get the number of changes (file updates and file deletes) that have been made. You can then iterate the changes using [getLocalFileChange](/functions/remote_storage/#getlocalfilechange).
+	When your application receives a [local_file_changed](/signals/remote_storage/#local_file_changed), use this method to get the number of changes (file updates and file deletes) that have been made. You can then iterate the changes using [getLocalFileChange](/functions/remote_storage/#getlocalfilechange).
 
 	**Returns:** uint32_t
 
@@ -335,7 +335,7 @@
 ## getUGCDetails
 
 !!! function "getUGCDetails( ```uint64_t``` content )"
-	Gets metadata for a file after it has been downloaded. This is the same metadata given in the [download_ugc_result](/signals/parties/#download_ugc_result) call result.
+	Gets metadata for a file after it has been downloaded. This is the same metadata given in the [download_ugc_result](/signals/remote_storage/#download_ugc_result) call result.
 
 	**Returns:** dictionary
 

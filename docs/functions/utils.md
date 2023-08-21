@@ -66,7 +66,7 @@
 !!! function "getImageSize( ```int``` image )"
 	Gets the size of a Steam image handle.
 
-	This must be called before calling [getImageRGBA](/functions/utils/#getimagesize) to create an appropriately sized buffer that will be filled with the raw image data.
+	This must be called before calling [getImageRGBA](/functions/utils/#getimagergba) to create an appropriately sized buffer that will be filled with the raw image data.
 	
 	**Returns:** dictionary
 
