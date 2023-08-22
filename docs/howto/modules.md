@@ -86,7 +86,7 @@ Some things to be aware of:
 - When creating templates for OSX, [please refer to this post for assistance as the documentation is a bit lacking.](http://steamcommunity.com/app/404790/discussions/0/364042703865087202/){ target="_blank" }
 
 ---
-## 5. Altogether Now
+## 5. All Together Now
 
 When recompiling the engine is finished, do the following before running it the first time:
 
@@ -140,7 +140,7 @@ Lack of the **Steam API .dll/.so/.dylib**, for your respective OS, or the **stea
   This can be done in an .sh file that runs these before running your executable.  This issue may not arise for all users and can also just be done by the user in a terminal separately.  You can [read more about it in our Linux Caveats doc](/tutorials/linux_caveats/).
 
 ---
-## 6. Good To Go
+## 6. Good to Go
 
 From here you should be able to call various functions of Steamworks. You should be able to look up the functions in Godot itself under the search section. In addition, you should be able to [read the Steamworks API documentation](https://partner.steamgames.com/doc/home){ target="_blank" } to see what all is available and cross-reference with GodotSteam's documentation.
 
