@@ -32,7 +32,7 @@
 ### run_callbacks
 
 !!! function "run_callbacks()"
-    Enables your application to receive callbacks from Steamworks.  Must be placed in your \_process function.
+    Enables your application to receive callbacks from Steamworks. Must be placed in your \_process function.
 
     **Returns:** void
 

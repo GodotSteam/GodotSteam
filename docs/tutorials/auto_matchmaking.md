@@ -1,6 +1,6 @@
 # Tutorials - Lobby Auto-Matchmaking
 
-A quick, requested tutorial is auto-matchmaking lobbies. While this example does not show how to match specific criteria, it will be noted where you can place such matches. This tutorial is basically an extention of the [lobbies / P2P tutorial.](/tutorials/lobbies_p2p/) Because of that we'll focus only on what's different; please refer to the lobby tutorial for additional information and layouts.
+A quick, requested tutorial is auto-matchmaking lobbies. While this example does not show how to match specific criteria, it will be noted where you can place such matches. This tutorial is basically an extension of the [lobbies](lobbies.md) and [p2p networking](p2p.md) tutorials. Because of that we'll focus only on what's different; please refer to the aforementioned tutorials for additional information and layouts.
 
 ---
 
@@ -17,14 +17,14 @@ var LOBBY_MAX_PLAYERS: int = 2
 
 Carried over from the lobby tutorial is **STEAM_LOBBY_ID**, which obviously houses the lobby's ID, and **LOBBY_MEMBERS**, which will be an array of dictionaries of lobby members and their Steam ID 64's.
 
-New to this tutorial is **MATCHMAKING_PHASE** which keeps track of which iteration of the matchmaking search our code does.  Also new is **LOBBY_MAX_PLAYERS** which is used to check if the lobby has space for our player.
+New to this tutorial is **MATCHMAKING_PHASE** which keeps track of which iteration of the matchmaking search our code does. Also new is **LOBBY_MAX_PLAYERS** which is used to check if the lobby has space for our player.
 
 All of the ***_ready()*** function callback connections will be the same.
 
 ---
 
-## Finding A Lobby
-For our purposes, we will create a button named "Auto Matchmake" and connect a **on_pressed** signal to it called ***_on_Auto_Matchmake_pressed()***.  Here is the function that triggers when that button is pressed:
+## Finding a Lobby
+For our purposes, we will create a button named "Auto Matchmake" and connect a **on_pressed** signal to it called ***_on_Auto_Matchmake_pressed()***. Here is the function that triggers when that button is pressed:
 
 ````
 # Start the auto matchmaking process.
@@ -107,4 +107,4 @@ The first lobby that matches your criteria and has space for the user, triggers 
 
 ---
 
-[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

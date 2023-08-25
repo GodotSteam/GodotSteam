@@ -102,7 +102,7 @@ This is also where the APIs for [Steam Voice](https://partner.steamgames.com/do
 	* buffer (PoolByteArray)
 	* size (uint32_t)
 
-	**Notes:** As of Steamworks SDK 1.57, you need to pass a network identity that was created with our Networking Tools class.  However, this is optional and defaults to NULL.
+	**Notes:** As of Steamworks SDK 1.57, you need to pass a network identity that was created with our Networking Tools class. However, this is optional and defaults to NULL.
 
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUser#GetAuthSessionTicket){ .md-button .md-button--store target="_blank" }

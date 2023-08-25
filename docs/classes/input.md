@@ -1,6 +1,6 @@
 # Input
 
-Steam Input API is a flexible action-based API that supports all major controller types - Xbox, PlayStation, Nintendo Switch Pro, and Steam Controllers.  
+Steam Input API is a flexible action-based API that supports all major controller types - Xbox, PlayStation, Nintendo Switch Pro, and Steam Controllers.
   
 See the [Steam Input](https://partner.steamgames.com/doc/features/steam_controller){ target="_blank" } documentation for more information.
 
@@ -299,7 +299,7 @@ See the [Steam Input](https://partner.steamgames.com/doc/features/steam_control
 !!! function "inputInit( ```bool``` explicitly_call_runframe )"
 	[inputInit](#inputinit) and [inputShutdown](#inputshutdown) must be called when starting/ending use of this interface.
 
-	If **explicitly_call_runframe**is called then you will need to manually call [runFrame](#runframe) each frame, otherwise Steam Input will updated when [run_callbacks](../main/#run_callbacks) is called.
+	If **explicitly_call_runframe** is called then you will need to manually call [runFrame](#runframe) each frame, otherwise Steam Input will updated when [run_callbacks](main.md#run_callbacks) is called.
 
 	**Returns:** bool
 
@@ -319,7 +319,7 @@ See the [Steam Input](https://partner.steamgames.com/doc/features/steam_control
 ### runFrame
 
 !!! function "runFrame()"
-	Synchronize API state with the latest Steam Controller inputs available. This is performed automatically by [run_callbacks](../main/#run_callbacks), but for the absolute lowest possible latency, you can call this directly before reading controller state.
+	Synchronize API state with the latest Steam Controller inputs available. This is performed automatically by [run_callbacks](main.md#run_callbacks), but for the absolute lowest possible latency, you can call this directly before reading controller state.
 
 	**Returns:** void
 

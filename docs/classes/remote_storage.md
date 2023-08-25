@@ -1,6 +1,6 @@
 # Remote Storage
 
-Provides functions for reading, writing, and accessing files which can be stored remotely in the Steam Cloud.  
+Provides functions for reading, writing, and accessing files which can be stored remotely in the Steam Cloud.
   
 See [Steam Cloud](https://partner.steamgames.com/doc/features/cloud){ target="_blank" } for more information.
 
@@ -431,7 +431,7 @@ See [Steam Cloud](https://partner.steamgames.com/doc/features/cloud){ target="_
 !!! function "ugcDownload( ```uint64_t``` content, ```uint32``` priority )"
 	Downloads a UGC file.
 
-	A priority value of 0 will download the file immediately, otherwise it will wait to download the file until all downloads with a lower priority value are completed.  Downloads with equal priority will occur simultaneously.
+	A priority value of 0 will download the file immediately, otherwise it will wait to download the file until all downloads with a lower priority value are completed. Downloads with equal priority will occur simultaneously.
 
 	**Returns:** void
 

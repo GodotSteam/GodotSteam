@@ -1,6 +1,6 @@
 # Screenshots
 
-Functions for adding screenshots to the user's screenshot library.  
+Functions for adding screenshots to the user's screenshot library.
   
 See [Steam Screenshots](https://partner.steamgames.com/doc/features/screenshots){ target="_blank" } for more information.
 
@@ -40,11 +40,11 @@ See [Steam Screenshots](https://partner.steamgames.com/doc/features/screenshots
 
 !!! function "hookScreenshots( ```bool``` hook )"
 
-    Toggles whether the overlay handles screenshots when the user presses the screenshot hotkey, or if the game handles them.  
+    Toggles whether the overlay handles screenshots when the user presses the screenshot hotkey, or if the game handles them. 
   
-	Hooking is disabled by default, and only ever enabled if you do so with this function.  
+	Hooking is disabled by default, and only ever enabled if you do so with this function. 
   
-	If the hooking is enabled, then the [screenshot_requested](#screenshot_requested) callback will be sent if the user presses the hotkey or when [triggerScreenshot](#triggerscreenshot) is called. Then the game is expected to call [writeScreenshot](#writescreenshot) or [addScreenshotToLibrary](#addscreenshottolibrary) in response.  
+	If the hooking is enabled, then the [screenshot_requested](#screenshot_requested) callback will be sent if the user presses the hotkey or when [triggerScreenshot](#triggerscreenshot) is called. Then the game is expected to call [writeScreenshot](#writescreenshot) or [addScreenshotToLibrary](#addscreenshottolibrary) in response. 
  
 	You can check if hooking is enabled with [isScreenshotsHooked](#isscreenshotshooked).
 

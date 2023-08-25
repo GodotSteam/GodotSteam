@@ -1,6 +1,6 @@
 # Inventory
 
-Steam Inventory query and manipulation API.  
+Steam Inventory query and manipulation API.
   
 See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inventory){ target="_blank" } for more information.
 
@@ -21,7 +21,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamInventory#AddPromoItem){ .md-button .md-button--store target="_blank" }
@@ -37,7 +37,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamInventory#AddPromoItems){ .md-button .md-button--store target="_blank" }
@@ -64,7 +64,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** You must call [destroyResult](#destroyresult) on the provided inventory result when you are done with it.
 
@@ -82,7 +82,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamInventory#DeserializeResult){ .md-button .md-button--store target="_blank" }
@@ -114,7 +114,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** You must call [destroyResult](#destroyresult) on the provided inventory result when you are done with it.
 
@@ -133,7 +133,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** You must call [destroyResult](#destroyresult) on the provided inventory result when you are done with it.
 
@@ -147,7 +147,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** Calls to this function are subject to rate limits and may return cached results if called too frequently. It is suggested that you call this function only when you are about to display the user's full inventory, or if you expect that the inventory may have changed.
 
@@ -184,7 +184,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** You must call [destroyResult](#destroyresult) on the provided inventory result when you are done with it.
 
@@ -301,7 +301,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** You must call [destroyResult](#destroyresult) on the provided inventory result when you are done with it.
 
@@ -392,7 +392,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** Tradability/marketability restrictions are copied along with transferred items. The destination stack receives the latest tradability/marketability date of any item in its composition.
 
@@ -414,7 +414,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamInventory#TriggerItemDrop){ .md-button .md-button--store target="_blank" }
@@ -436,7 +436,7 @@ See [Steam Inventory Service](https://partner.steamgames.com/doc/features/inven
 
 	**Returns:** int32
 
-	The inventory handle, which is also stored internally.  It will overwrite any previously stored inventory handle.
+	The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
 
 	**Note:** You must call [destroyResult](#destroyresult) on the provided inventory result for when you are done with it.
 

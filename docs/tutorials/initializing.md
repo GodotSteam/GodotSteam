@@ -1,6 +1,6 @@
 # Tutorials - Initializing Steam
 
-In this tutorial, we will cover the basic initialization of Steamworks in your game; as well as getting callbacks globally.  [Check out the common issues tutorial if](/tutorials/common_issues/) you have issues getting things to work too.
+In this tutorial, we will cover the basic initialization of Steamworks in your game; as well as getting callbacks globally. [Check out the common issues tutorial if](common_issues.md) you have issues getting things to work too.
 
 Please note, this tutorial is only valid for the module and GDExtension versions of GodotSteam; the GDNative version will already have these functions present.
 
@@ -8,17 +8,17 @@ Please note, this tutorial is only valid for the module and GDExtension versions
 
 ## Preparation
 
-Before we go any further, it is recommended that you enable logging in your project if you have not done so.  This will help both you, and us, debug any issues you might run into down the road.
+Before we go any further, it is recommended that you enable logging in your project if you have not done so. This will help both you, and us, debug any issues you might run into down the road.
 
-To enable logging in the Godot editor, go to: **Projects > Project Settings > Logging > File Logging** and check **Enable File Logging**.  This will start placing logs in your project's user data folder.  Where are these, you might ask?  [Check out the official Godot Engine documentation to find the locations.](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html?highlight=user%20data){ target="_blank" }
+To enable logging in the Godot editor, go to: **Projects > Project Settings > Logging > File Logging** and check **Enable File Logging**. This will start placing logs in your project's user data folder. Where are these, you might ask?  [Check out the official Godot Engine documentation to find the locations.](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html?highlight=user%20data){ target="_blank" }
 
-![Enable Logging](/assets/images/tutorial-initializing-logging.png){ loading=lazy }
+![Enable Logging](../assets/images/tutorial-initializing-logging.png){ loading=lazy }
 
 ---
 
 ## Initialize Steam
 
-In my personal projects, I usually create an auto-load GDscript called **global.gd** which is added as a singleton. I then create a function called ***_initialize_Steam()*** and add the code below.  This is then called from the ***_ready()*** function in my **global.gd**:
+In my personal projects, I usually create an auto-load GDscript called **global.gd** which is added as a singleton. I then create a function called ***_initialize_Steam()*** and add the code below. This is then called from the ***_ready()*** function in my **global.gd**:
 
 ````
 func _ready() -> void:
@@ -29,7 +29,7 @@ func _initialize_Steam() -> void:
 	print("Did Steam initialize?: "+str(INIT))
 ````
 
-By default, ***Steam.steamInit()*** will query Steamworks for the local user's current statistics and send this data back as a callback (signal).  You can pass a boolean (false) to the function to prevent this behavior:
+By default, ***Steam.steamInit()*** will query Steamworks for the local user's current statistics and send this data back as a callback (signal). You can pass a boolean (false) to the function to prevent this behavior:
 
 ````
 func _ready() -> void:
@@ -151,4 +151,4 @@ func _initialize_Steam() -> void:
 
 This covers the initialization and basic set-up.
 
-[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

@@ -1,6 +1,6 @@
 # Tutorials - Achievement Icons
 
-This quick tutorial will cover to how get achievement icons from Steam's servers.  It was made because there are some extra steps folks need to use to render the images and it may not be very clear otherwise.
+This quick tutorial will cover to how get achievement icons from Steam's servers. It was made because there are some extra steps folks need to use to render the images and it may not be very clear otherwise.
 
 ---
 
@@ -12,7 +12,7 @@ First you will need to request the icon handle by using the achievement's name y
 var HANDLE: int = Steam.getAchievementIcon("achievement name")
 ````
 
-This handle is used to get the image information.  This would be passed to a buffer variable like so:
+This handle is used to get the image information. This would be passed to a buffer variable like so:
 
 ````
 var BUFFER: Dictionary = Steam.getImageRGBA(HANDLE)
@@ -60,7 +60,7 @@ Now that all the pixels are set in the right places, we can create the texture:
 	var ICON_TEXTURE: ImageTexture = ImageTexture.create_from_image(ICON)
 	````
 
-Finally we can display the icon.  Using the previous ICON_TEXTURE, we can place this icon on our waiting sprite:
+Finally we can display the icon. Using the previous ICON_TEXTURE, we can place this icon on our waiting sprite:
 
 ````
 get_node("Sprite").set_texture(ICON_TEXTURE)
@@ -118,4 +118,4 @@ Our complete example should look something like this:
 
 And that's how you display an achievement icon.
 
-[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

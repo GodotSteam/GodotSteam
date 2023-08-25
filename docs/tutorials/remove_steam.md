@@ -1,11 +1,11 @@
 # Tutorials - Removing Steam Easily
 
-A lot of folks like to ship on other platforms like Playstation, XBox, Switch, Itch.io, etc.  Removing deeply embedded Steamworks stuff can be a pain and some have opted to keep separate repositories for their game's Steam version.  However, there is an alternative to this: programmatically ignoring the Steamworks bits. Below are some examples shared by users in our Discord.
+A lot of folks like to ship on other platforms like Playstation, XBox, Switch, Itch.io, etc. Removing deeply embedded Steamworks stuff can be a pain and some have opted to keep separate repositories for their game's Steam version. However, there is an alternative to this: programmatically ignoring the Steamworks bits. Below are some examples shared by users in our Discord.
 
 ---
 ## How We Do It
 
-So the example I'll be using for this tutorial is based on solution #2 submitted by Rutger.  I am actively using this in my current project.
+So the example I'll be using for this tutorial is based on solution #2 submitted by Rutger. I am actively using this in my current project.
 
 We will create two variable to hold our platform and the Steamworks object then modify the usual ```_initialize_Steam()``` function to look for the Steam singleton before trying to do anything:
 
@@ -48,7 +48,7 @@ func _is_Steam_Enabled() -> bool:
   return false
 ```
 
-Since it is in my global script, it can be called anywhere I need to use Steam functions.  If this function doesn't return true, then I just have my code ignore related Steam portions like so:
+Since it is in my global script, it can be called anywhere I need to use Steam functions. If this function doesn't return true, then I just have my code ignore related Steam portions like so:
 
 ```
 func _fire_Steam_Achievement(value: int) -> void:
@@ -124,7 +124,7 @@ func initialise_steam() -> void:
 ---
 ## Solution 2: Check For Singleton
 
-[Rutger from Roost Games (maker of Cat Cafe Manager)](https://catcafemanager.com){ target="_blank" } shared a tidbit about it: "If anyone is wondering how to do that, since I had to find out through the Switch port, I have a **Platform** global as a wrapper for any platform specific stuff, it just does this in the **_ready:**".  His example code is as following:
+[Rutger from Roost Games (maker of Cat Cafe Manager)](https://catcafemanager.com){ target="_blank" } shared a tidbit about it: "If anyone is wondering how to do that, since I had to find out through the Switch port, I have a **Platform** global as a wrapper for any platform specific stuff, it just does this in the **_ready:**". His example code is as following:
 
 ````
 if Engine.has_singleton("Steam"):

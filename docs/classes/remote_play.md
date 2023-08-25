@@ -1,6 +1,6 @@
 # Remote Play
 
-Functions that provide information about Steam Remote Play sessions, streaming your game content to another computer or to a Steam Link app or hardware.  
+Functions that provide information about Steam Remote Play sessions, streaming your game content to another computer or to a Steam Link app or hardware.
   
 See [Steam Remote Play](https://partner.steamgames.com/doc/features/remoteplay){ target="_blank" } for more information.
 

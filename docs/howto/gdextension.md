@@ -2,7 +2,7 @@
 
 ## Please Note
 
-If you are using the GDExtension version of GodotSteam, make sure **not to download or use the module version** in tandem; it will cause a lot of problems.  The two are not compatible with each other.
+If you are using the GDExtension version of GodotSteam, make sure **not to download or use the module version** in tandem; it will cause a lot of problems. The two are not compatible with each other.
 
 This also means you cannot use the GodotSteam templates for exporting; you must use the normal Godot templates.
 
@@ -14,7 +14,7 @@ Just like the module version, the easiest way to use GodotSteam is downloading t
 - [x] Download the [pre-compiled plug-in from the Release section](https://github.com/CoaguCo-Industries/GodotSteam/releases) and unpack it.
 - [x] Alternatively you can download and install the [GDExtension plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1768).
 - [x] Everything you need should be included.
-    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](/tutorials/linux_caveats/).
+    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](../tutorials/linux_caveats.md).
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
@@ -94,7 +94,7 @@ The compiling directory contents should now look like this:
 
 Before compiling, create a `bin` directory in the GDExtension folder. This is where the compiled binaries will be placed.
 
-The Visual Studio instructions carried over from GDNative probably do not work anymore so they were removed.  If anyone would like to contribute new ones, please feel free to do so!
+The Visual Studio instructions carried over from GDNative probably do not work anymore so they were removed. If anyone would like to contribute new ones, please feel free to do so!
 
 === "Windows PowerShell"
     Just open the powershell or VS command prompt and run:
@@ -120,7 +120,7 @@ The Visual Studio instructions carried over from GDNative probably do not work a
     ````
 
 ---
-## 5. Altogether Now
+## 5. All Together Now
 
 Copy the **/win64**, **/linuxbsd**, or **/osx** folder from within the **GDExtension/bin/** folder then place it into the **/addons/godotsteam/** folder inside your **game's project folder**. Then you will want to copy the matching Steam API file and put it in with the corresponding platform's folder.
 
@@ -174,16 +174,16 @@ func _ready():
 
 Note that you **do not** have to enable this in the editor for the extension to work; it is just always present.
 
-Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder.  You'll need this to run the game from the editor.
+Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder. You'll need this to run the game from the editor.
 
 The documentation for GodotSteam modules should apply to GodotSteam GDExtension as they are built from the same code and have all the same functions; generally speaking.
 
 ---
 ## 7. Exporting / Shipping Your Game
 
-For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](/tutorials/exporting_shipping/)
+For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](../tutorials/exporting_shipping.md)
 
-That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember.
+That being said, you should be able to export your game with the normal Godot templates. Also, here is a quick rundown of some things to remember.
 
 When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so) as well as the **exported GodotSteam file .dll/.so/.dylib** (godotsteam.dll, libgodotsteam.so, and/or libgodotsteam.dylib).
 

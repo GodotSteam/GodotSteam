@@ -2,7 +2,7 @@
 
 ## Please Note
 
-If you are using the GDNative version of GodotSteam, make sure **not to download or use the module version** in tandem; it will cause a lot of problems.  The two are not compatible with each other.
+If you are using the GDNative version of GodotSteam, make sure **not to download or use the module version** in tandem; it will cause a lot of problems. The two are not compatible with each other.
 
 This also means you cannot use the GodotSteam templates for exporting; you must use the normal Godot templates.
 
@@ -14,7 +14,7 @@ Just like the module version, the easiest way to use GodotSteam is downloading t
 - [x] Download the [pre-compiled editor from the Release section](https://github.com/CoaguCo-Industries/GodotSteam/releases) and unpack it.
 - [x] Alternatively you can download and install the [GDNative plug-in through Godot Asset Library](https://godotengine.org/asset-library/asset/1045).
 - [x] Everything you need should be included.
-    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](/tutorials/linux_caveats/).
+    - Users on Linux may have issues with the libsteam_api.so, if so then [read our Linux Caveats doc](../tutorials/linux_caveats.md).
 
 At this point you can skip all the following steps and check our our tutorials to learn more about integrating Steamworks or just explore the SDK!
 
@@ -121,7 +121,7 @@ The compiling directory contents should now look like this:
     ````
 
 ---
-## 5. Altogether Now
+## 5. All Together Now
 
 Copy the **/win64**, **/linuxbsd**, or **/osx** folder from within the **GDNative/bin/** folder then place it into the **/addons/godotsteam/** folder inside your **game's project folder**. Then you will want to copy the matching Steam API file and put it in with the corresponding platform's folder.
 
@@ -190,7 +190,7 @@ Replace (read below) with the following, based on platform. You can also use all
 To double-check this worked, in your Godot project, open the **.gdnlib** file in the **Inspector**. It will have the correct data in the GUI editor that pops up in the bottom panel.
 
 
-In a text editor, create a file called **godotsteam.gdns** (this may need to be renamed as such if using Windows).  Place the following inside this file and save it in the **addons/godotsteam/** folder in your project:
+In a text editor, create a file called **godotsteam.gdns** (this may need to be renamed as such if using Windows). Place the following inside this file and save it in the **addons/godotsteam/** folder in your project:
   ````
   [gd_resource type="NativeScript" load_steps=2 format=2]
 
@@ -214,14 +214,14 @@ Create a new scene in your game project and add a Node node with a GDScript as t
     Steam.steamInit()
 
   ````
-Save the scene as **steam.tscn** and place it where ever you want.  Now navigate to **Project > Project Settings** in the editor and click on **Autoload**.  Add your **steam.tscn** as a singleton, with the node name of **Steam**.
+Save the scene as **steam.tscn** and place it where ever you want. Now navigate to **Project > Project Settings** in the editor and click on **Autoload**. Add your **steam.tscn** as a singleton, with the node name of **Steam**.
 
 Done!
 
 ---
 ## 6. Usage
 
-Now you should be able to call functions from **Steam** like you would normally with the **GodotSteam module**.  They will, however, have to be added to your **steam.gd** script like this:
+Now you should be able to call functions from **Steam** like you would normally with the **GodotSteam module**. They will, however, have to be added to your **steam.gd** script like this:
 ````
   name = Steam.getPersonaName()
   country = Steam.getIPCountry()
@@ -241,18 +241,18 @@ These can then be called in any other script (since **steam.tscn** is a singleto
   steam.setAchievement(achieve)
 ````
 
-Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder.  You'll need this to run the game from the editor.
+Make sure to create a file called **steam_appid.txt** and place it with your editor or at the root of your game's project folder. You'll need this to run the game from the editor.
 
 The documentation for GodotSteam should apply to GodotSteam GDNative as they are built from the same code and have all the same functions; generally speaking.
 
-**Note:** GDNative on Windows has some odd glitch with setRichPresence where sometimes the key is sent as the value; this bug does not exist in the Linux or OSX versions of GodotSteam GDNative nor in any versions of the GodotSteam module nor any versions of the GodotSteam GDExtension.  In this case it is deemed unfixable.
+**Note:** GDNative on Windows has some odd glitch with setRichPresence where sometimes the key is sent as the value; this bug does not exist in the Linux or OSX versions of GodotSteam GDNative nor in any versions of the GodotSteam module nor any versions of the GodotSteam GDExtension. In this case it is deemed unfixable.
 
 ---
 ## 7. Exporting / Shipping Your Game
 
-For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](/tutorials/exporting_shipping/)
+For a full explanation of exporting and shipping your game with GodotSteam, [please refer to our Export and Shipping tutorial.](../tutorials/exporting_shipping.md)
 
-That being said, you should be able to export your game with the normal Godot templates.  Also, here is a quick rundown of some things to remember.
+That being said, you should be able to export your game with the normal Godot templates. Also, here is a quick rundown of some things to remember.
 
 When uploading your game to Steam, you _**must**_ upload your game's executable and **Steam API .dll/.so/.dylb** (steam_api.dll, steam_api64.dll, libsteam_api.dylib, and/or libsteam_api.so).
 
