@@ -20,7 +20,7 @@ var steam_id: int = Steam.getFriendByIndex(index, Steam.FRIEND_FLAG_IMMEDIATE)
 
 Inside of the loop we'll call `Steam.getFriendByIndex` to get the Steam ID of our friend at this index.
 
-Note: you must use the same flag as the flag used inside of `Steam.getFriendCount`. [List of friend flags.](https://godotsteam.com/enums/friends/#friendflags)
+Note: You must use the same flag as the flag used inside of `Steam.getFriendCount`. Refer to the [list of friend flags](../classes/friends.md#friendflags) for valid options.
 
 ````
 var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)

@@ -1,6 +1,6 @@
 # Tutorials - Workshop
 
-A hot topic that comes up: Workshop / UGC. There are a lot of moving parts and we'll probably miss quite a few in this tutorial.  Luckily some smart folks have provided some information based on their experiences that we can use.
+A hot topic that comes up: Workshop / UGC. There are a lot of moving parts and we'll probably miss quite a few in this tutorial. Luckily some smart folks have provided some information based on their experiences that we can use.
 
 ---
 

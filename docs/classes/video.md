@@ -1,6 +1,6 @@
 # Video
 
-Provides functions to interface with the Steam video and broadcasting platforms.  
+Provides functions to interface with the Steam video and broadcasting platforms.
   
 See [Steam Video](https://partner.steamgames.com/doc/features/streaming_video){ target="_blank" } for more information.
 

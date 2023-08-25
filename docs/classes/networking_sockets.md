@@ -51,11 +51,11 @@
 ### configureConnectionLanes
 
 !!! function "configureConnectionLanes()"
-	Configure multiple outbound messages streams ("lanes") on a connection, and control head-of-line blocking between them.  Messages within a given lane are always sent in the order they are queued, but messages from different lanes may be sent out of order.  Each lane has its own message number sequence.  The first message sent on each lane will be assigned the number 1.
+	Configure multiple outbound messages streams ("lanes") on a connection, and control head-of-line blocking between them. Messages within a given lane are always sent in the order they are queued, but messages from different lanes may be sent out of order. Each lane has its own message number sequence. The first message sent on each lane will be assigned the number 1.
 
-	Each lane has a "priority".  Lower priority lanes will only be processed when all higher-priority lanes are empty.  The magnitudes of the priority values are not relevant, only their sort order.  Higher numeric values take priority over lower numeric values.
+	Each lane has a "priority". Lower priority lanes will only be processed when all higher-priority lanes are empty. The magnitudes of the priority values are not relevant, only their sort order. Higher numeric values take priority over lower numeric values.
 
-	Each lane also is assigned a weight, which controls the approximate proportion of the bandwidth that will be consumed by the lane, relative to other lanes of the same priority.  (This is assuming the lane stays busy.  An idle lane does not build up "credits" to be be spent once a message is queued.) This value is only meaningful as a proportion, relative to other lanes with the same priority.  For lanes with different priorities, the strict priority order will prevail, and their weights relative to each other are not relevant. Thus, if a lane has a unique priority value, the weight value for that lane is not relevant.
+	Each lane also is assigned a weight, which controls the approximate proportion of the bandwidth that will be consumed by the lane, relative to other lanes of the same priority. (This is assuming the lane stays busy. An idle lane does not build up "credits" to be be spent once a message is queued.) This value is only meaningful as a proportion, relative to other lanes with the same priority. For lanes with different priorities, the strict priority order will prevail, and their weights relative to each other are not relevant. Thus, if a lane has a unique priority value, the weight value for that lane is not relevant.
 
 	**Returns:** int
 
@@ -67,7 +67,7 @@
 !!! function "connectP2P( ```string``` identity_reference, ```int``` port, ```array``` options )"
 	Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
 
-	If you use this, you probably want to call [initRelayNetworkAccess](#initrelaynetworkaccess) when your app initializes.  If you need to set any initial config options, pass them here.
+	If you use this, you probably want to call [initRelayNetworkAccess](#initrelaynetworkaccess) when your app initializes. If you need to set any initial config options, pass them here.
 
 	[See SteamNetworkingConfigValue_t](https://partner.steamgames.com/doc/api/steamnetworkingtypes#SteamNetworkingConfigValue_t){ target="_blank" } for more about why this is preferable to setting the options "immediately" after creation.
 
@@ -105,11 +105,11 @@
 ### createFakeUDPPort
 
 !!! function "createFakeUDPPort( ```int``` fake_server_port)"
-	Get an interface that can be used like a UDP port to send/receive datagrams to a FakeIP address.  This is intended to make it easy to port existing UDP-based code to take advantage of SDR.
+	Get an interface that can be used like a UDP port to send/receive datagrams to a FakeIP address. This is intended to make it easy to port existing UDP-based code to take advantage of SDR.
 
-	**fake_server_port** refers to the *index* of the port allocated using [beginAsyncRequestFakeIP](#beginasyncrequestfakeip) and is used to create "server" ports.  You may call this before the allocation has completed.  However, any attempts to send packets will fail until the allocation has succeeded.  When the peer receives packets sent from this interface, the from address of the packet will be the globally-unique FakeIP.  If you call this function multiple times and pass the same (nonnegative) fake port index, the same object will be returned, and this object is not reference counted.
+	**fake_server_port** refers to the *index* of the port allocated using [beginAsyncRequestFakeIP](#beginasyncrequestfakeip) and is used to create "server" ports. You may call this before the allocation has completed. However, any attempts to send packets will fail until the allocation has succeeded. When the peer receives packets sent from this interface, the from address of the packet will be the globally-unique FakeIP. If you call this function multiple times and pass the same (nonnegative) fake port index, the same object will be returned, and this object is not reference counted.
 
-	To create a "client" port (e.g. the equivalent of an ephemeral UDP port) pass -1.  In this case, a distinct object will be returned for each call. When the peer receives packets sent from this interface, the peer will assign a FakeIP from its own locally-controlled namespace.
+	To create a "client" port (e.g. the equivalent of an ephemeral UDP port) pass -1. In this case, a distinct object will be returned for each call. When the peer receives packets sent from this interface, the peer will assign a FakeIP from its own locally-controlled namespace.
 
 	**Returns:** void
 
@@ -118,7 +118,7 @@
 !!! function "createHostedDedicatedServerListenSocket( ```int``` virtual_port, ```array``` options )"
 	Create a listen socket on the specified virtual port. The physical UDP port to use will be determined by the SDR_LISTEN_PORT environment variable. If a UDP port is not configured, this call will fail.
 
-	This function should be used when you are using the ticket generator library to issue your own tickets.  Clients connecting to the server on this virtual port will need a ticket, and they must connect using [connectToHostedDedicatedServer](#connecttohosteddedicatedserver).
+	This function should be used when you are using the ticket generator library to issue your own tickets. Clients connecting to the server on this virtual port will need a ticket, and they must connect using [connectToHostedDedicatedServer](#connecttohosteddedicatedserver).
 
 	Pass your **options** as an array of arrays; each sub-array containing:
 
@@ -174,9 +174,9 @@
 ### createListenSocketP2PFakeIP
 
 !!! function "createListenSocketP2PFakeIP( ```int``` fake_port, ```array``` options )"
-	Create a listen socket that will listen for P2P connections sent to our FakeIP.  A peer can initiate connections to this listen socket by calling [connectByIPAddress](#connectbyipaddress).
+	Create a listen socket that will listen for P2P connections sent to our FakeIP. A peer can initiate connections to this listen socket by calling [connectByIPAddress](#connectbyipaddress).
 
-	**fake_port** refers to the *index* of the fake port requested, not the actual port number.  For example, pass 0 to refer to the first port in the reservation.  You must call this only after calling [beginAsyncRequestFakeIP](#beginasyncrequestfakeip).  However, you do not need to wait for the request to complete before creating the listen socket.
+	**fake_port** refers to the *index* of the fake port requested, not the actual port number. For example, pass 0 to refer to the first port in the reservation. You must call this only after calling [beginAsyncRequestFakeIP](#beginasyncrequestfakeip). However, you do not need to wait for the request to complete before creating the listen socket.
 
 	Pass your **options** as an array of arrays; each sub-array containing:
 
@@ -266,9 +266,9 @@
 ### getCertificateRequest
 
 !!! function "getCertificateRequest()"
-	Certificate provision by the application.  On Steam, we normally handle all this automatically and you will not need to use these advanced functions.
+	Certificate provision by the application. On Steam, we normally handle all this automatically and you will not need to use these advanced functions.
 
-	Get blob that describes a certificate request.  You can send this to your game coordinator. Pass this blob to your game coordinator and call SteamDatagram_CreateCert.
+	Get blob that describes a certificate request. You can send this to your game coordinator. Pass this blob to your game coordinator and call SteamDatagram_CreateCert.
 
 	**Returns:** dictionary
 
@@ -451,7 +451,7 @@
 ### getRemoteFakeIPForConnection
 
 !!! function "getRemoteFakeIPForConnection( ```uint32``` connection_handle )" 
-	If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host.  If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
+	If the connection was initiated using the "FakeIP" system, then we we can get an IP address for the remote host. If the remote host had a global FakeIP at the time the connection was established, this function will return that global IP.
 
 	Otherwise, a FakeIP that is unique locally will be allocated from the local FakeIP address space, and that will be returned.
 
@@ -559,7 +559,7 @@
 ### resetIdentity
 
 !!! function "resetIdentity( ```string``` identity_reference )"
-	Reset the identity associated with this instance. Any open connections are closed.  Any previous certificates, etc are discarded.
+	Reset the identity associated with this instance. Any open connections are closed. Any previous certificates, etc are discarded.
 	You can pass a specific identity that you want to use, or you can pass NULL, in which case the identity will be invalid until you set it using [setCertificate](#setcertificate).
 
 	**Note:** This function is not actually supported on Steam!  It is included for use on other platforms where the active user can sign out and a new user can sign in.
@@ -569,7 +569,7 @@
 ### runNetworkingCallbacks
 
 !!! function "runNetworkingCallbacks()"
-	Invoke all callback functions queued for this interface. You don't need to call this if you are using Steam's callback dispatch mechanism [run_callbacks](../main/#run_callbacks).
+	Invoke all callback functions queued for this interface. You don't need to call this if you are using Steam's callback dispatch mechanism [run_callbacks](main.md#run_callbacks).
 
 	**Returns:** void
 

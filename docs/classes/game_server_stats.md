@@ -144,11 +144,11 @@ Functions to allow game servers to set stats and achievements on players.
 
 	**Returns:** bool
 
-	This function returns **true** upon success if all of the following conditions are met; otherwise, **false**.  
+	This function returns **true** upon success if all of the following conditions are met; otherwise, **false**.
 
-	- The specified stat exists in App Admin on the Steamworks website, and the changes are published.   
-	- [serverRequestUserStats](#serverrequestuserstats) has completed and successfully returned its callback for the specified user.  
-	- The type must be AVGRATE in the Steamworks Partner backend.   
+	- The specified stat exists in App Admin on the Steamworks website, and the changes are published.
+	- [serverRequestUserStats](#serverrequestuserstats) has completed and successfully returned its callback for the specified user.
+	- The type must be AVGRATE in the Steamworks Partner backend.
 	- The stat must be allowed to be set by game server.
 
 	---

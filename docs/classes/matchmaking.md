@@ -1,6 +1,6 @@
 # Matchmaking
 
-Functions for clients to access matchmaking services, favorite servers, and to operate on game lobbies.  
+Functions for clients to access matchmaking services, favorite servers, and to operate on game lobbies.
   
 See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/multiplayer/matchmaking){ target="_blank" } for more information.
 
@@ -146,7 +146,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 	* flags (uint32)
 	* last_played (uint32)
 
-	**Note:** You must call [getFavoriteGameCount](#getfavoritegamecount) before calling this.  This is already used in GodotSteam's implementation, however.
+	**Note:** You must call [getFavoriteGameCount](#getfavoritegamecount) before calling this. This is already used in GodotSteam's implementation, however.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#GetFavoriteGame){ .md-button .md-button--store target="_blank" }

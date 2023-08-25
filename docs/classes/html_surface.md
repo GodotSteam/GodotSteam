@@ -10,7 +10,7 @@ See [Steam HTML Surface](https://partner.steamgames.com/doc/features/html_surfa
 
 ## Functions
 
-The **this_handle** argument is optional.  If you do not pass one, GodotSteam will use the internally stored handle instead.
+The **this_handle** argument is optional. If you do not pass one, GodotSteam will use the internally stored handle instead.
 
 ---
 

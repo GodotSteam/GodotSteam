@@ -6,14 +6,14 @@ Miscellaneous types and functions used by networking APIs.
 
 ## Functions
 
-These Networking Type functions are all unique to GodotSteam since we cannot work with C++ structs directly in GDscript.  These will create networking identities to use with [Networking Messages](../networking_messages/), [Networking Sockets](../networking_sockets/), and [Networking Utils](../networking_utils/) classes.  Much like how it works in a C++ implementation, the struct must be created (with either [addIdentity](#addidentity) or [addIPAddress](#addipaddress)) then it must be populated with data (Steam ID, IP address, etc.).
+These Networking Type functions are all unique to GodotSteam since we cannot work with C++ structs directly in GDscript. These will create networking identities to use with [Networking Messages](networking_messages.md), [Networking Sockets](networking_sockets.md), and [Networking Utils](networking_utils.md) classes. Much like how it works in a C++ implementation, the struct must be created (with either [addIdentity](#addidentity) or [addIPAddress](#addipaddress)) then it must be populated with data (Steam ID, IP address, etc.).
 
 ---
 
 ### addIdentity
 
 !!! function "addIdentity( ```string``` reference_name )"
-	Create a new network identity struct and store it for use.  When this network identity is used in other functions, you will always use the reference_name to use this struct.
+	Create a new network identity struct and store it for use. When this network identity is used in other functions, you will always use the reference_name to use this struct.
 	
 	You will have to set the IP, Steam ID, string, or bytes with other functions below otherwise the identity is invalid.
 
@@ -22,7 +22,7 @@ These Networking Type functions are all unique to GodotSteam since we cannot wor
 ### addIPAddress
 
 !!! function "addIPAddress( ```string``` refrence_name )"
-	Add a new IP address struct and store it for use.  When this networking IP address is used in other functions, you will always use the ```reference_name``` to use this struct.
+	Add a new IP address struct and store it for use. When this networking IP address is used in other functions, you will always use the ```reference_name``` to use this struct.
 
 	**Returns:** bool
 
@@ -141,7 +141,7 @@ These Networking Type functions are all unique to GodotSteam since we cannot wor
 ### isIdentityInvalid
 
 !!! function "isIdentityInvalid( ```string``` reference_name )"
-	Return true if we are the invalid type.  Does not make any other validity checks (e.g. is SteamID actually valid).
+	Return true if we are the invalid type. Does not make any other validity checks (e.g. is SteamID actually valid).
 
 	**Returns:** bool
 
@@ -169,7 +169,7 @@ These Networking Type functions are all unique to GodotSteam since we cannot wor
 ### parseIPAddressString
 
 !!! function "parseIPAddressString( ```string``` reference_name )"
-	Parse an IP address and optional port.  If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).
+	Parse an IP address and optional port. If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).
 
 	**Returns:** string
 
@@ -246,7 +246,7 @@ These Networking Type functions are all unique to GodotSteam since we cannot wor
 ### toIdentityString
 
 !!! function "toIdentityString( ```string``` reference_name )"
-	Print to a human-readable string.  This is suitable for debug messages or any other time you need to encode the identity as a string. It has a URL-like format ```type:<type-data>```. Your buffer should be at least k_cchMaxString (128) bytes big to avoid truncation.
+	Print to a human-readable string. This is suitable for debug messages or any other time you need to encode the identity as a string. It has a URL-like format ```type:<type-data>```. Your buffer should be at least k_cchMaxString (128) bytes big to avoid truncation.
 
 	**Returns:** void
 

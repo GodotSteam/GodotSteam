@@ -1,6 +1,6 @@
 # Matchmaking Servers
 
-Functions which provide access to the game server browser.  
+Functions which provide access to the game server browser.
   
 See [Game Servers](https://partner.steamgames.com/doc/features/multiplayer/game_servers){ target="_blank" } for more information.
 

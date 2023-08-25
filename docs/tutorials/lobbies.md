@@ -1,8 +1,8 @@
 # Tutorials - Lobbies
 
-One of the more requested tutorials is multiplayer lobbies and P2P networking through Steam; this tutorial specifically covers the lobby portion and [our P2P tutorial covers the other half](/tutorials/p2p).  Please note, only use this as a starting point.
+One of the more requested tutorials is multiplayer lobbies and P2P networking through Steam; this tutorial specifically covers the lobby portion and [our P2P tutorial covers the other half](p2p.md). Please note, only use this as a starting point.
 
-I'd also like to suggest you [check out the Additional Resources section of this tutorial](/tutorials/lobbies/#additional-resources) before continuing on.
+I'd also like to suggest you [check out the Additional Resources section of this tutorial](#additional-resources) before continuing on.
 
 ---
 
@@ -21,7 +21,7 @@ var LOBBY_VOTE_KICK: bool = false
 var LOBBY_MAX_MEMBERS: int = 10
 enum LOBBY_AVAILABILITY {PRIVATE, FRIENDS, PUBLIC, INVISIBLE}
 ````
-Your Steam ID and username may actually be in a different GDScript, especially if you use the **global.gd** the way I do [mentioned in the initialization tutorial](/tutorials/initializing/). The most important will be the **LOBBY_ID**, which obviously houses the lobby's ID, and **LOBBY_MEMBERS**, which will be an array of dictionaries of lobby members and their Steam ID 64's. **LOBBY_INVITE_ARG** is mostly used when the game is started by accepting a Steam invite or joining a game from your friends list if the game isn't running.
+Your Steam ID and username may actually be in a different GDScript, especially if you use the **global.gd** the way I do [mentioned in the initialization tutorial](initializing.md). The most important will be the **LOBBY_ID**, which obviously houses the lobby's ID, and **LOBBY_MEMBERS**, which will be an array of dictionaries of lobby members and their Steam ID 64's. **LOBBY_INVITE_ARG** is mostly used when the game is started by accepting a Steam invite or joining a game from your friends list if the game isn't running.
 
 ---
 
@@ -91,7 +91,7 @@ Additionally, you'll need to add the appropriate scene name to your Steamworks l
 
 ## Creating Lobbies
 
-Next we'll set up our lobby creation functions.  You'll probably want to connect this function to a button somewhere in your game:
+Next we'll set up our lobby creation functions. You'll probably want to connect this function to a button somewhere in your game:
 
 ````
 func _create_Lobby() -> void:
@@ -100,7 +100,7 @@ func _create_Lobby() -> void:
 		Steam.createLobby(LOBBY_AVAILABILITY.PUBLIC, LOBBY_MAX_MEMBERS)
 ````
 
-In this example we have ***createLobby()*** using our variables and enum.  The first variables covers the type of lobby; we are using a public lobby open to all.  There are, of course, four settings in total you can use:
+In this example we have ***createLobby()*** using our variables and enum. The first variables covers the type of lobby; we are using a public lobby open to all. There are, of course, four settings in total you can use:
 
 - **0 - Private**<br />The only way to join the lobby is from an invite.
 - **1 - Friends only**<br />Joinable by friends and invitees, but does not show up in the lobby list.
@@ -129,17 +129,17 @@ func _on_Lobby_Created(connect: int, lobby_id: int) -> void:
 		print("Allowing Steam to be relay backup: "+str(RELAY))
 ````
 
-Once this callback fires, you'll have your lobby ID which you can pass off to our **LOBBY_ID** variable for later use.  As the note says, the lobby should be set to joinable by default but, just in case, we add it here.  You can make the lobby unjoinable too.
+Once this callback fires, you'll have your lobby ID which you can pass off to our **LOBBY_ID** variable for later use. As the note says, the lobby should be set to joinable by default but, just in case, we add it here. You can make the lobby unjoinable too.
 
-You can also set some lobby data now; which can be whatever **key / value** pair you want.  I'm not aware of a maximum amount of pairs you can set.
+You can also set some lobby data now; which can be whatever **key / value** pair you want. I'm not aware of a maximum amount of pairs you can set.
 
-And you'll notice I set ***allowP2PPacketRelay()*** to true at this point; this allows, as the note mentions, P2P connections to fallback to being relayed through Steam if needed.  This usually happens if you have NAT or firewall issues.
+And you'll notice I set ***allowP2PPacketRelay()*** to true at this point; this allows, as the note mentions, P2P connections to fallback to being relayed through Steam if needed. This usually happens if you have NAT or firewall issues.
 
 ---
 
 ## Get Lobby Lists
 
-Now that we can create lobbies, let's query and pull a list of lobbies.  I usually have a button that will open a lobby interface which is a list of buttons, one per lobby:
+Now that we can create lobbies, let's query and pull a list of lobbies. I usually have a button that will open a lobby interface which is a list of buttons, one per lobby:
 
 ````
 func _on_Open_Lobby_List_pressed() -> void:
@@ -292,7 +292,7 @@ func _on_Lobby_Join_Requested(lobby_id: int, friendID: int) -> void:
 	_join_Lobby(lobby_id)
 ````
 
-It will then follow the normal ***_join_Lobby()*** process of setting up all lobby members, handshakes, etc.  Not to sound repetitive, but note again that if the player is not in-game and accepts a Steam invite or joins a game through the friends list then we are back to the command line situation talked about earlier.
+It will then follow the normal ***_join_Lobby()*** process of setting up all lobby members, handshakes, etc. Not to sound repetitive, but note again that if the player is not in-game and accepts a Steam invite or joins a game through the friends list then we are back to the command line situation talked about earlier.
 
 ---
 
@@ -320,13 +320,13 @@ func _get_Lobby_Members() -> void:
 		LOBBY_MEMBERS.append({"steam_id":MEMBER_STEAM_ID, "steam_name":MEMBER_STEAM_NAME})
 ````
 
-This will get the lobby members from Steam then loop through and get their names and Steam ID's then append them to our **LOBBY_MEMBERS** array for later use.  You can then display this list in your lobby room.
+This will get the lobby members from Steam then loop through and get their names and Steam ID's then append them to our **LOBBY_MEMBERS** array for later use. You can then display this list in your lobby room.
 
 ---
 
 ## Persona Changes / Avatars / Names
 	
-Sometimes you will see that a user's name and avatar, sometimes one or the other, won't immediately show up correctly. This is because our local user only really knows about friends and players they have played with; whatever is stored in local cache. A bit after a lobby is joined, this data will be sent by Steam which triggers a **persona_state_change** callback. You will want to update your player list to reflect this and get the correct name and avatar for unknown players.  Our connect ***_on_Persona_Change()*** function will do that:
+Sometimes you will see that a user's name and avatar, sometimes one or the other, won't immediately show up correctly. This is because our local user only really knows about friends and players they have played with; whatever is stored in local cache. A bit after a lobby is joined, this data will be sent by Steam which triggers a **persona_state_change** callback. You will want to update your player list to reflect this and get the correct name and avatar for unknown players. Our connect ***_on_Persona_Change()*** function will do that:
 
 ````
 # A user's information has changed
@@ -354,13 +354,13 @@ func _make_P2P_Handshake() -> void:
 	_send_P2P_Packet(0, {"message":"handshake", "from":STEAM_ID})
 ````
 
-We won't get into what all this means just yet, but I wanted to show the code for the handshake function here since it is referenced; [more on that in the P2P tutorial](/tutorials/p2p). Your handshake messages can be anything and disregarded for the most part. Again, it is just to test our P2P session.
+We won't get into what all this means just yet, but I wanted to show the code for the handshake function here since it is referenced; [more on that in the P2P tutorial](p2p.md). Your handshake messages can be anything and disregarded for the most part. Again, it is just to test our P2P session.
 
 ---
 
 ## Lobby Updates / Changes
 
-Now that a player has joined the lobby, everyone in the lobby will receive a callback notifying of the change.  We will handle it like this:
+Now that a player has joined the lobby, everyone in the lobby will receive a callback notifying of the change. We will handle it like this:
 
 ````
 func _on_Lobby_Chat_Update(lobby_id: int, change_id: int, making_change_id: int, chat_state: int) -> void:
@@ -391,7 +391,7 @@ func _on_Lobby_Chat_Update(lobby_id: int, change_id: int, making_change_id: int,
 	_get_Lobby_Members()
 ````
 
-For the most part this will update when players join or leave the lobby. However, if you add functionality to kick or ban players, it will show that too.  At the end of this function, I always update the player list so we can show the correct list of players in the lobby.
+For the most part this will update when players join or leave the lobby. However, if you add functionality to kick or ban players, it will show that too. At the end of this function, I always update the player list so we can show the correct list of players in the lobby.
 
 ---
 
@@ -459,10 +459,10 @@ First is this [video tutorial put together by **DawnsCrow Games**](https://youtu
 
 Second is [**JDare**'s has a repo, **GodotSteamHL**](https://github.com/JDare/GodotSteamHL){ target="_blank" }, designed to streamline Steam's networking functionality (lobbies and P2P) which should serve as a handy guide and/or useful script.
 
-I highly suggest you [check out the Example branch of the repo](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ target="_blank" }, specifically the **/src/examples/lobby.tscn** which will have the full working code and test interface for this tutorial.
+I highly suggest you [check out the Example project](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" }, specifically the **/src/examples/lobby.tscn** which will have the full working code and test interface for this tutorial.
 
 ---
 
-That concludes the lobby tutorial.  At this point you may want to [check out the P2P tutorial which compliments this one](/tutorials/p2p).  Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
+That concludes the lobby tutorial. At this point you may want to [check out the P2P tutorial which compliments this one](p2p.md). Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
 
-[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

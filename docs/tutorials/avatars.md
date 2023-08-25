@@ -1,6 +1,6 @@
 # Tutorials - Avatars
 
-You may want to get the current player's avatar, or someone else's, and display it in your game.  This tutorial will walk you through the basics of avatar retrieval and passing it to a sprite so you can use it.
+You may want to get the current player's avatar, or someone else's, and display it in your game. This tutorial will walk you through the basics of avatar retrieval and passing it to a sprite so you can use it.
 
 ---
 
@@ -12,7 +12,7 @@ Getting the avatar data is incredibly easy. Just use the following line:
 Steam.getPlayerAvatar(Steam.AVATAR_MEDIUM)
 ````
 
-You may pass it either **Steam.AVATAR_SMALL**, **Steam.AVATAR_MEDIUM**, or **Steam.AVATAR_LARGE**; their numerical counterparts (1, 2, or 3) will also work.  Additionally you can pass along a Steam ID64 to get a specific user or, if no ID is provided, it will get the current user by default.
+You may pass it either **Steam.AVATAR_SMALL**, **Steam.AVATAR_MEDIUM**, or **Steam.AVATAR_LARGE**; their numerical counterparts (1, 2, or 3) will also work. Additionally you can pass along a Steam ID64 to get a specific user or, if no ID is provided, it will get the current user by default.
 
 ---
 
@@ -29,7 +29,7 @@ To retrieve the avatar data buffer, you'll need to hook the signal for the callb
 	Steam.avatar_loaded.connect(loaded_avatar)
 	````
 
-This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image.  If you have read the [Achievement Icons tutorial](/tutorials/achievement_icons/), this should all look pretty familiar.  Our **loaded_avatar** function will look something like this:
+This will return the user's Steam ID, the avatar's size, and the data buffer for rendering the image. If you have read the [Achievement Icons tutorial](achievement_icons.md), this should all look pretty familiar. Our **loaded_avatar** function will look something like this:
 
 === "Godot 2.x, 3.x"
 	````
@@ -70,4 +70,4 @@ Naturally that texture could be applied elsewhere, depending on where you place 
 
 That covers the basics of getting player avatars.
 
-[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.

@@ -145,7 +145,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getClanActivityCounts
 
 !!! function "getClanActivityCounts( ```uint64_t``` clan_id )"
-	Gets the most recent information we have about what the users in a Steam Group are doing.  This can only retrieve data that the local client knows about. To refresh the data or get data from a group other than one that the current user is a member of you must call [downloadClanActivityCounts](#downloadclanactivitycounts).
+	Gets the most recent information we have about what the users in a Steam Group are doing. This can only retrieve data that the local client knows about. To refresh the data or get data from a group other than one that the current user is a member of you must call [downloadClanActivityCounts](#downloadclanactivitycounts).
 
 	**Returns:** dictionary
 
@@ -188,7 +188,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getClanChatMessage
 
 !!! function "getClanChatMessage( ```uint64_t``` chat_id, ```int``` message )"
-	Gets the data from a Steam group chat room message.  This should only ever be called in response to a [connected_clan_chat_message](#connected_clan_chat_message) callback.
+	Gets the data from a Steam group chat room message. This should only ever be called in response to a [connected_clan_chat_message](#connected_clan_chat_message) callback.
 
 	**Returns:** dictionary
 
@@ -205,7 +205,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getClanCount
 
 !!! function "getClanCount()"
-	Gets the number of Steam groups that the current user is a member of.  This is used for iteration, after calling this then [getClanByIndex](#getclanbyindex) can be used to get the Steam ID of each Steam group.
+	Gets the number of Steam groups that the current user is a member of. This is used for iteration, after calling this then [getClanByIndex](#getclanbyindex) can be used to get the Steam ID of each Steam group.
 
 	**Returns:** int
 
@@ -279,7 +279,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getCoplayFriendCount
 
 !!! function "getCoplayFriendCount()"
-	Gets the number of players that the current users has recently played with, across all games.  This is used for iteration, after calling this then [getCoplayFriend](#getcoplayfriend) can be used to get the Steam ID of each player.  These players are have been set with previous calls to [setPlayedWith](#setplayedwith).
+	Gets the number of players that the current users has recently played with, across all games. This is used for iteration, after calling this then [getCoplayFriend](#getcoplayfriend) can be used to get the Steam ID of each player. These players are have been set with previous calls to [setPlayedWith](#setplayedwith).
 
 	**Returns:** int
 
@@ -521,7 +521,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getFriendsGroupMembersCount
 
 !!! function "getFriendsGroupMembersCount( ```int16``` friend_group )"
-	Gets the number of friends in a given friends group.  This should be called before getting the list of friends with [getFriendsGroupMembersList](#getfriendsgroupmemberslist).
+	Gets the number of friends in a given friends group. This should be called before getting the list of friends with [getFriendsGroupMembersList](#getfriendsgroupmemberslist).
 
 	**Returns:** int
 
@@ -531,7 +531,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getFriendsGroupMembersList
 
 !!! function "```array``` getFriendsGroupMembersList( ```int16``` friend_group, ```int``` member_count )"
-	Gets the number of friends in the given friends group.  If fewer friends exist than requested those positions' Steam IDs will be invalid.  You must call [getFriendsGroupMembersCount](#getfrendsgroupmemberscount) before calling this to set up the **member_count** argument with an appropriate size!
+	Gets the number of friends in the given friends group. If fewer friends exist than requested those positions' Steam IDs will be invalid. You must call [getFriendsGroupMembersCount](#getfrendsgroupmemberscount) before calling this to set up the **member_count** argument with an appropriate size!
 
 	**Returns:** array
 
@@ -1046,7 +1046,7 @@ Access information about individual users and interact with the [Steam Overlay]
 
 	**status** - A UTF-8 string that will show up in the 'view game info' dialog in the Steam friends list.
 
-	**connect** - A UTF-8 string that contains the command-line for how a friend can connect to a game. This enables the 'join game' button in the 'view game info' dialog, in the steam friends list right click menu, and on the players Steam community profile. Be sure your app implements [getLaunchCommandLine](../apps/#getlaunchcommandline) so you can disable the popup warning when launched via a command line.
+	**connect** - A UTF-8 string that contains the command-line for how a friend can connect to a game. This enables the 'join game' button in the 'view game info' dialog, in the steam friends list right click menu, and on the players Steam community profile. Be sure your app implements [getLaunchCommandLine](apps.md#getlaunchcommandline) so you can disable the popup warning when launched via a command line.
 
 	There are three additional special keys used by the new Steam Chat:
 

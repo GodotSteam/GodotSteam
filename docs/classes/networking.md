@@ -1,8 +1,8 @@
 # Networking
 
-Networking functions for making connections and sending data between clients, traversing NATs when possible.  
+Networking functions for making connections and sending data between clients, traversing NATs when possible.
   
-**NOTE**: This API is deprecated and may be removed in a future Steamworks SDK release. Valve suggest using [Networking Sockets](../networking_sockets) or [Networking Messages](../networking_messages) instead. See the [Steam Networking](https://partner.steamgames.com/doc/features/multiplayer/networking){ target="_blank" } overview for more information.
+**NOTE**: This API is deprecated and may be removed in a future Steamworks SDK release. Valve suggest using [Networking Sockets](networking_sockets.md) or [Networking Messages](networking_messages.md) instead. See the [Steam Networking](https://partner.steamgames.com/doc/features/multiplayer/networking){ target="_blank" } overview for more information.
 
 ---
 

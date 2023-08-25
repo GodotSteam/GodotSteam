@@ -1,12 +1,12 @@
 # Tutorials - C#
 
-Every so often we get someone who asks how to use GodotSteam with C# so I figured I would write this up.  First and foremost, I have never used C# so my understanding of it is prety much null and void.
+Every so often we get someone who asks how to use GodotSteam with C# so I figured I would write this up. First and foremost, I have never used C# so my understanding of it is prety much null and void.
 
 ---
 
 ## What's Mono?
 
-To the point, GodotSteam does not have a C# version.  I tried once or twice to compile a version with Mono and it failed; I have yet to attempt this again.  However, anyone and everyone is welcome to make that work and submit a pull request for it!
+To the point, GodotSteam does not have a C# version. I tried once or twice to compile a version with Mono and it failed; I have yet to attempt this again. However, anyone and everyone is welcome to make that work and submit a pull request for it!
 
 ---
 
@@ -25,4 +25,4 @@ More often than not, I will refer C# users to one of two wonderful libraries for
 - [Facepunch.Steamworks](https://wiki.facepunch.com/steamworks) by the makers of Rust and Garry's Mod
 - [Steamworks.net](https://steamworks.github.io) by the super-nice Riley Labrecque
 
-I have no idea how you actually integrate these with Godot but some members of our Discord do.  I will try reaching out to them at some point for additions to this tutorial.
+I have no idea how you actually integrate these with Godot but some members of our Discord do. I will try reaching out to them at some point for additions to this tutorial.

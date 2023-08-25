@@ -1,8 +1,8 @@
 # Tutorials - P2P Networking
 
-One of the more requested tutorials is multiplayer lobbies and P2P networking through Steam; this tutorial specifically covers the P2P Networking portion and [our lobbies tutorial covers the other half](/tutorials/lobbies).  Please note this tutorial uses the **older Steamworks Networking class** and this is for a basic, turn-based lobby / P2P set-up.  Only use this as a starting point.
+One of the more requested tutorials is multiplayer lobbies and P2P networking through Steam; this tutorial specifically covers the P2P Networking portion and [our lobbies tutorial covers the other half](lobbies.md). Please note this tutorial uses the **older Steamworks Networking class** and this is for a basic, turn-based lobby / P2P set-up. Only use this as a starting point.
 
-I'd also like to suggest you [check out the Additional Resources section of this tutorial](/tutorials/p2p/#additional-resources) before continuing on.
+I'd also like to suggest you [check out the Additional Resources section of this tutorial](#additional-resources) before continuing on.
 
 ---
 
@@ -70,7 +70,7 @@ func _read_All_P2P_Packets(read_count: int = 0):
 
 ## P2P Networking - Session Request
 
-Next we'll check out the P2P networking functionality. [Over in the lobby tutorial](/tutorials/lobbies), we did a P2P handshake when someone joins the lobby, it would trigger a **p2p_session_request** callback which would in turn trigger this function:
+Next we'll check out the P2P networking functionality. [Over in the lobby tutorial](lobbies.md), we did a P2P handshake when someone joins the lobby, it would trigger a **p2p_session_request** callback which would in turn trigger this function:
 
 ````
 func _on_P2P_Session_Request(remote_id: int) -> void:
@@ -370,7 +370,7 @@ First is this [video tutorial put together by **DawnsCrow Games**](https://youtu
 
 Second is [**JDare**'s has a repo, **GodotSteamHL**](https://github.com/JDare/GodotSteamHL){ target="_blank" }, designed to streamline Steam's networking functionality (lobbies and P2P) which should serve as a handy guide and/or useful script.
 
-I highly suggest you [check out the Example branch of the repo](https://github.com/CoaguCo-Industries/GodotSteam/tree/example){ target="_blank" }, specifically the **/src/examples/lobby.tscn** which will have the full working code and test interface for this tutorial.
+I highly suggest you [check out the Example project](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" }, specifically the **/src/examples/lobby.tscn** which will have the full working code and test interface for this tutorial.
 
 I extremely and highly suggest you read through [Valve's networking documentations](https://partner.steamgames.com/doc/features/multiplayer/networking){ target="_blank" }; it also contains some links to other articles about networking which should prove helpful.
 
@@ -383,6 +383,6 @@ Here are some additional networking article resources to check out:
 
 ---
 
-That concludes the P2P tutorial.  At this point you may want to [check out the lobbies tutorial (if you haven't yet) which compliments this one](/tutorials/lobbies).  Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
+That concludes the P2P tutorial. At this point you may want to [check out the lobbies tutorial (if you haven't yet) which compliments this one](lobbies.md). Obviously this code should not be used for production and more for a very, very, very, simple guide on where to start.
 
-[To see this tutorial in action, check out our GodotSteam 3 Example Project on Github.](https://github.com/CoaguCo-Industries/GodotSteam-3-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
