@@ -6,7 +6,7 @@
 
 // Steam APIs
 #include "core/os/os.h"
-#include "../godotsteam/godot_steam_constants.h"
+#include "../godotsteam/godotsteam_constants.h"
 #include "../godotsteam/godotsteam.h"
 
 // #include "steam_id.h"
