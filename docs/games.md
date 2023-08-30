@@ -166,6 +166,14 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-youtube: ](https://www.youtube.com/@lightbulbengine/){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Chillquarium -->
+<figure class="game" markdown>
+[![Chillquarium](https://steamcdn-a.akamaihd.net/steam/apps/2276930/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2276930/Chillquarium/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/2276930/Chillquarium/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-discord: ](https://discord.com/invite/wzFChuVRjx){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Clive vs Hives 2 -->
 <figure class="game" markdown>
 [![Clive vs Hives 2](https://steamcdn-a.akamaihd.net/steam/apps/1883230/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1883230/Clive_vs_Hives_2/){ target="_blank" }
