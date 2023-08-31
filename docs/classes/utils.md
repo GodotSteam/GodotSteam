@@ -59,7 +59,7 @@
 
 	Contains the following keys:
 	
-	* buffer (PoolByteArray)
+	* buffer (PoolByteArray / PackedByteArray)
 	* success (bool)
 
 	---
