@@ -1,4 +1,0 @@
-[submodule "GodotSteam"]
-	path = GodotSteam
-	url = git@github.com:Gramps/GodotSteam.git
-	branch = gh-pages

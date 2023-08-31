@@ -1,4 +1,4 @@
-# Networking Utilities
+# Networking Utils
 
 Miscellaneous networking utilities for checking the local networking environment and estimating pings.
 

@@ -194,9 +194,11 @@ Provides functions for accessing and submitting stats, achievements, and leaderb
 !!! function "getAchievementIcon( ```string``` name )"
 	Gets the icon for an achievement.
 
-	Triggers a [user_achievement_icon_fetched](#user_achievement_icon_fetched) callback.
+	The image is returned as a handle to be used with [getImageRGBA](utils.md#getimagergba) to get the actual image data.
 
 	**Returns:** int
+
+	See the [Achievement Icons tutorial](../tutorials/achievement_icons.md) for an example.
 
 	---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamUserStats#GetAchievementIcon){ .md-button .md-button--store target="_blank" }
@@ -206,7 +208,7 @@ Provides functions for accessing and submitting stats, achievements, and leaderb
 !!! function "getAchievementName( ```uint32_t``` achievement )"
 	Gets the 'API name' for an achievement index between 0 and [getNumAchievements](#getnumachievements).
 
-	This function must be used in cojunction with [getNumAchievements](#getnumachievements) to loop over the list of achievements.
+	This function must be used in conjunction with [getNumAchievements](#getnumachievements) to loop over the list of achievements.
 
 	In general games should not need these functions as they should have the list of achievements compiled into them.
 

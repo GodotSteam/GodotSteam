@@ -41,7 +41,7 @@ nav:
     - UGC: 'classes/ugc.md'
     - User: 'classes/user.md'
     - User Stats: 'classes/user_stats.md'
-    - Utilities: 'classes/utils.md'
+    - Utils: 'classes/utils.md'
     - Video: 'classes/video.md'
   - Tutorials:
     - Achievement Icons: 'tutorials/achievement_icons.md'
