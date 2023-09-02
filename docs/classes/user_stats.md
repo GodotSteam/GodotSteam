@@ -555,7 +555,7 @@ Provides functions for accessing and submitting stats, achievements, and leaderb
 
 	You must have called [requestCurrentStats](#requestcurrentstats) and it needs to return successfully via its callback prior to calling this.
 
-	Triggers a [global_achievement_percentages_ready](#global_achievement_percentage_ready) callback.
+	Triggers a [global_achievement_percentages_ready](#global_achievement_percentages_ready) callback.
 
 	**Returns:** void
 

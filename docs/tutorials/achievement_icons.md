@@ -2,7 +2,7 @@
 
 This quick tutorial will cover to how get achievement icons from Steam's servers. It was made because there are some extra steps folks need to use to render the images and it may not be very clear otherwise.
 
-The relevant Steam classes and functions for this tutorial are:
+The relevant GodotSteam classes and functions for this tutorial are:
 
   * [User Stats class](../classes/user_stats.md)
     * [requestCurrentStats()](../classes/user_stats.md#requestcurrentstats)
@@ -123,4 +123,4 @@ Our complete example should look something like this:
 
 And that's how you display an achievement icon.
 
-[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+To see this tutorial in action, [check out our GodotSteam Example Project on GitHub](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" }. There you can get a full view of the code used which can serve as a starting point for you to branch out from.
