@@ -102,7 +102,7 @@ Inside that handshake there was a call to the ***_read_P2P_Packet()*** function 
 		if PACKET_SIZE > 0:
 			var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, 0)
 
-			if PACKET.empty() or PACKET == null:
+			if PACKET.is_empty() or PACKET == null:
 				print("WARNING: read an empty packet with non-zero size!")
 
 			# Get the remote user's ID
@@ -300,7 +300,7 @@ To accomplish this, we add a single line of code to our **\_read_P2P_Packet** fu
 		if PACKET_SIZE > 0:
 			var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, 0)
 
-			if PACKET.empty() or PACKET == null:
+			if PACKET.is_empty() or PACKET == null:
 				print("WARNING: read an empty packet with non-zero size!")
 
 			# Get the remote user's ID
