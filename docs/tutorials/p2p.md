@@ -309,7 +309,7 @@ To accomplish this, we add a single line of code to our **\_read_P2P_Packet** fu
 			# Make the packet data readable
 			var PACKET_CODE: PackedByteArray = PACKET['data']
 			# Decompress the array before turning it into a useable dictionary
-			var READABLE: Dictionary = bytes_to_var(PACKET_CODE.decompress_dynamic(-1, File.COMPRESSION_GZIP))
+			var READABLE: Dictionary = bytes_to_var(PACKET_CODE.decompress_dynamic(-1, FileAccess.COMPRESSION_GZIP))
 
 			# Print the packet to output
 			print("Packet: "+str(READABLE))
