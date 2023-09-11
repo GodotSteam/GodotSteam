@@ -15,6 +15,14 @@ Apparently, for Godot 4.x users, codesign is fine but you may want to keep the n
 
 ---
 
+## Disabling Library Validation
+
+This one is apparently still valid though Valve says it is only needed on Catalina 10.15, but you will want to disable library validation to allow Steamworks to load and the overlay to work properly.
+
+![Disable Validation](../assets/images/mac-caveats2.png){ loading=lazy }
+
+---
+
 ## App Icon
 
 There is, by default, a Godot Engine icon already inside the **{your game}.app/Contents/Resources** folder. You will most likely want to replace it with a fancy version of your game's icon. All you have to do is export your icon and save it as **icon.icns** then replace it in the same folder; overwriting the original.
