@@ -321,6 +321,7 @@ html .md-footer-meta.md-typeset a:is(:focus, :hover) {
 	border-color: #282828;
 	color: #fff;
 	text-decoration: none;
+	margin-bottom: 
 }
 .md-typeset .md-button--primary:hover,
 .md-typeset .md-button--store:hover {
@@ -997,6 +998,10 @@ div.start-grid div.admonition a {
 .md-typeset .admonition.source a,
 .md-typeset .admonition.steam a {
   margin-right: 2em;	
+}
+
+.md-typeset .admonition .md-button--primary {
+	margin-bottom: 2em;
 }
 
 .md-typeset .admonition.contributors1,

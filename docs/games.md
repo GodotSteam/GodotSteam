@@ -547,6 +547,17 @@ Here is a showcase of games using the GodotSteam module. Have a game on Steam us
 [ :fontawesome-brands-firefox-browser: ](https://www.lingothegame.com){ target="_blank" .md-button .md-button--store }
 </figure>
 
+<!-- Looking Up I See Only A Ceiling -->
+<figure class="game" markdown>
+[![Looking Up I See Only A Ceiling](https://steamcdn-a.akamaihd.net/steam/apps/1742930/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/1742930/Looking_Up_I_See_Only_A_Ceiling/){ target="_blank" }
+
+[ :fontawesome-brands-steam: ](https://store.steampowered.com/app/1742930/Looking_Up_I_See_Only_A_Ceiling/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-mastodon: ](https://mastodon.gamedev.place/@silver978){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-twitter: ](https://twitter.com/silver978_){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-instagram: ](https://www.instagram.com/silver978_/){ target="_blank" .md-button .md-button--store }
+[ :fontawesome-brands-firefox-browser: ](https://silver978.com/){ target="_blank" .md-button .md-button--store }
+</figure>
+
 <!-- Love Exalt 8372 -->
 <figure class="game" markdown>
 [![Love Exalt 8372](https://steamcdn-a.akamaihd.net/steam/apps/2295280/header.jpg){ loading=lazy align=left }](https://store.steampowered.com/app/2295280?utm_source=godotsteam){ target="_blank" }
