@@ -7,9 +7,11 @@ This comes up sometimes so I figured I would cover it. However, as you can notic
 
 ## Beware Codesign
 
-One option you need to make sure is disabled is Codesign. For some users, it makes the game unable to talk to Steam and results in the "Steam not running" error. Just check for this during export:
+For Godot 3.x users, one option you need to make sure is disabled is Codesign. For some users, it makes the game unable to talk to Steam and results in the "Steam not running" error. Just check for this during export:
 
 ![Codesign Fail](../assets/images/mac-caveats1.png){ loading=lazy }
+
+Apparently, for Godot 4.x users, codesign is fine but you may want to keep the notarizing stuff empty.
 
 ---
 
