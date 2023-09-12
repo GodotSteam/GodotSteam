@@ -23,7 +23,9 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 ### addRequestLobbyListDistanceFilter
 
 !!! function "addRequestLobbyListDistanceFilter( ```int``` distance_filter )"
-	Sets the physical distance for which we should search for lobbies, this is based on the users IP address and a IP location map on the Steam backed.
+	Sets the physical distance for which we should search for lobbies, this is based on the user's IP address and an IP location map on the Steam backend.
+	
+	See the [LobbyDistanceFilter enum](#lobbydistancefilter) for possible values to pass in.
 
 	**Returns:** void
 
@@ -160,7 +162,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 
 	Returns an empty string if no value is set for this key, or if **steam_lobby_id** is invalid.
 
-	**Note:** This can only get metadata from lobbies that the client knows about, either after receiving a list of lobbies from [lobby_match_list](#lobby_match_list), retrieving the data with [requestLobbyData](#requestlobbydata) or after joining a lobby.
+	**Note:** This can only get metadata from lobbies that the client knows about, either after receiving a list of lobbies from [lobby_match_list](#lobby_match_list), retrieving the data with [requestLobbyData](#requestlobbydata), or after joining a lobby.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#GetLobbyData){ .md-button .md-button--store target="_blank" }
@@ -236,7 +238,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 !!! function "getNumLobbyMembers( ```uint64_t``` steam_lobby_id )"
 	Gets the number of users in a lobby.
 
-	This is used for iteration, after calling this then [getLobbyMemberByIndex](#getlobbymemberbyindex) can be used to get the Steam ID of each person in the lobby. Persona information for other lobby members (name, avatar, etc.) is automatically received and accessible via the **SteamFriends** interface.
+	This is used for iteration. After calling this then [getLobbyMemberByIndex](#getlobbymemberbyindex) can be used to get the Steam ID of each person in the lobby. Persona information for other lobby members (name, avatar, etc.) is automatically received and accessible via the [**Friends** class](friends.md).
 
 	**Returns:** int
 
@@ -264,7 +266,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 
 	The lobby Steam ID can be obtained either from a search with [requestLobbyList](#requestlobbylist) joining on a friend, or from an invite.
 
-	Triggers a [lobby_joined](#lobby_joined) callback for other users.
+	Triggers a [lobby_joined](#lobby_joined) callback for yourself and a [lobby_chat_update](#lobby_chat_update) callback for any other users already in the lobby.
 
 	**Returns:** void
 
@@ -296,7 +298,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 !!! function "requestLobbyData( ```uint64_t``` steam_lobby_id )"
 	Refreshes all of the metadata for a lobby that you're not in right now.
 
-	You will never do this for lobbies you're a member of, that data will always be up to date. You can use this to refresh lobbies that you have obtained from [requestLobbyList](#requestlobbylist) or that are available via friends.
+	You will never do this for lobbies you're a member of; that data will always be up to date. You can use this to refresh lobbies that you have obtained from [requestLobbyList](#requestlobbylist) or that are available via friends.
 
 	Triggers a [lobby_data_update](#lobby_data_update) callback.
 
@@ -312,7 +314,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 !!! function "requestLobbyList()"
 	Get a filtered list of relevant lobbies.
 
-	There can only be one active lobby search at a time. The old request will be canceled if a new one is started. Depending on the users connection to the Steam back-end, this call can take from 300ms to 5 seconds to complete, and has a timeout of 20 seconds.
+	There can only be one active lobby search at a time. The old request will be canceled if a new one is started. Depending on the user's connection to the Steam back-end, this call can take from 300ms to 5 seconds to complete, and has a timeout of 20 seconds.
 
 	Triggers a [lobby_match_list](#lobby_match_list) callback.
 
@@ -320,9 +322,9 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 
 	**Note:** To filter the results you _must_ call the **addRequestLobbyList** functions before calling this. The filters are cleared on each call to this function.
 
-	**Note:** If [addRequestLobbyListDistanceFilter](#addrequestlobbylistdistancefilter) is not called, **k_ELobbyDistanceFilterDefault** will be used, which will only find matches in the same or nearby regions.
+	**Note:** If [addRequestLobbyListDistanceFilter](#addrequestlobbylistdistancefilter) is not called, **[LOBBY_DISTANCE_FILTER_DEFAULT (1)](#lobbydistancefilter)** will be used, which will only find matches in the same or nearby regions.
 
-	**Note:** This will only return lobbies that are not full, and only lobbies that are **public (2)** or **invisible (3)**, and are set to joinable with [setLobbyJoinable](#setlobbyjoinable).
+	**Note:** This will only return lobbies that are not full, and only lobbies that are **[LOBBY_TYPE_PUBLIC (2)](#lobbytype)** or **[LOBBY_TYPE_INVISIBLE (3)](#lobbytype)**, and are set to joinable with [setLobbyJoinable](#setlobbyjoinable).
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#RequestLobbyList){ .md-button .md-button--store target="_blank" }
@@ -601,7 +603,7 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 	**Returns:**
 
-	* lobbies (array)
+	* lobbies (array of lobby IDs)
 
 	**Notes:** With the GDNative plug-in, this callback will also send back the lobby count as an integer; this fixes a very strange issue with GDNative mangling the lobbies array.
 
