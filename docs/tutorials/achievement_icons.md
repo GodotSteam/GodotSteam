@@ -5,11 +5,11 @@ This quick tutorial will cover to how get achievement icons from Steam's servers
 The relevant GodotSteam classes and functions for this tutorial are:
 
   * [User Stats class](../classes/user_stats.md)
-    * [requestCurrentStats()](../classes/user_stats.md#requestcurrentstats)
     * [getAchievementIcon()](../classes/user_stats.md#getachievementicon)
+    * [requestCurrentStats()](../classes/user_stats.md#requestcurrentstats)
   * [Utils class](../classes/utils.md)
-    * [getImageSize()](../classes/utils.md#getimagesize)
 	* [getImageRGBA()](../classes/utils.md#getimagergba)
+    * [getImageSize()](../classes/utils.md#getimagesize)
 
 ---
 

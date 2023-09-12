@@ -2,6 +2,15 @@
 
 A quick, requested tutorial is auto-matchmaking lobbies. While this example does not show how to match specific criteria, it will be noted where you can place such matches. This tutorial is basically an extension of the [lobbies](lobbies.md) and [p2p networking](p2p.md) tutorials. Because of that we'll focus only on what's different; please refer to the aforementioned tutorials for additional information and layouts.
 
+The relevant GodotSteam classes and functions for this tutorial are:
+
+  * [Matchmaking class](../classes/matchmaking.md)
+    * [addRequestLobbyListDistanceFilter()](../classes/matchmaking.md#addrequestlobbylistdistancefilter)
+	* [getLobbyData()](../classes/matchmaking.md#getlobbydata)
+	* [getNumLobbyMembers()](../classes/matchmaking.md#getnumlobbymembers)
+	* [joinLobby()](../classes/matchmaking.md#joinlobby)
+	* [requestLobbyList()](../classes/matchmaking.md#requestlobbylist)
+
 ---
 
 ## Set Up
