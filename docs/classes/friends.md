@@ -20,7 +20,7 @@ Access information about individual users and interact with the [Steam Overlay]
 	* "OfficialGameGroup"
 	* "Stats"
 	* "Achievements"
-	* "LobbyInvite". 
+	* "LobbyInvite"
 
 	**Returns:** void
 
@@ -67,7 +67,7 @@ Access information about individual users and interact with the [Steam Overlay]
 	* "friendadd"
 	* "friendremove"
 	* "friendrequestaccept"
-	* "friendrequestignore". 
+	* "friendrequestignore"
 
 	**Returns:** void
 
@@ -87,7 +87,7 @@ Access information about individual users and interact with the [Steam Overlay]
 ### clearRichPresence
 
 !!! function "clearRichPresence()"
-	Clear the game information in Steam; used in 'View Game Info'. 
+	Clear the game information in Steam; used in 'View Game Info' section of Friends list.
 
 	**Returns:** void
 
@@ -565,13 +565,17 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getLargeFriendAvatar
 
 !!! function "getLargeFriendAvatar( ```uint64_t``` steam_id )"
-	Gets a handle to the large (128 x 128px) avatar for the specified user. You can pass in [getSteamID](#getsteamid) to get the current user's avatar.
+	**Note:** Consider using [getPlayerAvatar](#getplayeravatar) instead because it simplifies the process of getting avatar data.
+
+	Gets a handle to the large (128x128px) avatar for the specified user. You can pass in [getSteamID](user.md#getsteamid) to get the current user's avatar.
+	
+	**Note:** It is possible for the size to be larger than 128x128 if the user uploaded a larger image to their profile.
 
 	Triggers an [avatar_loaded](#avatar_loaded) callback.
 
 	**Returns:** int
 
-	A Steam image handle which is used with [getImageSize](#getimagesize) and [getImageRGBA](#getimagergba).
+	A Steam image handle which is used with [getImageSize](utils.md#getimagesize) and [getImageRGBA](utils.md#getimagergba).
 
 	**Note:** This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call [requestUserInformation](#requestuserinformation) to cache the avatar locally.
 
@@ -581,13 +585,15 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getMediumFriendAvatar
 
 !!! function "getMediumFriendAvatar( ```uint64_t``` steam_id )"
-	Gets a handle to the medium (64 x 64px) avatar for the specified user. You can pass in [getSteamID](#getsteamid) to get the current user's avatar.
+	**Note:** Consider using [getPlayerAvatar](#getplayeravatar) instead because it simplifies the process of getting avatar data.
+
+	Gets a handle to the medium (64x64px) avatar for the specified user. You can pass in [getSteamID](user.md#getsteamid) to get the current user's avatar.
 
 	Triggers an [avatar_loaded](#avatar_loaded) callback.
 
 	**Returns:** int
 
-	A Steam image handle which is used with [getImageSize](#getimagesize) and [getImageRGBA](#getimagergba).
+	A Steam image handle which is used with [getImageSize](utils.md#getimagesize) and [getImageRGBA](utils.md#getimagergba).
 
 	**Note:** This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call [requestUserInformation](#requestuserinformation) to cache the avatar locally.
 
@@ -627,19 +633,21 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getPlayerAvatar
 
 !!! function "getPlayerAvatar( ```int``` size = 2, ```uint64_t``` steam_id = 0 )"
-	Get player's avatar. Short-cuts to the various avatar functions in Steamworks.
+	Get a player's avatar. This is the preferred method of getting avatars as it shortcuts the various avatar functions in Steamworks to reduce the number of steps required.
 
-	Size is passed as follows:
+	Size can be passed as the [AvatarSizes enum](#avatarsizes) or an integer:
 
-	* 1 - small avatar
-	* 2 - medium avatar
-	* 3 - large avatar
+	* 1 (small)
+	* 2 (medium)
+	* 3 (large)
+	
+	If no **steam_id** is passed in, it will get the current user's avatar.
 
 	Triggers an [avatar_loaded](#avatar_loaded) callback.
 
-	**Returns:** void . 
+	**Returns:** void
 
-	**Note:** This is a unique function to GodotSteam.
+	**Note:** This is a unique function to GodotSteam. See the [Avatars tutorial](../tutorials/avatars.md) for more information.
 
 ### getPlayerNickname
 
@@ -694,13 +702,15 @@ Access information about individual users and interact with the [Steam Overlay]
 ### getSmallFriendAvatar
 
 !!! function "getSmallFriendAvatar( ```uint64_t``` steam_id )"
-	Gets a handle to the small (32 x 32px) avatar for the specified user. You can pass in [getSteamID](#getsteamid) to get the current user's avatar.
+	**Note:** Consider using [getPlayerAvatar](#getplayeravatar) instead because it simplifies the process of getting avatar data.
+	
+	Gets a handle to the small (32x32px) avatar for the specified user. You can pass in [getSteamID](user.md#getsteamid) to get the current user's avatar.
 
 	Triggers an [avatar_loaded](#avatar_loaded) callback.
 
 	**Returns:** int
 
-	A Steam image handle which is used with [getImageSize](#getimagesize) and [getImageRGBA](#getimagergba).
+	A Steam image handle which is used with [getImageSize](utils.md#getimagesize) and [getImageRGBA](utils.md#getimagergba).
 
 	**Note:** This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call [requestUserInformation](#requestuserinformation) to cache the avatar locally.
 
@@ -974,7 +984,9 @@ Access information about individual users and interact with the [Steam Overlay]
 ### requestUserInformation
 
 !!! function "requestUserInformation( ```uint64_t``` steam_id, ```bool``` require_name_only )"
-	Requests information about a user - persona name and avatar; if require_name_only is set, then the avatar of a user isn't downloaded. 
+	Requests the persona name and the avatar of a specified user.
+
+	NOTE: It's a lot slower to download avatars and churns the local cache, so if you don't need avatars, set require_name_only to true.
 
 	**Returns:** bool
 
