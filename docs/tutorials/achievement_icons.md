@@ -8,7 +8,7 @@ The relevant GodotSteam classes and functions for this tutorial are:
     * [getAchievementIcon()](../classes/user_stats.md#getachievementicon)
     * [requestCurrentStats()](../classes/user_stats.md#requestcurrentstats)
   * [Utils class](../classes/utils.md)
-	* [getImageRGBA()](../classes/utils.md#getimagergba)
+    * [getImageRGBA()](../classes/utils.md#getimagergba)
     * [getImageSize()](../classes/utils.md#getimagesize)
 
 ---

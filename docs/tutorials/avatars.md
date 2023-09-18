@@ -65,14 +65,14 @@ This will return the user's Steam ID, the avatar's size, and the data buffer for
 		print("Size: "+str(size))
 
 		# Create the image and texture for loading
-	    var AVATAR: Image = Image.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
+		var AVATAR: Image = Image.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
 
 		# Optionally resize the image if it is too large
 		if size > 128:
 			AVATAR.resize(128, 128, Image.INTERPOLATE_LANCZOS)
 
-    	# Apply the image to a texture
-    	var AVATAR_TEXTURE: ImageTexture = ImageTexture.create_from_image(AVATAR)
+		# Apply the image to a texture
+		var AVATAR_TEXTURE: ImageTexture = ImageTexture.create_from_image(AVATAR)
 
 		# Set the texture to a Sprite, TextureRect, etc.
 		$Sprite.set_texture(AVATAR_TEXTURE)
@@ -84,4 +84,4 @@ Naturally that texture could be applied elsewhere, depending on where you place 
 
 That covers the basics of getting player avatars.
 
-[To see this tutorial in action, check out our GodotSteam Example Project on GitHub.](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" } There you can get a full view of the code used which can serve as a starting point for you to branch out from.
+To see this tutorial in action, [check out our GodotSteam Example Project on GitHub](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project){ target="_blank" }. There you can get a full view of the code used which can serve as a starting point for you to branch out from.

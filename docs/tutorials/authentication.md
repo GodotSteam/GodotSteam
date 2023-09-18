@@ -6,8 +6,8 @@ The relevant GodotSteam classes and functions for this tutorial are:
 
   * [User class](../classes/user.md)
     * [beginAuthSession()](../classes/user.md#beginauthsession)
-	* [cancelAuthTicket()](../classes/user.md#cancelauthticket)
-	* [endAuthSession()](../classes/user.md#endauthsession)
+    * [cancelAuthTicket()](../classes/user.md#cancelauthticket)
+    * [endAuthSession()](../classes/user.md#endauthsession)
     * [getAuthSessionTicket()](../classes/user.md#getauthsessionticket)
 
 ---

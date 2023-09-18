@@ -5,9 +5,9 @@ In this quick tutorial we will cover how to get a dictionary of any lobbies belo
 The relevant GodotSteam classes and functions for this tutorial are:
 
   * [Friends class](../classes/friends.md)
-	* [getFriendByIndex](../classes/friends.md#getfriendbyindex)
+    * [getFriendByIndex](../classes/friends.md#getfriendbyindex)
     * [getFriendCount](../classes/friends.md#getfriendcount)
-	* [getFriendGamePlayed](../classes/friends.md#getfriendgameplayed)
+    * [getFriendGamePlayed](../classes/friends.md#getfriendgameplayed)
   * [Matchmaking class](../classes/matchmaking.md)
     * [createLobby](../classes/matchmaking.md#createlobby)
   * [Utils class](../classes/utils.md)
@@ -62,7 +62,7 @@ func get_lobbies_with_friends() -> Dictionary:
   for i in range(0, Steam.getFriendCount()):
     var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
     var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
-    
+
     if game_info.empty():
       # This friend is not playing a game
       continue
@@ -73,11 +73,11 @@ func get_lobbies_with_friends() -> Dictionary:
       if app_id != Steam.getAppID() or lobby is String:
         # Either not in this game, or not in a lobby
         continue
-      
+
       if not results.has(lobby):
         results[lobby] = []
       results[lobby].append(steam_id)
-  
+
   return results
 ````
 
@@ -90,7 +90,7 @@ func get_friends_in_lobbies() -> Dictionary:
   for i in range(0, Steam.getFriendCount()):
     var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
     var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
-    
+
     if game_info.empty():
       # This friend is not playing a game
       continue
@@ -101,9 +101,9 @@ func get_friends_in_lobbies() -> Dictionary:
       if app_id != Steam.getAppID() or lobby is String:
         # Either not in this game, or not in a lobby
         continue
-      
+
       results[steam_id] = lobby
-  
+
   return results
 ````
 
