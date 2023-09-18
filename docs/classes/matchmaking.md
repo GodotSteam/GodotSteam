@@ -93,7 +93,7 @@ See [Steam Matchmaking & Lobbies](https://partner.steamgames.com/doc/features/m
 
 	**Returns:** void
 
-	If the results returned via the [lobby_created](#lobby_created) call result indicate success then the lobby is joined & ready to use at this point.
+	If the results returned via the [lobby_created](#lobby_created) call result indicate success then the lobby is joined and ready to use at this point.
 
     ---
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#CreateLobby){ .md-button .md-button--store target="_blank" }
@@ -513,11 +513,11 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 ### lobby_created
 
 !!! function "lobby_created"
-	Result of our request to create a lobby. At this point, the lobby has been joined and is ready for use.
+	Result of our request to create a lobby. At this point, the lobby has been joined and is ready for use. A [lobby_joined](#lobby_joined) callback will also be received (since the user is joining their own lobby).
 
 	**Returns:**
 
-	* connect (int)
+	* connect (int) as [Result enum](main.md#result)
 	* lobby (uint64_t)
 
     ------
@@ -527,6 +527,8 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 
 !!! function "lobby_data_update"
 	The lobby metadata has changed.
+
+	If `member_id` is a user in the lobby, then use [getLobbyMemberData](#getlobbymemberdata) to access per-user details; otherwise, if `member_id == lobby_id`, use [getLobbyData](#getlobbydata) to access the lobby metadata.
 
 	**Returns:**
 
@@ -574,9 +576,9 @@ These callbacks require you to run ```Steam.run_callbacks()``` in your ```_proce
 	**Returns:**
 
 	* lobby_id (uint64_t)
-	* permissions (uint32_t)
+	* permissions (uint32_t) (unused; always 0)
 	* locked (bool)
-	* response (uint32_t)
+	* response (uint32_t) as [ChatRoomEnterResponse enum](main.md#chatroomenterresponse)
 
     ------
     [:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamMatchmaking#LobbyEnter_t){ .md-button .md-button--store target="_blank" }

@@ -302,10 +302,12 @@ Access information about individual users and interact with the [Steam Overlay]
 
 !!! function "getFriendByIndex( ```int``` friend_number, ```int``` friend_flags )"
 	Gets the Steam ID of the user at the given index.
+	
+	See the [FriendFlags enum](#friendflags) for possible values to pass in.
 
 	**Returns:** int
 
-	**Note:** You must call [getFriendCount](#getfriendcount) before calling this.
+	**Note:** You must call [getFriendCount](#getfriendcount), passing in the same `friend_flags` value, before calling this.
 
  	---
  	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendByIndex){ .md-button .md-button--store target="_blank" }
@@ -335,6 +337,8 @@ Access information about individual users and interact with the [Steam Overlay]
 
 !!! function "getFriendCount( ```int``` friend_flags )"
 	Gets the number of users the client knows about who meet a specified criteria. (Friends, blocked, users on the same server, etc). This can be used to iterate over all of the users by calling [getFriendByIndex](#getfriendbyindex) to get the Steam IDs of each user.
+	
+	See the [FriendFlags enum](#friendflags) for possible values to pass in.
 
 	**Returns:** int
 
@@ -378,11 +382,15 @@ Access information about individual users and interact with the [Steam Overlay]
 
 	Contains the following keys:
 
-	* id (int) as app ID
-	* ip (string)
 	* game_port (uint16)
+	* id (int) as App ID
+	* ip (string)
+	* lobby (uint64_t **or** String)
+		* If the friend is in a lobby visible to the user, it will be an int of the Lobby ID
+		* Otherwise, it will be a String equal to: `"No valid lobby"`
 	* query_port (uint16)
-	* lobby (uint64_t)
+	
+	**Note:** The dictionary will be empty if the friend is offline or not playing a game.
 
  	---
  	[:fontawesome-brands-steam: Read more in the official Steamworks SDK documentation](https://partner.steamgames.com/doc/api/ISteamFriends#GetFriendGamePlayed){ .md-button .md-button--store target="_blank" }
