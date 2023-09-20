@@ -3716,6 +3716,12 @@
 				[/codeblock]
 			</description>
 		</method>
+		<method name="getUserContentDescriptorPreferences">
+			<return type="Array" />
+			<description>
+				Return the user's community content descriptor preferences.
+			</description>
+		</method>
 		<method name="getUserItemVote">
 			<return type="void" />
 			<argument index="0" name="published_file_id" type="int" />
@@ -5750,6 +5756,7 @@
 			<return type="bool" />
 			<argument index="0" name="update_handle" type="int" />
 			<argument index="1" name="tag_array" type="Array" />
+			<argument index="2" name="allow_admin_tags" type="bool" />
 			<description>
 				Sets arbitrary developer specified tags on an item.
 				Each tag must be limited to 255 characters. Tag names can only include printable characters, excluding ','.
@@ -6332,6 +6339,14 @@
 				[b]Note:[/b] You must call [method Steam.destroyResult] on the inventory result for when you are done with it.
 			</description>
 		</method>
+		<method name="startRemotePlayTogether">
+			<return type="bool" />
+			<argument index="0" name="show_overlay" type="bool" />
+			<description>
+				Start Remote Play Together and optionally show the UI in the overlay.
+				This returns false if Remote Play Together can't be started or your game is not configured for Remote Play Together.
+			</description>
+		</method>
 		<method name="startUpdateProperties">
 			<return type="void" />
 			<description>
@@ -6362,6 +6377,19 @@
 				• 2 / "Steamworks failed to initialize"
 				• 20 / "Steam not running"
 				• 79 / "Invalid app ID or app not installed"
+				[/codeblock]
+			</description>
+		</method>
+		<method name="steamInitEx">
+			<return type="Dictionary" />
+			<argument index="0" name="retrieve_stats" type="bool" default="true" />
+			<description>
+				Initialize the Steamworks SDK. On success [enum Steam.STEAM_API_INIT_RESULT_OK] is returned.  Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
+				[codeblock]
+				• 0 / "Steamworks active"
+				• 1 / "Failed (generic)"
+				• 2 / "Cannot connect to Steam, client probably isn't running"
+				• 3 / "Steam client appears to be out of date"
 				[/codeblock]
 			</description>
 		</method>
@@ -8277,6 +8305,12 @@
 		<constant name="QUERY_PORT_ERROR" value="65534">
 		</constant>
 		<constant name="QUERY_PORT_NOT_INITIALIZED" value="65535">
+		</constant>
+		<constant name="STEAM_BUFFER_SIZE" value="255">
+		</constant>
+		<constant name="STEAM_LARGE_BUFFER_SIZE" value="8160">
+		</constant>
+		<constant name="STEAM_MAX_ERROR_MESSAGE" value="1024">
 		</constant>
 		<constant name="CHAT_METADATA_MAX" value="8192">
 		</constant>
@@ -10236,6 +10270,14 @@
 		</constant>
 		<constant name="NETWORKING_CONFIG_SEND_BUFFER_SIZE" value="9" enum="NetworkingConfigValue">
 		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_BUFFER_SIZE" value="47" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_BUFFER_MESSAGES" value="48" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_MAX_MESSAGE_SIZE" value="49" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_MAX_SEGMENTS_PER_PACKET" value="50" enum="NetworkingConfigValue">
+		</constant>
 		<constant name="NETWORKING_CONFIG_SEND_RATE_MIN" value="10" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_SEND_RATE_MAX" value="11" enum="NetworkingConfigValue">
@@ -10891,6 +10933,14 @@
 		<constant name="RESULT_CACHED_CREDENTIAL_INVALID" value="126" enum="Result">
 		</constant>
 		<constant name="RESULT_PHONE_NUMBER_IS_VOIP" value="127" enum="Result">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_OK" value="0" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_FAILED_GENERIC" value="1" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_NO_STEAM_CLIENT" value="2" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_VERSION_MISMATCH" value="3" enum="SteamAPIInitResult">
 		</constant>
 		<constant name="PAD_TRIGGER_EFFECT_MODE_OFF" value="0" enum="SCEPadTriggerEffectMode">
 		</constant>
