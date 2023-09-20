@@ -2,11 +2,11 @@
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
-- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3)
-- [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
-- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server3)
+- [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
+- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
+- [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
+- [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
+- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/server3)
 
 Documentation
 ---
@@ -16,24 +16,16 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.3)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.4)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.3.1 Changes**
-- Fixed: wrong variant type for join_requested
-
-**Version 4.3 Changes**
-- Added: full GodotSteam documentation into the editor
-- Added: steamShutdown to allow Steamworks to be manually shutdown
-- Added: requestEquippedProfileItems function and equipped_profile_items callback
-- Added: Steam Deck as Steam Input type
-- Changed: all enums are now directly linked to their SDK counterparts
-- Changed: getDigitalActionData returned keys are now state and active
-- Changed: names of some Steam enums to be cleaner and leaner
-- Changed: getAppInstallDir now returns dictionary with absolute path and install size
-- Fixed: some missing enum binds
-- Fixed: missing function argument binds
-- Fixed: get_ticket_for_web_api sending back strings
-- Removed: enums that are not in the SDK but Valve's docs
+**Version 4.4 Changes**
+- Added: new enums and constant related to new Steam initialization function
+- Added: new enums for NetworkingConfigValue
+- Added: new intialization function `steamInitEx` that is more verbose
+- Added: new UGC function `getUserContentDescriptorPreferences`
+- Added: new Remote Play function `startRemotePlayTogether`
+- Changed: UGC function`setItemTags` to have new argument for admin tags
+- Changed: compatible with Steamworks SDK 1.58
 
 [You can read more change-logs here](https://godotsteam.com/changelog/gdextension/).
 
@@ -47,7 +39,7 @@ Quick How-To
 ---
 For complete instructions on how to build the GDExtension version of GodotSteam, [please refer to our documentation's 'How-To GDExtension' section.](https://godotsteam.com/howto/gdextension/) It will have the most up-to-date information.
 
-Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/Gramps/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1768) and skip compiling it yourself!
+Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/CoaguCo-Industries/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1768) and skip compiling it yourself!
 
 Usage
 ----------
