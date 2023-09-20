@@ -330,6 +330,12 @@ public:
 		RESULT_CACHED_CREDENTIAL_INVALID = k_EResultCachedCredentialInvalid,
 		RESULT_PHONE_NUMBER_IS_VOIP = K_EResultPhoneNumberIsVOIP
 	};
+	enum SteamAPIInitResult {
+		STEAM_API_INIT_RESULT_OK = k_ESteamAPIInitResult_OK,
+		STEAM_API_INIT_RESULT_FAILED_GENERIC = k_ESteamAPIInitResult_FailedGeneric,
+		STEAM_API_INIT_RESULT_NO_STEAM_CLIENT = k_ESteamAPIInitResult_NoSteamClient,
+		STEAM_API_INIT_RESULT_VERSION_MISMATCH = k_ESteamAPIInitResult_VersionMismatch
+	};
 	enum Universe {
 		UNIVERSE_INVALID = k_EUniverseInvalid,
 		UNIVERSE_PUBLIC = k_EUniversePublic,
@@ -1237,6 +1243,10 @@ public:
 		NETWORKING_CONFIG_TIMEOUT_INITIAL = k_ESteamNetworkingConfig_TimeoutInitial,
 		NETWORKING_CONFIG_TIMEOUT_CONNECTED = k_ESteamNetworkingConfig_TimeoutConnected,
 		NETWORKING_CONFIG_SEND_BUFFER_SIZE = k_ESteamNetworkingConfig_SendBufferSize,
+		NETWORKING_CONFIG_RECV_BUFFER_SIZE = k_ESteamNetworkingConfig_RecvBufferSize,
+		NETWORKING_CONFIG_RECV_BUFFER_MESSAGES = k_ESteamNetworkingConfig_RecvBufferMessages,
+		NETWORKING_CONFIG_RECV_MAX_MESSAGE_SIZE = k_ESteamNetworkingConfig_RecvMaxMessageSize,
+		NETWORKING_CONFIG_RECV_MAX_SEGMENTS_PER_PACKET = k_ESteamNetworkingConfig_RecvMaxSegmentsPerPacket,
 		NETWORKING_CONFIG_SEND_RATE_MIN = k_ESteamNetworkingConfig_SendRateMin,
 		NETWORKING_CONFIG_SEND_RATE_MAX = k_ESteamNetworkingConfig_SendRateMax,
 		NETWORKING_CONFIG_NAGLE_TIME = k_ESteamNetworkingConfig_NagleTime,
@@ -1737,6 +1747,7 @@ public:
 	bool restartAppIfNecessary(uint32 app_id);
 	void steamworksError(const String &failed_signal);
 	Dictionary steamInit(bool retrieve_stats = true);
+	Dictionary steamInitEx(bool retrieve_stats = true);
 	void steamShutdown();
 
 	// Apps /////////////////////////////////
@@ -2280,6 +2291,7 @@ public:
 	int getSessionClientFormFactor(uint32 session_id);
 	Dictionary getSessionClientResolution(uint32 session_id);
 	bool sendRemotePlayTogetherInvite(uint64_t friend_id);
+	bool startRemotePlayTogether(bool show_overlay = true);
 
 	// Remote Storage ///////////////////////
 	bool beginFileWriteBatch();
@@ -2366,6 +2378,7 @@ public:
 	String getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index);
 	String getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index);
 	Array getSubscribedItems();
+	Array getUserContentDescriptorPreferences(uint32 max_entries);
 	void getUserItemVote(uint64_t published_file_id);
 	bool releaseQueryUGCRequest(uint64_t query_handle);
 	void removeAppDependency(uint64_t published_file_id, uint32_t app_id);
@@ -2381,7 +2394,7 @@ public:
 	bool setItemDescription(uint64_t update_handle, const String &description);
 	bool setItemMetadata(uint64_t update_handle, const String &ugc_metadata);
 	bool setItemPreview(uint64_t update_handle, const String &preview_file);
-	bool setItemTags(uint64_t update_handle, Array tag_array);
+	bool setItemTags(uint64_t update_handle, Array tag_array, bool allow_admin_tags = false);
 	bool setItemTitle(uint64_t update_handle, const String &title);
 	bool setItemUpdateLanguage(uint64_t update_handle, const String &language);
 	bool setItemVisibility(uint64_t update_handle, RemoteStoragePublishedFileVisibility visibility);
@@ -3001,6 +3014,7 @@ VARIANT_ENUM_CAST(Steam::Result);
 VARIANT_ENUM_CAST(Steam::SCEPadTriggerEffectMode);
 VARIANT_ENUM_CAST(Steam::SocketConnectionType);
 VARIANT_ENUM_CAST(Steam::SocketState);
+VARIANT_ENUM_CAST(Steam::SteamAPIInitResult);
 
 VARIANT_ENUM_CAST(Steam::TextFilteringContext);
 
