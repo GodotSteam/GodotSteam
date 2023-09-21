@@ -1,12 +1,12 @@
 # GodotSteam for GDExtension
-An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows 32/64-bit, Linux 32/64-bit, and Mac uinversal platforms. 
 
 Additional flavors include:
-- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/master)
-- [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
-- [GDNative](https://github.com/Gramps/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server)
+- [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
+- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/master)
+- [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
+- [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
+- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/server)
 
 Documentation
 ---
@@ -16,60 +16,34 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.2.5)_ of this repo here.](https://github.com/Gramps/GodotSteam/releases)
+You can [download pre-compiled versions _(currently v4.4)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.2.5 Changes**
-- Changed: updated submodule for Godot 4.1.1
-- Fixed: more stuff in godotsteam.gdextension file
-
-**Version 4.2.4 Changes**
-- Added: new Input callback input_gamepad_slot_change
-- Added: new User callback get_ticket_for_web_api
-- Added: new User function getAuthTicketForWebApi
-- Changed: getAuthSessionTicket argument is now optional, defaults to NULL
-- Changed: some internal variable names to fix compiling warnings and conflicts
-
-**Version 4.2.3 Changes**
-- Added: new return values for _overlay_toggled_; this will break compatibility with this
-- Added: new Input and Parental Settings enums
-- Added: new UGC Content Descriptor ID enums
-- Added: new UGC functions _removeContentDescriptor_, _addContentDescriptor_, and _getQueryUGCContentDescriptors_
-- Added: new signal _filter_text_dictionary_changed_
-- Changed: getAuthSessionTicket now uses networking identities
-- Changed: gamepad_text_input_dismissed now passes back the app ID
-- Changed: Steam Input max analog and digital actions values
-- Removed: ERegisterActivationCodeResult due to removal in SDK
-
-**Version 4.2.2 Changes**
-- Changed: names of all godotsteam dll/so/dylib files to be less verbose
-
-**Version 4.2.1 Changes**
-- Added: compiled dylib files for OSX, _thanks to definitelyokay_
-- Fixed: names of OSX files in the godotsteam.gdextension file
-
-**Version 4.2 Changes**
-- Changed: brought the plug-in version up to speed with the module version
+**Version 4.4 Changes**
+- Added: new enums and constant related to new Steam initialization function
+- Added: new enums for NetworkingConfigValue
+- Added: new intialization function `steamInitEx` that is more verbose
+- Added: new UGC function `getUserContentDescriptorPreferences`
+- Added: new Remote Play function `startRemotePlayTogether`
+- Changed: UGC function`setItemTags` to have new argument for admin tags
+- Changed: compatible with Steamworks SDK 1.58
 
 Known Issues
 ---
-- GDExtension for 4.1 is **not** compatible with 4.0.3 or lower. Please check the versions you are using.
 - Overlay will not work in the editor but will work in export projects when uploaded to Steam.  This seems to a limitation with Vulkan currently.
 
 Quick How-To
 ---
-For complete instructions on how to build the GDExtension version of GodotSteam, [please refer to our documentation's 'How-To GDExtension' section.](https://godotsteam.com/howto_gdextension/) It will have the most up-to-date information.
+Obtain the plugin through one of two ways:
+- Visit the [Godot Asset Library](https://godotengine.org/asset-library/asset/7469) either through the website or in the editor and search for GodotSteam.
+- Download this repo and unzip it into the base of your game project.
 
-Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/Gramps/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1768) and skip compiling it yourself!
+You will need to add the steam_appid.txt file with 480 or your game's app ID to where ever you have your Godot editor.  It should just work without having to do anything else.
 
-Usage
-----------
-Do not use the GDExtension version of GodotSteam with any of the module versions whether it be our pre-compiled versions or ones you compile.  They are not compatible with each other.
-
-When exporting with the GDExtension version, please use the normal Godot Engine templates instead of our GodotSteam templates or you will have a lot of issues.
+Tinker with Steamworks!
 
 Donate
 ---
-Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps), [Ko-Fi](https://ko-fi.com/grampsgarcia) or [Paypal](https://www.paypal.me/sithlordkyle)!
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps), [Ko-Fi](https://ko-fi.com/grampsgarcia), or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 ---
