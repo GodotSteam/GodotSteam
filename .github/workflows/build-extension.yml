@@ -51,7 +51,7 @@ jobs:
             name: MacOS (universal) - release
             runner: macos-latest
             target: release
-            platform: macos
+            platform: osx
             arch: universal
           - identifier: macos-debug (universal)
             name: MacOS (universal) - debug
