@@ -128,8 +128,6 @@ jobs:
         run: |
           cd godot-cpp
           scons platform='${{ matrix.opts.platform }}' arch='${{ matrix.opts.arch }}' ${{ matrix.opts.args }} generate_bindings=yes target=release
-          ls -al
-          ls -al bin/
           echo "Done building godot-cpp, and showing output"
           cd ..
           mkdir bin
