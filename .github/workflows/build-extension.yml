@@ -79,20 +79,6 @@ jobs:
           cp -r steamworks/public godotsteam/sdk
           cp -r steamworks/redistributable_bin godotsteam/sdk
 
-      - name: Checkout godot-cpp
-        run: git clone --recursive -b 3.5 https://github.com/godotengine/godot-cpp
-    
-      - name: Compile godot-cpp
-        run: |
-          cd godot-cpp
-          scons platform='${{ matrix.opts.platform }}' arch='${{ matrix.opts.arch }}' ${{ matrix.opts.args }} generate_bindings=yes target=release
-          ls -al
-          ls -al bin/
-          echo "Done building godot-cpp, and showing output"
-          cd ..
-          mkdir bin
-          ls
-
       - name: Setup Bin
         shell: bash
         run: |
@@ -128,6 +114,7 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install scons
           scons --version
+
       - name: Load .scons_cache directory
         id: godot-extension-cache
         uses: actions/cache@v2
@@ -138,6 +125,21 @@ jobs:
             ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
             ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}
             ${{github.job}}-${{env.BASE_BRANCH}}-${{env.BASE_BRANCH}}
+
+      - name: Checkout godot-cpp
+        run: git clone --recursive -b 3.5 https://github.com/godotengine/godot-cpp
+    
+      - name: Compile godot-cpp
+        run: |
+          cd godot-cpp
+          scons platform='${{ matrix.opts.platform }}' arch='${{ matrix.opts.arch }}' ${{ matrix.opts.args }} generate_bindings=yes target=release
+          ls -al
+          ls -al bin/
+          echo "Done building godot-cpp, and showing output"
+          cd ..
+          mkdir bin
+          ls
+  
       - name: Compile extension
         shell: sh
         env:
