@@ -1,0 +1,86 @@
+on: push
+
+env:
+  STEAMWORKS_SDK_TAG: "sdk-1.58"
+
+jobs:
+  build_macos:
+    strategy:
+      matrix:
+        architecture: ['x86_64', 'arm64']
+    runs-on: macos-latest
+    steps:
+      # Need to download godot-cpp, compile it, and the steamworks sdk
+      # Checkout current source of GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+      - name: Install Build Tools
+        run: |
+          brew install scons yasm
+       # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: "sdk-1.58"
+      - name: Copy Steamworks
+        run: |
+          cp -r steamworks/public godotsteam/sdk
+          cp -r steamworks/redistributable_bin godotsteam/sdk
+          ls -la 
+          ls -la godotsteam/sdk
+      - name: Checkout godot-cpp
+        run: git clone --recursive -b 3.5 https://github.com/godotengine/godot-cpp
+      - name: Compile godot-cpp
+        run: |
+          cd godot-cpp
+          scons platform=osx macos_arch=${{ matrix.architecture }} generate_bindings=yes target=release
+          ls -al
+          ls -al bin/
+          echo "Done building godot-cpp, and showing output"
+          cd ..
+          mkdir bin
+          ls
+      - name: Compile GodotSteam
+        run: |
+          scons platform=osx macos_arch=${{ matrix.architecture }} production=yes target=release
+      - name: Print compiled
+        run: |
+          ls -al
+          ls -al bin/osx
+          cd bin/osx 
+          mv libgodotsteam.dylib libgodotsteam-${{ matrix.architecture }}.dylib
+          cd ..
+      - name: Upload macOS dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-plugin-${{ matrix.architecture }}
+          path: bin/osx/libgodotsteam-${{ matrix.architecture }}.dylib
+          if-no-files-found: error
+          retention-days: 1
+  
+  bundle_universal:
+    needs: [build_macos]
+    runs-on: macos-latest
+    steps:
+      - name: Download x86_64
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-plugin-x86_64
+          path: dylibs
+      - name: Download arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-plugin-arm64
+          path: dylibs
+      - name: Bundle together
+        run: |
+          cd dylibs
+          lipo libgodotsteam-x86_64.dylib libgodotsteam-arm64.dylib -output libgodotsteam.dylib -create
+      - uses: actions/upload-artifact@v3
+        name: Upload final dylib
+        with:
+          name: macos-plugin-universal
+          path: dylibs/libgodotsteam.dylib
