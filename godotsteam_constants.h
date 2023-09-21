@@ -16,6 +16,7 @@
 #define QUERY_PORT_NOT_INITIALIZED 0xFFFF //deprecated?
 #define STEAM_BUFFER_SIZE 255 //deprecated?
 #define STEAM_LARGE_BUFFER_SIZE 8160 //deprecated?
+#define STEAM_MAX_ERROR_MESSAGE 1024
 
 // Define Friends constants
 #define CHAT_METADATA_MAX k_cubChatMetadataMax
