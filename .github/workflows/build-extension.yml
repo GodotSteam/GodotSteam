@@ -81,6 +81,11 @@ jobs:
           cp -r steamworks/public godotsteam/sdk
           cp -r steamworks/redistributable_bin godotsteam/sdk
 
+      - name: Setup Bin
+        shell: bash
+        run: |
+          mkdir bin/
+
       - name: Install gcc-multilib
         if: ${{ startsWith(matrix.opts.arch, 'x86_32') && startsWith(matrix.opts.runner,'ubuntu-') }}
         shell: sh
@@ -154,11 +159,11 @@ jobs:
           rm -rf *.exp *.lib
           cd ../../..
 
-          cp -n 'README.md' 'LICENSE.txt' 'godotsteam.gdextension' project/addons/godotsteam
+          cp -n 'README.md' 'LICENSE.txt' project/addons/godotsteam
           echo "480" > project/steam_appid.txt
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: gdextension
+          name: gdnative
           path: |
             project/
