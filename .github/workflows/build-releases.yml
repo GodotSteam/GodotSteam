@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-gdextension-release:
-    uses: build-gdextension.yml
+    uses: ./.github/workflows/build-extension.yml
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
     secrets:
