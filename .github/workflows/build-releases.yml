@@ -1,0 +1,23 @@
+name: Build Releases
+on:
+  workflow_dispatch:
+    inputs:
+      steamworks_sdk_tag:
+        description: 'Steamworks SDK Tag:'
+        required: true
+        type: string
+        default: 'sdk-1.58'
+      godotsteam_version:
+        description: 'GodotSteam GDNative Tag:'
+        required: true
+        type: string
+        default: 'v4.4-gdn'
+
+jobs:
+  build-gdextension-release:
+    uses: ./.github/workflows/build-gdextension.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
