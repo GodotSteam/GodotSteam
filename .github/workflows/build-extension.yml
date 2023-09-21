@@ -57,7 +57,7 @@ jobs:
             name: MacOS (universal) - debug
             runner: macos-latest
             target: debug
-            platform: macos
+            platform: osx
             arch: universal
 
     steps:
