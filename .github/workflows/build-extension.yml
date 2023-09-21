@@ -79,11 +79,6 @@ jobs:
           cp -r steamworks/public godotsteam/sdk
           cp -r steamworks/redistributable_bin godotsteam/sdk
 
-      - name: Setup Bin
-        shell: bash
-        run: |
-          mkdir bin/
-
       - name: Install gcc-multilib
         if: ${{ startsWith(matrix.opts.arch, 'x86_32') && startsWith(matrix.opts.runner,'ubuntu-') }}
         shell: sh
