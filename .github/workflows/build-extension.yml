@@ -63,8 +63,6 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
-        with:
-          submodules: recursive
       
       - name: Checkout Steamworks SDK
         uses: actions/checkout@v3
@@ -80,6 +78,20 @@ jobs:
         run: |
           cp -r steamworks/public godotsteam/sdk
           cp -r steamworks/redistributable_bin godotsteam/sdk
+
+      - name: Checkout godot-cpp
+        run: git clone --recursive -b 3.5 https://github.com/godotengine/godot-cpp
+    
+      - name: Compile godot-cpp
+        run: |
+          cd godot-cpp
+          scons platform='${{ matrix.opts.platform }}' arch='${{ matrix.opts.arch }}' ${{ matrix.opts.args }} generate_bindings=yes target=release
+          ls -al
+          ls -al bin/
+          echo "Done building godot-cpp, and showing output"
+          cd ..
+          mkdir bin
+          ls
 
       - name: Setup Bin
         shell: bash
