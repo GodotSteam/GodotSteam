@@ -16,7 +16,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.21)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 3.21.1 Changes**
+- Changed: bump for Godot 3.5.3
 
 **Version 3.21 Changes**
 - Added: new enums and constant related to new Steam initialization function
