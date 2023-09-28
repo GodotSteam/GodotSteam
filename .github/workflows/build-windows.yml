@@ -17,9 +17,9 @@ env:
   base_branch: gdnative
 
 jobs:
-  build_windows:
-     runs-on: windows-latest
-
+  build-windows:
+    runs-on: windows-latest
+    
     steps:
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
