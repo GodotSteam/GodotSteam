@@ -16,11 +16,14 @@ func _ready() -> void:
 		# If Steam fails to start up, shut down the app
 		print("[STEAM] Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
 #		get_tree().quit()
+
 	#Is the user online?
 	IS_ONLINE = Steam.loggedOn()
+
 	# Get the user's Stean name and ID
 	STEAM_ID = Steam.getSteamID()
 	STEAM_NAME = Steam.getPersonaName()
+
 	# Is this app owned or is it a free weekend?
 	IS_OWNED = Steam.isSubscribed()
 	IS_FREE_WEEKEND = Steam.isSubscribedFromFreeWeekend()
