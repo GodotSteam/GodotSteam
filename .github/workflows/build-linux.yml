@@ -1,0 +1,112 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_tag:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+env:
+  base_branch: gdnative
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-20.04
+
+    steps:
+      # Checkout current source of GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      # Install Buildroot for older Linux systems
+      - name: (Linux) Install buildroot
+        shell: sh
+        run: |
+          sudo apt-get update
+          sudo apt-get install yasm
+          cd /opt
+          curl -LO https://downloads.tuxfamily.org/godotengine/toolchains/linux/2021-02-11/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          tar xf x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          rm -f x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          mv x86_64-godot-linux-gnu_sdk-buildroot buildroot
+          cd buildroot
+          ./relocate-sdk.sh
+
+      # Get Python and SCONS
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Set up SCons
+        shell: bash
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install scons
+          scons --version
+
+      - name: Load .scons_cache directory
+        id: godot-extension-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/.scons_cache/
+          key: ${{github.job}}-${{env.base_branch}}-${{github.ref}}-${{github.sha}}
+          restore-keys: |
+            ${{github.job}}-${{env.base_branch}}-${{github.ref}}-${{github.sha}}
+            ${{github.job}}-${{env.base_branch}}-${{github.ref}}
+            ${{github.job}}-${{env.base_branch}}-${{env.base_branch}}
+
+      # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+
+      - name: Copy Steamworks
+        run: |
+          cp -r steamworks/public godotsteam/sdk
+          cp -r steamworks/redistributable_bin godotsteam/sdk
+          ls -la 
+          ls -la godotsteam/sdk
+
+      # Compile Godot-CPP
+      - name: Compile godot-cpp
+        run: |
+          cd godot-cpp
+          scons platform=linux generate_bindings=yes target=release
+          ls -al
+          ls -al bin/
+          echo "Done building godot-cpp, and showing output"
+          cd ..
+          mkdir bin
+          ls
+
+      # Compile the GodotSteam GDNative plug-in
+      - name: Compile GDNative plug-in
+        run: |
+          scons platform=linux production=yes target=release
+
+      # Double-check it
+      - name: Print compiled
+        run: |
+          ls -al
+          ls -al bin/linuxbsd
+
+      # Make it available to download
+      - name: Upload Linux .so
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-plugin
+          path: bin/linuxbsd/libgodotsteam.so
+          if-no-files-found: error
+          retention-days: 1

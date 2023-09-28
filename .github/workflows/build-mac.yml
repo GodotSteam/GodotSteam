@@ -1,38 +1,57 @@
-on: push
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_tag:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
 
 env:
-  STEAMWORKS_SDK_TAG: "sdk-1.58"
+  base_branch: gdnative
 
 jobs:
   build_macos:
     strategy:
       matrix:
         architecture: ['x86_64', 'arm64']
+
     runs-on: macos-latest
+
     steps:
-      # Need to download godot-cpp, compile it, and the steamworks sdk
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
       - name: Install Build Tools
         run: |
           brew install scons yasm
-       # Checkout Steamworks SDK
+
+      # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
         uses: actions/checkout@v3
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
           token: ${{ secrets.steamworks_sdk_repo_token }}
-          ref: "sdk-1.58"
+          ref: ${{ inputs.steamworks_sdk_tag }}
+
       - name: Copy Steamworks
         run: |
           cp -r steamworks/public godotsteam/sdk
           cp -r steamworks/redistributable_bin godotsteam/sdk
           ls -la 
           ls -la godotsteam/sdk
-      - name: Checkout godot-cpp
-        run: git clone --recursive -b 3.5 https://github.com/godotengine/godot-cpp
+
+      # Compile Godot-CPP
       - name: Compile godot-cpp
         run: |
           cd godot-cpp
@@ -43,9 +62,11 @@ jobs:
           cd ..
           mkdir bin
           ls
+
       - name: Compile GodotSteam
         run: |
           scons platform=osx macos_arch=${{ matrix.architecture }} production=yes target=release
+
       - name: Print compiled
         run: |
           ls -al
@@ -53,6 +74,7 @@ jobs:
           cd bin/osx 
           mv libgodotsteam.dylib libgodotsteam-${{ matrix.architecture }}.dylib
           cd ..
+
       - name: Upload macOS dylib
         uses: actions/upload-artifact@v3
         with:
@@ -63,18 +85,22 @@ jobs:
   
   bundle_universal:
     needs: [build_macos]
+
     runs-on: macos-latest
+
     steps:
       - name: Download x86_64
         uses: actions/download-artifact@v3
         with:
           name: macos-plugin-x86_64
           path: dylibs
+
       - name: Download arm64
         uses: actions/download-artifact@v3
         with:
           name: macos-plugin-arm64
           path: dylibs
+
       - name: Bundle together
         run: |
           cd dylibs

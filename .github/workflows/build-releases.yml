@@ -1,0 +1,48 @@
+name: Build Releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      steamworks_sdk_tag:
+        description: 'Steamworks SDK Github tag:'
+        required: true
+        type: string
+        default: 'sdk-1.58'
+      godot_tag:
+        description: 'Godot Github tag:'
+        required: true
+        type: string
+        default: '3.5.3-stable'
+      godotsteam_version:
+        description: 'GodotSteam version number:'
+        required: true
+        type: string
+        default: '3.21.1'
+
+jobs:
+  build_macos:
+    uses: ./.github/workflows/build-mac.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build_windows:
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+  build_linux:
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_tag: ${{ inputs.godot_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}    

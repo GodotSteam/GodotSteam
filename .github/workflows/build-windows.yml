@@ -1,0 +1,87 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_tag:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+env:
+  base_branch: gdnative
+
+jobs:
+  build_windows:
+     runs-on: windows-latest
+
+    steps:
+      # Checkout current source of GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      # Set up necessary components
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Set up SCons
+        run: python -m pip install scons
+
+      - name: Load .scons_cache directory
+        id: godot-gdnative-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/.scons_cache/
+          key: ${{github.job}}-${{env.base_branch}}-${{github.ref}}-${{github.sha}}
+          restore-keys: |
+            ${{github.job}}-${{env.base_branch}}-${{github.ref}}-${{github.sha}}
+            ${{github.job}}-${{env.base_branch}}-${{github.ref}}
+            ${{github.job}}-${{env.base_branch}}-${{env.base_branch}}   
+
+      # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+
+      - name: Copy Steamworks
+        run: |
+          robocopy steamworks/public godotsteam/sdk
+          robocopy steamworks/redistributable_bin godotsteam/sdk
+          EXIT 0
+
+      # Compile Godot-CPP
+      - name: Compile godot-cpp
+        run: |
+          cd godot-cpp
+          scons platform=windows generate_bindings=yes target=release
+          ls -al
+          ls -al bin/
+          echo "Done building godot-cpp, and showing output"
+          cd ..
+          mkdir bin
+          ls
+
+      # Compile the actual plug-in
+      - name: Compile GodotSteam
+        run: |
+          scons platform=windows production=yes target=release
+
+      # Make it available to download
+      - name: Upload Windows dll
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-plugin
+          path: bin/win64/godotsteam.dll
+          if-no-files-found: error
+          retention-days: 1

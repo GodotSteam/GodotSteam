@@ -27,6 +27,8 @@ You can [download pre-compiled versions _(currently v3.21)_ of this repo here](h
 - Changed: UGC function`setItemTags` to have new argument for admin tags
 - Changed: compatible with Steamworks SDK 1.58
 
+[You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
+
 Known Issues
 ----------
 - The GDNative version does not allow for default arguments in functions, thus some functions may have odd behaviors.  If you are using this version of GodotSteam you are required to pass any argument that has a default in the module version. Also, there are no enums in the GDNative version due to how it is structured.
