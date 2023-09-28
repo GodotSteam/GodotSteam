@@ -74,6 +74,7 @@ jobs:
 
       # Compile the actual plug-in
       - name: Compile GodotSteam
+        shell: cmd
         run: |
           scons platform=windows production=yes target=release
 
