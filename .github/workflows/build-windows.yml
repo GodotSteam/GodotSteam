@@ -65,12 +65,12 @@ jobs:
         run: |
           cd godot-cpp
           scons platform=windows generate_bindings=yes target=release
-          ls -al
-          ls -al bin/
+          cd bin/
+          dir
           echo "Done building godot-cpp, and showing output"
-          cd ..
+          cd ..\..
           mkdir bin
-          ls
+          dir
 
       # Compile the actual plug-in
       - name: Compile GodotSteam
