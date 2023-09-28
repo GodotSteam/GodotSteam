@@ -16,18 +16,18 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.20)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
 
-**Version 3.20 Changes**
-- Added: steamShutdown to allow Steamworks to be manually shutdown
-- Added: requestEquippedProfileItems function and equipped_profile_items callback
-- Added: Steam Deck as Steam Input type
-- Changed: all enums are now directly linked to their SDK counterparts
-- Changed: getDigitalActionData returned keys are now state and active
-- Changed: names of some Steam enums to be cleaner and leaner
-- Changed: getAppInstallDir now returns dictionary with absolute path and install size
-- Fixed: missing function argument binds
-- Removed: enums that are not in the SDK but Valve's docs
+**Version 3.21 Changes**
+- Added: new enums and constant related to new Steam initialization function
+- Added: new enums for NetworkingConfigValue
+- Added: new intialization function `steamInitEx` that is more verbose
+- Added: new UGC function `getUserContentDescriptorPreferences`
+- Added: new Remote Play function `startRemotePlayTogether`
+- Changed: UGC function`setItemTags` to have new argument for admin tags
+- Changed: compatible with Steamworks SDK 1.58
+
+[You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
 
 Known Issues
 ----------
