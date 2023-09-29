@@ -94,7 +94,7 @@ jobs:
       # Compile the GodotSteam GDNative plug-in
       - name: Compile GDNative plug-in
         run: |
-          scons platform=linux production=yes target=release
+          PATH=/opt/buildroot/bin:$PATH scons platform=linux production=yes target=release
 
       # Double-check it
       - name: Print compiled
