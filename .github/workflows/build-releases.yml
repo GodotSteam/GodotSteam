@@ -1,4 +1,4 @@
-name: Build GodotSteam GDNative
+name: Build GodotSteam
 
 on:
   workflow_dispatch:
