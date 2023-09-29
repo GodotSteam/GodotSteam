@@ -1,4 +1,4 @@
-name: Build Releases
+name: Build GodotSteam GDNative
 
 on:
   workflow_dispatch:

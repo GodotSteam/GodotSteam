@@ -4,8 +4,7 @@ import os
 opts = Variables([], ARGUMENTS)
 
 # Gets the standard flags CC, CCX, etc.
-#env = DefaultEnvironment()
-env = SConscript("godot-cpp/SConstruct")
+env = DefaultEnvironment()
 
 # Define our options
 opts.Add(EnumVariable('target', "Compilation target", 'debug', ['d', 'debug', 'r', 'release']))
@@ -87,22 +86,27 @@ elif env['platform'] in ('linuxbsd', 'linux'):
 elif env['platform'] == "windows":
     env['target_path'] += 'win64/'
     cpp_library += '.windows'
-    
-    # Set correct Steam library
-    steam_lib_path += "/win64"
-    steamworks_library = 'steam_api64.lib'
-    steam_lib = "steam_api64.lib"
-    
-    # This makes sure to keep the session environment variables on Windows,
+    # This makes sure to keep the session environment variables on windows,
     # that way you can run scons in a vs 2017 prompt and it will find all the required tools
     env.Append(ENV=os.environ)
 
     env.Append(CPPDEFINES=['WIN32', '_WIN32', '_WINDOWS', '_CRT_SECURE_NO_WARNINGS'])
     env.Append(CCFLAGS=['-W3', '-GR', '-FS'])
     env.Append(CXXFLAGS='/std:c++17')
-    env.Append(CPPDEFINES=['NDEBUG'])
-    env.Append(CCFLAGS=['-O2', '-EHsc', '-MD'])
-    env.Append(LINKFLAGS=[ steam_lib ])
+    if env['target'] in ('debug', 'd'):
+        env.Append(CPPDEFINES=['_DEBUG'])
+        env.Append(CCFLAGS=['-EHsc', '-MDd', '-ZI'])
+        env.Append(LINKFLAGS=['-DEBUG'])
+    else:
+        env.Append(CPPDEFINES=['NDEBUG'])
+        env.Append(CCFLAGS=['-O2', '-EHsc', '-MD'])
+
+    # Set correct Steam library
+    steam_lib_path += "/win64"
+    steamworks_library = 'steam_api64.lib'
+    steam_lib = "steam_api64.lib"
+    if env["CC"] == "cl":
+        env.Append(LINKFLAGS=[ steam_lib ])
 
 if env['target'] in ('debug', 'd'):
     cpp_library += '.debug'
