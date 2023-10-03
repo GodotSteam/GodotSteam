@@ -1170,7 +1170,6 @@ class Steam: public Object {
 			LOBBY_TYPE_PUBLIC = k_ELobbyTypePublic,
 			LOBBY_TYPE_INVISIBLE = k_ELobbyTypeInvisible,
 			LOBBY_TYPE_PRIVATE_UNIQUE = k_ELobbyTypePrivateUnique
-
 		};
 
 		// Matchmaking Servers enums

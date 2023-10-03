@@ -6,7 +6,8 @@ Additional flavors include:
 - [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
 - [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
 - [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/server3)
+- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server3)
+- [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server4)
 
 Documentation
 ---
@@ -16,7 +17,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.21.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 3.21.2 Changes**
+- Fixed: missing descriptions for some in-editor functions/signals
+- Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
 
 **Version 3.21.1 Changes**
 - Changed: bump for Godot 3.5.3
@@ -43,7 +48,7 @@ Known Issues
 
 "Quick" How-To
 ---
-For complete instructions on how to build the Godot 3.x version of GodotSteam, [please refer to our documentation's 'How-To Modules' section.](https://godotsteam.com/howto/modules/) It will have the most up-to-date information.
+For complete instructions on how to build the Godot 3.x version of GodotSteam from scratch, [please refer to our documentation's 'How-To Modules' section.](https://godotsteam.com/howto/modules/) It will have the most up-to-date information.
 
 Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/CoaguCo-Industries/GodotSteam/releases) and skip compiling it yourself!
 

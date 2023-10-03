@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="Steam" inherits="Object" version="3.4">
+<class name="Steam" inherits="Object" version="3.5">
 	<brief_description>
 		Steamworks SDK / API for the Godot Game Engine.
 	</brief_description>
 	<description>
 		An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.
-		Full documentation and tutorials are available at https://gramps.github.io/GodotSteam/.
+		Full documentation and tutorials are available at https://godotsteam.com/.
 	</description>
 	<tutorials>
 		<link title="Achievement Icons">https://godotsteam.com/tutorials/achievement_icons/</link>
@@ -4700,12 +4700,12 @@
 				    ┠╴size (int)
 				    ┠╴connection (int)
 				    ┠╴identity (string)
-				    ┠╴user_data (int)
+				    ┠╴receiver_user_data (int)
 				    ┠╴time_received (int)
 				    ┠╴message_number (int)
 				    ┠╴channel (int)
 				    ┠╴flags (int)
-				    ┖╴user_data (int)
+				    ┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4722,12 +4722,12 @@
 				    ┠╴size (int)
 				    ┠╴connection (int)
 				    ┠╴identity (string)
-				    ┠╴user_data (int)
+				    ┠╴receiver_user_data (int)
 				    ┠╴time_received (int)
 				    ┠╴message_number (int)
 				    ┠╴channel (int)
 				    ┠╴flags (int)
-				    ┖╴user_data (int)
+				    ┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4737,7 +4737,20 @@
 			<argument index="1" name="max_messages" type="int" />
 			<description>
 				Same as [method Steam.receiveMessagesOnConnection], but will return the next messages available on any connection in the poll group. Examine connection to know which connection. user_data might also be useful.
-
+				The returned array contains a list of:
+				[codeblock]
+				┖╴messages (dictionary):
+				    ┠╴payload (string)
+				    ┠╴size (int)
+				    ┠╴connection (int)
+				    ┠╴identity (string)
+				    ┠╴receiver_user_data (int)
+				    ┠╴time_received (int)
+				    ┠╴message_number (int)
+				    ┠╴channel (int)
+				    ┠╴flags (int)
+				    ┖╴sender_user_data (int)
+				[/codeblock]
 			</description>
 		</method>
 		<method name="refreshQuery">
@@ -7881,11 +7894,13 @@
 		<signal name="network_messages_session_failed">
 			<argument index="0" name="reason" type="int" />
 			<description>
+				Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way.
 			</description>
 		</signal>
 		<signal name="network_messages_session_request">
 			<argument index="0" name="identity" type="String" />
 			<description>
+				Posted when a remote host is sending us a message, and we do not already have a session with them.
 			</description>
 		</signal>
 		<signal name="new_launch_url_parameters">
@@ -8077,15 +8092,7 @@
 			<argument index="0" name="result" type="int" />
 			<argument index="1" name="retrying" type="bool" />
 			<description>
-			</description>
-		</signal>
-		<signal name="server_connected">
-			<description>
-			</description>
-		</signal>
-		<signal name="server_disconnected">
-			<argument index="0" name="result" type="int" />
-			<description>
+				Called when a connection attempt has failed. This will occur periodically if the Steam client is not connected, and has failed when retrying to establish a connection.
 			</description>
 		</signal>
 		<signal name="server_failed_to_respond">
