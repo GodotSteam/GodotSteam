@@ -4841,12 +4841,12 @@ Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 			char identity[STEAM_BUFFER_SIZE];
 			poll_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;	// Not used when sending messages
-			message["time_received"] = (uint64_t)channel_messages[i]->m_usecTimeReceived;
-			message["message_number"] = (uint64_t)channel_messages[i]->m_nMessageNumber;
-			message["channel"] = channel_messages[i]->m_nChannel;
-			message["flags"] = channel_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["receiver_user_data"] = (uint64_t)poll_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["time_received"] = (uint64_t)poll_messages[i]->m_usecTimeReceived;
+			message["message_number"] = (uint64_t)poll_messages[i]->m_nMessageNumber;
+			message["channel"] = poll_messages[i]->m_nChannel;
+			message["flags"] = poll_messages[i]->m_nFlags;
+			message["sender_user_data"] = (uint64_t)poll_messages[i]->m_nUserData;	// Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			poll_messages[i]->Release();
