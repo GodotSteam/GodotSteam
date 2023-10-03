@@ -3,20 +3,25 @@ An open-source and fully functional Steamworks SDK / API module and plug-in for 
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/master)
+- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
 - [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
 - [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/server)
+- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server3)
+- [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server4)
 
 Documentation
 ---
 [Documentation is available here](https://godotsteam.com/).
 
-Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
+Feel free to chat with us about Godotteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.4)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.4.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 4.4.1 Changes**
+- Fixed: missing descriptions for some in-editor functions/signals
+- Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
 
 **Version 4.4 Changes**
 - Added: new enums and constant related to new Steam initialization function
@@ -27,9 +32,13 @@ You can [download pre-compiled versions _(currently v4.4)_ of this repo here](ht
 - Changed: UGC function`setItemTags` to have new argument for admin tags
 - Changed: compatible with Steamworks SDK 1.58
 
+[You can read more change-logs here](https://godotsteam.com/changelog/gdextension/).
+
 Known Issues
 ---
+- GDExtension for 4.1 is **not** compatible with 4.0.3 or lower. Please check the versions you are using.
 - Overlay will not work in the editor but will work in export projects when uploaded to Steam.  This seems to a limitation with Vulkan currently.
+- **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.
 
 Quick How-To
 ---
