@@ -4582,12 +4582,12 @@ Array Steam::receiveMessagesOnChannel(int channel, int max_messages){
 			char identity[STEAM_BUFFER_SIZE];
 			channel_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;
+			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;	// Not used when sending messages
 			message["time_received"] = (uint64_t)channel_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)channel_messages[i]->m_nMessageNumber;
 			message["channel"] = channel_messages[i]->m_nChannel;
 			message["flags"] = channel_messages[i]->m_nFlags;
-			message["user_data"] = (uint64_t)channel_messages[i]->m_nUserData;
+			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData;	// Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			channel_messages[i]->Release();
@@ -4775,12 +4775,12 @@ Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messa
 			char identity[STEAM_BUFFER_SIZE];
 			connection_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["user_data"] = (uint64_t)connection_messages[i]->m_nConnUserData;
-			message["time_received"] = (uint64_t)connection_messages[i]->m_usecTimeReceived;
-			message["message_number"] = (uint64_t)connection_messages[i]->m_nMessageNumber;
-			message["channel"] = connection_messages[i]->m_nChannel;
-			message["flags"] = connection_messages[i]->m_nFlags;
-			message["user_data"] = (uint64_t)connection_messages[i]->m_nUserData;
+			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["time_received"] = (uint64_t)channel_messages[i]->m_usecTimeReceived;
+			message["message_number"] = (uint64_t)channel_messages[i]->m_nMessageNumber;
+			message["channel"] = channel_messages[i]->m_nChannel;
+			message["flags"] = channel_messages[i]->m_nFlags;
+			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData;	// Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			connection_messages[i]->Release();
@@ -4841,12 +4841,12 @@ Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 			char identity[STEAM_BUFFER_SIZE];
 			poll_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["user_data"] = (uint64_t)poll_messages[i]->m_nConnUserData;
-			message["time_received"] = (uint64_t)poll_messages[i]->m_usecTimeReceived;
-			message["message_number"] = (uint64_t)poll_messages[i]->m_nMessageNumber;
-			message["channel"] = poll_messages[i]->m_nChannel;
-			message["flags"] = poll_messages[i]->m_nFlags;
-			message["user_data"] = (uint64_t)poll_messages[i]->m_nUserData;
+			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["time_received"] = (uint64_t)channel_messages[i]->m_usecTimeReceived;
+			message["message_number"] = (uint64_t)channel_messages[i]->m_nMessageNumber;
+			message["channel"] = channel_messages[i]->m_nChannel;
+			message["flags"] = channel_messages[i]->m_nFlags;
+			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData;	// Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			poll_messages[i]->Release();

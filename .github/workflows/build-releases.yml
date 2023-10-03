@@ -6,12 +6,12 @@ on:
         description: 'Steamworks SDK Tag:'
         required: true
         type: string
-        default: 'sdk-1.57'
+        default: 'sdk-1.58'
       godotsteam_version:
         description: 'GodotSteam GDExtension Tag:'
         required: true
         type: string
-        default: 'v4.3-gde'
+        default: 'v4.4-gde'
 
 jobs:
   build-gdextension-release:
