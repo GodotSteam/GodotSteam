@@ -4,10 +4,12 @@ An open-source and fully functional Steamworks SDK / API module and plug-in for 
 Additional flavors include:
 - [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
 - [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
-- [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
+- [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
 - [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
 - [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server3)
 - [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server4)
+- [Server GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension)
+- [Server GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative)
 
 Documentation
 ---
@@ -17,7 +19,10 @@ Feel free to chat with us about Godotteam on the [CoaguCo Discord server](https:
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.4.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.4.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 4.4.2 Changes**
+- Changed: bump for Godot 4.1.2
 
 **Version 4.4.1 Changes**
 - Fixed: missing descriptions for some in-editor functions/signals
@@ -43,7 +48,7 @@ Known Issues
 Quick How-To
 ---
 Obtain the plugin through one of two ways:
-- Visit the [Godot Asset Library](https://godotengine.org/asset-library/asset/7469) either through the website or in the editor and search for GodotSteam.
+- Visit the [Godot Asset Library](https://godotengine.org/asset-library/asset/1972) either through the website or in the editor and search for GodotSteam.
 - Download this repo and unzip it into the base of your game project.
 
 You will need to add the steam_appid.txt file with 480 or your game's app ID to where ever you have your Godot editor.  It should just work without having to do anything else.
