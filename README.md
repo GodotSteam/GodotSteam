@@ -6,7 +6,10 @@ Additional flavors include:
 - [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3)
 - [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
 - [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
-- [Server 3.x](https://github.com/Gramps/GodotSteam/tree/server3)
+- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3)
+- [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4)
+- [Server GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension)
+- [Server GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative)
 
 Documentation
 ----------
@@ -16,7 +19,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.21.1)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+
+**Version 3.21.2 Changes**
+- Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
 
 **Version 3.21.1 Changes**
 - Removed: unneccesary steam.tscn and linked steam.gd directly
