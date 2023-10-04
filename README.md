@@ -19,7 +19,13 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.21)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 3.21.2 Changes**
+- Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
+
+**Version 3.21.1 Changes**
+- Removed: unneccesary steam.tscn and linked steam.gd directly
 
 **Version 3.21 Changes**
 - Added: new enums and constant related to new Steam initialization function
