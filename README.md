@@ -19,28 +19,22 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.3.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.4.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.3.2 Changes**
+**Version 4.4.1 Changes**
 - Fixed: missing descriptions for some in-editor functions/signals
 - Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
 
-**Version 4.3.1 Changes**
-- Fixed: wrong variant type for join_requested
+**Version 4.4 Changes**
 
-**Version 4.3 Changes**
-- Added: full GodotSteam documentation into the editor
-- Added: steamShutdown to allow Steamworks to be manually shutdown
-- Added: requestEquippedProfileItems function and equipped_profile_items callback
-- Added: Steam Deck as Steam Input type
-- Changed: all enums are now directly linked to their SDK counterparts
-- Changed: getDigitalActionData returned keys are now state and active
-- Changed: names of some Steam enums to be cleaner and leaner
-- Changed: getAppInstallDir now returns dictionary with absolute path and install size
-- Fixed: some missing enum binds
-- Fixed: missing function argument binds
-- Fixed: get_ticket_for_web_api sending back strings
-- Removed: enums that are not in the SDK but Valve's docs
+- Added: new enums and constant related to new Steam initialization function
+- Added: new enums for NetworkingConfigValue
+- Added: new intialization function `steamInitEx` that is more verbose
+- Added: new UGC function `getUserContentDescriptorPreferences`
+- Added: new Remote Play function `startRemotePlayTogether`
+- Changed: UGC function`setItemTags` to have new argument for admin tags
+- Changed: compatible with Steamworks SDK 1.58
+- Changed: in-editor docs now reflect all changes
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
