@@ -19,7 +19,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.4.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.4.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 4.4.2 Changes**
+- Changed: bump for Godot 4.1.2
 
 **Version 4.4.1 Changes**
 - Fixed: missing descriptions for some in-editor functions/signals
