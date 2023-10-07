@@ -2,6 +2,11 @@ extends Node
 
 # Steam variables
 onready var Steam = preload("res://addons/godotsteam/godotsteam.gdns").new()
+
+# Set your game's Steam app IP
+OS.set_environment("SteamAppId", str(480))
+OS.set_environment("SteamGameId", str(480))
+
 var IS_OWNED: bool = false
 var IS_ONLINE: bool = false
 var IS_FREE_WEEKEND: bool = false
