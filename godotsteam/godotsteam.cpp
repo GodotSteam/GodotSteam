@@ -11143,6 +11143,7 @@ void Steam::_register_methods(){
 	register_method("registerProtocolInOverlayBrowser", &Steam::registerProtocolInOverlayBrowser);
 	register_method("replyToFriendMessage", &Steam::replyToFriendMessage);
 	register_method("requestClanOfficerList", &Steam::requestClanOfficerList);
+	register_method("requestEquippedProfileItems", &Steam::requestEquippedProfileItems);
 	register_method("requestFriendRichPresence", &Steam::requestFriendRichPresence);
 	register_method("requestUserInformation", &Steam::requestUserInformation);
 	register_method("sendClanChatMessage", &Steam::sendClanChatMessage);

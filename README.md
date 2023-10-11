@@ -21,6 +21,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 3.21.3 Changes**
+- Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
+
 **Version 3.21.2 Changes**
 - Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
 
