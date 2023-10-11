@@ -11174,6 +11174,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("setPersonaName", "name"), &Steam::setPersonaName);
 	ClassDB::bind_method(D_METHOD("setPlayedWith", "steam_id"), &Steam::setPlayedWith);	
 	ClassDB::bind_method(D_METHOD("setRichPresence", "key", "value"), &Steam::setRichPresence);
+	ClassDB::bind_method(D_METHOD("requestEquippedProfileItems", "steam_id"), &Steam::requestEquippedProfileItems);
 	
 	// GAME SEARCH BIND METHODS /////////////////
 	ClassDB::bind_method(D_METHOD("addGameSearchParams", "key", "values"), &Steam::addGameSearchParams);
