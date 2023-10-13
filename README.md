@@ -23,6 +23,8 @@ You can [download pre-compiled versions _(currently v4.4.1)_ of this repo here](
 
 **Version 4.4.2 Changes**
 - Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
+- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
+- Removed: unnecessary `steam_appid.txt` from zips in Github Actions
 
 **Version 4.4.1 Changes**
 - Fixed: missing descriptions for some in-editor functions/signals

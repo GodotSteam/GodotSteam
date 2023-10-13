@@ -295,7 +295,7 @@ Dictionary Steam::steamInitEx(bool retrieve_stats){
 
 	initialize_result = SteamAPI_InitEx(&error_message);
 
-	if(initialize_result == STEAM_API_INIT_RESULT_OK){
+	if(initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK){
 		is_init_success = true;
 
 		if(SteamUserStats() != NULL && retrieve_stats){
@@ -9756,7 +9756,11 @@ void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t *call_data) {
 	uint32 auth_ticket = call_data->m_hAuthTicket;
 	int result = call_data->m_eResult;
 	int ticket_size = call_data->m_cubTicket;
-	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
+	PackedByteArray ticket_buffer;
+	ticket_buffer.resize(ticket_size);
+	for (auto i = 0; i < ticket_size; i++) {
+		ticket_buffer.set(i, call_data->m_rgubTicket[i]);
+	}
 	emit_signal("get_ticket_for_web_api", auth_ticket, result, ticket_size, ticket_buffer);
 }
 
@@ -10842,7 +10846,6 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("registerProtocolInOverlayBrowser", "protocol"), &Steam::registerProtocolInOverlayBrowser);
 	ClassDB::bind_method(D_METHOD("replyToFriendMessage", "steam_id", "message"), &Steam::replyToFriendMessage);
 	ClassDB::bind_method(D_METHOD("requestClanOfficerList", "clan_id"), &Steam::requestClanOfficerList);
-	ClassDB::bind_method(D_METHOD("requestEquippedProfileItems", "steam_id"), &Steam::requestEquippedProfileItems);
 	ClassDB::bind_method(D_METHOD("requestFriendRichPresence", "friend_id"), &Steam::requestFriendRichPresence);
 	ClassDB::bind_method(D_METHOD("requestUserInformation", "steam_id", "require_name_only"), &Steam::requestUserInformation);
 	ClassDB::bind_method(D_METHOD("sendClanChatMessage", "chat_id", "text"), &Steam::sendClanChatMessage);
