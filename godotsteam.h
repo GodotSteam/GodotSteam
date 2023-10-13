@@ -1892,7 +1892,7 @@ public:
 	void addHeader(const String &key, const String &value, uint32 this_handle = 0);
 	void allowStartRequest(bool allowed, uint32 this_handle = 0);
 	void copyToClipboard(uint32 this_handle = 0);
-	void createBrowser(const String &user_agent, const String &user_css);
+	void createBrowser(const String &user_agent = "", const String &user_css = "");
 	void executeJavascript(const String &javascript, uint32 this_handle = 0);
 	void find(const String &search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
 	void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
