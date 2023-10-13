@@ -4,7 +4,7 @@ on:
       steamworks_sdk_tag:
         required: true
         type: string
-    secrets:
+    secrets:  
       steamworks_sdk_repo:
         required: true
       steamworks_sdk_repo_token:
@@ -197,7 +197,6 @@ jobs:
           cd ../../..
 
           cp -n 'README.md' 'LICENSE.txt' 'godotsteam.gdextension' project/addons/godotsteam
-          echo "480" > project/steam_appid.txt
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:

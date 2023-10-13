@@ -11,7 +11,7 @@ on:
         description: 'GodotSteam GDExtension Tag:'
         required: true
         type: string
-        default: 'v4.4-gde'
+        default: 'v4.4.3-gde'
 
 jobs:
   build-gdextension-release:

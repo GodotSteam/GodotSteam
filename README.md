@@ -23,6 +23,13 @@ You can [download pre-compiled versions _(currently v4.4.2)_ of this repo here](
 
 **Version 4.4.3 Changes**
 - Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
+- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
+- Fixed: compiler complaining about comparison between Steam enum and GodotSteam enum for `steamInitEx`
+- Changed: different defaults in Github Actions files
+- Changed: `createBrowser` now sends proper NULL when empty string passed
+- Changed: `html_browser_ready` from callback to proper call result
+- Changed: cast handle in `setSize` as Steam HHTMLBrowser
+- Removed: unnecessary `steam_appid.txt` from zips in Github Actions
 
 **Version 4.4.2 Changes**
 - Changed: bump for Godot 4.1.2
