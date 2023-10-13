@@ -2653,7 +2653,6 @@ private:
 	STEAM_CALLBACK(Steam, end_game_result, EndGameResultCallback_t, callbackEndGameResult);
 
 	// HTML Surface callbacks ///////////////
-	STEAM_CALLBACK(Steam, html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
 	STEAM_CALLBACK(Steam, html_can_go_backandforward, HTML_CanGoBackAndForward_t, callbackHTMLCanGoBackandforward);
 	STEAM_CALLBACK(Steam, html_changed_title, HTML_ChangedTitle_t, callbackHTMLChangedTitle);
 	STEAM_CALLBACK(Steam, html_close_browser, HTML_CloseBrowser_t, callbackHTMLCloseBrowser);
@@ -2806,6 +2805,10 @@ private:
 	void get_follower_count(FriendsGetFollowerCount_t *call_data, bool io_failure);
 	CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 	void is_following(FriendsIsFollowing_t *call_data, bool io_failure);
+
+	// HTML Surface call results ////////////
+	CCallResult<Steam, HTML_BrowserReady_t> callResultHTMLBrowserReady;
+	void html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure);
 
 	// Inventory call results ///////////////
 	CCallResult<Steam, SteamInventoryEligiblePromoItemDefIDs_t> callResultEligiblePromoItemDefIDs;

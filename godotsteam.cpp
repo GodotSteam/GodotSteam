@@ -77,7 +77,6 @@ Steam::Steam() :
 		callbackEndGameResult(this, &Steam::end_game_result),
 
 		// HTML Surface callbacks ///////////////////
-		callbackHTMLBrowserReady(this, &Steam::html_browser_ready),
 		callbackHTMLCanGoBackandforward(this, &Steam::html_can_go_backandforward),
 		callbackHTMLChangedTitle(this, &Steam::html_changed_title),
 		callbackHTMLCloseBrowser(this, &Steam::html_close_browser),
@@ -1700,7 +1699,20 @@ void Steam::copyToClipboard(uint32 this_handle) {
 // Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.
 void Steam::createBrowser(const String &user_agent, const String &user_css) {
 	if (SteamHTMLSurface() != NULL) {
-		SteamHTMLSurface()->CreateBrowser(user_agent.utf8().get_data(), user_css.utf8().get_data());
+		char *this_user_agent = new char[sizeof(user_agent)];
+		strcpy(this_user_agent, user_agent.utf8().get_data());
+		char *this_user_css = new char[sizeof(user_css)];
+		strcpy(this_user_css, user_css.utf8().get_data());
+		if(user_agent.is_empty()){
+			this_user_agent = NULL;
+		}
+		if(user_css.is_empty()){
+			this_user_css = NULL;
+		}
+		SteamAPICall_t api_call = SteamHTMLSurface()->CreateBrowser(this_user_agent, this_user_css);
+		callResultHTMLBrowserReady.Set(api_call, this, &Steam::html_browser_ready);
+		delete[] this_user_agent;
+		delete[] this_user_css;
 	}
 }
 
@@ -1967,7 +1979,7 @@ void Steam::setSize(uint32 width, uint32 height, uint32 this_handle) {
 		if (this_handle == 0) {
 			this_handle = browser_handle;
 		}
-		SteamHTMLSurface()->SetSize(this_handle, width, height);
+		SteamHTMLSurface()->SetSize((HHTMLBrowser)this_handle, width, height);
 	}
 }
 
@@ -9019,12 +9031,6 @@ void Steam::end_game_result(EndGameResultCallback_t *call_data) {
 
 // HTML SURFACE CALLBACKS ///////////////////////
 //
-// A new browser was created and is ready for use.
-void Steam::html_browser_ready(HTML_BrowserReady_t *call_data) {
-	browser_handle = call_data->unBrowserHandle;
-	emit_signal("html_browser_ready", browser_handle);
-}
-
 // Called when page history status has changed the ability to go backwards and forward.
 void Steam::html_can_go_backandforward(HTML_CanGoBackAndForward_t *call_data) {
 	browser_handle = call_data->unBrowserHandle;
@@ -10035,6 +10041,19 @@ void Steam::is_following(FriendsIsFollowing_t *call_data, bool io_failure) {
 		uint64_t steam_id = call_data->m_steamID.ConvertToUint64();
 		bool following = call_data->m_bIsFollowing;
 		emit_signal("is_following", result, steam_id, following);
+	}
+}
+
+// HTML SURFACE CALL RESULTS ////////////////////
+//
+// A new browser was created and is ready for use.
+void Steam::html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure) {
+	if(io_failure){
+		steamworksError("html_browser_ready");
+	}
+	else{
+		browser_handle = call_data->unBrowserHandle;
+		emit_signal("html_browser_ready", browser_handle);
 	}
 }
 
