@@ -23,6 +23,7 @@ You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here]
 
 **Version 3.21.3 Changes**
 - Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
+- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
 
 **Version 3.21.2 Changes**
 - Fixed: missing descriptions for some in-editor functions/signals

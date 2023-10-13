@@ -197,7 +197,6 @@ Steam::Steam():
 	callbackEndGameResult(this, &Steam::end_game_result),
 
 	// HTML Surface callbacks ///////////////////
-	callbackHTMLBrowserReady(this, &Steam::html_browser_ready),
 	callbackHTMLCanGoBackandforward(this, &Steam::html_can_go_backandforward),
 	callbackHTMLChangedTitle(this, &Steam::html_changed_title),
 	callbackHTMLCloseBrowser(this, &Steam::html_close_browser),
@@ -419,7 +418,7 @@ Dictionary Steam::steamInitEx(bool retrieve_stats){
 
 	initialize_result = SteamAPI_InitEx(&error_message);
 
-	if(initialize_result == STEAM_API_INIT_RESULT_OK){
+	if(initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK){
 		is_init_success = true;
 
 		if(SteamUserStats() != NULL && retrieve_stats){
@@ -1828,7 +1827,20 @@ void Steam::copyToClipboard(uint32 this_handle){
 // Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.
 void Steam::createBrowser(const String& user_agent, const String& user_css){
 	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->CreateBrowser(user_agent.utf8().get_data(), user_css.utf8().get_data());
+		char *this_user_agent = new char[sizeof(user_agent)];
+		strcpy(this_user_agent, user_agent.utf8().get_data());
+		char *this_user_css = new char[sizeof(user_css)];
+		strcpy(this_user_css, user_css.utf8().get_data());
+		if(user_agent.empty()){
+			this_user_agent = NULL;
+		}
+		if(user_css.empty()){
+			this_user_css = NULL;
+		}
+		SteamAPICall_t api_call = SteamHTMLSurface()->CreateBrowser(this_user_agent, this_user_css);
+		callResultHTMLBrowserReady.Set(api_call, this, &Steam::html_browser_ready);
+		delete[] this_user_agent;
+		delete[] this_user_css;
 	}
 }
 
@@ -1888,10 +1900,11 @@ void Steam::goForward(uint32 this_handle){
 }
 
 // Initializes the HTML Surface API. This must be called prior to using any other functions in this interface. You MUST call Shutdown when you are done using the interface to free up the resources associated with it. Failing to do so will result in a memory leak!
-void Steam::htmlInit(){
-	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->Init();
+bool Steam::htmlInit(){
+	if(SteamHTMLSurface() == NULL){
+		return false;
 	}
+	return SteamHTMLSurface()->Init();
 }
 
 // Allows you to react to a page wanting to open a javascript modal dialog notification.
@@ -2095,7 +2108,7 @@ void Steam::setSize(uint32 width, uint32 height, uint32 this_handle){
 		if(this_handle == 0){
 			this_handle = browser_handle;
 		}
-		SteamHTMLSurface()->SetSize(this_handle, width, height);
+		SteamHTMLSurface()->SetSize((HHTMLBrowser)this_handle, width, height);
 	}
 }
 
@@ -9313,13 +9326,7 @@ void Steam::end_game_result(EndGameResultCallback_t* call_data){
 }
 
 // HTML SURFACE CALLBACKS ///////////////////////
-// 
-// A new browser was created and is ready for use.
-void Steam::html_browser_ready(HTML_BrowserReady_t* call_data){
-	browser_handle = call_data->unBrowserHandle;
-	emit_signal("html_browser_ready", browser_handle);
-}
-
+//
 // Called when page history status has changed the ability to go backwards and forward.
 void Steam::html_can_go_backandforward(HTML_CanGoBackAndForward_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
@@ -10052,7 +10059,11 @@ void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t* call_data){
 	uint32 auth_ticket = call_data->m_hAuthTicket;
 	int result = call_data->m_eResult;
 	int ticket_size = call_data->m_cubTicket;
-	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
+	PoolByteArray ticket_buffer;
+	ticket_buffer.resize(ticket_size);
+	for (auto i = 0; i < ticket_size; i++) {
+		ticket_buffer.set(i, call_data->m_rgubTicket[i]);
+	}
 	emit_signal("get_ticket_for_web_api", auth_ticket, result, ticket_size, ticket_buffer);
 }
 
@@ -10336,6 +10347,19 @@ void Steam::is_following(FriendsIsFollowing_t *call_data, bool io_failure){
 		uint64_t steam_id = call_data->m_steamID.ConvertToUint64();
 		bool following = call_data->m_bIsFollowing;
 		emit_signal("is_following", result, steam_id, following);
+	}
+}
+
+// HTML SURFACE /////////////////////////////////
+//
+// A new browser was created and is ready for use.
+void Steam::html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure){
+	if(io_failure){
+		steamworksError("html_browser_ready");
+	}
+	else{
+		browser_handle = call_data->unBrowserHandle;
+		emit_signal("html_browser_ready", browser_handle);
 	}
 }
 
@@ -11209,7 +11233,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("registerProtocolInOverlayBrowser", "protocol"), &Steam::registerProtocolInOverlayBrowser);
 	ClassDB::bind_method(D_METHOD("replyToFriendMessage", "steam_id", "message"), &Steam::replyToFriendMessage);
 	ClassDB::bind_method(D_METHOD("requestClanOfficerList", "clan_id"), &Steam::requestClanOfficerList);
-	ClassDB::bind_method(D_METHOD("requestEquippedProfileItems", "steam_id"), &Steam::requestEquippedProfileItems);
 	ClassDB::bind_method(D_METHOD("requestFriendRichPresence", "friend_id"), &Steam::requestFriendRichPresence);
 	ClassDB::bind_method(D_METHOD("requestUserInformation", "steam_id", "require_name_only"), &Steam::requestUserInformation);
 	ClassDB::bind_method(D_METHOD("sendClanChatMessage", "chat_id", "text"), &Steam::sendClanChatMessage);
@@ -11239,7 +11262,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("addHeader", "key", "value", "this_handle"), &Steam::addHeader, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("allowStartRequest", "allowed", "this_handle"), &Steam::allowStartRequest, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("copyToClipboard", "this_handle"), &Steam::copyToClipboard, DEFVAL(0));
-	ClassDB::bind_method(D_METHOD("createBrowser", "user_agent", "user_css"), &Steam::createBrowser);
+	ClassDB::bind_method(D_METHOD("createBrowser", "user_agent", "user_css"), &Steam::createBrowser, DEFVAL(""), DEFVAL(""));
 	ClassDB::bind_method(D_METHOD("executeJavascript", "script", "this_handle"), &Steam::executeJavascript, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("find", "search", "currently_in_find", "reverse", "this_handle"), &Steam::find, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLinkAtPosition", "x", "y", "this_handle"), &Steam::getLinkAtPosition, DEFVAL(0));
