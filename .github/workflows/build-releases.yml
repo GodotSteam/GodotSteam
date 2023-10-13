@@ -17,7 +17,7 @@ on:
         description: 'GodotSteam version number:'
         required: true
         type: string
-        default: '3.21.1'
+        default: '3.21.3'
 
 jobs:
   build_macos:
