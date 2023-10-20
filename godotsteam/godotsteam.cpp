@@ -4912,12 +4912,18 @@ String Steam::getConnectionName(uint32 peer){
 }
 
 // Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
-bool Steam::getListenSocketAddress(uint32 socket){
-	if(SteamNetworkingSockets() == NULL){
-		return false;
+String Steam::getListenSocketAddress(uint32 socket, bool with_port){
+	String socket_address = "";
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingIPAddr address;
+		if(SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address)){
+			char *this_address = new char[48];
+			address.ToString(this_address, 48, with_port);
+			socket_address = String(this_address);
+			delete[] this_address;
+		}
 	}
-	SteamNetworkingIPAddr address;
-	return SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
+	return socket_address;
 }
 
 // Get the identity assigned to this interface.
