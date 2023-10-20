@@ -19,7 +19,7 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.3)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
 **Version 3.21.3 Changes**
 - Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
