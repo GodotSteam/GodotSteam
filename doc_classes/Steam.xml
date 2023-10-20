@@ -2745,8 +2745,9 @@
 			</description>
 		</method>
 		<method name="getListenSocketAddress">
-			<return type="bool" />
+			<return type="String" />
 			<argument index="0" name="socket" type="int" />
+			<argument index="0" name="with_port" type="bool" default="true" />
 			<description>
 				Returns local IP and port that a listen socket created using [method Steam.createListenSocketIP] is bound to.
 				[b]Note:[/b] This is not how you find out your public IP that clients can connect to.
