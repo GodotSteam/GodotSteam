@@ -4936,12 +4936,18 @@ String Steam::getConnectionName(uint32 peer){
 }
 
 // Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
-bool Steam::getListenSocketAddress(uint32 socket){
-	if(SteamNetworkingSockets() == NULL){
-		return false;
+String Steam::getListenSocketAddress(uint32 socket, bool with_port){
+	String socket_address = "";
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingIPAddr address;
+		if(SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address)){
+			char *this_address = new char[48];
+			address.ToString(this_address, 48, with_port);
+			socket_address = String(this_address);
+			delete[] this_address;
+		}
 	}
-	SteamNetworkingIPAddr address;
-	return SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
+	return socket_address;
 }
 
 // Get the identity assigned to this interface.
@@ -11510,7 +11516,7 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method(D_METHOD("getHostedDedicatedServerAddress"), &Steam::getHostedDedicatedServerAddress);	<------ Uses datagram relay structs which were removed from base SDK
 	ClassDB::bind_method(D_METHOD("getHostedDedicatedServerPOPId"), &Steam::getHostedDedicatedServerPOPId);
 	ClassDB::bind_method(D_METHOD("getHostedDedicatedServerPort"), &Steam::getHostedDedicatedServerPort);
-	ClassDB::bind_method(D_METHOD("getListenSocketAddress", "socket"), &Steam::getListenSocketAddress);
+	ClassDB::bind_method(D_METHOD("getListenSocketAddress", "socket", "with_port"), &Steam::getListenSocketAddress, DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("getIdentity"), &Steam::getIdentity);
 	ClassDB::bind_method(D_METHOD("getRemoteFakeIPForConnection", "connection"), &Steam::getRemoteFakeIPForConnection);
 	ClassDB::bind_method(D_METHOD("initAuthentication"), &Steam::initAuthentication);

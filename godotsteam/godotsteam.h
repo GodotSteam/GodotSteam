@@ -2191,7 +2191,7 @@ class Steam: public Object {
 //		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 		uint32 getHostedDedicatedServerPOPId();
 		uint16 getHostedDedicatedServerPort();
-		bool getListenSocketAddress(uint32 socket);
+		String getListenSocketAddress(uint32 socket, bool with_port = true);
 		String getIdentity();
 		Dictionary getRemoteFakeIPForConnection(uint32 connection);
 		NetworkingAvailability initAuthentication();
