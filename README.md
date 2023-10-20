@@ -1,5 +1,5 @@
 # GodotSteam for GDExtension
-An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows 32/64-bit, Linux 32/64-bit, and Mac uinversal platforms. 
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
 
 Additional flavors include:
 - [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
@@ -15,11 +15,22 @@ Documentation
 ---
 [Documentation is available here](https://godotsteam.com/).
 
-Feel free to chat with us about Godotteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
+Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.4.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.4.3)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 4.4.3 Changes**
+- Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
+- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
+- Fixed: compiler complaining about comparison between Steam enum and GodotSteam enum for `steamInitEx`
+- Fixed: `getListenSocketAddress` fixed to provide the actual address and optional port
+- Changed: different defaults in Github Actions files
+- Changed: `createBrowser` now sends proper NULL when empty string passed
+- Changed: `html_browser_ready` from callback to proper call result
+- Changed: cast handle in `setSize` as Steam HHTMLBrowser
+- Removed: unnecessary `steam_appid.txt` from zips in Github Actions
 
 **Version 4.4.2 Changes**
 - Changed: bump for Godot 4.1.2
@@ -47,17 +58,19 @@ Known Issues
 
 Quick How-To
 ---
-Obtain the plugin through one of two ways:
-- Visit the [Godot Asset Library](https://godotengine.org/asset-library/asset/1972) either through the website or in the editor and search for GodotSteam.
-- Download this repo and unzip it into the base of your game project.
+For complete instructions on how to build the GDExtension version of GodotSteam, [please refer to our documentation's 'How-To GDExtension' section.](https://godotsteam.com/howto/gdextension/) It will have the most up-to-date information.
 
-You will need to add the steam_appid.txt file with 480 or your game's app ID to where ever you have your Godot editor.  It should just work without having to do anything else.
+Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/CoaguCo-Industries/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1972) and skip compiling it yourself!
 
-Tinker with Steamworks!
+Usage
+----------
+Do not use the GDExtension version of GodotSteam with any of the module versions whether it be our pre-compiled versions or ones you compile.  They are not compatible with each other.
+
+When exporting with the GDExtension version, please use the normal Godot Engine templates instead of our GodotSteam templates or you will have a lot of issues.
 
 Donate
 ---
-Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps), [Ko-Fi](https://ko-fi.com/grampsgarcia), or [Paypal](https://www.paypal.me/sithlordkyle)!
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps), [Ko-Fi](https://ko-fi.com/grampsgarcia) or [Paypal](https://www.paypal.me/sithlordkyle)!
 
 License
 ---
