@@ -1893,13 +1893,13 @@ class Steam: public Object {
 		void addHeader(const String& key, const String& value, uint32 this_handle = 0);
 		void allowStartRequest(bool allowed, uint32 this_handle = 0);
 		void copyToClipboard(uint32 this_handle = 0);
-		void createBrowser(const String& user_agent, const String& user_css);
+		void createBrowser(const String& user_agent = "", const String& user_css = "");
 		void executeJavascript(const String& script, uint32 this_handle = 0);
 		void find(const String& search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
 		void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 		void goBack(uint32 this_handle = 0);
 		void goForward(uint32 this_handle = 0);
-		void htmlInit();
+		bool htmlInit();
 		void jsDialogResponse(bool result, uint32 this_handle = 0);
 		void keyChar(uint32 unicode_char, int key_modifiers, uint32 this_handle = 0);
 		void keyDown(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
@@ -2185,7 +2185,7 @@ class Steam: public Object {
 //		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 		uint32 getHostedDedicatedServerPOPId();
 		uint16 getHostedDedicatedServerPort();
-		bool getListenSocketAddress(uint32 socket);
+		String getListenSocketAddress(uint32 socket, bool with_port = true);
 		String getIdentity();
 		Dictionary getRemoteFakeIPForConnection(uint32 connection);
 		NetworkingAvailability initAuthentication();
