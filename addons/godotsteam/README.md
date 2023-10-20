@@ -2,10 +2,10 @@
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
 Additional flavors include:
-- [Godot 2.x](https://github.com/Gramps/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/Gramps/GodotSteam/tree/godot3)
-- [Godot 4.x](https://github.com/Gramps/GodotSteam/tree/godot4)
-- [GDExtension](https://github.com/Gramps/GodotSteam/tree/gdextension)
+- [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
+- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
+- [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
+- [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
 - [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3)
 - [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4)
 - [Server GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension)
@@ -19,7 +19,17 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.21.2)_ of this repo here](https://github.com/Gramps/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.3)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 3.21.3 Changes**
+- Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
+- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
+- Fixed: compiler complaining about comparison between Steam enum and GodotSteam enum for `steamInitEx`
+- Fixed: `getListenSocketAddress` fixed to provide the actual address and optional port
+- Changed: `createBrowser` now sends proper NULL when empty string passed
+- Changed: `html_browser_ready` from callback to proper call result
+- Changed: cast handle in `setSize` as Steam HHTMLBrowser
+- Removed: unnecessary `steam_appid.txt` from zips in Github Actions
 
 **Version 3.21.2 Changes**
 - Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
@@ -45,13 +55,16 @@ Known Issues
 
 Quick How-To
 ----------
-Obtain the plugin through one of two ways:
-- Visit the Godot Asset Library either through the website or in the editor and search for GodotSteam.
-- Download this repo and unzip it into the base of your game project.
+For complete instructions on how to build the GDNative version of GodotSteam, [please refer to our documentation's 'How-To GDNative' section.](https://godotsteam.com/howto/gdnative/)  It will have the most up-to-date information.
 
-Go into **Project > Settings > Plugins** and activate the plugin.
 
-Tinker with Steamworks!
+Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/CoaguCo-Industries/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1045) and skip compiling it yourself!
+
+Usage
+----------
+Do not use the GDNative version of GodotSteam with any of the module versions whether it be our pre-compiled versions or ones you compile.  They are not compatible with each other.
+
+When exporting with the GDNative version, please use the normal Godot Engine templates instead of our GodotSteam templates or you will have a lot of issues.
 
 Donate
 -------------
