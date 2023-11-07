@@ -21,6 +21,9 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v4.4.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 4.4.3 Changes**
+- Fixed: Joy Con misspelling, pulled from PR from _Handagotes_
+
 **Version 4.4.2 Changes**
 - Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
 - Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
