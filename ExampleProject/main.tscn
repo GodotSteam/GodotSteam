@@ -1,0 +1,195 @@
+[gd_scene load_steps=3 format=3 uid="uid://cdhct7e8jy544"]
+
+[sub_resource type="GDScript" id="GDScript_dikc6"]
+script/source = "extends Node
+
+
+@export var UI:Control
+
+func _on_host_udp_pressed():
+	var port = %port.value
+	var peer = ENetMultiplayerPeer.new()
+	peer.create_server(port)
+	multiplayer.multiplayer_peer = peer
+	MultiplayerManager.setLevel(\"res://level.tscn\")
+	UI.visible = false
+	%HostClient.text = \"Host UDP\"
+	
+
+func _on_join_udp_pressed():
+	var port = %port.value
+	var hostname = %hostname.text
+	var peer = ENetMultiplayerPeer.new()
+	peer.create_client(hostname,port)
+	multiplayer.multiplayer_peer = peer
+	UI.visible = false
+	%HostClient.text = \"Client UDP\"
+
+
+func _on_exit_pressed():
+	get_tree().quit()
+	pass # Replace with function body.
+
+
+func _on_host_steam_pressed():
+	var peer = SteamMultiplayerPeer.new()
+	peer.create_lobby(SteamMultiplayerPeer.LOBBY_TYPE_PUBLIC)
+	multiplayer.multiplayer_peer = peer
+	MultiplayerManager.setLevel(\"res://level.tscn\")
+	UI.visible = false
+	%HostClient.text = \"Host Steam\"
+
+
+func _on_steam_join(lobby_id:int):
+	var peer = SteamMultiplayerPeer.new()
+	peer.connect_lobby(lobby_id)
+	multiplayer.multiplayer_peer = peer
+	UI.visible = false
+	%HostClient.text = \"Client Steam\"
+	pass # Replace with function body.
+"
+
+[sub_resource type="GDScript" id="GDScript_0ybl7"]
+script/source = "extends Node
+
+signal join(int)
+
+func _ready():
+	OS.set_environment(\"SteamAppId\", str(480))
+	OS.set_environment(\"SteamGameId\", str(480))
+	var a = Steam.steamInitEx(false)
+	Steam.lobby_invite.connect(lobby_invite)
+	Steam.lobby_joined.connect(lobby_joined)
+	Steam.join_requested.connect(join_requested)
+
+
+
+func lobby_invite(inviter: int, lobby: int, game: int):
+	pass
+
+func lobby_joined(lobby: int, permissions: int, locked: bool, response: int):
+	pass
+
+func join_requested(lobby_id: int, steam_id: int):
+	join.emit(lobby_id)
+
+
+
+func _process(delta):
+	Steam.run_callbacks()
+
+func _physics_process(delta):
+	Steam.run_callbacks()
+"
+
+[node name="main" type="Node" node_paths=PackedStringArray("UI")]
+script = SubResource("GDScript_dikc6")
+UI = NodePath("PanelContainer")
+
+[node name="HostClient" type="Label" parent="."]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -332.0
+offset_top = -125.0
+offset_right = 332.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "This is a demo projects intending to very basically demonstrate Godot's built in UDP based networking (based on the ENet library), as well as how to replace ENet with SteamMultiplayerPeer.
+
+Use the above tabs to switch. 
+
+I have not implemented \"properly\" or \"safely\" disconnecting from servers. Restart the application to reset."
+
+[node name="UDP (ENet)" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HostUDP" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)"]
+layout_mode = 2
+text = "Host UDP"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)"]
+layout_mode = 2
+
+[node name="port" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+min_value = 1.0
+max_value = 65535.0
+value = 9001.0
+prefix = "port:"
+
+[node name="hostname" type="TextEdit" parent="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "hostname(localhost)"
+
+[node name="JoinUDP" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)"]
+layout_mode = 2
+text = "Join UDP"
+
+[node name="Steam" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Steam" type="Node" parent="PanelContainer/VBoxContainer/TabContainer/Steam"]
+script = SubResource("GDScript_0ybl7")
+
+[node name="HostSteam" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Steam"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+text = "Host"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer/TabContainer/Steam"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Steam"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Steam/VBoxContainer"]
+layout_mode = 2
+text = "Games?"
+
+[node name="Exit" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Exit"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)/HostUDP" to="." method="_on_host_udp_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/TabContainer/UDP (ENet)/JoinUDP" to="." method="_on_join_udp_pressed"]
+[connection signal="join" from="PanelContainer/VBoxContainer/TabContainer/Steam/Steam" to="." method="_on_steam_join"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/TabContainer/Steam/HostSteam" to="." method="_on_host_steam_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Exit" to="." method="_on_exit_pressed"]

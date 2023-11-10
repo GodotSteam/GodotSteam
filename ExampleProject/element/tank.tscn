@@ -1,0 +1,66 @@
+[gd_scene load_steps=8 format=3 uid="uid://dni32vxv1fto"]
+
+[ext_resource type="Script" path="res://element/tank.gd" id="1_j7sqq"]
+[ext_resource type="Texture2D" uid="uid://dihe8am0th031" path="res://assets/sprites/tankBody_red_outline.tres" id="1_ko7ms"]
+[ext_resource type="Material" uid="uid://g8losm3pf3kh" path="res://element/TeamColorShifter.material" id="1_tw4pw"]
+[ext_resource type="PackedScene" uid="uid://fchc5a4jnneu" path="res://element/bullet.tscn" id="2_rpatk"]
+[ext_resource type="Texture2D" uid="uid://b5sjns7aih2qu" path="res://assets/sprites/tankRed_barrel1_outline.tres" id="2_vs527"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e6owa"]
+size = Vector2(76, 73)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_q55ls"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = true
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/sync = true
+properties/1/watch = true
+properties/2/path = NodePath(".:color")
+properties/2/spawn = true
+properties/2/sync = false
+properties/2/watch = true
+properties/3/path = NodePath("Body/Gun:rotation")
+properties/3/spawn = true
+properties/3/sync = true
+properties/3/watch = false
+
+[node name="Tank" type="CharacterBody2D" node_paths=PackedStringArray("turret", "barrelTip", "spawner")]
+texture_filter = 1
+material = ExtResource("1_tw4pw")
+position = Vector2(264, 216)
+script = ExtResource("1_j7sqq")
+turret = NodePath("Body/Gun")
+barrelTip = NodePath("Body/Gun/barrel")
+bullet = ExtResource("2_rpatk")
+spawner = NodePath("MultiplayerSpawner")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_e6owa")
+
+[node name="Body" type="Sprite2D" parent="."]
+use_parent_material = true
+rotation = 3.14159
+texture = ExtResource("1_ko7ms")
+
+[node name="Gun" type="Sprite2D" parent="Body"]
+use_parent_material = true
+texture = ExtResource("2_vs527")
+offset = Vector2(0, 19)
+
+[node name="barrel" type="Node2D" parent="Body/Gun"]
+position = Vector2(4.28372e-06, 49)
+rotation = 3.14159
+
+[node name="Camera2D" type="Camera2D" parent="."]
+unique_name_in_owner = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_q55ls")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://element/bullet.tscn", "res://element/boom.tscn")
+spawn_path = NodePath(".")

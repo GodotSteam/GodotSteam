@@ -1,0 +1,75 @@
+[gd_scene load_steps=6 format=3 uid="uid://fchc5a4jnneu"]
+
+[ext_resource type="PackedScene" uid="uid://bsxh5elcgtkel" path="res://element/boom.tscn" id="1_4wsmq"]
+[ext_resource type="Texture2D" uid="uid://b32w6euc1hxu5" path="res://assets/sprites/bulletRed1.tres" id="1_mnwpf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qpwro"]
+size = Vector2(16, 40)
+
+[sub_resource type="GDScript" id="GDScript_6d2kw"]
+script/source = "extends ShapeCast2D
+
+var shooter:Node2D
+@export var explosion:PackedScene
+
+@export var speed = 1000.0
+@export var damage = 100.0
+
+## Set by the authority, synchronized on spawn.
+#@export var player := 1 :
+#	set(id):
+#		player = id
+#		# Give authority over the player input to the appropriate peer.
+#		$PlayerInput.set_multiplayer_authority(id)
+
+func _ready():
+	position += (Vector2.UP * 10).rotated(rotation)
+	add_exception(shooter)
+
+func _physics_process(delta):
+	if is_multiplayer_authority() == false:
+		return
+	var speedVector = Vector2.UP * speed * delta
+	target_position = speedVector
+	force_shapecast_update()
+	if is_colliding():
+		var e:Node2D = explosion.instantiate()
+		e.global_position = get_collision_point(0)
+		add_sibling(e,true)
+
+		var c = get_collider(0)
+		if c.has_method(\"damage\"):
+#			c.damage.rpc
+			c.damage(self)
+
+		queue_free()
+		return
+	
+	position += speedVector.rotated(global_rotation)
+"
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_poie2"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = false
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/sync = true
+properties/1/watch = false
+
+[node name="Bullet" type="ShapeCast2D"]
+texture_filter = 1
+enabled = false
+shape = SubResource("RectangleShape2D_qpwro")
+target_position = Vector2(0, 0)
+script = SubResource("GDScript_6d2kw")
+explosion = ExtResource("1_4wsmq")
+speed = 2500.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("1_mnwpf")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_poie2")

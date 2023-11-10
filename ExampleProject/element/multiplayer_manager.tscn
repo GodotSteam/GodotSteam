@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://1vdrn5mtwdab"]
+
+[ext_resource type="Script" path="res://element/multiplayer_manager.gd" id="1_4prhs"]
+
+[node name="MultiplayerManager" type="Node"]
+script = ExtResource("1_4prhs")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("..")

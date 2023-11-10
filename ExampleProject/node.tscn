@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://g0ttktxjbi8o"]
+
+[ext_resource type="Script" path="res://xmlSpriteSheetParser.gd" id="1_2bs1i"]
+[ext_resource type="Texture2D" uid="uid://dakxm7mi6a1oa" path="res://assets/texture/allSprites_retina.png" id="2_58f0c"]
+[ext_resource type="Texture2D" uid="uid://yml4r0buty6e" path="res://assets/sprites/barrelRust_top.tres" id="3_bfhkk"]
+[ext_resource type="Texture2D" uid="uid://dbxwtrngxn7f" path="res://assets/sprites/tankBody_sand.tres" id="4_lwtkw"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_2bs1i")
+xml = "res://assets/texture/allSprites_retina.xml"
+sprite_sheets = ExtResource("2_58f0c")
+output = "res://assets/sprites"
+
+[node name="AllSpritesRetina" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(521, 453)
+texture = ExtResource("2_58f0c")
+
+[node name="BarrelRustTop" type="Sprite2D" parent="."]
+position = Vector2(1461, 449)
+texture = ExtResource("3_bfhkk")
+
+[node name="TankBodySand" type="Sprite2D" parent="."]
+position = Vector2(1330, 442)
+texture = ExtResource("4_lwtkw")

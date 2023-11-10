@@ -1,0 +1,87 @@
+[gd_scene load_steps=5 format=3 uid="uid://dd8nncdpd64ob"]
+
+[ext_resource type="PackedScene" uid="uid://dni32vxv1fto" path="res://element/tank.tscn" id="1_tnwkl"]
+
+[sub_resource type="GDScript" id="GDScript_y6ho8"]
+script/source = "extends Node
+
+@export var spawnPoint:Node2D
+@export var spawner:MultiplayerSpawner
+
+func _ready():
+	pass
+
+
+func _process(delta):
+	if Input.is_action_just_pressed(\"Info\"):
+		if multiplayer.get_unique_id() == 1:
+			push_warning(\"HOST\")
+		else:
+			push_warning(\"CLIENT\")
+"
+
+[sub_resource type="GDScript" id="GDScript_r5p6e"]
+script/source = "extends Polygon2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	polygon = get_parent().polygon 
+
+"
+
+[sub_resource type="GDScript" id="GDScript_ogq3g"]
+script/source = "extends MultiplayerSpawner
+
+@export var playerScene:PackedScene
+@export var points:Node2D
+func _ready():
+	spawn_function = spawnPlayer
+	if is_multiplayer_authority():
+		spawn(1)
+		multiplayer.peer_connected.connect(spawn)
+		multiplayer.peer_disconnected.connect(removePlayer)
+
+var players = {}
+
+func spawnPlayer(data):
+	var p:Node2D = playerScene.instantiate()
+	p.global_transform = points.global_transform
+	p.set_multiplayer_authority(data)
+	players[data] = p
+	return p
+
+
+func removePlayer(data):
+	players[data].queue_free()
+	players.erase(data)
+"
+
+[node name="Level" type="Node" node_paths=PackedStringArray("spawnPoint", "spawner")]
+script = SubResource("GDScript_y6ho8")
+spawnPoint = NodePath("Point")
+spawner = NodePath("MultiplayerSpawner")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+zoom = Vector2(0.9, 0.9)
+
+[node name="Point" type="Node2D" parent="."]
+position = Vector2(640, 328)
+
+[node name="world" type="StaticBody2D" parent="."]
+metadata/_edit_group_ = true
+metadata/_edit_lock_ = true
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="world"]
+polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720, 0, 0, -1920, -1968, -2864, 3024, 4416, 2720, 4536, -2272, -1944, -1680)
+
+[node name="Polygon2D" type="Polygon2D" parent="world/CollisionPolygon2D"]
+color = Color(0, 0, 0, 1)
+script = SubResource("GDScript_r5p6e")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("points")]
+spawn_path = NodePath(".")
+script = SubResource("GDScript_ogq3g")
+playerScene = ExtResource("1_tnwkl")
+points = NodePath("../Point")
