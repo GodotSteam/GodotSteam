@@ -19,6 +19,7 @@
 // Include some Godot headers
 #include "core/io/ip.h"
 #include "core/io/ip_address.h"
+#include "core/os/os.h"
 
 // Include some system headers
 #include "fstream"
@@ -309,6 +310,19 @@ Dictionary Steam::steamInitEx(bool retrieve_stats) {
 	initialize["verbal"] = error_message;
 
 	return initialize;
+}
+
+Dictionary Steam::steamInitUpdate(SceneTree *tree, bool retrieve_stats, int appId) {
+	auto id = itos(appId);
+	OS::get_singleton()->set_environment("SteamAppId", id);
+	OS::get_singleton()->set_environment("SteamGameId", id);
+	auto a = Steam::steamInitEx(retrieve_stats);
+
+	auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+	tree->connect("process_frame", callbacks); //todo add these to shutdown.
+	tree->connect("physics_frame", callbacks); //todo add these to shutdown.
+
+	return a;
 }
 
 // Shuts down the Steamworks API, releases pointers and frees memory.
@@ -10754,7 +10768,8 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
 	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx);
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("steamInitUpdate", "scene_tree", "retrieve_stats", "app_id"), &Steam::steamInitUpdate);
 	ClassDB::bind_method("steamShutdown", &Steam::steamShutdown);
 
 	// APPS BIND METHODS ////////////////////////

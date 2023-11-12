@@ -28,6 +28,7 @@
 #include "core/object/object.h"
 #include "core/object/ref_counted.h"
 #include "core/variant/dictionary.h"
+#include "scene/main/scene_tree.h"
 #include "scene/resources/texture.h"
 
 // Include some system headers
@@ -1748,6 +1749,7 @@ public:
 	void steamworksError(const String &failed_signal);
 	Dictionary steamInit(bool retrieve_stats = true);
 	Dictionary steamInitEx(bool retrieve_stats = true);
+	Dictionary steamInitUpdate(SceneTree *tree, bool retrieve_stats = true, int appId = 480);
 	void steamShutdown();
 
 	// Apps /////////////////////////////////
