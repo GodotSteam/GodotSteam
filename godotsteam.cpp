@@ -287,17 +287,17 @@ Dictionary Steam::steamInit(bool retrieve_stats) {
 
 // Initialize the Steamworks SDK. On success STEAM_API_INIT_RESULT_OK is returned.
 // Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
-Dictionary Steam::steamInitEx(bool retrieve_stats){
+Dictionary Steam::steamInitEx(bool retrieve_stats) {
 	Dictionary initialize;
 	char error_message[STEAM_MAX_ERROR_MESSAGE];
 	ESteamAPIInitResult initialize_result;
 
 	initialize_result = SteamAPI_InitEx(&error_message);
 
-	if(initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK){
+	if (initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK) {
 		is_init_success = true;
 
-		if(SteamUserStats() != NULL && retrieve_stats){
+		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
 	}
@@ -1703,10 +1703,10 @@ void Steam::createBrowser(const String &user_agent, const String &user_css) {
 		strcpy(this_user_agent, user_agent.utf8().get_data());
 		char *this_user_css = new char[sizeof(user_css)];
 		strcpy(this_user_css, user_css.utf8().get_data());
-		if(user_agent.is_empty()){
+		if (user_agent.is_empty()) {
 			this_user_agent = NULL;
 		}
-		if(user_css.is_empty()){
+		if (user_css.is_empty()) {
 			this_user_css = NULL;
 		}
 		SteamAPICall_t api_call = SteamHTMLSurface()->CreateBrowser(this_user_agent, this_user_css);
@@ -4451,12 +4451,12 @@ Array Steam::receiveMessagesOnChannel(int channel, int max_messages) {
 			char identity[STEAM_BUFFER_SIZE];
 			channel_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData; // Not used when sending messages
 			message["time_received"] = (uint64_t)channel_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)channel_messages[i]->m_nMessageNumber;
 			message["channel"] = channel_messages[i]->m_nChannel;
 			message["flags"] = channel_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData; // Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			channel_messages[i]->Release();
@@ -4643,12 +4643,12 @@ Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messa
 			char identity[STEAM_BUFFER_SIZE];
 			connection_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)connection_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["receiver_user_data"] = (uint64_t)connection_messages[i]->m_nConnUserData; // Not used when sending messages
 			message["time_received"] = (uint64_t)connection_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)connection_messages[i]->m_nMessageNumber;
 			message["channel"] = connection_messages[i]->m_nChannel;
 			message["flags"] = connection_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)connection_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["sender_user_data"] = (uint64_t)connection_messages[i]->m_nUserData; // Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			connection_messages[i]->Release();
@@ -4709,12 +4709,12 @@ Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages) {
 			char identity[STEAM_BUFFER_SIZE];
 			poll_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)poll_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["receiver_user_data"] = (uint64_t)poll_messages[i]->m_nConnUserData; // Not used when sending messages
 			message["time_received"] = (uint64_t)poll_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)poll_messages[i]->m_nMessageNumber;
 			message["channel"] = poll_messages[i]->m_nChannel;
 			message["flags"] = poll_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)poll_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["sender_user_data"] = (uint64_t)poll_messages[i]->m_nUserData; // Not used when receiving messages
 			messages.append(message);
 			// Release the message
 			poll_messages[i]->Release();
@@ -4792,11 +4792,11 @@ String Steam::getConnectionName(uint32 peer) {
 }
 
 // Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
-String Steam::getListenSocketAddress(uint32 socket, bool with_port){
+String Steam::getListenSocketAddress(uint32 socket, bool with_port) {
 	String socket_address = "";
-	if(SteamNetworkingSockets() != NULL){
+	if (SteamNetworkingSockets() != NULL) {
 		SteamNetworkingIPAddr address;
-		if(SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address)){
+		if (SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address)) {
 			char *this_address = new char[48];
 			address.ToString(this_address, 48, with_port);
 			socket_address = String(this_address);
@@ -5908,13 +5908,12 @@ bool Steam::sendRemotePlayTogetherInvite(uint64_t friend_id) {
 }
 
 //
-bool Steam::startRemotePlayTogether(bool show_overlay){
-	if(SteamRemotePlay() == NULL){
+bool Steam::startRemotePlayTogether(bool show_overlay) {
+	if (SteamRemotePlay() == NULL) {
 		return false;
 	}
 	return SteamRemotePlay()->BStartRemotePlayTogether(show_overlay);
 }
-
 
 /////////////////////////////////////////////////
 ///// REMOTE STORAGE
@@ -7048,12 +7047,12 @@ Array Steam::getSubscribedItems() {
 
 // Return the user's community content descriptor preferences
 // Information is unclear how this actually works so here goes nothing!
-Array Steam::getUserContentDescriptorPreferences(uint32 max_entries){
+Array Steam::getUserContentDescriptorPreferences(uint32 max_entries) {
 	Array descriptors;
-	if(SteamUGC() != NULL){
+	if (SteamUGC() != NULL) {
 		EUGCContentDescriptorID *descriptor_list = new EUGCContentDescriptorID[max_entries];
 		uint32 num_descriptors = SteamUGC()->GetUserContentDescriptorPreferences(descriptor_list, max_entries);
-		for(uint32 i = 0; i < num_descriptors; i++){
+		for (uint32 i = 0; i < num_descriptors; i++) {
 			descriptors.append(descriptor_list[i]);
 		}
 	}
@@ -10054,10 +10053,9 @@ void Steam::is_following(FriendsIsFollowing_t *call_data, bool io_failure) {
 //
 // A new browser was created and is ready for use.
 void Steam::html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure) {
-	if(io_failure){
+	if (io_failure) {
 		steamworksError("html_browser_ready");
-	}
-	else{
+	} else {
 		browser_handle = call_data->unBrowserHandle;
 		emit_signal("html_browser_ready", browser_handle);
 	}
