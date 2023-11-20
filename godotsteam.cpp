@@ -2971,7 +2971,6 @@ Array Steam::getResultItems(int32 this_inventory_handle) {
 	Array items;
 	uint32 size = 0;
 	if (SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, NULL, &size)) {
-		items.resize(size);
 		SteamItemDetails_t *item_array = new SteamItemDetails_t[size];
 		// If no inventory handle is passed, use internal one
 		if (this_inventory_handle == 0) {
@@ -2979,7 +2978,12 @@ Array Steam::getResultItems(int32 this_inventory_handle) {
 		}
 		if (SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)) {
 			for (uint32 i = 0; i < size; i++) {
-				items.push_back((uint64_t)item_array[i].m_itemId);
+		                Dictionary item_info;
+		                item_info["itemdefid"] = item_array[i].m_iDefinition;
+		                item_info["item_id"] = item_array[i].m_itemId;
+		                item_info["flags"] = item_array[i].m_unFlags;
+		                item_info["quantity"] = item_array[i].m_unQuantity;
+		                items.append(item_info);
 			}
 		}
 		delete[] item_array;
