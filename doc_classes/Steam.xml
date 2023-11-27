@@ -26,6 +26,7 @@
 		<link title="Remove Steam">https://godotsteam.com/tutorials/remove_steam/</link>
 		<link title="Rich Presence">https://godotsteam.com/tutorials/rich_presence/</link>
 		<link title="Stats and Achievements">https://godotsteam.com/tutorials/stats_achievements/</link>
+		<link title="Voice">https://godotsteam.com/tutorials/voice</link>
 		<link title="Workshop">https://godotsteam.com/tutorials/workshop/</link>
 	</tutorials>
 	<methods>
@@ -1110,11 +1111,11 @@
 			</description>
 		</method>
 		<method name="exchangeItems">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="output_items" type="PoolIntArray" />
-			<argument index="1" name="output_quantity" type="int" />
-			<argument index="2" name="input_items" type="int" />
-			<argument index="3" name="input_quantity" type="int" />
+			<argument index="1" name="output_quantity" type="PoolIntArray" />
+			<argument index="2" name="input_items" type="PoolIntArray" />
+			<argument index="3" name="input_quantity" type="PoolIntArray" />
 			<description>
 				Grant one item in exchange for a set of other items.
 				This can be used to implement crafting recipes or transmutations, or items which unpack themselves into other items (e.g., a chest).
@@ -1301,9 +1302,9 @@
 			</description>
 		</method>
 		<method name="generateItems">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="items" type="PoolIntArray" />
-			<argument index="1" name="quantity" type="int" />
+			<argument index="1" name="quantity" type="PoolIntArray" />
 			<description>
 				Grants specific items to the current user, for developers only.
 				This API is only intended for prototyping - it is only usable by Steam accounts that belong to the publisher group for your game.
@@ -2262,7 +2263,7 @@
 			<return type="int" />
 			<argument index="0" name="friend_group" type="int" />
 			<description>
-					Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
+				Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
 			</description>
 		</method>
 		<method name="getFriendsGroupMembersList">
@@ -2546,6 +2547,7 @@
 			<argument index="0" name="input_handle" type="int" />
 			<description>
 				Returns the input type (device model) for the specified controller. This tells you if a given controller is a Steam controller, Xbox 360 controller, PS4 controller, etc.
+				[b]Note:[/b] XBox Series controllers are listed as XBox One.
 			</description>
 		</method>
 		<method name="getInstalledApps">
@@ -2643,9 +2645,8 @@
 			</description>
 		</method>
 		<method name="getItemsByID">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="id_array" type="int" />
-			<argument index="1" name="count" type="int" />
 			<description>
 				Gets the state of a subset of the current user's inventory.
 				The subset is specified by an array of item instance IDs.
@@ -2656,9 +2657,8 @@
 		</method>
 		<method name="getItemsWithPrices">
 			<return type="Array" />
-			<argument index="0" name="length" type="int" />
 			<description>
-				After a successful call to [method Steam.requestPrices], you can call this method to get all the pricing for applicable item definitions. Use the result of [method Steam.getNumItemsWithPrices] as the the size of the arrays that you pass in.
+				After a successful call to [method Steam.requestPrices], you can call this method to get all the pricing for applicable item definitions.
 			</description>
 		</method>
 		<method name="getLargeFriendAvatar">
@@ -2939,12 +2939,6 @@
 			<description>
 				Get the number of installed apps for this player.
 				[b]Note:[/b] This is a restricted interface that can only be used by previously approved apps, contact your Steam Account Manager if you believe you need access to this API.
-			</description>
-		</method>
-		<method name="getNumItemsWithPrices">
-			<return type="int" />
-			<description>
-				After a successful call to [method Steam.requestPrices], this will return the number of item definitions with valid pricing.
 			</description>
 		</method>
 		<method name="getNumLobbyMembers">
@@ -3403,7 +3397,13 @@
 			<argument index="0" name="this_inventory_handle" type="int" default="0" />
 			<description>
 				Get the items associated with an inventory result handle.
-				The returned array contains a list of item IDs (int).
+				The returned array contains a list of dictionaries which contain the following keys:
+				[codeblock]
+				┠╴item_id (int)
+				┠╴item_definition (int)
+				┠╴flags (int)
+				┖╴quantity (int)
+				[/codeblock]
 				[b]Note:[/b] If the argument this_inventory_handle is omitted, GodotSteam will use the internally stored ID.
 			</description>
 		</method>
@@ -6344,7 +6344,7 @@
 		<method name="startPurchase">
 			<return type="void" />
 			<argument index="0" name="items" type="PoolIntArray" />
-			<argument index="1" name="quantity" type="int" />
+			<argument index="1" name="quantity" type="PoolIntArray" />
 			<description>
 				Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 				If the purchase process was started successfully, then order_id and transaction_id will be valid in the [signal Steam.inventory_start_purchase_result] call result.
@@ -7779,6 +7779,11 @@
 				Called when a user has responded to a microtransaction authorization request.
 			</description>
 		</signal>
+		<signal name="music_playback_status_has_changed">
+			<description>
+				There are no notes in the Steamworks documentation.
+			</description>
+		</signal>
 		<signal name="music_player_remote_to_front">
 			<description>
 				There are no notes in the Steamworks documentation.
@@ -7851,6 +7856,11 @@
 			</description>
 		</signal>
 		<signal name="music_player_will_quit">
+			<description>
+				There are no notes in the Steamworks documentation.
+			</description>
+		</signal>
+		<signal name="music_volume_has_changed">
 			<description>
 				There are no notes in the Steamworks documentation.
 			</description>

@@ -246,6 +246,10 @@ Steam::Steam():
 	callbackLobbyInvite(this, &Steam::lobby_invite),
 	callbackLobbyKicked(this, &Steam::lobby_kicked),
 
+	// Music callbacks //////////////////////////
+	callbackMusicPlaybackStatusHasChanged(this, &Steam::music_playback_status_has_changed),
+	callbackMusicVolumeHasChanged(this, &Steam::music_volume_has_changed),
+
 	// Music Remote callbacks ///////////////////
 	callbackMusicPlayerRemoteToFront(this, &Steam::music_player_remote_to_front),
 	callbackMusicPlayerRemoteWillActivate(this, &Steam::music_player_remote_will_activate),
@@ -451,7 +455,7 @@ Array Steam::getDLCDataByIndex(){
 		return Array();
 	}
 	int32 count = SteamApps()->GetDLCCount();
-	Array dlcData;
+	Array dlc_data;
 	for(int i = 0; i < count; i++){
 		AppId_t app_id = 0;
 		bool available = false;
@@ -462,10 +466,10 @@ Array Steam::getDLCDataByIndex(){
 			dlc["id"] = app_id;
 			dlc["available"] = available;
 			dlc["name"] = name;
-			dlcData.append(dlc);
+			dlc_data.append(dlc);
 		}
 	}
-	return dlcData;
+	return dlc_data;
 }
 
 // Check if given application/game is installed, not necessarily owned.
@@ -2949,10 +2953,10 @@ bool Steam::checkResultSteamID(uint64_t steam_id_expected, int32 this_inventory_
 int32 Steam::consumeItem(uint64_t item_consume, uint32 quantity){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
-	 	if(SteamInventory()->ConsumeItem(&new_inventory_handle, (SteamItemInstanceID_t)item_consume, quantity)){
-	 		// Update the internally stored handle
+		if(SteamInventory()->ConsumeItem(&new_inventory_handle, (SteamItemInstanceID_t)item_consume, quantity)){
+			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
-	 	}
+		}
 	}
 	return new_inventory_handle;
 }
@@ -2981,22 +2985,32 @@ void Steam::destroyResult(int this_inventory_handle){
 }
 
 // Grant one item in exchange for a set of other items.
-int32 Steam::exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity){
+int32 Steam::exchangeItems(const PoolIntArray output_items, const PoolIntArray output_quantity, const PoolIntArray input_items, const PoolIntArray input_quantity){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
-		if(SteamInventory()->ExchangeItems(&new_inventory_handle, output_items.read().ptr(), &output_quantity, 1, (const uint64 *)input_items, &input_quantity, 1)){
+		uint32_t* quantity_out = (uint32*) output_quantity.read().ptr();
+		uint32_t* quantity_in = (uint32*) input_quantity.read().ptr();
+		int array_size = input_items.size();
+		SteamItemInstanceID_t *input_item_ids = new SteamItemInstanceID_t[array_size];
+		for(int i = 0; i < array_size; i++){
+			input_item_ids[i] = input_items[i];
+		}
+		const SteamItemInstanceID_t *these_item_ids = input_item_ids;
+		if(SteamInventory()->ExchangeItems(&new_inventory_handle, output_items.read().ptr(), quantity_out, 1, these_item_ids, quantity_in, 1)){
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
+		delete[] input_item_ids;
 	}
 	return new_inventory_handle;
 }
 
 // Grants specific items to the current user, for developers only.
-int32 Steam::generateItems(const PoolIntArray items, const uint32 quantity){
+int32 Steam::generateItems(const PoolIntArray items, const PoolIntArray quantity){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
-		if(SteamInventory()->GenerateItems(&new_inventory_handle, items.read().ptr(), &quantity, items.size())){
+		uint32_t* this_quantity = (uint32*) quantity.read().ptr();
+		if(SteamInventory()->GenerateItems(&new_inventory_handle, items.read().ptr(), this_quantity, items.size())){
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
@@ -3030,13 +3044,20 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String& name){
 }
 
 // Gets the state of a subset of the current user's inventory.
-int32 Steam::getItemsByID(const uint64_t id_array, uint32 count){
+int32 Steam::getItemsByID(const PoolIntArray id_array){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
-		if(SteamInventory()->GetItemsByID(&new_inventory_handle, (const uint64 *)id_array, count)){
+		int array_size = id_array.size();
+		SteamItemInstanceID_t *item_ids = new SteamItemInstanceID_t[array_size];
+		for(int i = 0; i < array_size; i++){
+			item_ids[i] = id_array[i];
+		}
+		const SteamItemInstanceID_t *these_item_ids = item_ids;
+		if(SteamInventory()->GetItemsByID(&new_inventory_handle, these_item_ids, array_size)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
+		delete[] item_ids;
 	}
 	return new_inventory_handle;
 }
@@ -3053,18 +3074,19 @@ uint64_t Steam::getItemPrice(uint32 definition){
 }
 
 // After a successful call to RequestPrices, you can call this method to get all the pricing for applicable item definitions. Use the result of GetNumItemsWithPrices as the the size of the arrays that you pass in.
-Array Steam::getItemsWithPrices(uint32 length){
+Array Steam::getItemsWithPrices(){
 	if(SteamInventory() == NULL){
 		return Array();
 	}
+	uint32 valid_prices = SteamInventory()->GetNumItemsWithPrices();
 	// Create the return array
 	Array price_array;
 	// Create a temporary array
-	SteamItemDef_t *ids = new SteamItemDef_t[length];
-	uint64 *prices = new uint64[length];
-	uint64 *base_prices = new uint64[length];
-	if(SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, length)){
-		for(uint32 i = 0; i < length; i++){
+	SteamItemDef_t *ids = new SteamItemDef_t[valid_prices];
+	uint64 *prices = new uint64[valid_prices];
+	uint64 *base_prices = new uint64[valid_prices];
+	if(SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, valid_prices)){
+		for(uint32 i = 0; i < valid_prices; i++){
 			Dictionary price_group;
 			price_group["item"] = ids[i];
 			price_group["price"] = (uint64_t)prices[i];
@@ -3076,14 +3098,6 @@ Array Steam::getItemsWithPrices(uint32 length){
 	delete[] prices;
 	delete[] base_prices;
 	return price_array;
-}
-
-// After a successful call to RequestPrices, this will return the number of item definitions with valid pricing.
-uint32 Steam::getNumItemsWithPrices(){
-	if(SteamInventory() == NULL){
-		return 0;
-	}
-	return SteamInventory()->GetNumItemsWithPrices();
 }
 
 // Gets the dynamic properties from an item in an inventory result set.
@@ -3113,6 +3127,7 @@ Array Steam::getResultItems(int32 this_inventory_handle){
 	Array items;
 	uint32 size = 0;
 	if(SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, NULL, &size)){
+		items.resize(size);
 		SteamItemDetails_t *item_array = new SteamItemDetails_t[size];
 		// If no inventory handle is passed, use internal one
 		if(this_inventory_handle == 0){
@@ -3120,12 +3135,12 @@ Array Steam::getResultItems(int32 this_inventory_handle){
 		}
 		if(SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)){
 			for(uint32 i = 0; i < size; i++){
-                Dictionary item_info;
-                item_info["itemdefid"] = item_array[i].m_iDefinition;
-                item_info["item_id"] = item_array[i].m_itemId;
-                item_info["flags"] = item_array[i].m_unFlags;
-                item_info["quantity"] = item_array[i].m_unQuantity;
-                items.append(item_info);
+				Dictionary item_info;
+				item_info["item_id"] = item_array[i].m_itemId;
+				item_info["item_definition"] = item_array[i].m_iDefinition;
+				item_info["flags"] = item_array[i].m_unFlags;
+				item_info["quantity"] = item_array[i].m_unQuantity;
+				items.append(item_info);
 			}
 		}
 		delete[] item_array;
@@ -3236,9 +3251,10 @@ String Steam::serializeResult(int32 this_inventory_handle){
 }
 
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
-void Steam::startPurchase(const PoolIntArray items, const uint32 quantity){
+void Steam::startPurchase(const PoolIntArray items, const PoolIntArray quantity){
 	if(SteamInventory() != NULL){
-		SteamAPICall_t api_call = SteamInventory()->StartPurchase(items.read().ptr(), &quantity, items.size());
+		uint32_t* these_quantities = (uint32*) quantity.read().ptr();
+		SteamAPICall_t api_call = SteamInventory()->StartPurchase(items.read().ptr(), these_quantities, items.size());
 		callResultStartPurchase.Set(api_call, this, &Steam::inventory_start_purchase_result);
 	}
 }
@@ -9780,6 +9796,19 @@ void Steam::lobby_invite(LobbyInvite_t* lobbyData){
 	emit_signal("lobby_invite", inviter, lobby, game);
 }
 
+// MUSIC CALLBACKS //////////////////////////////
+//
+// No notes about this in the Steam docs, but we can assume it just updates us about the plaback status
+void Steam::music_playback_status_has_changed(PlaybackStatusHasChanged_t* call_data){
+	emit_signal("music_playback_status_has_changed");
+}
+
+// No notes about this in the Steam docs, but we can assume it just updates us about the volume changes
+void Steam::music_volume_has_changed(VolumeHasChanged_t* call_data){
+	float new_volume = call_data->m_flNewVolume;
+	emit_signal("music_volume_has_changed", new_volume);
+}
+
 // MUSIC REMOTE CALLBACKS ///////////////////////
 //
 // The majority of callback for Music Remote have no fields and no descriptions. They seem to be primarily fired as responses to functions.
@@ -11128,7 +11157,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
 	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx);
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx, DEFVAL(true));
 	ClassDB::bind_method("steamShutdown", &Steam::steamShutdown);
 	
 	// APPS BIND METHODS ////////////////////////
@@ -11392,10 +11421,9 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("generateItems", "items", "quantity"), &Steam::generateItems);
 	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
 	ClassDB::bind_method(D_METHOD("getItemDefinitionProperty", "definition", "name"), &Steam::getItemDefinitionProperty);
-	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array", "count"), &Steam::getItemsByID);
+	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array"), &Steam::getItemsByID);
 	ClassDB::bind_method(D_METHOD("getItemPrice", "definition"), &Steam::getItemPrice);
-	ClassDB::bind_method(D_METHOD("getItemsWithPrices", "length"), &Steam::getItemsWithPrices);
-	ClassDB::bind_method("getNumItemsWithPrices", &Steam::getNumItemsWithPrices);
+	ClassDB::bind_method(D_METHOD("getItemsWithPrices"), &Steam::getItemsWithPrices);
 	ClassDB::bind_method(D_METHOD("getResultItemProperty", "index", "name", "this_inventory_handle"), &Steam::getResultItemProperty, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultItems", "this_inventory_handle"), &Steam::getResultItems, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultStatus", "this_inventory_handle"), &Steam::getResultStatus, DEFVAL(0));
@@ -12033,6 +12061,10 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("server_responded"));
 	ADD_SIGNAL(MethodInfo("server_failed_to_respond"));
 
+	// MUSIC SIGNALS ////////////////////////////
+	ADD_SIGNAL(MethodInfo("music_playback_status_has_changed"));
+	ADD_SIGNAL(MethodInfo("music_volume_has_changed", PropertyInfo(Variant::REAL, "new_volume")));
+
 	// MUSIC REMOTE SIGNALS /////////////////////
 	ADD_SIGNAL(MethodInfo("music_player_remote_to_front"));
 	ADD_SIGNAL(MethodInfo("music_player_remote_will_activate"));
@@ -12180,7 +12212,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
 	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
 	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
-	
+
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
 	BIND_CONSTANT(ENUMERATED_FOLLOWERS_MAX);											// 50
@@ -12276,7 +12308,6 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(LEADERBOARD_DETAIL_MAX);												// 64
 	BIND_CONSTANT(LEADERBOARD_NAME_MAX);												// 128
 	BIND_CONSTANT(STAT_NAME_MAX);														// 128
-
 
 	/////////////////////////////////////////////
 	// ENUM CONSTANT BINDS //////////////////////

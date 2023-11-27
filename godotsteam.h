@@ -2010,14 +2010,13 @@ class Steam: public Object {
 		int32 consumeItem(uint64_t item_consume, uint32 quantity);
 		int32 deserializeResult(PoolByteArray buffer);
 		void destroyResult(int32 this_inventory_handle = 0);
-		int32 exchangeItems(const PoolIntArray output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
-		int32 generateItems(const PoolIntArray items, const uint32 quantity);
+		int32 exchangeItems(const PoolIntArray output_items, const PoolIntArray output_quantity, const PoolIntArray input_items, const PoolIntArray input_quantity);
+		int32 generateItems(const PoolIntArray items, const PoolIntArray quantity);
 		int32 getAllItems();
 		String getItemDefinitionProperty(uint32 definition, const String& name);
-		int32 getItemsByID(const uint64_t id_array, uint32 count);
+		int32 getItemsByID(const PoolIntArray id_array);
 		uint64_t getItemPrice(uint32 definition);
-		Array getItemsWithPrices(uint32 length);
-		uint32 getNumItemsWithPrices();
+		Array getItemsWithPrices();
 		String getResultItemProperty(uint32 index, const String& name, int32 this_inventory_handle = 0);
 		Array getResultItems(int32 this_inventory_handle = 0);
 		String getResultStatus(int32 this_inventory_handle = 0);
@@ -2027,7 +2026,7 @@ class Steam: public Object {
 		void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 		void requestPrices();
 		String serializeResult(int32 this_inventory_handle = 0);
-		void startPurchase(const PoolIntArray items, const uint32 quantity);
+		void startPurchase(const PoolIntArray items, const PoolIntArray quantity);
 		int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 		int32 triggerItemDrop(uint32 definition);
 		void startUpdateProperties();
@@ -2714,6 +2713,10 @@ class Steam: public Object {
 		STEAM_CALLBACK(Steam, lobby_game_created, LobbyGameCreated_t, callbackLobbyGameCreated);
 		STEAM_CALLBACK(Steam, lobby_invite, LobbyInvite_t, callbackLobbyInvite);
 		STEAM_CALLBACK(Steam, lobby_kicked, LobbyKicked_t, callbackLobbyKicked);
+
+		// Music callbacks //////////////////////
+		STEAM_CALLBACK(Steam, music_playback_status_has_changed, PlaybackStatusHasChanged_t, callbackMusicPlaybackStatusHasChanged);
+		STEAM_CALLBACK(Steam, music_volume_has_changed, VolumeHasChanged_t, callbackMusicVolumeHasChanged);
 
 		// Music Remote callbacks ///////////////
 		STEAM_CALLBACK(Steam, music_player_remote_to_front, MusicPlayerRemoteToFront_t, callbackMusicPlayerRemoteToFront);
