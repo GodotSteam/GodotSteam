@@ -20,14 +20,15 @@
 #include <inttypes.h>
 
 // Include Steamworks API headers
-#include "steam/isteamdualsense.h"
 #include "steam/steam_api.h"
 #include "steam/steamnetworkingfakeip.h"
+#include "steam/isteamdualsense.h"
 
 // Include Godot headers
 #include "core/object/object.h"
 #include "core/object/ref_counted.h"
 #include "core/variant/dictionary.h"
+#include "scene/main/scene_tree.h"
 #include "scene/resources/texture.h"
 
 // Include some system headers
@@ -1746,8 +1747,8 @@ public:
 	bool isSteamRunning();
 	bool restartAppIfNecessary(uint32 app_id);
 	void steamworksError(const String &failed_signal);
-	Dictionary steamInit(bool retrieve_stats = true);
-	Dictionary steamInitEx(bool retrieve_stats = true);
+	Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
+	Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
 	void steamShutdown();
 
 	// Apps /////////////////////////////////
@@ -2009,14 +2010,13 @@ public:
 	int32 consumeItem(uint64_t item_consume, uint32 quantity);
 	int32 deserializeResult(PackedByteArray buffer);
 	void destroyResult(int32 this_inventory_handle = 0);
-	int32 exchangeItems(const PackedInt64Array output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity);
-	int32 generateItems(const PackedInt64Array items, const uint32 quantity);
+	int32 exchangeItems(const PackedInt64Array output_items, const PackedInt32Array output_quantity, const PackedInt64Array input_items, const PackedInt32Array input_quantity);
+	int32 generateItems(const PackedInt64Array items, const PackedInt32Array quantity);
 	int32 getAllItems();
 	String getItemDefinitionProperty(uint32 definition, const String &name);
-	int32 getItemsByID(const uint64_t id_array, uint32 count);
+	int32 getItemsByID(const PackedInt64Array id_array);
 	uint64_t getItemPrice(uint32 definition);
-	Array getItemsWithPrices(uint32 length);
-	uint32 getNumItemsWithPrices();
+	Array getItemsWithPrices();
 	String getResultItemProperty(uint32 index, const String &name, int32 this_inventory_handle = 0);
 	Array getResultItems(int32 this_inventory_handle = 0);
 	String getResultStatus(int32 this_inventory_handle = 0);
@@ -2026,7 +2026,7 @@ public:
 	void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 	void requestPrices();
 	String serializeResult(int32 this_inventory_handle = 0);
-	void startPurchase(const PackedInt64Array items, const uint32 quantity);
+	void startPurchase(const PackedInt64Array items, const PackedInt32Array quantity);
 	int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 	int32 triggerItemDrop(uint32 definition);
 	void startUpdateProperties();
@@ -2550,6 +2550,7 @@ protected:
 private:
 	// Main
 	bool is_init_success;
+	bool were_callbacks_embedded;
 
 	// Apps
 	uint64_t current_app_id = 0;
@@ -2701,6 +2702,10 @@ private:
 	STEAM_CALLBACK(Steam, lobby_game_created, LobbyGameCreated_t, callbackLobbyGameCreated);
 	STEAM_CALLBACK(Steam, lobby_invite, LobbyInvite_t, callbackLobbyInvite);
 	STEAM_CALLBACK(Steam, lobby_kicked, LobbyKicked_t, callbackLobbyKicked);
+
+	// Music callbacks //////////////////////
+	STEAM_CALLBACK(Steam, music_playback_status_has_changed, PlaybackStatusHasChanged_t, callbackMusicPlaybackStatusHasChanged);
+	STEAM_CALLBACK(Steam, music_volume_has_changed, VolumeHasChanged_t, callbackMusicVolumeHasChanged);
 
 	// Music Remote callbacks ///////////////
 	STEAM_CALLBACK(Steam, music_player_remote_to_front, MusicPlayerRemoteToFront_t, callbackMusicPlayerRemoteToFront);

@@ -15,6 +15,7 @@
 //
 // Include GodotSteam header
 #include "godotsteam.h"
+#include "godotsteam_constants.h"
 
 // Include some Godot headers
 #include "core/io/ip.h"
@@ -24,7 +25,6 @@
 #include "fstream"
 #include "vector"
 
-#include "./godotsteam_constants.h"
 
 /////////////////////////////////////////////////
 ///// STEAM SINGLETON? STEAM SINGLETON
@@ -37,184 +37,190 @@ Steam *Steam::singleton = NULL;
 /////////////////////////////////////////////////
 //
 Steam::Steam() :
-		// Apps callbacks ////////////////////////////
-		callbackDLCInstalled(this, &Steam::dlc_installed),
-		callbackFileDetailsResult(this, &Steam::file_details_result),
-		callbackNewLaunchURLParameters(this, &Steam::new_launch_url_parameters),
-		callbackTimedTrialStatus(this, &Steam::timed_trial_status),
+	// Apps callbacks ////////////////////////////
+	callbackDLCInstalled(this, &Steam::dlc_installed),
+	callbackFileDetailsResult(this, &Steam::file_details_result),
+	callbackNewLaunchURLParameters(this, &Steam::new_launch_url_parameters),
+	callbackTimedTrialStatus(this, &Steam::timed_trial_status),
 
-		// Apps List callbacks ///////////////////////
-		callbackAppInstalled(this, &Steam::app_installed),
-		callbackAppUninstalled(this, &Steam::app_uninstalled),
+	// Apps List callbacks ///////////////////////
+	callbackAppInstalled(this, &Steam::app_installed),
+	callbackAppUninstalled(this, &Steam::app_uninstalled),
 
-		// Friends callbacks ////////////////////////
-		callbackAvatarLoaded(this, &Steam::avatar_loaded),
-		callbackAvatarImageLoaded(this, &Steam::avatar_image_loaded),
-		callbackClanActivityDownloaded(this, &Steam::clan_activity_downloaded),
-		callbackFriendRichPresenceUpdate(this, &Steam::friend_rich_presence_update),
-		callbackConnectedChatJoin(this, &Steam::connected_chat_join),
-		callbackConnectedChatLeave(this, &Steam::connected_chat_leave),
-		callbackConnectedClanChatMessage(this, &Steam::connected_clan_chat_message),
-		callbackConnectedFriendChatMessage(this, &Steam::connected_friend_chat_message),
-		callbackJoinRequested(this, &Steam::join_requested),
-		callbackOverlayToggled(this, &Steam::overlay_toggled),
-		callbackJoinGameRequested(this, &Steam::join_game_requested),
-		callbackChangeServerRequested(this, &Steam::change_server_requested),
-		callbackJoinClanChatComplete(this, &Steam::join_clan_chat_complete),
-		callbackPersonaStateChange(this, &Steam::persona_state_change),
-		callbackNameChanged(this, &Steam::name_changed),
-		callbackOverlayBrowserProtocol(this, &Steam::overlay_browser_protocol),
-		callbackUnreadChatMessagesChanged(this, &Steam::unread_chat_messages_changed),
-		callbackEquippedProfileItemsChanged(this, &Steam::equipped_profile_items_changed),
+	// Friends callbacks ////////////////////////
+	callbackAvatarLoaded(this, &Steam::avatar_loaded),
+	callbackAvatarImageLoaded(this, &Steam::avatar_image_loaded),
+	callbackClanActivityDownloaded(this, &Steam::clan_activity_downloaded),
+	callbackFriendRichPresenceUpdate(this, &Steam::friend_rich_presence_update),
+	callbackConnectedChatJoin(this, &Steam::connected_chat_join),
+	callbackConnectedChatLeave(this, &Steam::connected_chat_leave),
+	callbackConnectedClanChatMessage(this, &Steam::connected_clan_chat_message),
+	callbackConnectedFriendChatMessage(this, &Steam::connected_friend_chat_message),
+	callbackJoinRequested(this, &Steam::join_requested),
+	callbackOverlayToggled(this, &Steam::overlay_toggled),
+	callbackJoinGameRequested(this, &Steam::join_game_requested),
+	callbackChangeServerRequested(this, &Steam::change_server_requested),
+	callbackJoinClanChatComplete(this, &Steam::join_clan_chat_complete),
+	callbackPersonaStateChange(this, &Steam::persona_state_change),
+	callbackNameChanged(this, &Steam::name_changed),
+	callbackOverlayBrowserProtocol(this, &Steam::overlay_browser_protocol),
+	callbackUnreadChatMessagesChanged(this, &Steam::unread_chat_messages_changed),
+	callbackEquippedProfileItemsChanged(this, &Steam::equipped_profile_items_changed),
 
-		// Game Search callbacks ////////////////////
-		callbackSearchForGameProgress(this, &Steam::search_for_game_progress),
-		callbackSearchForGameResult(this, &Steam::search_for_game_result),
-		callbackRequestPlayersForGameProgress(this, &Steam::request_players_for_game_progress),
-		callbackRequestPlayersForGameResult(this, &Steam::request_players_for_game_result),
-		callbackRequestPlayersForGameFinalResult(this, &Steam::request_players_for_game_final_result),
-		callbackSubmitPlayerResult(this, &Steam::submit_player_result),
-		callbackEndGameResult(this, &Steam::end_game_result),
+	// Game Search callbacks ////////////////////
+	callbackSearchForGameProgress(this, &Steam::search_for_game_progress),
+	callbackSearchForGameResult(this, &Steam::search_for_game_result),
+	callbackRequestPlayersForGameProgress(this, &Steam::request_players_for_game_progress),
+	callbackRequestPlayersForGameResult(this, &Steam::request_players_for_game_result),
+	callbackRequestPlayersForGameFinalResult(this, &Steam::request_players_for_game_final_result),
+	callbackSubmitPlayerResult(this, &Steam::submit_player_result),
+	callbackEndGameResult(this, &Steam::end_game_result),
 
-		// HTML Surface callbacks ///////////////////
-		callbackHTMLCanGoBackandforward(this, &Steam::html_can_go_backandforward),
-		callbackHTMLChangedTitle(this, &Steam::html_changed_title),
-		callbackHTMLCloseBrowser(this, &Steam::html_close_browser),
-		callbackHTMLFileOpenDialog(this, &Steam::html_file_open_dialog),
-		callbackHTMLFinishedRequest(this, &Steam::html_finished_request),
-		callbackHTMLHideTooltip(this, &Steam::html_hide_tooltip),
-		callbackHTMLHorizontalScroll(this, &Steam::html_horizontal_scroll),
-		callbackHTMLJSAlert(this, &Steam::html_js_alert),
-		callbackHTMLJSConfirm(this, &Steam::html_js_confirm),
-		callbackHTMLLinkAtPosition(this, &Steam::html_link_at_position),
-		callbackHTMLNeedsPaint(this, &Steam::html_needs_paint),
-		callbackHTMLNewWindow(this, &Steam::html_new_window),
-		callbackHTMLOpenLinkInNewTab(this, &Steam::html_open_link_in_new_tab),
-		callbackHTMLSearchResults(this, &Steam::html_search_results),
-		callbackHTMLSetCursor(this, &Steam::html_set_cursor),
-		callbackHTMLShowTooltip(this, &Steam::html_show_tooltip),
-		callbackHTMLStartRequest(this, &Steam::html_start_request),
-		callbackHTMLStatusText(this, &Steam::html_status_text),
-		callbackHTMLUpdateTooltip(this, &Steam::html_update_tooltip),
-		callbackHTMLURLChanged(this, &Steam::html_url_changed),
-		callbackHTMLVerticalScroll(this, &Steam::html_vertical_scroll),
+	// HTML Surface callbacks ///////////////////
+	callbackHTMLCanGoBackandforward(this, &Steam::html_can_go_backandforward),
+	callbackHTMLChangedTitle(this, &Steam::html_changed_title),
+	callbackHTMLCloseBrowser(this, &Steam::html_close_browser),
+	callbackHTMLFileOpenDialog(this, &Steam::html_file_open_dialog),
+	callbackHTMLFinishedRequest(this, &Steam::html_finished_request),
+	callbackHTMLHideTooltip(this, &Steam::html_hide_tooltip),
+	callbackHTMLHorizontalScroll(this, &Steam::html_horizontal_scroll),
+	callbackHTMLJSAlert(this, &Steam::html_js_alert),
+	callbackHTMLJSConfirm(this, &Steam::html_js_confirm),
+	callbackHTMLLinkAtPosition(this, &Steam::html_link_at_position),
+	callbackHTMLNeedsPaint(this, &Steam::html_needs_paint),
+	callbackHTMLNewWindow(this, &Steam::html_new_window),
+	callbackHTMLOpenLinkInNewTab(this, &Steam::html_open_link_in_new_tab),
+	callbackHTMLSearchResults(this, &Steam::html_search_results),
+	callbackHTMLSetCursor(this, &Steam::html_set_cursor),
+	callbackHTMLShowTooltip(this, &Steam::html_show_tooltip),
+	callbackHTMLStartRequest(this, &Steam::html_start_request),
+	callbackHTMLStatusText(this, &Steam::html_status_text),
+	callbackHTMLUpdateTooltip(this, &Steam::html_update_tooltip),
+	callbackHTMLURLChanged(this, &Steam::html_url_changed),
+	callbackHTMLVerticalScroll(this, &Steam::html_vertical_scroll),
 
-		// HTTP callbacks ///////////////////////////
-		callbackHTTPRequestCompleted(this, &Steam::http_request_completed),
-		callbackHTTPRequestDataReceived(this, &Steam::http_request_data_received),
-		callbackHTTPRequestHeadersReceived(this, &Steam::http_request_headers_received),
+	// HTTP callbacks ///////////////////////////
+	callbackHTTPRequestCompleted(this, &Steam::http_request_completed),
+	callbackHTTPRequestDataReceived(this, &Steam::http_request_data_received),
+	callbackHTTPRequestHeadersReceived(this, &Steam::http_request_headers_received),
 
-		// Input callbacks //////////////////////////
-		callbackInputDeviceConnected(this, &Steam::input_device_connected),
-		callbackInputDeviceDisconnected(this, &Steam::input_device_disconnected),
-		callbackInputConfigurationLoaded(this, &Steam::input_configuration_loaded),
-		callbackInputGamePadSlotChange(this, &Steam::input_gamepad_slot_change),
+	// Input callbacks //////////////////////////
+	callbackInputDeviceConnected(this, &Steam::input_device_connected),
+	callbackInputDeviceDisconnected(this, &Steam::input_device_disconnected),
+	callbackInputConfigurationLoaded(this, &Steam::input_configuration_loaded),
+	callbackInputGamePadSlotChange(this, &Steam::input_gamepad_slot_change),
 
-		// Inventory callbacks //////////////////////
-		callbackInventoryDefinitionUpdate(this, &Steam::inventory_definition_update),
-		callbackInventoryFullUpdate(this, &Steam::inventory_full_update),
-		callbackInventoryResultReady(this, &Steam::inventory_result_ready),
+	// Inventory callbacks //////////////////////
+	callbackInventoryDefinitionUpdate(this, &Steam::inventory_definition_update),
+	callbackInventoryFullUpdate(this, &Steam::inventory_full_update),
+	callbackInventoryResultReady(this, &Steam::inventory_result_ready),
 
-		// Matchmaking callbacks ////////////////////
-		callbackFavoritesListAccountsUpdated(this, &Steam::favorites_list_accounts_updated),
-		callbackFavoritesListChanged(this, &Steam::favorites_list_changed),
-		callbackLobbyMessage(this, &Steam::lobby_message),
-		callbackLobbyChatUpdate(this, &Steam::lobby_chat_update),
-		callbackLobbyDataUpdate(this, &Steam::lobby_data_update),
-		callbackLobbyJoined(this, &Steam::lobby_joined),
-		callbackLobbyGameCreated(this, &Steam::lobby_game_created),
-		callbackLobbyInvite(this, &Steam::lobby_invite),
-		callbackLobbyKicked(this, &Steam::lobby_kicked),
+	// Matchmaking callbacks ////////////////////
+	callbackFavoritesListAccountsUpdated(this, &Steam::favorites_list_accounts_updated),
+	callbackFavoritesListChanged(this, &Steam::favorites_list_changed),
+	callbackLobbyMessage(this, &Steam::lobby_message),
+	callbackLobbyChatUpdate(this, &Steam::lobby_chat_update),
+	callbackLobbyDataUpdate(this, &Steam::lobby_data_update),
+	callbackLobbyJoined(this, &Steam::lobby_joined),
+	callbackLobbyGameCreated(this, &Steam::lobby_game_created),
+	callbackLobbyInvite(this, &Steam::lobby_invite),
+	callbackLobbyKicked(this, &Steam::lobby_kicked),
 
-		// Music Remote callbacks ///////////////////
-		callbackMusicPlayerRemoteToFront(this, &Steam::music_player_remote_to_front),
-		callbackMusicPlayerRemoteWillActivate(this, &Steam::music_player_remote_will_activate),
-		callbackMusicPlayerRemoteWillDeactivate(this, &Steam::music_player_remote_will_deactivate),
-		callbackMusicPlayerSelectsPlaylistEntry(this, &Steam::music_player_selects_playlist_entry),
-		callbackMusicPlayerSelectsQueueEntry(this, &Steam::music_player_selects_queue_entry),
-		callbackMusicPlayerWantsLooped(this, &Steam::music_player_wants_looped),
-		callbackMusicPlayerWantsPause(this, &Steam::music_player_wants_pause),
-		callbackMusicPlayerWantsPlayingRepeatStatus(this, &Steam::music_player_wants_playing_repeat_status),
-		callbackMusicPlayerWantsPlayNext(this, &Steam::music_player_wants_play_next),
-		callbackMusicPlayerWantsPlayPrevious(this, &Steam::music_player_wants_play_previous),
-		callbackMusicPlayerWantsPlay(this, &Steam::music_player_wants_play),
-		callbackMusicPlayerWantsShuffled(this, &Steam::music_player_wants_shuffled),
-		callbackMusicPlayerWantsVolume(this, &Steam::music_player_wants_volume),
-		callbackMusicPlayerWillQuit(this, &Steam::music_player_will_quit),
+	// Music callbacks //////////////////////////
+	callbackMusicPlaybackStatusHasChanged(this, &Steam::music_playback_status_has_changed),
+	callbackMusicVolumeHasChanged(this, &Steam::music_volume_has_changed),
 
-		// Networking callbacks /////////////////////
-		callbackP2PSessionConnectFail(this, &Steam::p2p_session_connect_fail),
-		callbackP2PSessionRequest(this, &Steam::p2p_session_request),
+	// Music Remote callbacks ///////////////////
+	callbackMusicPlayerRemoteToFront(this, &Steam::music_player_remote_to_front),
+	callbackMusicPlayerRemoteWillActivate(this, &Steam::music_player_remote_will_activate),
+	callbackMusicPlayerRemoteWillDeactivate(this, &Steam::music_player_remote_will_deactivate),
+	callbackMusicPlayerSelectsPlaylistEntry(this, &Steam::music_player_selects_playlist_entry),
+	callbackMusicPlayerSelectsQueueEntry(this, &Steam::music_player_selects_queue_entry),
+	callbackMusicPlayerWantsLooped(this, &Steam::music_player_wants_looped),
+	callbackMusicPlayerWantsPause(this, &Steam::music_player_wants_pause),
+	callbackMusicPlayerWantsPlayingRepeatStatus(this, &Steam::music_player_wants_playing_repeat_status),
+	callbackMusicPlayerWantsPlayNext(this, &Steam::music_player_wants_play_next),
+	callbackMusicPlayerWantsPlayPrevious(this, &Steam::music_player_wants_play_previous),
+	callbackMusicPlayerWantsPlay(this, &Steam::music_player_wants_play),
+	callbackMusicPlayerWantsShuffled(this, &Steam::music_player_wants_shuffled),
+	callbackMusicPlayerWantsVolume(this, &Steam::music_player_wants_volume),
+	callbackMusicPlayerWillQuit(this, &Steam::music_player_will_quit),
 
-		// Networking Messages callbacks ////////////
-		callbackNetworkMessagesSessionRequest(this, &Steam::network_messages_session_request),
-		callbackNetworkMessagesSessionFailed(this, &Steam::network_messages_session_failed),
+	// Networking callbacks /////////////////////
+	callbackP2PSessionConnectFail(this, &Steam::p2p_session_connect_fail),
+	callbackP2PSessionRequest(this, &Steam::p2p_session_request),
 
-		// Networking Sockets callbacks /////////////
-		callbackNetworkConnectionStatusChanged(this, &Steam::network_connection_status_changed),
-		callbackNetworkAuthenticationStatus(this, &Steam::network_authentication_status),
-		callbackNetworkingFakeIPResult(this, &Steam::fake_ip_result),
+	// Networking Messages callbacks ////////////
+	callbackNetworkMessagesSessionRequest(this, &Steam::network_messages_session_request),
+	callbackNetworkMessagesSessionFailed(this, &Steam::network_messages_session_failed),
 
-		// Networking Utils callbacks ///////////////
-		callbackRelayNetworkStatus(this, &Steam::relay_network_status),
+	// Networking Sockets callbacks /////////////
+	callbackNetworkConnectionStatusChanged(this, &Steam::network_connection_status_changed),
+	callbackNetworkAuthenticationStatus(this, &Steam::network_authentication_status),
+	callbackNetworkingFakeIPResult(this, &Steam::fake_ip_result),
 
-		// Parental Settings callbacks //////////////
-		callbackParentlSettingChanged(this, &Steam::parental_setting_changed),
+	// Networking Utils callbacks ///////////////
+	callbackRelayNetworkStatus(this, &Steam::relay_network_status),
 
-		// Parties callbacks ////////////////////////
-		callbackReserveNotification(this, &Steam::reservation_notification),
-		callbackAvailableBeaconLocationsUpdated(this, &Steam::available_beacon_locations_updated),
-		callbackActiveBeaconsUpdated(this, &Steam::active_beacons_updated),
+	// Parental Settings callbacks //////////////
+	callbackParentlSettingChanged(this, &Steam::parental_setting_changed),
 
-		// Remote Play callbacks ////////////////////
-		callbackRemotePlaySessionConnected(this, &Steam::remote_play_session_connected),
-		callbackRemotePlaySessionDisconnected(this, &Steam::remote_play_session_disconnected),
+	// Parties callbacks ////////////////////////
+	callbackReserveNotification(this, &Steam::reservation_notification),
+	callbackAvailableBeaconLocationsUpdated(this, &Steam::available_beacon_locations_updated),
+	callbackActiveBeaconsUpdated(this, &Steam::active_beacons_updated),
 
-		// Remote Storage callbacks /////////////////
-		callbackLocalFileChanged(this, &Steam::local_file_changed),
+	// Remote Play callbacks ////////////////////
+	callbackRemotePlaySessionConnected(this, &Steam::remote_play_session_connected),
+	callbackRemotePlaySessionDisconnected(this, &Steam::remote_play_session_disconnected),
 
-		// Screenshot callbacks /////////////////////
-		callbackScreenshotReady(this, &Steam::screenshot_ready),
-		callbackScreenshotRequested(this, &Steam::screenshot_requested),
+	// Remote Storage callbacks /////////////////
+	callbackLocalFileChanged(this, &Steam::local_file_changed),
 
-		// UGC callbacks ////////////////////////////
-		callbackItemDownloaded(this, &Steam::item_downloaded),
-		callbackItemInstalled(this, &Steam::item_installed),
-		callbackUserSubscribedItemsListChanged(this, &Steam::user_subscribed_items_list_changed),
+	// Screenshot callbacks /////////////////////
+	callbackScreenshotReady(this, &Steam::screenshot_ready),
+	callbackScreenshotRequested(this, &Steam::screenshot_requested),
 
-		// User callbacks ///////////////////////////
-		callbackClientGameServerDeny(this, &Steam::client_game_server_deny),
-		callbackGameWebCallback(this, &Steam::game_web_callback),
-		callbackGetAuthSessionTicketResponse(this, &Steam::get_auth_session_ticket_response),
-		callbackGetTicketForWebApiResponse(this, &Steam::get_ticket_for_web_api),
-		callbackIPCFailure(this, &Steam::ipc_failure),
-		callbackLicensesUpdated(this, &Steam::licenses_updated),
-		callbackMicrotransactionAuthResponse(this, &Steam::microtransaction_auth_response),
-		callbackSteamServerConnected(this, &Steam::steam_server_connected),
-		callbackSteamServerDisconnected(this, &Steam::steam_server_disconnected),
-		callbackValidateAuthTicketResponse(this, &Steam::validate_auth_ticket_response),
+	// UGC callbacks ////////////////////////////
+	callbackItemDownloaded(this, &Steam::item_downloaded),
+	callbackItemInstalled(this, &Steam::item_installed),
+	callbackUserSubscribedItemsListChanged(this, &Steam::user_subscribed_items_list_changed),
 
-		// User stat callbacks //////////////////////
-		callbackUserAchievementStored(this, &Steam::user_achievement_stored),
-		callbackCurrentStatsReceived(this, &Steam::current_stats_received),
-		callbackUserStatsStored(this, &Steam::user_stats_stored),
-		callbackUserStatsUnloaded(this, &Steam::user_stats_unloaded),
+	// User callbacks ///////////////////////////
+	callbackClientGameServerDeny(this, &Steam::client_game_server_deny),
+	callbackGameWebCallback(this, &Steam::game_web_callback),
+	callbackGetAuthSessionTicketResponse(this, &Steam::get_auth_session_ticket_response),
+	callbackGetTicketForWebApiResponse(this, &Steam::get_ticket_for_web_api),
+	callbackIPCFailure(this, &Steam::ipc_failure),
+	callbackLicensesUpdated(this, &Steam::licenses_updated),
+	callbackMicrotransactionAuthResponse(this, &Steam::microtransaction_auth_response),
+	callbackSteamServerConnected(this, &Steam::steam_server_connected),
+	callbackSteamServerDisconnected(this, &Steam::steam_server_disconnected),
+	callbackValidateAuthTicketResponse(this, &Steam::validate_auth_ticket_response),
 
-		// Utility callbacks ////////////////////////
-		callbackGamepadTextInputDismissed(this, &Steam::gamepad_text_input_dismissed),
-		callbackIPCountry(this, &Steam::ip_country),
-		callbackLowPower(this, &Steam::low_power),
-		callbackSteamAPICallCompleted(this, &Steam::steam_api_call_completed),
-		callbackSteamShutdown(this, &Steam::steam_shutdown),
-		callbackAppResumingFromSuspend(this, &Steam::app_resuming_from_suspend),
-		callbackFloatingGamepadTextInputDismissed(this, &Steam::floating_gamepad_text_input_dismissed),
-		callbackFilterTextDictionaryChanged(this, &Steam::filter_text_dictionary_changed),
+	// User stat callbacks //////////////////////
+	callbackUserAchievementStored(this, &Steam::user_achievement_stored),
+	callbackCurrentStatsReceived(this, &Steam::current_stats_received),
+	callbackUserStatsStored(this, &Steam::user_stats_stored),
+	callbackUserStatsUnloaded(this, &Steam::user_stats_unloaded),
 
-		// Video callbacks //////////////////////////
-		callbackGetOPFSettingsResult(this, &Steam::get_opf_settings_result),
-		callbackGetVideoResult(this, &Steam::get_video_result) {
+	// Utility callbacks ////////////////////////
+	callbackGamepadTextInputDismissed(this, &Steam::gamepad_text_input_dismissed),
+	callbackIPCountry(this, &Steam::ip_country),
+	callbackLowPower(this, &Steam::low_power),
+	callbackSteamAPICallCompleted(this, &Steam::steam_api_call_completed),
+	callbackSteamShutdown(this, &Steam::steam_shutdown),
+	callbackAppResumingFromSuspend(this, &Steam::app_resuming_from_suspend),
+	callbackFloatingGamepadTextInputDismissed(this, &Steam::floating_gamepad_text_input_dismissed),
+	callbackFilterTextDictionaryChanged(this, &Steam::filter_text_dictionary_changed),
+
+	// Video callbacks //////////////////////////
+	callbackGetOPFSettingsResult(this, &Steam::get_opf_settings_result),
+	callbackGetVideoResult(this, &Steam::get_video_result)
+{
 	is_init_success = false;
 	singleton = this;
+	were_callbacks_embedded = false;
 }
 
 /////////////////////////////////////////////////
@@ -251,8 +257,12 @@ bool Steam::restartAppIfNecessary(uint32 app_id) {
 }
 
 // Initialize the SDK, without worrying about the cause of failure.
-Dictionary Steam::steamInit(bool retrieve_stats) {
-	// Create the response dictionary
+Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_callbacks) {
+	// Set the app ID
+	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	
+	// Start the initialization process
 	Dictionary initialize;
 	// Attempt to initialize Steamworks
 	is_init_success = SteamAPI_Init();
@@ -260,24 +270,37 @@ Dictionary Steam::steamInit(bool retrieve_stats) {
 	int status = RESULT_FAIL;
 	String verbal = "Steamworks failed to initialize.";
 	// Steamworks initialized with no problems
-	if (is_init_success) {
+	if(is_init_success){
 		status = RESULT_OK;
 		verbal = "Steamworks active.";
+
+		current_app_id = app_id;
+
+		// Get the current stats, if set
+		if(SteamUserStats() != NULL && retrieve_stats){
+			requestCurrentStats();
+		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+			SceneTree::get_singleton()->connect("process_frame", callbacks);
+			SceneTree::get_singleton()->connect("physics_frame", callbacks);
+		}
 	}
-	// The Steam client is not running
-	if (!isSteamRunning()) {
-		status = RESULT_SERVICE_UNAVAILABLE;
-		verbal = "Steam not running.";
-	} else if (SteamUser() == NULL) {
-		status = RESULT_UNEXPECTED_ERROR;
-		verbal = "Invalid app ID or app not installed.";
+	else{
+		// The Steam client is not running
+		if(!isSteamRunning()){
+			status = RESULT_SERVICE_UNAVAILABLE;
+			verbal = "Steam not running.";
+		}
+		else if(SteamUser() == NULL){
+			status = RESULT_UNEXPECTED_ERROR;
+			verbal = "Invalid app ID or app not installed.";
+		}
 	}
-	// Steam is connected and active, so load the stats and achievements if requested
-	if (status == RESULT_OK && SteamUserStats() != NULL && retrieve_stats) {
-		requestCurrentStats();
-	}
-	// Get this app ID
-	current_app_id = getAppID();
 
 	initialize["status"] = status;
 	initialize["verbal"] = verbal;
@@ -287,7 +310,12 @@ Dictionary Steam::steamInit(bool retrieve_stats) {
 
 // Initialize the Steamworks SDK. On success STEAM_API_INIT_RESULT_OK is returned.
 // Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
-Dictionary Steam::steamInitEx(bool retrieve_stats) {
+Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
+	// Set the app ID
+	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	
+	// Start the initialization process
 	Dictionary initialize;
 	char error_message[STEAM_MAX_ERROR_MESSAGE];
 	ESteamAPIInitResult initialize_result;
@@ -296,15 +324,22 @@ Dictionary Steam::steamInitEx(bool retrieve_stats) {
 
 	if (initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK) {
 		is_init_success = true;
+		current_app_id = app_id;
 
+		// Get the current stats, if set
 		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+			SceneTree::get_singleton()->connect("process_frame", callbacks);
+			SceneTree::get_singleton()->connect("physics_frame", callbacks);
+		}
 	}
-
-	// Get this app ID
-	current_app_id = getAppID();
-
 	initialize["status"] = initialize_result;
 	initialize["verbal"] = error_message;
 
@@ -314,7 +349,17 @@ Dictionary Steam::steamInitEx(bool retrieve_stats) {
 // Shuts down the Steamworks API, releases pointers and frees memory.
 void Steam::steamShutdown() {
 	SteamAPI_Shutdown();
+
+	// If callbacks were connected internally
+	if(were_callbacks_embedded){
+		were_callbacks_embedded = false;
+
+		auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+		SceneTree::get_singleton()->disconnect("process_frame", callbacks);
+		SceneTree::get_singleton()->disconnect("physics_frame", callbacks);
+	}
 }
+
 
 /////////////////////////////////////////////////
 ///// APPS
@@ -2829,35 +2874,49 @@ void Steam::destroyResult(int this_inventory_handle) {
 }
 
 // Grant one item in exchange for a set of other items.
-int32 Steam::exchangeItems(const PackedInt64Array output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity) {
+int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt32Array output_quantity, const PackedInt64Array input_items, const PackedInt32Array input_quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		SteamItemDef_t *generated = new SteamItemDef_t[output_quantity];
-		for (uint32 i = 0; i < output_quantity; i++) {
-			generated[i] = output_items[i];
+		uint32 total_output = sizeof(output_items);
+		SteamItemDef_t *generated_items = new SteamItemDef_t[total_output];
+		for (uint32 i = 0; i < total_output; i++) {
+			generated_items[i] = output_items[i];
 		}
-		if (SteamInventory()->ExchangeItems(&new_inventory_handle, generated, &output_quantity, 1, (const uint64 *)input_items, &input_quantity, 1)) {
+
+		uint32_t* quantity_out = (uint32*) output_quantity.ptr();
+		uint32_t* quantity_in = (uint32*) input_quantity.ptr();
+		
+		int array_size = input_items.size();
+		SteamItemInstanceID_t *input_item_ids = new SteamItemInstanceID_t[array_size];
+		for(int i = 0; i < array_size; i++){
+			input_item_ids[i] = input_items[i];
+		}
+		const SteamItemInstanceID_t *these_item_ids = input_item_ids;
+
+		if (SteamInventory()->ExchangeItems(&new_inventory_handle, generated_items, quantity_out, 1, these_item_ids, quantity_in, 1)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
-		delete[] generated;
+		delete[] generated_items;
 	}
 	return new_inventory_handle;
 }
 
 // Grants specific items to the current user, for developers only.
-int32 Steam::generateItems(const PackedInt64Array items, const uint32 quantity) {
+int32 Steam::generateItems(const PackedInt64Array items, const PackedInt32Array quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		SteamItemDef_t *generated = new SteamItemDef_t[quantity];
-		for (uint32 i = 0; i < quantity; i++) {
-			generated[i] = items[i];
+		uint32 total_quantity = sizeof(items);
+		SteamItemDef_t *generated_items = new SteamItemDef_t[total_quantity];
+		for (uint32 i = 0; i < total_quantity; i++) {
+			generated_items[i] = items[i];
 		}
-		if (SteamInventory()->GenerateItems(&new_inventory_handle, generated, &quantity, items.size())) {
+		uint32_t* this_quantity = (uint32*) quantity.ptr();
+		if (SteamInventory()->GenerateItems(&new_inventory_handle, generated_items, this_quantity, items.size())) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
-		delete[] generated;
+		delete[] generated_items;
 	}
 	return new_inventory_handle;
 }
@@ -2888,13 +2947,22 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String &name) {
 }
 
 // Gets the state of a subset of the current user's inventory.
-int32 Steam::getItemsByID(const uint64_t id_array, uint32 count) {
+int32 Steam::getItemsByID(const PackedInt64Array id_array) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		if (SteamInventory()->GetItemsByID(&new_inventory_handle, (const uint64 *)id_array, count)) {
+
+		int array_size = id_array.size();
+		SteamItemInstanceID_t *item_ids = new SteamItemInstanceID_t[array_size];
+		for(int i = 0; i < array_size; i++){
+			item_ids[i] = id_array[i];
+		}
+		const SteamItemInstanceID_t *these_item_ids = item_ids;
+
+		if (SteamInventory()->GetItemsByID(&new_inventory_handle, these_item_ids, array_size)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
+		delete[] item_ids;
 	}
 	return new_inventory_handle;
 }
@@ -2911,18 +2979,19 @@ uint64_t Steam::getItemPrice(uint32 definition) {
 }
 
 // After a successful call to RequestPrices, you can call this method to get all the pricing for applicable item definitions. Use the result of GetNumItemsWithPrices as the the size of the arrays that you pass in.
-Array Steam::getItemsWithPrices(uint32 length) {
+Array Steam::getItemsWithPrices() {
 	if (SteamInventory() == NULL) {
 		return Array();
 	}
+	uint32 valid_prices = SteamInventory()->GetNumItemsWithPrices();
 	// Create the return array
 	Array price_array;
 	// Create a temporary array
-	SteamItemDef_t *ids = new SteamItemDef_t[length];
-	uint64 *prices = new uint64[length];
-	uint64 *base_prices = new uint64[length];
-	if (SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, length)) {
-		for (uint32 i = 0; i < length; i++) {
+	SteamItemDef_t *ids = new SteamItemDef_t[valid_prices];
+	uint64 *prices = new uint64[valid_prices];
+	uint64 *base_prices = new uint64[valid_prices];
+	if (SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, valid_prices)) {
+		for (uint32 i = 0; i < valid_prices; i++) {
 			Dictionary price_group;
 			price_group["item"] = ids[i];
 			price_group["price"] = (uint64_t)prices[i];
@@ -2934,14 +3003,6 @@ Array Steam::getItemsWithPrices(uint32 length) {
 	delete[] prices;
 	delete[] base_prices;
 	return price_array;
-}
-
-// After a successful call to RequestPrices, this will return the number of item definitions with valid pricing.
-uint32 Steam::getNumItemsWithPrices() {
-	if (SteamInventory() == NULL) {
-		return 0;
-	}
-	return SteamInventory()->GetNumItemsWithPrices();
 }
 
 // Gets the dynamic properties from an item in an inventory result set.
@@ -2978,12 +3039,12 @@ Array Steam::getResultItems(int32 this_inventory_handle) {
 		}
 		if (SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)) {
 			for (uint32 i = 0; i < size; i++) {
-		                Dictionary item_info;
-		                item_info["itemdefid"] = item_array[i].m_iDefinition;
-		                item_info["item_id"] = item_array[i].m_itemId;
-		                item_info["flags"] = item_array[i].m_unFlags;
-		                item_info["quantity"] = item_array[i].m_unQuantity;
-		                items.append(item_info);
+				Dictionary item_info;
+				item_info["item_id"] = (uint64_t)item_array[i].m_itemId;
+				item_info["item_definition"] = item_array[i].m_iDefinition;
+				item_info["flags"] = item_array[i].m_unFlags;
+				item_info["quantity"] = item_array[i].m_unQuantity;
+				items.append(item_info);
 			}
 		}
 		delete[] item_array;
@@ -3088,13 +3149,15 @@ String Steam::serializeResult(int32 this_inventory_handle) {
 }
 
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
-void Steam::startPurchase(const PackedInt64Array items, const uint32 quantity) {
+void Steam::startPurchase(const PackedInt64Array items, const PackedInt32Array quantity) {
 	if (SteamInventory() != NULL) {
-		SteamItemDef_t *purchases = new SteamItemDef_t[quantity];
-		for (uint32 i = 0; i < quantity; i++) {
+		uint32 total_items = sizeof(items);
+		SteamItemDef_t *purchases = new SteamItemDef_t[total_items];
+		for (uint32 i = 0; i < total_items; i++) {
 			purchases[i] = items[i];
 		}
-		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, &quantity, items.size());
+		uint32_t* these_quantities = (uint32*) quantity.ptr();
+		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, these_quantities, items.size());
 		callResultStartPurchase.Set(api_call, this, &Steam::inventory_start_purchase_result);
 		delete[] purchases;
 	}
@@ -9482,6 +9545,19 @@ void Steam::lobby_invite(LobbyInvite_t *lobbyData) {
 	emit_signal("lobby_invite", inviter, lobby, game);
 }
 
+// MUSIC CALLBACKS //////////////////////////////
+//
+// No notes about this in the Steam docs, but we can assume it just updates us about the plaback status
+void Steam::music_playback_status_has_changed(PlaybackStatusHasChanged_t* call_data){
+	emit_signal("music_playback_status_has_changed");
+}
+
+// No notes about this in the Steam docs, but we can assume it just updates us about the volume changes
+void Steam::music_volume_has_changed(VolumeHasChanged_t* call_data){
+	float new_volume = call_data->m_flNewVolume;
+	emit_signal("music_volume_has_changed", new_volume);
+}
+
 // MUSIC REMOTE CALLBACKS ///////////////////////
 //
 // The majority of callback for Music Remote have no fields and no descriptions. They seem to be primarily fired as responses to functions.
@@ -10757,8 +10833,8 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
-	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx);
+	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true), DEFVAL(480), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(480), DEFVAL(false));
 	ClassDB::bind_method("steamShutdown", &Steam::steamShutdown);
 
 	// APPS BIND METHODS ////////////////////////
@@ -11023,10 +11099,9 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("generateItems", "items", "quantity"), &Steam::generateItems);
 	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
 	ClassDB::bind_method(D_METHOD("getItemDefinitionProperty", "definition", "name"), &Steam::getItemDefinitionProperty);
-	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array", "count"), &Steam::getItemsByID);
+	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array"), &Steam::getItemsByID);
 	ClassDB::bind_method(D_METHOD("getItemPrice", "definition"), &Steam::getItemPrice);
-	ClassDB::bind_method(D_METHOD("getItemsWithPrices", "length"), &Steam::getItemsWithPrices);
-	ClassDB::bind_method("getNumItemsWithPrices", &Steam::getNumItemsWithPrices);
+	ClassDB::bind_method(D_METHOD("getItemsWithPrices"), &Steam::getItemsWithPrices);
 	ClassDB::bind_method(D_METHOD("getResultItemProperty", "index", "name", "this_inventory_handle"), &Steam::getResultItemProperty, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultItems", "this_inventory_handle"), &Steam::getResultItems, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultStatus", "this_inventory_handle"), &Steam::getResultStatus, DEFVAL(0));
@@ -11663,6 +11738,10 @@ void Steam::_bind_methods() {
 	// MATCHMAKING SERVER SIGNALS ///////////////
 	ADD_SIGNAL(MethodInfo("server_responded"));
 	ADD_SIGNAL(MethodInfo("server_failed_to_respond"));
+
+	// MUSIC SIGNALS ////////////////////////////
+	ADD_SIGNAL(MethodInfo("music_playback_status_has_changed"));
+	ADD_SIGNAL(MethodInfo("music_volume_has_changed", PropertyInfo(Variant::FLOAT, "new_volume")));
 
 	// MUSIC REMOTE SIGNALS /////////////////////
 	ADD_SIGNAL(MethodInfo("music_player_remote_to_front"));
@@ -13560,8 +13639,8 @@ void Steam::_bind_methods() {
 Steam::~Steam() {
 	// Store stats then shut down ///////////////
 	if (is_init_success) {
-		SteamUserStats()->StoreStats();
-		SteamAPI_Shutdown();
+		Steam::storeStats();
+		Steam::steamShutdown();
 	}
 
 	// Clear app ID and singleton variables /////

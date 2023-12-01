@@ -1,15 +1,14 @@
 # GodotSteam for Godot Engine
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 4.x). For the Windows, Linux, and Mac platforms.
 
-Additional flavors include:
-- [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
-- [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
-- [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server3)
-- [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/server4)
-- [Server GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension)
-- [Server GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative)
+Additional Flavors
+---
+Pre-Compiles | Plug-ins | Server | Examples/Demos
+--- | --- | --- | ---
+[Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)| [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot3)
+[Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3) | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot4)
+[Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server3)
+--- | --- | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server4)
 
 Documentation
 ---
@@ -21,34 +20,17 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v4.4.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.4.3 Changes**
-- Fixed: Joy Con misspelling, pulled from PR from _Handagotes_
-
-**Version 4.4.2 Changes**
-- Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
-- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
-- Fixed: compiler complaining about comparison between Steam enum and GodotSteam enum for `steamInitEx`
-- Fixed: `getListenSocketAddress` fixed to provide the actual address and optional port
-- Changed: different defaults in Github Actions files
-- Changed: `createBrowser` now sends proper NULL when empty string passed
-- Changed: `html_browser_ready` from callback to proper call result
-- Changed: cast handle in `setSize` as Steam HHTMLBrowser
-- Removed: unnecessary `steam_appid.txt` from zips in Github Actions
-
-**Version 4.4.1 Changes**
-- Fixed: missing descriptions for some in-editor functions/signals
-- Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
-
-**Version 4.4 Changes**
-
-- Added: new enums and constant related to new Steam initialization function
-- Added: new enums for NetworkingConfigValue
-- Added: new intialization function `steamInitEx` that is more verbose
-- Added: new UGC function `getUserContentDescriptorPreferences`
-- Added: new Remote Play function `startRemotePlayTogether`
-- Changed: UGC function`setItemTags` to have new argument for admin tags
-- Changed: compatible with Steamworks SDK 1.58
-- Changed: in-editor docs now reflect all changes
+**Version 4.5 Changes**
+- Added: two new arguments to `steamInit` and `steamInitEx` to set your app ID and run_callbacks interally, thanks to _GreenFox_
+- Added: two Music class callbacks
+- Changed: `generateItems`, `exchangeItems`, `getItemsByID`, and `startPurchase` all list-based arguments are now PoolIntArrays
+- Changed: `getItemsByID` now takes one argument, counts the elements in the passed array instead
+- Changed: `getItemsWithPrices` no longer requires any arguments passed to it
+- Changed: in-editor docs have been updated
+- Fixed: `getResultItems` now returns all item data
+- Fixed: missing DEFVAL for `steamInitEx`
+- Fixed: Joy Con name in `getInputTypeForHandle`
+- Removed: `getNumItemsWithPrices` as it was unnecessary
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 

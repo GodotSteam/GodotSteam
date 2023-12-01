@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="Steam" inherits="Object" version="3.4">
+<class name="Steam" inherits="Object" version="4.1">
 	<brief_description>
 		Steamworks SDK / API for the Godot Game Engine.
 	</brief_description>
@@ -26,6 +26,7 @@
 		<link title="Remove Steam">https://godotsteam.com/tutorials/remove_steam/</link>
 		<link title="Rich Presence">https://godotsteam.com/tutorials/rich_presence/</link>
 		<link title="Stats and Achievements">https://godotsteam.com/tutorials/stats_achievements/</link>
+		<link title="Voice">https://godotsteam.com/tutorials/voice</link>
 		<link title="Workshop">https://godotsteam.com/tutorials/workshop/</link>
 	</tutorials>
 	<methods>
@@ -1112,9 +1113,9 @@
 		<method name="exchangeItems">
 			<return type="bool" />
 			<argument index="0" name="output_items" type="PackedIntArray" />
-			<argument index="1" name="output_quantity" type="int" />
-			<argument index="2" name="input_items" type="int" />
-			<argument index="3" name="input_quantity" type="int" />
+			<argument index="1" name="output_quantity" type="PackedIntArray" />
+			<argument index="2" name="input_items" type="PackedIntArray" />
+			<argument index="3" name="input_quantity" type="PackedIntArray" />
 			<description>
 				Grant one item in exchange for a set of other items.
 				This can be used to implement crafting recipes or transmutations, or items which unpack themselves into other items (e.g., a chest).
@@ -1303,7 +1304,7 @@
 		<method name="generateItems">
 			<return type="bool" />
 			<argument index="0" name="items" type="PackedIntArray" />
-			<argument index="1" name="quantity" type="int" />
+			<argument index="1" name="quantity" type="PackedIntArray" />
 			<description>
 				Grants specific items to the current user, for developers only.
 				This API is only intended for prototyping - it is only usable by Steam accounts that belong to the publisher group for your game.
@@ -2644,8 +2645,7 @@
 		</method>
 		<method name="getItemsByID">
 			<return type="bool" />
-			<argument index="0" name="id_array" type="int" />
-			<argument index="1" name="count" type="int" />
+			<argument index="0" name="id_array" type="PackedIntArray" />
 			<description>
 				Gets the state of a subset of the current user's inventory.
 				The subset is specified by an array of item instance IDs.
@@ -2656,9 +2656,8 @@
 		</method>
 		<method name="getItemsWithPrices">
 			<return type="Array" />
-			<argument index="0" name="length" type="int" />
 			<description>
-				After a successful call to [method Steam.requestPrices], you can call this method to get all the pricing for applicable item definitions. Use the result of [method Steam.getNumItemsWithPrices] as the the size of the arrays that you pass in.
+				After a successful call to [method Steam.requestPrices], you can call this method to get all the pricing for applicable item definitions.
 			</description>
 		</method>
 		<method name="getLargeFriendAvatar">
@@ -2939,12 +2938,6 @@
 			<description>
 				Get the number of installed apps for this player.
 				[b]Note:[/b] This is a restricted interface that can only be used by previously approved apps, contact your Steam Account Manager if you believe you need access to this API.
-			</description>
-		</method>
-		<method name="getNumItemsWithPrices">
-			<return type="int" />
-			<description>
-				After a successful call to [method Steam.requestPrices], this will return the number of item definitions with valid pricing.
 			</description>
 		</method>
 		<method name="getNumLobbyMembers">
@@ -3403,7 +3396,13 @@
 			<argument index="0" name="this_inventory_handle" type="int" default="0" />
 			<description>
 				Get the items associated with an inventory result handle.
-				The returned array contains a list of item IDs (int).
+				The returned array contains a list of dictionaries which contain the following keys:
+				[codeblock]
+				┠╴item_id (int)
+				┠╴item_definition (int)
+				┠╴flags (int)
+				┖╴quantity (int)
+				[/codeblock]
 				[b]Note:[/b] If the argument this_inventory_handle is omitted, GodotSteam will use the internally stored ID.
 			</description>
 		</method>
@@ -6337,7 +6336,7 @@
 		<method name="startPurchase">
 			<return type="void" />
 			<argument index="0" name="items" type="PackedIntArray" />
-			<argument index="1" name="quantity" type="int" />
+			<argument index="1" name="quantity" type="PackedIntArray" />
 			<description>
 				Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 				If the purchase process was started successfully, then order_id and transaction_id will be valid in the [signal Steam.inventory_start_purchase_result] call result.
@@ -6368,6 +6367,8 @@
 		<method name="steamInit">
 			<return type="Dictionary" />
 			<argument index="0" name="retrieve_stats" type="bool" default="true" />
+			<argument index="1" name="app_id" type="int" default="480" />
+			<argument index="2" name="embed_callbacks" type="bool" default="false" />
 			<description>
 				Starts up the Steam API.
 				You will receive one of four results:
@@ -6377,6 +6378,25 @@
 				• 20 / "Steam not running"
 				• 79 / "Invalid app ID or app not installed"
 				[/codeblock]
+				You can also pass an app ID for GodotSteam to use for your game, which will default to 480 (SpaceWars) if nothing is passed.
+				Finally, you can pass true for embed_callbacks which will internally do the run_callbacks for your Steam callbacks so you don't have to code that separately in your game.
+			</description>
+		</method>
+		<method name="steamInitEx">
+			<return type="Dictionary" />
+			<argument index="0" name="retrieve_stats" type="bool" default="true" />
+			<argument index="1" name="app_id" type="int" default="480" />
+			<argument index="2" name="embed_callbacks" type="bool" default="false" />
+			<description>
+				Initialize the Steamworks SDK. On success [enum Steam.STEAM_API_INIT_RESULT_OK] is returned.  Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
+				[codeblock]
+				• 0 / "Steamworks active"
+				• 1 / "Failed (generic)"
+				• 2 / "Cannot connect to Steam, client probably isn't running"
+				• 3 / "Steam client appears to be out of date"
+				[/codeblock]
+				You can also pass an app ID for GodotSteam to use for your game, which will default to 480 (SpaceWars) if nothing is passed.
+				Finally, you can pass true for embed_callbacks which will internally do the run_callbacks for your Steam callbacks so you don't have to code that separately in your game.
 			</description>
 		</method>
 		<method name="steamShutdown">
@@ -7751,6 +7771,11 @@
 				Called when a user has responded to a microtransaction authorization request.
 			</description>
 		</signal>
+		<signal name="music_playback_status_has_changed">
+			<description>
+				There are no notes in the Steamworks documentation.
+			</description>
+		</signal>
 		<signal name="music_player_remote_to_front">
 			<description>
 				There are no notes in the Steamworks documentation.
@@ -7823,6 +7848,11 @@
 			</description>
 		</signal>
 		<signal name="music_player_will_quit">
+			<description>
+				There are no notes in the Steamworks documentation.
+			</description>
+		</signal>
+		<signal name="music_volume_has_changed">
 			<description>
 				There are no notes in the Steamworks documentation.
 			</description>
