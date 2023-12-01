@@ -340,6 +340,7 @@ Steam::Steam():
 {
 	is_init_success = false;
 	singleton = this;
+	were_callbacks_embedded = false;
 }
 
 
@@ -378,8 +379,12 @@ bool Steam::restartAppIfNecessary(uint32 app_id){
 }
 
 // Initialize the SDK, without worrying about the cause of failure.
-Dictionary Steam::steamInit(bool retrieve_stats){
-	// Create the response dictionary
+Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
+	// Set the app ID
+	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	
+	// Start the initialization process
 	Dictionary initialize;
 	// Attempt to initialize Steamworks
 	is_init_success = SteamAPI_Init();
@@ -390,22 +395,33 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 	if(is_init_success){
 		status = RESULT_OK;
 		verbal = "Steamworks active.";
+
+		current_app_id = app_id;
+
+		// Get the current stats, if set
+		if(SteamUserStats() != NULL && retrieve_stats){
+			requestCurrentStats();
+		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			SceneTree::get_singleton()->connect("idle_frame", Steam::singleton, "run_callbacks");
+			SceneTree::get_singleton()->connect("physics_frame", Steam::singleton, "run_callbacks");
+		}
 	}
-	// The Steam client is not running
-	if(!isSteamRunning()){
-		status = RESULT_SERVICE_UNAVAILABLE;
-		verbal = "Steam not running.";
+	else{
+		// The Steam client is not running
+		if(!isSteamRunning()){
+			status = RESULT_SERVICE_UNAVAILABLE;
+			verbal = "Steam not running.";
+		}
+		else if(SteamUser() == NULL){
+			status = RESULT_UNEXPECTED_ERROR;
+			verbal = "Invalid app ID or app not installed.";
+		}
 	}
-	else if(SteamUser() == NULL){
-		status = RESULT_UNEXPECTED_ERROR;
-		verbal = "Invalid app ID or app not installed.";
-	}
-	// Steam is connected and active, so load the stats and achievements if requested
-	if(status == RESULT_OK && SteamUserStats() != NULL && retrieve_stats){
-		requestCurrentStats();
-	}
-	// Get this app ID
-	current_app_id = getAppID();
 
 	initialize["status"] = status;
 	initialize["verbal"] = verbal;
@@ -415,24 +431,35 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 
 // Initialize the Steamworks SDK. On success k_ESteamAPIInitResult_OK is returned.
 // Otherwise, if pOutErrMsg is non-NULL, it will receive a non-localized message that explains the reason for the failure
-Dictionary Steam::steamInitEx(bool retrieve_stats){
+Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
+	// Set the app ID
+	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	
+	// Start the initialization process
 	Dictionary initialize;
 	char error_message[STEAM_MAX_ERROR_MESSAGE];
 	ESteamAPIInitResult initialize_result;
 
 	initialize_result = SteamAPI_InitEx(&error_message);
 
-	if(initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK){
+	if (initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK) {
 		is_init_success = true;
+		current_app_id = app_id;
 
-		if(SteamUserStats() != NULL && retrieve_stats){
+		// Get the current stats, if set
+		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			SceneTree::get_singleton()->connect("idle_frame", Steam::singleton, "run_callbacks");
+			SceneTree::get_singleton()->connect("physics_frame", Steam::singleton, "run_callbacks");
+		}
 	}
-
-	// Get this app ID
-	current_app_id = getAppID();
-
 	initialize["status"] = initialize_result;
 	initialize["verbal"] = error_message;
 
@@ -442,6 +469,14 @@ Dictionary Steam::steamInitEx(bool retrieve_stats){
 // Shuts down the Steamworks API, releases pointers and frees memory.
 void Steam::steamShutdown(){
 	SteamAPI_Shutdown();
+
+	// If callbacks were connected internally
+	if(were_callbacks_embedded){
+		were_callbacks_embedded = false;
+
+		SceneTree::get_singleton()->disconnect("idle_frame", Steam::singleton, "run_callbacks");
+		SceneTree::get_singleton()->disconnect("physics_frame", Steam::singleton, "run_callbacks");
+	}
 }
 
 
@@ -3136,7 +3171,7 @@ Array Steam::getResultItems(int32 this_inventory_handle){
 		if(SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)){
 			for(uint32 i = 0; i < size; i++){
 				Dictionary item_info;
-				item_info["item_id"] = item_array[i].m_itemId;
+				item_info["item_id"] = (uint64_t)item_array[i].m_itemId;
 				item_info["item_definition"] = item_array[i].m_iDefinition;
 				item_info["flags"] = item_array[i].m_unFlags;
 				item_info["quantity"] = item_array[i].m_unQuantity;
@@ -11156,8 +11191,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
-	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats", "app_id", "embed_callbacks"), &Steam::steamInit, DEFVAL(true), DEFVAL(480), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats", "app_id", "embed_callbacks"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(480), DEFVAL(false));
 	ClassDB::bind_method("steamShutdown", &Steam::steamShutdown);
 	
 	// APPS BIND METHODS ////////////////////////
@@ -13964,8 +13999,8 @@ void Steam::_bind_methods(){
 Steam::~Steam(){
 	// Store stats then shut down ///////////////
 	if(is_init_success){
-		SteamUserStats()->StoreStats();
-		SteamAPI_Shutdown();
+		Steam::storeStats();
+		Steam::steamShutdown();
 	}
 
 	// Clear app ID and singleton variables /////

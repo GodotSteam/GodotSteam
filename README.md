@@ -18,7 +18,11 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.22)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.21.3)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 3.22.1 Changes**
+- Added: two new arguments to `steamInit` and `steamInitEx` to set your app ID and run_callbacks interally, thanks to _GreenFox_
+- Fixed: issue with callback that caused compiling failure in Linux
 
 **Version 3.22 Changes**
 - Added: two Music class callbacks

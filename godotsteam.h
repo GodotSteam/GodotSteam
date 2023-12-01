@@ -28,6 +28,7 @@
 #include "core/object.h"
 #include "scene/resources/texture.h"
 #include "core/reference.h"
+#include "scene/main/scene_tree.h"
 #include "core/dictionary.h"
 #include "core/method_bind_ext.gen.inc"
 
@@ -1747,8 +1748,8 @@ class Steam: public Object {
 		bool isSteamRunning();
 		bool restartAppIfNecessary(uint32 app_id);
 		void steamworksError(const String& failed_signal);
-		Dictionary steamInit(bool retrieve_stats = true);
-		Dictionary steamInitEx(bool retrieve_stats = true);
+		Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
+		Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
 		void steamShutdown();
 
 		// Apps /////////////////////////////////
@@ -2550,6 +2551,7 @@ class Steam: public Object {
 	private:
 		// Main
 		bool is_init_success;
+		bool were_callbacks_embedded;
 
 		// Apps
 		uint64_t current_app_id = 0;
