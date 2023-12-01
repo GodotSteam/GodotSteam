@@ -17,6 +17,7 @@
 //
 // Include GodotSteam header
 #include "godotsteam.h"
+#include "godotsteam_constants.h"
 
 // Include some system headers
 #include "string.h"
@@ -24,125 +25,6 @@
 #include "vector"
 
 using namespace godot;
-
-
-/////////////////////////////////////////////////
-///// DEFINING CONSTANTS
-/////////////////////////////////////////////////
-//
-// Define Steam API constants
-#define API_CALL_INVALID 0x0
-#define APP_ID_INVALID 0x0
-#define AUTH_TICKET_INVALID 0
-#define DEPOT_ID_INVALID 0x0
-#define GAME_EXTRA_INFO_MAX 64
-#define INVALID_BREAKPAD_HANDLE 0
-#define STEAM_ACCOUNT_ID_MASK 0xFFFFFFFF
-#define STEAM_ACCOUNT_INSTANCE_MASK 0x000FFFFF
-#define STEAM_BUFFER_SIZE 255
-#define STEAM_LARGE_BUFFER_SIZE 8160
-#define STEAM_MAX_ERROR_MESSAGE 1024
-#define STEAM_USER_CONSOLE_INSTANCE 2
-#define STEAM_USER_DESKTOP_INSTANCE 1
-#define STEAM_USER_WEB_INSTANCE 4
-#define QUERY_PORT_ERROR 0xFFFE
-#define QUERY_PORT_NOT_INITIALIZED 0xFFFF
-
-// Define Friends constants
-#define CHAT_METADATA_MAX 8192
-#define ENUMERATED_FOLLOWERS_MAX 50
-#define FRIENDS_GROUP_LIMIT 100
-#define INVALID_FRIEND_GROUP_ID -1
-#define MAX_FRIENDS_GROUP_NAME 64
-#define MAX_RICH_PRESENCE_KEY_LENGTH 64
-#define MAX_RICH_PRESENCE_KEYS 20
-#define MAX_RICH_PRESENCE_VALUE_LENTH 256
-#define PERSONA_NAME_MAX_UTF8 128
-#define PERSONA_NAME_MAX_UTF16 32
-
-// Define HTML Surface constants
-#define INVALID_HTMLBROWSER 0
-
-// Define HTTP constants
-#define HTTPCOOKIE_INVALID_HANDLE 0
-#define HTTPREQUEST_INVALID_HANDLE 0
-
-// Define Input constants
-#define INPUT_MAX_ANALOG_ACTIONS 24
-#define INPUT_MAX_ANALOG_ACTION_DATA 1.0f
-#define INPUT_MAX_COUNT 16
-#define INPUT_MAX_DIGITAL_ACTIONS 256
-#define INPUT_MAX_ORIGINS 8
-#define INPUT_MIN_ANALOG_ACTION_DATA -1.0f
-
-// Define Inventory constants
-#define INVENTORY_RESULT_INVALID -1
-#define ITEM_INSTANCE_ID_INVALID 0
-
-// Define Matchmaking constants
-#define SERVER_QUERY_INVALID 0xffffffff
-#define MAX_LOBBY_KEY_LENGTH 255
-#define FAVORITE_FLAG_FAVORITE 0x01
-#define FAVORITE_FLAG_HISTORY 0x02
-#define FAVORITE_FLAG_NONE 0x00
-
-// Define Matchmaking Servers constants
-#define MAX_GAME_SERVER_GAME_DATA 2048
-#define MAX_GAME_SERVER_GAME_DESCRIPTION 64
-#define MAX_GAME_SERVER_GAME_DIR 32
-#define MAX_GAME_SERVER_MAP_NAME 32
-#define MAX_GAME_SERVER_NAME 64
-#define MAX_GAME_SERVER_TAGS 128
-
-// Define Music Remote constants
-#define MUSIC_NAME_MAX_LENGTH 255
-#define MUSIC_PNG_MAX_LENGTH 65535
-
-// Define Networking Message constants
-#define NETWORKING_SEND_UNRELIABLE 0
-#define NETWORKING_SEND_NO_NAGLE 1
-#define NETWORKING_SEND_NO_DELAY 4
-#define NETWORKING_SEND_RELIABLE 8
-
-// Define Remote Play constants
-#define DEVICE_FORM_FACTOR_UNKNOWN 0
-#define DEVICE_FORM_FACTOR_PHONE 1
-#define DEVICE_FORM_FACTOR_TABLET 2
-#define DEVICE_FORM_FACTOR_COMPUTER 3
-#define DEVICE_FORM_FACTOR_TV 4
-
-// Define Remote Storage constants
-#define FILE_NAME_MAX 260
-#define PUBLISHED_DOCUMENT_CHANGE_DESCRIPTION_MAX 8000
-#define PUBLISHED_DOCUMENT_DESCRIPTION_MAX 8000
-#define PUBLISHED_DOCUMENT_TITLE_MAX 128 + 1
-#define PUBLISHED_FILE_URL_MAX 256
-#define TAG_LIST_MAX 1024 + 1
-#define PUBLISHED_FILE_ID_INVALID 0
-#define PUBLISHED_FILE_UPDATE_HANDLE_INVALID 0
-#define UGC_FILE_STREAM_HANDLE_INVALID 0
-#define UGC_HANDLE_INVALID 0
-#define ENUMERATE_PUBLISHED_FILES_MAX_RESULTS 50
-#define MAX_CLOUD_FILE_CHUNK_SIZE 100 * 1024 * 1024
-
-// Define Screenshot constants
-#define SCREENSHOT_INVALID_HANDLE 0
-#define UFS_TAG_TYPE_MAX 255
-#define UFS_TAG_VALUE_MAX 255
-#define MAX_TAGGED_PUBLISHED_FILES 32
-#define MAX_TAGGED_USERS 32
-#define SCREENSHOT_THUMB_WIDTH 200
-
-// Define UGC constants
-#define NUM_UGC_RESULTS_PER_PAGE 50
-#define DEVELOPER_METADATA_MAX 5000
-#define UGC_QUERY_HANDLE_INVALID 0
-#define UGC_UPDATE_HANDLE_INVALID 0
-
-// Define User Stats constants
-#define LEADERBOARD_DETAIL_MAX 64
-#define LEADERBOARD_NAME_MAX 128
-#define STAT_NAME_MAX 128
 
 
 /////////////////////////////////////////////////
@@ -197,6 +79,7 @@ Steam::Steam():
 	callbackEndGameResult(this, &Steam::end_game_result),
 
 	// HTML Surface callbacks ///////////////////
+	callbackHTMLBrowserReady(this, &Steam::html_browser_ready),
 	callbackHTMLCanGoBackandforward(this, &Steam::html_can_go_backandforward),
 	callbackHTMLChangedTitle(this, &Steam::html_changed_title),
 	callbackHTMLCloseBrowser(this, &Steam::html_close_browser),
@@ -245,6 +128,10 @@ Steam::Steam():
 	callbackLobbyGameCreated(this, &Steam::lobby_game_created),
 	callbackLobbyInvite(this, &Steam::lobby_invite),
 	callbackLobbyKicked(this, &Steam::lobby_kicked),
+
+		// Music callbacks //////////////////////////
+		callbackMusicPlaybackStatusHasChanged(this, &Steam::music_playback_status_has_changed),
+		callbackMusicVolumeHasChanged(this, &Steam::music_volume_has_changed),
 
 	// Music Remote callbacks ///////////////////
 	callbackMusicPlayerRemoteToFront(this, &Steam::music_player_remote_to_front),
@@ -336,6 +223,7 @@ Steam::Steam():
 {
 	is_init_success = false;
 	singleton = this;
+	were_callbacks_embedded = false;
 }
 
 
@@ -373,9 +261,13 @@ bool Steam::restartAppIfNecessary(uint32 app_id){
 	return SteamAPI_RestartAppIfNecessary((AppId_t)app_id);
 }
 
-// Initialize Steamworks
-Dictionary Steam::steamInit(bool retrieve_stats){
-	// Create the response dictionary
+// Initialize the SDK, without worrying about the cause of failure.
+Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_callbacks) {
+	// Set the app ID
+	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	
+	// Start the initialization process
 	Dictionary initialize;
 	// Attempt to initialize Steamworks
 	is_init_success = SteamAPI_Init();
@@ -386,22 +278,34 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 	if(is_init_success){
 		status = RESULT_OK;
 		verbal = "Steamworks active.";
+
+		current_app_id = app_id;
+
+		// Get the current stats, if set
+		if(SteamUserStats() != NULL && retrieve_stats){
+			requestCurrentStats();
+		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+			SceneTree::get_singleton()->connect("process_frame", callbacks);
+			SceneTree::get_singleton()->connect("physics_frame", callbacks);
+		}
 	}
-	// The Steam client is not running
-	if(!isSteamRunning()){
-		status = RESULT_SERVICE_UNAVAILABLE;
-		verbal = "Steam not running.";
+	else{
+		// The Steam client is not running
+		if(!isSteamRunning()){
+			status = RESULT_SERVICE_UNAVAILABLE;
+			verbal = "Steam not running.";
+		}
+		else if(SteamUser() == NULL){
+			status = RESULT_UNEXPECTED_ERROR;
+			verbal = "Invalid app ID or app not installed.";
+		}
 	}
-	else if(SteamUser() == NULL){
-		status = RESULT_UNEXPECTED_ERROR;
-		verbal = "Invalid app ID or app not installed.";
-	}
-	// Steam is connected and active, so load the stats and achievements if requested
-	if(status == RESULT_OK && SteamUserStats() != NULL && retrieve_stats){
-		requestCurrentStats();
-	}
-	// Get this app ID
-	current_app_id = getAppID();
 
 	initialize["status"] = status;
 	initialize["verbal"] = verbal;
@@ -409,26 +313,38 @@ Dictionary Steam::steamInit(bool retrieve_stats){
 	return initialize;
 }
 
-// Initialize the Steamworks SDK. On success k_ESteamAPIInitResult_OK is returned.
-// Otherwise, if pOutErrMsg is non-NULL, it will receive a non-localized message that explains the reason for the failure
-Dictionary Steam::steamInitEx(bool retrieve_stats){
+// Initialize the Steamworks SDK. On success STEAM_API_INIT_RESULT_OK is returned.
+// Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
+Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
+	// Set the app ID
+	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	
+	// Start the initialization process
 	Dictionary initialize;
 	char error_message[STEAM_MAX_ERROR_MESSAGE];
 	ESteamAPIInitResult initialize_result;
 
 	initialize_result = SteamAPI_InitEx(&error_message);
 
-	if(initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK){
+	if (initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK) {
 		is_init_success = true;
+		current_app_id = app_id;
 
-		if(SteamUserStats() != NULL && retrieve_stats){
+		// Get the current stats, if set
+		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+			SceneTree::get_singleton()->connect("process_frame", callbacks);
+			SceneTree::get_singleton()->connect("physics_frame", callbacks);
+		}
 	}
-
-	// Get this app ID
-	current_app_id = getAppID();
-
 	initialize["status"] = initialize_result;
 	initialize["verbal"] = error_message;
 
@@ -436,8 +352,17 @@ Dictionary Steam::steamInitEx(bool retrieve_stats){
 }
 
 // Shuts down the Steamworks API, releases pointers and frees memory.
-void Steam::steamShutdown(){
+void Steam::steamShutdown() {
 	SteamAPI_Shutdown();
+
+	// If callbacks were connected internally
+	if(were_callbacks_embedded){
+		were_callbacks_embedded = false;
+
+		auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+		SceneTree::get_singleton()->disconnect("process_frame", callbacks);
+		SceneTree::get_singleton()->disconnect("physics_frame", callbacks);
+	}
 }
 
 
@@ -1828,20 +1753,7 @@ void Steam::copyToClipboard(uint32 this_handle){
 // Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.
 void Steam::createBrowser(const String& user_agent, const String& user_css){
 	if(SteamHTMLSurface() != NULL){
-		char *this_user_agent = new char[sizeof(user_agent)];
-		strcpy(this_user_agent, user_agent.utf8().get_data());
-		char *this_user_css = new char[sizeof(user_css)];
-		strcpy(this_user_css, user_css.utf8().get_data());
-		if(user_agent.is_empty()){
-			this_user_agent = NULL;
-		}
-		if(user_css.is_empty()){
-			this_user_css = NULL;
-		}
-		SteamAPICall_t api_call = SteamHTMLSurface()->CreateBrowser(this_user_agent, this_user_css);
-		callResultHTMLBrowserReady.Set(api_call, this, &Steam::html_browser_ready);
-		delete[] this_user_agent;
-		delete[] this_user_css;
+		SteamHTMLSurface()->CreateBrowser(user_agent.utf8().get_data(), user_css.utf8().get_data());
 	}
 }
 
@@ -2108,7 +2020,7 @@ void Steam::setSize(uint32 width, uint32 height, uint32 this_handle){
 		if(this_handle == 0){
 			this_handle = browser_handle;
 		}
-		SteamHTMLSurface()->SetSize((HHTMLBrowser)this_handle, width, height);
+		SteamHTMLSurface()->SetSize(this_handle, width, height);
 	}
 }
 
@@ -2605,10 +2517,10 @@ String Steam::getInputTypeForHandle(uint64_t input_handle){
 		return "Android Controller";
 	}
 	else if(inputType == k_ESteamInputType_SwitchJoyConPair){
-		return "Switch Jon Cons (Pair)";
+		return "Switch Joy Cons (Pair)";
 	}
 	else if(inputType == k_ESteamInputType_SwitchJoyConSingle){
-		return "Switch Jon Con (Single)";
+		return "Switch Joy Con (Single)";
 	}
 	else if(inputType == k_ESteamInputType_SwitchProController){
 		return "Switch Pro Controller";
@@ -2981,35 +2893,49 @@ void Steam::destroyResult(int this_inventory_handle){
 }
 
 // Grant one item in exchange for a set of other items.
-int32 Steam::exchangeItems(const PackedInt64Array output_items, const uint32 output_quantity, const uint64_t input_items, const uint32 input_quantity){
+int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt32Array output_quantity, const PackedInt64Array input_items, const PackedInt32Array input_quantity) {
 	int32 new_inventory_handle = 0;
-	if(SteamInventory() != NULL){
-		SteamItemDef_t *generated = new SteamItemDef_t[output_quantity];
-		for(uint32 i = 0; i < output_quantity; i++){
-			generated[i] = output_items[i];
+	if (SteamInventory() != NULL) {
+		uint32 total_output = sizeof(output_items);
+		SteamItemDef_t *generated_items = new SteamItemDef_t[total_output];
+		for (uint32 i = 0; i < total_output; i++) {
+			generated_items[i] = output_items[i];
 		}
-		if(SteamInventory()->ExchangeItems(&new_inventory_handle, generated, &output_quantity, 1, (const uint64 *)input_items, &input_quantity, 1)){
+
+		uint32_t* quantity_out = (uint32*) output_quantity.ptr();
+		uint32_t* quantity_in = (uint32*) input_quantity.ptr();
+		
+		int array_size = input_items.size();
+		SteamItemInstanceID_t *input_item_ids = new SteamItemInstanceID_t[array_size];
+		for(int i = 0; i < array_size; i++){
+			input_item_ids[i] = input_items[i];
+		}
+		const SteamItemInstanceID_t *these_item_ids = input_item_ids;
+
+		if (SteamInventory()->ExchangeItems(&new_inventory_handle, generated_items, quantity_out, 1, these_item_ids, quantity_in, 1)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
-		delete[] generated;
+		delete[] generated_items;
 	}
 	return new_inventory_handle;
 }
 
 // Grants specific items to the current user, for developers only.
-int32 Steam::generateItems(const PackedInt64Array items, const uint32 quantity){
+int32 Steam::generateItems(const PackedInt64Array items, const PackedInt32Array quantity) {
 	int32 new_inventory_handle = 0;
-	if(SteamInventory() != NULL){
-		SteamItemDef_t *generated = new SteamItemDef_t[quantity];
-		for(uint32 i = 0; i < quantity; i++){
-			generated[i] = items[i];
+	if (SteamInventory() != NULL) {
+		uint32 total_quantity = sizeof(items);
+		SteamItemDef_t *generated_items = new SteamItemDef_t[total_quantity];
+		for (uint32 i = 0; i < total_quantity; i++) {
+			generated_items[i] = items[i];
 		}
-		if(SteamInventory()->GenerateItems(&new_inventory_handle, generated, &quantity, items.size())){
+		uint32_t* this_quantity = (uint32*) quantity.ptr();
+		if (SteamInventory()->GenerateItems(&new_inventory_handle, generated_items, this_quantity, items.size())) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
-		delete[] generated;
+		delete[] generated_items;
 	}
 	return new_inventory_handle;
 }
@@ -3040,13 +2966,22 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String& name){
 }
 
 // Gets the state of a subset of the current user's inventory.
-int32 Steam::getItemsByID(const uint64_t id_array, uint32 count){
+int32 Steam::getItemsByID(const PackedInt64Array id_array) {
 	int32 new_inventory_handle = 0;
-	if(SteamInventory() != NULL){
-		if(SteamInventory()->GetItemsByID(&new_inventory_handle, (const uint64 *)id_array, count)){
+	if (SteamInventory() != NULL) {
+
+		int array_size = id_array.size();
+		SteamItemInstanceID_t *item_ids = new SteamItemInstanceID_t[array_size];
+		for(int i = 0; i < array_size; i++){
+			item_ids[i] = id_array[i];
+		}
+		const SteamItemInstanceID_t *these_item_ids = item_ids;
+
+		if (SteamInventory()->GetItemsByID(&new_inventory_handle, these_item_ids, array_size)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
+		delete[] item_ids;
 	}
 	return new_inventory_handle;
 }
@@ -3063,18 +2998,19 @@ uint64_t Steam::getItemPrice(uint32 definition){
 }
 
 // After a successful call to RequestPrices, you can call this method to get all the pricing for applicable item definitions. Use the result of GetNumItemsWithPrices as the the size of the arrays that you pass in.
-Array Steam::getItemsWithPrices(uint32 length){
-	if(SteamInventory() == NULL){
+Array Steam::getItemsWithPrices() {
+	if (SteamInventory() == NULL) {
 		return Array();
 	}
+	uint32 valid_prices = SteamInventory()->GetNumItemsWithPrices();
 	// Create the return array
 	Array price_array;
 	// Create a temporary array
-	SteamItemDef_t *ids = new SteamItemDef_t[length];
-	uint64 *prices = new uint64[length];
-	uint64 *base_prices = new uint64[length];
-	if(SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, length)){
-		for(uint32 i = 0; i < length; i++){
+	SteamItemDef_t *ids = new SteamItemDef_t[valid_prices];
+	uint64 *prices = new uint64[valid_prices];
+	uint64 *base_prices = new uint64[valid_prices];
+	if (SteamInventory()->GetItemsWithPrices(ids, prices, base_prices, valid_prices)) {
+		for (uint32 i = 0; i < valid_prices; i++) {
 			Dictionary price_group;
 			price_group["item"] = ids[i];
 			price_group["price"] = (uint64_t)prices[i];
@@ -3086,14 +3022,6 @@ Array Steam::getItemsWithPrices(uint32 length){
 	delete[] prices;
 	delete[] base_prices;
 	return price_array;
-}
-
-// After a successful call to RequestPrices, this will return the number of item definitions with valid pricing.
-uint32 Steam::getNumItemsWithPrices(){
-	if(SteamInventory() == NULL){
-		return 0;
-	}
-	return SteamInventory()->GetNumItemsWithPrices();
 }
 
 // Gets the dynamic properties from an item in an inventory result set.
@@ -3115,23 +3043,27 @@ String Steam::getResultItemProperty(uint32 index, const String& name, int32 this
 }
 
 // Get the items associated with an inventory result handle.
-Array Steam::getResultItems(int32 this_inventory_handle){
-	if(SteamInventory() == NULL){
+Array Steam::getResultItems(int32 this_inventory_handle) {
+	if (SteamInventory() == NULL) {
 		return Array();
 	}
 	// Set up return array
 	Array items;
 	uint32 size = 0;
-	if(SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, NULL, &size)){
-		items.resize(size);
+	if (SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, NULL, &size)) {
 		SteamItemDetails_t *item_array = new SteamItemDetails_t[size];
 		// If no inventory handle is passed, use internal one
-		if(this_inventory_handle == 0){
+		if (this_inventory_handle == 0) {
 			this_inventory_handle = inventory_handle;
 		}
-		if(SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)){
-			for(uint32 i = 0; i < size; i++){
-				items.push_back((uint64_t)item_array[i].m_itemId);
+		if (SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)) {
+			for (uint32 i = 0; i < size; i++) {
+				Dictionary item_info;
+				item_info["item_id"] = (uint64_t)item_array[i].m_itemId;
+				item_info["item_definition"] = item_array[i].m_iDefinition;
+				item_info["flags"] = item_array[i].m_unFlags;
+				item_info["quantity"] = item_array[i].m_unQuantity;
+				items.append(item_info);
 			}
 		}
 		delete[] item_array;
@@ -3242,13 +3174,15 @@ String Steam::serializeResult(int32 this_inventory_handle){
 }
 
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
-void Steam::startPurchase(const PackedInt64Array items, const uint32 quantity){
-	if(SteamInventory() != NULL){
-		SteamItemDef_t *purchases = new SteamItemDef_t[quantity];
-		for(uint32 i = 0; i < quantity; i++){
+void Steam::startPurchase(const PackedInt64Array items, const PackedInt32Array quantity) {
+	if (SteamInventory() != NULL) {
+		uint32 total_items = sizeof(items);
+		SteamItemDef_t *purchases = new SteamItemDef_t[total_items];
+		for (uint32 i = 0; i < total_items; i++) {
 			purchases[i] = items[i];
 		}
-		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, &quantity, items.size());
+		uint32_t* these_quantities = (uint32*) quantity.ptr();
+		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, these_quantities, items.size());
 		callResultStartPurchase.Set(api_call, this, &Steam::inventory_start_purchase_result);
 		delete[] purchases;
 	}
@@ -4594,12 +4528,12 @@ Array Steam::receiveMessagesOnChannel(int channel, int max_messages){
 			char identity[STEAM_BUFFER_SIZE];
 			channel_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["user_data"] = (uint64_t)channel_messages[i]->m_nConnUserData;
 			message["time_received"] = (uint64_t)channel_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)channel_messages[i]->m_nMessageNumber;
 			message["channel"] = channel_messages[i]->m_nChannel;
 			message["flags"] = channel_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)channel_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["user_data"] = (uint64_t)channel_messages[i]->m_nUserData;
 			messages.append(message);
 			// Release the message
 			channel_messages[i]->Release();
@@ -4787,12 +4721,12 @@ Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messa
 			char identity[STEAM_BUFFER_SIZE];
 			connection_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)connection_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["user_data"] = (uint64_t)connection_messages[i]->m_nConnUserData;
 			message["time_received"] = (uint64_t)connection_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)connection_messages[i]->m_nMessageNumber;
 			message["channel"] = connection_messages[i]->m_nChannel;
 			message["flags"] = connection_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)connection_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["user_data"] = (uint64_t)connection_messages[i]->m_nUserData;
 			messages.append(message);
 			// Release the message
 			connection_messages[i]->Release();
@@ -4853,12 +4787,12 @@ Array Steam::receiveMessagesOnPollGroup(uint32 poll_group, int max_messages){
 			char identity[STEAM_BUFFER_SIZE];
 			poll_messages[i]->m_identityPeer.ToString(identity, STEAM_BUFFER_SIZE);
 			message["identity"] = identity;
-			message["receiver_user_data"] = (uint64_t)poll_messages[i]->m_nConnUserData;	// Not used when sending messages
+			message["user_data"] = (uint64_t)poll_messages[i]->m_nConnUserData;
 			message["time_received"] = (uint64_t)poll_messages[i]->m_usecTimeReceived;
 			message["message_number"] = (uint64_t)poll_messages[i]->m_nMessageNumber;
 			message["channel"] = poll_messages[i]->m_nChannel;
 			message["flags"] = poll_messages[i]->m_nFlags;
-			message["sender_user_data"] = (uint64_t)poll_messages[i]->m_nUserData;	// Not used when receiving messages
+			message["user_data"] = (uint64_t)poll_messages[i]->m_nUserData;
 			messages.append(message);
 			// Release the message
 			poll_messages[i]->Release();
@@ -4936,18 +4870,12 @@ String Steam::getConnectionName(uint32 peer){
 }
 
 // Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
-String Steam::getListenSocketAddress(uint32 socket, bool with_port){
-	String socket_address = "";
-	if(SteamNetworkingSockets() != NULL){
-		SteamNetworkingIPAddr address;
-		if(SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address)){
-			char *this_address = new char[48];
-			address.ToString(this_address, 48, with_port);
-			socket_address = String(this_address);
-			delete[] this_address;
-		}
+bool Steam::getListenSocketAddress(uint32 socket){
+	if(SteamNetworkingSockets() == NULL){
+		return false;
 	}
-	return socket_address;
+	SteamNetworkingIPAddr address;
+	return SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
 }
 
 // Get the identity assigned to this interface.
@@ -9291,7 +9219,13 @@ void Steam::end_game_result(EndGameResultCallback_t* call_data){
 }
 
 // HTML SURFACE CALLBACKS ///////////////////////
-//
+// 
+// A new browser was created and is ready for use.
+void Steam::html_browser_ready(HTML_BrowserReady_t* call_data){
+	browser_handle = call_data->unBrowserHandle;
+	emit_signal("html_browser_ready", browser_handle);
+}
+
 // Called when page history status has changed the ability to go backwards and forward.
 void Steam::html_can_go_backandforward(HTML_CanGoBackAndForward_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
@@ -9734,6 +9668,19 @@ void Steam::lobby_invite(LobbyInvite_t* lobbyData){
 	emit_signal("lobby_invite", inviter, lobby, game);
 }
 
+// MUSIC CALLBACKS //////////////////////////////
+//
+// No notes about this in the Steam docs, but we can assume it just updates us about the plaback status
+void Steam::music_playback_status_has_changed(PlaybackStatusHasChanged_t* call_data){
+	emit_signal("music_playback_status_has_changed");
+}
+
+// No notes about this in the Steam docs, but we can assume it just updates us about the volume changes
+void Steam::music_volume_has_changed(VolumeHasChanged_t* call_data){
+	float new_volume = call_data->m_flNewVolume;
+	emit_signal("music_volume_has_changed", new_volume);
+}
+
 // MUSIC REMOTE CALLBACKS ///////////////////////
 //
 // The majority of callback for Music Remote have no fields and no descriptions. They seem to be primarily fired as responses to functions.
@@ -10023,11 +9970,7 @@ void Steam::get_ticket_for_web_api(GetTicketForWebApiResponse_t* call_data){
 	uint32 auth_ticket = call_data->m_hAuthTicket;
 	int result = call_data->m_eResult;
 	int ticket_size = call_data->m_cubTicket;
-	PackedByteArray ticket_buffer;
-	ticket_buffer.resize(ticket_size);
-	for (auto i = 0; i < ticket_size; i++) {
-		ticket_buffer.set(i, call_data->m_rgubTicket[i]);
-	}
+	uint8 ticket_buffer = call_data->m_rgubTicket[2560];
 	emit_signal("get_ticket_for_web_api", auth_ticket, result, ticket_size, ticket_buffer);
 }
 
@@ -10311,19 +10254,6 @@ void Steam::is_following(FriendsIsFollowing_t *call_data, bool io_failure){
 		uint64_t steam_id = call_data->m_steamID.ConvertToUint64();
 		bool following = call_data->m_bIsFollowing;
 		emit_signal("is_following", result, steam_id, following);
-	}
-}
-
-// HTML SURFACE CALL RESULTS ////////////////////
-//
-// A new browser was created and is ready for use.
-void Steam::html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure) {
-	if(io_failure){
-		steamworksError("html_browser_ready");
-	}
-	else{
-		browser_handle = call_data->unBrowserHandle;
-		emit_signal("html_browser_ready", browser_handle);
 	}
 }
 
@@ -11079,8 +11009,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("isSteamRunning"), &Steam::isSteamRunning);
 	ClassDB::bind_method(D_METHOD("run_callbacks"), &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
-	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx);
+	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true), DEFVAL(480), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(480), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("steamShutdown"), &Steam::steamShutdown);
 
 	// APPS BIND METHODS ////////////////////////
@@ -11195,7 +11125,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("registerProtocolInOverlayBrowser", "protocol"), &Steam::registerProtocolInOverlayBrowser);
 	ClassDB::bind_method(D_METHOD("replyToFriendMessage", "steam_id", "message"), &Steam::replyToFriendMessage);
 	ClassDB::bind_method(D_METHOD("requestClanOfficerList", "clan_id"), &Steam::requestClanOfficerList);
-	ClassDB::bind_method(D_METHOD("requestEquippedProfileItems", "steam_id"), &Steam::requestEquippedProfileItems);
 	ClassDB::bind_method(D_METHOD("requestFriendRichPresence", "friend_id"), &Steam::requestFriendRichPresence);
 	ClassDB::bind_method(D_METHOD("requestUserInformation", "steam_id", "require_name_only"), &Steam::requestUserInformation);
 	ClassDB::bind_method(D_METHOD("sendClanChatMessage", "chat_id", "text"), &Steam::sendClanChatMessage);
@@ -11225,7 +11154,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("addHeader", "key", "value", "this_handle"), &Steam::addHeader, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("allowStartRequest", "allowed", "this_handle"), &Steam::allowStartRequest, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("copyToClipboard", "this_handle"), &Steam::copyToClipboard, DEFVAL(0));
-	ClassDB::bind_method(D_METHOD("createBrowser", "user_agent", "user_css"), &Steam::createBrowser, DEFVAL(""), DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("createBrowser", "user_agent", "user_css"), &Steam::createBrowser);
 	ClassDB::bind_method(D_METHOD("executeJavascript", "script", "this_handle"), &Steam::executeJavascript, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("find", "search", "currently_in_find", "reverse", "this_handle"), &Steam::find, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getLinkAtPosition", "x", "y", "this_handle"), &Steam::getLinkAtPosition, DEFVAL(0));
@@ -11343,25 +11272,24 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("destroyResult", "this_inventory_handle"), &Steam::destroyResult, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("exchangeItems", "output_items", "output_quantity", "input_items", "input_quantity"), &Steam::exchangeItems);
 	ClassDB::bind_method(D_METHOD("generateItems", "items", "quantity"), &Steam::generateItems);
-	ClassDB::bind_method(D_METHOD("getAllItems"), &Steam::getAllItems);
+	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
 	ClassDB::bind_method(D_METHOD("getItemDefinitionProperty", "definition", "name"), &Steam::getItemDefinitionProperty);
-	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array", "count"), &Steam::getItemsByID);
+	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array"), &Steam::getItemsByID);
 	ClassDB::bind_method(D_METHOD("getItemPrice", "definition"), &Steam::getItemPrice);
-	ClassDB::bind_method(D_METHOD("getItemsWithPrices", "length"), &Steam::getItemsWithPrices);
-	ClassDB::bind_method(D_METHOD("getNumItemsWithPrices"), &Steam::getNumItemsWithPrices);
+	ClassDB::bind_method(D_METHOD("getItemsWithPrices"), &Steam::getItemsWithPrices);
 	ClassDB::bind_method(D_METHOD("getResultItemProperty", "index", "name", "this_inventory_handle"), &Steam::getResultItemProperty, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultItems", "this_inventory_handle"), &Steam::getResultItems, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultStatus", "this_inventory_handle"), &Steam::getResultStatus, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultTimestamp", "this_inventory_handle"), &Steam::getResultTimestamp, DEFVAL(0));
-	ClassDB::bind_method(D_METHOD("grantPromoItems"), &Steam::grantPromoItems);
-	ClassDB::bind_method(D_METHOD("loadItemDefinitions"), &Steam::loadItemDefinitions);
+	ClassDB::bind_method("grantPromoItems", &Steam::grantPromoItems);
+	ClassDB::bind_method("loadItemDefinitions", &Steam::loadItemDefinitions);
 	ClassDB::bind_method(D_METHOD("requestEligiblePromoItemDefinitionsIDs", "steam_id"), &Steam::requestEligiblePromoItemDefinitionsIDs);
-	ClassDB::bind_method(D_METHOD("requestPrices"), &Steam::requestPrices);
+	ClassDB::bind_method("requestPrices", &Steam::requestPrices);
 	ClassDB::bind_method(D_METHOD("serializeResult", "this_inventory_handle"), &Steam::serializeResult, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("startPurchase", "items", "quantity"), &Steam::startPurchase);
 	ClassDB::bind_method(D_METHOD("transferItemQuantity", "item_id", "quantity", "item_destination", "split"), &Steam::transferItemQuantity);
 	ClassDB::bind_method(D_METHOD("triggerItemDrop", "definition"), &Steam::triggerItemDrop);
-	ClassDB::bind_method(D_METHOD("startUpdateProperties"), &Steam::startUpdateProperties);
+	ClassDB::bind_method("startUpdateProperties", &Steam::startUpdateProperties);
 	ClassDB::bind_method(D_METHOD("submitUpdateProperties", "this_inventory_update_handle"), &Steam::submitUpdateProperties, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("removeProperty", "item_id", "name", "this_inventory_update_handle"), &Steam::removeProperty, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("setPropertyString", "item_id", "name", "value", "this_inventory_update_handle"), &Steam::setPropertyString, DEFVAL(0));
@@ -11516,7 +11444,7 @@ void Steam::_bind_methods(){
 //	ClassDB::bind_method(D_METHOD("getHostedDedicatedServerAddress"), &Steam::getHostedDedicatedServerAddress);	<------ Uses datagram relay structs which were removed from base SDK
 	ClassDB::bind_method(D_METHOD("getHostedDedicatedServerPOPId"), &Steam::getHostedDedicatedServerPOPId);
 	ClassDB::bind_method(D_METHOD("getHostedDedicatedServerPort"), &Steam::getHostedDedicatedServerPort);
-	ClassDB::bind_method(D_METHOD("getListenSocketAddress", "socket", "with_port"), &Steam::getListenSocketAddress, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("getListenSocketAddress", "socket"), &Steam::getListenSocketAddress);
 	ClassDB::bind_method(D_METHOD("getIdentity"), &Steam::getIdentity);
 	ClassDB::bind_method(D_METHOD("getRemoteFakeIPForConnection", "connection"), &Steam::getRemoteFakeIPForConnection);
 	ClassDB::bind_method(D_METHOD("initAuthentication"), &Steam::initAuthentication);
@@ -11986,6 +11914,10 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("server_responded"));
 	ADD_SIGNAL(MethodInfo("server_failed_to_respond"));
 
+	// MUSIC SIGNALS ////////////////////////////
+	ADD_SIGNAL(MethodInfo("music_playback_status_has_changed"));
+	ADD_SIGNAL(MethodInfo("music_volume_has_changed", PropertyInfo(Variant::FLOAT, "new_volume")));
+
 	// MUSIC REMOTE SIGNALS /////////////////////
 	ADD_SIGNAL(MethodInfo("music_player_remote_to_front"));
 	ADD_SIGNAL(MethodInfo("music_player_remote_will_activate"));
@@ -12117,22 +12049,20 @@ void Steam::_bind_methods(){
 	/////////////////////////////////////////////
 	//
 	// STEAM API CONSTANTS //////////////////////
+	BIND_CONSTANT(INVALID_BREAKPAD_HANDLE);												// (BREAKPAD_HANDLE)0
+	BIND_CONSTANT(GAME_EXTRA_INFO_MAX); 												// 64
+	BIND_CONSTANT(AUTH_TICKET_INVALID);													// 0
 	BIND_CONSTANT(API_CALL_INVALID); 													// 0x0
 	BIND_CONSTANT(APP_ID_INVALID); 														// 0x0
-	BIND_CONSTANT(AUTH_TICKET_INVALID);													// 0
 	BIND_CONSTANT(DEPOT_ID_INVALID); 													// 0x0
-	BIND_CONSTANT(GAME_EXTRA_INFO_MAX); 												// 64
-	BIND_CONSTANT(INVALID_BREAKPAD_HANDLE);												// (BREAKPAD_HANDLE)0
 	BIND_CONSTANT(STEAM_ACCOUNT_ID_MASK); 												// 0xFFFFFFFF
 	BIND_CONSTANT(STEAM_ACCOUNT_INSTANCE_MASK); 										// 0x000FFFFF
-	BIND_CONSTANT(STEAM_BUFFER_SIZE);													// 255
-	BIND_CONSTANT(STEAM_LARGE_BUFFER_SIZE);												// 8160
-	BIND_CONSTANT(STEAM_MAX_ERROR_MESSAGE);												// 1024
 	BIND_CONSTANT(STEAM_USER_CONSOLE_INSTANCE); 										// 2
 	BIND_CONSTANT(STEAM_USER_DESKTOP_INSTANCE); 										// 1
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
 	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
-	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
+	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED);											// 0xFFFF
+	BIND_CONSTANT(STEAM_MAX_ERROR_MESSAGE);												// 1024
 
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
@@ -13885,8 +13815,8 @@ void Steam::_bind_methods(){
 Steam::~Steam(){
 	// Store stats then shut down ///////////////
 	if(is_init_success){
-		SteamUserStats()->StoreStats();
-		SteamAPI_Shutdown();
+		Steam::storeStats();
+		Steam::steamShutdown();
 	}
 
 	// Clear app ID and singleton variables /////
