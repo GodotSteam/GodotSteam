@@ -259,8 +259,10 @@ bool Steam::restartAppIfNecessary(uint32 app_id) {
 // Initialize the SDK, without worrying about the cause of failure.
 Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_callbacks) {
 	// Set the app ID
-	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
-	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	if (app_id != 0){
+		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	}
 	
 	// Start the initialization process
 	Dictionary initialize;
@@ -312,8 +314,10 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 // Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
 Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
 	// Set the app ID
-	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
-	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	if (app_id != 0) {
+		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	}
 	
 	// Start the initialization process
 	Dictionary initialize;
@@ -10833,8 +10837,8 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method("isSteamRunning", &Steam::isSteamRunning);
 	ClassDB::bind_method("run_callbacks", &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
-	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats"), &Steam::steamInit, DEFVAL(true), DEFVAL(480), DEFVAL(false));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(480), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats", "app_id", "embed_callbacks"), &Steam::steamInit, DEFVAL(true), DEFVAL(0), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats", "app_id", "embed_callbacks"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(0), DEFVAL(false));
 	ClassDB::bind_method("steamShutdown", &Steam::steamShutdown);
 
 	// APPS BIND METHODS ////////////////////////
