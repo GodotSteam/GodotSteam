@@ -1748,8 +1748,8 @@ class Steam: public Object {
 		bool isSteamRunning();
 		bool restartAppIfNecessary(uint32 app_id);
 		void steamworksError(const String& failed_signal);
-		Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
-		Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
+		Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 0, bool embed_callbacks = false);
+		Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 0, bool embed_callbacks = false);
 		void steamShutdown();
 
 		// Apps /////////////////////////////////
