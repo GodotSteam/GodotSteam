@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////
 //
 // Turn off MSVC-only warning about strcpy
+#include <cstdint>
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable:4996)
@@ -16,6 +17,7 @@
 //
 // Include GodotSteam header
 #include "godotsteam.h"
+#include "godotsteam_constants.h"
 
 // Include some system headers
 #include "string.h"
@@ -26,122 +28,10 @@ using namespace godot;
 
 
 /////////////////////////////////////////////////
-///// DEFINING CONSTANTS
+///// STEAM SINGLETON? STEAM SINGLETON
 /////////////////////////////////////////////////
 //
-// Define Steam API constants
-#define API_CALL_INVALID 0x0
-#define APP_ID_INVALID 0x0
-#define AUTH_TICKET_INVALID 0
-#define DEPOT_ID_INVALID 0x0
-#define GAME_EXTRA_INFO_MAX 64
-#define INVALID_BREAKPAD_HANDLE 0
-#define STEAM_ACCOUNT_ID_MASK 0xFFFFFFFF
-#define STEAM_ACCOUNT_INSTANCE_MASK 0x000FFFFF
-#define STEAM_BUFFER_SIZE 255
-#define STEAM_LARGE_BUFFER_SIZE 8160
-#define STEAM_MAX_ERROR_MESSAGE 1024
-#define STEAM_USER_CONSOLE_INSTANCE 2
-#define STEAM_USER_DESKTOP_INSTANCE 1
-#define STEAM_USER_WEB_INSTANCE 4
-#define QUERY_PORT_ERROR 0xFFFE
-#define QUERY_PORT_NOT_INITIALIZED 0xFFFF
-
-// Define Friends constants
-#define CHAT_METADATA_MAX 8192
-#define ENUMERATED_FOLLOWERS_MAX 50
-#define FRIENDS_GROUP_LIMIT 100
-#define INVALID_FRIEND_GROUP_ID -1
-#define MAX_FRIENDS_GROUP_NAME 64
-#define MAX_RICH_PRESENCE_KEY_LENGTH 64
-#define MAX_RICH_PRESENCE_KEYS 20
-#define MAX_RICH_PRESENCE_VALUE_LENTH 256
-#define PERSONA_NAME_MAX_UTF8 128
-#define PERSONA_NAME_MAX_UTF16 32
-
-// Define HTML Surface constants
-#define INVALID_HTMLBROWSER 0
-
-// Define HTTP constants
-#define HTTPCOOKIE_INVALID_HANDLE 0
-#define HTTPREQUEST_INVALID_HANDLE 0
-
-// Define Input constants
-#define INPUT_MAX_ANALOG_ACTIONS 24
-#define INPUT_MAX_ANALOG_ACTION_DATA 1.0f
-#define INPUT_MAX_COUNT 16
-#define INPUT_MAX_DIGITAL_ACTIONS 256
-#define INPUT_MAX_ORIGINS 8
-#define INPUT_MIN_ANALOG_ACTION_DATA -1.0f
-
-// Define Inventory constants
-#define INVENTORY_RESULT_INVALID -1
-#define ITEM_INSTANCE_ID_INVALID 0
-
-// Define Matchmaking constants
-#define SERVER_QUERY_INVALID 0xffffffff
-#define MAX_LOBBY_KEY_LENGTH 255
-#define FAVORITE_FLAG_FAVORITE 0x01
-#define FAVORITE_FLAG_HISTORY 0x02
-#define FAVORITE_FLAG_NONE 0x00
-
-// Define Matchmaking Servers constants
-#define MAX_GAME_SERVER_GAME_DATA 2048
-#define MAX_GAME_SERVER_GAME_DESCRIPTION 64
-#define MAX_GAME_SERVER_GAME_DIR 32
-#define MAX_GAME_SERVER_MAP_NAME 32
-#define MAX_GAME_SERVER_NAME 64
-#define MAX_GAME_SERVER_TAGS 128
-
-// Define Music Remote constants
-#define MUSIC_NAME_MAX_LENGTH 255
-#define MUSIC_PNG_MAX_LENGTH 65535
-
-// Define Networking Message constants
-#define NETWORKING_SEND_UNRELIABLE 0
-#define NETWORKING_SEND_NO_NAGLE 1
-#define NETWORKING_SEND_NO_DELAY 4
-#define NETWORKING_SEND_RELIABLE 8
-
-// Define Remote Play constants
-#define DEVICE_FORM_FACTOR_UNKNOWN 0
-#define DEVICE_FORM_FACTOR_PHONE 1
-#define DEVICE_FORM_FACTOR_TABLET 2
-#define DEVICE_FORM_FACTOR_COMPUTER 3
-#define DEVICE_FORM_FACTOR_TV 4
-
-// Define Remote Storage constants
-#define FILE_NAME_MAX 260
-#define PUBLISHED_DOCUMENT_CHANGE_DESCRIPTION_MAX 8000
-#define PUBLISHED_DOCUMENT_DESCRIPTION_MAX 8000
-#define PUBLISHED_DOCUMENT_TITLE_MAX 128 + 1
-#define PUBLISHED_FILE_URL_MAX 256
-#define TAG_LIST_MAX 1024 + 1
-#define PUBLISHED_FILE_ID_INVALID 0
-#define PUBLISHED_FILE_UPDATE_HANDLE_INVALID 0
-#define UGC_FILE_STREAM_HANDLE_INVALID 0
-#define UGC_HANDLE_INVALID 0
-#define ENUMERATE_PUBLISHED_FILES_MAX_RESULTS 50
-#define MAX_CLOUD_FILE_CHUNK_SIZE 100 * 1024 * 1024
-
-// Define Screenshot constants
-#define SCREENSHOT_INVALID_HANDLE 0
-#define UFS_TAG_TYPE_MAX 255
-#define UFS_TAG_VALUE_MAX 255
-#define MAX_TAGGED_PUBLISHED_FILES 32
-#define MAX_TAGGED_USERS 32
-#define SCREENSHOT_THUMB_WIDTH 200
-
-// Define UGC constants
-#define NUM_UGC_RESULTS_PER_PAGE 50
-#define DEVELOPER_METADATA_MAX 5000
-#define UGC_QUERY_HANDLE_INVALID 0
-#define UGC_UPDATE_HANDLE_INVALID 0
-
-// Define User Stats constants
-#define LEADERBOARD_DETAIL_MAX 64
-#define LEADERBOARD_NAME_MAX 128
-#define STAT_NAME_MAX 128
+Steam *Steam::singleton = nullptr;
 
 
 /////////////////////////////////////////////////
@@ -332,6 +222,7 @@ Steam::Steam():
 	callbackGetVideoResult(this, &Steam::get_video_result)
 {
 	is_init_success = false;
+	singleton = this;
 	were_callbacks_embedded = false;
 }
 
@@ -340,6 +231,12 @@ Steam::Steam():
 ///// INTERNAL FUNCTIONS
 /////////////////////////////////////////////////
 //
+//
+// Get the Steam singleton, obviously
+Steam *Steam::get_singleton(){
+	return singleton;
+}
+
 // Creating a Steam ID for internal use
 CSteamID Steam::createSteamID(uint64_t steam_id){
 	CSteamID converted_steam_id;
@@ -363,49 +260,34 @@ bool Steam::restartAppIfNecessary(uint32 app_id){
 }
 
 // Initialize the SDK, without worrying about the cause of failure.
-Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
-	// Set the app ID
-	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
-	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
-	
-	// Start the initialization process
+Dictionary Steam::steamInit(bool retrieve_stats){
+	// Create the response dictionary
 	Dictionary initialize;
 	// Attempt to initialize Steamworks
 	is_init_success = SteamAPI_Init();
 	// Set the default status response
-	int status = RESULT_FAIL;
+	int status = k_EResultFail;
 	String verbal = "Steamworks failed to initialize.";
 	// Steamworks initialized with no problems
 	if(is_init_success){
-		status = RESULT_OK;
+		status = k_EResultOK;
 		verbal = "Steamworks active.";
-
-		current_app_id = app_id;
-
-		// Get the current stats, if set
-		if(SteamUserStats() != NULL && retrieve_stats){
-			requestCurrentStats();
-		}
-
-		// Attach the callbacks, if set
-		if (embed_callbacks) {
-			were_callbacks_embedded = true;
-
-			SceneTree::get_singleton()->connect("idle_frame", Steam::singleton, "run_callbacks");
-			SceneTree::get_singleton()->connect("physics_frame", Steam::singleton, "run_callbacks");
-		}
 	}
-	else{
-		// The Steam client is not running
-		if(!isSteamRunning()){
-			status = RESULT_SERVICE_UNAVAILABLE;
-			verbal = "Steam not running.";
-		}
-		else if(SteamUser() == NULL){
-			status = RESULT_UNEXPECTED_ERROR;
-			verbal = "Invalid app ID or app not installed.";
-		}
+	// The Steam client is not running
+	if(!isSteamRunning()){
+		status = k_EResultServiceUnavailable;
+		verbal = "Steam not running.";
 	}
+	else if(SteamUser() == NULL){
+		status = k_EResultUnexpectedError;
+		verbal = "Invalid app ID or app not installed.";
+	}
+	// Steam is connected and active, so load the stats and achievements if requested
+	if(status == k_EResultOK && SteamUserStats() != NULL && retrieve_stats){
+		requestCurrentStats();
+	}
+	// Get this app ID
+	current_app_id = getAppID();
 
 	initialize["status"] = status;
 	initialize["verbal"] = verbal;
@@ -415,35 +297,24 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 
 // Initialize the Steamworks SDK. On success k_ESteamAPIInitResult_OK is returned.
 // Otherwise, if pOutErrMsg is non-NULL, it will receive a non-localized message that explains the reason for the failure
-Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
-	// Set the app ID
-	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
-	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
-	
-	// Start the initialization process
+Dictionary Steam::steamInitEx(bool retrieve_stats){
 	Dictionary initialize;
 	char error_message[STEAM_MAX_ERROR_MESSAGE];
 	ESteamAPIInitResult initialize_result;
 
 	initialize_result = SteamAPI_InitEx(&error_message);
 
-	if (initialize_result == (ESteamAPIInitResult)STEAM_API_INIT_RESULT_OK) {
+	if(initialize_result == k_ESteamAPIInitResult_OK){
 		is_init_success = true;
-		current_app_id = app_id;
 
-		// Get the current stats, if set
-		if (SteamUserStats() != NULL && retrieve_stats) {
+		if(SteamUserStats() != NULL && retrieve_stats){
 			requestCurrentStats();
 		}
-
-		// Attach the callbacks, if set
-		if (embed_callbacks) {
-			were_callbacks_embedded = true;
-
-			SceneTree::get_singleton()->connect("idle_frame", Steam::singleton, "run_callbacks");
-			SceneTree::get_singleton()->connect("physics_frame", Steam::singleton, "run_callbacks");
-		}
 	}
+
+	// Get this app ID
+	current_app_id = getAppID();
+
 	initialize["status"] = initialize_result;
 	initialize["verbal"] = error_message;
 
@@ -453,14 +324,6 @@ Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_c
 // Shuts down the Steamworks API, releases pointers and frees memory.
 void Steam::steamShutdown(){
 	SteamAPI_Shutdown();
-
-	// If callbacks were connected internally
-	if(were_callbacks_embedded){
-		were_callbacks_embedded = false;
-
-		SceneTree::get_singleton()->disconnect("idle_frame", Steam::singleton, "run_callbacks");
-		SceneTree::get_singleton()->disconnect("physics_frame", Steam::singleton, "run_callbacks");
-	}
 }
 
 
@@ -1178,19 +1041,19 @@ String Steam::getFriendPersonaNameHistory(uint64_t steam_id, int name_history){
 // Returns the current status of the specified user.
 int Steam::getFriendPersonaState(uint64_t steam_id){
 	if(SteamFriends() == NULL){
-		return PERSONA_STATE_OFFLINE;
+		return k_EPersonaStateOffline;
 	}
 	CSteamID user_id = (uint64)steam_id;
-	return PersonaState(SteamFriends()->GetFriendPersonaState(user_id));
+	return SteamFriends()->GetFriendPersonaState(user_id);
 }
 
 // Returns a relationship to a user.
 int Steam::getFriendRelationship(uint64_t steam_id){
 	if(SteamFriends() == NULL){
-		return FRIEND_RELATION_NONE;
+		return k_EFriendRelationshipNone;
 	}
 	CSteamID user_id = (uint64)steam_id;
-	return FriendRelationship(SteamFriends()->GetFriendRelationship(user_id));
+	return SteamFriends()->GetFriendRelationship(user_id);
 }
 
 // Get a Rich Presence value from a specified friend (typically only used for debugging).
@@ -1303,9 +1166,9 @@ String Steam::getPersonaName(){
 // Gets the status of the current user.
 int Steam::getPersonaState(){
 	if(SteamFriends() == NULL){
-		return PERSONA_STATE_OFFLINE;
+		return k_EPersonaStateOffline;
 	}
-	return PersonaState(SteamFriends()->GetPersonaState());
+	return SteamFriends()->GetPersonaState();
 }
 
 // Get player's avatar.
@@ -2434,7 +2297,7 @@ uint64_t Steam::getActionSetHandle(String action_set_name){
 // Get an action origin that you can use in your glyph look up table or passed into GetGlyphForActionOrigin or GetStringForActionOrigin.
 int Steam::getActionOriginFromXboxOrigin(uint64_t input_handle, int origin){
 	if(SteamInput() == NULL){
-		return INPUT_ACTION_ORIGIN_NONE;
+		return k_EInputActionOrigin_None;
 	}
 	return SteamInput()->GetActionOriginFromXboxOrigin((InputHandle_t)input_handle, (EXboxOrigin)origin);
 }
@@ -2991,7 +2854,7 @@ void Steam::destroyResult(int this_inventory_handle){
 }
 
 // Grant one item in exchange for a set of other items.
-int32 Steam::exchangeItems(const PoolIntArray output_items, const PoolIntArray output_quantity, const PoolIntArray input_items, const PoolIntArray input_quantity){
+int32 Steam::exchangeItems(PoolIntArray output_items, PoolIntArray output_quantity, PoolIntArray input_items, PoolIntArray input_quantity){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
 		uint32_t* quantity_out = (uint32*) output_quantity.read().ptr();
@@ -3012,7 +2875,7 @@ int32 Steam::exchangeItems(const PoolIntArray output_items, const PoolIntArray o
 }
 
 // Grants specific items to the current user, for developers only.
-int32 Steam::generateItems(const PoolIntArray items, const PoolIntArray quantity){
+int32 Steam::generateItems(PoolIntArray items, PoolIntArray quantity){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
 		uint32_t* this_quantity = (uint32*) quantity.read().ptr();
@@ -3050,7 +2913,7 @@ String Steam::getItemDefinitionProperty(uint32 definition, String name){
 }
 
 // Gets the state of a subset of the current user's inventory.
-int32 Steam::getItemsByID(const PoolIntArray id_array){
+int32 Steam::getItemsByID(PoolIntArray id_array){
 	int32 new_inventory_handle = 0;
 	if(SteamInventory() != NULL){
 		int array_size = id_array.size();
@@ -3141,12 +3004,7 @@ Array Steam::getResultItems(int32 this_inventory_handle){
 		}
 		if(SteamInventory()->GetResultItems((SteamInventoryResult_t)this_inventory_handle, item_array, &size)){
 			for(uint32 i = 0; i < size; i++){
-				Dictionary item_info;
-				item_info["item_id"] = (uint64_t)item_array[i].m_itemId;
-				item_info["item_definition"] = item_array[i].m_iDefinition;
-				item_info["flags"] = item_array[i].m_unFlags;
-				item_info["quantity"] = item_array[i].m_unQuantity;
-				items.append(item_info);
+				items.push_back((uint64_t)item_array[i].m_itemId);
 			}
 		}
 		delete[] item_array;
@@ -3257,7 +3115,7 @@ String Steam::serializeResult(int32 this_inventory_handle){
 }
 
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
-void Steam::startPurchase(const PoolIntArray items, const PoolIntArray quantity){
+void Steam::startPurchase(PoolIntArray items, PoolIntArray quantity){
 	if(SteamInventory() != NULL){
 		uint32_t* these_quantities = (uint32*) quantity.read().ptr();
 		SteamAPICall_t api_call = SteamInventory()->StartPurchase(items.read().ptr(), these_quantities, items.size());
@@ -4098,7 +3956,7 @@ bool Steam::musicIsPlaying(){
 // Gets the current status of the Steam Music player
 int Steam::getPlaybackStatus(){
 	if(SteamMusic() == NULL){
-		return AUDIO_PLAYBACK_UNDEFINED;
+		return AudioPlayback_Undefined;
 	}
 	return SteamMusic()->GetPlaybackStatus();
 }
@@ -4955,12 +4813,18 @@ String Steam::getConnectionName(uint32 peer){
 }
 
 // Returns local IP and port that a listen socket created using CreateListenSocketIP is bound to.
-bool Steam::getListenSocketAddress(uint32 socket){
-	if(SteamNetworkingSockets() == NULL){
-		return false;
+String Steam::getListenSocketAddress(uint32 socket, bool with_port){
+	String socket_address = "";
+	if(SteamNetworkingSockets() != NULL){
+		SteamNetworkingIPAddr address;
+		if(SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address)){
+			char *this_address = new char[48];
+			address.ToString(this_address, 48, with_port);
+			socket_address = String(this_address);
+			delete[] this_address;
+		}
 	}
-	SteamNetworkingIPAddr address;
-	return SteamNetworkingSockets()->GetListenSocketAddress((HSteamListenSocket)socket, &address);
+	return socket_address;
 }
 
 // Get the identity assigned to this interface.
@@ -4981,7 +4845,7 @@ String Steam::getIdentity(){
 // Indicate our desire to be ready participate in authenticated communications. If we are currently not ready, then steps will be taken to obtain the necessary certificates. (This includes a certificate for us, as well as any CA certificates needed to authenticate peers.)
 int Steam::initAuthentication(){
 	if(SteamNetworkingSockets() == NULL){
-		return NETWORKING_AVAILABILITY_UNKNOWN;
+		return k_ESteamNetworkingAvailability_Unknown;
 	}
 	return SteamNetworkingSockets()->InitAuthentication();
 }
@@ -4989,7 +4853,7 @@ int Steam::initAuthentication(){
 // Query our readiness to participate in authenticated communications. A SteamNetAuthenticationStatus_t callback is posted any time this status changes, but you can use this function to query it at any time.
 int Steam::getAuthenticationStatus(){
 	if(SteamNetworkingSockets() == NULL){
-		return NETWORKING_AVAILABILITY_UNKNOWN;
+		return k_ESteamNetworkingAvailability_Unknown;
 	}
 	return SteamNetworkingSockets()->GetAuthenticationStatus(NULL);
 }
@@ -5585,7 +5449,7 @@ void Steam::initRelayNetworkAccess(){
 // Fetch current status of the relay network.  If you want more details, you can pass a non-NULL value.
 int Steam::getRelayNetworkStatus(){
 	if(SteamNetworkingUtils() == NULL){
-		return NETWORKING_AVAILABILITY_UNKNOWN;
+		return k_ESteamNetworkingAvailability_Unknown;
 	}
 	return SteamNetworkingUtils()->GetRelayNetworkStatus(NULL);
 }
@@ -9008,10 +8872,8 @@ void Steam::file_details_result(FileDetailsResult_t* file_data){
 	uint32_t result = file_data->m_eResult;
 	uint64_t file_size = file_data->m_ulFileSize;
 	uint32_t flags = file_data->m_unFlags;
-	uint8 *file_hash = new uint8[20];
-	file_hash = file_data->m_FileSHA;
+	uint8_t file_hash = file_data->m_FileSHA[20];
 	emit_signal("file_details_result", result, file_size, file_hash, flags);
-	delete[] file_hash;
 }
 
 // Posted after the user executes a steam url with command line or query parameters such as steam://run/<appid>//?param1=value1;param2=value2;param3=value3; while the game is already running. The new params can be queried with getLaunchCommandLine and getLaunchQueryParam.
@@ -11999,10 +11861,6 @@ void Steam::_register_methods(){
 	register_signal<Steam>("server_responded", godot::Dictionary());
 	register_signal<Steam>("server_failed_to_respond", godot::Dictionary());
 
-	// MUSIC SIGNALS ////////////////////////////
-	register_signal<Steam>("music_playback_status_has_changed", godot::Dictionary());
-	register_signal<Steam>("music_volume_has_changed", "volume", GODOT_VARIANT_TYPE_INT);
-
 	// MUSIC REMOTE SIGNALS /////////////////////
 	register_signal<Steam>("music_player_remote_to_front", godot::Dictionary());
 	register_signal<Steam>("music_player_remote_will_activate", godot::Dictionary());
@@ -12137,5 +11995,6 @@ Steam::~Steam(){
 	}
 
 	// Clear app ID and singleton variables /////
+	singleton = nullptr;
 	current_app_id = 0;
 }
