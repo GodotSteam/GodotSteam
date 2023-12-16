@@ -2910,7 +2910,7 @@ int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt3
 int32 Steam::generateItems(const PackedInt64Array items, const PackedInt32Array quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		uint32 total_quantity = sizeof(items);
+		uint32 total_quantity = items.size();
 		SteamItemDef_t *generated_items = new SteamItemDef_t[total_quantity];
 		for (uint32 i = 0; i < total_quantity; i++) {
 			generated_items[i] = items[i];
@@ -3155,13 +3155,13 @@ String Steam::serializeResult(int32 this_inventory_handle) {
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 void Steam::startPurchase(const PackedInt64Array items, const PackedInt32Array quantity) {
 	if (SteamInventory() != NULL) {
-		uint32 total_items = sizeof(items);
+		uint32 total_items = items.size(); // Calculate the size of the items array
 		SteamItemDef_t *purchases = new SteamItemDef_t[total_items];
 		for (uint32 i = 0; i < total_items; i++) {
 			purchases[i] = items[i];
 		}
 		uint32_t* these_quantities = (uint32*) quantity.ptr();
-		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, these_quantities, items.size());
+		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, these_quantities, total_items); // Pass the correct size of the items array
 		callResultStartPurchase.Set(api_call, this, &Steam::inventory_start_purchase_result);
 		delete[] purchases;
 	}
