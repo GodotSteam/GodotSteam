@@ -2881,7 +2881,7 @@ void Steam::destroyResult(int this_inventory_handle) {
 int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt32Array output_quantity, const PackedInt64Array input_items, const PackedInt32Array input_quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		uint32 total_output = sizeof(output_items);
+		uint32 total_output = output_items.size();
 		SteamItemDef_t *generated_items = new SteamItemDef_t[total_output];
 		for (uint32 i = 0; i < total_output; i++) {
 			generated_items[i] = output_items[i];
@@ -2897,11 +2897,12 @@ int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt3
 		}
 		const SteamItemInstanceID_t *these_item_ids = input_item_ids;
 
-		if (SteamInventory()->ExchangeItems(&new_inventory_handle, generated_items, quantity_out, 1, these_item_ids, quantity_in, 1)) {
+		if (SteamInventory()->ExchangeItems(&new_inventory_handle, generated_items, quantity_out, total_output, these_item_ids, quantity_in, array_size)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
 		delete[] generated_items;
+		delete[] input_item_ids;
 	}
 	return new_inventory_handle;
 }
