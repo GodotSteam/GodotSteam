@@ -1,15 +1,14 @@
 # GodotSteam for Godot Engine
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 2.x). For the Windows, Linux, and Mac platforms. 
 
-Additional flavors include:
-- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
-- [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
-- [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
-- [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative)
-- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3)
-- [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4)
-- [Server GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension)
-- [Server GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative)
+Additional Flavors
+---
+Pre-Compiles | Plug-ins | Server | Examples/Demos
+--- | --- | --- | ---
+[Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)| [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot3)
+[Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3) | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot4)
+[Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server3)
+--- | --- | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server4)
 
 **Notice:** GodotSteam for Godot 2.x is now retired. Please use the Godot 3.x version and update your game. This branch still works fine but will not receive any further updates.
 
