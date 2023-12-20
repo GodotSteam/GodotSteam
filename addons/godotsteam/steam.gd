@@ -3,35 +3,46 @@ extends Node
 # Steam variables
 onready var Steam = preload("res://addons/godotsteam/godotsteam.gdns").new()
 
-# Set your game's Steam app IP
-OS.set_environment("SteamAppId", str(480))
-OS.set_environment("SteamGameId", str(480))
+var is_free_weekend: bool = false
+var is_owned: bool = false
+var is_online: bool = false
+var is_on_steam_deck: bool = false
+var steam_app_id: int = 480
+var steam_id: int = 0
+var steam_username: String = ""
 
-var IS_OWNED: bool = false
-var IS_ONLINE: bool = false
-var IS_FREE_WEEKEND: bool = false
-var STEAM_ID: int = 0
-var STEAM_NAME: String = ""
+
+# Set your game's Steam app IP
+func _init() -> void:
+	OS.set_environment("SteamAppId", str(steam_app_id))
+	OS.set_environment("SteamGameId", str(steam_app_id))
+
 
 func _ready() -> void:
 	# Initialize Steam
-	var INIT: Dictionary = Steam.steamInit(false)
-	print("[STEAM] Did Steam initialize?: "+str(INIT))
-	if INIT['status'] != 1:
+	var initialize_response: Dictionary = Steam.steamInit(false)
+	print("[STEAM] Did Steam initialize?: %s" % initialize_response)
+	if initialize_response['status'] != 1:
 		# If Steam fails to start up, shut down the app
-		print("[STEAM] Failed to initialize Steam. "+str(INIT['verbal'])+" Shutting down...")
+		print("[STEAM] Failed to initialize Steam: %s" % initialize_response['verbal'])
 #		get_tree().quit()
 
+	# Some example functions to run after initializing.
+	# These can be deleted or commented out if not needed.
+	#############################################
 	#Is the user online?
-	IS_ONLINE = Steam.loggedOn()
+	is_online = Steam.loggedOn()
 
 	# Get the user's Stean name and ID
-	STEAM_ID = Steam.getSteamID()
-	STEAM_NAME = Steam.getPersonaName()
+	steam_id = Steam.getSteamID()
+	steam_username = Steam.getPersonaName()
 
 	# Is this app owned or is it a free weekend?
-	IS_OWNED = Steam.isSubscribed()
-	IS_FREE_WEEKEND = Steam.isSubscribedFromFreeWeekend()
+	is_owned = Steam.isSubscribed()
+	is_free_weekend = Steam.isSubscribedFromFreeWeekend()
+
+	# Is the game running on the Steam Deck
+	is_on_steam_deck = Steam.isSteamRunningOnSteamDeck()
 
 
 func _process(_delta: float) -> void:

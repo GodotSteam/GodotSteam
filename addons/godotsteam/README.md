@@ -1,15 +1,14 @@
 # GodotSteam for GDNative
 An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
-Additional flavors include:
-- [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)
-- [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3)
-- [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4)
-- [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension)
-- [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3)
-- [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4)
-- [Server GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension)
-- [Server GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative)
+Additional Flavors
+---
+Pre-Compiles | Plug-ins | Server | Examples/Demos
+--- | --- | --- | ---
+[Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)| [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot3)
+[Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3) | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot4)
+[Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server3)
+--- | --- | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server4)
 
 Documentation
 ----------
@@ -19,32 +18,26 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.21.3)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.22.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.21.3 Changes**
-- Fixed: `requestEquippedProfileItems` was missing method bind, thanks to _BOTLANNER_
-- Fixed: `get_ticket_for_web_api` callback for getting actual ticket buffer, thanks to _dicarne_
-- Fixed: compiler complaining about comparison between Steam enum and GodotSteam enum for `steamInitEx`
-- Fixed: `getListenSocketAddress` fixed to provide the actual address and optional port
-- Changed: `createBrowser` now sends proper NULL when empty string passed
-- Changed: `html_browser_ready` from callback to proper call result
-- Changed: cast handle in `setSize` as Steam HHTMLBrowser
-- Removed: unnecessary `steam_appid.txt` from zips in Github Actions
+**Version 3.22.2 Changes**
+- Changed: reverted `steamInit` and `steamInitEx` as new methods won't work with GDNative
+- Removed: all enums as they cannot be used in GDNative
 
-**Version 3.21.2 Changes**
-- Fixed: `receiveMessagesOnChannel`, `receiveMessagesOnPollGroup`, and `receiveMessagesOnConnection` had overwriting dictionary keys
+**Version 3.22.1 Changes**
+- Added: two new arguments to `steamInit` and `steamInitEx` to set your app ID and run_callbacks interally, thanks to _GreenFox_
+- Fixed: issue with callback that caused compiling failure in Linux
 
-**Version 3.21.1 Changes**
-- Removed: unneccesary steam.tscn and linked steam.gd directly
-
-**Version 3.21 Changes**
-- Added: new enums and constant related to new Steam initialization function
-- Added: new enums for NetworkingConfigValue
-- Added: new intialization function `steamInitEx` that is more verbose
-- Added: new UGC function `getUserContentDescriptorPreferences`
-- Added: new Remote Play function `startRemotePlayTogether`
-- Changed: UGC function`setItemTags` to have new argument for admin tags
-- Changed: compatible with Steamworks SDK 1.58
+**Version 3.22 Changes**
+- Added: two Music class callbacks
+- Changed: `generateItems`, `exchangeItems`, `getItemsByID`, and `startPurchase` all list-based arguments are now PoolIntArrays
+- Changed: `getItemsByID` now takes one argument, counts the elements in the passed array instead
+- Changed: `getItemsWithPrices` no longer requires any arguments passed to it
+- Changed: in-editor docs have been updated
+- Fixed: `getResultItems` now returns all item data
+- Fixed: missing DEFVAL for `steamInitEx`
+- Fixed: Joy Con name in `getInputTypeForHandle`
+- Removed: `getNumItemsWithPrices` as it was unnecessary
 
 [You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
 
