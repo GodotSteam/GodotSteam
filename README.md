@@ -20,6 +20,10 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v4.5.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 4.5.2 Changes**
+- Fixed: `exchangeItems`, `generateItems`, and `startPurchase` using wrong array size function, thanks to _sepTN_
+- Fixed: various spelling issues in in-editor docs, thanks to _sepTN_
+
 **Version 4.5.1 Changes**
 - Fixed: app ID automatically being set to 480, now default is 0 which makes GodotSteam ignore auto-setting app ID
 

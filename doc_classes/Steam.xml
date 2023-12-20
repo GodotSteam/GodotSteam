@@ -5,7 +5,7 @@
 	</brief_description>
 	<description>
 		An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.
-		Full documentation and tutorials are available at https://gramps.github.io/GodotSteam/.
+		Full documentation and tutorials are available at https://godotsteam.com/.
 	</description>
 	<tutorials>
 		<link title="Achievement Icons">https://godotsteam.com/tutorials/achievement_icons/</link>
@@ -1111,7 +1111,7 @@
 			</description>
 		</method>
 		<method name="exchangeItems">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="output_items" type="PackedIntArray" />
 			<argument index="1" name="output_quantity" type="PackedIntArray" />
 			<argument index="2" name="input_items" type="PackedIntArray" />
@@ -1302,7 +1302,7 @@
 			</description>
 		</method>
 		<method name="generateItems">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="items" type="PackedIntArray" />
 			<argument index="1" name="quantity" type="PackedIntArray" />
 			<description>
@@ -2263,7 +2263,7 @@
 			<return type="int" />
 			<argument index="0" name="friend_group" type="int" />
 			<description>
-					Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
+				Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
 			</description>
 		</method>
 		<method name="getFriendsGroupMembersList">
@@ -2547,6 +2547,7 @@
 			<argument index="0" name="input_handle" type="int" />
 			<description>
 				Returns the input type (device model) for the specified controller. This tells you if a given controller is a Steam controller, Xbox 360 controller, PS4 controller, etc.
+				[b]Note:[/b] XBox Series controllers are listed as XBox One.
 			</description>
 		</method>
 		<method name="getInstalledApps">
@@ -2644,7 +2645,7 @@
 			</description>
 		</method>
 		<method name="getItemsByID">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="id_array" type="PackedIntArray" />
 			<description>
 				Gets the state of a subset of the current user's inventory.
@@ -2746,7 +2747,7 @@
 		<method name="getListenSocketAddress">
 			<return type="String" />
 			<argument index="0" name="socket" type="int" />
-			<argument index="0" name="with_port" type="bool" default="true" />
+			<argument index="1" name="with_port" type="bool" default="true" />
 			<description>
 				Returns local IP and port that a listen socket created using [method Steam.createListenSocketIP] is bound to.
 				[b]Note:[/b] This is not how you find out your public IP that clients can connect to.
@@ -3716,6 +3717,12 @@
 				[/codeblock]
 			</description>
 		</method>
+		<method name="getUserContentDescriptorPreferences">
+			<return type="Array" />
+			<description>
+				Return the user's community content descriptor preferences.
+			</description>
+		</method>
 		<method name="getUserItemVote">
 			<return type="void" />
 			<argument index="0" name="published_file_id" type="int" />
@@ -4011,7 +4018,7 @@
 			<argument index="1" name="steam_id_invitee" type="int" />
 			<description>
 				Invite another user to the lobby.
-				If the specified user clicks the join link, a join_requested callback will be posted if the user is in-game, or if the game isn't running yet then the game will be automatically launched with the command line parameter <param>+connect_lobby (64-bit lobby Steam ID)</param> instead.
+				If the specified user clicks the join link, a join_requested callback will be posted if the user is in-game, or if the game isn't running yet then the game will be automatically launched with the command line parameter <code>+connect_lobby (64-bit lobby Steam ID)</code> instead.
 			</description>
 		</method>
 		<method name="isAPICallCompleted">
@@ -4442,7 +4449,7 @@
 			<argument index="1" name="post_data" type="String" />
 			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
-				Navigate to a specified URL. If you send POST data with post_data then the data should be formatted as: <param>name1=value1&amp;name2=value2</param>. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: <param>http://, https://, ftp://, and file:///</param>. If no scheme is specified then http:// is used.
+				Navigate to a specified URL. If you send POST data with post_data then the data should be formatted as: <code>name1=value1&amp;name2=value2</code>. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: <code>http://, https://, ftp://, and file:///</code>. If no scheme is specified then http:// is used.
 				Triggers a [signal Steam.html_start_request] callback.
 			</description>
 		</method>
@@ -5326,7 +5333,7 @@
 				You must inherit from the ISteamMatchmakingRulesResponse object to receive this callback.
 			</description>
 		</method>
-		d<method name="setAchievement">
+		<method name="setAchievement">
 			<return type="bool" />
 			<argument index="0" name="name" type="String" />
 			<description>
@@ -5459,6 +5466,7 @@
 			<description>
 				Set current DLC app ID being played (or 0 if none). Allows Steam to track usage of major DLC extensions.
 			</description>
+		</method>
 		<method name="setDisplayName">
 			<return type="bool" />
 			<argument index="0" name="name" type="String" />
@@ -5763,6 +5771,7 @@
 			<return type="bool" />
 			<argument index="0" name="update_handle" type="int" />
 			<argument index="1" name="tag_array" type="Array" />
+			<argument index="2" name="allow_admin_tags" type="bool" />
 			<description>
 				Sets arbitrary developer specified tags on an item.
 				Each tag must be limited to 255 characters. Tag names can only include printable characters, excluding ','.
@@ -6343,6 +6352,14 @@
 				If the user authorizes the transaction and completes the purchase, then the callback [signal Steam.inventory_result_ready] will be triggered and you can then retrieve what new items the user has acquired.
 				Triggers a [signal Steam.inventory_start_purchase_result] callback.
 				[b]Note:[/b] You must call [method Steam.destroyResult] on the inventory result for when you are done with it.
+			</description>
+		</method>
+		<method name="startRemotePlayTogether">
+			<return type="bool" />
+			<argument index="0" name="show_overlay" type="bool" />
+			<description>
+				Start Remote Play Together and optionally show the UI in the overlay.
+				This returns false if Remote Play Together can't be started or your game is not configured for Remote Play Together.
 			</description>
 		</method>
 		<method name="startUpdateProperties">
@@ -7897,11 +7914,13 @@
 		<signal name="network_messages_session_failed">
 			<argument index="0" name="reason" type="int" />
 			<description>
+				Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way.
 			</description>
 		</signal>
 		<signal name="network_messages_session_request">
 			<argument index="0" name="identity" type="String" />
 			<description>
+				Posted when a remote host is sending us a message, and we do not already have a session with them.
 			</description>
 		</signal>
 		<signal name="new_launch_url_parameters">
@@ -8093,15 +8112,7 @@
 			<argument index="0" name="result" type="int" />
 			<argument index="1" name="retrying" type="bool" />
 			<description>
-			</description>
-		</signal>
-		<signal name="server_connected">
-			<description>
-			</description>
-		</signal>
-		<signal name="server_disconnected">
-			<argument index="0" name="result" type="int" />
-			<description>
+				Called when a connection attempt has failed. This will occur periodically if the Steam client is not connected, and has failed when retrying to establish a connection.
 			</description>
 		</signal>
 		<signal name="server_failed_to_respond">
@@ -8321,6 +8332,12 @@
 		<constant name="QUERY_PORT_ERROR" value="65534">
 		</constant>
 		<constant name="QUERY_PORT_NOT_INITIALIZED" value="65535">
+		</constant>
+		<constant name="STEAM_BUFFER_SIZE" value="255">
+		</constant>
+		<constant name="STEAM_LARGE_BUFFER_SIZE" value="8160">
+		</constant>
+		<constant name="STEAM_MAX_ERROR_MESSAGE" value="1024">
 		</constant>
 		<constant name="CHAT_METADATA_MAX" value="8192">
 		</constant>
@@ -10280,6 +10297,14 @@
 		</constant>
 		<constant name="NETWORKING_CONFIG_SEND_BUFFER_SIZE" value="9" enum="NetworkingConfigValue">
 		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_BUFFER_SIZE" value="47" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_BUFFER_MESSAGES" value="48" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_MAX_MESSAGE_SIZE" value="49" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_RECV_MAX_SEGMENTS_PER_PACKET" value="50" enum="NetworkingConfigValue">
+		</constant>
 		<constant name="NETWORKING_CONFIG_SEND_RATE_MIN" value="10" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_SEND_RATE_MAX" value="11" enum="NetworkingConfigValue">
@@ -10935,6 +10960,14 @@
 		<constant name="RESULT_CACHED_CREDENTIAL_INVALID" value="126" enum="Result">
 		</constant>
 		<constant name="RESULT_PHONE_NUMBER_IS_VOIP" value="127" enum="Result">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_OK" value="0" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_FAILED_GENERIC" value="1" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_NO_STEAM_CLIENT" value="2" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_VERSION_MISMATCH" value="3" enum="SteamAPIInitResult">
 		</constant>
 		<constant name="PAD_TRIGGER_EFFECT_MODE_OFF" value="0" enum="SCEPadTriggerEffectMode">
 		</constant>
