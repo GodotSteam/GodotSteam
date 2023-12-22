@@ -28,11 +28,8 @@
 // Include Godot headers
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/global_constants.hpp>
-#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
-#include <godot_cpp/classes/scene_tree.hpp>
-#include <godot_cpp/variant/callable.hpp> 
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 
@@ -1756,8 +1753,8 @@ public:
 	bool isSteamRunning();
 	bool restartAppIfNecessary(uint32 app_id);
 	void steamworksError(const String& failed_signal);
-	Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
-	Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 480, bool embed_callbacks = false);
+	Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 0);
+	Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 0);
 	void steamShutdown();
 
 	// Apps /////////////////////////////////
@@ -2559,7 +2556,6 @@ protected:
 private:
 	// Main
 	bool is_init_success;
-	bool were_callbacks_embedded;
 
 	// Apps
 	uint64_t current_app_id = 0;

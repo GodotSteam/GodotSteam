@@ -129,9 +129,9 @@ Steam::Steam():
 	callbackLobbyInvite(this, &Steam::lobby_invite),
 	callbackLobbyKicked(this, &Steam::lobby_kicked),
 
-		// Music callbacks //////////////////////////
-		callbackMusicPlaybackStatusHasChanged(this, &Steam::music_playback_status_has_changed),
-		callbackMusicVolumeHasChanged(this, &Steam::music_volume_has_changed),
+	// Music callbacks //////////////////////////
+	callbackMusicPlaybackStatusHasChanged(this, &Steam::music_playback_status_has_changed),
+	callbackMusicVolumeHasChanged(this, &Steam::music_volume_has_changed),
 
 	// Music Remote callbacks ///////////////////
 	callbackMusicPlayerRemoteToFront(this, &Steam::music_player_remote_to_front),
@@ -223,7 +223,6 @@ Steam::Steam():
 {
 	is_init_success = false;
 	singleton = this;
-	were_callbacks_embedded = false;
 }
 
 
@@ -262,10 +261,12 @@ bool Steam::restartAppIfNecessary(uint32 app_id){
 }
 
 // Initialize the SDK, without worrying about the cause of failure.
-Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_callbacks) {
+Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id) {
 	// Set the app ID
-	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
-	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	if (app_id != 0) {
+		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	}
 	
 	// Start the initialization process
 	Dictionary initialize;
@@ -284,15 +285,6 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 		// Get the current stats, if set
 		if(SteamUserStats() != NULL && retrieve_stats){
 			requestCurrentStats();
-		}
-
-		// Attach the callbacks, if set
-		if (embed_callbacks) {
-			were_callbacks_embedded = true;
-
-			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
-			SceneTree::get_singleton()->connect("process_frame", callbacks);
-			SceneTree::get_singleton()->connect("physics_frame", callbacks);
 		}
 	}
 	else{
@@ -315,10 +307,12 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 
 // Initialize the Steamworks SDK. On success STEAM_API_INIT_RESULT_OK is returned.
 // Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
-Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_callbacks){
+Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id){
 	// Set the app ID
-	OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
-	OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	if (app_id != 0) {
+		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
+		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
+	}
 	
 	// Start the initialization process
 	Dictionary initialize;
@@ -335,15 +329,6 @@ Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_c
 		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
-
-		// Attach the callbacks, if set
-		if (embed_callbacks) {
-			were_callbacks_embedded = true;
-
-			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
-			SceneTree::get_singleton()->connect("process_frame", callbacks);
-			SceneTree::get_singleton()->connect("physics_frame", callbacks);
-		}
 	}
 	initialize["status"] = initialize_result;
 	initialize["verbal"] = error_message;
@@ -354,15 +339,6 @@ Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_c
 // Shuts down the Steamworks API, releases pointers and frees memory.
 void Steam::steamShutdown() {
 	SteamAPI_Shutdown();
-
-	// If callbacks were connected internally
-	if(were_callbacks_embedded){
-		were_callbacks_embedded = false;
-
-		auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
-		SceneTree::get_singleton()->disconnect("process_frame", callbacks);
-		SceneTree::get_singleton()->disconnect("physics_frame", callbacks);
-	}
 }
 
 
@@ -2896,7 +2872,7 @@ void Steam::destroyResult(int this_inventory_handle){
 int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt32Array output_quantity, const PackedInt64Array input_items, const PackedInt32Array input_quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		uint32 total_output = sizeof(output_items);
+		uint32 total_output = output_items.size();
 		SteamItemDef_t *generated_items = new SteamItemDef_t[total_output];
 		for (uint32 i = 0; i < total_output; i++) {
 			generated_items[i] = output_items[i];
@@ -2925,7 +2901,7 @@ int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt3
 int32 Steam::generateItems(const PackedInt64Array items, const PackedInt32Array quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		uint32 total_quantity = sizeof(items);
+		uint32 total_quantity = items.size();
 		SteamItemDef_t *generated_items = new SteamItemDef_t[total_quantity];
 		for (uint32 i = 0; i < total_quantity; i++) {
 			generated_items[i] = items[i];
@@ -3176,13 +3152,13 @@ String Steam::serializeResult(int32 this_inventory_handle){
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 void Steam::startPurchase(const PackedInt64Array items, const PackedInt32Array quantity) {
 	if (SteamInventory() != NULL) {
-		uint32 total_items = sizeof(items);
+		uint32 total_items = items.size();
 		SteamItemDef_t *purchases = new SteamItemDef_t[total_items];
 		for (uint32 i = 0; i < total_items; i++) {
 			purchases[i] = items[i];
 		}
 		uint32_t* these_quantities = (uint32*) quantity.ptr();
-		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, these_quantities, items.size());
+		SteamAPICall_t api_call = SteamInventory()->StartPurchase(purchases, these_quantities, total_items);
 		callResultStartPurchase.Set(api_call, this, &Steam::inventory_start_purchase_result);
 		delete[] purchases;
 	}
@@ -11009,8 +10985,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("isSteamRunning"), &Steam::isSteamRunning);
 	ClassDB::bind_method(D_METHOD("run_callbacks"), &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
-	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats", "app_id", "embed_callbacks"), &Steam::steamInit, DEFVAL(true), DEFVAL(480), DEFVAL(false));
-	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats", "app_id", "embed_callbacks"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(480), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("steamInit", "retrieve_stats", "app_id"), &Steam::steamInit, DEFVAL(true), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("steamInitEx", "retrieve_stats", "app_id"), &Steam::steamInitEx, DEFVAL(true), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("steamShutdown"), &Steam::steamShutdown);
 
 	// APPS BIND METHODS ////////////////////////
@@ -11272,7 +11248,7 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("destroyResult", "this_inventory_handle"), &Steam::destroyResult, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("exchangeItems", "output_items", "output_quantity", "input_items", "input_quantity"), &Steam::exchangeItems);
 	ClassDB::bind_method(D_METHOD("generateItems", "items", "quantity"), &Steam::generateItems);
-	ClassDB::bind_method("getAllItems", &Steam::getAllItems);
+	ClassDB::bind_method(D_METHOD("getAllItems"), &Steam::getAllItems);
 	ClassDB::bind_method(D_METHOD("getItemDefinitionProperty", "definition", "name"), &Steam::getItemDefinitionProperty);
 	ClassDB::bind_method(D_METHOD("getItemsByID", "id_array"), &Steam::getItemsByID);
 	ClassDB::bind_method(D_METHOD("getItemPrice", "definition"), &Steam::getItemPrice);
@@ -11281,15 +11257,15 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("getResultItems", "this_inventory_handle"), &Steam::getResultItems, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultStatus", "this_inventory_handle"), &Steam::getResultStatus, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getResultTimestamp", "this_inventory_handle"), &Steam::getResultTimestamp, DEFVAL(0));
-	ClassDB::bind_method("grantPromoItems", &Steam::grantPromoItems);
-	ClassDB::bind_method("loadItemDefinitions", &Steam::loadItemDefinitions);
+	ClassDB::bind_method(D_METHOD("grantPromoItems"), &Steam::grantPromoItems);
+	ClassDB::bind_method(D_METHOD("loadItemDefinitions"), &Steam::loadItemDefinitions);
 	ClassDB::bind_method(D_METHOD("requestEligiblePromoItemDefinitionsIDs", "steam_id"), &Steam::requestEligiblePromoItemDefinitionsIDs);
-	ClassDB::bind_method("requestPrices", &Steam::requestPrices);
+	ClassDB::bind_method(D_METHOD("requestPrices"), &Steam::requestPrices);
 	ClassDB::bind_method(D_METHOD("serializeResult", "this_inventory_handle"), &Steam::serializeResult, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("startPurchase", "items", "quantity"), &Steam::startPurchase);
 	ClassDB::bind_method(D_METHOD("transferItemQuantity", "item_id", "quantity", "item_destination", "split"), &Steam::transferItemQuantity);
 	ClassDB::bind_method(D_METHOD("triggerItemDrop", "definition"), &Steam::triggerItemDrop);
-	ClassDB::bind_method("startUpdateProperties", &Steam::startUpdateProperties);
+	ClassDB::bind_method(D_METHOD("startUpdateProperties"), &Steam::startUpdateProperties);
 	ClassDB::bind_method(D_METHOD("submitUpdateProperties", "this_inventory_update_handle"), &Steam::submitUpdateProperties, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("removeProperty", "item_id", "name", "this_inventory_update_handle"), &Steam::removeProperty, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("setPropertyString", "item_id", "name", "value", "this_inventory_update_handle"), &Steam::setPropertyString, DEFVAL(0));
