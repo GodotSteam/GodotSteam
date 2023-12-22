@@ -14,3 +14,4 @@ bin/
 
 /godotsteam/sdk/public
 /godotsteam/sdk/redistributable_bin
+/godot-cpp
