@@ -1465,7 +1465,7 @@ bool Steam::replyToFriendMessage(uint64_t steam_id, String message){
 void Steam::requestClanOfficerList(uint64_t clan_id){
 	if(SteamFriends() != NULL){
 		clan_activity = (uint64)clan_id;
-		SteamAPICall_t api_call = SteamFriends()->GetFollowerCount(clan_activity);
+		SteamAPICall_t api_call = SteamFriends()->RequestClanOfficerList(clan_activity);
 		callResultClanOfficerList.Set(api_call, this, &Steam::request_clan_officer_list);
 	}
 }

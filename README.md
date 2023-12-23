@@ -20,6 +20,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.22.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 3.22.3 Changes**
+- Fixed: `requestClanOfficerList()` using wrong internal function, thanks to _sepTN_
+
 **Version 3.22.2 Changes**
 - Changed: reverted `steamInit` and `steamInitEx` as new methods won't work with GDNative
 - Removed: all enums as they cannot be used in GDNative
