@@ -18,7 +18,10 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.5.1)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.5.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+
+**Version 4.5.3 Changes**
+- Fixed: `requestClanOfficerList()` using wrong internal function, thanks to _sepTN_
 
 **Version 4.5.2 Changes**
 - Fixed: `exchangeItems`, `generateItems`, and `startPurchase` using wrong array size function, thanks to _sepTN_
