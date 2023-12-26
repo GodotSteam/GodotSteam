@@ -5844,7 +5844,7 @@
 			<description>
 				Set the maximum number of details to return for leaderboard entries.
 				The current leaderboard details max value.
-				[b]Note:[/b] This is a GodotSteam specific function.
+				[b]Note:[/b] This is a GodotSteam specific function. The max that you can put is 256 (This number is undocumented on Steam, might be changed in the future). If you are trying to send details more than 256 bytes then the details will simply get ignored.
 			</description>
 		</method>
 		<method name="setListenForFriendsMessages">
