@@ -7,9 +7,6 @@ on:
       godot_tag:
         required: true
         type: string
-      godotsteam_tag:
-        required: true
-        type: string
       binary_name:
         required: true
         type: string
@@ -45,9 +42,8 @@ jobs:
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
         with:
-          repository: "CoaguCo-Industries/GodotSteam"
           path: "godotsteam"
-          ref: ${{ inputs.godotsteam_tag }}
+          ref: "godot4"
       - name: Copy GodotSteam Module
         run: |
           dir
@@ -76,7 +72,7 @@ jobs:
       - name: Copy GodotSteam Multiplayer Peer Module
         run: |
           dir
-          robocopy godotsteammultiplayer godot/modules/godotsteammultiplayer /ephemeral
+          robocopy godotsteammultiplayer godot/modules/godotsteammultiplayer /e
           cd godot/modules/godotsteammultiplayer && dir
           EXIT 0
       # Install build requirements
