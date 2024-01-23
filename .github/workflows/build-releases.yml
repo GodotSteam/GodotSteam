@@ -1,451 +1,451 @@
 name: Build Releases
 
 on:
-  workflow_dispatch:
-    inputs:
-      steamworks_sdk_tag:
-        description: 'Steamworks SDK Github tag:'
-        required: true
-        type: string
-        default: 'sdk-1.58'
-      godot_tag:
-        description: 'Godot Github tag:'
-        required: true
-        type: string
-        default: '4.1.2-stable'
-      godotsteam_version:
-        description: 'GodotSteam MP version:'
-        required: true
-        type: string
-        default: '4.5.1-mp'
+	workflow_dispatch:
+		inputs:
+			steamworks_sdk_tag:
+				description: 'Steamworks SDK Github tag:'
+				required: true
+				type: string
+				default: 'sdk-1.58'
+			godot_tag:
+				description: 'Godot Github tag:'
+				required: true
+				type: string
+				default: '4.1.2-stable'
+			godotsteam_version:
+				description: 'GodotSteam MP version:'
+				required: true
+				type: string
+				default: '4.5.1-mp'
 
 
 jobs:
-  env-setup:
-    name: "Setup env variables"
-    runs-on: ubuntu-latest
-    outputs:
-      zip_tag: ${{ steps.set_zip_tag.outputs.zip_tag }}
-      godot_version: ${{ steps.set_godot_version.outputs.godot_version }}
-    steps:
-      - name: set_zip_tag
-        id: set_zip_tag
-        run: |
-          sdktag=${{ inputs.steamworks_sdk_tag }}
-          sdktag=${sdktag//[.]/}
-          gsver=${{ inputs.godotsteam_version }}
-          gtag=${{ inputs.godot_tag }}
-          gtag=${gtag//[.]/}
-          tag=g${gtag%-*}-s${sdktag:0-3}-gs${gsver//[.]/}
-          echo "zip_tag=${tag}" >> $GITHUB_OUTPUT
-      - name: set_godot_version
-        id: set_godot_version
-        run: |
-          gv=${{ inputs.godot_tag }}
-          gv=${gv//[.]/}
-          gv=${gv%-*}
-          echo "godot_version=${gv}" >> $GITHUB_OUTPUT
+	env-setup:
+		name: "Setup env variables"
+		runs-on: ubuntu-latest
+		outputs:
+			zip_tag: ${{ steps.set_zip_tag.outputs.zip_tag }}
+			godot_version: ${{ steps.set_godot_version.outputs.godot_version }}
+		steps:
+			- name: set_zip_tag
+				id: set_zip_tag
+				run: |
+					sdktag=${{ inputs.steamworks_sdk_tag }}
+					sdktag=${sdktag//[.]/}
+					gsver=${{ inputs.godotsteam_version }}
+					gtag=${{ inputs.godot_tag }}
+					gtag=${gtag//[.]/}
+					tag=g${gtag%-*}-s${sdktag:0-3}-gs${gsver//[.]/}
+					echo "zip_tag=${tag}" >> $GITHUB_OUTPUT
+			- name: set_godot_version
+				id: set_godot_version
+				run: |
+					gv=${{ inputs.godot_tag }}
+					gv=${gv//[.]/}
+					gv=${gv%-*}
+					echo "godot_version=${gv}" >> $GITHUB_OUTPUT
 
 ################# Linux 64 Builds #################
 
-  build-linux-editor:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-      godot_tag: ${{ inputs.godot_tag }}
-      binary_name: "godot.linuxbsd.editor.x86_64"
-      export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-linux-editor.x86_64"
-      build_params: "-j4 platform=linuxbsd production=yes tools=yes target=editor bits=64 warnings=extra"
-      artifact_name: "linux-editor"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-editor:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			binary_name: "godot.linuxbsd.editor.x86_64"
+			export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-linux-editor.x86_64"
+			build_params: "-j4 platform=linuxbsd production=yes tools=yes target=editor bits=64 warnings=extra"
+			artifact_name: "linux-editor"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-linux-release-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-      godot_tag: ${{ inputs.godot_tag }}
-      binary_name: "godot.linuxbsd.template_release.x86_64"
-      export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-linux-template.x86_64"
-      build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_release bits=64 warnings=extra"
-      artifact_name: "linux-release-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-release-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			binary_name: "godot.linuxbsd.template_release.x86_64"
+			export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-linux-template.x86_64"
+			build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_release bits=64 warnings=extra"
+			artifact_name: "linux-release-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-linux-debug-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-      godot_tag: ${{ inputs.godot_tag }}
-      binary_name: "godot.linuxbsd.template_debug.x86_64"
-      export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-linux-debug-template.x86_64"
-      build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_debug bits=64 warnings=extra"
-      artifact_name: "linux-debug-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-linux-debug-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-linux-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			binary_name: "godot.linuxbsd.template_debug.x86_64"
+			export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-linux-debug-template.x86_64"
+			build_params: "-j4 platform=linuxbsd production=yes tools=yes target=template_debug bits=64 warnings=extra"
+			artifact_name: "linux-debug-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-linux-bundle:
-    needs: [env-setup, build-linux-editor, build-linux-release-template, build-linux-debug-template]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Linux Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-editor
-          path: files
-      - name: Download Linux Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-release-template
-          path: files
-      - name: Download Linux Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-debug-template
-          path: files
-      - name: Download Linux Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-libsteam-api-so
-          path: files
-      - name: Create Linux Bundle
-        run: zip -j linux64-${{ needs.env-setup.outputs.zip_tag }}.zip files/*
-      - name: Upload Win64 bundle artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
-          path: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
-          if-no-files-found: error
-          retention-days: 1
+	create-linux-bundle:
+		needs: [env-setup, build-linux-editor, build-linux-release-template, build-linux-debug-template]
+		runs-on: ubuntu-latest
+		steps:
+			- name: Download Linux Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-editor
+					path: files
+			- name: Download Linux Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-release-template
+					path: files
+			- name: Download Linux Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-debug-template
+					path: files
+			- name: Download Linux Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-libsteam-api-so
+					path: files
+			- name: Create Linux Bundle
+				run: zip -j linux64-${{ needs.env-setup.outputs.zip_tag }}.zip files/*
+			- name: Upload Win64 bundle artifact
+				uses: actions/upload-artifact@v3
+				with:
+					name: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
+					path: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
+					if-no-files-found: error
+					retention-days: 1
 
 ################# Win64 Builds #################
-  
-  build-win64-editor:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-      godot_tag: ${{ inputs.godot_tag }}
-      binary_name: godot.windows.editor.x86_64.exe
-      export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-win64-editor.exe"
-      build_params: "-j4 platform=windows production=yes tools=yes target=editor debug_symbols=no warnings=extra"
-      artifact_name: "win64-editor"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	
+	build-win64-editor:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			binary_name: godot.windows.editor.x86_64.exe
+			export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-win64-editor.exe"
+			build_params: "-j4 platform=windows production=yes tools=yes target=editor debug_symbols=no warnings=extra"
+			artifact_name: "win64-editor"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-win64-release-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-      godot_tag: ${{ inputs.godot_tag }}
-      binary_name: godot.windows.template_release.x86_64.exe
-      export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-win64-template.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=template_release debug_symbols=no warnings=extra"
-      artifact_name: "win64-release-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-win64-release-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			binary_name: godot.windows.template_release.x86_64.exe
+			export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-win64-template.exe"
+			build_params: "-j4 platform=windows production=yes tools=no target=template_release debug_symbols=no warnings=extra"
+			artifact_name: "win64-release-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  build-win64-debug-template:
-    needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
-    with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-      godot_tag: ${{ inputs.godot_tag }}
-      binary_name: godot.windows.template_debug.x86_64.exe
-      export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-win64-debug-template.exe"
-      build_params: "-j4 platform=windows production=yes tools=no target=template_debug debug_symbols=no warnings=extra"
-      artifact_name: "win64-debug-template"
-    secrets:
-      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-win64-debug-template:
+		needs: [env-setup]
+		uses: ./.github/workflows/build-windows-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			binary_name: godot.windows.template_debug.x86_64.exe
+			export_name: "godotsteam-multiplayer-${{ needs.env-setup.outputs.godotsteam_version }}-win64-debug-template.exe"
+			build_params: "-j4 platform=windows production=yes tools=no target=template_debug debug_symbols=no warnings=extra"
+			artifact_name: "win64-debug-template"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  create-win64-bundle:
-    needs: [env-setup, build-win64-editor, build-win64-release-template, build-win64-debug-template]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Windows Editor
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-editor
-          path: files
-      - name: Download Windows Release Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-release-template
-          path: files
-      - name: Download Windows Debug Template
-        uses: actions/download-artifact@v3
-        with:
-          name: win64-debug-template
-          path: files
-      - name: Download Windows 64 Bit Steam API
-        uses: actions/download-artifact@v3
-        with:
-          name: win_steam_api_64
-          path: files
-      - name: Create Windows Bundle
-        run: zip -j win64-${{needs.env-setup.outputs.zip_tag}}.zip files/*
-      - name: Upload Win64 bundle artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: win64-${{needs.env-setup.outputs.zip_tag}}.zip
-          path: win64-${{needs.env-setup.outputs.zip_tag}}.zip
-          if-no-files-found: error
-          retention-days: 1
+	create-win64-bundle:
+		needs: [env-setup, build-win64-editor, build-win64-release-template, build-win64-debug-template]
+		runs-on: ubuntu-latest
+		steps:
+			- name: Download Windows Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-editor
+					path: files
+			- name: Download Windows Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-release-template
+					path: files
+			- name: Download Windows Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-debug-template
+					path: files
+			- name: Download Windows 64 Bit Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: win_steam_api_64
+					path: files
+			- name: Create Windows Bundle
+				run: zip -j win64-${{needs.env-setup.outputs.zip_tag}}.zip files/*
+			- name: Upload Win64 bundle artifact
+				uses: actions/upload-artifact@v3
+				with:
+					name: win64-${{needs.env-setup.outputs.zip_tag}}.zip
+					path: win64-${{needs.env-setup.outputs.zip_tag}}.zip
+					if-no-files-found: error
+					retention-days: 1
 
-# ################# MacOS Universal Builds #################
+################# MacOS Universal Builds #################
 
-  # build-macos-editor-x86_64:
-  #   uses: ./.github/workflows/build-macos-artifact.yml
-  #   with:
-  #     steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-  #     godot_tag: ${{ inputs.godot_tag }}
-  #     godotsteam_tag: ${{ inputs.godotsteam_tag }}
-  #     export_name: "godot.macos.editor.x86_64"
-  #     build_params: "-j6 platform=macos arch=x86_64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
-  #     artifact_name: "macos-editor-x86_64"
-  #   secrets:
-  #     steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-  #     steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-editor-x86_64:
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			godotsteam_tag: ${{ inputs.godotsteam_tag }}
+			export_name: "godot.macos.editor.x86_64"
+			build_params: "-j6 platform=macos arch=x86_64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
+			artifact_name: "macos-editor-x86_64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  # build-macos-release-template-x86_64:
-  #   uses: ./.github/workflows/build-macos-artifact.yml
-  #   with:
-  #     steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-  #     godot_tag: ${{ inputs.godot_tag }}
-  #     godotsteam_tag: ${{ inputs.godotsteam_tag }}
-  #     export_name: "godot.macos.template_release.x86_64"
-  #     build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
-  #     artifact_name: "macos-release-template-x86_64"
-  #   secrets:
-  #     steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-  #     steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-release-template-x86_64:
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			godotsteam_tag: ${{ inputs.godotsteam_tag }}
+			export_name: "godot.macos.template_release.x86_64"
+			build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
+			artifact_name: "macos-release-template-x86_64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  # build-macos-debug-template-x86_64:
-  #   uses: ./.github/workflows/build-macos-artifact.yml
-  #   with:
-  #     steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-  #     godot_tag: ${{ inputs.godot_tag }}
-  #     godotsteam_tag: ${{ inputs.godotsteam_tag }}
-  #     export_name: "godot.macos.template_debug.x86_64"
-  #     build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
-  #     artifact_name: "macos-debug-template-x86_64"
-  #   secrets:
-  #     steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-  #     steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
-      
-  # build-macos-editor-arm64:
-  #   uses: ./.github/workflows/build-macos-artifact.yml
-  #   with:
-  #     steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-  #     godot_tag: ${{ inputs.godot_tag }}
-  #     godotsteam_tag: ${{ inputs.godotsteam_tag }}
-  #     export_name: "godot.macos.editor.arm64"
-  #     build_params: "-j6 platform=macos arch=arm64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
-  #     artifact_name: "macos-editor-arm64"
-  #   secrets:
-  #     steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-  #     steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-debug-template-x86_64:
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			godotsteam_tag: ${{ inputs.godotsteam_tag }}
+			export_name: "godot.macos.template_debug.x86_64"
+			build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
+			artifact_name: "macos-debug-template-x86_64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+			
+	build-macos-editor-arm64:
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			godotsteam_tag: ${{ inputs.godotsteam_tag }}
+			export_name: "godot.macos.editor.arm64"
+			build_params: "-j6 platform=macos arch=arm64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
+			artifact_name: "macos-editor-arm64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  # build-macos-release-template-arm64:
-  #   uses: ./.github/workflows/build-macos-artifact.yml
-  #   with:
-  #     steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-  #     godot_tag: ${{ inputs.godot_tag }}
-  #     godotsteam_tag: ${{ inputs.godotsteam_tag }}
-  #     export_name: "godot.macos.template_release.arm64"
-  #     build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
-  #     artifact_name: "macos-release-template-arm64"
-  #   secrets:
-  #     steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-  #     steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-release-template-arm64:
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			godotsteam_tag: ${{ inputs.godotsteam_tag }}
+			export_name: "godot.macos.template_release.arm64"
+			build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
+			artifact_name: "macos-release-template-arm64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  # build-macos-debug-template-arm64:
-  #   uses: ./.github/workflows/build-macos-artifact.yml
-  #   with:
-  #     steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
-  #     godot_tag: ${{ inputs.godot_tag }}
-  #     godotsteam_tag: ${{ inputs.godotsteam_tag }}
-  #     export_name: "godot.macos.template_debug.arm64"
-  #     build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
-  #     artifact_name: "macos-debug-template-arm64"
-  #   secrets:
-  #     steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
-  #     steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+	build-macos-debug-template-arm64:
+		uses: ./.github/workflows/build-macos-artifact.yml
+		with:
+			steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+			godot_tag: ${{ inputs.godot_tag }}
+			godotsteam_tag: ${{ inputs.godotsteam_tag }}
+			export_name: "godot.macos.template_debug.arm64"
+			build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
+			artifact_name: "macos-debug-template-arm64"
+		secrets:
+			steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+			steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
-  # create-macos-bundle:
-  #   needs: [env-setup, build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Download MacOS x86_64 Editor
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-editor-x86_64
-  #         path: files
-  #     - name: Download MacOS ARM Editor
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-editor-arm64
-  #         path: files
-  #     - name: Download MacOS x86_64 Release Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-release-template-x86_64
-  #         path: files
-  #     - name: Download MacOS x86_64 Debug Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-debug-template-x86_64
-  #         path: files
-  #     - name: Download MacOS ARM Release Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-release-template-arm64
-  #         path: files
-  #     - name: Download MacOS ARM Debug Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-debug-template-arm64
-  #         path: files
-  #     - name: Download MacOS Steam API
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-libsteam-api-dylib
-  #         path: files
-  #     - name: Download MacOS Tool App
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-tool-app
-  #         path: files
-  #     - name: Download MacOS Template App
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-template-app
-  #         path: files
-  #     - name: Create MacOS Bundle
-  #       run: |
-  #         lipo -create files/godot.macos.editor.x86_64 files/godot.macos.editor.arm64 -output files/godot.macos.editor.universal
-  #         lipo -create files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 -output files/godot.macos.template_release.universal
-  #         lipo -create files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64 -output files/godot.macos.template_debug.universal
-  #         unzip files/macos_tools.zip -d files
-  #         unzip files/macos_template.zip -d files
-  #         mv files/macos_tools.app files/GodotEditor.app
-  #         mkdir files/GodotEditor.app/Contents/MacOS
-  #         mv files/godot.macos.editor.universal files/GodotEditor.app/Contents/MacOS/godot
-  #         cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
-  #         chmod +x files/GodotEditor.app/Contents/MacOS/godot
-  #         mkdir files/macos_template.app/Contents/MacOS
-  #         mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
-  #         mv files/godot.macos.template_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
-  #         cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
-  #         chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
-  #         pushd files
-  #         zip -r ./macos.zip ./macos_template.app
-  #         zip -r ../macos-${{ needs.env-setup.outputs.zip_tag }}.zip ./macos.zip ./GodotEditor.app
-  #         popd
-  #     - name: Upload MacOS bundle artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
-  #         path: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
-  #         if-no-files-found: error
-  #         retention-days: 1
+	create-macos-bundle:
+		needs: [env-setup, build-macos-editor-x86_64, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-editor-arm64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
+		runs-on: macos-latest
+		steps:
+			- name: Download MacOS x86_64 Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-editor-x86_64
+					path: files
+			- name: Download MacOS ARM Editor
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-editor-arm64
+					path: files
+			- name: Download MacOS x86_64 Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-x86_64
+					path: files
+			- name: Download MacOS x86_64 Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-x86_64
+					path: files
+			- name: Download MacOS ARM Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-arm64
+					path: files
+			- name: Download MacOS ARM Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-arm64
+					path: files
+			- name: Download MacOS Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-libsteam-api-dylib
+					path: files
+			- name: Download MacOS Tool App
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-tool-app
+					path: files
+			- name: Download MacOS Template App
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-template-app
+					path: files
+			- name: Create MacOS Bundle
+				run: |
+					lipo -create files/godot.macos.editor.x86_64 files/godot.macos.editor.arm64 -output files/godot.macos.editor.universal
+					lipo -create files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 -output files/godot.macos.template_release.universal
+					lipo -create files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64 -output files/godot.macos.template_debug.universal
+					unzip files/macos_tools.zip -d files
+					unzip files/macos_template.zip -d files
+					mv files/macos_tools.app files/GodotEditor.app
+					mkdir files/GodotEditor.app/Contents/MacOS
+					mv files/godot.macos.editor.universal files/GodotEditor.app/Contents/MacOS/godot
+					cp files/libsteam_api.dylib files/GodotEditor.app/Contents/MacOS
+					chmod +x files/GodotEditor.app/Contents/MacOS/godot
+					mkdir files/macos_template.app/Contents/MacOS
+					mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
+					mv files/godot.macos.template_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
+					cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
+					chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
+					pushd files
+					zip -r ./macos.zip ./macos_template.app
+					zip -r ../macos-${{ needs.env-setup.outputs.zip_tag }}.zip ./macos.zip ./GodotEditor.app
+					popd
+			- name: Upload MacOS bundle artifact
+				uses: actions/upload-artifact@v3
+				with:
+					name: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
+					path: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
+					if-no-files-found: error
+					retention-days: 1
 
-################ Create Template Bundles #################
-  # create-templates-bundle:
-  #   needs: [env-setup, build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Download Windows 64 Bit Release Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: win64-release-template
-  #         path: files
-  #     - name: Download Windows 64 Bit Debug Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: win64-debug-template
-  #         path: files
-  #     - name: Download Windows 64 Bit Steam API
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: win_steam_api_64
-  #         path: files
-  #     - name: Download Linux Release Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: linux-release-template
-  #         path: files
-  #     - name: Download Linux Debug Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: linux-debug-template
-  #         path: files
-  #     - name: Download Linux Steam API
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: linux-libsteam-api-so
-  #         path: files
-  #     - name: Download MacOS x86_64 Release Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-release-template-x86_64
-  #         path: files
-  #     - name: Download MacOS x86_64 Debug Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-debug-template-x86_64
-  #         path: files
-  #     - name: Download MacOS ARM Release Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-release-template-arm64
-  #         path: files
-  #     - name: Download MacOS ARM Debug Template
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-debug-template-arm64
-  #         path: files
-  #     - name: Download MacOS Steam API
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-libsteam-api-dylib
-  #         path: files
-  #     - name: Download MacOS Template App
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: macos-template-app
-  #         path: files
-  #     - name: Create Template Bundle
-  #       run: |
-  #         lipo -create files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 -output files/godot.macos.template_release.universal
-  #         lipo -create files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64 -output files/godot.macos.template_debug.universal
-  #         rm files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64
-  #         unzip files/macos_template.zip -d files
-  #         rm -r files/macos_template.zip
-  #         mkdir files/macos_template.app/Contents/MacOS
-  #         mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
-  #         mv files/godot.macos.template_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
-  #         cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
-  #         chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
-  #         pushd files
-  #         zip -r ./macos.zip ./macos_template.app
-  #         popd
-  #         rm -r files/macos_template.app/
-  #         zip -j godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip files/*
-  #     - name: Upload template bundle artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
-  #         path: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
-  #         if-no-files-found: error
-  #         retention-days: 1
+############### Create Template Bundles #################
+	create-templates-bundle:
+		needs: [env-setup, build-linux-release-template, build-linux-debug-template, build-win64-release-template, build-win64-debug-template, build-macos-release-template-x86_64, build-macos-debug-template-x86_64, build-macos-release-template-arm64, build-macos-debug-template-arm64]
+		runs-on: macos-latest
+		steps:
+			- name: Download Windows 64 Bit Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-release-template
+					path: files
+			- name: Download Windows 64 Bit Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: win64-debug-template
+					path: files
+			- name: Download Windows 64 Bit Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: win_steam_api_64
+					path: files
+			- name: Download Linux Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-release-template
+					path: files
+			- name: Download Linux Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-debug-template
+					path: files
+			- name: Download Linux Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: linux-libsteam-api-so
+					path: files
+			- name: Download MacOS x86_64 Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-x86_64
+					path: files
+			- name: Download MacOS x86_64 Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-x86_64
+					path: files
+			- name: Download MacOS ARM Release Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-release-template-arm64
+					path: files
+			- name: Download MacOS ARM Debug Template
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-debug-template-arm64
+					path: files
+			- name: Download MacOS Steam API
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-libsteam-api-dylib
+					path: files
+			- name: Download MacOS Template App
+				uses: actions/download-artifact@v3
+				with:
+					name: macos-template-app
+					path: files
+			- name: Create Template Bundle
+				run: |
+					lipo -create files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 -output files/godot.macos.template_release.universal
+					lipo -create files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64 -output files/godot.macos.template_debug.universal
+					rm files/godot.macos.template_release.x86_64 files/godot.macos.template_release.arm64 files/godot.macos.template_debug.x86_64 files/godot.macos.template_debug.arm64
+					unzip files/macos_template.zip -d files
+					rm -r files/macos_template.zip
+					mkdir files/macos_template.app/Contents/MacOS
+					mv files/godot.macos.template_release.universal files/macos_template.app/Contents/MacOS/godot_macos_release.universal
+					mv files/godot.macos.template_debug.universal files/macos_template.app/Contents/MacOS/godot_macos_debug.universal
+					cp files/libsteam_api.dylib files/macos_template.app/Contents/MacOS
+					chmod +x files/macos_template.app/Contents/MacOS/godot_macos*
+					pushd files
+					zip -r ./macos.zip ./macos_template.app
+					popd
+					rm -r files/macos_template.app/
+					zip -j godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip files/*
+			- name: Upload template bundle artifact
+				uses: actions/upload-artifact@v3
+				with:
+					name: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
+					path: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
+					if-no-files-found: error
+					retention-days: 1
