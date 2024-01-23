@@ -214,7 +214,7 @@ void SteamMultiplayerPeer::poll() {
 	{
 		auto a = PingPayload();
 		for (auto E = connections_by_steamId64.begin(); E; ++E) {
-			auto key = E->key;
+			auto key = E->key; // this is unused?
 			Ref<SteamMultiplayerPeer::ConnectionData> value = E->value;
 			auto t = value->last_msg_timestamp + MAX_TIME_WITHOUT_MESSAGE; // pretty sure this will wrap. Should I fix this?
 
@@ -310,7 +310,7 @@ void SteamMultiplayerPeer::set_steam_id_peer(CSteamID steamId, int peer_id) {
 	} else if (con->peer_id == peer_id) {
 		//nothing happens, set peer that already exists
 	} else {
-		DEBUG_DATA_SIGNAL_V("THIS STEAM ID GOT WRONG PEER ID", steamId.ConvertToUint64());
+		DEBUG_DATA_SIGNAL_V("THIS STEAM ID GOT WRONG PEER ID", (uint64_t)steamId.ConvertToUint64());
 		DEBUG_DATA_SIGNAL_V("PEER ID WAS", con->peer_id);
 		DEBUG_DATA_SIGNAL_V("TRYING TO SET AS", peer_id);
 	}
@@ -328,11 +328,11 @@ void SteamMultiplayerPeer::add_connection_peer(const CSteamID &steamId, int peer
 
 	Ref<ConnectionData> connectionData = Ref<ConnectionData>(memnew(ConnectionData(steamId)));
 	connections_by_steamId64[steamId.ConvertToUint64()] = connectionData;
-	auto a = connectionData->ping();
-	if (a != OK) {
-		DEBUG_DATA_SIGNAL_V("add_connection_peer: Error sending ping", a);
+	auto this_ping = connectionData->ping();
+	if (this_ping != OK) {
+		DEBUG_DATA_SIGNAL_V("add_connection_peer: Error sending ping", this_ping);
 	}
-	ERR_FAIL_COND_MSG(a != OK, "Message failed to join?");
+	ERR_FAIL_COND_MSG(this_ping != OK, "Message failed to join?");
 }
 
 void SteamMultiplayerPeer::add_pending_peer(const CSteamID &steamId) {
@@ -367,8 +367,8 @@ void SteamMultiplayerPeer::lobby_created_scb(LobbyCreated_t *lobby_data, bool io
 		lobby_state = LOBBY_STATE::LOBBY_STATE_HOSTING;
 		int connect = lobby_data->m_eResult;
 		lobby_id = lobby_data->m_ulSteamIDLobby;
-		uint64 lobby = lobby_id.ConvertToUint64();
-		emit_signal(SNAME("lobby_created"), connect, lobby); // why do I do this? edit: no really, why am I doing this?
+		uint64_t lobby = lobby_id.ConvertToUint64();
+		emit_signal(SNAME("lobby_created"), connect, lobby); // why do I do this? edit: no really, why am I doing this? // why are you doing this? :)
 	}
 }
 
@@ -833,7 +833,7 @@ int SteamMultiplayerPeer::get_peer_id_from_steam64(uint64_t steamid) {
 Dictionary SteamMultiplayerPeer::get_peer_map() {
 	Dictionary output;
 	for (auto E = connections_by_steamId64.begin(); E; ++E) {
-		output[E->value->peer_id] = E->value->steam_id.ConvertToUint64();
+		output[E->value->peer_id] = (uint64_t)E->value->steam_id.ConvertToUint64();
 	}
 	return output;
 }
