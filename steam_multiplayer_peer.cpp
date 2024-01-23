@@ -25,7 +25,7 @@ SteamMultiplayerPeer::~SteamMultiplayerPeer() {
 	}
 }
 
-uint64 SteamMultiplayerPeer::get_lobby_id() {
+uint64_t SteamMultiplayerPeer::get_lobby_id() {
 	return lobby_id.ConvertToUint64();
 }
 
@@ -214,7 +214,8 @@ void SteamMultiplayerPeer::poll() {
 	{
 		auto a = PingPayload();
 		for (auto E = connections_by_steamId64.begin(); E; ++E) {
-			auto key = E->key; // this is unused?
+			// Commented out auto key to appease the compiler gods
+//			auto key = E->key; // this is unused?
 			Ref<SteamMultiplayerPeer::ConnectionData> value = E->value;
 			auto t = value->last_msg_timestamp + MAX_TIME_WITHOUT_MESSAGE; // pretty sure this will wrap. Should I fix this?
 
@@ -372,16 +373,16 @@ void SteamMultiplayerPeer::lobby_created_scb(LobbyCreated_t *lobby_data, bool io
 	}
 }
 
-Error SteamMultiplayerPeer::join_lobby(uint64 lobbyId) {
+Error SteamMultiplayerPeer::join_lobby(uint64_t lobbyId) {
 	ERR_FAIL_COND_V_MSG(SteamMatchmaking() == NULL, ERR_DOES_NOT_EXIST, "`SteamMatchmaking()` is null.");
 	ERR_FAIL_COND_V_MSG(lobby_state != LOBBY_STATE::LOBBY_STATE_NOT_CONNECTED, ERR_ALREADY_IN_USE, "CANNOT JOIN A LOBBY WHILE IN A LOBBY!");
 
 	if (SteamMatchmaking() != NULL) {
 		lobby_state = LOBBY_STATE::LOBBY_STATE_CLIENT_PENDING;
-		this->lobby_id = lobbyId;
+		this->lobby_id.SetFromUint64(lobbyId);
 		// unique_id = SteamUser()->GetSteamID().GetAccountID();
 		unique_id = generate_unique_id();
-		SteamMatchmaking()->JoinLobby(CSteamID(lobbyId));
+		SteamMatchmaking()->JoinLobby(this->lobby_id);
 	}
 	return OK;
 }
@@ -458,9 +459,11 @@ void SteamMultiplayerPeer::network_messages_session_failed_scb(SteamNetworkingMe
 }
 
 void SteamMultiplayerPeer::lobby_data_update_scb(LobbyDataUpdate_t *call_data) {
-	uint64_t member_id = call_data->m_ulSteamIDMember;
-	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
-	uint8 success = call_data->m_bSuccess;
+	// These were meant to be sent back with a signal that was commented out
+	// Commenting these out to appease the compiler gods as one shadows a member of the class
+//	uint64_t member_id = call_data->m_ulSteamIDMember;
+//	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
+//	uint8 success = call_data->m_bSuccess;
 	return;
 	// emit_signal("lobby_data_update", success, lobby_id, member_id);
 }
