@@ -209,7 +209,6 @@ jobs:
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
-      godotsteam_tag: ${{ inputs.godotsteam_tag }}
       export_name: "godot.macos.editor.x86_64"
       build_params: "-j6 platform=macos arch=x86_64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-editor-x86_64"
@@ -222,7 +221,6 @@ jobs:
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
-      godotsteam_tag: ${{ inputs.godotsteam_tag }}
       export_name: "godot.macos.template_release.x86_64"
       build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-release-template-x86_64"
@@ -235,7 +233,6 @@ jobs:
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
-      godotsteam_tag: ${{ inputs.godotsteam_tag }}
       export_name: "godot.macos.template_debug.x86_64"
       build_params: "-j6 platform=macos arch=x86_64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-debug-template-x86_64"
@@ -248,7 +245,6 @@ jobs:
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
-      godotsteam_tag: ${{ inputs.godotsteam_tag }}
       export_name: "godot.macos.editor.arm64"
       build_params: "-j6 platform=macos arch=arm64 production=yes tools=yes target=editor --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-editor-arm64"
@@ -261,7 +257,6 @@ jobs:
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
-      godotsteam_tag: ${{ inputs.godotsteam_tag }}
       export_name: "godot.macos.template_release.arm64"
       build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_release --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-release-template-arm64"
@@ -274,7 +269,6 @@ jobs:
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_tag: ${{ inputs.godot_tag }}
-      godotsteam_tag: ${{ inputs.godotsteam_tag }}
       export_name: "godot.macos.template_debug.arm64"
       build_params: "-j6 platform=macos arch=arm64 production=yes tools=no target=template_debug --jobs=$(sysctl -n hw.logicalcpu) warnings=extra"
       artifact_name: "macos-debug-template-arm64"
