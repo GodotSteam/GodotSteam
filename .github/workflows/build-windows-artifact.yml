@@ -70,7 +70,7 @@ jobs:
           EXIT 0
       # Checkout GodotSteam Multiplayer Peer
       - name: Checkout GodotSteam Multiplayer Peer
-        users: actions/checkout@v3
+        uses: actions/checkout@v3
         with:
           path: "godotsteammultiplayer"
       - name: Copy GodotSteam Multiplayer Peer Module
