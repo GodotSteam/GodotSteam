@@ -1,0 +1,104 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+      godot_tag:
+        required: true
+        type: string
+      godotsteam_tag:
+        required: true
+        type: string
+      binary_name:
+        required: true
+        type: string
+      build_params:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      export_name:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+      # Checkout Godot
+      - name: Checkout Godot
+        uses: actions/checkout@v3
+        with:
+          repository: "godotengine/godot"
+          path: "godot"
+          ref: ${{ inputs.godot_tag }}
+      # Checkout current source of GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v3
+        with:
+          repository: "CoaguCo-Industries/GoddotSteam"
+          path: "godotsteam"
+          ref: ${{ inputs.godotsteam_tag }}
+      - name: Copy GodotSteam Module
+        run: |
+          dir
+          robocopy godotsteam godot/modules/godotsteam /e
+          cd godot/modules/godotsteam && dir
+          EXIT 0
+      # Checkout Steamworks SDK
+      - name: Checkout Steamworks SDK
+        uses: actions/checkout@v3
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+      - name: Copy Steamworks
+        run: |
+          robocopy steamworks/public/steam godot/modules/godotsteam/sdk/public/steam /e
+          robocopy steamworks/redistributable_bin godot/modules/godotsteam/sdk/redistributable_bin /e
+          cd godot/modules/godotsteam/sdk && dir
+          EXIT 0
+      # Checkout GodotSteam Multiplayer Peer
+      - name: Checkout GodotSteam Multiplayer Peer
+        uses: actions/checkout@v3
+        with:
+          path: "godotsteammultiplayer"
+      - name: Copy GodotSteam Multiplayer Peer Module
+        run: |
+          dir
+          robocopy godotsteammultiplayer godot/modules/godotsteammultiplayer /ephemeral
+          cd godot/modules/godotsteammultiplayer && dir
+          EXIT 0
+      # Install build requirements
+      - name: Install Build Requirements
+        run: |
+          python -m pip install scons==4.4.0
+      # Build everything
+      - name: Build Windows
+        working-directory: "godot"
+        run: |
+          scons ${{ inputs.build_params }}
+          cd bin && ren ${{ inputs.binary_name }} ${{ inputs.export_name }}
+      - name: Upload Windows Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: godot/bin/${{ inputs.export_name }}
+          retention-days: 1
+      - name: Upload Windows 64 bit Steam File
+        uses: actions/upload-artifact@v3
+        with:
+          name: win_steam_api_64
+          path: |
+            godot/modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll
+          retention-days: 1
