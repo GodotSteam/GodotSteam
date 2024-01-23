@@ -6,7 +6,7 @@
 #include "steam_id.h"
 #include "steam_multiplayer_peer.h"
 
-static Steam *SteamPtr = NULL;
+static Steam *SteamPtr = NULL;	// Not needed?
 
 void initialize_godotsteammultiplayer_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {

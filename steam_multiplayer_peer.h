@@ -39,7 +39,7 @@ public:
 
 	SteamMultiplayerPeer();
 	~SteamMultiplayerPeer();
-	uint64 get_lobby_id();
+	uint64_t get_lobby_id();
 
 	static void _bind_methods();
 
@@ -132,12 +132,12 @@ public:
 		int channel = 0;
 		int transfer_mode = k_nSteamNetworkingSend_Reliable;
 		Packet() {}
-		Packet(const void *p_buffer, uint32 p_buffer_size, int transferMode, int channel) {
+		Packet(const void *p_buffer, uint32 p_buffer_size, int transferMode, int packet_channel) {
 			ERR_FAIL_COND_MSG(p_buffer_size > MAX_STEAM_PACKET_SIZE, "ERROR TRIED TO SEND A PACKET LARGER THAN MAX_STEAM_PACKET_SIZE");
 			memcpy(this->data, p_buffer, p_buffer_size);
 			this->size = p_buffer_size;
 			this->sender = CSteamID();
-			this->channel = channel;
+			this->channel = packet_channel;
 			this->transfer_mode = transferMode;
 		}
 	};
@@ -251,6 +251,18 @@ public:
 				case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
 					output["connection_status"] = "ProblemDetectedLocally";
 					break;
+				case k_ESteamNetworkingConnectionState_FinWait:
+					output["connection_status"] = "FinalWait";
+					break;
+				case k_ESteamNetworkingConnectionState_Linger:
+					output["connection_status"] = "Linger";
+					break;
+				case k_ESteamNetworkingConnectionState_Dead:
+					output["connection_status"] = "Dead";
+					break;
+				default:
+					output["connection_status"] = "Unknown";
+					break;
 			}
 			output["packets_per_sec"] = info.m_flOutPacketsPerSec;
 			output["bytes_per_sec"] = info.m_flOutBytesPerSec;
@@ -262,7 +274,7 @@ public:
 			output["pending_unreliable"] = info.m_cbPendingUnreliable;
 			output["pending_reliable"] = info.m_cbPendingReliable;
 			output["sent_unacked_reliable"] = info.m_cbSentUnackedReliable;
-			output["queue_time"] = info.m_usecQueueTime;
+			output["queue_time"] = (int64_t)info.m_usecQueueTime;
 
 			output["ping"] = info.m_nPing;
 			return output;
@@ -282,7 +294,7 @@ public:
 	void removed_connection_peer(const CSteamID &steamId);
 
 	Error create_lobby(LOBBY_TYPE lobbyType, int max_players);
-	Error join_lobby(uint64 lobbyId);
+	Error join_lobby(uint64_t lobbyId);
 
 	STEAM_CALLBACK(SteamMultiplayerPeer, lobby_message_scb, LobbyChatMsg_t, callbackLobbyMessage);
 	STEAM_CALLBACK(SteamMultiplayerPeer, lobby_chat_update_scb, LobbyChatUpdate_t, callbackLobbyChatUpdate);

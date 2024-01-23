@@ -19,10 +19,10 @@ public:
 	void setData(CSteamID value) {
 		data = value;
 	}
-	uint64 to_int() {
+	uint64_t to_int() {
 		return data.ConvertToUint64();
 	}
-	void from_int(uint64 i) {
+	void from_int(uint64_t i) {
 		data.SetFromUint64(i);
 	}
 	void from_CSteamID(CSteamID i) {

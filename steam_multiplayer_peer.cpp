@@ -25,7 +25,7 @@ SteamMultiplayerPeer::~SteamMultiplayerPeer() {
 	}
 }
 
-uint64 SteamMultiplayerPeer::get_lobby_id() {
+uint64_t SteamMultiplayerPeer::get_lobby_id() {
 	return lobby_id.ConvertToUint64();
 }
 
@@ -214,7 +214,8 @@ void SteamMultiplayerPeer::poll() {
 	{
 		auto a = PingPayload();
 		for (auto E = connections_by_steamId64.begin(); E; ++E) {
-			auto key = E->key;
+			// Commented out auto key to appease the compiler gods
+//			auto key = E->key; // this is unused?
 			Ref<SteamMultiplayerPeer::ConnectionData> value = E->value;
 			auto t = value->last_msg_timestamp + MAX_TIME_WITHOUT_MESSAGE; // pretty sure this will wrap. Should I fix this?
 
@@ -310,7 +311,7 @@ void SteamMultiplayerPeer::set_steam_id_peer(CSteamID steamId, int peer_id) {
 	} else if (con->peer_id == peer_id) {
 		//nothing happens, set peer that already exists
 	} else {
-		DEBUG_DATA_SIGNAL_V("THIS STEAM ID GOT WRONG PEER ID", steamId.ConvertToUint64());
+		DEBUG_DATA_SIGNAL_V("THIS STEAM ID GOT WRONG PEER ID", (uint64_t)steamId.ConvertToUint64());
 		DEBUG_DATA_SIGNAL_V("PEER ID WAS", con->peer_id);
 		DEBUG_DATA_SIGNAL_V("TRYING TO SET AS", peer_id);
 	}
@@ -328,11 +329,11 @@ void SteamMultiplayerPeer::add_connection_peer(const CSteamID &steamId, int peer
 
 	Ref<ConnectionData> connectionData = Ref<ConnectionData>(memnew(ConnectionData(steamId)));
 	connections_by_steamId64[steamId.ConvertToUint64()] = connectionData;
-	auto a = connectionData->ping();
-	if (a != OK) {
-		DEBUG_DATA_SIGNAL_V("add_connection_peer: Error sending ping", a);
+	auto this_ping = connectionData->ping();
+	if (this_ping != OK) {
+		DEBUG_DATA_SIGNAL_V("add_connection_peer: Error sending ping", this_ping);
 	}
-	ERR_FAIL_COND_MSG(a != OK, "Message failed to join?");
+	ERR_FAIL_COND_MSG(this_ping != OK, "Message failed to join?");
 }
 
 void SteamMultiplayerPeer::add_pending_peer(const CSteamID &steamId) {
@@ -367,21 +368,21 @@ void SteamMultiplayerPeer::lobby_created_scb(LobbyCreated_t *lobby_data, bool io
 		lobby_state = LOBBY_STATE::LOBBY_STATE_HOSTING;
 		int connect = lobby_data->m_eResult;
 		lobby_id = lobby_data->m_ulSteamIDLobby;
-		uint64 lobby = lobby_id.ConvertToUint64();
-		emit_signal(SNAME("lobby_created"), connect, lobby); // why do I do this? edit: no really, why am I doing this?
+		uint64_t lobby = lobby_id.ConvertToUint64();
+		emit_signal(SNAME("lobby_created"), connect, lobby); // why do I do this? edit: no really, why am I doing this? // why are you doing this? :)
 	}
 }
 
-Error SteamMultiplayerPeer::join_lobby(uint64 lobbyId) {
+Error SteamMultiplayerPeer::join_lobby(uint64_t lobbyId) {
 	ERR_FAIL_COND_V_MSG(SteamMatchmaking() == NULL, ERR_DOES_NOT_EXIST, "`SteamMatchmaking()` is null.");
 	ERR_FAIL_COND_V_MSG(lobby_state != LOBBY_STATE::LOBBY_STATE_NOT_CONNECTED, ERR_ALREADY_IN_USE, "CANNOT JOIN A LOBBY WHILE IN A LOBBY!");
 
 	if (SteamMatchmaking() != NULL) {
 		lobby_state = LOBBY_STATE::LOBBY_STATE_CLIENT_PENDING;
-		this->lobby_id = lobbyId;
+		this->lobby_id.SetFromUint64(lobbyId);
 		// unique_id = SteamUser()->GetSteamID().GetAccountID();
 		unique_id = generate_unique_id();
-		SteamMatchmaking()->JoinLobby(CSteamID(lobbyId));
+		SteamMatchmaking()->JoinLobby(this->lobby_id);
 	}
 	return OK;
 }
@@ -458,9 +459,11 @@ void SteamMultiplayerPeer::network_messages_session_failed_scb(SteamNetworkingMe
 }
 
 void SteamMultiplayerPeer::lobby_data_update_scb(LobbyDataUpdate_t *call_data) {
-	uint64_t member_id = call_data->m_ulSteamIDMember;
-	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
-	uint8 success = call_data->m_bSuccess;
+	// These were meant to be sent back with a signal that was commented out
+	// Commenting these out to appease the compiler gods as one shadows a member of the class
+//	uint64_t member_id = call_data->m_ulSteamIDMember;
+//	uint64_t lobby_id = call_data->m_ulSteamIDLobby;
+//	uint8 success = call_data->m_bSuccess;
 	return;
 	// emit_signal("lobby_data_update", success, lobby_id, member_id);
 }
@@ -833,7 +836,7 @@ int SteamMultiplayerPeer::get_peer_id_from_steam64(uint64_t steamid) {
 Dictionary SteamMultiplayerPeer::get_peer_map() {
 	Dictionary output;
 	for (auto E = connections_by_steamId64.begin(); E; ++E) {
-		output[E->value->peer_id] = E->value->steam_id.ConvertToUint64();
+		output[E->value->peer_id] = (uint64_t)E->value->steam_id.ConvertToUint64();
 	}
 	return output;
 }
