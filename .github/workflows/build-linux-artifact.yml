@@ -45,7 +45,7 @@ jobs:
       - name: Checkout GodotSteam
         uses: actions/checkout@v3
         with:
-          repository: "CoaguCo-Industries/GoddotSteam"
+          repository: "CoaguCo-Industries/GodotSteam"
           path: "godotsteam"
           ref: ${{ inputs.godotsteam_tag }}
       - name: Copy GodotSteam Module
