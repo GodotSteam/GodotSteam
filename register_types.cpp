@@ -8,11 +8,11 @@
 
 static Steam *SteamPtr = NULL;	// Not needed?
 
-void initialize_godotsteammultiplayer_module(ModuleInitializationLevel level) {
+void initialize_godotsteam_multiplayer_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<SteamMultiplayerPeer>();
 	}
 }
 
-void uninitialize_godotsteammultiplayer_module(ModuleInitializationLevel level) {
+void uninitialize_godotsteam_multiplayer_module(ModuleInitializationLevel level) {
 }

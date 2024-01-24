@@ -3,7 +3,7 @@
 
 #include "modules/register_module_types.h"
 
-void initialize_godotsteammultiplayer_module(ModuleInitializationLevel level);
-void uninitialize_godotsteammultiplayer_module(ModuleInitializationLevel level);
+void initialize_godotsteam_multiplayer_module(ModuleInitializationLevel level);
+void uninitialize_godotsteam_multiplayer_module(ModuleInitializationLevel level);
 
 #endif
