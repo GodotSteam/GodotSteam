@@ -209,7 +209,6 @@ Steam::Steam() :
 	callbackIPCountry(this, &Steam::ip_country),
 	callbackLowPower(this, &Steam::low_power),
 	callbackSteamAPICallCompleted(this, &Steam::steam_api_call_completed),
-	callbackSteamWarningMessage(this &Steam::steamworks_warning_message),
 	callbackSteamShutdown(this, &Steam::steam_shutdown),
 	callbackAppResumingFromSuspend(this, &Steam::app_resuming_from_suspend),
 	callbackFloatingGamepadTextInputDismissed(this, &Steam::floating_gamepad_text_input_dismissed),
@@ -2497,12 +2496,12 @@ String Steam::getGlyphForActionOrigin(InputActionOrigin origin) {
 }
 
 // Get the input type (device model) for the specified controller.
-InputType Steam::getInputTypeForHandle(uint64_t input_handle) {
+Steam::InputType Steam::getInputTypeForHandle(uint64_t input_handle) {
 	if (SteamInput() == NULL) {
-		return "";
+		return INPUT_TYPE_UNKNOWN;
 	}
 	ESteamInputType this_input_type = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
-	return this_input_type;
+	return (Steam::InputType)this_input_type;
 }
 
 // Returns raw motion data for the specified controller.
@@ -8670,18 +8669,6 @@ void Steam::setVRHeadsetStreamingEnabled(bool enabled) {
 	}
 }
 
-// Sets a warning message hook to receive Steam API warnings and info message in a callback function
-void Steam::setWarningMessageHook(bool set_hook = true) {
-	if (SteamUtils() != NULL) {
-		if (set_hook){
-			SteamUtils->SetWarningMessageHook(steamworks_warning_message);
-		}
-		else{
-			SteamUtils->SetWarningMessageHook(NULL);
-		}
-	}
-}
-
 // Activates the Big Picture text input dialog which only supports gamepad input.
 bool Steam::showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text) {
 	if (SteamUtils() == NULL) {
@@ -9712,14 +9699,7 @@ void Steam::relay_network_status(SteamRelayNetworkStatus_t *call_data) {
 	delete[] debug_message;
 }
 
-// A message from Steam about a warning or information related to the API
-void Steam::steamworks_warning_message(SteamAPIWarningMessageHook_t *call_data){
-	int severity = call_data->nSeverity;
-	char *debug_message = new char[256];
-	sprintf(debug_message, "%s", call_data->pchDebugText);
-	emit_signal("steamworks_warning_message", severity, debug_message);
-	delete[] debug_message;
-}
+
 
 // PARENTAL SETTINGS CALLBACKS //////////////////
 //
@@ -11856,7 +11836,6 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("ip_country"));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
 	ADD_SIGNAL(MethodInfo("steam_api_call_completed", PropertyInfo(Variant::INT, "async_call"), PropertyInfo(Variant::INT, "callback"), PropertyInfo(Variant::INT, "parameter")));
-	ADD_SIGNAL(MethodInfo("steamworks_warning_message", PropertyInfo(Variant::INT, "severity"), PropertyInfo(Variant::STRING, "debug_message")));
 	ADD_SIGNAL(MethodInfo("steam_shutdown"));
 	ADD_SIGNAL(MethodInfo("app_resuming_from_suspend"));
 	ADD_SIGNAL(MethodInfo("floating_gamepad_text_input_dismissed"));

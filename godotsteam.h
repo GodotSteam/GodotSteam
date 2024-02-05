@@ -2530,7 +2530,6 @@ public:
 	void setOverlayNotificationInset(int horizontal, int vertical);
 	void setOverlayNotificationPosition(int pos);
 	void setVRHeadsetStreamingEnabled(bool enabled);
-	void setWarningMessageHook(bool set_hook = true);
 	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	bool showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
 	void setGameLauncherMode(bool mode);
@@ -2787,7 +2786,6 @@ private:
 	STEAM_CALLBACK(Steam, ip_country, IPCountry_t, callbackIPCountry);
 	STEAM_CALLBACK(Steam, low_power, LowBatteryPower_t, callbackLowPower);
 	STEAM_CALLBACK(Steam, steam_api_call_completed, SteamAPICallCompleted_t, callbackSteamAPICallCompleted);
-	STEAM_CALLBACK(Staem, steamworks_warning_message, SteamAPIWarningMessageHook_t, callbackSteamWarningMessage);
 	STEAM_CALLBACK(Steam, steam_shutdown, SteamShutdown_t, callbackSteamShutdown);
 	STEAM_CALLBACK(Steam, app_resuming_from_suspend, AppResumingFromSuspend_t, callbackAppResumingFromSuspend);
 	STEAM_CALLBACK(Steam, floating_gamepad_text_input_dismissed, FloatingGamepadTextInputDismissed_t, callbackFloatingGamepadTextInputDismissed);
