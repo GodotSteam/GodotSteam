@@ -209,6 +209,7 @@ Steam::Steam() :
 	callbackIPCountry(this, &Steam::ip_country),
 	callbackLowPower(this, &Steam::low_power),
 	callbackSteamAPICallCompleted(this, &Steam::steam_api_call_completed),
+	callbackSteamWarningMessage(this &Steam::steamworks_warning_message),
 	callbackSteamShutdown(this, &Steam::steam_shutdown),
 	callbackAppResumingFromSuspend(this, &Steam::app_resuming_from_suspend),
 	callbackFloatingGamepadTextInputDismissed(this, &Steam::floating_gamepad_text_input_dismissed),
@@ -2496,42 +2497,12 @@ String Steam::getGlyphForActionOrigin(InputActionOrigin origin) {
 }
 
 // Get the input type (device model) for the specified controller.
-String Steam::getInputTypeForHandle(uint64_t input_handle) {
+InputType Steam::getInputTypeForHandle(uint64_t input_handle) {
 	if (SteamInput() == NULL) {
 		return "";
 	}
-	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
-	if (inputType == k_ESteamInputType_SteamController) {
-		return "Steam controller";
-	} else if (inputType == k_ESteamInputType_XBox360Controller) {
-		return "XBox 360 controller";
-	} else if (inputType == k_ESteamInputType_XBoxOneController) {
-		return "XBox One controller";
-	} else if (inputType == k_ESteamInputType_GenericGamepad) {
-		return "Generic XInput";
-	} else if (inputType == k_ESteamInputType_PS4Controller) {
-		return "PS4 controller";
-	} else if (inputType == k_ESteamInputType_AppleMFiController) {
-		return "Apple iController";
-	} else if (inputType == k_ESteamInputType_AndroidController) {
-		return "Android Controller";
-	} else if (inputType == k_ESteamInputType_SwitchJoyConPair) {
-		return "Switch Joy Cons (Pair)";
-	} else if (inputType == k_ESteamInputType_SwitchJoyConSingle) {
-		return "Switch Joy Con (Single)";
-	} else if (inputType == k_ESteamInputType_SwitchProController) {
-		return "Switch Pro Controller";
-	} else if (inputType == k_ESteamInputType_MobileTouch) {
-		return "Mobile Touch";
-	} else if (inputType == k_ESteamInputType_PS3Controller) {
-		return "PS3 Controller";
-	} else if (inputType == k_ESteamInputType_PS5Controller) {
-		return "PS5 Controller";
-	} else if (inputType == k_ESteamInputType_SteamDeckController) {
-		return "Steam Deck";
-	} else {
-		return "Unknown";
-	}
+	ESteamInputType this_input_type = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
+	return this_input_type;
 }
 
 // Returns raw motion data for the specified controller.
@@ -8699,6 +8670,18 @@ void Steam::setVRHeadsetStreamingEnabled(bool enabled) {
 	}
 }
 
+// Sets a warning message hook to receive Steam API warnings and info message in a callback function
+void Steam::setWarningMessageHook(bool set_hook = true) {
+	if (SteamUtils() != NULL) {
+		if (set_hook){
+			SteamUtils->SetWarningMessageHook(steamworks_warning_message);
+		}
+		else{
+			SteamUtils->SetWarningMessageHook(NULL);
+		}
+	}
+}
+
 // Activates the Big Picture text input dialog which only supports gamepad input.
 bool Steam::showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text) {
 	if (SteamUtils() == NULL) {
@@ -9729,6 +9712,15 @@ void Steam::relay_network_status(SteamRelayNetworkStatus_t *call_data) {
 	delete[] debug_message;
 }
 
+// A message from Steam about a warning or information related to the API
+void Steam::steamworks_warning_message(SteamAPIWarningMessageHook_t *call_data){
+	int severity = call_data->nSeverity;
+	char *debug_message = new char[256];
+	sprintf(debug_message, "%s", call_data->pchDebugText);
+	emit_signal("steamworks_warning_message", severity, debug_message);
+	delete[] debug_message;
+}
+
 // PARENTAL SETTINGS CALLBACKS //////////////////
 //
 // Purpose: Callback for querying UGC
@@ -10530,8 +10522,8 @@ void Steam::item_updated(SubmitItemUpdateResult_t *call_data, bool io_failure) {
 		steamworksError("item_updated");
 	} else {
 		EResult result = call_data->m_eResult;
-		bool accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-		emit_signal("item_updated", result, accept_tos);
+		bool need_to_accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+		emit_signal("item_updated", result, need_to_accept_tos);
 	}
 }
 
@@ -11864,6 +11856,7 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("ip_country"));
 	ADD_SIGNAL(MethodInfo("low_power", PropertyInfo(Variant::INT, "power")));
 	ADD_SIGNAL(MethodInfo("steam_api_call_completed", PropertyInfo(Variant::INT, "async_call"), PropertyInfo(Variant::INT, "callback"), PropertyInfo(Variant::INT, "parameter")));
+	ADD_SIGNAL(MethodInfo("steamworks_warning_message", PropertyInfo(Variant::INT, "severity"), PropertyInfo(Variant::STRING, "debug_message")));
 	ADD_SIGNAL(MethodInfo("steam_shutdown"));
 	ADD_SIGNAL(MethodInfo("app_resuming_from_suspend"));
 	ADD_SIGNAL(MethodInfo("floating_gamepad_text_input_dismissed"));
@@ -11913,6 +11906,8 @@ void Steam::_bind_methods() {
 	BIND_CONSTANT(INVALID_HTTPREQUEST_HANDLE); // 0
 
 	// INPUT CONSTANTS //////////////////////////
+	BIND_CONSTANT(INPUT_HANDLE_ALL_CONTROLLERS);
+	BIND_CONSTANT(INPUT_MAX_ACTIVE_LAYERS);
 	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTIONS); // 16
 	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTION_DATA); // 1.0f
 	BIND_CONSTANT(INPUT_MAX_COUNT); // 16
@@ -11944,6 +11939,7 @@ void Steam::_bind_methods() {
 	BIND_CONSTANT(MUSIC_PNG_MAX_LENGTH); // 65535
 
 	// NETWORKING MESSAGE CONSTANTS /////////////
+	BIND_CONSTANT(NETWORKING_SEND_AUTO_RESTART_BROKEN_SESSION);
 	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE); // 0
 	BIND_CONSTANT(NETWORKING_SEND_NO_NAGLE); // 1
 	BIND_CONSTANT(NETWORKING_SEND_NO_DELAY); // 4

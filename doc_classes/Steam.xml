@@ -7914,7 +7914,7 @@
 		<signal name="network_messages_session_failed">
 			<argument index="0" name="reason" type="int" />
 			<description>
-				Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way.
+				Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way. There is no notification when a peer proactively closes the session. 
 			</description>
 		</signal>
 		<signal name="network_messages_session_request">
@@ -8406,6 +8406,8 @@
 		<constant name="MUSIC_NAME_MAX_LENGTH" value="255">
 		</constant>
 		<constant name="MUSIC_PNG_MAX_LENGTH" value="65535">
+		</constant>
+		<constant name="NETWORKING_SEND_AUTO_RESTART_BROKEN_SESSION" value="32">
 		</constant>
 		<constant name="NETWORKING_SEND_UNRELIABLE" value="0">
 		</constant>
