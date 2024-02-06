@@ -94,29 +94,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux Editor
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-editor
           path: files
       - name: Download Linux Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-release-template
           path: files
       - name: Download Linux Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-debug-template
           path: files
       - name: Download Linux Steam API
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-libsteam-api-so
           path: files
       - name: Create Linux Bundle
         run: zip -j linux64-${{ needs.env-setup.outputs.zip_tag }}.zip files/*
       - name: Upload Win64 bundle artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
           path: linux64-${{ needs.env-setup.outputs.zip_tag }}.zip
@@ -172,29 +172,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows Editor
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win64-editor
           path: files
       - name: Download Windows Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win64-release-template
           path: files
       - name: Download Windows Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win64-debug-template
           path: files
       - name: Download Windows 64 Bit Steam API
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win_steam_api_64
           path: files
       - name: Create Windows Bundle
         run: zip -j win64-${{needs.env-setup.outputs.zip_tag}}.zip files/*
       - name: Upload Win64 bundle artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: win64-${{needs.env-setup.outputs.zip_tag}}.zip
           path: win64-${{needs.env-setup.outputs.zip_tag}}.zip
@@ -280,47 +280,47 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Download MacOS x86_64 Editor
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-editor-x86_64
           path: files
       - name: Download MacOS ARM Editor
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-editor-arm64
           path: files
       - name: Download MacOS x86_64 Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-release-template-x86_64
           path: files
       - name: Download MacOS x86_64 Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-debug-template-x86_64
           path: files
       - name: Download MacOS ARM Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-release-template-arm64
           path: files
       - name: Download MacOS ARM Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-debug-template-arm64
           path: files
       - name: Download MacOS Steam API
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-libsteam-api-dylib
           path: files
       - name: Download MacOS Tool App
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-tool-app
           path: files
       - name: Download MacOS Template App
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-template-app
           path: files
@@ -346,7 +346,7 @@ jobs:
           zip -r ../macos-${{ needs.env-setup.outputs.zip_tag }}.zip ./macos.zip ./GodotEditor.app
           popd
       - name: Upload MacOS bundle artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
           path: macos-${{ needs.env-setup.outputs.zip_tag }}.zip
@@ -359,62 +359,62 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Download Windows 64 Bit Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win64-release-template
           path: files
       - name: Download Windows 64 Bit Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win64-debug-template
           path: files
       - name: Download Windows 64 Bit Steam API
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win_steam_api_64
           path: files
       - name: Download Linux Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-release-template
           path: files
       - name: Download Linux Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-debug-template
           path: files
       - name: Download Linux Steam API
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-libsteam-api-so
           path: files
       - name: Download MacOS x86_64 Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-release-template-x86_64
           path: files
       - name: Download MacOS x86_64 Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-debug-template-x86_64
           path: files
       - name: Download MacOS ARM Release Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-release-template-arm64
           path: files
       - name: Download MacOS ARM Debug Template
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-debug-template-arm64
           path: files
       - name: Download MacOS Steam API
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-libsteam-api-dylib
           path: files
       - name: Download MacOS Template App
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-template-app
           path: files
@@ -436,7 +436,7 @@ jobs:
           rm -r files/macos_template.app/
           zip -j godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip files/*
       - name: Upload template bundle artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
           path: godotsteam-${{ needs.env-setup.outputs.zip_tag }}-templates.zip
