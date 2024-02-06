@@ -30,14 +30,14 @@ jobs:
     steps:
       # Checkout Godot
       - name: Checkout Godot
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "godotengine/godot"
           path: "godot"
           ref: ${{ inputs.godot_tag }}
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "godotsteam"
       - name: Copy GodotSteam Module
@@ -45,7 +45,7 @@ jobs:
           cp -r godotsteam godot/modules/godotsteam
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
@@ -56,25 +56,6 @@ jobs:
           cp -r steamworks/public godot/modules/godotsteam/sdk
           cp -r steamworks/redistributable_bin godot/modules/godotsteam/sdk
           ls -la godot/modules/godotsteam/sdk
-      # Install the Vulkan SDK, script copied from the official Godot build scripts.
-      - name: Install Vulkan SDK
-        run: |
-          set -euo pipefail
-          IFS=$'\n\t'
-          # Download and install the Vulkan SDK.
-          curl -L "https://sdk.lunarg.com/sdk/download/latest/mac/vulkan-sdk.dmg" -o /tmp/vulkan-sdk.dmg
-          hdiutil attach /tmp/vulkan-sdk.dmg -mountpoint /Volumes/vulkan-sdk
-          /Volumes/vulkan-sdk/InstallVulkan.app/Contents/MacOS/InstallVulkan \
-              --accept-licenses --default-answer --confirm-command install
-          cnt=5
-          until hdiutil detach -force /Volumes/vulkan-sdk
-          do
-             [[ cnt -eq "0" ]] && break
-             sleep 1
-             ((cnt--))
-          done
-          rm -f /tmp/vulkan-sdk.dmg
-          echo 'Vulkan SDK installed successfully!'
       - name: Install Build Tools
         run: |
           brew install scons yasm
@@ -83,14 +64,14 @@ jobs:
         run: |
           scons ${{ inputs.build_params }}
       - name: Upload MacOS Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
           if-no-files-found: error
           retention-days: 1
       - name: Upload MacOS Steam Dylib
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-libsteam-api-dylib
           path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
@@ -103,14 +84,14 @@ jobs:
           zip -r ./osx_template.zip ./osx_template.app/
           popd
       - name: Upload MacOS Tool App
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-tool-app
           path: godot/misc/dist/osx_tools.zip
           if-no-files-found: error
           retention-days: 1
       - name: Upload MacOS Template App
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-template-app
           path: godot/misc/dist/osx_template.zip

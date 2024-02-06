@@ -33,14 +33,14 @@ jobs:
     steps:
       # Checkout Godot
       - name: Checkout Godot
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "godotengine/godot"
           path: "godot"
           ref: ${{ inputs.godot_tag }}
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "godotsteam"
       - name: Copy GodotSteam Module
@@ -51,7 +51,7 @@ jobs:
           EXIT 0
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
@@ -70,13 +70,13 @@ jobs:
           scons ${{ inputs.build_params }}
           cd bin && ren ${{ inputs.binary_name }} ${{ inputs.export_name }}
       - name: Upload Windows Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
           retention-days: 1
       - name: Upload Windows 64 bit Steam File
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: win_steam_api_64
           path: |

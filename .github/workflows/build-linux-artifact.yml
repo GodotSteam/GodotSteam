@@ -40,7 +40,7 @@ jobs:
           ref: ${{ inputs.godot_tag }}
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "godotsteam"
       - name: Copy GodotSteam Module
@@ -48,7 +48,7 @@ jobs:
           cp -r godotsteam godot/modules/godotsteam
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
@@ -65,13 +65,13 @@ jobs:
           PATH=/opt/x86_64-godot-linux-gnu_sdk-buildroot/bin:$PATH scons ${{ inputs.build_params }}
           mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
       - name: Upload Linux Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
           retention-days: 1
       - name: Upload Linux Steam File
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-libsteam-api-so
           path: godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so
