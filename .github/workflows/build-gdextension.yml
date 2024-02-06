@@ -86,12 +86,12 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       
       - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
           path: "steamworks"
@@ -141,7 +141,7 @@ jobs:
           ./relocate-sdk.sh
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
 
       - name: Set up SCons
         shell: bash
@@ -151,7 +151,7 @@ jobs:
           scons --version
       - name: Load .scons_cache directory
         id: godot-extension-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{github.workspace}}/.scons_cache/
           key: ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
@@ -198,7 +198,7 @@ jobs:
 
           cp -n 'README.md' 'LICENSE.txt' 'godotsteam.gdextension' project/addons/godotsteam
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: gdextension
           path: |
