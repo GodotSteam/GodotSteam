@@ -295,7 +295,7 @@ public:
 	String getGlyphForXboxOrigin(int origin);
 	String getGlyphPNGForActionOrigin(int origin, int size, uint32 flags);
 	String getGlyphSVGForActionOrigin(int origin, uint32 flags);
-	String getInputTypeForHandle(uint64_t input_handle);
+	int getInputTypeForHandle(uint64_t input_handle);
 	Dictionary getMotionData(uint64_t input_handle);
 	int getRemotePlaySessionID(uint64_t input_handle);
 	uint16 getSessionInputConfigurationSettings();

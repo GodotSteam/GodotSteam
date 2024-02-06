@@ -1465,7 +1465,7 @@ bool Steam::replyToFriendMessage(uint64_t steam_id, String message){
 void Steam::requestClanOfficerList(uint64_t clan_id){
 	if(SteamFriends() != NULL){
 		clan_activity = (uint64)clan_id;
-		SteamAPICall_t api_call = SteamFriends()->RequestClanOfficerList(clan_activity);
+		SteamAPICall_t api_call = SteamFriends()->GetFollowerCount(clan_activity);
 		callResultClanOfficerList.Set(api_call, this, &Steam::request_clan_officer_list);
 	}
 }
@@ -2451,56 +2451,12 @@ String Steam::getGlyphForActionOrigin(int origin){
 }
 
 // Get the input type (device model) for the specified controller. 
-String Steam::getInputTypeForHandle(uint64_t input_handle){
+int Steam::getInputTypeForHandle(uint64_t input_handle){
 	if(SteamInput() == NULL){
-		return "";
+		return 0;
 	}
-	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
-	if(inputType == k_ESteamInputType_SteamController){
-		return "Steam controller";
-	}
-	else if(inputType == k_ESteamInputType_XBox360Controller){
-		return "XBox 360 controller";
-	}
-	else if(inputType == k_ESteamInputType_XBoxOneController){
-		return "XBox One controller";
-	}
-	else if(inputType == k_ESteamInputType_GenericGamepad){
-		return "Generic XInput";
-	}
-	else if(inputType == k_ESteamInputType_PS4Controller){
-		return "PS4 controller";
-	}
-	else if(inputType == k_ESteamInputType_AppleMFiController){
-		return "Apple iController";
-	}
-	else if(inputType == k_ESteamInputType_AndroidController){
-		return "Android Controller";
-	}
-	else if(inputType == k_ESteamInputType_SwitchJoyConPair){
-		return "Switch Jon Cons (Pair)";
-	}
-	else if(inputType == k_ESteamInputType_SwitchJoyConSingle){
-		return "Switch Jon Con (Single)";
-	}
-	else if(inputType == k_ESteamInputType_SwitchProController){
-		return "Switch Pro Controller";
-	}
-	else if(inputType == k_ESteamInputType_MobileTouch){
-		return "Mobile Touch";
-	}
-	else if(inputType == k_ESteamInputType_PS3Controller){
-		return "PS3 Controller";
-	}
-	else if(inputType == k_ESteamInputType_PS5Controller){
-		return "PS5 Controller";
-	}
-	else if(inputType == k_ESteamInputType_SteamDeckController){
-		return "Steam Deck";
-	}
-	else{
-		return "Unknown";
-	}
+	ESteamInputType this_input_type = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
+	return (int)this_input_type;
 }
 
 // Returns raw motion data for the specified controller.
@@ -10615,8 +10571,8 @@ void Steam::item_updated(SubmitItemUpdateResult_t *call_data, bool io_failure){
 	}
 	else{
 		EResult result = call_data->m_eResult;
-		bool accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-		emit_signal("item_updated", result, accept_tos);
+		bool needs_to_accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+		emit_signal("item_updated", result, needs_to_accept_tos);
 	}
 }
 
