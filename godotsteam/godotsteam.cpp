@@ -79,7 +79,6 @@ Steam::Steam():
 	callbackEndGameResult(this, &Steam::end_game_result),
 
 	// HTML Surface callbacks ///////////////////
-	callbackHTMLBrowserReady(this, &Steam::html_browser_ready),
 	callbackHTMLCanGoBackandforward(this, &Steam::html_can_go_backandforward),
 	callbackHTMLChangedTitle(this, &Steam::html_changed_title),
 	callbackHTMLCloseBrowser(this, &Steam::html_close_browser),
@@ -1728,8 +1727,21 @@ void Steam::copyToClipboard(uint32 this_handle){
 
 // Create a browser object for displaying of an HTML page. NOTE: You MUST call RemoveBrowser when you are done using this browser to free up the resources associated with it. Failing to do so will result in a memory leak.
 void Steam::createBrowser(const String& user_agent, const String& user_css){
-	if(SteamHTMLSurface() != NULL){
-		SteamHTMLSurface()->CreateBrowser(user_agent.utf8().get_data(), user_css.utf8().get_data());
+	if (SteamHTMLSurface() != NULL) {
+		char *this_user_agent = new char[sizeof(user_agent)];
+		strcpy(this_user_agent, user_agent.utf8().get_data());
+		char *this_user_css = new char[sizeof(user_css)];
+		strcpy(this_user_css, user_css.utf8().get_data());
+		if (user_agent.is_empty()) {
+			this_user_agent = NULL;
+		}
+		if (user_css.is_empty()) {
+			this_user_css = NULL;
+		}
+		SteamAPICall_t api_call = SteamHTMLSurface()->CreateBrowser(this_user_agent, this_user_css);
+		callResultHTMLBrowserReady.Set(api_call, this, &Steam::html_browser_ready);
+		delete[] this_user_agent;
+		delete[] this_user_css;
 	}
 }
 
@@ -2465,57 +2477,13 @@ String Steam::getGlyphForActionOrigin(InputActionOrigin origin){
 	return SteamInput()->GetGlyphForActionOrigin_Legacy((EInputActionOrigin)origin);
 }
 
-// Get the input type (device model) for the specified controller. 
-String Steam::getInputTypeForHandle(uint64_t input_handle){
-	if(SteamInput() == NULL){
-		return "";
+// Get the input type (device model) for the specified controller.
+Steam::InputType Steam::getInputTypeForHandle(uint64_t input_handle) {
+	if (SteamInput() == NULL) {
+		return INPUT_TYPE_UNKNOWN;
 	}
-	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
-	if(inputType == k_ESteamInputType_SteamController){
-		return "Steam controller";
-	}
-	else if(inputType == k_ESteamInputType_XBox360Controller){
-		return "XBox 360 controller";
-	}
-	else if(inputType == k_ESteamInputType_XBoxOneController){
-		return "XBox One controller";
-	}
-	else if(inputType == k_ESteamInputType_GenericGamepad){
-		return "Generic XInput";
-	}
-	else if(inputType == k_ESteamInputType_PS4Controller){
-		return "PS4 controller";
-	}
-	else if(inputType == k_ESteamInputType_AppleMFiController){
-		return "Apple iController";
-	}
-	else if(inputType == k_ESteamInputType_AndroidController){
-		return "Android Controller";
-	}
-	else if(inputType == k_ESteamInputType_SwitchJoyConPair){
-		return "Switch Joy Cons (Pair)";
-	}
-	else if(inputType == k_ESteamInputType_SwitchJoyConSingle){
-		return "Switch Joy Con (Single)";
-	}
-	else if(inputType == k_ESteamInputType_SwitchProController){
-		return "Switch Pro Controller";
-	}
-	else if(inputType == k_ESteamInputType_MobileTouch){
-		return "Mobile Touch";
-	}
-	else if(inputType == k_ESteamInputType_PS3Controller){
-		return "PS3 Controller";
-	}
-	else if(inputType == k_ESteamInputType_PS5Controller){
-		return "PS5 Controller";
-	}
-	else if(inputType == k_ESteamInputType_SteamDeckController){
-		return "Steam Deck";
-	}
-	else{
-		return "Unknown";
-	}
+	ESteamInputType this_input_type = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
+	return (Steam::InputType)this_input_type;
 }
 
 // Returns raw motion data for the specified controller.
@@ -9196,12 +9164,6 @@ void Steam::end_game_result(EndGameResultCallback_t* call_data){
 
 // HTML SURFACE CALLBACKS ///////////////////////
 // 
-// A new browser was created and is ready for use.
-void Steam::html_browser_ready(HTML_BrowserReady_t* call_data){
-	browser_handle = call_data->unBrowserHandle;
-	emit_signal("html_browser_ready", browser_handle);
-}
-
 // Called when page history status has changed the ability to go backwards and forward.
 void Steam::html_can_go_backandforward(HTML_CanGoBackAndForward_t* call_data){
 	browser_handle = call_data->unBrowserHandle;
@@ -10233,6 +10195,18 @@ void Steam::is_following(FriendsIsFollowing_t *call_data, bool io_failure){
 	}
 }
 
+// HTML SURFACE CALL RESULTS ////////////////////
+//
+// A new browser was created and is ready for use.
+void Steam::html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure) {
+	if (io_failure) {
+		steamworksError("html_browser_ready");
+	} else {
+		browser_handle = call_data->unBrowserHandle;
+		emit_signal("html_browser_ready", browser_handle);
+	}
+}
+
 // INVENTORY CALL RESULTS ///////////////////////
 //
 // Returned when you have requested the list of "eligible" promo items that can be manually granted to the given user. These are promo items of type "manual" that won't be granted automatically.
@@ -10645,8 +10619,8 @@ void Steam::item_updated(SubmitItemUpdateResult_t *call_data, bool io_failure){
 	}
 	else{
 		EResult result = call_data->m_eResult;
-		bool accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-		emit_signal("item_updated", result, accept_tos);
+		bool need_to_accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+		emit_signal("item_updated", result, need_to_accept_tos);
 	}
 }
 
@@ -12019,122 +11993,126 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("get_opf_settings_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "app_id")));
 	ADD_SIGNAL(MethodInfo("get_video_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::STRING, "url")));
 
-
 	/////////////////////////////////////////////
 	// CONSTANT BINDS
 	/////////////////////////////////////////////
 	//
 	// STEAM API CONSTANTS //////////////////////
-	BIND_CONSTANT(INVALID_BREAKPAD_HANDLE);												// (BREAKPAD_HANDLE)0
-	BIND_CONSTANT(GAME_EXTRA_INFO_MAX); 												// 64
-	BIND_CONSTANT(AUTH_TICKET_INVALID);													// 0
 	BIND_CONSTANT(API_CALL_INVALID); 													// 0x0
 	BIND_CONSTANT(APP_ID_INVALID); 														// 0x0
+	BIND_CONSTANT(AUTH_TICKET_INVALID);													// 0
 	BIND_CONSTANT(DEPOT_ID_INVALID); 													// 0x0
+	BIND_CONSTANT(GAME_EXTRA_INFO_MAX); 												// 64
+	BIND_CONSTANT(INVALID_BREAKPAD_HANDLE);												// (BREAKPAD_HANDLE)0
+	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
+	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
 	BIND_CONSTANT(STEAM_ACCOUNT_ID_MASK); 												// 0xFFFFFFFF
 	BIND_CONSTANT(STEAM_ACCOUNT_INSTANCE_MASK); 										// 0x000FFFFF
+	BIND_CONSTANT(STEAM_BUFFER_SIZE);													// 255
+	BIND_CONSTANT(STEAM_LARGE_BUFFER_SIZE);												// 8160
+	BIND_CONSTANT(STEAM_MAX_ERROR_MESSAGE);												// 1024
 	BIND_CONSTANT(STEAM_USER_CONSOLE_INSTANCE); 										// 2
 	BIND_CONSTANT(STEAM_USER_DESKTOP_INSTANCE); 										// 1
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
-	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
-	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED);											// 0xFFFF
-	BIND_CONSTANT(STEAM_MAX_ERROR_MESSAGE);												// 1024
 
 	// FRIENDS CONSTANTS ////////////////////////
-	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
-	BIND_CONSTANT(ENUMERATED_FOLLOWERS_MAX);											// 50
-	BIND_CONSTANT(FRIENDS_GROUP_LIMIT);													// 100
-	BIND_CONSTANT(INVALID_FRIEND_GROUP_ID);												// -1
-	BIND_CONSTANT(MAX_FRIENDS_GROUP_NAME);												// 64
-	BIND_CONSTANT(MAX_RICH_PRESENCE_KEY_LENGTH);										// 64
-	BIND_CONSTANT(MAX_RICH_PRESENCE_KEYS);												// 20
-	BIND_CONSTANT(MAX_RICH_PRESENCE_VALUE_LENTH);										// 256
-	BIND_CONSTANT(PERSONA_NAME_MAX_UTF8);												// 128
-	BIND_CONSTANT(PERSONA_NAME_MAX_UTF16);												// 32
+	BIND_CONSTANT(CHAT_METADATA_MAX); // 8192
+	BIND_CONSTANT(ENUMERATED_FOLLOWERS_MAX); // 50
+	BIND_CONSTANT(FRIENDS_GROUP_LIMIT); // 100
+	BIND_CONSTANT(INVALID_FRIEND_GROUP_ID); // -1
+	BIND_CONSTANT(MAX_FRIENDS_GROUP_NAME); // 64
+	BIND_CONSTANT(MAX_RICH_PRESENCE_KEY_LENGTH); // 64
+	BIND_CONSTANT(MAX_RICH_PRESENCE_KEYS); // 20
+	BIND_CONSTANT(MAX_RICH_PRESENCE_VALUE_LENTH); // 256
+	BIND_CONSTANT(PERSONA_NAME_MAX_UTF8); // 128
+	BIND_CONSTANT(PERSONA_NAME_MAX_UTF16); // 32
 
 	// HTML SURFACE CONSTANTS ///////////////////
-	BIND_CONSTANT(INVALID_HTMLBROWSER);													// 0
+	BIND_CONSTANT(INVALID_HTMLBROWSER); // 0
 
 	// HTTP CONSTANTS ///////////////////////////
-	BIND_CONSTANT(INVALID_HTTPCOOKIE_HANDLE);											// 0
-	BIND_CONSTANT(INVALID_HTTPREQUEST_HANDLE);											// 0
+	BIND_CONSTANT(INVALID_HTTPCOOKIE_HANDLE); // 0
+	BIND_CONSTANT(INVALID_HTTPREQUEST_HANDLE); // 0
 
 	// INPUT CONSTANTS //////////////////////////
-	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTIONS);											// 16
-	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTION_DATA);										// 1.0f
-	BIND_CONSTANT(INPUT_MAX_COUNT);														// 16
-	BIND_CONSTANT(INPUT_MAX_DIGITAL_ACTIONS);											// 128
-	BIND_CONSTANT(INPUT_MAX_ORIGINS);													// 8
-	BIND_CONSTANT(INPUT_MIN_ANALOG_ACTION_DATA);										// -1.0f
+	BIND_CONSTANT(INPUT_HANDLE_ALL_CONTROLLERS);
+	BIND_CONSTANT(INPUT_MAX_ACTIVE_LAYERS);
+	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTIONS); // 16
+	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTION_DATA); // 1.0f
+	BIND_CONSTANT(INPUT_MAX_COUNT); // 16
+	BIND_CONSTANT(INPUT_MAX_DIGITAL_ACTIONS); // 128
+	BIND_CONSTANT(INPUT_MAX_ORIGINS); // 8
+	BIND_CONSTANT(INPUT_MIN_ANALOG_ACTION_DATA); // -1.0f
 
 	// INVENTORY CONSTANTS //////////////////////
-	BIND_CONSTANT(INVENTORY_RESULT_INVALID);											// -1
-	BIND_CONSTANT(ITEM_INSTANCE_ID_INVALID);											// 0
+	BIND_CONSTANT(INVENTORY_RESULT_INVALID); // -1
+	BIND_CONSTANT(ITEM_INSTANCE_ID_INVALID); // 0
 
 	// MATCHMAKING CONSTANTS ////////////////////
-	BIND_CONSTANT(SERVER_QUERY_INVALID);												// 0xffffffff
-	BIND_CONSTANT(MAX_LOBBY_KEY_LENGTH);												// 255
 	BIND_CONSTANT(FAVORITE_FLAG_FAVORITE);												// 0x01
 	BIND_CONSTANT(FAVORITE_FLAG_HISTORY);												// 0x02
 	BIND_CONSTANT(FAVORITE_FLAG_NONE);													// 0x00
+	BIND_CONSTANT(MAX_LOBBY_KEY_LENGTH);												// 255
+	BIND_CONSTANT(SERVER_QUERY_INVALID);												// 0xffffffff
 
 	// MATCHMAKING SERVERS CONSTANTS ////////////
-	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DATA);											// 2048
-	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DESCRIPTION);									// 64
-	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DIR);											// 32
-	BIND_CONSTANT(MAX_GAME_SERVER_MAP_NAME);											// 32
-	BIND_CONSTANT(MAX_GAME_SERVER_NAME);												// 64
-	BIND_CONSTANT(MAX_GAME_SERVER_TAGS);												// 128
+	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DATA); // 2048
+	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DESCRIPTION); // 64
+	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DIR); // 32
+	BIND_CONSTANT(MAX_GAME_SERVER_MAP_NAME); // 32
+	BIND_CONSTANT(MAX_GAME_SERVER_NAME); // 64
+	BIND_CONSTANT(MAX_GAME_SERVER_TAGS); // 128
 
 	// MUSIC REMOTE CONSTANTS ///////////////////
-	BIND_CONSTANT(MUSIC_NAME_MAX_LENGTH); 												// 255
-	BIND_CONSTANT(MUSIC_PNG_MAX_LENGTH); 												// 65535
+	BIND_CONSTANT(MUSIC_NAME_MAX_LENGTH); // 255
+	BIND_CONSTANT(MUSIC_PNG_MAX_LENGTH); // 65535
 
 	// NETWORKING MESSAGE CONSTANTS /////////////
-	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
+	BIND_CONSTANT(NETWORKING_SEND_AUTO_RESTART_BROKEN_SESSION);
 	BIND_CONSTANT(NETWORKING_SEND_NO_NAGLE);											// 1
 	BIND_CONSTANT(NETWORKING_SEND_NO_DELAY);											// 4
 	BIND_CONSTANT(NETWORKING_SEND_RELIABLE);											// 8
+	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
 
 	// REMOTE PLAY CONSTANTS ////////////////////
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN);											// 0
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_PHONE);											// 1
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_TABLET);											// 2
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_COMPUTER);											// 3
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_TV);												// 4
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN); // 0
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_PHONE); // 1
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_TABLET); // 2
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_COMPUTER); // 3
+	BIND_CONSTANT(DEVICE_FORM_FACTOR_TV); // 4
 
 	// REMOTE STORAGE CONSTANTS /////////////////
-	BIND_CONSTANT(FILENAME_MAX); 														// 260
-	BIND_CONSTANT(PUBLISHED_DOCUMENT_CHANGE_DESCRIPTION_MAX); 							// 8000
-	BIND_CONSTANT(PUBLISHED_DOCUMENT_DESCRIPTION_MAX);									// 8000
-	BIND_CONSTANT(PUBLISHED_DOCUMENT_TITLE_MAX);										// 128 + 1
-	BIND_CONSTANT(PUBLISHED_FILE_URL_MAX);												// 256
-	BIND_CONSTANT(TAG_LIST_MAX);														// 1024 + 1
-	BIND_CONSTANT(PUBLISHED_FILE_ID_INVALID);											// 0
-	BIND_CONSTANT(PUBLISHED_FILE_UPDATE_HANDLE_INVALID);								// 0xffffffffffffffffull
-	BIND_CONSTANT(UGC_FILE_STREAM_HANDLE_INVALID);										// 0xffffffffffffffffull
-	BIND_CONSTANT(UGC_HANDLE_INVALID);													// 0xffffffffffffffffull
-	BIND_CONSTANT(ENUMERATE_PUBLISHED_FILES_MAX_RESULTS);								// 50
-	BIND_CONSTANT(MAX_CLOUD_FILE_CHUNK_SIZE);											// 100 * 1024 * 1024
+	BIND_CONSTANT(FILENAME_MAX); // 260
+	BIND_CONSTANT(PUBLISHED_DOCUMENT_CHANGE_DESCRIPTION_MAX); // 8000
+	BIND_CONSTANT(PUBLISHED_DOCUMENT_DESCRIPTION_MAX); // 8000
+	BIND_CONSTANT(PUBLISHED_DOCUMENT_TITLE_MAX); // 128 + 1
+	BIND_CONSTANT(PUBLISHED_FILE_URL_MAX); // 256
+	BIND_CONSTANT(TAG_LIST_MAX); // 1024 + 1
+	BIND_CONSTANT(PUBLISHED_FILE_ID_INVALID); // 0
+	BIND_CONSTANT(PUBLISHED_FILE_UPDATE_HANDLE_INVALID); // 0xffffffffffffffffull
+	BIND_CONSTANT(UGC_FILE_STREAM_HANDLE_INVALID); // 0xffffffffffffffffull
+	BIND_CONSTANT(UGC_HANDLE_INVALID); // 0xffffffffffffffffull
+	BIND_CONSTANT(ENUMERATE_PUBLISHED_FILES_MAX_RESULTS); // 50
+	BIND_CONSTANT(MAX_CLOUD_FILE_CHUNK_SIZE); // 100 * 1024 * 1024
 
 	// SCREENSHOT CONSTANTS /////////////////////
-	BIND_CONSTANT(INVALID_SCREENSHOT_HANDLE); 											// 0
-	BIND_CONSTANT(UFS_TAG_TYPE_MAX); 													// 255
-	BIND_CONSTANT(UFS_TAG_VALUE_MAX); 													// 255
-	BIND_CONSTANT(MAX_TAGGED_PUBLISHED_FILES); 											// 32
-	BIND_CONSTANT(MAX_TAGGED_USERS); 													// 32
-	BIND_CONSTANT(SCREENSHOT_THUMB_WIDTH); 												// 200
+	BIND_CONSTANT(INVALID_SCREENSHOT_HANDLE); // 0
+	BIND_CONSTANT(UFS_TAG_TYPE_MAX); // 255
+	BIND_CONSTANT(UFS_TAG_VALUE_MAX); // 255
+	BIND_CONSTANT(MAX_TAGGED_PUBLISHED_FILES); // 32
+	BIND_CONSTANT(MAX_TAGGED_USERS); // 32
+	BIND_CONSTANT(SCREENSHOT_THUMB_WIDTH); // 200
 
 	// UGC CONSTANTS ////////////////////////////
-	BIND_CONSTANT(NUM_UGC_RESULTS_PER_PAGE); 											// 50
-	BIND_CONSTANT(DEVELOPER_METADATA_MAX); 												// 5000
-	BIND_CONSTANT(UGC_QUERY_HANDLE_INVALID); 											// 0xffffffffffffffffull
-	BIND_CONSTANT(UGC_UPDATE_HANDLE_INVALID); 											// 0xffffffffffffffffull
+	BIND_CONSTANT(NUM_UGC_RESULTS_PER_PAGE); // 50
+	BIND_CONSTANT(DEVELOPER_METADATA_MAX); // 5000
+	BIND_CONSTANT(UGC_QUERY_HANDLE_INVALID); // 0xffffffffffffffffull
+	BIND_CONSTANT(UGC_UPDATE_HANDLE_INVALID); // 0xffffffffffffffffull
 
 	// USER STATS CONSTANTS /////////////////////
-	BIND_CONSTANT(LEADERBOARD_DETAIL_MAX);												// 64
-	BIND_CONSTANT(LEADERBOARD_NAME_MAX);												// 128
-	BIND_CONSTANT(STAT_NAME_MAX);														// 128
+	BIND_CONSTANT(LEADERBOARD_DETAIL_MAX); // 64
+	BIND_CONSTANT(LEADERBOARD_NAME_MAX); // 128
+	BIND_CONSTANT(STAT_NAME_MAX); // 128
 
 	/////////////////////////////////////////////
 	// ENUM CONSTANT BINDS //////////////////////

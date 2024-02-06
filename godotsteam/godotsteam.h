@@ -1983,7 +1983,7 @@ public:
 	String getGlyphForXboxOrigin(int origin);
 	String getGlyphPNGForActionOrigin(InputActionOrigin origin, InputGlyphSize size, uint32 flags);
 	String getGlyphSVGForActionOrigin(InputActionOrigin origin, uint32 flags);
-	String getInputTypeForHandle(uint64_t input_handle);
+	InputType getInputTypeForHandle(uint64_t input_handle);
 	Dictionary getMotionData(uint64_t input_handle);
 	int getRemotePlaySessionID(uint64_t input_handle);
 	uint16 getSessionInputConfigurationSettings();
@@ -2659,7 +2659,6 @@ private:
 	STEAM_CALLBACK(Steam, end_game_result, EndGameResultCallback_t, callbackEndGameResult);
 
 	// HTML Surface callbacks ///////////////
-	STEAM_CALLBACK(Steam, html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
 	STEAM_CALLBACK(Steam, html_can_go_backandforward, HTML_CanGoBackAndForward_t, callbackHTMLCanGoBackandforward);
 	STEAM_CALLBACK(Steam, html_changed_title, HTML_ChangedTitle_t, callbackHTMLChangedTitle);
 	STEAM_CALLBACK(Steam, html_close_browser, HTML_CloseBrowser_t, callbackHTMLCloseBrowser);
@@ -2817,6 +2816,10 @@ private:
 	void get_follower_count(FriendsGetFollowerCount_t *call_data, bool io_failure);
 	CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 	void is_following(FriendsIsFollowing_t *call_data, bool io_failure);
+
+	// HTML Surface call results ////////////
+	CCallResult<Steam, HTML_BrowserReady_t> callResultHTMLBrowserReady;
+	void html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure);
 
 	// Inventory call results ///////////////
 	CCallResult<Steam, SteamInventoryEligiblePromoItemDefIDs_t> callResultEligiblePromoItemDefIDs;
