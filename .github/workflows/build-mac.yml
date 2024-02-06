@@ -27,7 +27,7 @@ jobs:
     steps:
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -37,7 +37,7 @@ jobs:
 
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
@@ -76,7 +76,7 @@ jobs:
           cd ..
 
       - name: Upload macOS dylib
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-plugin-${{ matrix.architecture }}
           path: bin/osx/libgodotsteam-${{ matrix.architecture }}.dylib
@@ -90,13 +90,13 @@ jobs:
 
     steps:
       - name: Download x86_64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-plugin-x86_64
           path: dylibs
 
       - name: Download arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macos-plugin-arm64
           path: dylibs
@@ -105,7 +105,7 @@ jobs:
         run: |
           cd dylibs
           lipo libgodotsteam-x86_64.dylib libgodotsteam-arm64.dylib -output libgodotsteam.dylib -create
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload final dylib
         with:
           name: macos-plugin-universal

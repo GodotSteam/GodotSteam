@@ -23,20 +23,20 @@ jobs:
     steps:
       # Checkout current source of GodotSteam
       - name: Checkout GodotSteam
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       # Set up necessary components
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
 
       - name: Set up SCons
         run: python -m pip install scons
 
       - name: Load .scons_cache directory
         id: godot-gdnative-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{github.workspace}}/.scons_cache/
           key: ${{github.job}}-${{env.base_branch}}-${{github.ref}}-${{github.sha}}
@@ -47,7 +47,7 @@ jobs:
 
       # Checkout Steamworks SDK
       - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
@@ -80,7 +80,7 @@ jobs:
 
       # Make it available to download
       - name: Upload Windows dll
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-plugin
           path: bin/win64/godotsteam.dll
