@@ -7610,7 +7610,7 @@
 		</signal>
 		<signal name="item_updated">
 			<argument index="0" name="result" type="int" />
-			<argument index="1" name="accept_tos" type="bool" />
+			<argument index="1" name="need_accept_tos" type="bool" />
 			<description>
 				Called when an item update has completed.
 				Emits signal in response to function [method Steam.submitItemUpdate].
