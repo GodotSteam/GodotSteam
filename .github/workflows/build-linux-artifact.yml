@@ -69,10 +69,12 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
+          overwrite: true
           retention-days: 1
       - name: Upload Linux Steam File
         uses: actions/upload-artifact@v4
         with:
           name: linux-libsteam-api-so
           path: godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so
+          overwrite: true
           retention-days: 1

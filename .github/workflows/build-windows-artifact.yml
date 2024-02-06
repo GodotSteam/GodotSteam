@@ -77,6 +77,7 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: godot/bin/${{ inputs.export_name }}
+          overwrite: true
           retention-days: 1
       - name: Upload Windows 64 bit Steam File
         uses: actions/upload-artifact@v4
@@ -84,4 +85,5 @@ jobs:
           name: win_steam_api_64
           path: |
             godot/modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll
+          overwrite: true
           retention-days: 1
