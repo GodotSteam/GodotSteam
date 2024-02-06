@@ -8,7 +8,7 @@ Pre-Compiles | Plug-ins | Server | Examples/Demos
 [Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)| [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot3)
 [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3) | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot4)
 [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server3)
---- | --- | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server4)
+[Multiplayer Peer](https://github.com/CoaguCo-Industries/GodotSteam/tree/multiplayer-peer)| --- | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server4)
 
 Documentation
 ---
@@ -20,10 +20,16 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v3.22.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 3.22.4 Changes**
+- Added: missing k_nSteamNetworkingSend_AutoRestartBrokenSession to constants
+- Added: two missing Input constants: INPUT_HANDLE_ALL_CONTROLLERS and INPUT_MAX_ACTIVE_LAYERS
+- Changed: `getInputTypeForHandle()` now returns int / enum instead of string for device models
+- Changed: updated in-editor docs for missing content
+- Changed: order of constants to be alphabetic
+- Changed: changed returned variable name to `need_to_accept_tos` in `item_updated` callback
+
 **Version 3.22.3 Changes**
 - Changed: moved constants to separate file like in Godot 4.x branches
-- Fixed: backported fixes for in-editor docs, thanks to _sepTN_
-- Fixed: `requestClanOfficerList()` using wrong internal function, thanks to _sepTN_
 
 **Version 3.22.2 Changes**
 - Fixed: app ID automatically being set to 480, now default is 0 which makes GodotSteam ignore auto-setting app ID

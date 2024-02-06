@@ -1978,7 +1978,7 @@ class Steam: public Object {
 		String getGlyphForXboxOrigin(int origin);
 		String getGlyphPNGForActionOrigin(InputActionOrigin origin, InputGlyphSize size, uint32 flags);
 		String getGlyphSVGForActionOrigin(InputActionOrigin origin, uint32 flags);
-		String getInputTypeForHandle(uint64_t input_handle);
+		InputType getInputTypeForHandle(uint64_t input_handle);
 		Dictionary getMotionData(uint64_t input_handle);
 		int getRemotePlaySessionID(uint64_t input_handle);
 		uint16 getSessionInputConfigurationSettings();

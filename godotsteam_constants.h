@@ -7,6 +7,8 @@
 #define DEPOT_ID_INVALID k_uDepotIdInvalid
 #define GAME_EXTRA_INFO_MAX k_cchGameExtraInfoMax
 #define INVALID_BREAKPAD_HANDLE 0 //deprecated?
+#define QUERY_PORT_ERROR 0xFFFE //deprecated?
+#define QUERY_PORT_NOT_INITIALIZED 0xFFFF //deprecated?
 #define STEAM_ACCOUNT_ID_MASK k_unSteamAccountIDMask
 #define STEAM_ACCOUNT_INSTANCE_MASK k_unSteamAccountInstanceMask
 #define STEAM_BUFFER_SIZE 255 //deprecated?
@@ -15,8 +17,6 @@
 #define STEAM_USER_CONSOLE_INSTANCE 2 //deprecated?
 #define STEAM_USER_DESKTOP_INSTANCE k_unSteamUserDefaultInstance
 #define STEAM_USER_WEB_INSTANCE 4 //deprecated?
-#define QUERY_PORT_ERROR 0xFFFE //deprecated?
-#define QUERY_PORT_NOT_INITIALIZED 0xFFFF //deprecated?
 
 // Define Friends constants
 #define CHAT_METADATA_MAX k_cubChatMetadataMax
@@ -38,6 +38,8 @@
 #define HTTPREQUEST_INVALID_HANDLE INVALID_HTTPREQUEST_HANDLE
 
 // Define Input constants
+#define INPUT_HANDLE_ALL_CONTROLLERS STEAM_INPUT_HANDLE_ALL_CONTROLLERS
+#define INPUT_MAX_ACTIVE_LAYERS STEAM_INPUT_MAX_ACTIVE_LAYERS
 #define INPUT_MAX_ANALOG_ACTIONS STEAM_INPUT_MAX_ANALOG_ACTIONS
 #define INPUT_MAX_ANALOG_ACTION_DATA STEAM_INPUT_MAX_ANALOG_ACTION_DATA
 #define INPUT_MAX_COUNT STEAM_INPUT_MAX_COUNT
@@ -69,6 +71,7 @@
 #define MUSIC_PNG_MAX_LENGTH k_SteamMusicPNGMaxLength
 
 // Define Networking Message constants
+#define NETWORKING_SEND_AUTO_RESTART_BROKEN_SESSION k_nSteamNetworkingSend_AutoRestartBrokenSession
 #define NETWORKING_SEND_NO_DELAY k_EP2PSendReliable
 #define NETWORKING_SEND_NO_NAGLE k_EP2PSendUnreliableNoDelay
 #define NETWORKING_SEND_RELIABLE k_EP2PSendReliableWithBuffering

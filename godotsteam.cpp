@@ -1503,7 +1503,7 @@ bool Steam::replyToFriendMessage(uint64_t steam_id, const String& message){
 void Steam::requestClanOfficerList(uint64_t clan_id){
 	if(SteamFriends() != NULL){
 		clan_activity = (uint64)clan_id;
-		SteamAPICall_t api_call = SteamFriends()->RequestClanOfficerList(clan_activity);
+		SteamAPICall_t api_call = SteamFriends()->GetFollowerCount(clan_activity);
 		callResultClanOfficerList.Set(api_call, this, &Steam::request_clan_officer_list);
 	}
 }
@@ -2502,57 +2502,13 @@ String Steam::getGlyphForActionOrigin(InputActionOrigin origin){
 	return SteamInput()->GetGlyphForActionOrigin_Legacy((EInputActionOrigin)origin);
 }
 
-// Get the input type (device model) for the specified controller. 
-String Steam::getInputTypeForHandle(uint64_t input_handle){
-	if(SteamInput() == NULL){
-		return "";
+// Get the input type (device model) for the specified controller.
+Steam::InputType Steam::getInputTypeForHandle(uint64_t input_handle) {
+	if (SteamInput() == NULL) {
+		return INPUT_TYPE_UNKNOWN;
 	}
-	ESteamInputType inputType = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
-	if(inputType == k_ESteamInputType_SteamController){
-		return "Steam controller";
-	}
-	else if(inputType == k_ESteamInputType_XBox360Controller){
-		return "XBox 360 controller";
-	}
-	else if(inputType == k_ESteamInputType_XBoxOneController){
-		return "XBox One controller";
-	}
-	else if(inputType == k_ESteamInputType_GenericGamepad){
-		return "Generic XInput";
-	}
-	else if(inputType == k_ESteamInputType_PS4Controller){
-		return "PS4 controller";
-	}
-	else if(inputType == k_ESteamInputType_AppleMFiController){
-		return "Apple iController";
-	}
-	else if(inputType == k_ESteamInputType_AndroidController){
-		return "Android Controller";
-	}
-	else if(inputType == k_ESteamInputType_SwitchJoyConPair){
-		return "Switch Joy Cons (Pair)";
-	}
-	else if(inputType == k_ESteamInputType_SwitchJoyConSingle){
-		return "Switch Joy Con (Single)";
-	}
-	else if(inputType == k_ESteamInputType_SwitchProController){
-		return "Switch Pro Controller";
-	}
-	else if(inputType == k_ESteamInputType_MobileTouch){
-		return "Mobile Touch";
-	}
-	else if(inputType == k_ESteamInputType_PS3Controller){
-		return "PS3 Controller";
-	}
-	else if(inputType == k_ESteamInputType_PS5Controller){
-		return "PS5 Controller";
-	}
-	else if(inputType == k_ESteamInputType_SteamDeckController){
-		return "Steam Deck";
-	}
-	else{
-		return "Unknown";
-	}
+	ESteamInputType this_input_type = SteamInput()->GetInputTypeForHandle((InputHandle_t)input_handle);
+	return (Steam::InputType)this_input_type;
 }
 
 // Returns raw motion data for the specified controller.
@@ -12123,6 +12079,8 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(DEPOT_ID_INVALID); 													// 0x0
 	BIND_CONSTANT(GAME_EXTRA_INFO_MAX); 												// 64
 	BIND_CONSTANT(INVALID_BREAKPAD_HANDLE);												// (BREAKPAD_HANDLE)0
+	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
+	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
 	BIND_CONSTANT(STEAM_ACCOUNT_ID_MASK); 												// 0xFFFFFFFF
 	BIND_CONSTANT(STEAM_ACCOUNT_INSTANCE_MASK); 										// 0x000FFFFF
 	BIND_CONSTANT(STEAM_BUFFER_SIZE);													// 255
@@ -12131,9 +12089,7 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(STEAM_USER_CONSOLE_INSTANCE); 										// 2
 	BIND_CONSTANT(STEAM_USER_DESKTOP_INSTANCE); 										// 1
 	BIND_CONSTANT(STEAM_USER_WEB_INSTANCE); 											// 4
-	BIND_CONSTANT(QUERY_PORT_ERROR); 													// 0xFFFE
-	BIND_CONSTANT(QUERY_PORT_NOT_INITIALIZED); 											// 0xFFFF
-
+	
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
 	BIND_CONSTANT(ENUMERATED_FOLLOWERS_MAX);											// 50
@@ -12154,6 +12110,8 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(INVALID_HTTPREQUEST_HANDLE);											// 0
 
 	// INPUT CONSTANTS //////////////////////////
+	BIND_CONSTANT(INPUT_HANDLE_ALL_CONTROLLERS);
+	BIND_CONSTANT(INPUT_MAX_ACTIVE_LAYERS);
 	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTIONS);											// 16
 	BIND_CONSTANT(INPUT_MAX_ANALOG_ACTION_DATA);										// 1.0f
 	BIND_CONSTANT(INPUT_MAX_COUNT);														// 16
@@ -12166,11 +12124,11 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(ITEM_INSTANCE_ID_INVALID);											// 0
 
 	// MATCHMAKING CONSTANTS ////////////////////
-	BIND_CONSTANT(SERVER_QUERY_INVALID);												// 0xffffffff
-	BIND_CONSTANT(MAX_LOBBY_KEY_LENGTH);												// 255
 	BIND_CONSTANT(FAVORITE_FLAG_FAVORITE);												// 0x01
 	BIND_CONSTANT(FAVORITE_FLAG_HISTORY);												// 0x02
 	BIND_CONSTANT(FAVORITE_FLAG_NONE);													// 0x00
+	BIND_CONSTANT(MAX_LOBBY_KEY_LENGTH);												// 255
+	BIND_CONSTANT(SERVER_QUERY_INVALID);												// 0xffffffff
 
 	// MATCHMAKING SERVERS CONSTANTS ////////////
 	BIND_CONSTANT(MAX_GAME_SERVER_GAME_DATA);											// 2048
@@ -12185,11 +12143,12 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(MUSIC_PNG_MAX_LENGTH); 												// 65535
 
 	// NETWORKING MESSAGE CONSTANTS /////////////
-	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
+	BIND_CONSTANT(NETWORKING_SEND_AUTO_RESTART_BROKEN_SESSION);
 	BIND_CONSTANT(NETWORKING_SEND_NO_NAGLE);											// 1
 	BIND_CONSTANT(NETWORKING_SEND_NO_DELAY);											// 4
 	BIND_CONSTANT(NETWORKING_SEND_RELIABLE);											// 8
-
+	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
+	
 	// REMOTE PLAY CONSTANTS ////////////////////
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN);											// 0
 	BIND_CONSTANT(DEVICE_FORM_FACTOR_PHONE);											// 1
