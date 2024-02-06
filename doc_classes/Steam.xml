@@ -2543,8 +2543,8 @@
 			</description>
 		</method>
 		<method name="getInputTypeForHandle">
-			<return type="String" />
-			<argument index="0" name="input_handle" type="int" />
+			<return type="int" enum="Steam.InputType" />
+			<param index="0" name="input_handle" type="int" />
 			<description>
 				Returns the input type (device model) for the specified controller. This tells you if a given controller is a Steam controller, Xbox 360 controller, PS4 controller, etc.
 				[b]Note:[/b] XBox Series controllers are listed as XBox One.
