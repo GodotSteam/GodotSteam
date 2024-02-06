@@ -10691,8 +10691,8 @@ void Steam::item_updated(SubmitItemUpdateResult_t *call_data, bool io_failure){
 	}
 	else{
 		EResult result = call_data->m_eResult;
-		bool accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
-		emit_signal("item_updated", result, accept_tos);
+		bool need_to_accept_tos = call_data->m_bUserNeedsToAcceptWorkshopLegalAgreement;
+		emit_signal("item_updated", result, need_to_accept_tos);
 	}
 }
 
