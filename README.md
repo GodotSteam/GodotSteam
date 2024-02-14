@@ -20,6 +20,9 @@ Current Build
 ----------
 You can [download pre-compiled versions _(currently v3.22.4)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 3.22.5 Changes**
+- Fixed: missing bind for `startRemotePlayTogether()`
+
 **Version 3.22.4 Changes**
 - Added: missing k_nSteamNetworkingSend_AutoRestartBrokenSession to constants
 - Added: two missing Input constants: INPUT_HANDLE_ALL_CONTROLLERS and INPUT_MAX_ACTIVE_LAYERS
