@@ -11454,6 +11454,7 @@ void Steam::_register_methods(){
 	register_method("getSessionClientFormFactor", &Steam::getSessionClientFormFactor);
 	register_method("getSessionClientResolution", &Steam::getSessionClientResolution);
 	register_method("sendRemotePlayTogetherInvite", &Steam::sendRemotePlayTogetherInvite);
+	register_method("startRemotePlayTogether", &Steam::startRemotePlayTogether);
 
 	// REMOTE STORAGE BIND METHODS //////////////
 	register_method("beginFileWriteBatch", &Steam::beginFileWriteBatch);
