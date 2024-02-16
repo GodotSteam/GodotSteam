@@ -7604,7 +7604,7 @@
 		</signal>
 		<signal name="item_updated">
 			<argument index="0" name="result" type="int" />
-			<argument index="1" name="accept_tos" type="bool" />
+			<argument index="1" name="need_to_accept_tos" type="bool" />
 			<description>
 				Called when an item update has completed.
 				Emits signal in response to function [method Steam.submitItemUpdate].
@@ -7908,11 +7908,13 @@
 		<signal name="network_messages_session_failed">
 			<argument index="0" name="reason" type="int" />
 			<description>
+				Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way.
 			</description>
 		</signal>
 		<signal name="network_messages_session_request">
 			<argument index="0" name="identity" type="String" />
 			<description>
+				Posted when a remote host is sending us a message, and we do not already have a session with them.
 			</description>
 		</signal>
 		<signal name="new_launch_url_parameters">
@@ -8104,15 +8106,7 @@
 			<argument index="0" name="result" type="int" />
 			<argument index="1" name="retrying" type="bool" />
 			<description>
-			</description>
-		</signal>
-		<signal name="server_connected">
-			<description>
-			</description>
-		</signal>
-		<signal name="server_disconnected">
-			<argument index="0" name="result" type="int" />
-			<description>
+				Called when a connection attempt has failed. This will occur periodically if the Steam client is not connected, and has failed when retrying to establish a connection.
 			</description>
 		</signal>
 		<signal name="server_failed_to_respond">
