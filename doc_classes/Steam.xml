@@ -253,7 +253,7 @@
 			</description>
 		</method>
 		<method name="addPromoItem">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="item" type="int" />
 			<description>
 				Grant a specific one-time promotional item to the current user.
@@ -263,7 +263,7 @@
 			</description>
 		</method>
 		<method name="addPromoItems">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="items" type="PackedIntArray" />
 			<description>
 				Grant a specific one-time promotional item to the current user.
@@ -639,7 +639,7 @@
 			</description>
 		</method>
 		<method name="consumeItem">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="item_consume" type="int" />
 			<argument index="1" name="quantity" type="int" />
 			<description>
@@ -658,7 +658,7 @@
 		</method>
 		<method name="copyToClipboard">
 			<return type="void" />
-			<argument index="0" name="this_handle" type="int" />
+			<argument index="0" name="this_handle" type="int" default="0" />
 			<description>
 				Copy the currently selected text from the current page in an HTML surface into the local clipboard.
 				If no handle is passed, GodotSteam will use the internal one.
@@ -679,8 +679,8 @@
 		</method>
 		<method name="createBrowser">
 			<return type="void" />
-			<argument index="0" name="user_agent" type="String" />
-			<argument index="1" name="user_css" type="String" />
+			<argument index="0" name="user_agent" type="String" default="&quot;&quot;" />
+			<argument index="1" name="user_css" type="String" default="&quot;&quot;" />
 			<description>
 				Create a browser object for displaying of an HTML page.
 				If no handle is passed, GodotSteam will use the internal one.
@@ -765,7 +765,7 @@
 		<method name="createLobby">
 			<return type="void" />
 			<argument index="0" name="lobby_type" type="int" enum="Steam.LobbyType" />
-			<argument index="1" name="max_messages" type="int" default="2" />
+			<argument index="1" name="max_members" type="int" default="2" />
 			<description>
 				Create a new matchmaking lobby.
 				Triggers all three callbacks: [signal Steam.lobby_created], [signal Steam.lobby_joined], and [signal Steam.lobby_data_update].
@@ -962,6 +962,12 @@
 				Dismisses the floating keyboard.
 			</description>
 		</method>
+		<method name="dismissGamepadTextInput">
+			<return type="bool" />
+			<description>
+				Dismisses the full-screen text input dialog.
+			</description>
+		</method>
 		<method name="downloadClanActivityCounts">
 			<return type="void" />
 			<argument index="0" name="chat_id" type="int" />
@@ -1111,11 +1117,11 @@
 			</description>
 		</method>
 		<method name="exchangeItems">
-			<return type="int" />
-			<argument index="0" name="output_items" type="PackedIntArray" />
-			<argument index="1" name="output_quantity" type="PackedIntArray" />
-			<argument index="2" name="input_items" type="PackedIntArray" />
-			<argument index="3" name="input_quantity" type="PackedIntArray" />
+			<return type="bool" />
+			<argument index="0" name="output_items" type="PackedInt64Array" />
+			<argument index="1" name="output_quantity" type="PackedInt32Array" />
+			<argument index="2" name="input_items" type="PackedInt64Array" />
+			<argument index="3" name="input_quantity" type="PackedInt32Array" />
 			<description>
 				Grant one item in exchange for a set of other items.
 				This can be used to implement crafting recipes or transmutations, or items which unpack themselves into other items (e.g., a chest).
@@ -1303,8 +1309,8 @@
 		</method>
 		<method name="generateItems">
 			<return type="int" />
-			<argument index="0" name="items" type="PackedIntArray" />
-			<argument index="1" name="quantity" type="PackedIntArray" />
+			<argument index="0" name="items" type="PackedInt64Array" />
+			<argument index="1" name="quantity" type="PackedInt32Array" />
 			<description>
 				Grants specific items to the current user, for developers only.
 				This API is only intended for prototyping - it is only usable by Steam accounts that belong to the publisher group for your game.
@@ -1443,7 +1449,7 @@
 			</description>
 		</method>
 		<method name="getAllItems">
-			<return type="bool" />
+			<return type="int" />
 			<description>
 				Start retrieving all items in the current users inventory.
 				The inventory handle, which is also stored internally. It will overwrite any previously stored inventory handle.
@@ -1509,34 +1515,16 @@
 			</description>
 		</method>
 		<method name="getAppInstallDir">
-			<return type="String" />
+			<return type="Dictionary" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
 				Gets the install folder for a specific app ID. This works even if the application is not installed, based on where the game would be installed with the default Steam library location.
-			</description>
-		</method>
-		<method name="getAppListBuildId">
-			<return type="String" />
-			<argument index="0" name="app_id" type="int" />
-			<argument index="1" name="arg1" type="int" />
-			<description>
-				Get a given app ID's build.
-			</description>
-		</method>
-		<method name="getAppListInstallDir">
-			<return type="String" />
-			<argument index="0" name="app_id" type="int" />
-			<argument index="1" name="name_max" type="int" />
-			<description>
-				Get a given app ID's install directory.
-			</description>
-		</method>
-		<method name="getAppName">
-			<return type="String" />
-			<argument index="0" name="app_id" type="int" />
-			<argument index="1" name="name_max" type="int" />
-			<description>
-				Get a given app ID's name. 
+				[codeblock]
+				The returned dictionary contains the following keys:
+				┠╴directory (string)
+				┠╴install_size (int)
+				┖╴size (int)
+				[/codeblock]
 			</description>
 		</method>
 		<method name="getAppOwner">
@@ -2111,7 +2099,7 @@
 		</method>
 		<method name="getFriendCount">
 			<return type="int" />
-			<argument index="0" name="arg0" type="int" default="4" />
+			<argument index="0" name="friend_flags" type="int" default="4" />
 			<description>
 				Gets the number of users the client knows about who meet a specified criteria. (Friends, blocked, users on the same server, etc). This can be used to iterate over all of the users by calling [method Steam.getFriendByIndex] to get the Steam IDs of each user.
 				[b]Note:[/b] Returns -1 if the current user is not logged on.
@@ -2263,7 +2251,7 @@
 			<return type="int" />
 			<argument index="0" name="friend_group" type="int" />
 			<description>
-				Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
+					Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
 			</description>
 		</method>
 		<method name="getFriendsGroupMembersList">
@@ -2547,7 +2535,6 @@
 			<param index="0" name="input_handle" type="int" />
 			<description>
 				Returns the input type (device model) for the specified controller. This tells you if a given controller is a Steam controller, Xbox 360 controller, PS4 controller, etc.
-				[b]Note:[/b] XBox Series controllers are listed as XBox One.
 			</description>
 		</method>
 		<method name="getInstalledApps">
@@ -2646,7 +2633,7 @@
 		</method>
 		<method name="getItemsByID">
 			<return type="int" />
-			<argument index="0" name="id_array" type="PackedIntArray" />
+			<argument index="0" name="id_array" type="PackedInt64Array" />
 			<description>
 				Gets the state of a subset of the current user's inventory.
 				The subset is specified by an array of item instance IDs.
@@ -3704,6 +3691,13 @@
 				[/codeblock]
 			</description>
 		</method>
+		<method name="getUserContentDescriptorPreferences">
+			<return type="Array" />
+			<argument index="0" name="max_entries" type="int" />
+			<description>
+				Return the user's community content descriptor preferences.
+			</description>
+		</method>
 		<method name="getUserFriendsGroups">
 			<return type="Array" />
 			<description>
@@ -3715,12 +3709,6 @@
 				    ┠╴name (string)
 				    ┖╴members (int)
 				[/codeblock]
-			</description>
-		</method>
-		<method name="getUserContentDescriptorPreferences">
-			<return type="Array" />
-			<description>
-				Return the user's community content descriptor preferences.
 			</description>
 		</method>
 		<method name="getUserItemVote">
@@ -3876,7 +3864,7 @@
 		<method name="hasFriend">
 			<return type="bool" />
 			<argument index="0" name="steam_id" type="int" />
-			<argument index="1" name="friend_flags" type="int" />
+			<argument index="1" name="friend_flags" type="int" enum="Steam.FriendFlags" is_bitfield="true" />
 			<description>
 				Returns true if the specified user meets any of the criteria specified in friend_flags:
 				[codeblock]
@@ -4018,7 +4006,7 @@
 			<argument index="1" name="steam_id_invitee" type="int" />
 			<description>
 				Invite another user to the lobby.
-				If the specified user clicks the join link, a join_requested callback will be posted if the user is in-game, or if the game isn't running yet then the game will be automatically launched with the command line parameter <code>+connect_lobby (64-bit lobby Steam ID)</code> instead.
+				If the specified user clicks the join link, a join_requested callback will be posted if the user is in-game, or if the game isn't running yet then the game will be automatically launched with the command line parameter <param>+connect_lobby (64-bit lobby Steam ID)</param> instead.
 			</description>
 		</method>
 		<method name="isAPICallCompleted">
@@ -4397,7 +4385,7 @@
 		<method name="keyChar">
 			<return type="void" />
 			<argument index="0" name="unicode_char" type="int" />
-			<argument index="1" name="key_modifiers" type="int" />
+			<argument index="1" name="key_modifiers" type="int" enum="Steam.HTMLKeyModifiers" is_bitfield="true" />
 			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
 				unicode_char is the unicode character point for this keypress (and potentially multiple chars per press).
@@ -4406,7 +4394,7 @@
 		<method name="keyDown">
 			<return type="void" />
 			<argument index="0" name="native_key_code" type="int" />
-			<argument index="1" name="key_modifiers" type="int" />
+			<argument index="1" name="key_modifiers" type="int" enum="Steam.HTMLKeyModifiers" is_bitfield="true" />
 			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
 				Keyboard interactions, native keycode is the virtual key code value from your OS.
@@ -4415,7 +4403,7 @@
 		<method name="keyUp">
 			<return type="void" />
 			<argument index="0" name="native_key_code" type="int" />
-			<argument index="1" name="key_modifiers" type="int" />
+			<argument index="1" name="key_modifiers" type="int" enum="Steam.HTMLKeyModifiers" is_bitfield="true" />
 			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
 				Keyboard interactions, native keycode is the virtual key code value from your OS.
@@ -4449,7 +4437,7 @@
 			<argument index="1" name="post_data" type="String" />
 			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
-				Navigate to a specified URL. If you send POST data with post_data then the data should be formatted as: <code>name1=value1&amp;name2=value2</code>. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: <code>http://, https://, ftp://, and file:///</code>. If no scheme is specified then http:// is used.
+				Navigate to a specified URL. If you send POST data with post_data then the data should be formatted as: <param>name1=value1&amp;name2=value2</param>. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: <param>http://, https://, ftp://, and file:///</param>. If no scheme is specified then http:// is used.
 				Triggers a [signal Steam.html_start_request] callback.
 			</description>
 		</method>
@@ -4495,7 +4483,7 @@
 		</method>
 		<method name="mouseUp">
 			<return type="void" />
-			<argument index="0" name="mouse_button" type="int" />
+			<argument index="0" name="mouse_button" type="int" enum="Steam.HTMLMouseButton" />
 			<argument index="1" name="this_handle" type="int" default="0" />
 			<description>
 				Tells an HTML surface that a mouse button has been released. The click will occur where the surface thinks the mouse is based on the last call to [method Steam.mouseMove].
@@ -4967,6 +4955,13 @@
 				Triggers a [signal Steam.encrypted_app_ticket_response] call result.
 			</description>
 		</method>
+		<method name="requestEquippedProfileItems">
+			<return type="void" />
+			<param index="0" name="steam_id" type="int" />
+			<description>
+				After calling RequestEquippedProfileItems, you can use this function to check if the user has a type of profile item equipped or not.
+			</description>
+		</method>
 		<method name="requestFavoritesServerList">
 			<return type="void" />
 			<argument index="0" name="app_id" type="int" />
@@ -4985,7 +4980,7 @@
 			</description>
 		</method>
 		<method name="requestFriendsServerList">
-			<return type="void" />
+			<return type="int" />
 			<argument index="0" name="app_id" type="int" />
 			<argument index="1" name="filters" type="Array" />
 			<description>
@@ -5012,7 +5007,7 @@
 			</description>
 		</method>
 		<method name="requestHistoryServerList">
-			<return type="void" />
+			<return type="int" />
 			<argument index="0" name="app_id" type="int" />
 			<argument index="1" name="filters" type="Array" />
 			<description>
@@ -5021,7 +5016,7 @@
 			</description>
 		</method>
 		<method name="requestInternetServerList">
-			<return type="void" />
+			<return type="int" />
 			<argument index="0" name="app_id" type="int" />
 			<argument index="1" name="filters" type="Array" />
 			<description>
@@ -5030,7 +5025,7 @@
 			</description>
 		</method>
 		<method name="requestLANServerList">
-			<return type="void" />
+			<return type="int" />
 			<argument index="0" name="app_id" type="int" />
 			<description>
 				Request a new list of game servers from the 'LAN' server list.
@@ -5075,7 +5070,7 @@
 			</description>
 		</method>
 		<method name="requestSpectatorServerList">
-			<return type="void" />
+			<return type="int" />
 			<argument index="0" name="app_id" type="int" />
 			<argument index="1" name="filters" type="Array" />
 			<description>
@@ -5343,7 +5338,7 @@
 			</description>
 		</method>
 		<method name="setAllowCachedResponse">
-			<return type="void" />
+			<return type="bool" />
 			<argument index="0" name="update_handle" type="int" />
 			<argument index="1" name="max_age_seconds" type="int" />
 			<description>
@@ -5771,7 +5766,6 @@
 			<return type="bool" />
 			<argument index="0" name="update_handle" type="int" />
 			<argument index="1" name="tag_array" type="Array" />
-			<argument index="2" name="allow_admin_tags" type="bool" />
 			<description>
 				Sets arbitrary developer specified tags on an item.
 				Each tag must be limited to 255 characters. Tag names can only include printable characters, excluding ','.
@@ -6192,7 +6186,7 @@
 			<return type="void" />
 			<argument index="0" name="width" type="int" />
 			<argument index="1" name="height" type="int" />
-			<argument index="2" name="this_handle" type="int" />
+			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
 				Sets the display size of a surface in pixels.
 			</description>
@@ -6344,8 +6338,8 @@
 		</method>
 		<method name="startPurchase">
 			<return type="void" />
-			<argument index="0" name="items" type="PackedIntArray" />
-			<argument index="1" name="quantity" type="PackedIntArray" />
+			<argument index="0" name="items" type="PackedInt64Array" />
+			<argument index="1" name="quantity" type="PackedInt32Array" />
 			<description>
 				Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 				If the purchase process was started successfully, then order_id and transaction_id will be valid in the [signal Steam.inventory_start_purchase_result] call result.
@@ -6356,10 +6350,9 @@
 		</method>
 		<method name="startRemotePlayTogether">
 			<return type="bool" />
-			<argument index="0" name="show_overlay" type="bool" />
+			<param index="0" name="show_overlay" type="bool" default="true" />
 			<description>
-				Start Remote Play Together and optionally show the UI in the overlay.
-				This returns false if Remote Play Together can't be started or your game is not configured for Remote Play Together.
+				Start a Remote Play session.
 			</description>
 		</method>
 		<method name="startUpdateProperties">
@@ -6384,7 +6377,7 @@
 		<method name="steamInit">
 			<return type="Dictionary" />
 			<argument index="0" name="retrieve_stats" type="bool" default="true" />
-			<argument index="1" name="app_id" type="int" default="480" />
+			<argument index="1" name="app_id" type="int" default="0" />
 			<argument index="2" name="embed_callbacks" type="bool" default="false" />
 			<description>
 				Starts up the Steam API.
@@ -6402,7 +6395,7 @@
 		<method name="steamInitEx">
 			<return type="Dictionary" />
 			<argument index="0" name="retrieve_stats" type="bool" default="true" />
-			<argument index="1" name="app_id" type="int" default="480" />
+			<argument index="1" name="app_id" type="int" default="0" />
 			<argument index="2" name="embed_callbacks" type="bool" default="false" />
 			<description>
 				Initialize the Steamworks SDK. On success [enum Steam.STEAM_API_INIT_RESULT_OK] is returned.  Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
@@ -6567,7 +6560,7 @@
 			</description>
 		</method>
 		<method name="transferItemQuantity">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="item_id" type="int" />
 			<argument index="1" name="quantity" type="int" />
 			<argument index="2" name="item_destination" type="int" />
@@ -6598,7 +6591,7 @@
 			</description>
 		</method>
 		<method name="triggerItemDrop">
-			<return type="bool" />
+			<return type="int" />
 			<argument index="0" name="definition" type="int" />
 			<description>
 				Trigger an item drop if the user has played a long enough period of time.
@@ -6795,7 +6788,7 @@
 			<return type="void" />
 			<argument index="0" name="score" type="int" />
 			<argument index="1" name="keep_best" type="bool" default="true" />
-			<argument index="2" name="details" type="PackedIntArray" default="PackedIntArray(  )" />
+			<argument index="2" name="details" type="PackedInt32Array" default="PackedInt32Array(  )" />
 			<argument index="3" name="this_leaderboard" type="int" default="0" />
 			<description>
 				If this_leaderboard is not passed, then the function will use the last internally-stored handle.
@@ -7610,7 +7603,7 @@
 		</signal>
 		<signal name="item_updated">
 			<argument index="0" name="result" type="int" />
-			<argument index="1" name="need_accept_tos" type="bool" />
+			<argument index="1" name="accept_tos" type="bool" />
 			<description>
 				Called when an item update has completed.
 				Emits signal in response to function [method Steam.submitItemUpdate].
@@ -7641,7 +7634,7 @@
 			</description>
 		</signal>
 		<signal name="join_requested">
-			<argument index="0" name="from" type="int" />
+			<argument index="0" name="lobby_id" type="int" />
 			<argument index="1" name="steam_id" type="int" />
 			<description>
 				Called when the user tries to join a lobby from their friends list or after a user accepts an invite by a friend with [method Steam.inviteUserToGame].
@@ -7656,7 +7649,7 @@
 			</description>
 		</signal>
 		<signal name="leaderboard_score_uploaded">
-			<argument index="0" name="success" type="int" />
+			<argument index="0" name="success" type="bool" />
 			<argument index="1" name="this_handle" type="int" />
 			<argument index="2" name="this_score" type="Dictionary" />
 			<description>
@@ -7760,7 +7753,7 @@
 			</description>
 		</signal>
 		<signal name="lobby_message">
-			<argument index="0" name="result" type="int" />
+			<argument index="0" name="lobby_id" type="int" />
 			<argument index="1" name="user" type="int" />
 			<argument index="2" name="message" type="String" />
 			<argument index="3" name="chat_type" type="int" />
@@ -7914,13 +7907,11 @@
 		<signal name="network_messages_session_failed">
 			<argument index="0" name="reason" type="int" />
 			<description>
-				Posted when we fail to establish a connection, or we detect that communications have been disrupted it an unusual way. There is no notification when a peer proactively closes the session. 
 			</description>
 		</signal>
 		<signal name="network_messages_session_request">
 			<argument index="0" name="identity" type="String" />
 			<description>
-				Posted when a remote host is sending us a message, and we do not already have a session with them.
 			</description>
 		</signal>
 		<signal name="new_launch_url_parameters">
@@ -8112,7 +8103,15 @@
 			<argument index="0" name="result" type="int" />
 			<argument index="1" name="retrying" type="bool" />
 			<description>
-				Called when a connection attempt has failed. This will occur periodically if the Steam client is not connected, and has failed when retrying to establish a connection.
+			</description>
+		</signal>
+		<signal name="server_connected">
+			<description>
+			</description>
+		</signal>
+		<signal name="server_disconnected">
+			<argument index="0" name="result" type="int" />
+			<description>
 			</description>
 		</signal>
 		<signal name="server_failed_to_respond">
@@ -8171,7 +8170,7 @@
 		</signal>
 		<signal name="steamworks_error">
 			<argument index="0" name="failed_signal" type="String" />
-			<argument index="1" name="io failure" type="String" />
+			<argument index="1" name="io_failure" type="String" />
 			<description>
 				Intended to serve as generic error messaging for failed call results.
 			</description>
@@ -8307,31 +8306,27 @@
 		</signal>
 	</signals>
 	<constants>
-		<constant name="INVALID_BREAKPAD_HANDLE" value="0">
-		</constant>
-		<constant name="GAME_EXTRA_INFO_MAX" value="64">
-		</constant>
-		<constant name="AUTH_TICKET_INVALID" value="0">
+		<constant name="ACCOUNT_ID_INVALID" value="0">
 		</constant>
 		<constant name="API_CALL_INVALID" value="0">
 		</constant>
 		<constant name="APP_ID_INVALID" value="0">
 		</constant>
+		<constant name="AUTH_TICKET_INVALID" value="0">
+		</constant>
 		<constant name="DEPOT_ID_INVALID" value="0">
 		</constant>
-		<constant name="STEAM_ACCOUNT_ID_MASK" value="-1">
+		<constant name="GAME_EXTRA_INFO_MAX" value="64">
 		</constant>
-		<constant name="STEAM_ACCOUNT_INSTANCE_MASK" value="1048575">
-		</constant>
-		<constant name="STEAM_USER_CONSOLE_INSTANCE" value="2">
-		</constant>
-		<constant name="STEAM_USER_DESKTOP_INSTANCE" value="1">
-		</constant>
-		<constant name="STEAM_USER_WEB_INSTANCE" value="4">
+		<constant name="INVALID_BREAKPAD_HANDLE" value="0">
 		</constant>
 		<constant name="QUERY_PORT_ERROR" value="65534">
 		</constant>
 		<constant name="QUERY_PORT_NOT_INITIALIZED" value="65535">
+		</constant>
+		<constant name="STEAM_ACCOUNT_ID_MASK" value="4294967295">
+		</constant>
+		<constant name="STEAM_ACCOUNT_INSTANCE_MASK" value="1048575">
 		</constant>
 		<constant name="STEAM_BUFFER_SIZE" value="255">
 		</constant>
@@ -8339,9 +8334,19 @@
 		</constant>
 		<constant name="STEAM_MAX_ERROR_MESSAGE" value="1024">
 		</constant>
+		<constant name="STEAM_USER_CONSOLE_INSTANCE" value="2">
+		</constant>
+		<constant name="STEAM_USER_DESKTOP_INSTANCE" value="1">
+		</constant>
+		<constant name="STEAM_USER_WEB_INSTANCE" value="4">
+		</constant>
 		<constant name="CHAT_METADATA_MAX" value="8192">
 		</constant>
 		<constant name="ENUMERATED_FOLLOWERS_MAX" value="50">
+		</constant>
+		<constant name="FRIEND_GAME_INFO_QUERY_PORT_ERROR" value="65534">
+		</constant>
+		<constant name="FRIEND_GAME_INFO_QUERY_PORT_NOT_INITIALIZED" value="65535">
 		</constant>
 		<constant name="FRIENDS_GROUP_LIMIT" value="100">
 		</constant>
@@ -8351,7 +8356,7 @@
 		</constant>
 		<constant name="MAX_RICH_PRESENCE_KEY_LENGTH" value="64">
 		</constant>
-		<constant name="MAX_RICH_PRESENCE_KEYS" value="20">
+		<constant name="MAX_RICH_PRESENCE_KEYS" value="30">
 		</constant>
 		<constant name="MAX_RICH_PRESENCE_VALUE_LENTH" value="256">
 		</constant>
@@ -8383,17 +8388,17 @@
 		</constant>
 		<constant name="INVENTORY_RESULT_INVALID" value="-1">
 		</constant>
-		<constant name="ITEM_INSTANCE_ID_INVALID" value="0">
-		</constant>
-		<constant name="SERVER_QUERY_INVALID" value="-1">
-		</constant>
-		<constant name="MAX_LOBBY_KEY_LENGTH" value="255">
+		<constant name="ITEM_INSTANCE_ID_INVALID" value="-1">
 		</constant>
 		<constant name="FAVORITE_FLAG_FAVORITE" value="1">
 		</constant>
 		<constant name="FAVORITE_FLAG_HISTORY" value="2">
 		</constant>
 		<constant name="FAVORITE_FLAG_NONE" value="0">
+		</constant>
+		<constant name="MAX_LOBBY_KEY_LENGTH" value="255">
+		</constant>
+		<constant name="SERVER_QUERY_INVALID" value="-1">
 		</constant>
 		<constant name="MAX_GAME_SERVER_GAME_DATA" value="2048">
 		</constant>
@@ -8413,25 +8418,15 @@
 		</constant>
 		<constant name="NETWORKING_SEND_AUTO_RESTART_BROKEN_SESSION" value="32">
 		</constant>
-		<constant name="NETWORKING_SEND_UNRELIABLE" value="0">
-		</constant>
 		<constant name="NETWORKING_SEND_NO_NAGLE" value="1">
 		</constant>
-		<constant name="NETWORKING_SEND_NO_DELAY" value="4">
+		<constant name="NETWORKING_SEND_NO_DELAY" value="2">
 		</constant>
-		<constant name="NETWORKING_SEND_RELIABLE" value="8">
+		<constant name="NETWORKING_SEND_RELIABLE" value="3">
 		</constant>
-		<constant name="DEVICE_FORM_FACTOR_UNKNOWN" value="0">
+		<constant name="NETWORKING_SEND_UNRELIABLE" value="0">
 		</constant>
-		<constant name="DEVICE_FORM_FACTOR_PHONE" value="1">
-		</constant>
-		<constant name="DEVICE_FORM_FACTOR_TABLET" value="2">
-		</constant>
-		<constant name="DEVICE_FORM_FACTOR_COMPUTER" value="3">
-		</constant>
-		<constant name="DEVICE_FORM_FACTOR_TV" value="4">
-		</constant>
-		<constant name="FILENAME_MAX" value="260">
+		<constant name="FILENAME_MAX" value="4096">
 		</constant>
 		<constant name="PUBLISHED_DOCUMENT_CHANGE_DESCRIPTION_MAX" value="8000">
 		</constant>
@@ -8447,9 +8442,9 @@
 		</constant>
 		<constant name="PUBLISHED_FILE_UPDATE_HANDLE_INVALID" value="0">
 		</constant>
-		<constant name="UGC_FILE_STREAM_HANDLE_INVALID" value="0">
+		<constant name="UGC_FILE_STREAM_HANDLE_INVALID" value="-1">
 		</constant>
-		<constant name="UGC_HANDLE_INVALID" value="0">
+		<constant name="UGC_HANDLE_INVALID" value="-1">
 		</constant>
 		<constant name="ENUMERATE_PUBLISHED_FILES_MAX_RESULTS" value="50">
 		</constant>
@@ -8471,9 +8466,9 @@
 		</constant>
 		<constant name="DEVELOPER_METADATA_MAX" value="5000">
 		</constant>
-		<constant name="UGC_QUERY_HANDLE_INVALID" value="0">
+		<constant name="UGC_QUERY_HANDLE_INVALID" value="-1">
 		</constant>
-		<constant name="UGC_UPDATE_HANDLE_INVALID" value="0">
+		<constant name="UGC_UPDATE_HANDLE_INVALID" value="-1">
 		</constant>
 		<constant name="LEADERBOARD_DETAIL_MAX" value="64">
 		</constant>
@@ -8635,15 +8630,15 @@
 		</constant>
 		<constant name="CHAT_ENTRY_TYPE_LINK_BLOCKED" value="14" enum="ChatEntryType">
 		</constant>
-		<constant name="CHAT_MEMBER_STATE_CHANGE_ENTERED" value="1" enum="ChatMemberStateChange">
+		<constant name="CHAT_MEMBER_STATE_CHANGE_ENTERED" value="1" enum="ChatMemberStateChange" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_MEMBER_STATE_CHANGE_LEFT" value="2" enum="ChatMemberStateChange">
+		<constant name="CHAT_MEMBER_STATE_CHANGE_LEFT" value="2" enum="ChatMemberStateChange" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_MEMBER_STATE_CHANGE_DISCONNECTED" value="4" enum="ChatMemberStateChange">
+		<constant name="CHAT_MEMBER_STATE_CHANGE_DISCONNECTED" value="4" enum="ChatMemberStateChange" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_MEMBER_STATE_CHANGE_KICKED" value="8" enum="ChatMemberStateChange">
+		<constant name="CHAT_MEMBER_STATE_CHANGE_KICKED" value="8" enum="ChatMemberStateChange" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_MEMBER_STATE_CHANGE_BANNED" value="16" enum="ChatMemberStateChange">
+		<constant name="CHAT_MEMBER_STATE_CHANGE_BANNED" value="16" enum="ChatMemberStateChange" is_bitfield="true">
 		</constant>
 		<constant name="CHAT_ROOM_ENTER_RESPONSE_SUCCESS" value="1" enum="ChatRoomEnterResponse">
 		</constant>
@@ -8669,13 +8664,13 @@
 		</constant>
 		<constant name="CHAT_ROOM_ENTER_RESPONSE_RATE_LIMIT_EXCEEDED" value="15" enum="ChatRoomEnterResponse">
 		</constant>
-		<constant name="CHAT_ACCOUNT_INSTANCE_MASK" value="4095" enum="ChatSteamIDInstanceFlags">
+		<constant name="CHAT_ACCOUNT_INSTANCE_MASK" value="4095" enum="ChatSteamIDInstanceFlags" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_INSTANCE_FLAG_CLAN" value="524288" enum="ChatSteamIDInstanceFlags">
+		<constant name="CHAT_INSTANCE_FLAG_CLAN" value="524288" enum="ChatSteamIDInstanceFlags" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_INSTANCE_FLAG_LOBBY" value="262144" enum="ChatSteamIDInstanceFlags">
+		<constant name="CHAT_INSTANCE_FLAG_LOBBY" value="262144" enum="ChatSteamIDInstanceFlags" is_bitfield="true">
 		</constant>
-		<constant name="CHAT_INSTANCE_FLAG_MMS_LOBBY" value="131072" enum="ChatSteamIDInstanceFlags">
+		<constant name="CHAT_INSTANCE_FLAG_MMS_LOBBY" value="131072" enum="ChatSteamIDInstanceFlags" is_bitfield="true">
 		</constant>
 		<constant name="CHECK_FILE_SIGNATURE_INVALID_SIGNATURE" value="0" enum="CheckFileSignature">
 		</constant>
@@ -8779,6 +8774,8 @@
 		</constant>
 		<constant name="FORM_FACTOR_TV" value="4" enum="DeviceFormFactor">
 		</constant>
+		<constant name="FORM_FACTOR_VR_HEADSET" value="5" enum="DeviceFormFactor">
+		</constant>
 		<constant name="DURATION_CONTROL_NOTIFICATION_NONE" value="0" enum="DurationControlNotification">
 		</constant>
 		<constant name="DURATION_CONTROL_NOTIFICATION_1_HOUR" value="1" enum="DurationControlNotification">
@@ -8829,29 +8826,29 @@
 		</constant>
 		<constant name="FLOATING_GAMEPAD_TEXT_INPUT_MODE_NUMERIC" value="3" enum="FloatingGamepadTextInputMode">
 		</constant>
-		<constant name="FRIEND_FLAG_NONE" value="0" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_NONE" value="0" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_BLOCKED" value="1" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_BLOCKED" value="1" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_FRIENDSHIP_REQUESTED" value="2" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_FRIENDSHIP_REQUESTED" value="2" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_IMMEDIATE" value="4" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_IMMEDIATE" value="4" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_CLAN_MEMBER" value="8" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_CLAN_MEMBER" value="8" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_ON_GAME_SERVER" value="16" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_ON_GAME_SERVER" value="16" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_REQUESTING_FRIENDSHIP" value="128" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_REQUESTING_FRIENDSHIP" value="128" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_REQUESTING_INFO" value="256" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_REQUESTING_INFO" value="256" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_IGNORED" value="512" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_IGNORED" value="512" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_IGNORED_FRIEND" value="1024" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_IGNORED_FRIEND" value="1024" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_CHAT_MEMBER" value="4096" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_CHAT_MEMBER" value="4096" enum="FriendFlags" is_bitfield="true">
 		</constant>
-		<constant name="FRIEND_FLAG_ALL" value="65535" enum="FriendFlags">
+		<constant name="FRIEND_FLAG_ALL" value="65535" enum="FriendFlags" is_bitfield="true">
 		</constant>
 		<constant name="FRIEND_RELATION_NONE" value="0" enum="FriendRelationship">
 		</constant>
@@ -8905,13 +8902,13 @@
 		</constant>
 		<constant name="GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR" value="9" enum="GameSearchErrorCode">
 		</constant>
-		<constant name="HTML_KEY_MODIFIER_NONE" value="0" enum="HTMLKeyModifiers">
+		<constant name="HTML_KEY_MODIFIER_NONE" value="0" enum="HTMLKeyModifiers" is_bitfield="true">
 		</constant>
-		<constant name="HTML_KEY_MODIFIER_ALT_DOWN" value="1" enum="HTMLKeyModifiers">
+		<constant name="HTML_KEY_MODIFIER_ALT_DOWN" value="1" enum="HTMLKeyModifiers" is_bitfield="true">
 		</constant>
-		<constant name="HTML_KEY_MODIFIER_CTRL_DOWN" value="2" enum="HTMLKeyModifiers">
+		<constant name="HTML_KEY_MODIFIER_CTRL_DOWN" value="2" enum="HTMLKeyModifiers" is_bitfield="true">
 		</constant>
-		<constant name="HTML_KEY_MODIFIER_SHIFT_DOWN" value="4" enum="HTMLKeyModifiers">
+		<constant name="HTML_KEY_MODIFIER_SHIFT_DOWN" value="4" enum="HTMLKeyModifiers" is_bitfield="true">
 		</constant>
 		<constant name="HTML_MOUSE_BUTTON_LEFT" value="0" enum="HTMLMouseButton">
 		</constant>
@@ -9847,15 +9844,15 @@
 		</constant>
 		<constant name="INPUT_ACTION_ORIGIN_MAXIMUM_POSSIBLE_VALUE" value="32767" enum="InputActionOrigin">
 		</constant>
-		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_NONE" value="0" enum="InputConfigurationEnableType">
+		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_NONE" value="0" enum="InputConfigurationEnableType" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_PLAYSTATION" value="1" enum="InputConfigurationEnableType">
+		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_PLAYSTATION" value="1" enum="InputConfigurationEnableType" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_XBOX" value="2" enum="InputConfigurationEnableType">
+		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_XBOX" value="2" enum="InputConfigurationEnableType" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_GENERIC" value="4" enum="InputConfigurationEnableType">
+		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_GENERIC" value="4" enum="InputConfigurationEnableType" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH" value="8" enum="InputConfigurationEnableType">
+		<constant name="INPUT_CONFIGURATION_ENABLE_TYPE_SWITCH" value="8" enum="InputConfigurationEnableType" is_bitfield="true">
 		</constant>
 		<constant name="INPUT_GLYPH_SIZE_SMALL" value="0" enum="InputGlyphSize">
 		</constant>
@@ -9865,15 +9862,15 @@
 		</constant>
 		<constant name="INPUT_GLYPH_SIZE_COUNT" value="3" enum="InputGlyphSize">
 		</constant>
-		<constant name="INPUT_GLYPH_STYLE_KNOCKOUT" value="0" enum="InputGlyphStyle">
+		<constant name="INPUT_GLYPH_STYLE_KNOCKOUT" value="0" enum="InputGlyphStyle" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_GLYPH_STYLE_LIGHT" value="1" enum="InputGlyphStyle">
+		<constant name="INPUT_GLYPH_STYLE_LIGHT" value="1" enum="InputGlyphStyle" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_GLYPH_STYLE_DARK" value="2" enum="InputGlyphStyle">
+		<constant name="INPUT_GLYPH_STYLE_DARK" value="2" enum="InputGlyphStyle" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY" value="16" enum="InputGlyphStyle">
+		<constant name="INPUT_GLYPH_STYLE_NEUTRAL_COLOR_ABXY" value="16" enum="InputGlyphStyle" is_bitfield="true">
 		</constant>
-		<constant name="INPUT_GLYPH_STYLE_SOLID_ABXY" value="32" enum="InputGlyphStyle">
+		<constant name="INPUT_GLYPH_STYLE_SOLID_ABXY" value="32" enum="InputGlyphStyle" is_bitfield="true">
 		</constant>
 		<constant name="INPUT_LED_FLAG_SET_COLOR" value="0" enum="InputLEDFlag">
 		</constant>
@@ -9963,11 +9960,11 @@
 		</constant>
 		<constant name="IPV6_CONNECTIVITY_STATE_BAD" value="2" enum="IPv6ConnectivityState">
 		</constant>
-		<constant name="STEAM_ITEM_NO_TRADE" value="1" enum="ItemFlags">
+		<constant name="STEAM_ITEM_NO_TRADE" value="1" enum="ItemFlags" is_bitfield="true">
 		</constant>
-		<constant name="STEAM_ITEM_REMOVED" value="256" enum="ItemFlags">
+		<constant name="STEAM_ITEM_REMOVED" value="256" enum="ItemFlags" is_bitfield="true">
 		</constant>
-		<constant name="STEAM_ITEM_CONSUMED" value="512" enum="ItemFlags">
+		<constant name="STEAM_ITEM_CONSUMED" value="512" enum="ItemFlags" is_bitfield="true">
 		</constant>
 		<constant name="ITEM_PREVIEW_TYPE_IMAGE" value="0" enum="ItemPreviewType">
 		</constant>
@@ -9979,21 +9976,25 @@
 		</constant>
 		<constant name="ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG" value="4" enum="ItemPreviewType">
 		</constant>
+		<constant name="ITEM_PREVIEW_TYPE_CLIP" value="5" enum="ItemPreviewType">
+		</constant>
 		<constant name="ITEM_PREVIEW_TYPE_RESERVED_MAX" value="255" enum="ItemPreviewType">
 		</constant>
-		<constant name="ITEM_STATE_NONE" value="0" enum="ItemState">
+		<constant name="ITEM_STATE_NONE" value="0" enum="ItemState" is_bitfield="true">
 		</constant>
-		<constant name="ITEM_STATE_SUBSCRIBED" value="1" enum="ItemState">
+		<constant name="ITEM_STATE_SUBSCRIBED" value="1" enum="ItemState" is_bitfield="true">
 		</constant>
-		<constant name="ITEM_STATE_LEGACY_ITEM" value="2" enum="ItemState">
+		<constant name="ITEM_STATE_LEGACY_ITEM" value="2" enum="ItemState" is_bitfield="true">
 		</constant>
-		<constant name="ITEM_STATE_INSTALLED" value="4" enum="ItemState">
+		<constant name="ITEM_STATE_INSTALLED" value="4" enum="ItemState" is_bitfield="true">
 		</constant>
-		<constant name="ITEM_STATE_NEEDS_UPDATE" value="8" enum="ItemState">
+		<constant name="ITEM_STATE_NEEDS_UPDATE" value="8" enum="ItemState" is_bitfield="true">
 		</constant>
-		<constant name="ITEM_STATE_DOWNLOADING" value="16" enum="ItemState">
+		<constant name="ITEM_STATE_DOWNLOADING" value="16" enum="ItemState" is_bitfield="true">
 		</constant>
-		<constant name="ITEM_STATE_DOWNLOAD_PENDING" value="32" enum="ItemState">
+		<constant name="ITEM_STATE_DOWNLOAD_PENDING" value="32" enum="ItemState" is_bitfield="true">
+		</constant>
+		<constant name="ITEM_STATE_DISABLED_LOCALLY" value="64" enum="ItemState" is_bitfield="true">
 		</constant>
 		<constant name="ITEM_STATISTIC_NUM_SUBSCRIPTIONS" value="0" enum="ItemStatistic">
 		</constant>
@@ -10295,6 +10296,8 @@
 		</constant>
 		<constant name="NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_BURST" value="45" enum="NetworkingConfigValue">
 		</constant>
+		<constant name="NETWORKING_CONFIG_OUT_OF_ORDER_CORRECTION_WINDOW_MICROSECONDS" value="51" enum="NetworkingConfigValue">
+		</constant>
 		<constant name="NETWORKING_CONFIG_CONNECTION_USER_DATA" value="40" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_TIMEOUT_INITIAL" value="24" enum="NetworkingConfigValue">
@@ -10343,11 +10346,13 @@
 		</constant>
 		<constant name="NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER" value="29" enum="NetworkingConfigValue">
 		</constant>
-		<constant name="NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS" value="30" enum="NetworkingConfigValue">
+		<constant name="NETWORKING_CONFIG_SDR_CLIENT_DEV_TICKET" value="30" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR" value="31" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_SDR_CLIENT_FAKE_CLUSTER_PING" value="36" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_SDR_CLIENT_LIMIT_PING_PROBES_TO_NEAREST_N" value="60" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT" value="13" enum="NetworkingConfigValue">
 		</constant>
@@ -10390,6 +10395,8 @@
 		<constant name="NETWORKING_CONFIG_P2P_TURN_PASS_LIST" value="109" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_P2P_TRANSPORT_ICE_IMPLEMENTATION" value="110" enum="NetworkingConfigValue">
+		</constant>
+		<constant name="NETWORKING_CONFIG_ECN" value="999" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_VALUE_FORCE32BIT" value="2147483647" enum="NetworkingConfigValue">
 		</constant>
@@ -10629,35 +10636,35 @@
 		</constant>
 		<constant name="STEAM_PARTY_BEACON_LOCATION_TYPE_MAX" value="2" enum="PartyBeaconLocationType">
 		</constant>
-		<constant name="PERSONA_CHANGE_NAME" value="1" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_NAME" value="1" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_STATUS" value="2" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_STATUS" value="2" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_COME_ONLINE" value="4" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_COME_ONLINE" value="4" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_GONE_OFFLINE" value="8" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_GONE_OFFLINE" value="8" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_GAME_PLAYED" value="16" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_GAME_PLAYED" value="16" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_GAME_SERVER" value="32" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_GAME_SERVER" value="32" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_AVATAR" value="64" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_AVATAR" value="64" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_JOINED_SOURCE" value="128" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_JOINED_SOURCE" value="128" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_LEFT_SOURCE" value="256" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_LEFT_SOURCE" value="256" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_RELATIONSHIP_CHANGED" value="512" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_RELATIONSHIP_CHANGED" value="512" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_NAME_FIRST_SET" value="1024" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_NAME_FIRST_SET" value="1024" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_FACEBOOK_INFO" value="2048" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_FACEBOOK_INFO" value="2048" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_NICKNAME" value="4096" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_NICKNAME" value="4096" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_STEAM_LEVEL" value="8192" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_STEAM_LEVEL" value="8192" enum="PersonaChange" is_bitfield="true">
 		</constant>
-		<constant name="PERSONA_CHANGE_RICH_PRESENCE" value="16384" enum="PersonaChange">
+		<constant name="PERSONA_CHANGE_RICH_PRESENCE" value="16384" enum="PersonaChange" is_bitfield="true">
 		</constant>
 		<constant name="PERSONA_STATE_OFFLINE" value="0" enum="PersonaState">
 		</constant>
@@ -10687,23 +10694,23 @@
 		</constant>
 		<constant name="PLAYER_RESULT_COMPLETED" value="5" enum="PlayerResult">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_NONE" value="0" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_NONE" value="0" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_WINDOWS" value="1" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_WINDOWS" value="1" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_OSX" value="2" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_OSX" value="2" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_PS3" value="4" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_PS3" value="4" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_LINUX" value="8" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_LINUX" value="8" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_SWITCH" value="16" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_SWITCH" value="16" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_ANDROID" value="32" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_ANDROID" value="32" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_IOS" value="64" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_IOS" value="64" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
-		<constant name="REMOTE_STORAGE_PLATFORM_ALL" value="-1" enum="RemoteStoragePlatform">
+		<constant name="REMOTE_STORAGE_PLATFORM_ALL" value="4294967295" enum="RemoteStoragePlatform" is_bitfield="true">
 		</constant>
 		<constant name="REMOTE_STORAGE_PUBLISHED_VISIBILITY_PUBLIC" value="0" enum="RemoteStoragePublishedFileVisibility">
 		</constant>
@@ -10967,13 +10974,9 @@
 		</constant>
 		<constant name="RESULT_PHONE_NUMBER_IS_VOIP" value="127" enum="Result">
 		</constant>
-		<constant name="STEAM_API_INIT_RESULT_OK" value="0" enum="SteamAPIInitResult">
+		<constant name="RESULT_NOT_SUPPORTED" value="128" enum="Result">
 		</constant>
-		<constant name="STEAM_API_INIT_RESULT_FAILED_GENERIC" value="1" enum="SteamAPIInitResult">
-		</constant>
-		<constant name="STEAM_API_INIT_RESULT_NO_STEAM_CLIENT" value="2" enum="SteamAPIInitResult">
-		</constant>
-		<constant name="STEAM_API_INIT_RESULT_VERSION_MISMATCH" value="3" enum="SteamAPIInitResult">
+		<constant name="RESULT_FAMILY_SIZE_LIMIT_EXCEEDED" value="129" enum="Result">
 		</constant>
 		<constant name="PAD_TRIGGER_EFFECT_MODE_OFF" value="0" enum="SCEPadTriggerEffectMode">
 		</constant>
@@ -11016,6 +11019,14 @@
 		<constant name="NET_SOCKET_STATE_REMOTE_END_DISCONNECTED" value="24" enum="SocketState">
 		</constant>
 		<constant name="NET_SOCKET_STATE_BROKEN" value="25" enum="SocketState">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_OK" value="0" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_FAILED_GENERIC" value="1" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_NO_STEAM_CLIENT" value="2" enum="SteamAPIInitResult">
+		</constant>
+		<constant name="STEAM_API_INIT_RESULT_VERSION_MISMATCH" value="3" enum="SteamAPIInitResult">
 		</constant>
 		<constant name="TEXT_FILTERING_CONTEXT_UNKNOWN" value="0" enum="TextFilteringContext">
 		</constant>
@@ -11127,21 +11138,21 @@
 		</constant>
 		<constant name="USER_HAS_LICENSE_RESULT_NO_AUTH" value="2" enum="UserHasLicenseForAppResult">
 		</constant>
-		<constant name="USER_RESTRICTION_NONE" value="0" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_NONE" value="0" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_UNKNOWN" value="1" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_UNKNOWN" value="1" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_ANY_CHAT" value="2" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_ANY_CHAT" value="2" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_VOICE_CHAT" value="4" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_VOICE_CHAT" value="4" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_GROUP_CHAT" value="8" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_GROUP_CHAT" value="8" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_RATING" value="16" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_RATING" value="16" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_GAME_INVITES" value="32" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_GAME_INVITES" value="32" enum="UserRestriction" is_bitfield="true">
 		</constant>
-		<constant name="USER_RESTRICTION_TRADING" value="64" enum="UserRestriction">
+		<constant name="USER_RESTRICTION_TRADING" value="64" enum="UserRestriction" is_bitfield="true">
 		</constant>
 		<constant name="USER_UGC_LIST_PUBLISHED" value="0" enum="UserUGCList">
 		</constant>
@@ -11259,7 +11270,9 @@
 		</constant>
 		<constant name="WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM" value="15" enum="WorkshopFileType">
 		</constant>
-		<constant name="WORKSHOP_FILE_TYPE_MAX" value="16" enum="WorkshopFileType">
+		<constant name="WORKSHOP_FILE_TYPE_CLIP" value="16" enum="WorkshopFileType">
+		</constant>
+		<constant name="WORKSHOP_FILE_TYPE_MAX" value="17" enum="WorkshopFileType">
 		</constant>
 		<constant name="WORKSHOP_VIDEO_PROVIDER_NONE" value="0" enum="WorkshopVideoProvider">
 		</constant>

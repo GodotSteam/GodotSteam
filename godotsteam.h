@@ -329,7 +329,9 @@ public:
 		RESULT_INSUFFICIENT_BATTERY = k_EResultInsufficientBattery,
 		RESULT_CHARGER_REQUIRED = k_EResultChargerRequired,
 		RESULT_CACHED_CREDENTIAL_INVALID = k_EResultCachedCredentialInvalid,
-		RESULT_PHONE_NUMBER_IS_VOIP = K_EResultPhoneNumberIsVOIP
+		RESULT_PHONE_NUMBER_IS_VOIP = K_EResultPhoneNumberIsVOIP,
+		RESULT_NOT_SUPPORTED = k_EResultNotSupported,
+		RESULT_FAMILY_SIZE_LIMIT_EXCEEDED = k_EResultFamilySizeLimitExceeded
 	};
 	enum SteamAPIInitResult {
 		STEAM_API_INIT_RESULT_OK = k_ESteamAPIInitResult_OK,
@@ -1240,6 +1242,7 @@ public:
 		NETWORKING_CONFIG_FAKE_RATE_LIMIT_SEND_BURST = k_ESteamNetworkingConfig_FakeRateLimit_Send_Burst,
 		NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_RATE = k_ESteamNetworkingConfig_FakeRateLimit_Recv_Rate,
 		NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_BURST = k_ESteamNetworkingConfig_FakeRateLimit_Recv_Burst,
+		NETWORKING_CONFIG_OUT_OF_ORDER_CORRECTION_WINDOW_MICROSECONDS = k_ESteamNetworkingConfig_OutOfOrderCorrectionWindowMicroseconds,
 		NETWORKING_CONFIG_CONNECTION_USER_DATA = k_ESteamNetworkingConfig_ConnectionUserData,
 		NETWORKING_CONFIG_TIMEOUT_INITIAL = k_ESteamNetworkingConfig_TimeoutInitial,
 		NETWORKING_CONFIG_TIMEOUT_CONNECTED = k_ESteamNetworkingConfig_TimeoutConnected,
@@ -1264,9 +1267,10 @@ public:
 		NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE = k_ESteamNetworkingConfig_SDRClient_MinPingsBeforePingAccurate,
 		NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET = k_ESteamNetworkingConfig_SDRClient_SingleSocket,
 		NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER = k_ESteamNetworkingConfig_SDRClient_ForceRelayCluster,
-		NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS = k_ESteamNetworkingConfig_SDRClient_DebugTicketAddress,
+		NETWORKING_CONFIG_SDR_CLIENT_DEV_TICKET = k_ESteamNetworkingConfig_SDRClient_DevTicket,
 		NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR = k_ESteamNetworkingConfig_SDRClient_ForceProxyAddr,
 		NETWORKING_CONFIG_SDR_CLIENT_FAKE_CLUSTER_PING = k_ESteamNetworkingConfig_SDRClient_FakeClusterPing,
+		NETWORKING_CONFIG_SDR_CLIENT_LIMIT_PING_PROBES_TO_NEAREST_N = k_ESteamNetworkingConfig_SDRClient_LimitPingProbesToNearestN,
 		NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT = k_ESteamNetworkingConfig_LogLevel_AckRTT,
 		NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE = k_ESteamNetworkingConfig_LogLevel_PacketDecode,
 		NETWORKING_CONFIG_LOG_LEVEL_MESSAGE = k_ESteamNetworkingConfig_LogLevel_Message,
@@ -1289,6 +1293,7 @@ public:
 		NETWORKING_CONFIG_P2P_TURN_PASS_LIST = k_ESteamNetworkingConfig_P2P_TURN_PassList,
 		//			NETWORKING_CONFIG_P2P_TRANSPORT_LAN_BEACON_PENALTY = k_ESteamNetworkingConfig_P2P_Transport_LANBeacon_Penalty,
 		NETWORKING_CONFIG_P2P_TRANSPORT_ICE_IMPLEMENTATION = k_ESteamNetworkingConfig_P2P_Transport_ICE_Implementation,
+		NETWORKING_CONFIG_ECN = k_ESteamNetworkingConfig_ECN,
 		NETWORKING_CONFIG_VALUE_FORCE32BIT = k_ESteamNetworkingConfigValue__Force32Bit
 	};
 	enum NetworkingConnectionEnd {
@@ -1426,7 +1431,7 @@ public:
 		FEATURE_LIBRARY = k_EFeatureLibrary,
 		FEATURE_TEST = k_EFeatureTest,
 		FEATURE_SITE_LICENSE = k_EFeatureSiteLicense,
-		FEATURE_KIOSK_MODE = k_EFeatureKioskMode,
+		FEATURE_KIOSK_MODE = k_EFeatureKioskMode_Deprecated,
 		FEATURE_MAX = k_EFeatureMax
 	};
 
@@ -1450,7 +1455,8 @@ public:
 		FORM_FACTOR_PHONE = k_ESteamDeviceFormFactorPhone,
 		FORM_FACTOR_TABLET = k_ESteamDeviceFormFactorTablet,
 		FORM_FACTOR_COMPUTER = k_ESteamDeviceFormFactorComputer,
-		FORM_FACTOR_TV = k_ESteamDeviceFormFactorTV
+		FORM_FACTOR_TV = k_ESteamDeviceFormFactorTV,
+		FORM_FACTOR_VR_HEADSET = k_ESteamDeviceFormFactorVRHeadset
 	};
 
 	// Remote Storage enums
@@ -1517,6 +1523,7 @@ public:
 		wORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE = k_EWorkshopFileTypeSteamworksAccessInvite,
 		WORKSHOP_FILE_TYPE_STEAM_VIDEO = k_EWorkshopFileTypeSteamVideo,
 		WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM = k_EWorkshopFileTypeGameManagedItem,
+		WORKSHOP_FILE_TYPE_CLIP = k_EWorkshopFileTypeClip,
 		WORKSHOP_FILE_TYPE_MAX = k_EWorkshopFileTypeMax
 	};
 	enum WorkshopVideoProvider {
@@ -1547,6 +1554,7 @@ public:
 		ITEM_PREVIEW_TYPE_SKETCHFAB = k_EItemPreviewType_Sketchfab,
 		ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS = k_EItemPreviewType_EnvironmentMap_HorizontalCross,
 		ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG = k_EItemPreviewType_EnvironmentMap_LatLong,
+		ITEM_PREVIEW_TYPE_CLIP = k_EItemPreviewType_Clip,
 		ITEM_PREVIEW_TYPE_RESERVED_MAX = k_EItemPreviewType_ReservedMax
 	};
 	enum ItemState {
@@ -1556,7 +1564,8 @@ public:
 		ITEM_STATE_INSTALLED = k_EItemStateInstalled,
 		ITEM_STATE_NEEDS_UPDATE = k_EItemStateNeedsUpdate,
 		ITEM_STATE_DOWNLOADING = k_EItemStateDownloading,
-		ITEM_STATE_DOWNLOAD_PENDING = k_EItemStateDownloadPending
+		ITEM_STATE_DOWNLOAD_PENDING = k_EItemStateDownloadPending,
+		ITEM_STATE_DISABLED_LOCALLY = k_EItemStateDisabledLocally
 	};
 	enum ItemStatistic {
 		ITEM_STATISTIC_NUM_SUBSCRIPTIONS = k_EItemStatistic_NumSubscriptions,
@@ -1780,13 +1789,6 @@ public:
 	bool markContentCorrupt(bool missing_files_only);
 	bool setDLCContext(uint32_t app_id);
 	void uninstallDLC(uint32_t dlc_id);
-
-	// App Lists ////////////////////////////
-	uint32 getNumInstalledApps();
-	Array getInstalledApps(uint32 max_app_ids);
-	String getAppName(uint32_t app_id, int name_max);
-	String getAppListInstallDir(uint32_t app_id, int name_max);
-	int getAppListBuildId(uint32_t app_id);
 
 	// Friends //////////////////////////////
 	void activateGameOverlay(const String &type);
@@ -2478,6 +2480,7 @@ public:
 	uint64_t getGlobalStatIntHistory(const String &stat_name);
 	double getGlobalStatFloatHistory(const String &stat_name);
 	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
+	Array getLeaderboardEntries();
 	int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
 	String getLeaderboardName(uint64_t this_leaderboard = 0);
 	Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard = 0);
@@ -2504,9 +2507,10 @@ public:
 	bool storeStats();
 	bool updateAvgRateStat(const String &name, float this_session, double session_length);
 	void uploadLeaderboardScore(int score, bool keep_best = false, PackedInt32Array details = PackedInt32Array(), uint64_t this_leaderboard = 0);
-	Array getLeaderboardEntries();
 
 	// Utils ////////////////////////////////
+	bool dismissFloatingGamepadTextInput();
+	bool dismissGamepadTextInput();
 	String filterText(TextFilteringContext context, uint64_t steam_id, const String &message);
 	String getAPICallFailureReason();
 	uint32_t getAppID();
@@ -2525,17 +2529,16 @@ public:
 	bool isSteamChinaLauncher();
 	bool isSteamInBigPictureMode();
 	bool isSteamRunningInVR();
+	bool isSteamRunningOnSteamDeck();
 	bool isVRHeadsetStreamingEnabled();
 	bool overlayNeedsPresent();
+	void setGameLauncherMode(bool mode);
 	void setOverlayNotificationInset(int horizontal, int vertical);
 	void setOverlayNotificationPosition(int pos);
 	void setVRHeadsetStreamingEnabled(bool enabled);
-	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	bool showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
-	void setGameLauncherMode(bool mode);
+	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	void startVRDashboard();
-	bool isSteamRunningOnSteamDeck();
-	bool dismissFloatingGamepadTextInput();
 
 	// Video ////////////////////////////////
 	void getOPFSettings(uint32_t app_id);
@@ -2619,10 +2622,6 @@ private:
 	STEAM_CALLBACK(Steam, file_details_result, FileDetailsResult_t, callbackFileDetailsResult);
 	STEAM_CALLBACK(Steam, new_launch_url_parameters, NewUrlLaunchParameters_t, callbackNewLaunchURLParameters);
 	STEAM_CALLBACK(Steam, timed_trial_status, TimedTrialStatus_t, callbackTimedTrialStatus);
-
-	// Apps List callbacks //////////////////
-	STEAM_CALLBACK(Steam, app_installed, SteamAppInstalled_t, callbackAppInstalled);
-	STEAM_CALLBACK(Steam, app_uninstalled, SteamAppUninstalled_t, callbackAppUninstalled);
 
 	// Friends callbacks ////////////////////
 	STEAM_CALLBACK(Steam, avatar_loaded, AvatarImageLoaded_t, callbackAvatarLoaded);
