@@ -45,7 +45,7 @@ While rare, sometimes Steamworks SDK updates will break compatilibity with older
 
 Steamworks SDK Version | GodotSteam Version | Notes
 ---|---|---
-1.59 or newer | 4.6 or newer | API files (dll, so, dylib) will still work
+1.59 or newer | 4.6 or newer | API files (dll, so, dylib) will still work for older
 1.58a or older | 4.5.4 or older |
 
 Known Issues
