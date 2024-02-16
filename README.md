@@ -18,36 +18,24 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v3.22.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.23)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.22.4 Changes**
-- Added: missing k_nSteamNetworkingSend_AutoRestartBrokenSession to constants
-- Added: two missing Input constants: INPUT_HANDLE_ALL_CONTROLLERS and INPUT_MAX_ACTIVE_LAYERS
-- Changed: `getInputTypeForHandle()` now returns int / enum instead of string for device models
-- Changed: updated in-editor docs for missing content
-- Changed: order of constants to be alphabetic
-- Changed: changed returned variable name to `need_to_accept_tos` in `item_updated` callback
-
-**Version 3.22.3 Changes**
-- Changed: moved constants to separate file like in Godot 4.x branches
-
-**Version 3.22.2 Changes**
-- Fixed: app ID automatically being set to 480, now default is 0 which makes GodotSteam ignore auto-setting app ID
-
-**Version 3.22.1 Changes**
-- Added: two new arguments to `steamInit` and `steamInitEx` to set your app ID and run_callbacks interally, thanks to _GreenFox_
-- Fixed: issue with callback that caused compiling failure in Linux
-
-**Version 3.22 Changes**
-- Added: two Music class callbacks
-- Changed: `generateItems`, `exchangeItems`, `getItemsByID`, and `startPurchase` all list-based arguments are now PoolIntArrays
-- Changed: `getItemsByID` now takes one argument, counts the elements in the passed array instead
-- Changed: `getItemsWithPrices` no longer requires any arguments passed to it
-- Changed: in-editor docs have been updated
-- Fixed: `getResultItems` now returns all item data
-- Fixed: missing DEFVAL for `steamInitEx`
-- Fixed: Joy Con name in `getInputTypeForHandle`
-- Removed: `getNumItemsWithPrices` as it was unnecessary
+**Version 3.23 Changes**
+- Added: new Remote Storage enum to WorkshopFileType
+- Added: two new UGC enums to ItemState and ItemPreviewType
+- Added: two new Friends class constants
+- Added: new function `dismissGamepadTextInput()`
+- Added: new Remote Play enum, form factor for VR headset
+- Added: two new result enums; not supported and family size limit exceeded
+- Added: three new enums to NetworkingConfigValue
+- Added: new general constant ACCOUNT_ID_INVALID
+- Changed: FEATURE_KIOSK_MODE enum now deprecated
+- Changed: minor housekeeping by rearranging some functions
+- Changed: k_ESteamNetworkingConfig_SDRClient_DebugTicketAddress was replaced by k_ESteamNetworkingConfig_SDRClient_DevTicket, value is the same but reference changed
+- Changed: updated in-editor docs
+- Fixed: spelling error in `getProfileItemPropertyInt()` bind
+- Removed: App Lists class functions, callbacks, etc. due to SDK 1.59 changes
+- Removed: Remote Play enums mistakenly added as constants
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot3/).
 
@@ -59,10 +47,11 @@ Compatibility
 ---
 While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below.
 
-Steamworks SDK Version | GodotSteam Version
----|---
-1.53 or newer | 3.12 or newer
-1.53 or older | 3.11.1 or older
+Steamworks SDK Version | GodotSteam Version | Notes
+---|---|---
+1.59 or newer | 3.23 or newer | API files (dll, so, dylib) will still work for older
+1.53 to 1.58a | 3.12 to 3.22.4 | 
+1.52 or older | 3.11.1 or older | 
 
 "Quick" How-To
 ---

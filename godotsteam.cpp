@@ -45,10 +45,6 @@ Steam::Steam():
 	callbackNewLaunchURLParameters(this, &Steam::new_launch_url_parameters),
 	callbackTimedTrialStatus(this, &Steam::timed_trial_status),
 
-	// Apps List callbacks ///////////////////////
-	callbackAppInstalled(this, &Steam::app_installed),
-	callbackAppUninstalled(this, &Steam::app_uninstalled),
-
 	// Friends callbacks ////////////////////////
 	callbackAvatarLoaded(this, &Steam::avatar_loaded),
 	callbackAvatarImageLoaded(this, &Steam::avatar_image_loaded),
@@ -652,75 +648,6 @@ void Steam::uninstallDLC(uint32_t dlc_id){
 	if(SteamApps() != NULL){
 		SteamApps()->UninstallDLC((AppId_t)dlc_id);
 	}
-}
-
-
-/////////////////////////////////////////////////
-///// APP LISTS
-/////////////////////////////////////////////////
-//
-// This is a restricted interface that can only be used by previously approved apps, contact your Steam Account Manager if you believe you need access to this API.
-//!
-// Get the number of installed apps for this player.
-uint32 Steam::getNumInstalledApps(){
-	if(SteamAppList() == NULL){
-		return 0;
-	}
-	return SteamAppList()->GetNumInstalledApps();
-}
-
-// Get a list of app IDs for installed apps for this player.
-Array Steam::getInstalledApps(uint32 max_app_ids){
-	Array installed_apps;
-	if(SteamAppList() != NULL){
-		uint32 *app_ids = nullptr;
-		uint32 these_apps = SteamAppList()->GetInstalledApps(app_ids, max_app_ids);
-		// Which is greater?
-		if(these_apps < max_app_ids){
-			max_app_ids = these_apps;
-		}
-		// Parse it
-		for(uint32 i = 0; i < max_app_ids; i++){
-			installed_apps.append(app_ids[i]);
-		}
-	}
-	return installed_apps;
-}
-
-// Get a given app ID's name.
-String Steam::getAppName(uint32_t app_id, int name_max){
-	String app_name;
-	if(SteamAppList() != NULL){
-		char* app_buffer = new char[name_max];
-		int buffer_size = SteamAppList()->GetAppName((AppId_t)app_id, app_buffer, name_max);
-		if(buffer_size != 0){
-			app_name += app_buffer;
-		}
-		delete[] app_buffer;
-	}
-	return app_name;
-}
-
-// Get a given app ID's install directory.
-String Steam::getAppListInstallDir(uint32_t app_id, int name_max){
-	String directory_name;
-	if(SteamAppList() != NULL){
-		char* directory_buffer = new char[name_max];
-		int buffer_size = SteamAppList()->GetAppInstallDir((AppId_t)app_id, directory_buffer, name_max);
-		if(buffer_size != 0){
-			directory_name += directory_buffer;
-		}
-		delete[] directory_buffer;
-	}
-	return directory_name;
-}
-
-// Get a given app ID's build.
-int Steam::getAppListBuildId(uint32_t app_id){
-	if(SteamAppList() == NULL){
-		return 0;
-	}
-	return SteamAppList()->GetAppBuildId((AppId_t)app_id);
 }
 
 
@@ -1584,6 +1511,14 @@ bool Steam::setRichPresence(const String& key, const String& value){
 		return false;
 	}
 	return SteamFriends()->SetRichPresence(key.utf8().get_data(), value.utf8().get_data());
+}
+
+// Dismisses the full-screen text input dialog.
+bool Steam::dismissGamepadTextInput() {
+	if (SteamUtils() == NULL) {
+		return false;
+	}
+	return SteamUtils()->DismissGamepadTextInput();
 }
 
 
@@ -8955,22 +8890,6 @@ void Steam::timed_trial_status(TimedTrialStatus_t* call_data){
 	emit_signal("timed_trial_status", app_id, is_offline, seconds_allowed, seconds_played);
 }
 
-// APPS LIST CALLBACKS ///////////////////////////
-//
-// Sent when a new app is installed.
-void Steam::app_installed(SteamAppInstalled_t* call_data){
-	uint32_t app_id = (uint32_t)call_data->m_nAppID;
-	uint32_t install_folder_index = call_data->m_iInstallFolderIndex;
-	emit_signal("app_installed", app_id, install_folder_index);
-}
-
-// Sent when an app is uninstalled.
-void Steam::app_uninstalled(SteamAppUninstalled_t* call_data){
-	uint32_t app_id = (uint32_t)call_data->m_nAppID;
-	uint32_t install_folder_index = call_data->m_iInstallFolderIndex;
-	emit_signal("app_uninstalled", app_id, install_folder_index);	
-}
-
 // FRIENDS CALLBACKS ////////////////////////////
 //
 // Called when a large avatar is loaded if you have tried requesting it when it was unavailable.
@@ -11067,13 +10986,6 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("setDLCContext", "app_id"), &Steam::setDLCContext);
 	ClassDB::bind_method(D_METHOD("uninstallDLC", "dlc_id"), &Steam::uninstallDLC);
 
-	// APP LIST BIND METHODS ////////////////////
-	ClassDB::bind_method("getNumInstalledApps", &Steam::getNumInstalledApps);
-	ClassDB::bind_method(D_METHOD("getInstalledApps", "max_app_ids"), &Steam::getInstalledApps);
-	ClassDB::bind_method(D_METHOD("getAppName", "app_id", "name_max"), &Steam::getAppName);
-	ClassDB::bind_method(D_METHOD("getAppListInstallDir", "app_id", "name_max"), &Steam::getAppListInstallDir);
-	ClassDB::bind_method(D_METHOD("getAppListBuildId", "app_id"), &Steam::getAppListInstallDir);
-
 	// FRIENDS BIND METHODS /////////////////////
 	ClassDB::bind_method(D_METHOD("activateGameOverlay", "type"), &Steam::activateGameOverlay, DEFVAL(""));
 	ClassDB::bind_method(D_METHOD("activateGameOverlayInviteDialog", "steam_id"), &Steam::activateGameOverlayInviteDialog);
@@ -11790,6 +11702,8 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("getLeaderboardEntries", &Steam::getLeaderboardEntries);
 
 	// UTILS BIND METHODS ///////////////////////
+	ClassDB::bind_method("dismissFloatingGamepadTextInput", &Steam::dismissFloatingGamepadTextInput);
+	ClassDB::bind_method("dismissGamepadTextInput", &Steam::dismissGamepadTextInput);
 	ClassDB::bind_method(D_METHOD("filterText", "context", "steam_id", "message"), &Steam::filterText);
 	ClassDB::bind_method("getAPICallFailureReason", &Steam::getAPICallFailureReason);
 	ClassDB::bind_method("getAppID", &Steam::getAppID);
@@ -11808,18 +11722,17 @@ void Steam::_bind_methods(){
 	ClassDB::bind_method("isSteamChinaLauncher", &Steam::isSteamChinaLauncher);
 	ClassDB::bind_method("isSteamInBigPictureMode", &Steam::isSteamInBigPictureMode);
 	ClassDB::bind_method("isSteamRunningInVR", &Steam::isSteamRunningInVR);
+	ClassDB::bind_method("isSteamRunningOnSteamDeck", &Steam::isSteamRunningOnSteamDeck);
 	ClassDB::bind_method("isVRHeadsetStreamingEnabled", &Steam::isVRHeadsetStreamingEnabled);
 	ClassDB::bind_method("overlayNeedsPresent", &Steam::overlayNeedsPresent);
+	ClassDB::bind_method(D_METHOD("setGameLauncherMode", "mode"), &Steam::setGameLauncherMode);
 	ClassDB::bind_method(D_METHOD("setOverlayNotificationInset", "horizontal", "vertical"), &Steam::setOverlayNotificationInset);
 	ClassDB::bind_method(D_METHOD("setOverlayNotificationPosition", "pos"), &Steam::setOverlayNotificationPosition);
 	ClassDB::bind_method(D_METHOD("setVRHeadsetStreamingEnabled", "enabled"), &Steam::setVRHeadsetStreamingEnabled);
 	ClassDB::bind_method(D_METHOD("showGamepadTextInput", "input_mode", "line_input_mode", "description", "max_text", "preset_text"), &Steam::showGamepadTextInput);
 	ClassDB::bind_method(D_METHOD("showFloatingGamepadTextInput", "input_mode", "text_field_x_position", "text_field_y_position", "text_field_width", "text_field_height"), &Steam::showFloatingGamepadTextInput);
-	ClassDB::bind_method(D_METHOD("setGameLauncherMode", "mode"), &Steam::setGameLauncherMode);
 	ClassDB::bind_method("startVRDashboard", &Steam::startVRDashboard);	
-	ClassDB::bind_method("isSteamRunningOnSteamDeck", &Steam::isSteamRunningOnSteamDeck);
-	ClassDB::bind_method("dismissFloatingGamepadTextInput", &Steam::dismissFloatingGamepadTextInput);
-
+	
 	// VIDEO BIND METHODS ///////////////////////
 	ClassDB::bind_method(D_METHOD("getOPFSettings", "app_id"), &Steam::getOPFSettings);
 	ClassDB::bind_method(D_METHOD("getOPFStringForApp", "app_id"), &Steam::getOPFStringForApp);
@@ -11838,10 +11751,6 @@ void Steam::_bind_methods(){
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("new_launch_url_parameters"));
 	ADD_SIGNAL(MethodInfo("timed_trial_status", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::BOOL, "is_offline"), PropertyInfo(Variant::INT, "seconds_allowed"), PropertyInfo(Variant::INT, "seconds_played")));
-
-	// APP LIST SIGNALS /////////////////////////
-	ADD_SIGNAL(MethodInfo("app_installed", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "install_folder_index")));
-	ADD_SIGNAL(MethodInfo("app_uninstalled", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "install_folder_index")));
 
 	// FRIENDS SIGNALS //////////////////////////
 	ADD_SIGNAL(MethodInfo("avatar_loaded", PropertyInfo(Variant::INT, "avatar_id"), PropertyInfo(Variant::INT, "size"), PropertyInfo(Variant::ARRAY, "data")));
@@ -12073,6 +11982,7 @@ void Steam::_bind_methods(){
 	/////////////////////////////////////////////
 	//
 	// STEAM API CONSTANTS //////////////////////
+	BIND_CONSTANT(ACCOUNT_ID_INVALID);
 	BIND_CONSTANT(API_CALL_INVALID); 													// 0x0
 	BIND_CONSTANT(APP_ID_INVALID); 														// 0x0
 	BIND_CONSTANT(AUTH_TICKET_INVALID);													// 0
@@ -12093,6 +12003,8 @@ void Steam::_bind_methods(){
 	// FRIENDS CONSTANTS ////////////////////////
 	BIND_CONSTANT(CHAT_METADATA_MAX);													// 8192
 	BIND_CONSTANT(ENUMERATED_FOLLOWERS_MAX);											// 50
+	BIND_CONSTANT(FRIEND_GAME_INFO_QUERY_PORT_ERROR);
+	BIND_CONSTANT(FRIEND_GAME_INFO_QUERY_PORT_NOT_INITIALIZED);
 	BIND_CONSTANT(FRIENDS_GROUP_LIMIT);													// 100
 	BIND_CONSTANT(INVALID_FRIEND_GROUP_ID);												// -1
 	BIND_CONSTANT(MAX_FRIENDS_GROUP_NAME);												// 64
@@ -12148,13 +12060,6 @@ void Steam::_bind_methods(){
 	BIND_CONSTANT(NETWORKING_SEND_NO_DELAY);											// 4
 	BIND_CONSTANT(NETWORKING_SEND_RELIABLE);											// 8
 	BIND_CONSTANT(NETWORKING_SEND_UNRELIABLE);											// 0
-	
-	// REMOTE PLAY CONSTANTS ////////////////////
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_UNKNOWN);											// 0
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_PHONE);											// 1
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_TABLET);											// 2
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_COMPUTER);											// 3
-	BIND_CONSTANT(DEVICE_FORM_FACTOR_TV);												// 4
 
 	// REMOTE STORAGE CONSTANTS /////////////////
 	BIND_CONSTANT(FILENAME_MAX); 														// 260
@@ -12380,6 +12285,7 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(FORM_FACTOR_TABLET);
 	BIND_ENUM_CONSTANT(FORM_FACTOR_COMPUTER);
 	BIND_ENUM_CONSTANT(FORM_FACTOR_TV);
+	BIND_ENUM_CONSTANT(FORM_FACTOR_VR_HEADSET);
 
 	// DurationControlNotification Enums
 	BIND_ENUM_CONSTANT(DURATION_CONTROL_NOTIFICATION_NONE);
@@ -13039,6 +12945,7 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_SKETCHFAB);
 	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_HORIZONTAL_CROSS);
 	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_ENVIRONMENTMAP_LAT_LONG);
+	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_CLIP);
 	BIND_ENUM_CONSTANT(ITEM_PREVIEW_TYPE_RESERVED_MAX);
 
 	// ItemState Enums
@@ -13049,6 +12956,7 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(ITEM_STATE_NEEDS_UPDATE);
 	BIND_ENUM_CONSTANT(ITEM_STATE_DOWNLOADING);
 	BIND_ENUM_CONSTANT(ITEM_STATE_DOWNLOAD_PENDING);
+	BIND_ENUM_CONSTANT(ITEM_STATE_DISABLED_LOCALLY);
 
 	// ItemStatistic Enums
 	BIND_ENUM_CONSTANT(ITEM_STATISTIC_NUM_SUBSCRIPTIONS);
@@ -13233,6 +13141,7 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_SEND_BURST);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_RATE);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_FAKE_RATE_LIMIT_RECV_BURST);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_OUT_OF_ORDER_CORRECTION_WINDOW_MICROSECONDS);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_CONNECTION_USER_DATA);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_INITIAL);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_TIMEOUT_CONNECTED);
@@ -13257,9 +13166,10 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_MIN_PINGS_BEFORE_PING_ACCURATE);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_SINGLE_SOCKET);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_RELAY_CLUSTER);
-	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_DEBUG_TICKET_ADDRESS);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_DEV_TICKET);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FORCE_PROXY_ADDR);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_FAKE_CLUSTER_PING);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_SDR_CLIENT_LIMIT_PING_PROBES_TO_NEAREST_N);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_ACK_RTT);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_PACKET_DECODE);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_LOG_LEVEL_MESSAGE);
@@ -13282,6 +13192,7 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_PASS_LIST);
 //	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_LAN_BEACON_PENALTY);		// Commented out in the SDK
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_ICE_IMPLEMENTATION);
+	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_ECN);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_VALUE_FORCE32BIT);
 
 	// NetworkingConnectionEnd Enums
@@ -13613,6 +13524,8 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(RESULT_CHARGER_REQUIRED);
 	BIND_ENUM_CONSTANT(RESULT_CACHED_CREDENTIAL_INVALID);
 	BIND_ENUM_CONSTANT(RESULT_PHONE_NUMBER_IS_VOIP);
+	BIND_ENUM_CONSTANT(RESULT_NOT_SUPPORTED);
+	BIND_ENUM_CONSTANT(RESULT_FAMILY_SIZE_LIMIT_EXCEEDED);
 
 	// SCEPadTriggerEffectMode Enums
 	BIND_ENUM_CONSTANT(PAD_TRIGGER_EFFECT_MODE_OFF);
@@ -13797,6 +13710,7 @@ void Steam::_bind_methods(){
 	BIND_ENUM_CONSTANT(wORKSHOP_FILE_TYPE_STEAMWORKS_ACCESS_INVITE);
 	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_STEAM_VIDEO);
 	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_GAME_MANAGED_ITEM);
+	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_CLIP);
 	BIND_ENUM_CONSTANT(WORKSHOP_FILE_TYPE_MAX);
 
 	// WorkshopVideoProvider Enums
