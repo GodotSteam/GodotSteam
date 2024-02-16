@@ -5766,6 +5766,7 @@
 			<return type="bool" />
 			<argument index="0" name="update_handle" type="int" />
 			<argument index="1" name="tag_array" type="Array" />
+			<argument index="2" name="allow_admin_tags" type="bool" />
 			<description>
 				Sets arbitrary developer specified tags on an item.
 				Each tag must be limited to 255 characters. Tag names can only include printable characters, excluding ','.
