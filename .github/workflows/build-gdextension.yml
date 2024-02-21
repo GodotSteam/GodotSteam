@@ -159,6 +159,7 @@ jobs:
             ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
             ${{github.job}}-${{env.BASE_BRANCH}}-${{github.ref}}
             ${{github.job}}-${{env.BASE_BRANCH}}-${{env.BASE_BRANCH}}
+
       - name: Compile extension
         shell: sh
         env:
@@ -167,11 +168,13 @@ jobs:
         run: |
           PATH=/opt/buildroot/bin:$PATH scons target='${{ matrix.opts.target }}' platform='${{ matrix.opts.platform }}' arch='${{ matrix.opts.arch }}' ${{ matrix.opts.args }} -j2
           ls -la bin/
+
       - name: Strip bins
         if: "!startsWith(matrix.opts.identifier, 'windows-') && startsWith(matrix.opts.arch, 'x86_')"
         shell: sh
         run: |
           strip bin/*
+
       - name: Prepare artifact
         shell: sh
         run: |
@@ -197,9 +200,13 @@ jobs:
           cd ../../..
 
           cp -n 'README.md' 'LICENSE.txt' 'godotsteam.gdextension' project/addons/godotsteam
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: gdextension
           path: |
             project/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 14
