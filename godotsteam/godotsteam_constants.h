@@ -1,6 +1,7 @@
 #include "steam/steam_api.h"
 
 // Define Steam API constants
+#define ACCOUNT_ID_INVALID k_uAccountIdInvalid
 #define API_CALL_INVALID k_uAPICallInvalid
 #define APP_ID_INVALID k_uAppIdInvalid
 #define AUTH_TICKET_INVALID k_HAuthTicketInvalid
@@ -21,6 +22,8 @@
 // Define Friends constants
 #define CHAT_METADATA_MAX k_cubChatMetadataMax
 #define ENUMERATED_FOLLOWERS_MAX k_cEnumerateFollowersMax
+#define FRIEND_GAME_INFO_QUERY_PORT_ERROR k_usFriendGameInfoQueryPort_Error
+#define FRIEND_GAME_INFO_QUERY_PORT_NOT_INITIALIZED k_usFriendGameInfoQueryPort_NotInitialized
 #define FRIENDS_GROUP_LIMIT k_cFriendsGroupLimit
 #define INVALID_FRIEND_GROUP_ID k_FriendsGroupID_Invalid
 #define MAX_FRIENDS_GROUP_NAME k_cchMaxFriendsGroupName
@@ -79,13 +82,6 @@
 
 // Define Networking Socket constants
 #define MAX_STEAM_PACKET_SIZE k_cbMaxSteamNetworkingSocketsMessageSizeSend
-
-// Define Remote Play constants
-#define DEVICE_FORM_FACTOR_COMPUTER k_ESteamDeviceFormFactorComputer
-#define DEVICE_FORM_FACTOR_PHONE k_ESteamDeviceFormFactorPhone
-#define DEVICE_FORM_FACTOR_TABLET k_ESteamDeviceFormFactorTablet
-#define DEVICE_FORM_FACTOR_TV k_ESteamDeviceFormFactorTV
-#define DEVICE_FORM_FACTOR_UNKNOWN k_ESteamDeviceFormFactorUnknown
 
 // Define Remote Storage constants
 #define ENUMERATE_PUBLISHED_FILES_MAX_RESULTS k_unEnumeratePublishedFilesMaxResults

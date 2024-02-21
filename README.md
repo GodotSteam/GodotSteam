@@ -20,39 +20,33 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v4.5.2)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.5.4 Changes**
-
-- Added: missing k_nSteamNetworkingSend_AutoRestartBrokenSession to constants
-- Added: two missing Input constants: INPUT_HANDLE_ALL_CONTROLLERS and INPUT_MAX_ACTIVE_LAYERS
-- Changed: `getInputTypeForHandle()` now returns int / enum instead of string for device models
-- Changed: `createBrowser` now like module version
-- Changed: `html_browser_ready` now call result instead of callback
-- Changed: order of constants to be alphabetic
-- Changed: changed returned variable name to `need_to_accept_tos` in `item_updated` callback
-- Changed: Github Actions scripts, one for Vulkan and another for version numbers
-
-**Version 4.5.3 Changes**
-- Fixed: `requestClanOfficerList()` using wrong internal function, thanks to _sepTN_
-
-**Version 4.5.2 Changes**
-- Fixed: crashes on `generateItems`, `startPurchase`, and `exchangeItems`, thanks to _sepTN_
-
-**Version 4.5.1 Changes**
-- Fixed: app ID automatically being set to 480, now default is 0 which makes GodotSteam ignore auto-setting app ID
-
-**Version 4.5 Changes**
-- Added: two new arguments to `steamInit` and `steamInitEx` to set your app ID, thanks to _GreenFox_
-- Added: two Music class callbacks
-- Changed: `generateItems`, `exchangeItems`, `getItemsByID`, and `startPurchase` all list-based arguments are now PoolIntArrays
-- Changed: `getItemsByID` now takes one argument, counts the elements in the passed array instead
-- Changed: `getItemsWithPrices` no longer requires any arguments passed to it
-- Changed: in-editor docs have been updated
-- Fixed: `getResultItems` now returns all item data
-- Fixed: missing DEFVAL for `steamInitEx`
-- Fixed: Joy Con name in `getInputTypeForHandle`
-- Removed: `getNumItemsWithPrices` as it was unnecessary
+**Version 4.6 Changes**
+- Added: new Remote Storage enum to WorkshopFileType
+- Added: two new UGC enums to ItemState and ItemPreviewType
+- Added: two new Friends class constants
+- Added: new function `dismissGamepadTextInput()`
+- Added: new Remote Play enum, form factor for VR headset
+- Added: two new result enums; not supported and family size limit exceeded
+- Added: three new enums to NetworkingConfigValue
+- Added: new general constant ACCOUNT_ID_INVALID
+- Changed: FEATURE_KIOSK_MODE enum now deprecated
+- Changed: minor housekeeping by rearranging some functions
+- Changed: k_ESteamNetworkingConfig_SDRClient_DebugTicketAddress was replaced by k_ESteamNetworkingConfig_SDRClient_DevTicket, value is the same but reference changed
+- Changed: updated in-editor docs
+- Fixed: spelling error in `getProfileItemPropertyInt()` bind
+- Removed: App Lists class functions, callbacks, etc. due to SDK 1.59 changes
+- Removed: Remote Play enums mistakenly added as constants
 
 [You can read more change-logs here](https://godotsteam.com/changelog/gdextension/).
+
+Compatibility
+---
+While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below.  Newer API files (dll, so, dylib) _should_ still work for older versions.
+
+Steamworks SDK Version | GodotSteam Version
+---|---|---
+1.59 or newer | 4.6 or newer
+1.58a or older | 4.5.4 or older
 
 Known Issues
 ---
