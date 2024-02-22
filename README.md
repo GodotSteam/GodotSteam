@@ -18,42 +18,25 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.22.4)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v3.23)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.22.5 Changes**
-- Fixed: missing bind for `startRemotePlayTogether()`
-
-**Version 3.22.4 Changes**
-- Added: missing k_nSteamNetworkingSend_AutoRestartBrokenSession to constants
-- Added: two missing Input constants: INPUT_HANDLE_ALL_CONTROLLERS and INPUT_MAX_ACTIVE_LAYERS
-- Changed: `getInputTypeForHandle()` now returns int / enum instead of string for device models
-- Changed: order of constants to be alphabetic
-- Changed: changed returned variable name to `need_to_accept_tos` in `item_updated` callback
-
-**Version 3.22.3 Changes**
-- Changed: moved constants to separate file like in Godot 4.x branches
-- Fixed: `requestClanOfficerList()` using wrong internal function, ***thanks to sepTN***
-
-**Version 3.22.2 Changes**
-- Changed: reverted `steamInit` and `steamInitEx` as new methods won't work with GDNative
-- Removed: all enums as they cannot be used in GDNative
-
-**Version 3.22.1 Changes**
-- Added: two new arguments to `steamInit` and `steamInitEx` to set your app ID and run_callbacks interally, ***thanks to GreenFox***
-- Fixed: issue with callback that caused compiling failure in Linux
-
-**Version 3.22 Changes**
-- Added: two Music class callbacks
-- Changed: `generateItems`, `exchangeItems`, `getItemsByID`, and `startPurchase` all list-based arguments are now PoolIntArrays
-- Changed: `getItemsByID` now takes one argument, counts the elements in the passed array instead
-- Changed: `getItemsWithPrices` no longer requires any arguments passed to it
-- Changed: in-editor docs have been updated
-- Fixed: `getResultItems` now returns all item data
-- Fixed: missing DEFVAL for `steamInitEx`
-- Fixed: Joy Con name in `getInputTypeForHandle`
-- Removed: `getNumItemsWithPrices` as it was unnecessary
+**Version 3.23 Changes**
+- Added: two new Friends class constants
+- Added: new function `dismissGamepadTextInput()`
+- Added: new general constant ACCOUNT_ID_INVALID
+- Removed: App Lists class functions, callbacks, etc. due to SDK 1.59 changes
 
 [You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
+
+Compatibility
+---
+While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below. Newer API files (dll, so, dylib) _should_ still work for older versions.
+
+Steamworks SDK Version | GodotSteam Version
+---|---
+1.59 or newer | 3.23 or newer
+1.53 to 1.58a | 3.12 to 3.22.4
+1.52 or older | 3.11.1 or older
 
 Known Issues
 ----------

@@ -85,4 +85,5 @@ jobs:
           name: windows-plugin
           path: bin/win64/godotsteam.dll
           if-no-files-found: error
-          retention-days: 1
+          overwrite: true
+          retention-days: 14

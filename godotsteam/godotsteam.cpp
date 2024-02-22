@@ -45,10 +45,6 @@ Steam::Steam():
 	callbackNewLaunchURLParameters(this, &Steam::new_launch_url_parameters),
 	callbackTimedTrialStatus(this, &Steam::timed_trial_status),
 
-	// Apps List callbacks ///////////////////////
-	callbackAppInstalled(this, &Steam::app_installed),
-	callbackAppUninstalled(this, &Steam::app_uninstalled),
-
 	// Friends callbacks ////////////////////////
 	callbackAvatarLoaded(this, &Steam::avatar_loaded),
 	callbackAvatarImageLoaded(this, &Steam::avatar_image_loaded),
@@ -613,75 +609,6 @@ void Steam::uninstallDLC(uint32_t dlc_id){
 	if(SteamApps() != NULL){
 		SteamApps()->UninstallDLC((AppId_t)dlc_id);
 	}
-}
-
-
-/////////////////////////////////////////////////
-///// APP LISTS
-/////////////////////////////////////////////////
-//
-// This is a restricted interface that can only be used by previously approved apps, contact your Steam Account Manager if you believe you need access to this API.
-//!
-// Get the number of installed apps for this player.
-uint32 Steam::getNumInstalledApps(){
-	if(SteamAppList() == NULL){
-		return 0;
-	}
-	return SteamAppList()->GetNumInstalledApps();
-}
-
-// Get a list of app IDs for installed apps for this player.
-Array Steam::getInstalledApps(uint32 max_app_ids){
-	Array installed_apps;
-	if(SteamAppList() != NULL){
-		uint32 *app_ids = nullptr;
-		uint32 these_apps = SteamAppList()->GetInstalledApps(app_ids, max_app_ids);
-		// Which is greater?
-		if(these_apps < max_app_ids){
-			max_app_ids = these_apps;
-		}
-		// Parse it
-		for(uint32 i = 0; i < max_app_ids; i++){
-			installed_apps.append(app_ids[i]);
-		}
-	}
-	return installed_apps;
-}
-
-// Get a given app ID's name.
-String Steam::getAppName(uint32_t app_id, int name_max){
-	String app_name;
-	if(SteamAppList() != NULL){
-		char* app_buffer = new char[name_max];
-		int buffer_size = SteamAppList()->GetAppName((AppId_t)app_id, app_buffer, name_max);
-		if(buffer_size != 0){
-			app_name += app_buffer;
-		}
-		delete[] app_buffer;
-	}
-	return app_name;
-}
-
-// Get a given app ID's install directory.
-String Steam::getAppListInstallDir(uint32_t app_id, int name_max){
-	String directory_name;
-	if(SteamAppList() != NULL){
-		char* directory_buffer = new char[name_max];
-		int buffer_size = SteamAppList()->GetAppInstallDir((AppId_t)app_id, directory_buffer, name_max);
-		if(buffer_size != 0){
-			directory_name += directory_buffer;
-		}
-		delete[] directory_buffer;
-	}
-	return directory_name;
-}
-
-// Get a given app ID's build.
-int Steam::getAppListBuildId(uint32_t app_id){
-	if(SteamAppList() == NULL){
-		return 0;
-	}
-	return SteamAppList()->GetAppBuildId((AppId_t)app_id);
 }
 
 
@@ -8764,6 +8691,14 @@ bool Steam::dismissFloatingGamepadTextInput(){
 	return SteamUtils()->DismissFloatingGamepadTextInput();
 }
 
+// Dismisses the full-screen text input dialog.
+bool Steam::dismissGamepadTextInput() {
+	if (SteamUtils() == NULL) {
+		return false;
+	}
+	return SteamUtils()->DismissGamepadTextInput();
+}
+
 
 /////////////////////////////////////////////////
 ///// VIDEO
@@ -8844,22 +8779,6 @@ void Steam::timed_trial_status(TimedTrialStatus_t* call_data){
 	uint32 seconds_allowed = call_data->m_unSecondsAllowed;
 	uint32 seconds_played = call_data->m_unSecondsPlayed;
 	emit_signal("timed_trial_status", app_id, is_offline, seconds_allowed, seconds_played);
-}
-
-// APPS LIST CALLBACKS ///////////////////////////
-//
-// Sent when a new app is installed.
-void Steam::app_installed(SteamAppInstalled_t* call_data){
-	uint32_t app_id = (uint32_t)call_data->m_nAppID;
-	uint32_t install_folder_index = call_data->m_iInstallFolderIndex;
-	emit_signal("app_installed", app_id, install_folder_index);
-}
-
-// Sent when an app is uninstalled.
-void Steam::app_uninstalled(SteamAppUninstalled_t* call_data){
-	uint32_t app_id = (uint32_t)call_data->m_nAppID;
-	uint32_t install_folder_index = call_data->m_iInstallFolderIndex;
-	emit_signal("app_uninstalled", app_id, install_folder_index);	
 }
 
 // FRIENDS CALLBACKS ////////////////////////////
@@ -10947,13 +10866,6 @@ void Steam::_register_methods(){
 	register_method("setDLCContext", &Steam::setDLCContext);
 	register_method("uninstallDLC", &Steam::uninstallDLC);
 
-	// APP LIST BIND METHODS ////////////////////
-	register_method("getNumInstalledApps", &Steam::getNumInstalledApps);
-	register_method("getInstalledApps", &Steam::getInstalledApps);
-	register_method("getAppName", &Steam::getAppName);
-	register_method("getAppListInstallDir", &Steam::getAppListInstallDir);
-	register_method("getAppListBuildId", &Steam::getAppListInstallDir);
-
 	// FRIENDS BIND METHODS /////////////////////
 	register_method("activateGameOverlay", &Steam::activateGameOverlay);
 	register_method("activateGameOverlayInviteDialog", &Steam::activateGameOverlayInviteDialog);
@@ -11698,6 +11610,7 @@ void Steam::_register_methods(){
 	register_method("startVRDashboard", &Steam::startVRDashboard);	
 	register_method("isSteamRunningOnSteamDeck", &Steam::isSteamRunningOnSteamDeck);
 	register_method("dismissFloatingGamepadTextInput", &Steam::dismissFloatingGamepadTextInput);
+	register_method("dismissGamepadTextInput", &Steam::dismissGamepadTextInput);
 
 	// VIDEO BIND METHODS ///////////////////////
 	register_method("getOPFSettings", &Steam::getOPFSettings);

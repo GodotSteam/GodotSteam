@@ -98,13 +98,6 @@ public:
 	bool markContentCorrupt(bool missing_files_only);
 	bool setDLCContext(uint32_t app_id);
 	void uninstallDLC(uint32_t dlc_id);
-	
-	// App Lists ////////////////////////////
-	uint32 getNumInstalledApps();
-	Array getInstalledApps(uint32 max_app_ids);
-	String getAppName(uint32_t app_id, int name_max);
-	String getAppListInstallDir(uint32_t app_id, int name_max);
-	int getAppListBuildId(uint32_t app_id);
 
 	// Friends //////////////////////////////
 	void activateGameOverlay(String type);
@@ -854,6 +847,7 @@ public:
 	void startVRDashboard();
 	bool isSteamRunningOnSteamDeck();
 	bool dismissFloatingGamepadTextInput();
+	bool dismissGamepadTextInput();
 
 	// Video ////////////////////////////////
 	void getOPFSettings(uint32_t app_id);
@@ -938,10 +932,6 @@ private:
 	STEAM_CALLBACK(Steam, file_details_result, FileDetailsResult_t, callbackFileDetailsResult);
 	STEAM_CALLBACK(Steam, new_launch_url_parameters, NewUrlLaunchParameters_t, callbackNewLaunchURLParameters);
 	STEAM_CALLBACK(Steam, timed_trial_status, TimedTrialStatus_t, callbackTimedTrialStatus);
-
-	// Apps List callbacks //////////////////
-	STEAM_CALLBACK(Steam, app_installed, SteamAppInstalled_t, callbackAppInstalled);
-	STEAM_CALLBACK(Steam, app_uninstalled, SteamAppUninstalled_t, callbackAppUninstalled);
 
 	// Friends callbacks ////////////////////
 	STEAM_CALLBACK(Steam, avatar_loaded, AvatarImageLoaded_t, callbackAvatarLoaded);

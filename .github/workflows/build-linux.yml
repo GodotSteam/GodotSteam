@@ -18,7 +18,7 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       # Checkout current source of GodotSteam
@@ -109,4 +109,5 @@ jobs:
           name: linux-plugin
           path: bin/linuxbsd/libgodotsteam.so
           if-no-files-found: error
-          retention-days: 1
+          overwrite: true
+          retention-days: 14

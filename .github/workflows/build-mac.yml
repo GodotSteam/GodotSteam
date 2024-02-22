@@ -110,3 +110,6 @@ jobs:
         with:
           name: macos-plugin-universal
           path: dylibs/libgodotsteam.dylib
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 14
