@@ -149,6 +149,7 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install scons
           scons --version
+
       - name: Load .scons_cache directory
         id: godot-extension-cache
         uses: actions/cache@v4
@@ -202,11 +203,9 @@ jobs:
           cp -n 'README.md' 'LICENSE.txt' 'godotsteam.gdextension' project/addons/godotsteam
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: gdextension
           path: |
             project/
-          if-no-files-found: error
-          overwrite: true
           retention-days: 14
