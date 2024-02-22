@@ -56,8 +56,8 @@ jobs:
 
       - name: Copy Steamworks
         run: |
-          robocopy steamworks/public godotsteam/sdk
-          robocopy steamworks/redistributable_bin godotsteam/sdk
+          robocopy steamworks/public/steam godot/modules/godotsteam/sdk/public/steam /e
+          robocopy steamworks/redistributable_bin godot/modules/godotsteam/sdk/redistributable_bin /e
           EXIT 0
 
       # Compile Godot-CPP
