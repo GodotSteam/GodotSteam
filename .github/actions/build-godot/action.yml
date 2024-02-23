@@ -3,10 +3,10 @@ description: Build Godot with the provided options
 inputs:
   binary:
     description: The finished binary's name
-    default: false
+    default: ''
   buildroot:
     description: Build root to add to the PATH before building Godot, if Linux
-    default: ""
+    default: ''
   target:
     description: The SCONS target (debug/release_debug/release)
     default: "debug"
@@ -18,9 +18,9 @@ inputs:
     required: false
   export:
     description: New GodotSteam export name
-    default: false
+    default: ''
   sconsflags:
-    default: ""
+    default: ''
   scons-cache:
     description: The scons cache path
     default: "${{ github.workspace }}/.scons-cache/"
@@ -40,11 +40,14 @@ runs:
           SCONS_CACHE_LIMIT: ${{ inputs.scons-cache-limit }}
       run: |
         echo "Building with flags:" ${{ env.SCONSFLAGS }}
-        if [[ ${{ inputs.buildroot != '' }} ]]; then
+        if [[ ${{ inputs.buildroot  != '' }} ]]; then
           echo "Using buildroot at ${{ inputs.buildroot }}"
         fi
         ${{ inputs.buildroot != '' && format('PATH={0}:$PATH', inputs.buildroot) || '' }} scons p=${{ inputs.platform }} production=yes target=${{ inputs.target }} tests=${{ inputs.tests }} ${{ env.SCONSFLAGS }}
         ls -l bin/
-        if [[ ${{ inputs.binary != '' && inputs.export != '' }} ]]; then
-          mv bin/${{ inputs.binary }} bin/${{ inputs.export }}
-        fi
+
+    - name: Rename Export
+      shell: bash
+      if: ${{ inputs.binary != '' }}
+      run: |
+        mv bin/${{ inputs.binary }} bin/${{ inputs.export }}

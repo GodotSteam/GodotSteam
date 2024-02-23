@@ -10,6 +10,9 @@ on:
       zip_prefix:
         required: true
         type: string
+      zip_tag:
+        required: true
+        type: string
 
 
 jobs:
@@ -19,36 +22,47 @@ jobs:
     name: Create ${{ inputs.platform }} Bundle
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download ${{ inputs.platform }} Editor
         uses: actions/download-artifact@v4
         with:
-          name: ${{ artifact_type }}-editor
+          name: ${{ inputs.artifact_type }}-editor
           path: files
 
       - name: Download ${{ inputs.platform }} Release Template
+        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
-          name: ${{ artifact_type }}-release-template
+          name: ${{ inputs.artifact_type }}-release-template
           path: files
 
       - name: Download ${{ inputs.platform }} Debug Template
+        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
-          name: ${{ artifact_type }}-debug-template
+          name: ${{ inputs.artifact_type }}-debug-template
           path: files
 
+      - name: Download ${{ inputs.platform }} Template App
+        if: ${{ inputs.platform == 'MacOS' || inputs.platform == 'MacOS Mono' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_type }}-template-app
+          path: files
+        
       - name: Download ${{ inputs.platform }} Steam Redistributable
         uses: actions/download-artifact@v4
         with:
-          name: ${{ artifact_type }}-steam
+          name: ${{ inputs.artifact_type }}-steam
           path: files
 
       - name: Create ${{ inputs.platform }} Bundle
         run: |
-          zip -j ${{ inputs.zip_prefix }}-${{ env.ZIP_TAG }}.zip files/*
+          zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
 
       - name: Upload ${{ inputs.platform }} Bundle Artifact
         uses: ./.github/actions/upload-artifact
         with:
-          name: ${{ inputs.zip_prefix }}-${{ env.ZIP_TAG }}.zip
-          path: ${{ inputs.zip_prefix }}-${{ env.ZIP_TAG }}.zip
+          name: ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip
+          path: ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip

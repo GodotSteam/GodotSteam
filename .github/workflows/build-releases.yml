@@ -35,9 +35,10 @@ jobs:
 
   build-linux:
     needs: [env-setup]
-    uses: ./.github/workflows/build-linux-artifact.yml
+    uses: ./.github/workflows/build-artifact-linux.yml
     with:
       godot_tag: ${{ inputs.godot_tag }}
+      godot_version: ${{ needs.env-setup.outputs.godot_version }}
       mono_tag: ${{ inputs.mono_tag }}
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
     secrets:
@@ -51,12 +52,23 @@ jobs:
       artifact_type: linux
       platform: Linux
       zip_prefix: linux64
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
+
+  create-linux-mono-bundle:
+    needs: [env-setup, build-linux]
+    uses: ./.github/workflows/create-bundle.yml
+    with:
+      artifact_type: linux-mono
+      platform: Linux Mono
+      zip_prefix: linux64.mono
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
   build-windows:
     needs: [env-setup]
-    uses: ./.github/workflows/build-windows-artifact.yml
+    uses: ./.github/workflows/build-artifact-windows.yml
     with:
       godot_tag: ${{ inputs.godot_tag }}
+      godot_version: ${{ needs.env-setup.outputs.godot_version }}
       mono_tag: ${{ inputs.mono_tag }}
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
     secrets:
@@ -70,6 +82,7 @@ jobs:
       artifact_type: windows32
       platform: Windows32
       zip_prefix: win32
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
   create-windows64-bundle:
     needs: [env-setup, build-windows]
@@ -78,12 +91,14 @@ jobs:
       artifact_type: windows64
       platform: Windows64
       zip_prefix: win64
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
   build-macos:
     needs: [env-setup]
-    uses: ./.github/workflows/build-macos-artifact.yml
+    uses: ./.github/workflows/build-artifact-macos.yml
     with:
       godot_tag: ${{ inputs.godot_tag }}
+      godot_version: ${{ needs.env-setup.outputs.godot_version }}
       mono_tag: ${{ inputs.mono_tag }}
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
     secrets:
@@ -97,15 +112,27 @@ jobs:
       artifact_type: macos
       platform: MacOS
       zip_prefix: macos
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
+
+  crate-macos-mono-bundle:
+    needs: [env-setup, build-macos]
+    uses: ./.github/workflows/create-bundle.yml
+    with:
+      artifact_type: macos-mono
+      platform: MacOS Mono
+      zip_prefix: macos-mono
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
   create-template-bundle:
     needs: [env-setup, build-linux, build-windows, build-macos]
     uses: ./.github/workflows/create-bundle-templates.yml
     with:
       is_mono: false
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
   create-mono-template-bundle:
     needs: [env-setup, build-linux, build-macos]
     uses: ./.github/workflows/create-bundle-templates.yml
     with:
       is_mono: true
+      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}

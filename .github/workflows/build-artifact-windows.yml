@@ -4,13 +4,13 @@ on:
       godot_tag:
         required: true
         type: string
+      godot_version:
+        required: true
+        type: string
       mono_tag:
         required: true
         type: string
       steamworks_sdk_tag:
-        required: true
-        type: string
-      windows_version:
         required: true
         type: string
     secrets:
@@ -24,32 +24,42 @@ jobs:
   build-windows:
     runs-on: windows-latest
 
-    name: Windows ${{ matrxi.name }}
+    name: Windows ${{ matrix.name }}
     
     env:
-      SCONSFLAGS: mono_static=yes
+      SCONSFLAGS:
 
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Editor and Templates (64-bit)
-            bits: 32
+            bits: x86_64
             build-mono: false
             cache-name: windows64
-            editor_name: godot.windows.editor.x86_64.exe
-            editor_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.editor.windows.64.exe
-            steam_redist: steam_api64.dll
-            steam_redist_bin: win64/
+            editor-name: godot.windows.editor.x86_64.exe
+            editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.windows.64.exe
+            debug-name: godot.windows.template_debug.x86_64.exe
+            debug-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.debug.template.windows.64.exe
+            release-name: godot.windows.template_release.x86_64.exe
+            release-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.template.windows.64.exe
+            steam-redist: steam_api64.dll
+            steam-redist-bin: win64/
+            steam-redist-bits: 64
 
-          -name: Editor and Templates (32-bit)
-            bits: 64
+          - name: Editor and Templates (32-bit)
+            bits: x86_32
             build-mono: false
             cache-name: windows32
-            editor_name: godot.windows.editor.x86_32.exe
-            editor_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.editor.windows.32.exe
-            steam_redist: steam_api.dll
-            steam_redist_bin: ""
+            editor-name: godot.windows.editor.x86_32.exe
+            editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.windows.32.exe
+            debug-name: godot.windows.template_debug.x86_32.exe
+            debug-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.debug.template.windows.32.exe
+            release-name: godot.windows.template_release.x86_32.exe
+            release-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.template.windows.32.exe
+            steam-redist: steam_api.dll
+            steam-redist-bin: ""
+            steam-redist-bits: 32
 
     steps:
       - uses: actions/checkout@v4
@@ -101,17 +111,17 @@ jobs:
       - name: ${{ matrix.bits }}-bit Editor Compilation
         uses: ./.github/actions/build-godot
         with:
-          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} bits=${{ matrix.bits }}
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} arch=${{ matrix.bits }}
           platform: windows
           target: editor
-          binary: ${{ matrix.editor_name }}
-          export: ${{ matrix.editor_name_new }}
+          binary: ${{ matrix.editor-name }}
+          export: ${{ matrix.editor-name-new }}
 
       - name: Upload ${{ matrix.bits }}-bit Editor
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}-editor
-          path: ./bin/${{ matrix.editor_name_new }}
+          path: ./bin/${{ matrix.editor-name-new }}
 
       - name: Clear bin
         shell: bash
@@ -122,32 +132,32 @@ jobs:
       - name: ${{ matrix.bits }}-bit Debug Template Compilation (target=template_debug)
         uses: ./.github/actions/build-godot
         with:
-          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} bits=${{ matrix.bits }}
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} arch=${{ matrix.bits }}
           platform: windows
           target: template_debug
-          binary: ${{ matrix.debug_name }}
-          export: ${{ matrix.debug_name_new }}
+          binary: ${{ matrix.debug-name }}
+          export: ${{ matrix.debug-name-new }}
 
       - name: Upload ${{ matrix.bits }}-bit Debug Template
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}-debug-template
-          path: ./bin/${{ matrix.debug_name_new }}
+          path: ./bin/${{ matrix.debug-name-new }}
 
       - name: ${{ matrix.bits }}-bit Release Template Compilation (target=template_release)
         uses: ./.github/actions/build-godot
         with:
-          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} bits=${{ matrix.bits }} debug_symbols=no
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} arch=${{ matrix.bits }} debug_symbols=no
           platform: windows
           target: template_release
-          binary: ${{ matrix.release_name }}
-          export: ${{ matrix.release_name_new }}
+          binary: ${{ matrix.release-name }}
+          export: ${{ matrix.release-name-new }}
 
       - name: Upload ${{ matrix.bits }}-bit Release Template
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}-release-template
-          path: ./bin/${{ matrix.release_name_new }}
+          path: ./bin/${{ matrix.release-name-new }}
 
       - name: Clear bin
         shell: bash
@@ -155,9 +165,9 @@ jobs:
           rm -rf bin
 
       # Upload the Steam redistributable for packaging
-      - name: Upload Windows ${{ matrix.bits}}-bit Steam File
+      - name: Upload Windows ${{ matrix.steam-redist-bits}}-bit Steam File
         uses: ./.github/actions/upload-steam-redistributable
         with:
-          name: windows${{ matrix.bits }}-steam
-          path: ${{ matrix.steam_redist_bin }}
-          redist: ${{ matrix.steam_redist }}
+          name: windows${{ matrix.steam-redist-bits }}-steam
+          path: ${{ matrix.steam-redist-bin }}
+          redist: ${{ matrix.steam-redist }}

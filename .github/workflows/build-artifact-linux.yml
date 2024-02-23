@@ -4,9 +4,12 @@ on:
       godot_tag:
         required: true
         type: string
+      godot_version:
+        required: true
+        type: string
       mono_tag:
         required: true
-        type: string:
+        type: string
       steamworks_sdk_tag:
         required: true
         type: string
@@ -33,22 +36,22 @@ jobs:
           - name: Editor and Templates
             build-mono: false
             cache-name: linux
-            editor_name: godot.linuxbsd.editor.x86_64
-            editor_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.editor.linux.x86_64
-            debug_name: godot.linuxbsd.template_debug.x86_64
-            debug_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.debug.template.linux.x86_64
-            release_name: godot.linuxbsd.template_release.x86_64
-            release_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.template.linux.x86_64
+            editor-name: godot.linuxbsd.editor.x86_64
+            editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.linux.x86_64
+            debug-name: godot.linuxbsd.template_debug.x86_64
+            debug-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.debug.template.linux.x86_64
+            release-name: godot.linuxbsd.template_release.x86_64
+            release-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.template.linux.x86_64
 
           - name: Editor and Templates with Mono
             build-mono: true
             cache-name: linux-mono
-            editor_name: godot.linuxbsd.editor.x86_64.mono
-            editor_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.editor.linux.mono.x86_64
-            debug_name: godot.linuxbsd.template_debug.x86_64.mono
-            debug_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.debug.template.linux.x86_64
-            release_name: godot.linuxbsd.template_release.x86_64.mono
-            release_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.template.linux.x86_64
+            editor-name: godot.linuxbsd.editor.x86_64.mono
+            editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.linux.mono.x86_64
+            debug-name: godot.linuxbsd.template_debug.x86_64.mono
+            debug-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.debug.template.linux.x86_64
+            release-name: godot.linuxbsd.template_release.x86_64.mono
+            release-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.template.linux.x86_64
 
     steps:
       - uses: actions/checkout@v4
@@ -97,7 +100,7 @@ jobs:
         uses: ./.github/actions/setup-cache
         with:
           cache-name: ${{ matrix.cache-name }}
-          godot-base: inputs.godot_tag
+          godot-base: ${{ inputs.godot_tag }}
         continue-on-error: true
 
       # Setup Python and SCONS
@@ -110,8 +113,8 @@ jobs:
         uses: ./.github/actions/setup-mono
         with:
           mono-release: "linux-x86_64"
-          mono-bcl: "bcl_desktop"
-          mono-tag: inputs.mono_tag
+          mono-bcl: "bcl-desktop"
+          mono-build-tag: ${{ inputs.mono_tag }}
 
       - name: Mono Precompilation
         if: ${{ matrix.build-mono }}
@@ -120,6 +123,7 @@ jobs:
           buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
           sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} module_mono_enabled=yes mono_glue=no copy_mono_root=yes mono_bcl=$HOME/mono-bcls/desktop-bcl/net_4_x mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release
           platform: linuxbsd
+          target: editor
 
       # Generate Mono glue
       - name: Generate Mono glue code
@@ -144,14 +148,14 @@ jobs:
           sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} bits=64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release' || '' }}
           platform: linuxbsd
           target: editor
-          binary: ${{ matrix.editor_name }}
-          export: ${{ matrix.editor_name_new }}
+          binary: ${{ matrix.editor-name }}
+          export: ${{ matrix.editor-name-new }}
 
       - name: Upload Editor
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}-editor
-          path: ./bin/${{ matrix.editor_name_new }}
+          path: ./bin/${{ matrix.editor-name-new }}
 
       - name: Clear bin
         run: |
@@ -165,14 +169,14 @@ jobs:
           sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} bits=64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release' || '' }}
           platform: linuxbsd
           target: template_debug
-          binary: ${{ matrix.debug_name }}
-          export: ${{ matrix.debug_name_new }}
+          binary: ${{ matrix.debug-name }}
+          export: ${{ matrix.debug-name-new }}
 
       - name: Upload Debug Template
         uses: ./.github/actions/upload-artifact
         with:
-          name: ${{ matrix.cache-name }}-debug-template-64
-          path: ./bin/${{ matrix.debug_name_new }}
+          name: ${{ matrix.cache-name }}-debug-template
+          path: ./bin/${{ matrix.debug-name-new }}
 
       - name: Release Template Compilation (target=template_release)
         uses: ./.github/actions/build-godot
@@ -181,14 +185,14 @@ jobs:
           sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} bits=64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release' || '' }} debug_symbols=no
           platform: linuxbsd
           target: template_release
-          binary: ${{ matrix.release_name }}
-          export: ${{ matrix.release_name_new }}
+          binary: ${{ matrix.release-name }}
+          export: ${{ matrix.release-name-new }}
 
       - name: Upload Release Template
         uses: ./.github/actions/upload-artifact
         with:
-          name: ${{ matrix.cache-name }}-release-template-64
-          path: ./bin/${{ matrix.release_name_new }}
+          name: ${{ matrix.cache-name }}-release-template
+          path: ./bin/${{ matrix.release-name-new }}
 
       - name: Clear bin
         run: |
@@ -198,6 +202,6 @@ jobs:
       - name: Upload Linux Steam File
         uses: ./.github/actions/upload-steam-redistributable
         with:
-          name: linux-steam
+          name: ${{ matrix.cache-name }}-steam
           path: linux64/
           redist: libsteam_api.so

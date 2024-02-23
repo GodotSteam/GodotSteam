@@ -4,6 +4,9 @@ on:
       is_mono:
         required: true
         type: boolean
+      zip_tag:
+        required: true
+        type: string
 
 
 jobs:
@@ -13,6 +16,8 @@ jobs:
     name: Create Template Bundle
 
     steps:
+      - uses: actions/checkout@v4
+
       # Windows templates and Steam redistributables
       - name: Download Windows 64-bit Release Template
         if: ${{ inputs.is_mono != true }}
@@ -32,14 +37,14 @@ jobs:
         if: ${{ inputs.is_mono != true }}
         uses: actions/download-artifact@v4
         with:
-          name: win64-debug-template
+          name: windows64-debug-template
           path: files
 
       - name: Download Windows 32-bit Debug Template
         if: ${{ inputs.is_mono != true }}
         uses: actions/download-artifact@v4
         with:
-          name: win64-debug-template
+          name: windows64-debug-template
           path: files
 
       - name: Download Windows 64-bit Steam Redistributable
@@ -60,23 +65,23 @@ jobs:
       - name: Download Linux ${{ inputs.is_mono && 'Mono ' || '' }}Release Template
         uses: actions/download-artifact@v4
         with:
-          name: linux-${{ inputs.is_mono && 'mono-' || '' }}release-template-64
+          name: linux-${{ inputs.is_mono && 'mono-' || '' }}release-template
           path: files
 
       - name: Download Linux ${{ inputs.is_mono && 'Mono ' || '' }}Debug Template
         uses: actions/download-artifact@v4
         with:
-          name: linux-${{ inputs.is_mono && 'mono-' || '' }}debug-template-64
+          name: linux-${{ inputs.is_mono && 'mono-' || '' }}debug-template
           path: files
 
       - name: Download Linux Steam Redistributable
         uses: actions/download-artifact@v4
         with:
-          name: linux-libsteam-api-so
+          name: linux-steam
           path: files
 
       # Mac templates and Steam redistributable
-      - name: Download MacOS x86_64 ${{ inputs.is_mono && 'Mono ' || '' }}Release Template
+      - name: Download MacOS ${{ inputs.is_mono && 'Mono ' || '' }}Template App
         uses: actions/download-artifact@v4
         with:
           name: macos${{ inputs.is_mono && '-mono' || '' }}-template-app
@@ -88,12 +93,6 @@ jobs:
           name: macos-steam
           path: files
 
-      - name: Download MacOS ${{ inputs.is_mono && 'Mono ' || '' }}Template App
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-template-app
-          path: files
-
       - name: Create ${{ inputs.is_mono && 'Mono ' || '' }}Template Bundle
         run: |
           zip -j godotsteam-${{ env.ZIP_TAG }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip files/*
@@ -101,5 +100,5 @@ jobs:
       - name: Upload ${{ inputs.is_mono && 'Mono ' || '' }}Template Bundle Artifact
         uses: ./.github/actions/upload-artifact
         with:
-          name: godotsteam-${{ env.ZIP_TAG }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip
-          path: godotsteam-${{ env.ZIP_TAG }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip
+          name: godotsteam-${{ inputs.zip_tag }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip
+          path: godotsteam-${{ inputs.zip_tag }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip

@@ -10,6 +10,13 @@ on:
       steamworks_sdk_tag:
         required: true
         type: string
+    outputs:
+      godot_version:
+        description: The shortened Godot version for file names
+        value: ${{ jobs.env-setup.outputs.godot_version }}
+      zip_tag:
+        description: The full zip tag for releases
+        value: ${{ jobs.env-setup.outputs.zip_tag }}
 
 
 jobs:
@@ -19,8 +26,8 @@ jobs:
     name: Setup ENV Variables
     
     outputs:
-      zip_tag: ${{ steps.set_zip_tag.outputs.zip_tag }}
       godot_version: ${{ steps.set_godot_version.outputs.godot_version }}
+      zip_tag: ${{ steps.set_zip_tag.outputs.zip_tag }}
     
     steps:
       - name: Set The Zip Tag For Packaging
@@ -32,7 +39,8 @@ jobs:
           gtag=${{ inputs.godot_tag }}
           gtag=${gtag//[.]/}
           tag=g${gtag%-*}-s${sdktag:0-3}-gs${gsver//[.]/}
-          echo "ZIP_TAG=${tag}" >> $GITHUB_ENV
+          echo "Zip tag: ${tag}"
+          echo "zip_tag=${tag}" >> $GITHUB_OUTPUT
 
       - name: Set The Godot Version For Packaging
         id: set_godot_version
@@ -40,4 +48,5 @@ jobs:
           gv=${{ inputs.godot_tag }}
           gv=${gv//[.]/}
           gv=${gv%-*}
-          echo "GODOT_VERSION=${gv}" >> $GITHUB_ENV
+          echo "Godot version: ${gv}"
+          echo "godot_version=${gv}" >> $GITHUB_OUTPUT
