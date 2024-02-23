@@ -18,13 +18,22 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.5.1-mp)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions _(currently v4.6-mp)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.5.1 Changes**
-- Added: doc_classes folder for writing
-- Added: first tests for Github Actions
+**Version 4.6 Changes**
+- Changed: all-new Github Actions files with Mono attempt
+- Removed: demo has been removed and added to the GodotSteam Example repo instead
 
 [You can read more change-logs here](https://godotsteam.com/changelog/multiplayer_peer/).
+
+Compatibility
+---
+While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below. Newer API files (dll, so, dylib) _should_ still work for older versions.
+
+Steamworks SDK Version | GodotSteam Version
+---|---
+1.59 or newer | 4.6 or newer
+1.58a or older | 4.5.4 or older
 
 Known Issues
 ---
