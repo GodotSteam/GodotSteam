@@ -1,0 +1,43 @@
+on:
+  workflow_call:
+    inputs:
+      godot_tag:
+        required: true
+        type: string
+      godotsteam_version:
+        required: true
+        type: string
+      steamworks_sdk_tag:
+        required: true
+        type: string
+
+
+jobs:
+  env-setup:
+    runs-on: ubuntu-latest
+      
+    name: Setup ENV Variables
+    
+    outputs:
+      zip_tag: ${{ steps.set_zip_tag.outputs.zip_tag }}
+      godot_version: ${{ steps.set_godot_version.outputs.godot_version }}
+    
+    steps:
+      - name: Set The Zip Tag For Packaging
+        id: set_zip_tag
+        run: |
+          sdktag=${{ inputs.steamworks_sdk_tag }}
+          sdktag=${sdktag//[.]/}
+          gsver=${{ inputs.godotsteam_version }}
+          gtag=${{ inputs.godot_tag }}
+          gtag=${gtag//[.]/}
+          tag=g${gtag%-*}-s${sdktag:0-3}-gs${gsver//[.]/}
+          echo "ZIP_TAG=${tag}" >> $GITHUB_ENV
+
+      - name: Set The Godot Version For Packaging
+        id: set_godot_version
+        run: |
+          gv=${{ inputs.godot_tag }}
+          gv=${gv//[.]/}
+          gv=${gv%-*}
+          echo "GODOT_VERSION=${gv}" >> $GITHUB_ENV

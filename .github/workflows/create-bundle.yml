@@ -1,0 +1,54 @@
+on:
+  workflow_call:
+    inputs:
+      artifact_type:
+        required: true
+        type: string
+      platform:
+        required: true
+        type: string
+      zip_prefix:
+        required: true
+        type: string
+
+
+jobs:
+  create-bundle:
+    runs-on: ubuntu-latest
+
+    name: Create ${{ inputs.platform }} Bundle
+
+    steps:
+      - name: Download ${{ inputs.platform }} Editor
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ artifact_type }}-editor
+          path: files
+
+      - name: Download ${{ inputs.platform }} Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ artifact_type }}-release-template
+          path: files
+
+      - name: Download ${{ inputs.platform }} Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ artifact_type }}-debug-template
+          path: files
+
+      - name: Download ${{ inputs.platform }} Steam Redistributable
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ artifact_type }}-steam
+          path: files
+
+      - name: Create ${{ inputs.platform }} Bundle
+        run: |
+          zip -j ${{ inputs.zip_prefix }}-${{ env.ZIP_TAG }}.zip files/*
+
+      - name: Upload ${{ inputs.platform }} Bundle Artifact
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ inputs.zip_prefix }}-${{ env.ZIP_TAG }}.zip
+          path: ${{ inputs.zip_prefix }}-${{ env.ZIP_TAG }}.zip

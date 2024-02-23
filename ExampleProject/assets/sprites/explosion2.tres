@@ -1,8 +1,0 @@
-[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://oq04yrldx7jo"]
-
-[ext_resource type="Texture2D" uid="uid://dakxm7mi6a1oa" path="res://assets/texture/allSprites_retina.png" id="1_8iw6y"]
-
-[resource]
-atlas = ExtResource("1_8iw6y")
-region = Rect2(764, 508, 114, 112)
-filter_clip = true

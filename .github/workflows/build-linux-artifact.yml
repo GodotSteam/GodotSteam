@@ -1,22 +1,13 @@
 on:
   workflow_call:
     inputs:
-      steamworks_sdk_tag:
-        required: true
-        type: string
       godot_tag:
         required: true
         type: string
-      binary_name:
+      mono_tag:
         required: true
-        type: string
-      build_params:
-        required: true
-        type: string
-      artifact_name:
-        required: true
-        type: string
-      export_name:
+        type: string:
+      steamworks_sdk_tag:
         required: true
         type: string
     secrets:
@@ -28,61 +19,185 @@ on:
 
 jobs:
   build-linux:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+
+    name: Linux ${{ matrix.name }}
     
+    env:
+      SCONSFLAGS: mono_static=yes
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Editor and Templates
+            build-mono: false
+            cache-name: linux
+            editor_name: godot.linuxbsd.editor.x86_64
+            editor_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.editor.linux.x86_64
+            debug_name: godot.linuxbsd.template_debug.x86_64
+            debug_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.debug.template.linux.x86_64
+            release_name: godot.linuxbsd.template_release.x86_64
+            release_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.template.linux.x86_64
+
+          - name: Editor and Templates with Mono
+            build-mono: true
+            cache-name: linux-mono
+            editor_name: godot.linuxbsd.editor.x86_64.mono
+            editor_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.editor.linux.mono.x86_64
+            debug_name: godot.linuxbsd.template_debug.x86_64.mono
+            debug_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.debug.template.linux.x86_64
+            release_name: godot.linuxbsd.template_release.x86_64.mono
+            release_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.template.linux.x86_64
+
     steps:
-      # Checkout Godot
-      - name: Checkout Godot
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      # Download Godot to start
+      - name: Download Godot
+        uses: ./.github/actions/download-godot
         with:
-          repository: "godotengine/godot"
-          path: "godot"
-          ref: ${{ inputs.godot_tag }}
-      # Checkout current source of GodotSteam
-      - name: Checkout GodotSteam
-        uses: actions/checkout@v3
-        with:
-          path: "godotsteam"
-          ref: "godot4"
-      - name: Copy GodotSteam Module
-        run: |
-          cp -r godotsteam godot/modules/godotsteam
-      # Checkout Steamworks SDK
-      - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+          version: ${{ inputs.godot_tag }}
+
+      # Download GodotSteam
+      - name: Download GodotSteam
+        uses: ./.github/actions/download-godotsteam
+
+      # Download Steamworks SDK
+      - name: Download Steamworks SDK
+        uses: ./.github/actions/download-steamworks
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
           token: ${{ secrets.steamworks_sdk_repo_token }}
           ref: ${{ inputs.steamworks_sdk_tag }}
-      - name: Copy Steamworks
-        run: |
-          mkdir godot/modules/godotsteam/sdk/public
-          cp -r steamworks/public godot/modules/godotsteam/sdk
-          cp -r steamworks/redistributable_bin godot/modules/godotsteam/sdk
-      # Checkout GodotSteam Multiplayer Peer
-      - name: Checkout GodotSteam Multiplayer Peer
-        uses: actions/checkout@v3
+
+      # Download GodotSteam Multiplayer Peer
+      - name: Download GodotSteam Multiplayer Peer
+        uses: ./.github/actions/download-godotsteam-multiplayer
         with:
           path: "godotsteammultiplayer"
-      - name: Copy GodotSteam Multiplayer Module
-        run: |
-          cp -r godotsteammultiplayer godot/modules/godotsteammultiplayer
-      # Build it
-      - name: Build Linux Binary
-        working-directory: "godot"
-        run: |
-          PATH=/opt/x86_64-godot-linux-gnu_sdk-buildroot/bin:$PATH scons ${{ inputs.build_params }}
-          mv bin/${{ inputs.binary_name }} bin/${{ inputs.export_name }}
-      - name: Upload Linux Build
-        uses: actions/upload-artifact@v3
+
+      # Mono prep
+      - name: Move Shared Library For Mono
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/prep-mono
         with:
-          name: ${{ inputs.artifact_name }}
-          path: godot/bin/${{ inputs.export_name }}
-          retention-days: 1
+          path: "linux64"
+          lib: "libsteam_api.so"
+
+      # Setting up the Linux buildroot for older versions
+      - name: Setup Linux Buildroot (x64_64)
+        uses: ./.github/actions/prep-buildroot
+        with:
+          toolchain-name: "x86_64-godot-linux-gnu_sdk-buildroot"
+
+      # Get that cache money
+      - name: Setup Build Cache
+        uses: ./.github/actions/setup-cache
+        with:
+          cache-name: ${{ matrix.cache-name }}
+          godot-base: inputs.godot_tag
+        continue-on-error: true
+
+      # Setup Python and SCONS
+      - name: Setup Python and SCONS
+        uses: ./.github/actions/setup-dependencies
+
+      # Setup Mono
+      - name: Setup Mono (x86_64)
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/setup-mono
+        with:
+          mono-release: "linux-x86_64"
+          mono-bcl: "bcl_desktop"
+          mono-tag: inputs.mono_tag
+
+      - name: Mono Precompilation
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} module_mono_enabled=yes mono_glue=no copy_mono_root=yes mono_bcl=$HOME/mono-bcls/desktop-bcl/net_4_x mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release
+          platform: linuxbsd
+
+      # Generate Mono glue
+      - name: Generate Mono glue code
+        if: ${{ matrix.build-mono }}
+        run: |
+          DRI_PRIME=0 xvfb-run "./bin/godot.x11.tools.64.mono" --generate-mono-glue modules/mono/glue || true
+
+      - name: Set Mono Scons flags
+        if: ${{ matrix.build-mono }}
+        run: |
+          echo "MONO_SCONSFLAGS=module_mono_enabled=yes mono_glue=yes copy_mono_root=yes mono_bcl=$HOME/mono-bcls/desktop-bcl/net_4_x" >> $GITHUB_ENV
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Compiling editor
+      - name: Editor Compilation
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} bits=64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release' || '' }}
+          platform: linuxbsd
+          target: editor
+          binary: ${{ matrix.editor_name }}
+          export: ${{ matrix.editor_name_new }}
+
+      - name: Upload Editor
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-editor
+          path: ./bin/${{ matrix.editor_name_new }}
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Compiling templates
+      - name: Debug Template Compilation (target=template_debug)
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} bits=64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release' || '' }}
+          platform: linuxbsd
+          target: template_debug
+          binary: ${{ matrix.debug_name }}
+          export: ${{ matrix.debug_name_new }}
+
+      - name: Upload Debug Template
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-debug-template-64
+          path: ./bin/${{ matrix.debug_name_new }}
+
+      - name: Release Template Compilation (target=template_release)
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} bits=64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-linux-x86_64-release' || '' }} debug_symbols=no
+          platform: linuxbsd
+          target: template_release
+          binary: ${{ matrix.release_name }}
+          export: ${{ matrix.release_name_new }}
+
+      - name: Upload Release Template
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-release-template-64
+          path: ./bin/${{ matrix.release_name_new }}
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Upload the Steam redistributable for packaging
       - name: Upload Linux Steam File
-        uses: actions/upload-artifact@v3
+        uses: ./.github/actions/upload-steam-redistributable
         with:
-          name: linux-libsteam-api-so
-          path: godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so
-          retention-days: 1
+          name: linux-steam
+          path: linux64/
+          redist: libsteam_api.so

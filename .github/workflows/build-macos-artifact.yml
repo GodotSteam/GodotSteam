@@ -1,19 +1,13 @@
 on:
   workflow_call:
     inputs:
-      steamworks_sdk_tag:
-        required: true
-        type: string
       godot_tag:
         required: true
         type: string
-      build_params:
+      mono_tag:
         required: true
-        type: string
-      artifact_name:
-        required: true
-        type: string
-      export_name:
+        type: string:
+      steamworks_sdk_tag:
         required: true
         type: string
     secrets:
@@ -26,102 +20,232 @@ on:
 jobs:
   build-macos:
     runs-on: macos-latest
-    
+
+    name: Mac ${{ matrix.name }}
+
+    env:
+      SCONSFLAGS: --jobs=$(sysctl -n hw.logicalcpu)
+      STRIP: "strip -u -r"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Editor and Templates
+            build_mono: false
+            cache_name: macos
+            editor_name: godot.macos.editor.universal
+            debug_name: godot.linuxbsd.template_debug.x86_64
+            debug_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.debug.template.linux.x86_64
+            release_name: godot.linuxbsd.template_release.x86_64
+            release_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.template.linux.x86_64
+
+          - name: Editor and Templates with Mono
+            build-mono: true
+            cache_name: macos-mono
+            editor_name: godot.macos.editor.universal.mono
+            debug_name: godot.macos.template_debug.x86_64.mono
+            debug_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.debug.template.macos.x86_64
+            release_name: godot.macos.template_release.x86_64.mono
+            release_name_new: godotsteam.multiplayer.${{ env.GODOT_VERSION }}.template.macos.x86_64
+
     steps:
-      # Checkout Godot
-      - name: Checkout Godot
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      # Download Godot to start
+      - name: Download Godot
+        uses: ./.github/actions/download-godot
         with:
-          repository: "godotengine/godot"
-          path: "godot"
-          ref: ${{ inputs.godot_tag }}
-      # Checkout current source of GodotSteam
-      - name: Checkout GodotSteam
-        uses: actions/checkout@v3
-        with:
-          path: "godotsteam"
-          ref: "godot4"
-      - name: Copy GodotSteam Module
-        run: |
-          cp -r godotsteam godot/modules/godotsteam
-      # Checkout Steamworks SDK
-      - name: Checkout Steamworks SDK
-        uses: actions/checkout@v3
+          version: ${{ inputs.godot_tag }}
+
+      # Download GodotSteam
+      - name: Download GodotSteam
+        uses: ./.github/actions/download-godotsteam
+
+      # Download Steamworks SDK
+      - name: Download Steamworks SDK
+        uses: ./.github/actions/download-steamworks
         with:
           path: "steamworks"
           repository: ${{ secrets.steamworks_sdk_repo }}
           token: ${{ secrets.steamworks_sdk_repo_token }}
           ref: ${{ inputs.steamworks_sdk_tag }}
-      - name: Copy Steamworks
-        run: |
-          cp -r steamworks/public godot/modules/godotsteam/sdk
-          cp -r steamworks/redistributable_bin godot/modules/godotsteam/sdk
-          ls -la godot/modules/godotsteam/sdk
-      # Checkout GodotSteam Multiplayer Peer
-      - name: Checkout GodotSteam Multiplayer Peer
-        uses: actions/checkout@v3
+
+      # Download GodotSteam Multiplayer Peer
+      - name: Download GodotSteam Multiplayer Peer
+        uses: ./.github/actions/download-godotsteam-multiplayer
         with:
           path: "godotsteammultiplayer"
-      - name: Copy GodotSteam Multiplayer Module
-        run: |
-          cp -r godotsteammultiplayer godot/modules/godotsteammultiplayer
-      # Install the Vulkan SDK, script copied from the official Godot build scripts.
-      - name: Install Vulkan SDK
-        run: |
-          set -euo pipefail
-          IFS=$'\n\t'
-          # Download and install the Vulkan SDK.
-          curl -L "https://sdk.lunarg.com/sdk/download/latest/mac/vulkan-sdk.dmg" -o /tmp/vulkan-sdk.dmg
-          hdiutil attach /tmp/vulkan-sdk.dmg -mountpoint /Volumes/vulkan-sdk
-          /Volumes/vulkan-sdk/InstallVulkan.app/Contents/MacOS/InstallVulkan \
-              --accept-licenses --default-answer --confirm-command install
-          cnt=5
-          until hdiutil detach -force /Volumes/vulkan-sdk
-          do
-             [[ cnt -eq "0" ]] && break
-             sleep 1
-             ((cnt--))
-          done
-          rm -f /tmp/vulkan-sdk.dmg
-          echo 'Vulkan SDK installed successfully!'
-      - name: Install Build Tools
-        run: |
-          brew install scons yasm
-      - name: Build MacOS
-        working-directory: "godot"
-        run: |
-          scons ${{ inputs.build_params }}
-      - name: Upload MacOS Build
-        uses: actions/upload-artifact@v3
+
+      # Mono prep
+      - name: Move Shared Library For Mono
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/prep-mono
         with:
-          name: ${{ inputs.artifact_name }}
-          path: godot/bin/${{ inputs.export_name }}
-          if-no-files-found: error
-          retention-days: 1
-      - name: Upload MacOS Steam Dylib
-        uses: actions/upload-artifact@v3
+          path: "osx"
+          lib: "libsteam_api.dylib"
+
+      # Download and install Vulkan
+      - name: Download Vulkan SDK
+        uses: ./.github/actions/download-vulkan
+
+      # Get that cache money
+      - name: Setup Build Cache
+        uses: ./.github/actions/setup-cache
         with:
-          name: macos-libsteam-api-dylib
-          path: godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib
-          if-no-files-found: error
-          retention-days: 1
-      - name: Zip the MacOS Apps
+          cache-name: ${{ matrix.cache-name }}
+          godot-base: inputs.godot_tag
+        continue-on-error: true
+
+      # Setup Python and SCONS
+      - name: Setup Python and SCONS
+        uses: ./.github/actions/setup-dependencies
+
+      # Setup Mono
+      - name: Setup Mono (x86_64)
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/setup-mono
+        with:
+          mono-release: "osx-x86_64"
+          mono-bcl: "bcl-desktop"
+
+      - name: Setup Mono (arm64)
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/setup-mono
+        with:
+          mono-release: "osx-arm64"
+
+      - name: Mono precompilation
+        if: ${{ matrix.build-mono }}
+        uses: ./.github/actions/build-godot
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} module_mono_enabled=yes mono_glue=no
+          platform: macos
+
+      # Generate Mono glue
+      - name: Generate Mono glue code
+        if: ${{ matrix.build-mono }}
         run: |
-          pushd godot/misc/dist
-          zip -r ./macos_tools.zip ./macos_tools.app/
-          zip -r ./macos_template.zip ./macos_template.app/
-          popd
-      - name: Upload MacOS Tool App
-        uses: actions/upload-artifact@v3
+          DRI_PRIME=0 "./bin/godot.macos.editor.x86_64.mono" --generate-mono-glue modules/mono/glue
+
+      - name: Set Mono Scons flags
+        if: ${{ matrix.build-mono }}
+        run: |
+          echo "MONO_SCONSFLAGS=module_mono_enabled=yes mono_glue=yes copy_mono_root=yes mono_bcl=$HOME/mono-bcls/desktop-bcl/net_4_x" >> $GITHUB_ENV
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Compiling editors
+      - name: Editor compilation (arch=x86_64)
+        uses: ./.github/actions/build-godot
         with:
-          name: macos-tool-app
-          path: godot/misc/dist/macos_tools.zip
-          if-no-files-found: error
-          retention-days: 1
-      - name: Upload MacOS Template App
-        uses: actions/upload-artifact@v3
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} arch=x86_64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-osx-x86_64-release' || '' }}
+          platform: macos
+          target: editor
+
+      - name: Dylib Wrangling
+        if: ${{ matrix.build-mono }}
+        run: |
+          mkdir -p tmp-lib/{x86_64,arm64}
+          cp bin/GodotSharp/Mono/lib/*.dylib tmp-lib/x86_64/
+
+      - name: Editor Compilation (arch=arm64)
+        uses: ./.github/actions/build-godot
         with:
-          name: macos-template-app
-          path: godot/misc/dist/macos_template.zip
-          if-no-files-found: error
-          retention-days: 1
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} arch=arm64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-osx-arm64-release' || '' }}
+          platform: macos
+          target: editor
+
+      - name: Dylib Wrangling
+        if: ${{ matrix.build-mono }}
+        run: |
+          cp bin/GodotSharp/Mono/lib/*.dylib tmp-lib/arm64/
+          echo "tmp-lib:"
+          find tmp-lib | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+
+      # Create Mac Universal package
+      - name: Package Editor (arch=arm64, x86_64)
+        run: |
+          lipo -create bin/godot.macos.editor.x86_64${{ matrix.build-mono && '.mono' || '' }} \
+            bin/godot.macos.editor.arm64${{ matrix.build-mono && '.mono' || '' }} \
+            -output bin/godot.macos.editor.universal${{ matrix.build-mono && '.mono' || '' }}
+          $STRIP bin/godot.macos.editor.universal${{ matrix.build-mono && '.mono' || '' }}
+          cp -r misc/dist/macos_tools.app ./GodotSteam.app
+          mkdir -p GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app/Contents/MacOS
+          cp bin/godot.macos.editor.universal GodotSteam{{ matrix.build-mono && 'Mono' || '' }}.app/Contents/MacOS/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}
+          chmod +x GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app/Contents/MacOS/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}
+          codesign --force --timestamp --options=runtime --entitlements misc/dist/macos/editor.entitlements -s - GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app
+
+      - name: Upload Editor
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-editor
+          path: ./bin/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Compiling templates
+      - name: Debug Template Compilation (arch=x86_64, target=template_debug)
+        uses: ./.github/actions/build-godot
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} arch=x86_64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-osx-x86_64-release' || '' }}
+          platform: macos
+          target: template_debug
+
+      - name: Debug Template Compilation (arch=x86_64, target=template_debug)
+        uses: ./.github/actions/build-godot
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} arch=x86_64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-osx-x86_64-release' || '' }} debug_symbols=no
+          platform: macos
+          target: template_debug
+
+      - name: Release Template Compilation (arch=arm64, target=template_release)
+        uses: ./.github/actions/build-godot
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} arch=arm64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-osx-arm64-release' || '' }}
+          platform: macos
+          target: template_release
+
+      - name: Release template Compilation (arch=arm64, target=template_release)
+        uses: ./.github/actions/build-godot
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ env.MONO_SCONSFLAGS }} ${{ matrix.sconsflags }} arch=arm64 ${{ matrix.build-mono && 'mono_prefix=$HOME/mono-installs/desktop-osx-arm64-release' || '' }} debug_symbols=no
+          platform: macos
+          target: template_release
+
+      # Create Mac Universal package
+      - name: Package Templates (arch=arm64, x86_64)
+        run: |
+          lipo -create bin/godot.macos.template_debug.x86_64${{ matrix.build-mono && '.mono' || '' }} bin/godot.macos.template_debug.arm64${{ matrix.build-mono && '.mono' || '' }} -output bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }}
+          $STRIP bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }}
+          lipo -create bin/godot.macos.template_release.x86_64${{ matrix.build-mono && '.mono' || '' }} bin/godot.macos.template_release.arm64${{ matrix.build-mono && '.mono' || '' }} -output bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }}
+          $STRIP bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }}
+          cp -r misc/dist/macos_template.app .
+          mkdir -p macos_template.app/Contents/MacOS
+          cp bin/godot.macos.template_release.universal macos_template.app/Contents/MacOS/godot_macos_release.universal
+          cp bin/godot.macos.template_debug.universal macos_template.app/Contents/MacOS/godot_macos_debug.universal
+          chmod +x macos_template.app/Contents/MacOS/godot_macos*
+          zip -q -9 -r macos.zip macos_template.app
+
+      - name: Upload Mac Template App
+        uses: ./.github/actions/upload-artifact
+        with:
+        with:
+          name: macos${{ matrix.build-mono && '-mono' || '' }}-template-app
+          path: ./bin/macos.zip
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Upload the Steam redistributable for packaging
+      - name: Upload Linux Steam File
+        uses: ./.github/actions/upload-steam-redistributable
+        with:
+          name: macos-steam
+          path: osx/
+          redist: libsteam_api.dylib
