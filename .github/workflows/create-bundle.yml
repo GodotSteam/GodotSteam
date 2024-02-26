@@ -31,14 +31,14 @@ jobs:
           path: files
 
       - name: Download ${{ inputs.platform }} Release Template
-        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' && inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-release-template
           path: files
 
       - name: Download ${{ inputs.platform }} Debug Template
-        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' && inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-debug-template
