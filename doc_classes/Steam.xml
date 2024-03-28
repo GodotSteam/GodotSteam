@@ -1462,7 +1462,7 @@
 			<argument index="0" name="steam_lobby_id" type="int" />
 			<description>
 				Get lobby data by the lobby's ID.
-				The returned dictionary contains the following keys: [b]index (int), key (string), and value (string).[/b]
+				The returned dictionary contains dictionaries with the following keys: [b]index (int), key (string), and value (string).[/b]
 				[b]Note:[/b] This is a GodotSteam specific function.
 			</description>
 		</method>
