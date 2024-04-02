@@ -3361,9 +3361,9 @@ bool Steam::setLobbyData(uint64_t steam_lobby_id, const String &key, const Strin
 
 // Get lobby data by the lobby's ID
 Dictionary Steam::getAllLobbyData(uint64_t steam_lobby_id) {
-	Dictionary data;
+	Dictionary all_data;
 	if (SteamMatchmaking() == NULL) {
-		return data;
+		return all_data;
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
 	int data_count = SteamMatchmaking()->GetLobbyDataCount(lobby_id);
@@ -3372,12 +3372,14 @@ Dictionary Steam::getAllLobbyData(uint64_t steam_lobby_id) {
 	for (int i = 0; i < data_count; i++) {
 		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobby_id, i, key, MAX_LOBBY_KEY_LENGTH, value, CHAT_METADATA_MAX);
 		if (success) {
+			Dictionary data;
 			data["index"] = i;
 			data["key"] = key;
 			data["value"] = value;
+			all_data[i] = data;
 		}
 	}
-	return data;
+	return all_data;
 }
 
 // Removes a metadata key from the lobby.
