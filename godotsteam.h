@@ -31,6 +31,9 @@
 #include "scene/main/scene_tree.h"
 #include "scene/resources/texture.h"
 
+// Include GodotSteam headers
+#include "godotsteam_constants.h"
+
 // Include some system headers
 #include "map"
 
@@ -43,6 +46,7 @@ public:
 	/////////////////////////////////////////
 	//
 	enum AccountType {
+		// Found in steamclientpublic.h
 		ACCOUNT_TYPE_INVALID = k_EAccountTypeInvalid,
 		ACCOUNT_TYPE_INDIVIDUAL = k_EAccountTypeIndividual,
 		ACCOUNT_TYPE_MULTISEAT = k_EAccountTypeMultiseat,
@@ -57,6 +61,7 @@ public:
 		ACCOUNT_TYPE_MAX = k_EAccountTypeMax
 	};
 	enum AuthSessionResponse {
+		// Found in steamclientpublic.h
 		AUTH_SESSION_RESPONSE_OK = k_EAuthSessionResponseOK,
 		AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM = k_EAuthSessionResponseUserNotConnectedToSteam,
 		AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED = k_EAuthSessionResponseNoLicenseOrExpired,
@@ -70,6 +75,7 @@ public:
 		AUTH_SESSION_RESPONSE_AUTH_TICKET_NETWORK_IDENTITY_FAILURE = k_EAuthSessionResponseAuthTicketNetworkIdentityFailure
 	};
 	enum BeginAuthSessionResult {
+		// Found in steamclientpublic.h
 		BEGIN_AUTH_SESSION_RESULT_OK = k_EBeginAuthSessionResultOK,
 		BEGIN_AUTH_SESSION_RESULT_INVALID_TICKET = k_EBeginAuthSessionResultInvalidTicket,
 		BEGIN_AUTH_SESSION_RESULT_DUPLICATE_REQUEST = k_EBeginAuthSessionResultDuplicateRequest,
@@ -78,6 +84,7 @@ public:
 		BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET = k_EBeginAuthSessionResultExpiredTicket
 	};
 	enum BroadcastUploadResult {
+		 // Found in steamclientpublic.h
 		BROADCAST_UPLOAD_RESULT_NONE = k_EBroadcastUploadResultNone,
 		BROADCAST_UPLOAD_RESULT_OK = k_EBroadcastUploadResultOK,
 		BROADCAST_UPLOAD_RESULT_INIT_FAILED = k_EBroadcastUploadResultInitFailed,
@@ -104,6 +111,7 @@ public:
 		BROADCAST_UPLOAD_RESULT_AUDIO_INIT_FAILED = k_EBroadcastUploadResultAudioInitFailed
 	};
 	enum ChatEntryType {
+		// Found in steamclientpublic.h
 		CHAT_ENTRY_TYPE_INVALID = k_EChatEntryTypeInvalid,
 		CHAT_ENTRY_TYPE_CHAT_MSG = k_EChatEntryTypeChatMsg,
 		CHAT_ENTRY_TYPE_TYPING = k_EChatEntryTypeTyping,
@@ -119,6 +127,7 @@ public:
 		CHAT_ENTRY_TYPE_LINK_BLOCKED = k_EChatEntryTypeLinkBlocked
 	};
 	enum ChatRoomEnterResponse {
+		// Found in steamclientpublic.h
 		CHAT_ROOM_ENTER_RESPONSE_SUCCESS = k_EChatRoomEnterResponseSuccess,
 		CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST = k_EChatRoomEnterResponseDoesntExist,
 		CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED = k_EChatRoomEnterResponseNotAllowed,
@@ -133,12 +142,14 @@ public:
 		CHAT_ROOM_ENTER_RESPONSE_RATE_LIMIT_EXCEEDED = k_EChatRoomEnterResponseRatelimitExceeded
 	};
 	enum ChatSteamIDInstanceFlags {
+		// Found in steamclientpublic.h
 		CHAT_ACCOUNT_INSTANCE_MASK = k_EChatAccountInstanceMask,
 		CHAT_INSTANCE_FLAG_CLAN = k_EChatInstanceFlagClan,
 		CHAT_INSTANCE_FLAG_LOBBY = k_EChatInstanceFlagLobby,
 		CHAT_INSTANCE_FLAG_MMS_LOBBY = k_EChatInstanceFlagMMSLobby
 	};
 	enum DenyReason {
+		// Found in steamclientpublic.h
 		DENY_INVALID = k_EDenyInvalid,
 		DENY_INVALID_VERSION = k_EDenyInvalidVersion,
 		DENY_GENERIC = k_EDenyGeneric,
@@ -167,16 +178,19 @@ public:
 		IP_TYPE_IPV6 = k_ESteamIPTypeIPv6
 	};
 	enum IPv6ConnectivityProtocol {
+		// Found in steamclientpublic.h
 		IPV6_CONNECTIVITY_PROTOCOL_INVALID = k_ESteamIPv6ConnectivityProtocol_Invalid,
 		IPV6_CONNECTIVITY_PROTOCOL_HTTP = k_ESteamIPv6ConnectivityProtocol_HTTP,
 		IPV6_CONNECTIVITY_PROTOCOL_UDP = k_ESteamIPv6ConnectivityProtocol_UDP
 	};
 	enum IPv6ConnectivityState {
+		// Found in steamclientpublic.h
 		IPV6_CONNECTIVITY_STATE_UNKNOWN = k_ESteamIPv6ConnectivityState_Unknown,
 		IPV6_CONNECTIVITY_STATE_GOOD = k_ESteamIPv6ConnectivityState_Good,
 		IPV6_CONNECTIVITY_STATE_BAD = k_ESteamIPv6ConnectivityState_Bad
 	};
 	enum MarketNotAllowedReasonFlags {
+		// Found in steamclientpublic.h
 		MARKET_NOT_ALLOWED_REASON_NONE = k_EMarketNotAllowedReason_None,
 		MARKET_NOT_ALLOWED_REASON_TEMPORARY_FAILURE = k_EMarketNotAllowedReason_TemporaryFailure,
 		MARKET_NOT_ALLOWED_REASON_ACCOUNT_DISABLED = k_EMarketNotAllowedReason_AccountDisabled,
@@ -196,6 +210,7 @@ public:
 		MARKET_NOT_ALLOWED_REASON_ACCEPTED_WALLET_GIFT = k_EMarketNotAllowedReason_AcceptedWalletGift
 	};
 	enum NotificationPosition {
+		// Found in steamclientpublic.h
 		POSITION_INVALID = k_EPositionInvalid,
 		POSITION_TOP_LEFT = k_EPositionTopLeft,
 		POSITION_TOP_RIGHT = k_EPositionTopRight,
@@ -203,6 +218,7 @@ public:
 		POSITION_BOTTOM_RIGHT = k_EPositionBottomRight
 	};
 	enum Result {
+		// Found in steamclientpublic.h
 		RESULT_NONE = k_EResultNone,
 		RESULT_OK = k_EResultOK,
 		RESULT_FAIL = k_EResultFail,
@@ -340,6 +356,7 @@ public:
 		STEAM_API_INIT_RESULT_VERSION_MISMATCH = k_ESteamAPIInitResult_VersionMismatch
 	};
 	enum Universe {
+		// Found in steamuniverse.h
 		UNIVERSE_INVALID = k_EUniverseInvalid,
 		UNIVERSE_PUBLIC = k_EUniversePublic,
 		UNIVERSE_BETA = k_EUniverseBeta,
@@ -348,11 +365,13 @@ public:
 		UNIVERSE_MAX = k_EUniverseMax
 	};
 	enum UserHasLicenseForAppResult {
+		// Found in steamclientpublic.h
 		USER_HAS_LICENSE_RESULT_HAS_LICENSE = k_EUserHasLicenseResultHasLicense,
 		USER_HAS_LICENSE_RESULT_DOES_NOT_HAVE_LICENSE = k_EUserHasLicenseResultDoesNotHaveLicense,
 		USER_HAS_LICENSE_RESULT_NO_AUTH = k_EUserHasLicenseResultNoAuth
 	};
 	enum VoiceResult {
+		// Found in steamclientpublic.h
 		VOICE_RESULT_OK = k_EVoiceResultOK,
 		VOICE_RESULT_NOT_INITIALIZED = k_EVoiceResultNotInitialized,
 		VOICE_RESULT_NOT_RECORDING = k_EVoiceResultNotRecording,
@@ -470,6 +489,7 @@ public:
 
 	// Game Search enums
 	enum GameSearchErrorCode {
+		// Found in steamclientpublic.h
 		GAME_SEARCH_ERROR_CODE_OK = k_EGameSearchErrorCode_OK,
 		GAME_SEARCH_ERROR_CODE_SEARCH_AREADY_IN_PROGRESS = k_EGameSearchErrorCode_Failed_Search_Already_In_Progress,
 		GAME_SEARCH_ERROR_CODE_NO_SEARCH_IN_PROGRESS = k_EGameSearchErrorCode_Failed_No_Search_In_Progress,
@@ -481,6 +501,7 @@ public:
 		GAME_SEARCH_ERROR_CODE_UNKNOWN_ERROR = k_EGameSearchErrorCode_Failed_Unknown_Error
 	};
 	enum PlayerResult {
+		// Found in steamclientpublic.h
 		PLAYER_RESULT_FAILED_TO_CONNECT = k_EPlayerResultFailedToConnect,
 		PLAYER_RESULT_ABANDONED = k_EPlayerResultAbandoned,
 		PLAYER_RESULT_KICKED = k_EPlayerResultKicked,
@@ -1658,6 +1679,7 @@ public:
 
 	// User enums
 	enum DurationControlNotification {
+		// Found in steamclientpublic.h
 		DURATION_CONTROL_NOTIFICATION_NONE = k_EDurationControlNotification_None,
 		DURATION_CONTROL_NOTIFICATION_1_HOUR = k_EDurationControlNotification_1Hour,
 		DURATION_CONTROL_NOTIFICATION_3_HOURS = k_EDurationControlNotification_3Hours,
@@ -1668,12 +1690,14 @@ public:
 		DURATION_CONTROL_NOTIFICATION_EXIT_SOON_NIGHT = k_EDurationControlNotification_ExitSoon_Night
 	};
 	enum DurationControlOnlineState {
+		// Found in steamclientpublic.h
 		DURATION_CONTROL_ONLINE_STATE_INVALID = k_EDurationControlOnlineState_Invalid,
 		DURATION_CONTROL_ONLINE_STATE_OFFLINE = k_EDurationControlOnlineState_Offline,
 		DURATION_CONTROL_ONLINE_STATE_ONLINE = k_EDurationControlOnlineState_Online,
 		DURATION_CONTROL_ONLINE_STATE_ONLINE_HIGH_PRIORITY = k_EDurationControlOnlineState_OnlineHighPri
 	};
 	enum DurationControlProgress {
+		// Found in steamclientpublic.h
 		DURATION_CONTROL_PROGRESS_FULL = k_EDurationControlProgress_Full,
 		DURATION_CONTROL_PROGRESS_HALF = k_EDurationControlProgress_Half,
 		DURATION_CONTROL_PROGRESS_NONE = k_EDurationControlProgress_None,
@@ -1753,6 +1777,14 @@ public:
 	CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
 
 	// Main /////////////////////////////////
+	uint32_t getSteamID32(uint64_t steam_id);
+	bool isAnonAccount(uint64_t steam_id);
+	bool isAnonUserAccount(uint64_t steam_id);
+	bool isChatAccount(uint64_t steam_id);
+	bool isClanAccount(uint64_t steam_id);
+	bool isConsoleUserAccount(uint64_t steam_id);
+	bool isIndividualAccount(uint64_t steam_id);
+	bool isLobby(uint64_t steam_id);
 	bool isSteamRunning();
 	bool restartAppIfNecessary(uint32 app_id);
 	void steamworksError(const String &failed_signal);
@@ -2572,7 +2604,7 @@ private:
 	// Leaderboards
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries_array;
-	int leaderboard_details_max = 0;
+	int leaderboard_details_max = LEADERBOARD_DETAIL_MAX;
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;

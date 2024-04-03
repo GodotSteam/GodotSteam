@@ -18,35 +18,26 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ---
-You can [download pre-compiled versions _(currently v4.6)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.6 Changes**
-- Added: new Remote Storage enum to WorkshopFileType
-- Added: two new UGC enums to ItemState and ItemPreviewType
-- Added: two new Friends class constants
-- Added: new function `dismissGamepadTextInput()`
-- Added: new Remote Play enum, form factor for VR headset
-- Added: two new result enums; not supported and family size limit exceeded
-- Added: three new enums to NetworkingConfigValue
-- Added: new general constant ACCOUNT_ID_INVALID
-- Changed: FEATURE_KIOSK_MODE enum now deprecated
-- Changed: minor housekeeping by rearranging some functions
-- Changed: k_ESteamNetworkingConfig_SDRClient_DebugTicketAddress was replaced by k_ESteamNetworkingConfig_SDRClient_DevTicket, value is the same but reference changed
-- Changed: updated in-editor docs
-- Fixed: spelling error in `getProfileItemPropertyInt()` bind
-- Removed: App Lists class functions, callbacks, etc. due to SDK 1.59 changes
-- Removed: Remote Play enums mistakenly added as constants
+**Version 4.6.1 Changes**
+- Added: internal notes about where enums are found
+- Added: minor extra helper functions from Steam's client header
+- Added: `getSteamID32` function to convert SteamID64 to SteamID
+- Changed: replaced deprecated Controller struct with Inputs struct in `getDigitalActionData`
+- Changed: in-editor docs
+- Changed: leaderboard details max now set at highest instead of zero by default
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
 Compatibility
 ---
-While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below.
+While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below. Newer API files (dll, so, dylib) _should_ still work for older versions.
 
-Steamworks SDK Version | GodotSteam Version | Notes
----|---|---
-1.59 or newer | 4.6 or newer | API files (dll, so, dylib) will still work for older
-1.58a or older | 4.5.4 or older |
+Steamworks SDK Version | GodotSteam Version
+---|---
+1.59 or newer | 4.6 or newer
+1.58a or older | 4.5.4 or older
 
 Known Issues
 ---
