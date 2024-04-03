@@ -1,0 +1,146 @@
+on:
+  workflow_call:
+    inputs:
+      godot_tag:
+        required: true
+        type: string
+      godot_version:
+        required: true
+        type: string
+      steamworks_sdk_tag:
+        required: true
+        type: string
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+
+    name: Linux ${{ matrix.name }}
+
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Editor and Templates
+            cache-name: linux
+            editor-name: godot.linuxbsd.editor.x86_64
+            editor-name-new: godotsteam.${{ inputs.godot_version }}.editor.linux.x86_64
+            debug-name: godot.linuxbsd.template_debug.x86_64
+            debug-name-new: godotsteam.${{ inputs.godot_version }}.debug.template.linux.x86_64
+            release-name: godot.linuxbsd.template_release.x86_64
+            release-name-new: godotsteam.${{ inputs.godot_version }}.template.linux.x86_64
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Download Godot to start
+      - name: Download Godot
+        uses: ./.github/actions/download-godot
+        with:
+          version: ${{ inputs.godot_tag }}
+
+      # Download GodotSteam
+      - name: Download GodotSteam
+        uses: ./.github/actions/download-godotsteam
+
+      # Download Steamworks SDK
+      - name: Download Steamworks SDK
+        uses: ./.github/actions/download-steamworks
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+  
+      # Setting up the Linux buildroot for older versions
+      - name: Setup Linux Buildroot (x64_64)
+        uses: ./.github/actions/prep-buildroot
+        with:
+          toolchain-name: "x86_64-godot-linux-gnu_sdk-buildroot"
+
+      # Get that cache money
+      - name: Setup Build Cache
+        uses: ./.github/actions/setup-cache
+        with:
+          cache-name: ${{ matrix.cache-name }}
+          godot-base: ${{ inputs.godot_tag }}
+        continue-on-error: true
+
+      # Setup Python and SCONS
+      - name: Setup Python and SCONS
+        uses: ./.github/actions/setup-dependencies
+
+      # Compiling editor
+      - name: Editor Compilation
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: bits=64
+          platform: linuxbsd
+          target: editor
+          binary: ${{ matrix.editor-name }}
+          export: ${{ matrix.editor-name-new }}
+
+      - name: Upload Editor
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-editor
+          path: ./bin/${{ matrix.editor-name-new }}
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+     # Compiling templates
+      - name: Debug Template Compilation (target=template_debug)
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: bits=64
+          platform: linuxbsd
+          target: template_debug
+          binary: ${{ matrix.debug-name }}
+          export: ${{ matrix.debug-name-new }}
+
+      - name: Upload Debug Template
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-debug-template
+          path: ./bin/${{ matrix.debug-name-new }}
+
+      - name: Release Template Compilation (target=template_release)
+        uses: ./.github/actions/build-godot
+        with:
+          buildroot: "${{ github.workspace }}/x86_64-godot-linux-gnu_sdk-buildroot/bin"
+          sconsflags: bits=64 debug_symbols=no
+          platform: linuxbsd
+          target: template_release
+          binary: ${{ matrix.release-name }}
+          export: ${{ matrix.release-name-new }}
+
+      - name: Upload Release Template
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}-release-template
+          path: ./bin/${{ matrix.release-name-new }}
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Upload the Steam redistributable for packaging
+      - name: Upload Linux Steam File
+        uses: ./.github/actions/upload-steam-redistributable
+        with:
+          name: ${{ matrix.cache-name }}-steam
+          path: linux64/
+          redist: libsteam_api.so
