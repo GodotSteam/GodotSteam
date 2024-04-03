@@ -94,7 +94,7 @@ jobs:
       - name: Package Editor (arch=arm64, x86_64)
         run: |
           ls -l bin/
-          lipo -create bin/godot.macos.editor.x86_64 bin/godot.macos.editor.arm64 -output files/godot.macos.editor.universal
+          lipo -create bin/godot.macos.editor.x86_64 bin/godot.macos.editor.arm64 -output bin/godot.macos.editor.universal
           $STRIP bin/godot.macos.editor.universal
           cp -r misc/dist/macos_tools.app ./GodotSteam.app
           mkdir -p bin/GodotSteam.app/Contents/MacOS
