@@ -96,7 +96,7 @@ jobs:
           ls -l bin/
           lipo -create bin/godot.macos.editor.x86_64 bin/godot.macos.editor.arm64 -output bin/godot.macos.editor.universal
           $STRIP bin/godot.macos.editor.universal
-          cp -r misc/dist/macos_tools.app ./GodotSteam.app
+          cp -r misc/dist/macos_tools.app bin/GodotSteam.app
           mkdir -p bin/GodotSteam.app/Contents/MacOS
           cp bin/godot.macos.editor.universal bin/GodotSteam.app/Contents/MacOS/GodotSteam
           chmod +x bin/GodotSteam.app/Contents/MacOS/GodotSteam
@@ -149,12 +149,12 @@ jobs:
           $STRIP bin/godot.macos.template_debug.universal
           lipo -create bin/godot.macos.template_release.x86_64 bin/godot.macos.template_release.arm64 -output bin/godot.macos.template_release.universal
           $STRIP bin/godot.macos.template_release.universal
-          cp -r misc/dist/macos_template.app .
+          cp -r misc/dist/macos_template.app bin/
           mkdir -p bin/macos_template.app/Contents/MacOS
           cp bin/godot.macos.template_release.universal bin/macos_template.app/Contents/MacOS/godot_macos_release.universal
           cp bin/godot.macos.template_debug.universal bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
           chmod +x bin/macos_template.app/Contents/MacOS/godot_macos*
-          zip -q -9 -r bin/macos.zip macos_template.app
+          zip -q -9 -r bin/macos.zip bin/macos_template.app
           ls -l bin/
 
       - name: Upload Mac Template App
@@ -168,7 +168,7 @@ jobs:
           rm -rf bin
 
       # Upload the Steam redistributable for packaging
-      - name: Upload Linux Steam File
+      - name: Upload Mac Steam File
         uses: ./.github/actions/upload-steam-redistributable
         with:
           name: ${{ matrix.cache-name }}-steam
