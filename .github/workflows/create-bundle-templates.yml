@@ -1,0 +1,104 @@
+on:
+  workflow_call:
+    inputs:
+      is_mono:
+        required: true
+        type: boolean
+      zip_tag:
+        required: true
+        type: string
+
+
+jobs:
+  create-template-bundle:
+    runs-on: ubuntu-latest
+
+    name: Create Template Bundle
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Windows templates and Steam redistributables
+      - name: Download Windows 64-bit Release Template
+        if: ${{ inputs.is_mono != true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-release-template
+          path: files
+
+      - name: Download Windows 32-bit Release Template
+        if: ${{ inputs.is_mono != true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: windows32-release-template
+          path: files
+
+      - name: Download Windows 64-bit Debug Template
+        if: ${{ inputs.is_mono != true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-debug-template
+          path: files
+
+      - name: Download Windows 32-bit Debug Template
+        if: ${{ inputs.is_mono != true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-debug-template
+          path: files
+
+      - name: Download Windows 64-bit Steam Redistributable
+        if: ${{ inputs.is_mono != true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-steam
+          path: files
+
+      - name: Download Windows 32-bit Steam Redistributable
+        if: ${{ inputs.is_mono != true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: windows32-steam
+          path: files
+
+      # Linux templates and Steam redistributable
+      - name: Download Linux ${{ inputs.is_mono && 'Mono ' || '' }}Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-${{ inputs.is_mono && 'mono-' || '' }}release-template
+          path: files
+
+      - name: Download Linux ${{ inputs.is_mono && 'Mono ' || '' }}Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-${{ inputs.is_mono && 'mono-' || '' }}debug-template
+          path: files
+
+      - name: Download Linux Steam Redistributable
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-steam
+          path: files
+
+      # Mac templates and Steam redistributable
+      - name: Download MacOS ${{ inputs.is_mono && 'Mono ' || '' }}Template App
+        uses: actions/download-artifact@v4
+        with:
+          name: macos${{ inputs.is_mono && '-mono' || '' }}-template-app
+          path: files
+
+      - name: Download MacOS Steam Redistributable
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-steam
+          path: files
+
+      - name: Create ${{ inputs.is_mono && 'Mono ' || '' }}Template Bundle
+        run: |
+          zip -j godotsteam-${{ inputs.zip_tag }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip files/*
+      
+      - name: Upload ${{ inputs.is_mono && 'Mono ' || '' }}Template Bundle Artifact
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: godotsteam-${{ inputs.zip_tag }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip
+          path: godotsteam-${{ inputs.zip_tag }}-${{ inputs.is_mono && 'mono-' || '' }}templates.zip

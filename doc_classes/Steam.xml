@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="Steam" inherits="Object" version="3.5">
+<class name="Steam" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
 	<brief_description>
 		Steamworks SDK / API for the Godot Game Engine.
 	</brief_description>
@@ -1462,7 +1462,12 @@
 			<argument index="0" name="steam_lobby_id" type="int" />
 			<description>
 				Get lobby data by the lobby's ID.
-				The returned dictionary contains the following keys: [b]index (int), key (string), and value (string).[/b]
+				[codeblock]
+				The returned dictionary contains dictionaries with the following keys:
+				┠╴index (int)
+				┠╴key (string)
+				┖╴value (string)
+				[/codeblock]
 				[b]Note:[/b] This is a GodotSteam specific function.
 			</description>
 		</method>
@@ -1472,7 +1477,13 @@
 			<argument index="1" name="analog_action_handle" type="int" />
 			<description>
 				Gets the current state of the supplied analog game action.
-				The returned dictionary contains the following keys: [b]mode (int), x (float),y (float), and active (bool).[/b]
+				[codeblock]
+				The returned dictionary contains the following keys:
+				┠╴mode (int)
+				┠╴x (float)
+				┠╴y (float)
+				┖╴active (bool)
+				[/codeblock]
 			</description>
 		</method>
 		<method name="getAnalogActionHandle">
@@ -3540,7 +3551,7 @@
 			</description>
 		</method>
 		<method name="getSessionInputConfigurationSettings">
-			<return type="int" />
+			<return type="int" enum="Steam.InputConfigurationEnableType" />
 			<description>
 				Get a bitmask of the Steam Input Configuration types opted in for the current session. Returns ESteamInputConfigurationEnableType values.
 				[b]Note:[/b] user can override the settings from the Steamworks Partner site so the returned values may not exactly match your default configuration.
@@ -4031,7 +4042,7 @@
 			<argument index="1" name="steam_id_invitee" type="int" />
 			<description>
 				Invite another user to the lobby.
-				If the specified user clicks the join link, a join_requested callback will be posted if the user is in-game, or if the game isn't running yet then the game will be automatically launched with the command line parameter <param>+connect_lobby (64-bit lobby Steam ID)</param> instead.
+				If the specified user clicks the join link, a join_requested callback will be posted if the user is in-game, or if the game isn't running yet then the game will be automatically launched with the command line parameter +connect_lobby (64-bit lobby Steam ID) instead.
 			</description>
 		</method>
 		<method name="isAPICallCompleted">
@@ -4051,6 +4062,20 @@
 			<argument index="0" name="reference_name" type="String" />
 			<description>
 				Return true if this identity is localhost. (Either IPv6 ::1, or IPv4 127.0.0.1).
+			</description>
+		</method>
+		<method name="isAnonAccount">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this an anonymous account?
+			</description>
+		</method>
+		<method name="isAnonUserAccount">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this an anonymous user account? Used to create an account or reset a password, but do not try to do this.
 			</description>
 		</method>
 		<method name="isAppBlocked">
@@ -4091,6 +4116,20 @@
 				┠╴broadcasting (bool)
 				┖╴viewers (int)
     			[/codeblock]
+			</description>
+		</method>
+		<method name="isChatAccount">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this a chat account ID?
+			</description>
+		</method>
+		<method name="isClanAccount">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this a clan account ID?
 			</description>
 		</method>
 		<method name="isClanChatAdmin">
@@ -4135,6 +4174,13 @@
 				Checks if the per game Steam Cloud setting is enabled for this user; or if they disabled it in the Game Properties->Update dialog.
 				Ensure that you are also checking [method Steam.isCloudEnabledForAccount], as these two options are mutually exclusive.
 				It's generally recommended that you allow the user to toggle this setting within your in-game options, you can toggle it with [method Steam.setCloudEnabledForApp].
+			</description>
+		</method>
+		<method name="isConsoleUserAccount">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this a faked up Steam ID for a PSN friend account?
 			</description>
 		</method>
 		<method name="isCurrentMusicRemote">
@@ -4206,6 +4252,20 @@
 			<argument index="0" name="reference_name" type="String" />
 			<description>
 				Return true if this identity is localhost.
+			</description>
+		</method>
+		<method name="isIndividualAccount">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this an individual user account ID?
+			</description>
+		</method>
+		<method name="isLobby">
+			<return type="bool" />
+			<argument index="0" name="steam_id" type="int" />
+			<description>
+				Is this a lobby account ID?
 			</description>
 		</method>
 		<method name="isLowViolence">
@@ -4462,8 +4522,7 @@
 			<argument index="1" name="post_data" type="String" />
 			<argument index="2" name="this_handle" type="int" default="0" />
 			<description>
-				Navigate to a specified URL. If you send POST data with post_data then the data should be formatted as: <param>name1=value1&amp;name2=value2</param>. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: <param>http://, https://, ftp://, and file:///</param>. If no scheme is specified then http:// is used.
-				Triggers a [signal Steam.html_start_request] callback.
+				Navigate to a specified URL. If you send POST data with post_data then the data should be formatted as: name1=value1&amp;name2=value2. You can load any URI scheme supported by Chromium Embedded Framework including but not limited to: http://, https://, ftp://, and file:///. If no scheme is specified then http:// is used.
 			</description>
 		</method>
 		<method name="loggedOn">
