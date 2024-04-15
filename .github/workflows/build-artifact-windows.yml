@@ -30,7 +30,7 @@ jobs:
       matrix:
         include:
           - name: Editor and Templates (64-bit)
-            bits: x86_64
+            bits: 64
             cache-name: windows64
             editor-name: godot.windows.opt.tools.64.exe
             editor-name-new: godotsteam.${{ inputs.godot_version }}.editor.windows.64.exe
@@ -43,7 +43,7 @@ jobs:
             steam-redist-bits: 64
 
           - name: Editor and Templates (32-bit)
-            bits: x86_32
+            bits: 32
             cache-name: windows32
             editor-name: godot.windows.opt.tools.32.exe
             editor-name-new: godotsteam.${{ inputs.godot_version }}.editor.windows.32.exe

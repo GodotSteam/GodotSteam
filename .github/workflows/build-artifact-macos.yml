@@ -90,9 +90,9 @@ jobs:
       - name: Package Editor (arch=arm64, x86_64)
         run: |
           ls -l bin/
-          lipo -create bin/godot.osx.tools.x86_64 bin/godot.osx.tools.arm64 -output bin/godot.osx.editor.universal
+          lipo -create bin/godot.osx.opt.tools.x86_64 bin/godot.osx.opt.tools.arm64 -output bin/godot.osx.editor.universal
           $STRIP bin/godot.osx.editor.universal
-          cp -r misc/dist/macos_tools.app bin/GodotSteam.app
+          cp -r misc/dist/osx_tools.app bin/GodotSteam.app
           mkdir -p bin/GodotSteam.app/Contents/MacOS
           cp bin/godot.osx.editor.universal bin/GodotSteam.app/Contents/MacOS/GodotSteam
           chmod +x bin/GodotSteam.app/Contents/MacOS/GodotSteam
@@ -145,7 +145,7 @@ jobs:
           $STRIP bin/godot.osx.template.debug.universal
           lipo -create bin/godot.osx.opt.x86_64 bin/godot.osx.opt.arm64 -output bin/godot.osx.template.universal
           $STRIP bin/godot.osx.template.universal
-          cp -r misc/dist/macos_template.app bin/
+          cp -r misc/dist/osx_template.app bin/
           mkdir -p bin/macos_template.app/Contents/MacOS
           cp bin/godot.osx.template.universal bin/macos_template.app/Contents/MacOS/godot_macos_release.universal
           cp bin/godot.osx.template.debug.universal bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
