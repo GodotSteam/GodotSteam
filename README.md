@@ -20,6 +20,9 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 4.6.2 Changes**
+- Fixed: incorrect constant for PUBLISHED_FILE_UPDATE_HANDLE_INVALID
+
 **Version 4.6.1 Changes**
 - Added: internal notes about where enums are found
 - Added: minor extra helper functions from Steam's client header
