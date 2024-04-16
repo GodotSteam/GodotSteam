@@ -20,9 +20,9 @@ func _init() -> void:
 
 func _ready() -> void:
 	# Initialize Steam
-	var initialize_response: Dictionary = Steam.steamInit(false)
+	var initialize_response: Dictionary = Steam.steamInitEx(false)
 	print("[STEAM] Did Steam initialize?: %s" % initialize_response)
-	if initialize_response['status'] != 1:
+	if initialize_response['status'] != 0:
 		# If Steam fails to start up, shut down the app
 		print("[STEAM] Failed to initialize Steam: %s" % initialize_response['verbal'])
 #		get_tree().quit()
