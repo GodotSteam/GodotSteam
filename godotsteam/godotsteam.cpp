@@ -11,13 +11,11 @@
 #endif
 
 
-/////////////////////////////////////////////////
 ///// HEADER INCLUDES
 /////////////////////////////////////////////////
 //
 // Include GodotSteam header
 #include "godotsteam.h"
-#include "godotsteam_constants.h"
 
 // Include some system headers
 #include "string.h"
@@ -27,14 +25,12 @@
 using namespace godot;
 
 
-/////////////////////////////////////////////////
 ///// STEAM SINGLETON? STEAM SINGLETON
 /////////////////////////////////////////////////
 //
 Steam *Steam::singleton = nullptr;
 
 
-/////////////////////////////////////////////////
 ///// STEAM OBJECT WITH CALLBACKS
 /////////////////////////////////////////////////
 //
@@ -221,7 +217,6 @@ Steam::Steam() :
 }
 
 
-/////////////////////////////////////////////////
 ///// INTERNAL FUNCTIONS
 /////////////////////////////////////////////////
 //
@@ -241,10 +236,57 @@ CSteamID Steam::createSteamID(uint64_t steam_id, AccountType account_type) {
 }
 
 
-/////////////////////////////////////////////////
 ///// MAIN FUNCTIONS
 /////////////////////////////////////////////////
 //
+// Convert a SteamID64 into a SteamID
+uint32_t Steam::getSteamID32(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.GetAccountID();
+}
+
+// Is this an anonymous account?
+bool Steam::isAnonAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BAnonAccount();
+}
+
+// Is this an anonymous user account? Used to create an account or reset a password, but do not try to do this.
+bool Steam::isAnonUserAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BAnonUserAccount();
+}
+
+// Is this a chat account ID?
+bool Steam::isChatAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BChatAccount();
+}
+
+// Is this a clan account ID?
+bool Steam::isClanAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BClanAccount();
+}
+
+// Is this a faked up Steam ID for a PSN friend account?
+bool Steam::isConsoleUserAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BConsoleUserAccount();
+}
+
+// Is this an individual user account ID?
+bool Steam::isIndividualAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BIndividualAccount();
+}
+
+// Is this a lobby account ID?
+bool Steam::isLobby(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.IsLobby();
+}
+
 // Returns true/false if Steam is running.
 bool Steam::isSteamRunning(void) {
 	return SteamAPI_IsSteamRunning();
@@ -337,7 +379,6 @@ void Steam::steamShutdown() {
 }
 
 
-/////////////////////////////////////////////////
 ///// APPS
 /////////////////////////////////////////////////
 //
@@ -626,7 +667,6 @@ void Steam::uninstallDLC(uint32_t dlc_id) {
 }
 
 
-/////////////////////////////////////////////////
 ///// FRIENDS
 /////////////////////////////////////////////////
 //
@@ -1490,7 +1530,6 @@ bool Steam::setRichPresence(const String &key, const String &value) {
 }
 
 
-/////////////////////////////////////////////////
 ///// GAME SEARCH
 /////////////////////////////////////////////////
 //
@@ -1615,7 +1654,6 @@ int Steam::endGame(uint64_t game_id) {
 }
 
 
-/////////////////////////////////////////////////
 ///// HTML SURFACE
 /////////////////////////////////////////////////
 //
@@ -1992,7 +2030,6 @@ void Steam::viewSource(uint32 this_handle) {
 }
 
 
-/////////////////////////////////////////////////
 ///// HTTP
 /////////////////////////////////////////////////
 //
@@ -2208,7 +2245,6 @@ bool Steam::setHTTPRequestUserAgentInfo(uint32 request_handle, const String &use
 }
 
 
-/////////////////////////////////////////////////
 ///// INPUT
 /////////////////////////////////////////////////
 //
@@ -2355,15 +2391,15 @@ Array Steam::getDeviceBindingRevision(uint64_t input_handle) {
 
 // Returns the current state of the supplied digital game action.
 Dictionary Steam::getDigitalActionData(uint64_t input_handle, uint64_t digital_action_handle) {
-	ControllerDigitalActionData_t data;
-	Dictionary d;
+	InputDigitalActionData_t data;
+	Dictionary digital_action;
 	memset(&data, 0, sizeof(data));
 	if (SteamInput() != NULL) {
 		data = SteamInput()->GetDigitalActionData((InputHandle_t)input_handle, (ControllerDigitalActionHandle_t)digital_action_handle);
 	}
-	d["state"] = data.bState;
-	d["active"] = data.bActive;
-	return d;
+	digital_action["state"] = data.bState;
+	digital_action["active"] = data.bActive;
+	return digital_action;
 }
 
 // Get the handle of the specified digital action.
@@ -2678,7 +2714,6 @@ String Steam::getStringForAnalogActionName(uint64_t action_handle) {
 }
 
 
-/////////////////////////////////////////////////
 ///// INVENTORY
 /////////////////////////////////////////////////
 //
@@ -3175,7 +3210,6 @@ bool Steam::setPropertyFloat(uint64_t item_id, const String &name, float value, 
 }
 
 
-/////////////////////////////////////////////////
 ///// MATCHMAKING
 /////////////////////////////////////////////////
 //
@@ -3524,7 +3558,6 @@ bool Steam::setLobbyOwner(uint64_t steam_lobby_id, uint64_t steam_id_new_owner) 
 }
 
 
-/////////////////////////////////////////////////
 ///// MATCHMAKING SERVERS
 /////////////////////////////////////////////////
 //
@@ -3858,7 +3891,6 @@ int Steam::serverRules(const String &ip, int port) {
 }
 
 
-/////////////////////////////////////////////////
 ///// MUSIC
 /////////////////////////////////////////////////
 //
@@ -3930,7 +3962,6 @@ void Steam::musicSetVolume(float volume) {
 }
 
 
-/////////////////////////////////////////////////
 ///// MUSIC REMOTE
 /////////////////////////////////////////////////
 //
@@ -4195,7 +4226,6 @@ bool Steam::updateVolume(float volume) {
 }
 
 
-/////////////////////////////////////////////////
 ///// NETWORKING
 /////////////////////////////////////////////////
 //
@@ -4298,7 +4328,6 @@ bool Steam::sendP2PPacket(uint64_t steam_id_remote, PackedByteArray data, P2PSen
 }
 
 
-/////////////////////////////////////////////////
 ///// NETWORKING MESSAGES
 /////////////////////////////////////////////////
 //
@@ -4423,7 +4452,6 @@ int Steam::sendMessageToUser(const String &identity_reference, const PackedByteA
 }
 
 
-/////////////////////////////////////////////////
 ///// NETWORKING SOCKETS
 /////////////////////////////////////////////////
 //
@@ -5068,7 +5096,6 @@ void Steam::createFakeUDPPort(int fake_server_port_index) {
 }
 
 
-/////////////////////////////////////////////////
 ///// NETWORKING TYPES
 /////////////////////////////////////////////////
 //
@@ -5367,7 +5394,6 @@ const SteamNetworkingConfigValue_t *Steam::convertOptionsArray(Array options) {
 }
 
 
-/////////////////////////////////////////////////
 ///// NETWORKING UTILS
 /////////////////////////////////////////////////
 //
@@ -5616,7 +5642,6 @@ uint64_t Steam::getLocalTimestamp() {
 }
 
 
-/////////////////////////////////////////////////
 ///// PARENTAL SETTINGS
 /////////////////////////////////////////////////
 //
@@ -5664,7 +5689,6 @@ bool Steam::isFeatureInBlockList(ParentalFeature feature) {
 }
 
 
-/////////////////////////////////////////////////
 ///// PARTIES
 /////////////////////////////////////////////////
 //
@@ -5801,7 +5825,6 @@ String Steam::getBeaconLocationData(uint64_t location_id, PartyBeaconLocationTyp
 }
 
 
-/////////////////////////////////////////////////
 ///// REMOTE PLAY 
 /////////////////////////////////////////////////
 //
@@ -5881,7 +5904,6 @@ bool Steam::startRemotePlayTogether(bool show_overlay) {
 }
 
 
-/////////////////////////////////////////////////
 ///// REMOTE STORAGE
 /////////////////////////////////////////////////
 //
@@ -6242,7 +6264,6 @@ Dictionary Steam::getLocalFileChange(int file) {
 }
 
 
-/////////////////////////////////////////////////
 ///// SCREENSHOTS
 /////////////////////////////////////////////////
 //
@@ -6320,7 +6341,6 @@ uint32_t Steam::writeScreenshot(const PackedByteArray &rgb, int width, int heigh
 }
 
 
-/////////////////////////////////////////////////
 ///// UGC
 /////////////////////////////////////////////////
 //
@@ -7568,7 +7588,6 @@ bool Steam::setTimeUpdatedDateRange(uint64_t update_handle, uint32 start, uint32
 }
 
 
-/////////////////////////////////////////////////
 ///// USERS
 /////////////////////////////////////////////////
 //
@@ -7873,7 +7892,6 @@ int Steam::userHasLicenseForApp(uint64_t steam_id, uint32_t app_id) {
 }
 
 
-/////////////////////////////////////////////////
 ///// USER STATS
 /////////////////////////////////////////////////
 //
@@ -8443,7 +8461,6 @@ Array Steam::getLeaderboardEntries() {
 }
 
 
-/////////////////////////////////////////////////
 ///// UTILS
 /////////////////////////////////////////////////
 //
@@ -8747,7 +8764,6 @@ bool Steam::dismissGamepadTextInput() {
 }
 
 
-/////////////////////////////////////////////////
 ///// VIDEO
 /////////////////////////////////////////////////
 //
@@ -8793,7 +8809,6 @@ Dictionary Steam::isBroadcasting() {
 }
 
 
-/////////////////////////////////////////////////
 ///// SIGNALS / CALLBACKS
 /////////////////////////////////////////////////
 //
@@ -9997,8 +10012,7 @@ void Steam::get_video_result(GetVideoURLResult_t *call_data) {
 }
 
 
-/////////////////////////////////////////////////
-///// SIGNALS / CALL RESULTS ////////////////////
+///// SIGNALS / CALL RESULTS
 /////////////////////////////////////////////////
 //
 // STEAMWORKS ERROR SIGNAL //////////////////////
@@ -10875,16 +10889,23 @@ void Steam::check_file_signature(CheckFileSignature_t *call_data, bool io_failur
 }
 
 
-/////////////////////////////////////////////////
 ///// BIND METHODS
 /////////////////////////////////////////////////
 //
 void Steam::_bind_methods() {
-	/////////////////////////////////////////////
+
 	// FUNCTION BINDS
 	/////////////////////////////////////////////
 	//
 	// STEAM MAIN BIND METHODS //////////////////
+	ClassDB::bind_method(D_METHOD("getSteamID32", "steam_id"), &Steam::getSteamID32);
+	ClassDB::bind_method(D_METHOD("isAnonAccount", "steam_id"), &Steam::isAnonAccount);
+	ClassDB::bind_method(D_METHOD("isAnonUserAccount", "steam_id"), &Steam::isAnonUserAccount);
+	ClassDB::bind_method(D_METHOD("isChatAccount", "steam_id"), &Steam::isChatAccount);
+	ClassDB::bind_method(D_METHOD("isClanAccount", "steam_id"), &Steam::isClanAccount);
+	ClassDB::bind_method(D_METHOD("isConsoleUserAccount", "steam_id"), &Steam::isConsoleUserAccount);
+	ClassDB::bind_method(D_METHOD("isIndividualAccount", "steam_id"), &Steam::isIndividualAccount);
+	ClassDB::bind_method(D_METHOD("isLobby", "steam_id"), &Steam::isLobby);
 	ClassDB::bind_method(D_METHOD("isSteamRunning"), &Steam::isSteamRunning);
 	ClassDB::bind_method(D_METHOD("run_callbacks"), &Steam::run_callbacks);
 	ClassDB::bind_method(D_METHOD("restartAppIfNecessary", "app_id"), &Steam::restartAppIfNecessary);
