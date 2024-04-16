@@ -18,13 +18,17 @@ Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https
 
 Current Build
 ----------
-You can [download pre-compiled versions _(currently v3.23)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.23 Changes**
-- Added: two new Friends class constants
-- Added: new function `dismissGamepadTextInput()`
-- Added: new general constant ACCOUNT_ID_INVALID
-- Removed: App Lists class functions, callbacks, etc. due to SDK 1.59 changes
+**Version 3.23.1 Changes**
+- Added: internal notes about where enums are found
+- Added: minor extra helper functions from Steam's client header
+- Added: `getSteamID32` function to convert SteamID64 to SteamID
+- Changed: replaced deprecated Controller struct with Inputs struct in `getDigitalActionData`
+- Changed: in-editor docs
+- Changed: leaderboard details max now set at highest instead of zero by default
+- Fixed: incorrect constant for PUBLISHED_FILE_UPDATE_HANDLE_INVALID
+- Fixed: `getAllLobbyData` sending back all pairs, thanks to ***freehuntx***
 
 [You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
 
@@ -47,8 +51,7 @@ Quick How-To
 ----------
 For complete instructions on how to build the GDNative version of GodotSteam, [please refer to our documentation's 'How-To GDNative' section.](https://godotsteam.com/howto/gdnative/)  It will have the most up-to-date information.
 
-
-Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/CoaguCo-Industries/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1045) and skip compiling it yourself!
+Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/GodotSteam/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1045) and skip compiling it yourself!
 
 Usage
 ----------
