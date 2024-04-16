@@ -55,10 +55,12 @@ jobs:
           ref: ${{ inputs.steamworks_sdk_tag }}
 
       - name: Copy Steamworks
+        shell: bash
         run: |
-          robocopy steamworks/public/steam godot/modules/godotsteam/sdk/public/steam /e
-          robocopy steamworks/redistributable_bin godot/modules/godotsteam/sdk/redistributable_bin /e
-          EXIT 0
+          cp -r steamworks/public godotsteam/sdk
+          cp -r steamworks/redistributable_bin godotsteam/sdk
+          ls -la 
+          ls -la godotsteam/sdk
 
       # Compile Godot-CPP
       - name: Compile godot-cpp

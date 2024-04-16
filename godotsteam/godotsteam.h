@@ -36,6 +36,9 @@
 #include "Dictionary.hpp"
 #include "IP.hpp"
 
+// Include GodotSteam headers
+#include "godotsteam_constants.h"
+
 // Include some system headers
 #include "map"
 
@@ -62,6 +65,14 @@ public:
 	CSteamID createSteamID(uint64_t steam_id);
 
 	// Main /////////////////////////////////
+	uint32_t getSteamID32(uint64_t steam_id);
+	bool isAnonAccount(uint64_t steam_id);
+	bool isAnonUserAccount(uint64_t steam_id);
+	bool isChatAccount(uint64_t steam_id);
+	bool isClanAccount(uint64_t steam_id);
+	bool isConsoleUserAccount(uint64_t steam_id);
+	bool isIndividualAccount(uint64_t steam_id);
+	bool isLobby(uint64_t steam_id);
 	bool isSteamRunning();
 	bool restartAppIfNecessary(uint32 app_id);
 	void steamworksError(String failed_signal);
@@ -881,7 +892,7 @@ private:
 	// Leaderboards
 	SteamLeaderboard_t leaderboard_handle;
 	Array leaderboard_entries_array;
-	int leaderboard_details_max = 0;
+	int leaderboard_details_max = LEADERBOARD_DETAIL_MAX;
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;

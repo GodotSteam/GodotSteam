@@ -17,7 +17,6 @@
 //
 // Include GodotSteam header
 #include "godotsteam.h"
-#include "godotsteam_constants.h"
 
 // Include some system headers
 #include "string.h"
@@ -245,6 +244,54 @@ CSteamID Steam::createSteamID(uint64_t steam_id){
 ///// MAIN FUNCTIONS
 /////////////////////////////////////////////////
 //
+// Convert a SteamID64 into a SteamID
+uint32_t Steam::getSteamID32(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.GetAccountID();
+}
+
+// Is this an anonymous account?
+bool Steam::isAnonAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BAnonAccount();
+}
+
+// Is this an anonymous user account? Used to create an account or reset a password, but do not try to do this.
+bool Steam::isAnonUserAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BAnonUserAccount();
+}
+
+// Is this a chat account ID?
+bool Steam::isChatAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BChatAccount();
+}
+
+// Is this a clan account ID?
+bool Steam::isClanAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BClanAccount();
+}
+
+// Is this a faked up Steam ID for a PSN friend account?
+bool Steam::isConsoleUserAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BConsoleUserAccount();
+}
+
+// Is this an individual user account ID?
+bool Steam::isIndividualAccount(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.BIndividualAccount();
+}
+
+// Is this a lobby account ID?
+bool Steam::isLobby(uint64_t steam_id) {
+	CSteamID this_steam_id = (uint64)steam_id;
+	return this_steam_id.IsLobby();
+}
+
 // Returns true/false if Steam is running.
 bool Steam::isSteamRunning(void){
 	return SteamAPI_IsSteamRunning();
@@ -2328,7 +2375,7 @@ Array Steam::getDeviceBindingRevision(uint64_t input_handle){
 
 // Returns the current state of the supplied digital game action.
 Dictionary Steam::getDigitalActionData(uint64_t input_handle, uint64_t digital_action_handle){
-	ControllerDigitalActionData_t data;
+	InputDigitalActionData_t data;
 	Dictionary d;
 	memset(&data, 0, sizeof(data));
 	if(SteamInput() != NULL){
@@ -3313,9 +3360,9 @@ bool Steam::setLobbyData(uint64_t steam_lobby_id, String key, String value){
 
 // Get lobby data by the lobby's ID
 Dictionary Steam::getAllLobbyData(uint64_t steam_lobby_id){
-	Dictionary data;
-	if(SteamMatchmaking() == NULL){
-		return data;
+	Dictionary all_data;
+	if (SteamMatchmaking() == NULL) {
+		return all_data;
 	}
 	CSteamID lobby_id = (uint64)steam_lobby_id;
 	int data_count = SteamMatchmaking()->GetLobbyDataCount(lobby_id);
@@ -3323,13 +3370,15 @@ Dictionary Steam::getAllLobbyData(uint64_t steam_lobby_id){
 	char value[CHAT_METADATA_MAX];
 	for(int i = 0; i < data_count; i++){
 		bool success = SteamMatchmaking()->GetLobbyDataByIndex(lobby_id, i, key, MAX_LOBBY_KEY_LENGTH, value, CHAT_METADATA_MAX);
-		if(success){
+		if (success) {
+			Dictionary data;
 			data["index"] = i;
 			data["key"] = key;
 			data["value"] = value;
+			all_data[i] = data;
 		}
 	}
-	return data;
+	return all_data;
 }
 
 // Removes a metadata key from the lobby.
@@ -10829,6 +10878,14 @@ void Steam::_register_methods(){
 	/////////////////////////////////////////////
 	//
 	// STEAM MAIN BIND METHODS //////////////////
+	register_method("getSteamID32", &Steam::getSteamID32);
+	register_method("isAnonAccount", &Steam::isAnonAccount);
+	register_method("isAnonUserAccount", &Steam::isAnonUserAccount);
+	register_method("isChatAccount", &Steam::isChatAccount);
+	register_method("isClanAccount", &Steam::isClanAccount);
+	register_method("isConsoleUserAccount", &Steam::isConsoleUserAccount);
+	register_method("isIndividualAccount", &Steam::isIndividualAccount);
+	register_method("isLobby", &Steam::isLobby);
 	register_method("isSteamRunning", &Steam::isSteamRunning);
 	register_method("run_callbacks", &Steam::run_callbacks);
 	register_method("restartAppIfNecessary", &Steam::restartAppIfNecessary);
