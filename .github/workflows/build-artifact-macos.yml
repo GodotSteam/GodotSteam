@@ -146,11 +146,11 @@ jobs:
           lipo -create bin/godot.osx.opt.x86_64 bin/godot.osx.opt.arm64 -output bin/godot.osx.template.universal
           $STRIP bin/godot.osx.template.universal
           cp -r misc/dist/osx_template.app bin/
-          mkdir -p bin/macos_template.app/Contents/MacOS
-          cp bin/godot.osx.template.universal bin/macos_template.app/Contents/MacOS/godot_macos_release.universal
-          cp bin/godot.osx.template.debug.universal bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
-          chmod +x bin/macos_template.app/Contents/MacOS/godot_macos*
-          zip -q -9 -r bin/macos.zip bin/macos_template.app
+          mkdir -p bin/osx_template.app/Contents/MacOS
+          cp bin/godot.osx.template.universal bin/osx_template.app/Contents/MacOS/godot_osx_release.universal
+          cp bin/godot.osx.template.debug.universal bin/osx_template.app/Contents/MacOS/godot_osx_debug.universal
+          chmod +x bin/osx_template.app/Contents/MacOS/godot_osx*
+          zip -q -9 -r bin/macos.zip bin/osx_template.app
           ls -l bin/
 
       - name: Upload Mac Template App
