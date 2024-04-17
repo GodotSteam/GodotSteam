@@ -971,15 +971,15 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steam_id) {
 			sprintf(gameIP, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 			friend_game["ip"] = gameIP;
 			friend_game["game_port"] = game_info.m_usGamePort;
-			friend_game["query_port"] = (char)game_info.m_usQueryPort;
+			friend_game["query_port"] = game_info.m_usQueryPort;
 			friend_game["lobby"] = uint64_t(game_info.m_steamIDLobby.ConvertToUint64());
 		}
 		else{
 			friend_game["id"] = game_info.m_gameID.AppID();
 			friend_game["ip"] = "0.0.0.0";
-			friend_game["game_port"] = "0";
-			friend_game["query_port"] = "0";
-			friend_game["lobby"] = "No valid lobby";
+			friend_game["game_port"] = 0;
+			friend_game["query_port"] = 0;
+			friend_game["lobby"] = 0; // No valid lobby
 		}
 	}
 	return friend_game;
@@ -995,6 +995,7 @@ Dictionary Steam::getFriendMessage(uint64_t friend_id, int message) {
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(friend_id), message, text, STEAM_LARGE_BUFFER_SIZE, &type);
 	chat["text"] = String(text);
+	chat["type"] = type;
 	return chat;
 }
 
@@ -2893,14 +2894,17 @@ int32 Steam::getItemsByID(const PackedInt64Array id_array) {
 }
 
 // After a successful call to RequestPrices, you can call this method to get the pricing for a specific item definition.
-uint64_t Steam::getItemPrice(uint32 definition) {
+Dictionary Steam::getItemPrice(uint32 definition) {
+	Dictionary prices;
 	if (SteamInventory() == NULL) {
-		return 0;
+		return prices;
 	}
 	uint64 price = 0;
-	uint64 basePrice = 0;
-	SteamInventory()->GetItemPrice(definition, &price, &basePrice);
-	return price;
+	uint64 base_price = 0;
+	SteamInventory()->GetItemPrice(definition, &price, &base_price);
+	prices["price"] = (uint64_t)price;
+	prices["base_price"] = (uint64_t)base_price;
+	return prices;
 }
 
 // After a successful call to RequestPrices, you can call this method to get all the pricing for applicable item definitions. Use the result of GetNumItemsWithPrices as the the size of the arrays that you pass in.
@@ -3601,7 +3605,7 @@ Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request
 			this_server_list_request = (uint64)server_list_request;
 		}
 		gameserveritem_t *server_item = new gameserveritem_t;
-		SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
+		server_item = SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
 		// Populate the dictionary
 		game_server["ping"] = server_item->m_nPing;
 		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
@@ -4380,6 +4384,7 @@ Dictionary Steam::getSessionConnectionInfo(const String &identity_reference, boo
 			connection_info["end_reason"] = this_info.m_eEndReason;
 			connection_info["end_debug"] = this_info.m_szEndDebug;
 			connection_info["debug_description"] = this_info.m_szConnectionDescription;
+			connection_info["info_flags"] = this_info.m_nFlags;
 		}
 		// If getting the quick status
 		if (get_status) {
@@ -4721,6 +4726,7 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle) {
 			connection_info["end_reason"] = info.m_eEndReason;
 			connection_info["end_debug"] = info.m_szEndDebug;
 			connection_info["debug_description"] = info.m_szConnectionDescription;
+			connection_info["info_flags"] = info.m_nFlags;
 		}
 	}
 	return connection_info;
@@ -8941,6 +8947,7 @@ void Steam::connected_friend_chat_message(GameConnectedFriendChatMsg_t *call_dat
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(steam_id), message, text, 2048, &type);
 	chat["text"] = String(text);
+	chat["type"] = type;
 	emit_signal("friend_chat_message", chat);
 }
 
