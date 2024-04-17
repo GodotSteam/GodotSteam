@@ -2602,7 +2602,7 @@
 				After a successful call to [method Steam.requestPrices], you can call this method to get the pricing for a specific item definition.
 				The returned dictionary contains the following keys:
 				[codeblock]
-				┠╴price (bool)
+				┠╴price (int)
 				┖╴base_price (int)
 				[/codeblock]
 			</description>
