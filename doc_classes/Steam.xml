@@ -2147,7 +2147,8 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴ret (int)
-				┖╴text (string)
+				┠╴text (string)
+				┖╴type (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -2595,10 +2596,15 @@
 			</description>
 		</method>
 		<method name="getItemPrice">
-			<return type="int" />
+			<return type="Dictionary" />
 			<param index="0" name="definition" type="int" />
 			<description>
 				After a successful call to [method Steam.requestPrices], you can call this method to get the pricing for a specific item definition.
+				The returned dictionary contains the following keys:
+				[codeblock]
+				┠╴price (bool)
+				┖╴base_price (int)
+				[/codeblock]
 			</description>
 		</method>
 		<method name="getItemState">
@@ -7026,7 +7032,8 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴ret (int)
-				┖╴text (string)
+				┠╴text (string)
+				┖╴type (int)
 				[/codeblock]
 			</description>
 		</signal>

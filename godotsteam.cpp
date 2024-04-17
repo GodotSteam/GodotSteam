@@ -2925,13 +2925,13 @@ int32 Steam::getItemsByID(const PackedInt64Array id_array) {
 Dictionary Steam::getItemPrice(uint32 definition) {
 	Dictionary prices;
 	if (SteamInventory() == NULL) {
-		return 0;
+		return prices;
 	}
 	uint64 price = 0;
-	uint64 basePrice = 0;
-	SteamInventory()->GetItemPrice(definition, &price, &basePrice);
+	uint64 base_price = 0;
+	SteamInventory()->GetItemPrice(definition, &price, &base_price);
 	prices["price"] = (uint64_t)price;
-	prices["base_price"] = (uint64_t)basePrice;
+	prices["base_price"] = (uint64_t)base_price;
 	return prices;
 }
 
@@ -4979,7 +4979,6 @@ Dictionary Steam::getConnectionRealTimeStatus(uint32 connection, int lanes, bool
 				connection_status["pending_reliable"] = this_status.m_cbPendingReliable;
 				connection_status["sent_unacknowledged_reliable"] = this_status.m_cbSentUnackedReliable;
 				connection_status["queue_time"] = (uint64_t)this_status.m_usecQueueTime;
-				
 			}
 			real_time_status["connection_status"] = connection_status;
 			// Get the lane information

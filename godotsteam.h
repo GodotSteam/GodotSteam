@@ -2049,7 +2049,7 @@ public:
 	int32 getAllItems();
 	String getItemDefinitionProperty(uint32 definition, const String &name);
 	int32 getItemsByID(const PackedInt64Array id_array);
-	uint64_t getItemPrice(uint32 definition);
+	Dictionary getItemPrice(uint32 definition);
 	Array getItemsWithPrices();
 	String getResultItemProperty(uint32 index, const String &name, int32 this_inventory_handle = 0);
 	Array getResultItems(int32 this_inventory_handle = 0);
