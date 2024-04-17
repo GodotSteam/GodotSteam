@@ -20,14 +20,14 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.6.2 Changes**
-- Added: internal notes about where enums are found
-- Added: minor extra helper functions from Steam's client header
-- Added: `getSteamID32` function to convert SteamID64 to SteamID
-- Changed: replaced deprecated Controller struct with Inputs struct in `getDigitalActionData`
-- Changed: in-editor docs
-- Changed: leaderboard details max now set at highest instead of zero by default
-- Fixed: incorrect constant for PUBLISHED_FILE_UPDATE_HANDLE_INVALID
+**Version 4.6.3 Changes**
+
+- Changed: returned values for getFriendGamePlayed, ***thanks to SlejmUr***
+- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
+- Changed: `getFriendMessage()` and callback `connected_friend_chat_message` now returns the type, ***thanks to SlejmUr***
+- Changed: updated in-editor docs with changes
+- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
+- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
 
 [You can read more change-logs here](https://godotsteam.com/changelog/gdextension/).
 
