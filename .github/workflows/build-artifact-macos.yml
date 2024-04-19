@@ -209,7 +209,7 @@ jobs:
           $STRIP bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }}
           lipo -create bin/godot.macos.template_release.x86_64${{ matrix.build-mono && '.mono' || '' }} bin/godot.macos.template_release.arm64${{ matrix.build-mono && '.mono' || '' }} -output bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }}
           $STRIP bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }}
-          cp -r misc/dist/macos_template.app .
+          cp -r misc/dist/macos_template.app bin/
           mkdir -p bin/macos_template.app/Contents/MacOS
           cp bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }} bin/macos_template.app/Contents/MacOS/godot_macos_release.universal
           cp bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }} bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
@@ -222,6 +222,7 @@ jobs:
         with:
           name: macos${{ matrix.build-mono && '-mono' || '' }}-template-app
           path: bin/macos${{ matrix.build-mono && '-mono' || '' }}.zip
+
 
       - name: Clear bin
         run: |
