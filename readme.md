@@ -24,7 +24,7 @@ You can [download pre-compiled versions _(currently v4.6-mp)_ of this repo here]
 - Fixed: lobby_state breaking after calling close on peer, ***thanks to Hangman***
 
 **Version 4.6.2**
-Version bump to sync with 4.x branch
+- Version bump to sync with 4.x branch
 
 **Version 4.6.1**
 - Added: various fixes including Linux compiling, ***thanks to friartruck***
