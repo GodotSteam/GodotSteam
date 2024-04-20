@@ -274,6 +274,7 @@ void SteamMultiplayerPeer::process_ping(const SteamNetworkingMessage_t *msg) {
 void SteamMultiplayerPeer::close() {
 	ERR_FAIL_COND_MSG(lobby_id == CSteamID(), "CAN'T LEAVE A LOBBY IF YOUR'E NOT IN ONE!");
 	SteamMatchmaking()->LeaveLobby(lobby_id);
+	lobby_state = LOBBY_STATE::LOBBY_STATE_NOT_CONNECTED;
 }
 
 int SteamMultiplayerPeer::get_unique_id() const {
