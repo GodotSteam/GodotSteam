@@ -7771,6 +7771,9 @@
 			</description>
 		</signal>
 		<signal name="lobby_data_update">
+      <param index="0" name="success" type="int" />
+      <param index="1" name="lobby_id" type="int" />
+      <param index="2" name="member_id" type="int" />
 			<description>
 				The lobby metadata has changed.
 			</description>
