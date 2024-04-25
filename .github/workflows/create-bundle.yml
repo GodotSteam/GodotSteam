@@ -54,12 +54,6 @@ jobs:
           name: ${{ inputs.artifact_type }}-template-app
           path: files
 
-      - name: Double-Check Mac Files
-        if: ${{ inputs.platform == 'MacOS' || inputs.platform == 'MacOS Mono' }}
-        shell: bash
-        run: |
-          ls -la files
-        
       - name: Download ${{ inputs.platform }} Steam Redistributable
         if: ${{ inputs.platform != 'MacOS' }}
         uses: actions/download-artifact@v4
@@ -69,6 +63,7 @@ jobs:
 
       - name: Create ${{ inputs.platform }} Bundle
         run: |
+          ls -la files/
           zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
 
       - name: Upload ${{ inputs.platform }} Bundle Artifact
