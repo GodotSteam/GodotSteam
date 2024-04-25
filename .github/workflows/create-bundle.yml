@@ -4,12 +4,15 @@ on:
       artifact_type:
         required: true
         type: string
+
       platform:
         required: true
         type: string
+
       zip_prefix:
         required: true
         type: string
+
       zip_tag:
         required: true
         type: string

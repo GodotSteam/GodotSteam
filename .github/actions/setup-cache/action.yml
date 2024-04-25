@@ -1,17 +1,26 @@
 name: Setup Build Cache
+
+
 description: Setup SCONS build cache
+
+
 inputs:
   cache-name:
     description: The cache base name (job name by default)
     default: "${{ github.job }}"
+
   scons-cache:
     description: The scons cache path
     default: "${{ github.workspace }}/.scons-cache/"
+
   godot-base:
     description: Base version of Godot
     default: "3.5.3"
+
+
 runs:
   using: "composite"
+
   steps:
     - name: Load .scons_cache directory
       uses: actions/cache@v4

@@ -20,15 +20,17 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.23.1 Changes**
-- Added: internal notes about where enums are found
-- Added: minor extra helper functions from Steam's client header
-- Added: `getSteamID32` function to convert SteamID64 to SteamID
-- Changed: replaced deprecated Controller struct with Inputs struct in `getDigitalActionData`
-- Changed: in-editor docs
-- Changed: leaderboard details max now set at highest instead of zero by default
-- Fixed: incorrect constant for PUBLISHED_FILE_UPDATE_HANDLE_INVALID
-- Fixed: `getAllLobbyData` sending back all pairs, thanks to ***freehuntx***
+**Version 3.24 Changes**
+- Changed: internal argument for `executeJavascript()` to match godot4
+- Changed: returned values for getFriendGamePlayed, ***thanks to SlejmUr***
+- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
+- Changed: `getFriendMessage()` and callback `connected_friend_chat_message` now returns the type, ***thanks to SlejmUr***
+- Changed: updated in-editor docs with changes
+- Changed: minor organizational things, variable naming, etc.
+- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
+- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
+- Fixed: `getBeaconDetails()` never passing beacon metadata
+- Removed: unused internal variables
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot3/).
 
@@ -37,7 +39,7 @@ Compatibility
 While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below. Newer API files (dll, so, dylib) _should_ still work for older versions.
 
 Steamworks SDK Version | GodotSteam Version
----|---
+---|---|---
 1.59 or newer | 3.23 or newer
 1.53 to 1.58a | 3.12 to 3.22.4
 1.52 or older | 3.11.1 or older

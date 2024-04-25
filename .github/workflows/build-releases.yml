@@ -1,5 +1,6 @@
 name: Build Releases
 
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,16 +9,18 @@ on:
         required: true
         type: string
         default: 'sdk-1.59'
+
       godot_tag:
         description: 'Godot Github tag:'
         required: true
         type: string
         default: '3.5.3-stable'
+
       godotsteam_version:
         description: 'GodotSteam version number:'
         required: true
         type: string
-        default: '3.23.1'
+        default: '3.24'
 
 
 jobs:

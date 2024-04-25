@@ -7751,7 +7751,8 @@
 		</signal>
 		<signal name="leaderboard_scores_downloaded">
 			<argument index="0" name="message" type="String" />
-			<argument index="1" name="leaderboard_entries" type="Array" />
+			<argument index="1" name="leaderboard_handle" type="int" />
+			<argument index="2" name="leaderboard_entries" type="Array" />
 			<description>
 				Called when scores for a leaderboard have been downloaded and are ready to be retrieved.
 				The returned array contains dictionaries containing the following keys:

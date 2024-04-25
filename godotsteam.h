@@ -1,18 +1,18 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
 
-/////////////////////////////////////////////////
+
 // SILENCE STEAMWORKS WARNINGS
 /////////////////////////////////////////////////
 //
 // Turn off MSVC-only warning about strcpy
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
-#pragma warning(disable:4996)
-#pragma warning(disable:4828)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4828)
 #endif
 
-/////////////////////////////////////////////////
+
 // INCLUDE HEADERS
 /////////////////////////////////////////////////
 //
@@ -38,11 +38,17 @@
 // Include some system headers
 #include "map"
 
-class Steam: public Object {
+class Steam : public Object {
+
 	GDCLASS(Steam, Object);
 
 public:
-	/////////////////////////////////////////
+		
+	static Steam *get_singleton();
+	Steam();
+	~Steam();
+
+
 	// STEAMWORKS API ENUMS
 	/////////////////////////////////////////
 	//
@@ -1766,18 +1772,12 @@ public:
 		TEXT_FILTERING_CONTEXT_CHAT = k_ETextFilteringContextChat,
 		TEXT_FILTERING_CONTEXT_NAME = k_ETextFilteringContextName
 	};
-		
-	static Steam* get_singleton();
-	Steam();
-	~Steam();
 
 
-	/////////////////////////////////////////
 	// STEAMWORKS FUNCTIONS
 	/////////////////////////////////////////
 	//
 	CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
-
 	
 	// Main /////////////////////////////////
 	uint32_t getSteamID32(uint64_t steam_id);
@@ -1790,7 +1790,7 @@ public:
 	bool isLobby(uint64_t steam_id);
 	bool isSteamRunning();
 	bool restartAppIfNecessary(uint32 app_id);
-	void steamworksError(const String& failed_signal);
+	void steamworksError(const String &failed_signal);
 	Dictionary steamInit(bool retrieve_stats = true, uint32_t app_id = 0, bool embed_callbacks = false);
 	Dictionary steamInitEx(bool retrieve_stats = true, uint32_t app_id = 0, bool embed_callbacks = false);
 	void steamShutdown();
@@ -1816,29 +1816,22 @@ public:
 	int32 getDLCCount();
 	Dictionary getDLCDownloadProgress(uint32_t dlc_id);
 	uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
-	void getFileDetails(const String& filename);
+	void getFileDetails(const String &filename);
 	Array getInstalledDepots(uint32_t app_id);
 	String getLaunchCommandLine();
-	String getLaunchQueryParam(const String& key);
+	String getLaunchQueryParam(const String &key);
 	void installDLC(uint32_t dlc_id);
 	bool markContentCorrupt(bool missing_files_only);
 	bool setDLCContext(uint32_t app_id);
 	void uninstallDLC(uint32_t dlc_id);
-	
-	// App Lists ////////////////////////////
-	uint32 getNumInstalledApps();
-	Array getInstalledApps(uint32 max_app_ids);
-	String getAppName(uint32_t app_id, int name_max);
-	String getAppListInstallDir(uint32_t app_id, int name_max);
-	int getAppListBuildId(uint32_t app_id);
 
 	// Friends //////////////////////////////
-	void activateGameOverlay(const String& type);
+	void activateGameOverlay(const String &type);
 	void activateGameOverlayInviteDialog(uint64_t steam_id);
-	void activateGameOverlayInviteDialogConnectString(const String& connect_string);
+	void activateGameOverlayInviteDialogConnectString(const String &connect_string);
 	void activateGameOverlayToStore(uint32_t app_id = 0);
-	void activateGameOverlayToUser(const String& type, uint64_t steam_id);
-	void activateGameOverlayToWebPage(const String& url);
+	void activateGameOverlayToUser(const String &type, uint64_t steam_id);
+	void activateGameOverlayToWebPage(const String &url);
 	void clearRichPresence();
 	bool closeClanChatWindowInSteam(uint64_t chat_id);
 	void downloadClanActivityCounts(uint64_t clan_id, int clans_to_request);
@@ -1869,9 +1862,9 @@ public:
 	String getFriendPersonaNameHistory(uint64_t steam_id, int name_history);
 	PersonaState getFriendPersonaState(uint64_t steam_id);
 	FriendRelationship getFriendRelationship(uint64_t steam_id);
-	String getFriendRichPresence(uint64_t friend_id, const String& key);
+	String getFriendRichPresence(uint64_t friend_id, const String &key);
 	int getFriendRichPresenceKeyCount(uint64_t friend_id);
-	String getFriendRichPresenceKeyByIndex(uint64_t friend_id, int key);		
+	String getFriendRichPresenceKeyByIndex(uint64_t friend_id, int key);
 	int getFriendsGroupCount();
 	int16 getFriendsGroupIDByIndex(int16 friend_group);
 	int getFriendsGroupMembersCount(int16 friend_group);
@@ -1894,7 +1887,7 @@ public:
 	Array getUserSteamGroups();
 	bool hasEquippedProfileItem(uint64_t steam_id, CommunityProfileItemType item_type);
 	bool hasFriend(uint64_t steam_id, int friend_flags);
-	bool inviteUserToGame(uint64_t friend_id, const String& connect_string);
+	bool inviteUserToGame(uint64_t friend_id, const String &connect_string);
 	bool isClanChatAdmin(uint64_t chat_id, uint64_t steam_id);
 	bool isClanPublic(uint64_t clan_id);
 	bool isClanOfficialGameGroup(uint64_t clan_id);
@@ -1904,29 +1897,29 @@ public:
 	void joinClanChatRoom(uint64_t clan_id);
 	bool leaveClanChatRoom(uint64_t clan_id);
 	bool openClanChatWindowInSteam(uint64_t chat_id);
-	bool registerProtocolInOverlayBrowser(const String& protocol);
-	bool replyToFriendMessage(uint64_t steam_id, const String& message);
+	bool registerProtocolInOverlayBrowser(const String &protocol);
+	bool replyToFriendMessage(uint64_t steam_id, const String &message);
 	void requestClanOfficerList(uint64_t clan_id);
 	void requestEquippedProfileItems(uint64_t steam_id);
 	void requestFriendRichPresence(uint64_t friend_id);
 	bool requestUserInformation(uint64_t steam_id, bool require_name_only);
-	bool sendClanChatMessage(uint64_t chat_id, const String& text);
+	bool sendClanChatMessage(uint64_t chat_id, const String &text);
 	void setInGameVoiceSpeaking(uint64_t steam_id, bool speaking);
 	bool setListenForFriendsMessages(bool intercept);
-	void setPersonaName(const String& name);
+	void setPersonaName(const String &name);
 	void setPlayedWith(uint64_t steam_id);
-	bool setRichPresence(const String& key, const String& value);
+	bool setRichPresence(const String &key, const String &value);
 
 	// Game Search //////////////////////////
-	int addGameSearchParams(const String& key, const String& values);
+	int addGameSearchParams(const String &key, const String &values);
 	int searchForGameWithLobby(uint64_t lobby_id, int player_min, int player_max);
 	int searchForGameSolo(int player_min, int player_max);
 	int acceptGame();
 	int declineGame();
 	String retrieveConnectionDetails(uint64_t host_id);
 	int endGameSearch();
-	int setGameHostParams(const String& key, const String& value);
-	int setConnectionDetails(const String& details, int connection_details);
+	int setGameHostParams(const String &key, const String &value);
+	int setConnectionDetails(const String &details, int connection_details);
 	int requestPlayersForGame(int player_min, int player_max, int max_team_size);
 	int hostConfirmGameStart(uint64_t game_id);
 	int cancelRequestPlayersForGame();
@@ -1934,12 +1927,12 @@ public:
 	int endGame(uint64_t game_id);
 
 	// HTML Surface /////////////////////////
-	void addHeader(const String& key, const String& value, uint32 this_handle = 0);
+	void addHeader(const String &key, const String &value, uint32 this_handle = 0);
 	void allowStartRequest(bool allowed, uint32 this_handle = 0);
 	void copyToClipboard(uint32 this_handle = 0);
-	void createBrowser(const String& user_agent = "", const String& user_css = "");
-	void executeJavascript(const String& script, uint32 this_handle = 0);
-	void find(const String& search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
+	void createBrowser(const String &user_agent = "", const String &user_css = "");
+	void executeJavascript(const String &javascript, uint32 this_handle = 0);
+	void find(const String &search, bool currently_in_find, bool reverse, uint32 this_handle = 0);
 	void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 	void goBack(uint32 this_handle = 0);
 	void goForward(uint32 this_handle = 0);
@@ -1948,7 +1941,7 @@ public:
 	void keyChar(uint32 unicode_char, int key_modifiers, uint32 this_handle = 0);
 	void keyDown(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
 	void keyUp(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
-	void loadURL(const String& url, const String& post_data, uint32 this_handle = 0);
+	void loadURL(const String &url, const String &post_data, uint32 this_handle = 0);
 	void mouseDoubleClick(HTMLMouseButton mouse_button, uint32 this_handle = 0);
 	void mouseDown(HTMLMouseButton mouse_button, uint32 this_handle = 0);
 	void mouseMove(int x, int y, uint32 this_handle = 0);
@@ -1958,7 +1951,7 @@ public:
 	void reload(uint32 this_handle = 0);
 	void removeBrowser(uint32 this_handle = 0);
 	void setBackgroundMode(bool background_mode, uint32 this_handle = 0);
-	void setCookie(const String& hostname, const String& key, const String& value, const String& path, uint32 expires, bool secure, bool http_only);
+	void setCookie(const String &hostname, const String &key, const String &value, const String &path, uint32 expires, bool secure, bool http_only);
 	void setHorizontalScroll(uint32 absolute_pixel_scroll, uint32 this_handle = 0);
 	void setKeyFocus(bool has_key_focus, uint32 this_handle = 0);
 	void setPageScaleFactor(float zoom, int point_x, int point_y, uint32 this_handle = 0);
@@ -1970,32 +1963,32 @@ public:
 	void viewSource(uint32 this_handle = 0);
 
 	// HTTP /////////////////////////////////
-	uint32_t createCookieContainer( bool allow_responses_to_modify);
-	uint32_t createHTTPRequest(HTTPMethod request_method, const String& absolute_url);
+	uint32_t createCookieContainer(bool allow_responses_to_modify);
+	uint32_t createHTTPRequest(HTTPMethod request_method, const String &absolute_url);
 	bool deferHTTPRequest(uint32 request_handle);
 	float getHTTPDownloadProgressPct(uint32 request_handle);
 	bool getHTTPRequestWasTimedOut(uint32 request_handle);
 	PoolByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 	uint32 getHTTPResponseBodySize(uint32 request_handle);
-	uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String& header_name);
-	uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String& header_name, uint32 buffer_size);
+	uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String &header_name);
+	uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
 	uint8 getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
 	bool prioritizeHTTPRequest(uint32 request_handle);
 	bool releaseCookieContainer(uint32 cookie_handle);
 	bool releaseHTTPRequest(uint32 request_handle);
 	bool sendHTTPRequest(uint32 request_handle);
 	bool sendHTTPRequestAndStreamResponse(uint32 request_handle);
-	bool setHTTPCookie(uint32 cookie_handle, const String& host, const String& url, const String& cookie);
+	bool setHTTPCookie(uint32 cookie_handle, const String &host, const String &url, const String &cookie);
 	bool setHTTPRequestAbsoluteTimeoutMS(uint32 request_handle, uint32 milliseconds);
 	bool setHTTPRequestContextValue(uint32 request_handle, uint64_t context_value);
 	bool setHTTPRequestCookieContainer(uint32 request_handle, uint32 cookie_handle);
-	bool setHTTPRequestGetOrPostParameter(uint32 request_handle, const String& name, const String& value);
-	bool setHTTPRequestHeaderValue(uint32 request_handle, const String& header_name, const String& header_value);
+	bool setHTTPRequestGetOrPostParameter(uint32 request_handle, const String &name, const String &value);
+	bool setHTTPRequestHeaderValue(uint32 request_handle, const String &header_name, const String &header_value);
 	bool setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 timeout_seconds);
-	uint8 setHTTPRequestRawPostBody(uint32 request_handle, const String& content_type, uint32 body_length);
+	uint8 setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, uint32 body_length);
 	bool setHTTPRequestRequiresVerifiedCertificate(uint32 request_handle, bool require_verified_certificate);
-	bool setHTTPRequestUserAgentInfo(uint32 request_handle, const String& user_agent_info);
-	
+	bool setHTTPRequestUserAgentInfo(uint32 request_handle, const String &user_agent_info);
+
 	// Input ////////////////////////////////
 	void activateActionSet(uint64_t input_handle, uint64_t action_set_handle);
 	void activateActionSetLayer(uint64_t input_handle, uint64_t action_set_layer_handle);
@@ -2003,18 +1996,18 @@ public:
 	void deactivateAllActionSetLayers(uint64_t input_handle);
 	void enableDeviceCallbacks();
 //		void enableActionEventCallbacks();
-	uint64_t getActionSetHandle(const String& action_set_name);
+	uint64_t getActionSetHandle(const String &action_set_name);
 	InputActionOrigin getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
 	Array getActiveActionSetLayers(uint64_t input_handle);
 	Dictionary getAnalogActionData(uint64_t input_handle, uint64_t analog_action_handle);
-	uint64_t getAnalogActionHandle(const String& action_name);
+	uint64_t getAnalogActionHandle(const String &action_name);
 	Array getAnalogActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t analog_action_handle);
 	Array getConnectedControllers();
 	uint64_t getControllerForGamepadIndex(int index);
 	uint64_t getCurrentActionSet(uint64_t input_handle);
 	Array getDeviceBindingRevision(uint64_t input_handle);
 	Dictionary getDigitalActionData(uint64_t input_handle, uint64_t digital_action_handle);
-	uint64_t getDigitalActionHandle(const String& action_name);
+	uint64_t getDigitalActionHandle(const String &action_name);
 	Array getDigitalActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t digital_action_handle);
 	int getGamepadIndexForController(uint64_t input_handle);
 	String getGlyphForActionOrigin(InputActionOrigin origin);
@@ -2031,7 +2024,7 @@ public:
 	String getStringForXboxOrigin(int origin);
 	bool inputInit(bool explicitly_call_runframe = false);
 	bool inputShutdown();
-	void inputActionEventCallback(SteamInputActionEvent_t* call_data);
+	void inputActionEventCallback(SteamInputActionEvent_t *call_data);
 	bool newDataAvailable();
 	void runFrame(bool reserved_value = true);
 	void setLEDColor(uint64_t input_handle, int color_r, int color_g, int color_b, int flags);
@@ -2040,10 +2033,10 @@ public:
 	int translateActionOrigin(InputType destination_input, InputActionOrigin source_origin);
 	void triggerHapticPulse(uint64_t input_handle, int target_pad, int duration);
 	void triggerRepeatedHapticPulse(uint64_t input_handle, int target_pad, int duration, int offset, int repeat, int flags);
-	void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String& gain_db, uint8 other_intensity, const String& other_gain_db);
+	void triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String &gain_db, uint8 other_intensity, const String &other_gain_db);
 	void triggerVibration(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed);
 	void triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed, uint16_t right_speed, uint16_t left_trigger_speed, uint16_t right_trigger_speed);
-	bool setInputActionManifestFilePath(const String& manifest_path);
+	bool setInputActionManifestFilePath(const String &manifest_path);
 	void setDualSenseTriggerEffect(uint64_t input_handle, int parameter_index, int trigger_mask, SCEPadTriggerEffectMode effect_mode, int position, int amplitude, int frequency);
 	bool waitForData(bool wait_forever, uint32 timeout);
 
@@ -2057,11 +2050,11 @@ public:
 	int32 exchangeItems(const PoolIntArray output_items, const PoolIntArray output_quantity, const PoolIntArray input_items, const PoolIntArray input_quantity);
 	int32 generateItems(const PoolIntArray items, const PoolIntArray quantity);
 	int32 getAllItems();
-	String getItemDefinitionProperty(uint32 definition, const String& name);
+	String getItemDefinitionProperty(uint32 definition, const String &name);
 	int32 getItemsByID(const PoolIntArray id_array);
-	uint64_t getItemPrice(uint32 definition);
+	Dictionary getItemPrice(uint32 definition);
 	Array getItemsWithPrices();
-	String getResultItemProperty(uint32 index, const String& name, int32 this_inventory_handle = 0);
+	String getResultItemProperty(uint32 index, const String &name, int32 this_inventory_handle = 0);
 	Array getResultItems(int32 this_inventory_handle = 0);
 	String getResultStatus(int32 this_inventory_handle = 0);
 	uint32 getResultTimestamp(int32 this_inventory_handle = 0);
@@ -2075,20 +2068,20 @@ public:
 	int32 triggerItemDrop(uint32 definition);
 	void startUpdateProperties();
 	int32 submitUpdateProperties(uint64_t this_inventory_update_handle = 0);
-	bool removeProperty(uint64_t item_id, const String& name, uint64_t this_inventory_update_handle = 0);
-	bool setPropertyString(uint64_t item_id, const String& name, const String& value, uint64_t this_inventory_update_handle = 0);
-	bool setPropertyBool(uint64_t item_id, const String& name, bool value, uint64_t this_inventory_update_handle = 0);
-	bool setPropertyInt(uint64_t item_id, const String& name, uint64_t value, uint64_t this_inventory_update_handle = 0);
-	bool setPropertyFloat(uint64_t item_id, const String& name, float value, uint64_t this_inventory_update_handle = 0);
+	bool removeProperty(uint64_t item_id, const String &name, uint64_t this_inventory_update_handle = 0);
+	bool setPropertyString(uint64_t item_id, const String &name, const String &value, uint64_t this_inventory_update_handle = 0);
+	bool setPropertyBool(uint64_t item_id, const String &name, bool value, uint64_t this_inventory_update_handle = 0);
+	bool setPropertyInt(uint64_t item_id, const String &name, uint64_t value, uint64_t this_inventory_update_handle = 0);
+	bool setPropertyFloat(uint64_t item_id, const String &name, float value, uint64_t this_inventory_update_handle = 0);
 
 	// Matchmaking //////////////////////////
 	Array getFavoriteGames();
 	int addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
 	bool removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
 	void requestLobbyList();
-	void addRequestLobbyListStringFilter(const String& key_to_match, const String& value_to_match, LobbyComparison comparison_type);
-	void addRequestLobbyListNumericalFilter(const String& key_to_match, int value_to_match, LobbyComparison comparison_type);
-	void addRequestLobbyListNearValueFilter(const String& key_to_match, int value_to_be_close_to);
+	void addRequestLobbyListStringFilter(const String &key_to_match, const String &value_to_match, LobbyComparison comparison_type);
+	void addRequestLobbyListNumericalFilter(const String &key_to_match, int value_to_match, LobbyComparison comparison_type);
+	void addRequestLobbyListNearValueFilter(const String &key_to_match, int value_to_be_close_to);
 	void addRequestLobbyListFilterSlotsAvailable(int slots_available);
 	void addRequestLobbyListDistanceFilter(LobbyDistanceFilter distance_filter);
 	void addRequestLobbyListResultCountFilter(int max_results);
@@ -2098,15 +2091,15 @@ public:
 	bool inviteUserToLobby(uint64_t steam_lobby_id, uint64_t steam_id_invitee);
 	int getNumLobbyMembers(uint64_t steam_lobby_id);
 	uint64_t getLobbyMemberByIndex(uint64_t steam_lobby_id, int member);
-	String getLobbyData(uint64_t steam_lobby_id, const String& key);
-	bool setLobbyData(uint64_t steam_lobby_id, const String& key, const String& value);
+	String getLobbyData(uint64_t steam_lobby_id, const String &key);
+	bool setLobbyData(uint64_t steam_lobby_id, const String &key, const String &value);
 	Dictionary getAllLobbyData(uint64_t steam_lobby_id);
-	bool deleteLobbyData(uint64_t steam_lobby_id, const String& key);
-	String getLobbyMemberData(uint64_t steam_lobby_id, uint64_t steam_id_user, const String& key);
-	void setLobbyMemberData(uint64_t steam_lobby_id, const String& key, const String& value);
-	bool sendLobbyChatMsg(uint64_t steam_lobby_id, const String& message_body);
+	bool deleteLobbyData(uint64_t steam_lobby_id, const String &key);
+	String getLobbyMemberData(uint64_t steam_lobby_id, uint64_t steam_id_user, const String &key);
+	void setLobbyMemberData(uint64_t steam_lobby_id, const String &key, const String &value);
+	bool sendLobbyChatMsg(uint64_t steam_lobby_id, const String &message_body);
 	bool requestLobbyData(uint64_t steam_lobby_id);
-	void setLobbyGameServer(uint64_t steam_lobby_id, const String& server_ip, uint16 server_port, uint64_t steam_id_game_server);
+	void setLobbyGameServer(uint64_t steam_lobby_id, const String &server_ip, uint16 server_port, uint64_t steam_id_game_server);
 	Dictionary getLobbyGameServer(uint64_t steam_lobby_id);
 	bool setLobbyMemberLimit(uint64_t steam_lobby_id, int max_members);
 	int getLobbyMemberLimit(uint64_t steam_lobby_id);
@@ -2121,8 +2114,8 @@ public:
 	int getServerCount(uint64_t server_list_request = 0);
 	Dictionary getServerDetails(int server, uint64_t server_list_request = 0);
 	bool isRefreshing(uint64_t server_list_request = 0);
-	int pingServer(const String& ip, uint16 port);
-	int playerDetails(const String& ip, uint16 port);
+	int pingServer(const String &ip, uint16 port);
+	int playerDetails(const String &ip, uint16 port);
 	void refreshQuery(uint64_t server_list_request = 0);
 	void refreshServer(int server, uint64_t server_list_request = 0);
 	void releaseRequest(uint64_t server_list_request = 0);
@@ -2132,7 +2125,7 @@ public:
 	uint64_t requestInternetServerList(uint32 app_id, Array filters);
 	uint64_t requestLANServerList(uint32 app_id);
 	uint64_t requestSpectatorServerList(uint32 app_id, Array filters);
-	int serverRules(const String& ip, uint16 port);
+	int serverRules(const String &ip, uint16 port);
 
 	// Music ////////////////////////////////
 	bool musicIsEnabled();
@@ -2162,18 +2155,18 @@ public:
 	bool playlistWillChange();
 	bool queueDidChange();
 	bool queueWillChange();
-	bool registerSteamMusicRemote(const String& name);
+	bool registerSteamMusicRemote(const String &name);
 	bool resetPlaylistEntries();
 	bool resetQueueEntries();
 	bool setCurrentPlaylistEntry(int id);
 	bool setCurrentQueueEntry(int id);
-	bool setDisplayName(const String& name);
-	bool setPlaylistEntry(int id, int position, const String& entry_text);
+	bool setDisplayName(const String &name);
+	bool setPlaylistEntry(int id, int position, const String &entry_text);
 	bool setPNGIcon64x64(PoolByteArray icon);
-	bool setQueueEntry(int id, int position, const String& entry_text);
+	bool setQueueEntry(int id, int position, const String &entry_text);
 	bool updateCurrentEntryCoverArt(PoolByteArray art);
 	bool updateCurrentEntryElapsedSeconds(int seconds);
-	bool updateCurrentEntryText(const String& text);
+	bool updateCurrentEntryText(const String &text);
 	bool updateLooped(bool looped);
 	bool updatePlaybackStatus(AudioPlaybackStatus status);
 	bool updateShuffled(bool shuffle);
@@ -2190,29 +2183,29 @@ public:
 	bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, P2PSend send_type, int channel = 0);
 
 	// Networking Messages //////////////////
-	bool acceptSessionWithUser(const String& identity_reference);
-	bool closeChannelWithUser(const String& identity_reference, int channel);
-	bool closeSessionWithUser(const String& identity_reference);
-	Dictionary getSessionConnectionInfo(const String& identity_reference, bool get_connection, bool get_status);
+	bool acceptSessionWithUser(const String &identity_reference);
+	bool closeChannelWithUser(const String &identity_reference, int channel);
+	bool closeSessionWithUser(const String &identity_reference);
+	Dictionary getSessionConnectionInfo(const String &identity_reference, bool get_connection, bool get_status);
 	Array receiveMessagesOnChannel(int channel, int max_messages);
-	int sendMessageToUser(const String& identity_reference, const PoolByteArray data, int flags, int channel);
-	
+	int sendMessageToUser(const String &identity_reference, const PoolByteArray data, int flags, int channel);
+
 	// Networking Sockets ///////////////////
 	int acceptConnection(uint32 connection_handle);
 	bool beginAsyncRequestFakeIP(int num_ports);
-	bool closeConnection(uint32 peer, int reason, const String& debug_message, bool linger);
+	bool closeConnection(uint32 peer, int reason, const String &debug_message, bool linger);
 	bool closeListenSocket(uint32 socket);
 	int configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights);
-	uint32 connectP2P(const String& identity_reference, int virtual_port, Array options);
-	uint32 connectByIPAddress(const String& ip_address_with_port, Array options);
-	uint32 connectToHostedDedicatedServer(const String& identity_reference, int virtual_port, Array options);
+	uint32 connectP2P(const String &identity_reference, int virtual_port, Array options);
+	uint32 connectByIPAddress(const String &ip_address_with_port, Array options);
+	uint32 connectToHostedDedicatedServer(const String &identity_reference, int virtual_port, Array options);
 	void createFakeUDPPort(int fake_server_port);
 	uint32 createHostedDedicatedServerListenSocket(int virtual_port, Array options);
-	uint32 createListenSocketIP(const String& ip_reference, Array options);
+	uint32 createListenSocketIP(const String &ip_reference, Array options);
 	uint32 createListenSocketP2P(int virtual_port, Array options);
 	uint32 createListenSocketP2PFakeIP(int fake_port, Array options);
 	uint32 createPollGroup();
-	Dictionary createSocketPair(bool loopback, const String& identity_reference1, const String& identity_reference2);
+	Dictionary createSocketPair(bool loopback, const String &identity_reference1, const String &identity_reference2);
 	bool destroyPollGroup(uint32 poll_group);
 //		int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
 	int flushMessagesOnConnection(uint32 connection_handle);
@@ -2224,7 +2217,7 @@ public:
 	uint64_t getConnectionUserData(uint32 peer);
 	Dictionary getDetailedConnectionStatus(uint32 connection_handle);
 	Dictionary getFakeIP(int first_port = 0);
-//		int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
+//		int getGameCoordinatorServerLogin(const String &app_data);	<------ Uses datagram relay structs which were removed from base SDK
 //		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 	uint32 getHostedDedicatedServerPOPId();
 	uint16 getHostedDedicatedServerPort();
@@ -2235,52 +2228,52 @@ public:
 	Array receiveMessagesOnConnection(uint32 connection, int max_messages);
 	Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
 //		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
-	void resetIdentity(const String& this_identity);
+	void resetIdentity(const String &this_identity);
 	void runNetworkingCallbacks();
 	void sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags);
 	Dictionary sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags);
-	Dictionary setCertificate(const PoolByteArray& certificate);		
+	Dictionary setCertificate(const PoolByteArray &certificate);		
 	bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
-	void setConnectionName(uint32 peer, const String& name);
+	void setConnectionName(uint32 peer, const String &name);
 
 	// Networking Types /////////////////////
-	bool addIdentity(const String& reference_name);
-	bool addIPAddress(const String& reference_name);
-	void clearIdentity(const String& reference_name);
-	void clearIPAddress(const String& reference_name);
-	uint8 getGenericBytes(const String& reference_name);
-	String getGenericString(const String& reference_name);
+	bool addIdentity(const String &reference_name);
+	bool addIPAddress(const String &reference_name);
+	void clearIdentity(const String &reference_name);
+	void clearIPAddress(const String &reference_name);
+	uint8 getGenericBytes(const String &reference_name);
+	String getGenericString(const String &reference_name);
 	Array getIdentities();
-	uint32 getIdentityIPAddr(const String& reference_name);
-	uint32 getIdentitySteamID(const String& reference_name);
-	uint64_t getIdentitySteamID64(const String& reference_name);
+	uint32 getIdentityIPAddr(const String &reference_name);
+	uint32 getIdentitySteamID(const String &reference_name);
+	uint64_t getIdentitySteamID64(const String &reference_name);
 	Array getIPAddresses();
-	uint32 getIPv4(const String& reference_name);
-	uint64_t getPSNID(const String& reference_name);
-	uint64_t getStadiaID(const String& reference_name);
-	String getXboxPairwiseID(const String& reference_name);
-	bool isAddressLocalHost(const String& reference_name);
-	bool isIdentityInvalid(const String& reference_name);
-	bool isIdentityLocalHost(const String& reference_name);
-	bool isIPv4(const String& reference_name);
-	bool isIPv6AllZeros(const String& reference_name);
-	bool parseIdentityString(const String& reference_name, const String& string_to_parse);
-	bool parseIPAddressString(const String& reference_name, const String& string_to_parse);
-	bool setGenericBytes(const String& reference_name, uint8 data);
-	bool setGenericString(const String& reference_name, const String& this_string);
-	bool setIdentityIPAddr(const String& reference_name, const String& ip_address_name);
-	void setIdentityLocalHost(const String& reference_name);
-	void setIdentitySteamID(const String& reference_name, uint32 steam_id);
-	void setIdentitySteamID64(const String& reference_name, uint64_t steam_id);
-	void setIPv4(const String& reference_name, uint32 ip, uint16 port);
-	void setIPv6(const String& reference_name, uint8 ipv6, uint16 port);
-	void setIPv6LocalHost(const String& reference_name, uint16 port = 0);
-	void setPSNID(const String& reference_name, uint64_t psn_id);
-	void setStadiaID(const String& reference_name, uint64_t stadia_id);
-	bool setXboxPairwiseID(const String& reference_name, const String& xbox_id);
-	String toIdentityString(const String& reference_name);
-	String toIPAddressString(const String& reference_name, bool with_port);
-	const SteamNetworkingConfigValue_t* convertOptionsArray(Array options);
+	uint32 getIPv4(const String &reference_name);
+	uint64_t getPSNID(const String &reference_name);
+	uint64_t getStadiaID(const String &reference_name);
+	String getXboxPairwiseID(const String &reference_name);
+	bool isAddressLocalHost(const String &reference_name);
+	bool isIdentityInvalid(const String &reference_name);
+	bool isIdentityLocalHost(const String &reference_name);
+	bool isIPv4(const String &reference_name);
+	bool isIPv6AllZeros(const String &reference_name);
+	bool parseIdentityString(const String &reference_name, const String &string_to_parse);
+	bool parseIPAddressString(const String &reference_name, const String &string_to_parse);
+	bool setGenericBytes(const String &reference_name, uint8 data);
+	bool setGenericString(const String &reference_name, const String &this_string);
+	bool setIdentityIPAddr(const String &reference_name, const String &ip_address_name);
+	void setIdentityLocalHost(const String &reference_name);
+	void setIdentitySteamID(const String &reference_name, uint32 steam_id);
+	void setIdentitySteamID64(const String &reference_name, uint64_t steam_id);
+	void setIPv4(const String &reference_name, uint32 ip, uint16 port);
+	void setIPv6(const String &reference_name, uint8 ipv6, uint16 port);
+	void setIPv6LocalHost(const String &reference_name, uint16 port = 0);
+	void setPSNID(const String &reference_name, uint64_t psn_id);
+	void setStadiaID(const String &reference_name, uint64_t stadia_id);
+	bool setXboxPairwiseID(const String &reference_name, const String &xbox_id);
+	String toIdentityString(const String &reference_name);
+	String toIPAddressString(const String &reference_name, bool with_port);
+	const SteamNetworkingConfigValue_t *convertOptionsArray(Array options);
 	
 	// Networking Utils /////////////////////
 	bool checkPingDataUpToDate(float max_age_in_seconds);
@@ -2297,14 +2290,14 @@ public:
 	Array getPOPList();
 	NetworkingAvailability getRelayNetworkStatus();
 	void initRelayNetworkAccess();
-	Dictionary parsePingLocationString(const String& location_string);
+	Dictionary parsePingLocationString(const String &location_string);
 	bool setConnectionConfigValueFloat(uint32 connection, NetworkingConfigValue config, float value);
 	bool setConnectionConfigValueInt32(uint32 connection, NetworkingConfigValue config, int32 value);
-	bool setConnectionConfigValueString(uint32 connection, NetworkingConfigValue config, const String& value);
+	bool setConnectionConfigValueString(uint32 connection, NetworkingConfigValue config, const String &value);
 //		bool setConfigValue(NetworkingConfigValue setting, NetworkingConfigScope scope_type, uint32_t connection_handle, NetworkingConfigDataType data_type, auto value);
 	bool setGlobalConfigValueFloat(NetworkingConfigValue config, float value);		
 	bool setGlobalConfigValueInt32(NetworkingConfigValue config, int32 value);
-	bool setGlobalConfigValueString(NetworkingConfigValue config, const String& value);
+	bool setGlobalConfigValueString(NetworkingConfigValue config, const String &value);
 
 	// Parental Settings ////////////////////
 	bool isParentalLockEnabled();
@@ -2317,7 +2310,7 @@ public:
 	// Parties //////////////////////////////
 	void cancelReservation(uint64_t beacon_id, uint64_t steam_id);
 	void changeNumOpenSlots(uint64_t beacon_id, uint32 open_slots);
-	void createBeacon(uint32 open_slots, uint64_t location, PartyBeaconLocationType type, const String& connect_string, const String& metadata);
+	void createBeacon(uint32 open_slots, uint64_t location_id, PartyBeaconLocationType type, const String &connect_string, const String &beacon_metadata);
 	bool destroyBeacon(uint64_t beacon_id);
 	Array getAvailableBeaconLocations(uint32 max);
 	uint64_t getBeaconByIndex(uint32 index);
@@ -2326,7 +2319,7 @@ public:
 	uint32 getNumActiveBeacons();
 	void joinParty(uint64_t beacon_id);
 	void onReservationCompleted(uint64_t beacon_id, uint64_t steam_id);
-	
+
 	// Remote Play //////////////////////////
 	uint32 getSessionCount();
 	uint32 getSessionID(uint32 index);
@@ -2340,61 +2333,61 @@ public:
 	// Remote Storage ///////////////////////
 	bool beginFileWriteBatch();
 	bool endFileWriteBatch();
-	bool fileDelete(const String& file);
-	bool fileExists(const String& file);
-	bool fileForget(const String& file);
-	bool filePersisted(const String& file);
-	Dictionary fileRead(const String& file, int32_t data_to_read);
-	void fileReadAsync(const String& file, uint32 offset, uint32_t data_to_read);
-	void fileShare(const String& file);
-	bool fileWrite(const String& file, PoolByteArray data, int32 size = 0);
-	void fileWriteAsync(const String& file, PoolByteArray data, int32 size = 0);
+	bool fileDelete(const String &file);
+	bool fileExists(const String &file);
+	bool fileForget(const String &file);
+	bool filePersisted(const String &file);
+	Dictionary fileRead(const String &file, int32_t data_to_read);
+	void fileReadAsync(const String &file, uint32 offset, uint32_t data_to_read);
+	void fileShare(const String &file);
+	bool fileWrite(const String &file, PoolByteArray data, int32 size = 0);
+	void fileWriteAsync(const String &file, PoolByteArray data, int32 size = 0);
 	bool fileWriteStreamCancel(uint64_t write_handle);
 	bool fileWriteStreamClose(uint64_t write_handle);
-	uint64_t fileWriteStreamOpen(const String& file);
+	uint64_t fileWriteStreamOpen(const String &file);
 	bool fileWriteStreamWriteChunk(uint64_t write_handle, PoolByteArray data);
 	int32 getCachedUGCCount();
 	uint64_t getCachedUGCHandle(int32 content);
 	int32_t getFileCount();
 	Dictionary getFileNameAndSize(int file);
-	int32_t getFileSize(const String& file);
-	int64_t getFileTimestamp(const String& file);
+	int32_t getFileSize(const String &file);
+	int64_t getFileTimestamp(const String &file);
 	Dictionary getLocalFileChange(int file);
 	uint32_t getLocalFileChangeCount();
 	Dictionary getQuota();
-	Dictionary getSyncPlatforms(const String& file);
+	Dictionary getSyncPlatforms(const String &file);
 	Dictionary getUGCDetails(uint64_t content);
 	Dictionary getUGCDownloadProgress(uint64_t content);
 	bool isCloudEnabledForAccount();
 	bool isCloudEnabledForApp();
 	void setCloudEnabledForApp(bool enabled);
-	bool setSyncPlatforms(const String& file, int platform);
+	bool setSyncPlatforms(const String &file, int platform);
 	void ugcDownload(uint64_t content, uint32 priority);
-	void ugcDownloadToLocation(uint64_t content, const String& location, uint32 priority);
+	void ugcDownloadToLocation(uint64_t content, const String &location, uint32 priority);
 	PoolByteArray ugcRead(uint64_t content, int32 data_size, uint32 offset, UGCReadAction action);
 	
 	// Screenshots //////////////////////////
-	uint32_t addScreenshotToLibrary(const String& filename, const String& thumbnail_filename, int width, int height);
-	uint32_t addVRScreenshotToLibrary(VRScreenshotType type, const String& filename, const String& vr_filename);
+	uint32_t addScreenshotToLibrary(const String &filename, const String &thumbnail_filename, int width, int height);
+	uint32_t addVRScreenshotToLibrary(VRScreenshotType type, const String &filename, const String &vr_filename);
 	void hookScreenshots(bool hook);
 	bool isScreenshotsHooked();
-	bool setLocation(uint32_t screenshot, const String& location);
+	bool setLocation(uint32_t screenshot, const String &location);
 	bool tagPublishedFile(uint32_t screenshot, uint64_t file_id);
 	bool tagUser(uint32_t screenshot, uint64_t steam_id);
 	void triggerScreenshot();
-	uint32_t writeScreenshot(const PoolByteArray& rgb, int width, int height);
+	uint32_t writeScreenshot(const PoolByteArray &rgb, int width, int height);
 
 	// UGC //////////////////////////////////
 	void addAppDependency(uint64_t published_file_id, uint32_t app_id);
 	bool addContentDescriptor(uint64_t update_handle, int descriptor_id);
 	void addDependency(uint64_t published_file_id, uint64_t child_published_file_id);
-	bool addExcludedTag(uint64_t query_handle, const String& tag_name);
-	bool addItemKeyValueTag(uint64_t query_handle, const String& key, const String& value);
-	bool addItemPreviewFile(uint64_t query_handle, const String& preview_file, ItemPreviewType type);
-	bool addItemPreviewVideo(uint64_t query_handle, const String& video_id);
+	bool addExcludedTag(uint64_t query_handle, const String &tag_name);
+	bool addItemKeyValueTag(uint64_t query_handle, const String &key, const String &value);
+	bool addItemPreviewFile(uint64_t query_handle, const String &preview_file, ItemPreviewType type);
+	bool addItemPreviewVideo(uint64_t query_handle, const String &video_id);
 	void addItemToFavorites(uint32_t app_id, uint64_t published_file_id);
-	bool addRequiredKeyValueTag(uint64_t query_handle, const String& key, const String& value);
-	bool addRequiredTag(uint64_t query_handle, const String& tag_name);
+	bool addRequiredKeyValueTag(uint64_t query_handle, const String &key, const String &value);
+	bool addRequiredTag(uint64_t query_handle, const String &tag_name);
 	bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
 	bool initWorkshopForGameServer(uint32_t workshop_depot_id);
 	void createItem(uint32 app_id, WorkshopFileType file_type);
@@ -2429,20 +2422,20 @@ public:
 	bool removeContentDescriptor(uint64_t update_handle, int descriptor_id);
 	void removeDependency(uint64_t published_file_id, uint64_t child_published_file_id);
 	void removeItemFromFavorites(uint32_t app_id, uint64_t published_file_id);
-	bool removeItemKeyValueTags(uint64_t update_handle, const String& key);
+	bool removeItemKeyValueTags(uint64_t update_handle, const String &key);
 	bool removeItemPreview(uint64_t update_handle, uint32 index);
 	void sendQueryUGCRequest(uint64_t update_handle);
 	bool setAllowCachedResponse(uint64_t update_handle, uint32 max_age_seconds);
-	bool setCloudFileNameFilter(uint64_t update_handle, const String& match_cloud_filename);
-	bool setItemContent(uint64_t update_handle, const String& content_folder);
-	bool setItemDescription(uint64_t update_handle, const String& description);
-	bool setItemMetadata(uint64_t update_handle, const String& metadata);
-	bool setItemPreview(uint64_t update_handle, const String& preview_file);
+	bool setCloudFileNameFilter(uint64_t update_handle, const String &match_cloud_filename);
+	bool setItemContent(uint64_t update_handle, const String &content_folder);
+	bool setItemDescription(uint64_t update_handle, const String &description);
+	bool setItemMetadata(uint64_t update_handle, const String &ugc_metadata);
+	bool setItemPreview(uint64_t update_handle, const String &preview_file);
 	bool setItemTags(uint64_t update_handle, Array tag_array, bool allow_admin_tags = false);
-	bool setItemTitle(uint64_t update_handle, const String& title);
-	bool setItemUpdateLanguage(uint64_t update_handle, const String& language);
+	bool setItemTitle(uint64_t update_handle, const String &title);
+	bool setItemUpdateLanguage(uint64_t update_handle, const String &language);
 	bool setItemVisibility(uint64_t update_handle, RemoteStoragePublishedFileVisibility visibility);
-	bool setLanguage(uint64_t query_handle, const String& language);
+	bool setLanguage(uint64_t query_handle, const String &language);
 	bool setMatchAnyTag(uint64_t query_handle, bool match_any_tag);
 	bool setRankedByTrendDays(uint64_t query_handle, uint32 days);
 	bool setReturnAdditionalPreviews(uint64_t query_handle, bool return_additional_previews);
@@ -2453,32 +2446,32 @@ public:
 	bool setReturnOnlyIDs(uint64_t query_handle, bool return_only_ids);
 	bool setReturnPlaytimeStats(uint64_t query_handle, uint32 days);
 	bool setReturnTotalOnly(uint64_t query_handle, bool return_total_only);
-	bool setSearchText(uint64_t query_handle, const String& search_text);
+	bool setSearchText(uint64_t query_handle, const String &search_text);
 	void setUserItemVote(uint64_t published_file_id, bool vote_up);
 	uint64_t startItemUpdate(uint32_t app_id, uint64_t file_id);
 	void startPlaytimeTracking(Array published_file_ids);
 	void stopPlaytimeTracking(Array published_file_ids);
 	void stopPlaytimeTrackingForAllItems();
 	void getAppDependencies(uint64_t published_file_id);
-	void submitItemUpdate(uint64_t update_handle, const String& change_note);
+	void submitItemUpdate(uint64_t update_handle, const String &change_note);
 	void subscribeItem(uint64_t published_file_id);
 	void suspendDownloads(bool suspend);
 	void unsubscribeItem(uint64_t published_file_id);
-	bool updateItemPreviewFile(uint64_t update_handle, uint32 index, const String& preview_file);
-	bool updateItemPreviewVideo(uint64_t update_handle, uint32 index, const String& video_id);
+	bool updateItemPreviewFile(uint64_t update_handle, uint32 index, const String &preview_file);
+	bool updateItemPreviewVideo(uint64_t update_handle, uint32 index, const String &video_id);
 	bool showWorkshopEULA();
 	void getWorkshopEULAStatus();
 	bool setTimeCreatedDateRange(uint64_t update_handle, uint32 start, uint32 end);
 	bool setTimeUpdatedDateRange(uint64_t update_handle, uint32 start, uint32 end);
 
 	// Users ////////////////////////////////
-	void advertiseGame(const String& server_ip, int port);
+	void advertiseGame(const String &server_ip, int port);
 	BeginAuthSessionResult beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
 	void cancelAuthTicket(uint32_t auth_ticket);
-	Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
+	Dictionary decompressVoice(const PoolByteArray &voice, uint32 voice_size, uint32 sample_rate);
 	void endAuthSession(uint64_t steam_id);
-	Dictionary getAuthSessionTicket(const String& identity_reference = "");
-	uint32 getAuthTicketForWebApi(const String& service_identity = "");
+	Dictionary getAuthSessionTicket(const String &identity_reference = "");
+	uint32 getAuthTicketForWebApi(const String &service_identity = "");
 	Dictionary getAvailableVoice();
 	void getDurationControl();
 	Dictionary getEncryptedAppTicket();
@@ -2494,8 +2487,8 @@ public:
 	bool isPhoneVerified();
 	bool isTwoFactorEnabled();
 	bool loggedOn();
-	void requestEncryptedAppTicket(const String& secret);
-	void requestStoreAuthURL(const String& redirect);
+	void requestEncryptedAppTicket(const String &secret);
+	void requestStoreAuthURL(const String &redirect);
 	void startVoiceRecording();
 	bool setDurationControlOnlineState(int new_state);
 	void stopVoiceRecording();
@@ -2504,23 +2497,23 @@ public:
 
 	// User Stats ///////////////////////////
 	void attachLeaderboardUGC(uint64_t ugc_handle, uint64_t this_leaderboard = 0);
-	bool clearAchievement(const String& achievement_name);
+	bool clearAchievement(const String &achievement_name);
 	void downloadLeaderboardEntries(int start, int end, LeaderboardDataRequest type = LeaderboardDataRequest(k_ELeaderboardDataRequestGlobal), uint64_t this_leaderboard = 0);
 	void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard = 0);
-	void findLeaderboard(const String& leaderboard_name);
-	void findOrCreateLeaderboard(const String& leaderboard_name, LeaderboardSortMethod sort_method, LeaderboardDisplayType display_type);
-	Dictionary getAchievement(const String& achievement_name);
-	Dictionary getAchievementAchievedPercent(const String& achievement_name);
-	Dictionary getAchievementAndUnlockTime(const String& achievement_name);
-	String getAchievementDisplayAttribute(const String& achievement_name, const String& key);
-	int getAchievementIcon(const String& achievement_name);
+	void findLeaderboard(const String &leaderboard_name);
+	void findOrCreateLeaderboard(const String &leaderboard_name, LeaderboardSortMethod sort_method, LeaderboardDisplayType display_type);
+	Dictionary getAchievement(const String &achievement_name);
+	Dictionary getAchievementAchievedPercent(const String &achievement_name);
+	Dictionary getAchievementAndUnlockTime(const String &achievement_name);
+	String getAchievementDisplayAttribute(const String &achievement_name, const String &key);
+	int getAchievementIcon(const String &achievement_name);
 	String getAchievementName(uint32_t achievement);
-	Dictionary getAchievementProgressLimitsInt(const String& achievement_name);
-	Dictionary getAchievementProgressLimitsFloat(const String& achievement_name);
-	uint64_t getGlobalStatInt(const String& stat_name);
-	double getGlobalStatFloat(const String& stat_name);
-	uint64_t getGlobalStatIntHistory(const String& stat_name);
-	double getGlobalStatFloatHistory(const String& stat_name);
+	Dictionary getAchievementProgressLimitsInt(const String &achievement_name);
+	Dictionary getAchievementProgressLimitsFloat(const String &achievement_name);
+	uint64_t getGlobalStatInt(const String &stat_name);
+	double getGlobalStatFloat(const String &stat_name);
+	uint64_t getGlobalStatIntHistory(const String &stat_name);
+	double getGlobalStatFloatHistory(const String &stat_name);
 	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
 	Array getLeaderboardEntries();
 	int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
@@ -2530,30 +2523,30 @@ public:
 	Dictionary getNextMostAchievedAchievementInfo(int iterator);
 	uint32_t getNumAchievements();
 	void getNumberOfCurrentPlayers();
-	float getStatFloat(const String& stat_name);
-	int getStatInt(const String& stat_name);
-	Dictionary getUserAchievement(uint64_t steam_id, const String& name);
-	Dictionary getUserAchievementAndUnlockTime(uint64_t steam_id, const String& name);
-	float getUserStatFloat(uint64_t steam_id, const String& name);
-	int getUserStatInt(uint64_t steam_id, const String& name);
-	bool indicateAchievementProgress(const String& name, int current_progress, int max_progress);
+	float getStatFloat(const String &stat_name);
+	int getStatInt(const String &stat_name);
+	Dictionary getUserAchievement(uint64_t steam_id, const String &name);
+	Dictionary getUserAchievementAndUnlockTime(uint64_t steam_id, const String &name);
+	float getUserStatFloat(uint64_t steam_id, const String &name);
+	int getUserStatInt(uint64_t steam_id, const String &name);
+	bool indicateAchievementProgress(const String &name, int current_progress, int max_progress);
 	bool requestCurrentStats();
 	void requestGlobalAchievementPercentages();
 	void requestGlobalStats(int history_days);
 	void requestUserStats(uint64_t steam_id);
 	bool resetAllStats(bool achievements_too = true);
-	bool setAchievement(const String& name);
+	bool setAchievement(const String &name);
 	int setLeaderboardDetailsMax(int max);
-	bool setStatFloat(const String& name, float value);
-	bool setStatInt(const String& name, int value);
+	bool setStatFloat(const String &name, float value);
+	bool setStatInt(const String &name, int value);
 	bool storeStats();
-	bool updateAvgRateStat(const String& name, float this_session, double session_length);
+	bool updateAvgRateStat(const String &name, float this_session, double session_length);
 	void uploadLeaderboardScore(int score, bool keep_best = false, PoolIntArray details = PoolIntArray(), uint64_t this_leaderboard = 0);
 
 	// Utils ////////////////////////////////
 	bool dismissFloatingGamepadTextInput();
 	bool dismissGamepadTextInput();
-	String filterText(TextFilteringContext context, uint64_t steam_id, const String& message);
+	String filterText(TextFilteringContext context, uint64_t steam_id, const String &message);
 	String getAPICallFailureReason();
 	uint32_t getAppID();
 	int getCurrentBatteryPower();
@@ -2579,7 +2572,7 @@ public:
 	void setOverlayNotificationPosition(int pos);
 	void setVRHeadsetStreamingEnabled(bool enabled);
 	bool showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
-	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String& description, uint32 max_text, const String& preset_text);
+	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	void startVRDashboard();
 	
 
@@ -2589,9 +2582,11 @@ public:
 	void getVideoURL(uint32_t app_id);
 	Dictionary isBroadcasting();
 
+
 protected:
 	static void _bind_methods();
-	static Steam* singleton;
+	static Steam *singleton;
+
 
 private:
 	// Main
@@ -2600,16 +2595,12 @@ private:
 
 	// Apps
 	uint64_t current_app_id = 0;
-		
+
 	// Friends
 	CSteamID clan_activity;
 
 	// HTML Surface
 	uint32 browser_handle;
-
-	// HTTP
-	uint32 cookie_handle;
-	uint32 request_handle;
 
 	// Inventory
 	SteamInventoryUpdateHandle_t inventory_update_handle;
@@ -2623,8 +2614,7 @@ private:
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;
-	HServerQuery server_query = HSERVERQUERY_INVALID;
-	ISteamMatchmakingServerListResponse* server_list_response;
+	ISteamMatchmakingServerListResponse *server_list_response;
 	ISteamMatchmakingPingResponse *ping_response;
 	ISteamMatchmakingPlayersResponse *player_response;
 	ISteamMatchmakingRulesResponse *rules_response;
@@ -2634,7 +2624,6 @@ private:
 
 	// Networking Sockets
 	uint32 network_connection;
-	uint32 listen_socket;
 	uint32 network_poll_group;
 	uint64_t networking_microseconds = 0;
 	SteamNetworkingIdentity networking_identity;
@@ -2648,9 +2637,6 @@ private:
 	// Parties
 	uint64 party_beacon_id;
 
-	// Remote Play
-	uint32 session_id;
-
 	// Remote Storage
 	uint64_t write_stream_handle = 0;
 
@@ -2663,12 +2649,11 @@ private:
 	uint64_t api_handle = 0;
 
 	// Run the Steamworks API callbacks /////
-	void run_callbacks(){
+	void run_callbacks() {
 		SteamAPI_RunCallbacks();
 	}
 
 
-	/////////////////////////////////////////
 	// STEAM CALLBACKS
 	/////////////////////////////////////////
 	//
@@ -2850,7 +2835,6 @@ private:
 	STEAM_CALLBACK(Steam, get_video_result, GetVideoURLResult_t, callbackGetVideoResult);
 
 
-	/////////////////////////////////////////
 	// STEAM CALL RESULTS
 	/////////////////////////////////////////
 	//
@@ -2974,6 +2958,7 @@ private:
 	CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
 	void check_file_signature(CheckFileSignature_t *call_data, bool io_failure);
 };
+
 
 VARIANT_ENUM_CAST(Steam::AccountType);
 VARIANT_ENUM_CAST(Steam::APICallFailure);
@@ -3101,5 +3086,6 @@ VARIANT_ENUM_CAST(Steam::WorkshopVideoProvider);
 VARIANT_ENUM_CAST(Steam::WorkshopVote);
 
 VARIANT_ENUM_CAST(Steam::XboxOrigin);
+
 
 #endif // GODOTSTEAM_H

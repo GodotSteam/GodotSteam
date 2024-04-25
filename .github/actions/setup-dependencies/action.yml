@@ -1,14 +1,22 @@
 name: Setup Python and SCONS
+
+
 description: Setup Python and install the pip version of SCONS
+
+
 inputs:
   python-version:
     description: The Python version to use
     default: "3.x"
+
   python-arch:
     description: The Python architecture
     default: "x64"
+
+
 runs:
   using: "composite"
+
   steps:
     # Use python 3.x release (works cross platform)
     - name: Set up Python 3.x

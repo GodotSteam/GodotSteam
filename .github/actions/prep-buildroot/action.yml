@@ -1,17 +1,25 @@
 name: Setup Linux Buildroot
+
+
 description: Setup Linux buildroot for making Linux builds of Godot
+
+
 inputs:
   toolchain-name: 
     description: The release tag to use
     default: "x86_64-godot-linux-gnu_sdk-buildroot"
     
+
 runs:
   using: "composite"
+
   steps:
     - name: Download Buildroot
       shell: bash
       run: |
         curl -fLO https://download.tuxfamily.org/godotengine/toolchains/linux/2021-02-11/${{ inputs.toolchain-name }}.tar.bz2
+
         tar -xf ${{ inputs.toolchain-name }}.tar.bz2
         chmod +x "${{ inputs.toolchain-name }}/relocate-sdk.sh"
+
         "${{ inputs.toolchain-name }}/relocate-sdk.sh"

@@ -1,26 +1,38 @@
 name: Setup Mono
+
+
 description: Setup mono builds and mono base class libraries.
+
+
 inputs:
   mono-release: 
     description: The release file to download
     default: ""
+
   mono-bcl:
     description: The release bcl file to download
     default: ""
+
   mono-installs-path:
     description: Path to dump the mono-release into
     default: $HOME/mono-installs
+
   mono-bcl-path:
     description: Path to dump the mono-bcl into
     default: $HOME/mono-bcls
+
   mono-build-repo:
     description: Github repository to download the prebuilt mono releaes from
     default: "godotengine/godot-mono-builds"
+
   mono-build-tag:
     description: Release tag to download from the mono-build-repo
     default: "release-5299efd"
+
+
 runs:
   using: "composite"
+
   steps:
     - name: Setup default inputs
       shell: bash
