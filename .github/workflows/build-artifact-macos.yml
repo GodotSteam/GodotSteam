@@ -13,7 +13,6 @@ on:
         required: true
         type: string
 
-
     secrets:
       steamworks_sdk_repo:
         required: true

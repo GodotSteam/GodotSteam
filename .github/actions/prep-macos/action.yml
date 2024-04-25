@@ -48,5 +48,5 @@ runs:
 
         cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/macos_template.app/Contents/MacOS/
 
-        zip -q -9 -r bin/macos.zip bin/macos_template.app
+        zip -q -9 -r bin/macos.zip macos_template.app
         ls -la bin/
