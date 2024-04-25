@@ -1,11 +1,18 @@
 name: Download Godot source code
+
+
 description: Download and extract the Godot source code for use in compiling
+
+
 inputs:
   version:
     description: Version of Godot source code to download
-    default: "4.2.1-stable"
+    default: "4.2.2-stable"
+
+
 runs:
   using: "composite"
+
   steps:
     - name: Download and extract Godot
       shell: bash

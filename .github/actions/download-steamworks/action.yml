@@ -1,20 +1,30 @@
 name: Download Steamworks SDK
+
+
 description: Download and extract the Steamworks SDK from our secret repository
+
+
 inputs:
   path:
     description: Where to dump this
     default: "steamworks"
+
   repository:
     description: GodotSteam's private SDK repo
     default: "It's a secret..."
+
   token:
     description: GodotSteam's repo token for access
     default: "It's a secret..."
+
   ref:
     description: The Steamworks SDK tag used
     default: "sdk-1.59"
+
+
 runs:
   using: "composite"
+
   steps:
     - name: Download Steamworks SDK
       uses: actions/checkout@v4

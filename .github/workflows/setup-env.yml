@@ -4,16 +4,20 @@ on:
       godot_tag:
         required: true
         type: string
+
       godotsteam_version:
         required: true
         type: string
+
       steamworks_sdk_tag:
         required: true
         type: string
+
     outputs:
       godot_version:
         description: The shortened Godot version for file names
         value: ${{ jobs.env-setup.outputs.godot_version }}
+
       zip_tag:
         description: The full zip tag for releases
         value: ${{ jobs.env-setup.outputs.zip_tag }}

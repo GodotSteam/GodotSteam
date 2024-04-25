@@ -4,15 +4,19 @@ on:
       godot_tag:
         required: true
         type: string
+
       godot_version:
         required: true
         type: string
+
       steamworks_sdk_tag:
         required: true
         type: string
+
     secrets:
       steamworks_sdk_repo:
         required: true
+
       steamworks_sdk_repo_token:
         required: true
 

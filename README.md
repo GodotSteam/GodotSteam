@@ -20,14 +20,9 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.6.3 Changes**
-
-- Changed: returned values for getFriendGamePlayed, ***thanks to SlejmUr***
-- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
-- Changed: `getFriendMessage()` and callback `connected_friend_chat_message` now returns the type, ***thanks to SlejmUr***
-- Changed: updated in-editor docs with changes
-- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
-- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
+**Version 4.7 Changes**
+- Changed: minor organization and readability changes
+- Fixed: `htmlInit()` not returning bool for success
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 

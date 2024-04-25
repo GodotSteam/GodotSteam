@@ -1,6 +1,8 @@
 #include "steam/steam_api.h"
 
 // Define Steam API constants
+// Constants with 'deprecated/': these were listed in the SDK docs but do not exist in the header files; safe to remove probably
+// Possibly deprecated or never existed?
 #define ACCOUNT_ID_INVALID k_uAccountIdInvalid
 #define API_CALL_INVALID k_uAPICallInvalid
 #define APP_ID_INVALID k_uAppIdInvalid

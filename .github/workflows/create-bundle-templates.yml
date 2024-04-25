@@ -4,6 +4,7 @@ on:
       is_mono:
         required: true
         type: boolean
+
       zip_tag:
         required: true
         type: string
