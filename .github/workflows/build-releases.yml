@@ -20,7 +20,7 @@ on:
         description: 'GodotSteam version number:'
         required: true
         type: string
-        default: '4.6.4'
+        default: '4.7'
 
 
 jobs:

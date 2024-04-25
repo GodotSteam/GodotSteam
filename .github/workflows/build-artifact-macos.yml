@@ -4,15 +4,20 @@ on:
       godot_tag:
         required: true
         type: string
+
       godot_version:
         required: true
         type: string
+
       steamworks_sdk_tag:
         required: true
         type: string
+
+
     secrets:
       steamworks_sdk_repo:
         required: true
+
       steamworks_sdk_repo_token:
         required: true
 
@@ -94,7 +99,7 @@ jobs:
       - name: Package Editor (arch=arm64, x86_64)
         uses: ./.github/actions/prep-macos
         with:
-          target: editor
+          target: 'editor'
 
       - name: Upload Editor
         uses: ./.github/actions/upload-artifact
@@ -139,7 +144,7 @@ jobs:
       - name: Package Templates (arch=arm64, x86_64)
         uses: ./.github/actions/prep-macos
         with:
-          target: templates
+          target: 'templates'
 
       - name: Upload Mac Template App
         uses: ./.github/actions/upload-artifact

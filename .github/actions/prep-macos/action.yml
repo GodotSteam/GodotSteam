@@ -7,13 +7,12 @@ description: Combine x86_64 and arm64 into Universal
 inputs:
   target:
     description: Which packaging are we prepping
-    default: editor
-
+    default: 'editor'
 runs:
   using: "composite"
   steps:
     - name: Create Universal Editor
-      if: ${{ inputs.target == editor }}
+      if: ${{ inputs.target == 'editor' }}
       shell: bash
       run: |
         ls -la bin/
@@ -31,7 +30,7 @@ runs:
         ls -la bin/
 
     - name: Create Universal Templates
-      if: ${{ inputs.target == templates }}
+      if: ${{ inputs.target == 'templates' }}
       shell: bash
       run: |
         ls -la bin/
