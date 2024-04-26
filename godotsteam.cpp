@@ -6880,21 +6880,21 @@ Dictionary Steam::getQueryUGCResult(uint64_t query_handle, uint32 index) {
 
 // Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
 Dictionary Steam::getQueryUGCStatistic(uint64_t query_handle, uint32 index, ItemStatistic stat_type) {
-	Dictionary ugcStat;
+	Dictionary ugc_stat;
 	if (SteamUGC() == NULL) {
-		return ugcStat;
+		return ugc_stat;
 	}
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	uint64 value = 0;
 	bool success = SteamUGC()->GetQueryUGCStatistic(handle, index, (EItemStatistic)stat_type, &value);
 	if (success) {
-		ugcStat["success"] = success;
-		ugcStat["handle"] = (uint64_t)handle;
-		ugcStat["index"] = index;
-		ugcStat["type"] = stat_type;
-		ugcStat["value"] = (uint64_t)value;
+		ugc_stat["success"] = success;
+		ugc_stat["handle"] = (uint64_t)handle;
+		ugc_stat["index"] = index;
+		ugc_stat["type"] = stat_type;
+		ugc_stat["value"] = (uint64_t)value;
 	}
-	return ugcStat;
+	return ugc_stat;
 }
 
 // Retrieve the "nth" tag associated with an individual workshop item after receiving a querying UGC call result.
@@ -7341,7 +7341,7 @@ void Steam::submitItemUpdate(uint64_t update_handle, const String &change_note) 
 		if (change_note.is_empty()) {
 			api_call = SteamUGC()->SubmitItemUpdate(handle, NULL);
 		}
-	else {
+		else {
 			api_call = SteamUGC()->SubmitItemUpdate(handle, change_note.utf8().get_data());
 		}
 		callResultItemUpdate.Set(api_call, this, &Steam::item_updated);
@@ -9396,12 +9396,12 @@ void Steam::lobby_invite(LobbyInvite_t *lobby_data) {
 // MUSIC CALLBACKS //////////////////////////////
 //
 // No notes about this in the Steam docs, but we can assume it just updates us about the plaback status
-void Steam::music_playback_status_has_changed(PlaybackStatusHasChanged_t* call_data) {
+void Steam::music_playback_status_has_changed(PlaybackStatusHasChanged_t *call_data) {
 	emit_signal("music_playback_status_has_changed");
 }
 
 // No notes about this in the Steam docs, but we can assume it just updates us about the volume changes
-void Steam::music_volume_has_changed(VolumeHasChanged_t* call_data) {
+void Steam::music_volume_has_changed(VolumeHasChanged_t *call_data) {
 	float new_volume = call_data->m_flNewVolume;
 	emit_signal("music_volume_has_changed", new_volume);
 }
@@ -11276,7 +11276,7 @@ void Steam::_bind_methods() {
 	// PARTIES BIND METHODS /////////////////////
 	ClassDB::bind_method(D_METHOD("cancelReservation", "beacon_id", "steam_id"), &Steam::cancelReservation);
 	ClassDB::bind_method(D_METHOD("changeNumOpenSlots", "beacon_id", "open_slots"), &Steam::changeNumOpenSlots);
-	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location_id", "type", "connect_string", "metadata"), &Steam::createBeacon);
+	ClassDB::bind_method(D_METHOD("createBeacon", "open_slots", "location_id", "type", "connect_string", "beacon_metadata"), &Steam::createBeacon);
 	ClassDB::bind_method(D_METHOD("destroyBeacon", "beacon_id"), &Steam::destroyBeacon);
 	ClassDB::bind_method(D_METHOD("getAvailableBeaconLocations", "max"), &Steam::getAvailableBeaconLocations);
 	ClassDB::bind_method(D_METHOD("getBeaconByIndex", "index"), &Steam::getBeaconByIndex);
@@ -11395,7 +11395,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setCloudFileNameFilter", "update_handle", "match_cloud_filename"), &Steam::setCloudFileNameFilter);
 	ClassDB::bind_method(D_METHOD("setItemContent", "update_handle", "content_folder"), &Steam::setItemContent);
 	ClassDB::bind_method(D_METHOD("setItemDescription", "update_handle", "description"), &Steam::setItemDescription);
-	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "metadata"), &Steam::setItemMetadata);
+	ClassDB::bind_method(D_METHOD("setItemMetadata", "update_handle", "ugc_metadata"), &Steam::setItemMetadata);
 	ClassDB::bind_method(D_METHOD("setItemPreview", "update_handle", "preview_file"), &Steam::setItemPreview);
 	ClassDB::bind_method(D_METHOD("setItemTags", "update_handle", "tag_array", "allow_admin_tags"), &Steam::setItemTags, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("setItemTitle", "update_handle", "title"), &Steam::setItemTitle);

@@ -23,6 +23,8 @@ You can [download pre-compiled versions of this repo here](https://github.com/Co
 **Version 4.7 Changes**
 - Changed: minor organization and readability changes
 - Fixed: `htmlInit()` not returning bool for success
+- Fixed: incorrect argument bind for `createBeacon()`
+- Fixed: incorrect argument bind for `setItemMetadata()`
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
