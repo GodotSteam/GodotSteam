@@ -43,10 +43,12 @@ using namespace godot;
 
 
 class Steam: public Object {
+
 	GDCLASS(Steam, Object);
 
 
 public:
+
 	static Steam *get_singleton();
 	Steam();
 	~Steam();
@@ -1777,7 +1779,6 @@ public:
 	};
 
 
-
 	// STEAMWORKS FUNCTIONS
 	/////////////////////////////////////////
 	//
@@ -1940,7 +1941,7 @@ public:
 	void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 	void goBack(uint32 this_handle = 0);
 	void goForward(uint32 this_handle = 0);
-	void htmlInit();
+	bool htmlInit();
 	void jsDialogResponse(bool result, uint32 this_handle = 0);
 	void keyChar(uint32 unicode_char, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
 	void keyDown(uint32 native_key_code, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
@@ -2622,16 +2623,16 @@ private:
 	ISteamMatchmakingRulesResponse *rules_response;
 
 	// Networking Messages
-//		std::map<int, SteamNetworkingMessage_t> network_messages;
+	//		std::map<int, SteamNetworkingMessage_t> network_messages;
 
 	// Networking Sockets
 	uint32 network_connection;
 	uint32 network_poll_group;
 	uint64_t networking_microseconds = 0;
 	SteamNetworkingIdentity networking_identity;
-//		SteamDatagramHostedAddress hosted_address;
+	//		SteamDatagramHostedAddress hosted_address;
 	PackedByteArray routing_blob;
-//		SteamDatagramRelayAuthTicket relay_auth_ticket;
+	//		SteamDatagramRelayAuthTicket relay_auth_ticket;
 	std::map<String, SteamNetworkingIdentity> networking_identities;
 	std::map<String, SteamNetworkingIPAddr> ip_addresses;
 
@@ -3086,5 +3087,6 @@ VARIANT_ENUM_CAST(Steam::WorkshopVideoProvider);
 VARIANT_ENUM_CAST(Steam::WorkshopVote);
 
 VARIANT_ENUM_CAST(Steam::XboxOrigin);
+
 
 #endif // GODOTSTEAM_H
