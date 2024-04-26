@@ -6430,7 +6430,7 @@ bool Steam::addRequiredTagGroup(uint64_t query_handle, Array tag_array) {
 		// Needed to ensure the CharStrings are still alive when submitted
 		std::vector<CharString> tag_char_strs;
 		for (uint32 i = 0; i < str_count; i++) {
-			String str = (String)tag_array[i];
+			String str = tag_array[i];
 			CharString char_str = str.utf8();
 			tag_char_strs.push_back(char_str);
 			tags->m_ppStrings[i] = char_str.get_data();
@@ -7019,7 +7019,7 @@ bool Steam::setItemTags(uint64_t update_handle, Array tag_array, bool allow_admi
 		// Needed to ensure the CharStrings are still alive when submitted
 		std::vector<CharString> tag_char_strs;
 		for (uint32 i = 0; i < str_count; i++) {
-			String str = (String)tag_array[i];
+			String str = tag_array[i];
 			CharString char_str = str.utf8();
 			tag_char_strs.push_back(char_str);
 			tags->m_ppStrings[i] = char_str.get_data();
