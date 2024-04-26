@@ -1,7 +1,7 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
 
-/////////////////////////////////////////////////
+
 // SILENCE STEAMWORKS WARNINGS
 /////////////////////////////////////////////////
 //
@@ -9,11 +9,11 @@
 #include <cstdint>
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
-#pragma warning(disable:4996)
-#pragma warning(disable:4828)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4828)
 #endif
 
-/////////////////////////////////////////////////
+
 // INCLUDE HEADERS
 /////////////////////////////////////////////////
 //
@@ -44,21 +44,20 @@
 
 using namespace godot;
 
-class Steam: public Object {
+class Steam : public Object {
+
 	GODOT_CLASS(Steam, Object);
 
 public:
-	// Used by Godot for GDNative
+
 	static void _register_methods();
 	void _init(){ }
 
-	// Steamworks
 	static Steam *get_singleton();
 	Steam();
 	~Steam();
 
 
-	/////////////////////////////////////////
 	// STEAMWORKS FUNCTIONS
 	/////////////////////////////////////////
 	//
@@ -221,7 +220,7 @@ public:
 	void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 	void goBack(uint32 this_handle = 0);
 	void goForward(uint32 this_handle = 0);
-	void htmlInit();
+	bool htmlInit();
 	void jsDialogResponse(bool result, uint32 this_handle = 0);
 	void keyChar(uint32 unicode_char, int key_modifiers, uint32 this_handle = 0);
 	void keyDown(uint32 native_key_code, int key_modifiers, uint32 this_handle = 0);
@@ -337,7 +336,7 @@ public:
 	int32 getAllItems();
 	String getItemDefinitionProperty(uint32 definition, String name);
 	int32 getItemsByID(PoolIntArray id_array);
-	uint64_t getItemPrice(uint32 definition);
+	Dictionary getItemPrice(uint32 definition);
 	Array getItemsWithPrices();
 	String getResultItemProperty(uint32 index, String name, int32 this_inventory_handle = 0);
 	Array getResultItems(int32 this_inventory_handle = 0);
@@ -866,14 +865,15 @@ public:
 	void getVideoURL(uint32_t app_id);
 	Dictionary isBroadcasting();
 
+
 protected:
 	static void _bind_methods();
 	static Steam *singleton;
 
+
 private:
 	// Main
 	bool is_init_success;
-	bool were_callbacks_embedded;
 
 	// Apps
 	uint64_t current_app_id = 0;
@@ -896,7 +896,7 @@ private:
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;
-	ISteamMatchmakingServerListResponse* server_list_response;
+	ISteamMatchmakingServerListResponse *server_list_response;
 	ISteamMatchmakingPingResponse *ping_response;
 	ISteamMatchmakingPlayersResponse *player_response;
 	ISteamMatchmakingRulesResponse *rules_response;
@@ -909,6 +909,7 @@ private:
 	uint32 network_poll_group;
 	uint64_t networking_microseconds = 0;
 	SteamNetworkingIdentity networking_identity;
+	SteamNetworkingIdentity game_server;
 //		SteamDatagramHostedAddress hosted_address;
 	PoolByteArray routing_blob;
 //		SteamDatagramRelayAuthTicket relay_auth_ticket;
@@ -934,7 +935,6 @@ private:
 	}
 
 
-	/////////////////////////////////////////
 	// STEAM CALLBACKS
 	/////////////////////////////////////////
 	//
@@ -974,7 +974,6 @@ private:
 	STEAM_CALLBACK(Steam, end_game_result, EndGameResultCallback_t, callbackEndGameResult);
 
 	// HTML Surface callbacks ///////////////
-	STEAM_CALLBACK(Steam, html_browser_ready, HTML_BrowserReady_t, callbackHTMLBrowserReady);
 	STEAM_CALLBACK(Steam, html_can_go_backandforward, HTML_CanGoBackAndForward_t, callbackHTMLCanGoBackandforward);
 	STEAM_CALLBACK(Steam, html_changed_title, HTML_ChangedTitle_t, callbackHTMLChangedTitle);
 	STEAM_CALLBACK(Steam, html_close_browser, HTML_CloseBrowser_t, callbackHTMLCloseBrowser);
@@ -1117,7 +1116,6 @@ private:
 	STEAM_CALLBACK(Steam, get_video_result, GetVideoURLResult_t, callbackGetVideoResult);
 
 
-	/////////////////////////////////////////
 	// STEAM CALL RESULTS
 	/////////////////////////////////////////
 	//
@@ -1132,6 +1130,10 @@ private:
 	void get_follower_count(FriendsGetFollowerCount_t *call_data, bool io_failure);
 	CCallResult<Steam, FriendsIsFollowing_t> callResultIsFollowing;
 	void is_following(FriendsIsFollowing_t *call_data, bool io_failure);
+
+	// HTML Surface call results ////////////
+	CCallResult<Steam, HTML_BrowserReady_t> callResultHTMLBrowserReady;
+	void html_browser_ready(HTML_BrowserReady_t *call_data, bool io_failure);
 
 	// Inventory call results ///////////////
 	CCallResult<Steam, SteamInventoryEligiblePromoItemDefIDs_t> callResultEligiblePromoItemDefIDs;
@@ -1237,5 +1239,6 @@ private:
 	CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
 	void check_file_signature(CheckFileSignature_t *call_data, bool io_failure);
 };
+
 
 #endif // GODOTSTEAM_H
