@@ -22,14 +22,13 @@ You can [download pre-compiled versions of this repo here](https://github.com/Co
 
 **Version 3.24 Changes**
 - Changed: internal argument for `executeJavascript()` to match godot4
-- Changed: returned values for getFriendGamePlayed, ***thanks to SlejmUr***
+- Changed: returned values for `getFriendGamePlayed()`, ***thanks to SlejmUr***
 - Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
 - Changed: `getFriendMessage()` and callback `connected_friend_chat_message` now returns the type, ***thanks to SlejmUr***
 - Changed: updated in-editor docs with changes
 - Changed: minor organizational things, variable naming, etc.
 - Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
 - Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
-- Fixed: `getBeaconDetails()` never passing beacon metadata
 - Removed: unused internal variables
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot3/).

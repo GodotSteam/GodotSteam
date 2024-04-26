@@ -3934,7 +3934,7 @@
 			</description>
 		</method>
 		<method name="htmlInit">
-			<return type="void" />
+			<return type="bool" />
 			<description>
 				Initializes the HTML Surface API. This must be called prior to using any other functions in this interface. You must call [method Steam.htmlShutdown] when you are done using the interface to free up the resources associated with it. Failing to do so will result in a memory leak.
 			</description>

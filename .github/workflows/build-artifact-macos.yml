@@ -100,7 +100,7 @@ jobs:
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}-editor
-          path: bin/GodotSteam.app
+          path: bin/macos_editor.zip
 
       - name: Clear bin
         run: |

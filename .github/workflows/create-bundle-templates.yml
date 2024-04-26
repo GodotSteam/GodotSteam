@@ -81,17 +81,11 @@ jobs:
           name: linux-steam
           path: files
 
-      # Mac templates and Steam redistributable
+      # Mac templates
       - name: Download MacOS ${{ inputs.is_mono && 'Mono ' || '' }}Template App
         uses: actions/download-artifact@v4
         with:
           name: macos${{ inputs.is_mono && '-mono' || '' }}-template-app
-          path: files
-
-      - name: Download MacOS Steam Redistributable
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-steam
           path: files
 
       - name: Create ${{ inputs.is_mono && 'Mono ' || '' }}Template Bundle

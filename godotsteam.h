@@ -2643,7 +2643,6 @@ private:
 	// User stats
 	int number_achievements = 0;
 	bool stats_initialized = false;
-	uint64 ugc_handle;
 
 	// Utils
 	uint64_t api_handle = 0;

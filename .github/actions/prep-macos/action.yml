@@ -27,6 +27,9 @@ runs:
 
         cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/GodotSteam.app/Contents/MacOS/
 
+        cd bin/
+        zip -q -9 -r macos_editor.zip GodotSteam.app
+        cd ../
         ls -la bin/
 
     - name: Create Universal Templates
@@ -37,7 +40,7 @@ runs:
 
         lipo -create bin/godot.osx.opt.debug.x86_64 bin/godot.osx.opt.debug.arm64 -output bin/godot.osx.template.debug.universal
         lipo -create bin/godot.osx.opt.x86_64 bin/godot.osx.opt.arm64 -output bin/godot.osx.template.universal
-        $STRIP bin/godot.macos.template_release.universal
+        $STRIP bin/godot.osx.template.universal
 
         cp -r misc/dist/osx_template.app bin/
         mkdir -p bin/osx_template.app/Contents/MacOS
@@ -48,5 +51,7 @@ runs:
 
         cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/osx_template.app/Contents/MacOS/
 
+        cd bin/
         zip -q -9 -r bin/macos.zip bin/osx_template.app
+        cd ../
         ls -la bin/

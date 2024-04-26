@@ -2746,7 +2746,7 @@ String Steam::getStringForAnalogActionName(uint64_t action_handle) {
 ///// INVENTORY
 /////
 ///// When dealing with any inventory handles, you should call CheckResultSteamID on the result handle when it completes to verify that a remote player is not pretending to have a different user's inventory.
-//// Also, you must call DestroyResult on the provided inventory result when you are done with it.
+///// Also, you must call DestroyResult on the provided inventory result when you are done with it.
 /////////////////////////////////////////////////
 //
 // Grant a specific one-time promotional item to the current user.
@@ -2831,8 +2831,8 @@ void Steam::destroyResult(int this_inventory_handle) {
 int32 Steam::exchangeItems(const PoolIntArray output_items, const PoolIntArray output_quantity, const PoolIntArray input_items, const PoolIntArray input_quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		uint32_t* quantity_out = (uint32*) output_quantity.read().ptr();
-		uint32_t* quantity_in = (uint32*) input_quantity.read().ptr();
+		uint32_t *quantity_out = (uint32*) output_quantity.read().ptr();
+		uint32_t *quantity_in = (uint32*) input_quantity.read().ptr();
 		int array_size = input_items.size();
 		SteamItemInstanceID_t *input_item_ids = new SteamItemInstanceID_t[array_size];
 		for (int i = 0; i < array_size; i++) {
@@ -2852,7 +2852,7 @@ int32 Steam::exchangeItems(const PoolIntArray output_items, const PoolIntArray o
 int32 Steam::generateItems(const PoolIntArray items, const PoolIntArray quantity) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		uint32_t* this_quantity = (uint32*) quantity.read().ptr();
+		uint32_t *this_quantity = (uint32*) quantity.read().ptr();
 		if (SteamInventory()->GenerateItems(&new_inventory_handle, items.read().ptr(), this_quantity, items.size())) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
@@ -3099,7 +3099,7 @@ String Steam::serializeResult(int32 this_inventory_handle) {
 // Starts the purchase process for the user, given a "shopping cart" of item definitions that the user would like to buy. The user will be prompted in the Steam Overlay to complete the purchase in their local currency, funding their Steam Wallet if necessary, etc.
 void Steam::startPurchase(const PoolIntArray items, const PoolIntArray quantity) {
 	if (SteamInventory() != NULL) {
-		uint32_t* these_quantities = (uint32*) quantity.read().ptr();
+		uint32_t *these_quantities = (uint32*) quantity.read().ptr();
 		SteamAPICall_t api_call = SteamInventory()->StartPurchase(items.read().ptr(), these_quantities, items.size());
 		callResultStartPurchase.Set(api_call, this, &Steam::inventory_start_purchase_result);
 	}
@@ -4459,8 +4459,8 @@ Array Steam::receiveMessagesOnChannel(int channel, int max_messages) {
 			int message_size = channel_messages[i]->m_cbSize;
 			PoolByteArray data;
 			data.resize(message_size);
-			uint8_t* source_data = (uint8_t*)channel_messages[i]->m_pData;
-			uint8_t* output_data = data.write().ptr();
+			uint8_t *source_data = (uint8_t*)channel_messages[i]->m_pData;
+			uint8_t *output_data = data.write().ptr();
 			for (int j = 0; j < message_size; j++) {
 				output_data[j] = source_data[j];
 			}
@@ -4648,8 +4648,8 @@ Array Steam::receiveMessagesOnConnection(uint32 connection_handle, int max_messa
 			int message_size = connection_messages[i]->m_cbSize;
 			PoolByteArray data;
 			data.resize(message_size);
-			uint8_t* source_data = (uint8_t*)connection_messages[i]->m_pData;
-			uint8_t* output_data = data.write().ptr();
+			uint8_t *source_data = (uint8_t*)connection_messages[i]->m_pData;
+			uint8_t *output_data = data.write().ptr();
 			for (int j = 0; j < message_size; j++) {
 				output_data[j] = source_data[j];
 			}
@@ -6859,21 +6859,21 @@ Dictionary Steam::getQueryUGCResult(uint64_t query_handle, uint32 index) {
 
 // Retrieve various statistics of an individual workshop item after receiving a querying UGC call result.
 Dictionary Steam::getQueryUGCStatistic(uint64_t query_handle, uint32 index, ItemStatistic stat_type) {
-	Dictionary ugcStat;
+	Dictionary ugc_stat;
 	if (SteamUGC() == NULL) {
-		return ugcStat;
+		return ugc_stat;
 	}
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	uint64 value = 0;
 	bool success = SteamUGC()->GetQueryUGCStatistic(handle, index, (EItemStatistic)stat_type, &value);
 	if (success) {
-		ugcStat["success"] = success;
-		ugcStat["handle"] = (uint64_t)handle;
-		ugcStat["index"] = index;
-		ugcStat["type"] = stat_type;
-		ugcStat["value"] = (uint64_t)value;
+		ugc_stat["success"] = success;
+		ugc_stat["handle"] = (uint64_t)handle;
+		ugc_stat["index"] = index;
+		ugc_stat["type"] = stat_type;
+		ugc_stat["value"] = (uint64_t)value;
 	}
-	return ugcStat;
+	return ugc_stat;
 }
 
 // Retrieve the "nth" tag associated with an individual workshop item after receiving a querying UGC call result.
@@ -7088,10 +7088,10 @@ bool Steam::setItemTags(uint64_t update_handle, Array tag_array, bool allow_admi
 		UGCUpdateHandle_t handle = uint64(update_handle);
 		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
 		tags->m_ppStrings = new const char *[tag_array.size()];
-		uint32 strCount = tag_array.size();
+		uint32 str_count = tag_array.size();
 		// Needed to ensure the CharStrings are still alive when submitted
 		Vector<CharString> tag_char_strs;
-		for (uint32 i = 0; i < strCount; i++) {
+		for (uint32 i = 0; i < str_count; i++) {
 			String str = (String)tag_array[i];
 			CharString char_str = str.utf8();
 			tag_char_strs.push_back(char_str);
@@ -7451,13 +7451,11 @@ Dictionary Steam::decompressVoice(const PoolByteArray &voice, uint32 voice_size,
 		uint32 written = 0;
 		PoolByteArray outputBuffer;
 		outputBuffer.resize(20480); // 20KiB buffer
-	
 		int result = SteamUser()->DecompressVoice(voice.read().ptr(), voice_size, outputBuffer.write().ptr(), outputBuffer.size(), &written, sample_rate);
 		if (result == 0) {
 			decompressed["uncompressed"] = outputBuffer;
 			decompressed["size"] = written;
 		}
-
 		decompressed["result"] = result; // Include result for debugging
 	}
 	return decompressed;
@@ -7580,10 +7578,8 @@ Dictionary Steam::getVoice() {
 		uint32 written = 0;
 		PoolByteArray buffer = PoolByteArray();
 		buffer.resize(8192); // Steam suggests 8Kb of buffer space per call
-	
 		int result = SteamUser()->GetVoice(true, buffer.write().ptr(), 8192, &written, false, NULL, 0, NULL, 0);
 		buffer.resize(written);
-
 		// Add the data to the dictionary
 		voice_data["result"] = result;
 		voice_data["written"] = written;
