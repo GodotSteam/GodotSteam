@@ -4,12 +4,15 @@ on:
       artifact_type:
         required: true
         type: string
+
       platform:
         required: true
         type: string
+
       zip_prefix:
         required: true
         type: string
+
       zip_tag:
         required: true
         type: string
@@ -31,14 +34,14 @@ jobs:
           path: files
 
       - name: Download ${{ inputs.platform }} Release Template
-        if: ${{ inputs.platform != 'MacOS' && inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-release-template
           path: files
 
       - name: Download ${{ inputs.platform }} Debug Template
-        if: ${{ inputs.platform != 'MacOS' && inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-debug-template
@@ -50,15 +53,25 @@ jobs:
         with:
           name: ${{ inputs.artifact_type }}-template-app
           path: files
-        
+
       - name: Download ${{ inputs.platform }} Steam Redistributable
+        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-steam
           path: files
 
-      - name: Create ${{ inputs.platform }} Bundle
+      - name: Create Mac Bundle
+        if: ${{ inputs.platform == 'MacOS' || inputs.platform == 'MacOS Mono' }}
         run: |
+          ls -la files/
+          unzip files/macos_editor.zip -d files/
+          zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
+
+      - name: Create ${{ inputs.platform }} Bundle
+        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+        run: |
+          ls -la files/
           zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
 
       - name: Upload ${{ inputs.platform }} Bundle Artifact

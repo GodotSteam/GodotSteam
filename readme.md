@@ -20,18 +20,8 @@ Current Build
 ---
 You can [download pre-compiled versions _(currently v4.6-mp)_ of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.6.3**
-- Fixed: lobby_state breaking after calling close on peer, ***thanks to Hangman***
-
-**Version 4.6.2**
-- Version bump to sync with 4.x branch
-
-**Version 4.6.1**
-- Added: various fixes including Linux compiling, ***thanks to friartruck***
-
-**Version 4.6**
-- Changed: all-new Github Actions files with Mono attempt
-- Removed: demo has been removed and added to the GodotSteam Example repo instead
+**Version 4.7 Changes**
+- Added: in-editor docs, ***thanks to grossqx***
 
 [You can read more change-logs here](https://godotsteam.com/changelog/multiplayer_peer/).
 
