@@ -43,10 +43,6 @@ jobs:
             build-mono: false
             cache-name: macos
 
-          - name: Editor and Templates with Mono
-            build-mono: true
-            cache-name: macos-mono
-
     steps:
       - uses: actions/checkout@v4
 

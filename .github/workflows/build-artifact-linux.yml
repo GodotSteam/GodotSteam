@@ -43,16 +43,6 @@ jobs:
             release-name: godot.linuxbsd.template_release.x86_64
             release-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.template.linux.x86_64
 
-          - name: Editor and Templates with Mono
-            build-mono: true
-            cache-name: linux-mono
-            editor-name: godot.linuxbsd.editor.x86_64.mono
-            editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.linux.mono.x86_64
-            debug-name: godot.linuxbsd.template_debug.x86_64.mono
-            debug-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.debug.template.linux.x86_64
-            release-name: godot.linuxbsd.template_release.x86_64.mono
-            release-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.template.linux.x86_64
-
     steps:
       - uses: actions/checkout@v4
 
