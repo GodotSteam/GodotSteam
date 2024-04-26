@@ -34,21 +34,21 @@ jobs:
           path: files
 
       - name: Download ${{ inputs.platform }} Release Template
-        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-release-template
           path: files
 
       - name: Download ${{ inputs.platform }} Debug Template
-        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-debug-template
           path: files
 
       - name: Download ${{ inputs.platform }} Template App
-        if: ${{ inputs.platform == 'MacOS' || inputs.platform == 'MacOS Mono' }}
+        if: ${{ inputs.platform == 'MacOS' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-template-app
@@ -61,14 +61,14 @@ jobs:
           path: files
 
       - name: Create Mac Bundle
-        if: ${{ inputs.platform == 'MacOS' || inputs.platform == 'MacOS Mono' }}
+        if: ${{ inputs.platform == 'MacOS' }}
         run: |
           ls -la files/
           unzip files/macos_editor.zip -d files/
           zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
 
       - name: Create ${{ inputs.platform }} Bundle
-        if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+        if: ${{ inputs.platform != 'MacOS' }}
         run: |
           ls -la files/
           zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
