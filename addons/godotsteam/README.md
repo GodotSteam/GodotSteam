@@ -20,15 +20,20 @@ Current Build
 ----------
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.23.1 Changes**
-- Added: internal notes about where enums are found
-- Added: minor extra helper functions from Steam's client header
-- Added: `getSteamID32` function to convert SteamID64 to SteamID
-- Changed: replaced deprecated Controller struct with Inputs struct in `getDigitalActionData`
-- Changed: in-editor docs
-- Changed: leaderboard details max now set at highest instead of zero by default
-- Fixed: incorrect constant for PUBLISHED_FILE_UPDATE_HANDLE_INVALID
-- Fixed: `getAllLobbyData` sending back all pairs, thanks to ***freehuntx***
+**Version 3.24 Changes**
+- Changed: `createBrowser` now accepts empty strings like the godot3 branch
+- Changed: minor organizational things, variable naming, etc.
+- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
+- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
+- Fixed: `requestClanOfficerList()` using wrong SDK call
+- Fixed: issues with `getResultItems()`
+- Fixed: `addRequestLobbyListDistanceFilter()`
+- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
+- Fixed: regressions in `receiveMessagesOnChannel()`, `receiveMessagesOnConnection()`, and `receiveMessagesOnPollGroup()`
+- Fixed: `getConnectionRealTimeStatus()` checking the wrong value, ***thanks to tamper2***
+- Fixed: missing cast on `setSize()`
+- Fixed: `addRequiredTagGroup()` backported from godot3 branch
+- Removed: unused internal variables
 
 [You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
 
