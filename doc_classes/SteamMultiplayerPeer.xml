@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SteamMultiplayerPeer" inherits="MultiplayerPeer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Provides a bridge between Steam Networking Sockets and Godot's high level [MultiplayerAPI].
+	</brief_description>
+	<description>
+        A [MultiplayerPeer] implementation that connects Steam Networking Sockets to Godot's high level multiplayer API. Should be passed to [MultiplayerAPI].multiplayer_peer after being initialized by calling create_lobby or connect_lobby.
+	</description>
+	<tutorials>
+		<link title="GodotSteam and SteamMultiplayerPeer - article by Michael Macha">https://michaelmacha.wordpress.com/2024/04/08/godotsteam-and-steammultiplayerpeer/</link>
+		<link title="Compiling from source">https://godotsteam.com/howto/multiplayer_peer/</link>
+		<link title="Changelog">https://godotsteam.com/changelog/multiplayer_peer/</link>
+	</tutorials>
+	<methods>
+		<method name="create_lobby">
+			<return type="Error" />
+			<param index="0" name="lobby_type" type="LOBBY_TYPE" />
+			<param index="0" name="max_players" type="int" />
+			<description>
+				Creates a lobby of given with set privacy type and set maximum player amount. Signal lobby_created will be emitted after lobby creation.
+			</description>
+		</method>
+		<method name="connect_lobby">
+			<return type="Error" />
+			<param index="0" name="lobby_id" type="int" />
+			<description>
+				Connect to the Steam lobby by given lobby ID. Signal lobby_joined will be emitted after attempting to connect.
+			</description>
+		</method>
+		<method name="get_steam64_from_peer_id">
+			<return type="int" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Converts peer ID of MultiplayerAPI's current multiplayer_peer into Steam user ID.
+			</description>
+		</method>
+		<method name="get_peer_id_from_steam64">
+			<return type="int" />
+			<param index="0" name="steam_id" type="int" />
+			<description>
+				Converts Steam user ID into peer ID of MultiplayerAPI's current multiplayer_peer.
+			</description>
+		</method>
+		<method name="set_lobby_joinable">
+			<return type="void" />
+			<param index="0" name="joinable" type="bool" />
+			<description>
+				Sets whether or not a lobby is joinable by other players. This always defaults to enabled for a new lobby. If joining is disabled, then no players can join, even if they are a friend or have been invited. Lobbies with joining disabled will not be returned from a lobby search.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="lobby_created">
+			<param index="0" name="result" type="int" />
+			<param index="1" name="lobby_id" type="int" />
+			<description>
+				Gets emitted after creating a lobby and a game server. Creator automatically joins the lobby. 
+				Provided that result is [Steam].Result.RESULT_OK, callback for this signal would be a good moment to assign the peer to [MultiplayerAPI] by calling multiplayer.set_multiplayer_peer().
+			</description>
+		</signal>
+		<signal name="lobby_joined">
+			<param index="0" name="lobby" type="int" />
+			<param index="1" name="permissions" type="int" />
+			<param index="2" name="locked" type="bool" />
+			<param index="3" name="response" type="Steam.ChatRoomEnterResponse" />
+			<description>
+				Received upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this.
+				Provided that result is [Steam].ChatRoomEnterResponse.CHAT_ROOM_ENTER_RESPONSE_SUCCESS, callback for this signal would be a good moment to assign the peer to [MultiplayerAPI] by calling multiplayer.set_multiplayer_peer().
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="LOBBY_TYPE_PRIVATE" value="0" enum="LOBBY_TYPE">
+			Lobby invisible to all other Steam users. The only way to join the lobby is from an invite.
+		</constant>
+		<constant name="LOBBY_TYPE_FRIENDS_ONLY" value="1" enum="LOBBY_TYPE">
+			Joinable by friends and invitees, but does not show up in the lobby list provided by [GodotSteam] in lobby_match_list callback.
+		</constant>
+		<constant name="LOBBY_TYPE_PUBLIC" value="2" enum="LOBBY_TYPE">
+			Returned by search and visible to friends.
+		</constant>
+		<constant name="LOBBY_TYPE_INVISIBLE" value="3" enum="LOBBY_TYPE">
+			Returned by search, but not visible to other friends.
+		</constant>
+	</constants>
+</class>
