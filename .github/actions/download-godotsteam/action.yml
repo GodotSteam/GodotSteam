@@ -1,7 +1,12 @@
 name: Download GodotSteam
+
+
 description: Download and extract the GodotSteam source code for use in compiling
+
+
 runs:
   using: "composite"
+
   steps:
     - name: Download and extract GodotSteam
       uses: actions/checkout@v4

@@ -8,16 +8,19 @@ on:
         required: true
         type: string
         default: 'sdk-1.59'
+
       godot_tag:
         description: 'Godot Github tag:'
         required: true
         type: string
-        default: '4.2.1-stable'
+        default: '4.2.2-stable'
+
       godotsteam_version:
         description: 'GodotSteam MP version:'
         required: true
         type: string
-        default: '4.6-mp'
+        default: '4.7-mp'
+
       mono_tag:
         description: 'Mono tag:'
         required: true
@@ -52,15 +55,6 @@ jobs:
       artifact_type: linux
       platform: Linux
       zip_prefix: linux64
-      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
-
-  create-linux-mono-bundle:
-    needs: [env-setup, build-linux]
-    uses: ./.github/workflows/create-bundle.yml
-    with:
-      artifact_type: linux-mono
-      platform: Linux Mono
-      zip_prefix: linux64.mono
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
   build-windows:
@@ -114,25 +108,9 @@ jobs:
       zip_prefix: macos
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
-  crate-macos-mono-bundle:
-    needs: [env-setup, build-macos]
-    uses: ./.github/workflows/create-bundle.yml
-    with:
-      artifact_type: macos-mono
-      platform: MacOS Mono
-      zip_prefix: macos-mono
-      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
-
   create-template-bundle:
     needs: [env-setup, build-linux, build-windows, build-macos]
     uses: ./.github/workflows/create-bundle-templates.yml
     with:
       is_mono: false
-      zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
-
-  create-mono-template-bundle:
-    needs: [env-setup, build-linux, build-macos]
-    uses: ./.github/workflows/create-bundle-templates.yml
-    with:
-      is_mono: true
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}

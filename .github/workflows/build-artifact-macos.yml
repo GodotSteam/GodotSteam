@@ -4,18 +4,23 @@ on:
       godot_tag:
         required: true
         type: string
+
       godot_version:
         required: true
         type: string
+
       mono_tag:
         required: true
         type: string
+
       steamworks_sdk_tag:
         required: true
         type: string
+
     secrets:
       steamworks_sdk_repo:
         required: true
+
       steamworks_sdk_repo_token:
         required: true
 
@@ -37,10 +42,6 @@ jobs:
           - name: Editor and Templates
             build-mono: false
             cache-name: macos
-
-          - name: Editor and Templates with Mono
-            build-mono: true
-            cache-name: macos-mono
 
     steps:
       - uses: actions/checkout@v4
@@ -150,23 +151,15 @@ jobs:
 
       # Create Mac Universal package
       - name: Package Editor (arch=arm64, x86_64)
-        run: |
-          ls -l bin/
-          lipo -create bin/godot.macos.editor.x86_64${{ matrix.build-mono && '.mono' || '' }} \
-            bin/godot.macos.editor.arm64${{ matrix.build-mono && '.mono' || '' }} \
-            -output bin/godot.macos.editor.universal${{ matrix.build-mono && '.mono' || '' }}
-          $STRIP bin/godot.macos.editor.universal${{ matrix.build-mono && '.mono' || '' }}
-          cp -r misc/dist/macos_tools.app ./GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app
-          mkdir -p bin/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app/Contents/MacOS
-          cp bin/godot.macos.editor.universal${{ matrix.build-mono && '.mono' || '' }} bin/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app/Contents/MacOS/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}
-          chmod +x bin/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app/Contents/MacOS/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}
-          ls -l bin/
+        uses: ./.github/actions/prep-macos
+        with:
+          target: 'editor'
 
       - name: Upload Editor
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}-editor
-          path: bin/GodotSteam${{ matrix.build-mono && 'Mono' || '' }}.app
+          path: bin/macos_editor.zip
 
       - name: Clear bin
         run: |
@@ -203,35 +196,16 @@ jobs:
 
       # Create Mac Universal package
       - name: Package Templates (arch=arm64, x86_64)
-        run: |
-          ls -l bin/
-          lipo -create bin/godot.macos.template_debug.x86_64${{ matrix.build-mono && '.mono' || '' }} bin/godot.macos.template_debug.arm64${{ matrix.build-mono && '.mono' || '' }} -output bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }}
-          $STRIP bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }}
-          lipo -create bin/godot.macos.template_release.x86_64${{ matrix.build-mono && '.mono' || '' }} bin/godot.macos.template_release.arm64${{ matrix.build-mono && '.mono' || '' }} -output bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }}
-          $STRIP bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }}
-          cp -r misc/dist/macos_template.app bin/
-          mkdir -p bin/macos_template.app/Contents/MacOS
-          cp bin/godot.macos.template_release.universal${{ matrix.build-mono && '.mono' || '' }} bin/macos_template.app/Contents/MacOS/godot_macos_release.universal
-          cp bin/godot.macos.template_debug.universal${{ matrix.build-mono && '.mono' || '' }} bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
-          chmod +x bin/macos_template.app/Contents/MacOS/godot_macos*
-          zip -q -9 -r bin/macos${{ matrix.build-mono && '-mono' || '' }}.zip macos_template.app
-          ls -l bin/
+        uses: ./.github/actions/prep-macos
+        with:
+          target: 'templates'
 
       - name: Upload Mac Template App
         uses: ./.github/actions/upload-artifact
         with:
-          name: macos${{ matrix.build-mono && '-mono' || '' }}-template-app
-          path: bin/macos${{ matrix.build-mono && '-mono' || '' }}.zip
-
+          name: macos-template-app
+          path: bin/macos.zip
 
       - name: Clear bin
         run: |
           rm -rf bin
-
-      # Upload the Steam redistributable for packaging
-      - name: Upload Linux Steam File
-        uses: ./.github/actions/upload-steam-redistributable
-        with:
-          name: ${{ matrix.cache-name }}-steam
-          path: osx/
-          redist: libsteam_api.dylib
