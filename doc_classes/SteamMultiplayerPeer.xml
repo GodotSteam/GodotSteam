@@ -200,6 +200,14 @@
 				A chat (text or binary) message for this lobby has been received.
 			</description>
 		</signal>
+		<signal name="network_session_failed">
+			<param index="0" name="steam_id" type="int" />
+			<param index="1" name="reason" type="int" />
+			<param index="2" name="connection_state" type="bool" />
+			<description>
+				Gets emitted when [SteamMultiplayerPeer] fails to establish a message session. Can be used to exit the lobby or retry the connection from client's side. Returned SteamID can be empty, depending on the current state of connection. For more information on reason of failure check [code]reason[/code] in [code]ESteamNetConnectionEnd[/code] and [code]connection_state[/code] in [code]ESteamNetworkingConnectionState[/code] or check output of [code]debug_data[/code] signal.
+			</description>
+		</signal>
 	</signals>
 	<constants>
 		<constant name="LOBBY_TYPE_PRIVATE" value="0" enum="LOBBY_TYPE">
