@@ -91,7 +91,7 @@ void SteamMultiplayerPeer::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("lobby_invite", PropertyInfo(Variant::INT, "inviter"), PropertyInfo(Variant::INT, "lobby"), PropertyInfo(Variant::INT, "game")));
 	ADD_SIGNAL(MethodInfo("lobby_match_list", PropertyInfo(Variant::ARRAY, "lobbies")));
 	ADD_SIGNAL(MethodInfo("lobby_kicked", PropertyInfo(Variant::INT, "lobby_id"), PropertyInfo(Variant::INT, "admin_id"), PropertyInfo(Variant::INT, "due_to_disconnect")));
-
+	ADD_SIGNAL(MethodInfo("network_session_failed", PropertyInfo(Variant::INT, "steam_id"), PropertyInfo(Variant::INT, "reason"), PropertyInfo(Variant::INT, "connection_state")));
 	// debug
 	ADD_SIGNAL(MethodInfo("debug_data", PropertyInfo(Variant::DICTIONARY, "data")));
 }
@@ -431,7 +431,7 @@ void SteamMultiplayerPeer::lobby_chat_update_scb(LobbyChatUpdate_t *call_data) {
 			// todo emit signal based on what happened to that user!
 			break;
 		default:
-			ERR_PRINT("WTF!?");
+			ERR_PRINT("WTF is this lobby chat update status?!");
 	}
 };
 
@@ -453,10 +453,14 @@ void SteamMultiplayerPeer::network_messages_session_request_scb(SteamNetworkingM
 
 void SteamMultiplayerPeer::network_messages_session_failed_scb(SteamNetworkingMessagesSessionFailed_t *call_data) {
 	SteamNetConnectionInfo_t info = call_data->m_info;
-	// Parse out the reason for failure
-	ERR_PRINT("ERROR NETWORK MESSAGE! I'm going to figure this out later.");
-	DEBUG_DATA_SIGNAL_V("network_messages_session_failed_scb", info.m_eEndReason);
-	// emit_signal("network_messages_session_failed", reason);
+	/// Indicates who this session was with. Depending on the connection type and phase of the connection, we might not know.
+	uint64_t other_end_steamid = info.m_identityRemote.GetSteamID64();
+	ERR_PRINT(String("Connection terminated. See ESteamNetConnectionEnd for reason #") + String::num(info.m_eEndReason)
+	+ String(". and ESteamNetworkingConnectionState for connection state #") + String::num(info.m_eState));
+	emit_signal("network_session_failed", other_end_steamid, info.m_eEndReason, info.m_eState);
+	/// Send a human-readable explanation of the problem to debug signal.
+	DEBUG_DATA_SIGNAL_V("network_messages_session_failed_scb",
+	String::utf8(info.m_szEndDebug) + String("; ") + String::utf8(info.m_szConnectionDescription));
 }
 
 void SteamMultiplayerPeer::lobby_data_update_scb(LobbyDataUpdate_t *call_data) {
