@@ -1,7 +1,7 @@
 #ifndef GODOTSTEAM_H
 #define GODOTSTEAM_H
 
-
+/////////////////////////////////////////////////
 // SILENCE STEAMWORKS WARNINGS
 /////////////////////////////////////////////////
 //
@@ -12,7 +12,7 @@
 #pragma warning(disable : 4828)
 #endif
 
-
+/////////////////////////////////////////////////
 // INCLUDE HEADERS
 /////////////////////////////////////////////////
 //
@@ -37,18 +37,11 @@
 // Include some system headers
 #include "map"
 
-
 class Steam : public Object {
-
 	GDCLASS(Steam, Object);
 
 public:
-
-	static Steam *get_singleton();
-	Steam();
-	~Steam();
-
-
+	/////////////////////////////////////////
 	// STEAMWORKS API ENUMS
 	/////////////////////////////////////////
 	//
@@ -1773,7 +1766,11 @@ public:
 		TEXT_FILTERING_CONTEXT_NAME = k_ETextFilteringContextName
 	};
 
+	static Steam *get_singleton();
+	Steam();
+	~Steam();
 
+	/////////////////////////////////////////
 	// STEAMWORKS FUNCTIONS
 	/////////////////////////////////////////
 	//
@@ -1936,7 +1933,7 @@ public:
 	void getLinkAtPosition(int x, int y, uint32 this_handle = 0);
 	void goBack(uint32 this_handle = 0);
 	void goForward(uint32 this_handle = 0);
-	bool htmlInit();
+	void htmlInit();
 	void jsDialogResponse(bool result, uint32 this_handle = 0);
 	void keyChar(uint32 unicode_char, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
 	void keyDown(uint32 native_key_code, BitField<HTMLKeyModifiers> key_modifiers, uint32 this_handle = 0);
@@ -2099,7 +2096,7 @@ public:
 	void setLobbyMemberData(uint64_t steam_lobby_id, const String &key, const String &value);
 	bool sendLobbyChatMsg(uint64_t steam_lobby_id, const String &message_body);
 	bool requestLobbyData(uint64_t steam_lobby_id);
-	void setLobbyGameServer(uint64_t steam_lobby_id, const String &server_ip, uint16 server_port, uint64_t steam_id_game_server);
+	void setLobbyGameServer(uint64_t steam_lobby_id, const String &server_ip = "0", uint16 server_port = 0, uint64_t steam_id_game_server = 0);
 	Dictionary getLobbyGameServer(uint64_t steam_lobby_id);
 	bool setLobbyMemberLimit(uint64_t steam_lobby_id, int max_members);
 	int getLobbyMemberLimit(uint64_t steam_lobby_id);
@@ -2581,11 +2578,9 @@ public:
 	void getVideoURL(uint32_t app_id);
 	Dictionary isBroadcasting();
 
-
 protected:
 	static void _bind_methods();
 	static Steam *singleton;
-
 
 private:
 	// Main
@@ -2650,7 +2645,7 @@ private:
 		SteamAPI_RunCallbacks();
 	}
 
-
+	/////////////////////////////////////////
 	// STEAM CALLBACKS
 	/////////////////////////////////////////
 	//
@@ -2831,7 +2826,7 @@ private:
 	STEAM_CALLBACK(Steam, get_opf_settings_result, GetOPFSettingsResult_t, callbackGetOPFSettingsResult);
 	STEAM_CALLBACK(Steam, get_video_result, GetVideoURLResult_t, callbackGetVideoResult);
 
-
+	/////////////////////////////////////////
 	// STEAM CALL RESULTS
 	/////////////////////////////////////////
 	//
@@ -2955,7 +2950,6 @@ private:
 	CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
 	void check_file_signature(CheckFileSignature_t *call_data, bool io_failure);
 };
-
 
 VARIANT_ENUM_CAST(Steam::AccountType);
 VARIANT_ENUM_CAST(Steam::APICallFailure);
@@ -3083,6 +3077,5 @@ VARIANT_ENUM_CAST(Steam::WorkshopVideoProvider);
 VARIANT_ENUM_CAST(Steam::WorkshopVote);
 
 VARIANT_ENUM_CAST(Steam::XboxOrigin);
-
 
 #endif // GODOTSTEAM_H

@@ -55,7 +55,11 @@ jobs:
           path: files
 
       - name: Download ${{ inputs.platform }} Steam Redistributable
+<<<<<<< HEAD
+        if: ${{ inputs.platform != 'MacOS' }}
+=======
         if: ${{ inputs.platform != 'MacOS' || inputs.platform != 'MacOS Mono' }}
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_type }}-steam

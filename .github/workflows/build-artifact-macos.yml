@@ -98,7 +98,11 @@ jobs:
       - name: Package Editor (arch=arm64, x86_64)
         uses: ./.github/actions/prep-macos
         with:
+<<<<<<< HEAD
+          target: editor
+=======
           target: 'editor'
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
 
       - name: Upload Editor
         uses: ./.github/actions/upload-artifact
@@ -143,7 +147,11 @@ jobs:
       - name: Package Templates (arch=arm64, x86_64)
         uses: ./.github/actions/prep-macos
         with:
+<<<<<<< HEAD
+          target: templates
+=======
           target: 'templates'
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
 
       - name: Upload Mac Template App
         uses: ./.github/actions/upload-artifact

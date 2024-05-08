@@ -7,12 +7,21 @@ description: Combine x86_64 and arm64 into Universal
 inputs:
   target:
     description: Which packaging are we prepping
+<<<<<<< HEAD
+    default: editor
+
+=======
     default: 'editor'
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
 runs:
   using: "composite"
   steps:
     - name: Create Universal Editor
+<<<<<<< HEAD
+      if: ${{ inputs.target == "editor" }}
+=======
       if: ${{ inputs.target == 'editor' }}
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
       shell: bash
       run: |
         ls -la bin/
@@ -27,6 +36,12 @@ runs:
 
         cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/GodotSteam.app/Contents/MacOS/
 
+<<<<<<< HEAD
+        ls -la bin/
+
+    - name: Create Universal Templates
+      if: ${{ inputs.target == "templates" }}
+=======
         cd bin/
         zip -q -9 -r macos_editor.zip GodotSteam.app
         cd ../
@@ -34,6 +49,7 @@ runs:
 
     - name: Create Universal Templates
       if: ${{ inputs.target == 'templates' }}
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
       shell: bash
       run: |
         ls -la bin/
@@ -49,9 +65,15 @@ runs:
         cp bin/godot.macos.template_debug.universal bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
         chmod +x bin/macos_template.app/Contents/MacOS/godot_macos*
 
+<<<<<<< HEAD
+        cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/GodotSteam.app/Contents/MacOS/
+
+        zip -q -9 -r bin/macos.zip bin/macos_template.app
+=======
         cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/macos_template.app/Contents/MacOS/
 
         cd bin/
         zip -q -9 -r macos.zip macos_template.app
         cd ../
+>>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
         ls -la bin/
