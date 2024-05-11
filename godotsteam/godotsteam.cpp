@@ -3627,8 +3627,12 @@ Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request
 		game_server["secure"] = server_item->m_bSecure;
 		game_server["last_played"] = server_item->m_ulTimeLastPlayed;
 		game_server["server_version"] = server_item->m_nServerVersion;
+		game_server["name"] = server_item->GetName();
+		game_server["game_tags"] = server_item->m_szGameTags;
+		game_server["steam_id"] = server_item->m_steamID.ConvertToUint64();
+		game_server["connection_address"] = server_item->m_NetAdr.GetConnectionAddressString();
 		// Clean up
-		delete server_item;
+		// delete server_item;
 	}
 	// Return the dictionary
 	return game_server;
@@ -3898,6 +3902,21 @@ int Steam::serverRules(const String &ip, int port) {
 		}
 	}
 	return response;
+}
+
+// A server has responded to a list request.
+void Steam::ServerResponded(HServerListRequest server_list_request, int server){
+	emit_signal("request_server_list_server_responded", (uint64)server_list_request, server);
+}
+
+// A server has failed to respond to a list request.
+void Steam::ServerFailedToRespond(HServerListRequest server_list_request, int server){
+	emit_signal("request_server_list_server_failed_to_respond", (uint64)server_list_request, server);
+}
+
+// A server list request has completed.
+void Steam::RefreshComplete(HServerListRequest server_list_request, EMatchMakingServerResponse response){
+	emit_signal("request_server_list_refresh_complete", (uint64)server_list_request, MatchMakingServerResponse(response));
 }
 
 
@@ -11591,6 +11610,11 @@ void Steam::_bind_methods() {
 	// MATCHMAKING SERVER SIGNALS ///////////////
 	ADD_SIGNAL(MethodInfo("server_responded"));
 	ADD_SIGNAL(MethodInfo("server_failed_to_respond"));
+
+	// MATCHMAKING SERVERS //////////////
+	ADD_SIGNAL(MethodInfo("request_server_list_server_responded", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
+	ADD_SIGNAL(MethodInfo("request_server_list_server_failed_to_respond", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
+	ADD_SIGNAL(MethodInfo("request_server_list_refresh_complete", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "response")));
 
 	// MUSIC SIGNALS ////////////////////////////
 	ADD_SIGNAL(MethodInfo("music_playback_status_has_changed"));

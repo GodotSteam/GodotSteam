@@ -42,7 +42,7 @@
 using namespace godot;
 
 
-class Steam: public Object {
+class Steam: public Object, ISteamMatchmakingServerListResponse {
 
 	GDCLASS(Steam, Object);
 
@@ -2132,6 +2132,10 @@ public:
 	uint64_t requestSpectatorServerList(uint32 app_id, Array filters);
 	int serverRules(const String &ip, int port);
 
+	void ServerResponded (HServerListRequest server_list_request, int server);
+	void ServerFailedToRespond (HServerListRequest server_list_request, int server);
+	void RefreshComplete (HServerListRequest server_list_request, EMatchMakingServerResponse response);
+
 	// Music ////////////////////////////////
 	bool musicIsEnabled();
 	bool musicIsPlaying();
@@ -2617,7 +2621,7 @@ private:
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;
-	ISteamMatchmakingServerListResponse *server_list_response;
+	ISteamMatchmakingServerListResponse *server_list_response = this;
 	ISteamMatchmakingPingResponse *ping_response;
 	ISteamMatchmakingPlayersResponse *player_response;
 	ISteamMatchmakingRulesResponse *rules_response;
