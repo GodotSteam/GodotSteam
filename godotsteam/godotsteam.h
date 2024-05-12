@@ -42,7 +42,11 @@
 using namespace godot;
 
 
-class Steam: public Object, ISteamMatchmakingServerListResponse {
+class Steam: public Object,
+	ISteamMatchmakingServerListResponse,
+	ISteamMatchmakingPingResponse,
+	ISteamMatchmakingPlayersResponse,
+	ISteamMatchmakingRulesResponse {
 
 	GDCLASS(Steam, Object);
 
@@ -2132,9 +2136,24 @@ public:
 	uint64_t requestSpectatorServerList(uint32 app_id, Array filters);
 	int serverRules(const String &ip, int port);
 
-	void ServerResponded (HServerListRequest server_list_request, int server);
-	void ServerFailedToRespond (HServerListRequest server_list_request, int server);
+	// ISteamMatchmakingServerListResponse
+	void ServerResponded(HServerListRequest server_list_request, int server);
+	void ServerFailedToRespond(HServerListRequest server_list_request, int server);
 	void RefreshComplete (HServerListRequest server_list_request, EMatchMakingServerResponse response);
+
+	// ISteamMatchmakingPingResponse
+	void ServerResponded(gameserveritem_t &server);
+	void ServerFailedToRespond();
+
+	// ISteamMatchmakingPlayersResponse
+	void AddPlayerToList(const char *pchName, int nScore, float flTimePlayed);
+	void PlayersFailedToRespond();
+	void PlayersRefreshComplete();
+
+	// ISteamMatchmakingRulesResponse
+	void RulesResponded(const char *pchRule, const char *pchValue);
+	void RulesFailedToRespond();
+	void RulesRefreshComplete();
 
 	// Music ////////////////////////////////
 	bool musicIsEnabled();
@@ -2622,9 +2641,11 @@ private:
 	// Matchmaking Server
 	HServerListRequest server_list_request;
 	ISteamMatchmakingServerListResponse *server_list_response = this;
-	ISteamMatchmakingPingResponse *ping_response;
-	ISteamMatchmakingPlayersResponse *player_response;
-	ISteamMatchmakingRulesResponse *rules_response;
+	ISteamMatchmakingPingResponse *ping_response = this;
+	ISteamMatchmakingPlayersResponse *players_response = this;
+	ISteamMatchmakingRulesResponse *rules_response = this;
+
+	Dictionary GameServerItemToDictionary(gameserveritem_t *server_item);
 
 	// Networking Messages
 	//		std::map<int, SteamNetworkingMessage_t> network_messages;

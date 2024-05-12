@@ -3613,25 +3613,8 @@ Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request
 		gameserveritem_t *server_item = new gameserveritem_t();
 		server_item = SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
 		// Populate the dictionary
-		game_server["ping"] = server_item->m_nPing;
-		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
-		game_server["no_refresh"] = server_item->m_bDoNotRefresh;
-		game_server["game_dir"] = server_item->m_szGameDir;
-		game_server["map"] = server_item->m_szMap;
-		game_server["description"] = server_item->m_szGameDescription;
-		game_server["app_id"] = server_item->m_nAppID;
-		game_server["players"] = server_item->m_nPlayers;
-		game_server["max_players"] = server_item->m_nMaxPlayers;
-		game_server["bot_players"] = server_item->m_nBotPlayers;
-		game_server["password"] = server_item->m_bPassword;
-		game_server["secure"] = server_item->m_bSecure;
-		game_server["last_played"] = server_item->m_ulTimeLastPlayed;
-		game_server["server_version"] = server_item->m_nServerVersion;
-		game_server["name"] = server_item->GetName();
-		game_server["game_tags"] = server_item->m_szGameTags;
-		game_server["steam_id"] = server_item->m_steamID.ConvertToUint64();
-		game_server["connection_address"] = server_item->m_NetAdr.GetConnectionAddressString();
-		// Clean up
+		game_server = GameServerItemToDictionary(server_item);
+		// Clean up crashes if query is still active
 		// delete server_item;
 	}
 	// Return the dictionary
@@ -3672,7 +3655,7 @@ int Steam::playerDetails(const String &ip, int port) {
 			char ip_bytes[4];
 	  		sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
 			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->PlayerDetails(ip4, (uint16)port, player_response);
+			response = SteamMatchmakingServers()->PlayerDetails(ip4, (uint16)port, players_response);
 		}
 	}
 	return response;
@@ -3918,6 +3901,68 @@ void Steam::ServerFailedToRespond(HServerListRequest server_list_request, int se
 void Steam::RefreshComplete(HServerListRequest server_list_request, EMatchMakingServerResponse response){
 	emit_signal("request_server_list_refresh_complete", (uint64)server_list_request, MatchMakingServerResponse(response));
 }
+
+Dictionary Steam::GameServerItemToDictionary(gameserveritem_t *server_item){
+	Dictionary game_server;
+	if (server_item != NULL) {
+		game_server["name"] = server_item->GetName();
+		game_server["connection_address"] = server_item->m_NetAdr.GetConnectionAddressString();
+		game_server["query_address"] = server_item->m_NetAdr.GetQueryAddressString();
+		game_server["ping"] = server_item->m_nPing;
+		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
+		game_server["no_refresh"] = server_item->m_bDoNotRefresh;
+		game_server["game_dir"] = server_item->m_szGameDir;
+		game_server["map"] = server_item->m_szMap;
+		game_server["description"] = server_item->m_szGameDescription;
+		game_server["app_id"] = server_item->m_nAppID;
+		game_server["players"] = server_item->m_nPlayers;
+		game_server["max_players"] = server_item->m_nMaxPlayers;
+		game_server["bot_players"] = server_item->m_nBotPlayers;
+		game_server["password"] = server_item->m_bPassword;
+		game_server["secure"] = server_item->m_bSecure;
+		game_server["last_played"] = server_item->m_ulTimeLastPlayed;
+		game_server["server_version"] = server_item->m_nServerVersion;
+		game_server["game_tags"] = server_item->m_szGameTags;
+		game_server["steam_id"] = server_item->m_steamID.ConvertToUint64();
+	}
+	return game_server;
+}
+
+// The server has responded to a ping request.
+void Steam::ServerResponded(gameserveritem_t &server){
+	emit_signal("ping_server_responded", GameServerItemToDictionary(&server));
+}
+
+// The server has failed to respond to a ping request.
+void Steam::ServerFailedToRespond(){
+	emit_signal("ping_server_failed_to_respond");
+}
+
+// The server has responded to a player details request.
+void Steam::AddPlayerToList(const char *pchName, int nScore, float flTimePlayed){
+	emit_signal("player_details_player_added", String(pchName), nScore, flTimePlayed);
+}
+
+void Steam::PlayersFailedToRespond(){
+	emit_signal("player_details_failed_to_respond");
+}
+
+void Steam::PlayersRefreshComplete(){
+	emit_signal("player_details_refresh_complete");
+}
+
+void Steam::RulesResponded(const char *pchRule, const char *pchValue){
+	emit_signal("server_rules_responded", String(pchRule), String(pchValue));
+}
+
+void Steam::RulesFailedToRespond(){
+	emit_signal("server_rules_failed_to_respond");
+}
+
+void Steam::RulesRefreshComplete(){
+	emit_signal("server_rules_refresh_complete");
+}
+
 
 
 ///// MUSIC
@@ -11615,6 +11660,17 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("request_server_list_server_responded", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
 	ADD_SIGNAL(MethodInfo("request_server_list_server_failed_to_respond", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
 	ADD_SIGNAL(MethodInfo("request_server_list_refresh_complete", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "response")));
+
+	ADD_SIGNAL(MethodInfo("ping_server_responded", PropertyInfo(Variant::DICTIONARY, "server_details")));
+	ADD_SIGNAL(MethodInfo("ping_server_failed_to_respond"));
+
+	ADD_SIGNAL(MethodInfo("player_details_player_added", PropertyInfo(Variant::STRING, "name"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::FLOAT, "time_played")));
+	ADD_SIGNAL(MethodInfo("player_details_failed_to_respond"));
+	ADD_SIGNAL(MethodInfo("player_details_refresh_complete"));
+
+	ADD_SIGNAL(MethodInfo("server_rules_responded", PropertyInfo(Variant::STRING, "rule"), PropertyInfo(Variant::STRING, "value")));
+	ADD_SIGNAL(MethodInfo("server_rules_failed_to_respond"));
+	ADD_SIGNAL(MethodInfo("server_rules_refresh_complete"));
 
 	// MUSIC SIGNALS ////////////////////////////
 	ADD_SIGNAL(MethodInfo("music_playback_status_has_changed"));
