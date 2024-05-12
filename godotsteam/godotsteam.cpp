@@ -3637,11 +3637,11 @@ bool Steam::isRefreshing(uint64_t this_server_list_request) {
 int Steam::pingServer(const String &ip, int port) {
 	int response = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		if (ip.is_valid_ip_address()) {
-			char ip_bytes[4];
-			sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
-			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->PingServer(ip4, (uint16)port, ping_response);
+		SteamNetworkingIPAddr address;
+		address.Clear();
+		if (address.ParseString(ip.utf8().get_data())){
+			address.m_port = port;
+			response = SteamMatchmakingServers()->PingServer(address.GetIPv4(), address.m_port, ping_response);
 		}
 	}
 	return response;
@@ -3651,11 +3651,11 @@ int Steam::pingServer(const String &ip, int port) {
 int Steam::playerDetails(const String &ip, int port) {
 	int response = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		if (ip.is_valid_ip_address()) {
-			char ip_bytes[4];
-	  		sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
-			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->PlayerDetails(ip4, (uint16)port, players_response);
+		SteamNetworkingIPAddr address;
+		address.Clear();
+		if (address.ParseString(ip.utf8().get_data())){
+			address.m_port = port;
+			response = SteamMatchmakingServers()->PlayerDetails(address.GetIPv4(), address.m_port, players_response);
 		}
 	}
 	return response;
@@ -3877,11 +3877,11 @@ uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters) {
 int Steam::serverRules(const String &ip, int port) {
 	int response = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		if (ip.is_valid_ip_address()) {
-			char ip_bytes[4];
-	  		sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
-			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->ServerRules(ip4, (uint16)port, rules_response);
+		SteamNetworkingIPAddr address;
+		address.Clear();
+		if (address.ParseString(ip.utf8().get_data())){
+			address.m_port = port;
+			response = SteamMatchmakingServers()->ServerRules(address.GetIPv4(), address.m_port, rules_response);
 		}
 	}
 	return response;
