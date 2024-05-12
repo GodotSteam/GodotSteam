@@ -3701,26 +3701,24 @@ uint64_t Steam::requestFavoritesServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3735,26 +3733,24 @@ uint64_t Steam::requestFriendsServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3769,26 +3765,24 @@ uint64_t Steam::requestHistoryServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3803,26 +3797,24 @@ uint64_t Steam::requestInternetServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3846,26 +3838,24 @@ uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
