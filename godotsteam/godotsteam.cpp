@@ -3613,22 +3613,9 @@ Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request
 		gameserveritem_t *server_item = new gameserveritem_t();
 		server_item = SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
 		// Populate the dictionary
-		game_server["ping"] = server_item->m_nPing;
-		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
-		game_server["no_refresh"] = server_item->m_bDoNotRefresh;
-		game_server["game_dir"] = server_item->m_szGameDir;
-		game_server["map"] = server_item->m_szMap;
-		game_server["description"] = server_item->m_szGameDescription;
-		game_server["app_id"] = server_item->m_nAppID;
-		game_server["players"] = server_item->m_nPlayers;
-		game_server["max_players"] = server_item->m_nMaxPlayers;
-		game_server["bot_players"] = server_item->m_nBotPlayers;
-		game_server["password"] = server_item->m_bPassword;
-		game_server["secure"] = server_item->m_bSecure;
-		game_server["last_played"] = server_item->m_ulTimeLastPlayed;
-		game_server["server_version"] = server_item->m_nServerVersion;
-		// Clean up
-		delete server_item;
+		game_server = GameServerItemToDictionary(server_item);
+		// Clean up crashes if query is still active
+		// delete server_item;
 	}
 	// Return the dictionary
 	return game_server;
@@ -3650,11 +3637,11 @@ bool Steam::isRefreshing(uint64_t this_server_list_request) {
 int Steam::pingServer(const String &ip, int port) {
 	int response = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		if (ip.is_valid_ip_address()) {
-			char ip_bytes[4];
-			sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
-			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->PingServer(ip4, (uint16)port, ping_response);
+		SteamNetworkingIPAddr address;
+		address.Clear();
+		if (address.ParseString(ip.utf8().get_data())){
+			address.m_port = port;
+			response = SteamMatchmakingServers()->PingServer(address.GetIPv4(), address.m_port, ping_response);
 		}
 	}
 	return response;
@@ -3664,11 +3651,11 @@ int Steam::pingServer(const String &ip, int port) {
 int Steam::playerDetails(const String &ip, int port) {
 	int response = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		if (ip.is_valid_ip_address()) {
-			char ip_bytes[4];
-	  		sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
-			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->PlayerDetails(ip4, (uint16)port, player_response);
+		SteamNetworkingIPAddr address;
+		address.Clear();
+		if (address.ParseString(ip.utf8().get_data())){
+			address.m_port = port;
+			response = SteamMatchmakingServers()->PlayerDetails(address.GetIPv4(), address.m_port, players_response);
 		}
 	}
 	return response;
@@ -3714,26 +3701,24 @@ uint64_t Steam::requestFavoritesServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3748,26 +3733,24 @@ uint64_t Steam::requestFriendsServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3782,26 +3765,24 @@ uint64_t Steam::requestHistoryServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3816,26 +3797,24 @@ uint64_t Steam::requestInternetServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3859,26 +3838,24 @@ uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters) {
 		uint32 filter_size = filters.size();
 		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
 		for (uint32 i = 0; i < filter_size; i++) {
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t();
 			// Get the key/value pair
 			Array pair = filters[i];
+
 			// Get the key from the filter pair
 			String key = (String)pair[0];
 			char *this_key = new char[256];
 			strcpy(this_key, key.utf8().get_data());
-			filter_array->m_szKey[i] = *this_key;
-			delete[] this_key;
+
 			// Get the value from the filter pair
 			String value = pair[1];
 			char *this_value = new char[256];
 			strcpy(this_value, value.utf8().get_data());
-			filter_array->m_szValue[i] = *this_value;
-			delete[] this_value;
-			// Append this to the array
+
+			// Create a new filter pair to populate
+			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
+			delete [] this_key;
+			delete [] this_value;
 			filters_array[i] = *filter_array;
-			// Free up the memory
-			delete filter_array;
 		}
 		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
 		delete[] filters_array;
@@ -3890,15 +3867,92 @@ uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters) {
 int Steam::serverRules(const String &ip, int port) {
 	int response = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		if (ip.is_valid_ip_address()) {
-			char ip_bytes[4];
-	  		sscanf(ip.utf8().get_data(), "%hhu.%hhu.%hhu.%hhu", &ip_bytes[3], &ip_bytes[2], &ip_bytes[1], &ip_bytes[0]);
-			uint32_t ip4 = ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24;
-			response = SteamMatchmakingServers()->ServerRules(ip4, (uint16)port, rules_response);
+		SteamNetworkingIPAddr address;
+		address.Clear();
+		if (address.ParseString(ip.utf8().get_data())){
+			address.m_port = port;
+			response = SteamMatchmakingServers()->ServerRules(address.GetIPv4(), address.m_port, rules_response);
 		}
 	}
 	return response;
 }
+
+// A server has responded to a list request.
+void Steam::ServerResponded(HServerListRequest server_list_request, int server){
+	emit_signal("request_server_list_server_responded", (uint64)server_list_request, server);
+}
+
+// A server has failed to respond to a list request.
+void Steam::ServerFailedToRespond(HServerListRequest server_list_request, int server){
+	emit_signal("request_server_list_server_failed_to_respond", (uint64)server_list_request, server);
+}
+
+// A server list request has completed.
+void Steam::RefreshComplete(HServerListRequest server_list_request, EMatchMakingServerResponse response){
+	emit_signal("request_server_list_refresh_complete", (uint64)server_list_request, MatchMakingServerResponse(response));
+}
+
+Dictionary Steam::GameServerItemToDictionary(gameserveritem_t *server_item){
+	Dictionary game_server;
+	if (server_item != NULL) {
+		game_server["name"] = server_item->GetName();
+		game_server["connection_address"] = server_item->m_NetAdr.GetConnectionAddressString();
+		game_server["query_address"] = server_item->m_NetAdr.GetQueryAddressString();
+		game_server["ping"] = server_item->m_nPing;
+		game_server["success_response"] = server_item->m_bHadSuccessfulResponse;
+		game_server["no_refresh"] = server_item->m_bDoNotRefresh;
+		game_server["game_dir"] = server_item->m_szGameDir;
+		game_server["map"] = server_item->m_szMap;
+		game_server["description"] = server_item->m_szGameDescription;
+		game_server["app_id"] = server_item->m_nAppID;
+		game_server["players"] = server_item->m_nPlayers;
+		game_server["max_players"] = server_item->m_nMaxPlayers;
+		game_server["bot_players"] = server_item->m_nBotPlayers;
+		game_server["password"] = server_item->m_bPassword;
+		game_server["secure"] = server_item->m_bSecure;
+		game_server["last_played"] = server_item->m_ulTimeLastPlayed;
+		game_server["server_version"] = server_item->m_nServerVersion;
+		game_server["game_tags"] = server_item->m_szGameTags;
+		game_server["steam_id"] = server_item->m_steamID.ConvertToUint64();
+	}
+	return game_server;
+}
+
+// The server has responded to a ping request.
+void Steam::ServerResponded(gameserveritem_t &server){
+	emit_signal("ping_server_responded", GameServerItemToDictionary(&server));
+}
+
+// The server has failed to respond to a ping request.
+void Steam::ServerFailedToRespond(){
+	emit_signal("ping_server_failed_to_respond");
+}
+
+// The server has responded to a player details request.
+void Steam::AddPlayerToList(const char *pchName, int nScore, float flTimePlayed){
+	emit_signal("player_details_player_added", String(pchName), nScore, flTimePlayed);
+}
+
+void Steam::PlayersFailedToRespond(){
+	emit_signal("player_details_failed_to_respond");
+}
+
+void Steam::PlayersRefreshComplete(){
+	emit_signal("player_details_refresh_complete");
+}
+
+void Steam::RulesResponded(const char *pchRule, const char *pchValue){
+	emit_signal("server_rules_responded", String(pchRule), String(pchValue));
+}
+
+void Steam::RulesFailedToRespond(){
+	emit_signal("server_rules_failed_to_respond");
+}
+
+void Steam::RulesRefreshComplete(){
+	emit_signal("server_rules_refresh_complete");
+}
+
 
 
 ///// MUSIC
@@ -11591,6 +11645,22 @@ void Steam::_bind_methods() {
 	// MATCHMAKING SERVER SIGNALS ///////////////
 	ADD_SIGNAL(MethodInfo("server_responded"));
 	ADD_SIGNAL(MethodInfo("server_failed_to_respond"));
+
+	// MATCHMAKING SERVERS //////////////
+	ADD_SIGNAL(MethodInfo("request_server_list_server_responded", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
+	ADD_SIGNAL(MethodInfo("request_server_list_server_failed_to_respond", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
+	ADD_SIGNAL(MethodInfo("request_server_list_refresh_complete", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "response")));
+
+	ADD_SIGNAL(MethodInfo("ping_server_responded", PropertyInfo(Variant::DICTIONARY, "server_details")));
+	ADD_SIGNAL(MethodInfo("ping_server_failed_to_respond"));
+
+	ADD_SIGNAL(MethodInfo("player_details_player_added", PropertyInfo(Variant::STRING, "name"), PropertyInfo(Variant::INT, "score"), PropertyInfo(Variant::FLOAT, "time_played")));
+	ADD_SIGNAL(MethodInfo("player_details_failed_to_respond"));
+	ADD_SIGNAL(MethodInfo("player_details_refresh_complete"));
+
+	ADD_SIGNAL(MethodInfo("server_rules_responded", PropertyInfo(Variant::STRING, "rule"), PropertyInfo(Variant::STRING, "value")));
+	ADD_SIGNAL(MethodInfo("server_rules_failed_to_respond"));
+	ADD_SIGNAL(MethodInfo("server_rules_refresh_complete"));
 
 	// MUSIC SIGNALS ////////////////////////////
 	ADD_SIGNAL(MethodInfo("music_playback_status_has_changed"));
