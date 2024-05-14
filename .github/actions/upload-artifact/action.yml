@@ -12,13 +12,9 @@ inputs:
   path:
     description: The path to upload
     required: true
-<<<<<<< HEAD
     default: "bin/"
-=======
-    default: "./bin/"
 
 
->>>>>>> 39d3d9276f65d6112e4d428dcbc4876cefc853a5
 runs:
   using: "composite"
 

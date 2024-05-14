@@ -20,19 +20,34 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.6.4 Changes**
-
-- Changed: sprintf for snprintf
-- Changed: `setLobbyGameServer()` now has default arguments for IP, port, and server ID, also accepts 0 for IP and port
-
-**Version 4.6.3 Changes**
-
-- Changed: returned values for getFriendGamePlayed, ***thanks to SlejmUr***
-- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
-- Changed: `getFriendMessage()` and callback `connected_friend_chat_message` now returns the type, ***thanks to SlejmUr***
-- Changed: updated in-editor docs with changes
-- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
-- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
+**Version 4.8 Changes**
+- Added: Steam Matchmaking response handlers, ***thanks to jeremybeier***
+- Added: all missing Messages and Sockets constants
+- Changed: Networking Messages, Sockets, and Utils now use Steam IDs instead of identity system
+- Changed: UserUGCListSortOrder enums for readability
+- Changed: UGCContentDescriptorID enums for readability
+- Changed: `getResultStatus()` now returns the integer / enum
+- Changed: cleaned up `addItemPreviewFile()`, `check_file_signature`, and `showGamepadTextInput()`
+- Changed: various bits and pieces
+- Changed: IP logic for all related functions
+- Changed: `addFavoriteGame()`, `initiateGameConnection()`, `terminateGameConnection()`, and `removeFavoriteGame()` now take strings for IP
+- Changed: `getAuthSessionTicket()` now defaults to 0 for Steam ID
+- Changed: IP address now accepted instead of IP references
+- Fixed: `getFriendCount()` has correct bit-wise value
+- Fixed: server browser functionality, ***thanks to jeremybeier***
+- Fixed: wrong string IP conversions, ***thanks to jeremybeier***
+- Fixed: server list request filters, ***thanks to jeremybeier***
+- Fixed: typo with UGC_MATCHING_UGC_TYPE_ITEMS enum
+- Fixed: minor case issue with Workshop enums
+- Fixed: `playerDetails()`, `requestFavoritesServerList()`, `requestInternetServerList()`, `requestSpectatorServerList()`, `requestFriendsServerList()`, `requestHistoryServerList()`, and `pingServer()`, ***thanks to jeremybeier***
+- Fixed: regressions caused by minor update
+- Fixed: typo with NETWORKING_CONFIG_TYPE_STRING enum
+- Fixed: typo with LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN
+- Fixed: in-editor docs
+- Removed: Networking Types identity system and related bits
+- Removed: P2P Networking constants as they are duplicates of the P2PSend enum
+- Removed: previous, non-functioning Matchmaking Server call results
+- Removed: `getIdentity()` as it is redundant now
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
@@ -44,6 +59,10 @@ Steamworks SDK Version | GodotSteam Version
 ---|---
 1.59 or newer | 4.6 or newer
 1.58a or older | 4.5.4 or older
+
+GodotSteam Version | Broken Compatibility
+---|---
+4.8 | Networking identity system removed, replaced with Steam IDs
 
 Known Issues
 ---
