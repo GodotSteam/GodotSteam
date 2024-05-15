@@ -7433,10 +7433,10 @@ Dictionary Steam::initiateGameConnection(uint64_t server_id, String server_ip, u
 	Dictionary connection;
 	if (SteamUser() != NULL) {
 		PackedByteArray auth;
-		int authSize = 2048;
-		auth.resize(authSize);
+		int auth_size = 2048;
+		auth.resize(auth_size);
 		CSteamID server = (uint64)server_id;
-		if (SteamUser()->InitiateGameConnection_DEPRECATED(&auth, authSize, server, getIPFromString(server_ip), server_port, secure) > 0) {
+		if (SteamUser()->InitiateGameConnection_DEPRECATED(&auth, auth_size, server, getIPFromString(server_ip), server_port, secure) > 0) {
 			connection["auth_blob"] = auth;
 			connection["server_id"] = server_id;
 			connection["server_ip"] = server_ip;
@@ -9377,9 +9377,7 @@ void Steam::network_connection_status_changed(SteamNetConnectionStatusChangedCal
 	connection["identity"] = getSteamIDFromIdentity(connection_info.m_identityRemote);
 	connection["user_data"] = (uint64_t)connection_info.m_nUserData;
 	connection["listen_socket"] = connection_info.m_hListenSocket;
-	char ip_address[STEAM_BUFFER_SIZE];
-	connection_info.m_addrRemote.ToString(ip_address, STEAM_BUFFER_SIZE, true);
-	connection["remote_address"] = ip_address;
+	connection["remote_address"] = getStringFromSteamIP(connection_info.m_addrRemote);
 	connection["remote_pop"] = connection_info.m_idPOPRemote;
 	connection["pop_relay"] = connection_info.m_idPOPRelay;
 	connection["connection_state"] = connection_info.m_eState;
