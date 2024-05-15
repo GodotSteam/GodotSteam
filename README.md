@@ -50,10 +50,6 @@ You can [download pre-compiled versions of this repo here](https://github.com/Co
 - Removed: previous, non-functioning Matchmaking Server call results
 - Removed: `getIdentity()` as it is redundant now
 
-GodotSteam Version | Broken Compatibility
----|---
-4.8 | Networking identity system removed, replaced with Steam IDs
-
 [You can read more change-logs here](https://godotsteam.com/changelog/gdextension/).
 
 Compatibility
@@ -64,6 +60,10 @@ Steamworks SDK Version | GodotSteam Version
 ---|---
 1.59 or newer | 4.6 or newer
 1.58a or older | 4.5.4 or older
+
+GodotSteam Version | Broken Compatibility
+---|---
+4.8 | Networking identity system removed, replaced with Steam IDs
 
 Known Issues
 ---
