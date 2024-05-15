@@ -61,6 +61,8 @@ Steamworks SDK Version | GodotSteam Version
 1.59 or newer | 4.6 or newer
 1.58a or older | 4.5.4 or older
 
+Versions of GodotSteam that have compatibility breaks introduced.
+
 GodotSteam Version | Broken Compatibility
 ---|---
 4.8 | Networking identity system removed, replaced with Steam IDs
