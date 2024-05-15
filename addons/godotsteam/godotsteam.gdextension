@@ -1,6 +1,6 @@
 [configuration]
 entry_symbol = "godotsteam_init"
-compatibility_minimum = "4.1"
+compatibility_minimum = 4.1
 
 [libraries]
 macos.debug = "osx/libgodotsteam.debug.framework"
