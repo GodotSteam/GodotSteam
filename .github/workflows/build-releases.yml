@@ -19,7 +19,7 @@ on:
         description: 'GodotSteam MP version:'
         required: true
         type: string
-        default: '4.7-mp'
+        default: '4.8-mp'
 
       mono_tag:
         description: 'Mono tag:'
@@ -53,7 +53,7 @@ jobs:
     uses: ./.github/workflows/create-bundle.yml
     with:
       artifact_type: linux
-      platform: Linux
+      platform: 'Linux'
       zip_prefix: linux64
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
@@ -74,7 +74,7 @@ jobs:
     uses: ./.github/workflows/create-bundle.yml
     with:
       artifact_type: windows32
-      platform: Windows32
+      platform: 'Windows32'
       zip_prefix: win32
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
@@ -83,7 +83,7 @@ jobs:
     uses: ./.github/workflows/create-bundle.yml
     with:
       artifact_type: windows64
-      platform: Windows64
+      platform: 'Windows64'
       zip_prefix: win64
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
@@ -104,7 +104,7 @@ jobs:
     uses: ./.github/workflows/create-bundle.yml
     with:
       artifact_type: macos
-      platform: MacOS
+      platform: 'MacOS'
       zip_prefix: macos
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 
