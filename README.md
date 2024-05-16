@@ -20,16 +20,34 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.24 Changes**
-- Changed: internal argument for `executeJavascript()` to match godot4
-- Changed: returned values for `getFriendGamePlayed()`, ***thanks to SlejmUr***
-- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
-- Changed: `getFriendMessage()` and callback `connected_friend_chat_message` now returns the type, ***thanks to SlejmUr***
-- Changed: updated in-editor docs with changes
-- Changed: minor organizational things, variable naming, etc.
-- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
-- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
-- Removed: unused internal variables
+**Version 3.25 Changes**
+- Added: Steam Matchmaking response handlers, ***thanks to jeremybeier***
+- Added: all missing Messages and Sockets constants
+- Changed: Networking Messages, Sockets, and Utils now use Steam IDs instead of identity system
+- Changed: UserUGCListSortOrder enums for readability
+- Changed: UGCContentDescriptorID enums for readability
+- Changed: `getResultStatus()` now returns the integer / enum
+- Changed: cleaned up `addItemPreviewFile()`, `check_file_signature`, and `showGamepadTextInput()`
+- Changed: various bits and pieces
+- Changed: IP logic for all related functions
+- Changed: `addFavoriteGame()`, `initiateGameConnection()`, `terminateGameConnection()`, and `removeFavoriteGame()` now take strings for IP
+- Changed: `getAuthSessionTicket()` now defaults to 0 for Steam ID
+- Changed: IP address now accepted instead of IP references
+- Fixed: `getFriendCount()` has correct bit-wise value
+- Fixed: server browser functionality, ***thanks to jeremybeier***
+- Fixed: wrong string IP conversions, ***thanks to jeremybeier***
+- Fixed: server list request filters, ***thanks to jeremybeier***
+- Fixed: typo with UGC_MATCHING_UGC_TYPE_ITEMS enum
+- Fixed: minor case issue with Workshop enums
+- Fixed: `playerDetails()`, `requestFavoritesServerList()`, `requestInternetServerList()`, `requestSpectatorServerList()`, `requestFriendsServerList()`, `requestHistoryServerList()`, and `pingServer()`, ***thanks to jeremybeier***
+- Fixed: regressions caused by minor update
+- Fixed: typo with NETWORKING_CONFIG_TYPE_STRING enum
+- Fixed: typo with LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN
+- Fixed: in-editor docs
+- Removed: Networking Types identity system and related bits
+- Removed: P2P Networking constants as they are duplicates of the P2PSend enum
+- Removed: previous, non-functioning Matchmaking Server call results
+- Removed: `getIdentity()` as it is redundant now
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot3/).
 
@@ -43,6 +61,12 @@ Steamworks SDK Version | GodotSteam Version
 1.53 to 1.58a | 3.12 to 3.22.4
 1.52 or older | 3.11.1 or older
 
+Versions of GodotSteam that have compatibility breaks introduced.
+
+GodotSteam Version | Broken Compatibility
+---|---
+3.25 | Networking identity system removed, replaced with Steam IDs
+
 Known Issues
 ---
 - **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.
@@ -55,7 +79,7 @@ Alternatively, you can just [download the pre-compiled versions in our Releases 
 
 Donate
 ---
-Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps), [Ko-Fi](https://ko-fi.com/grampsgarcia) or [Paypal](https://www.paypal.me/sithlordkyle)!
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps)!
 
 License
 ---
