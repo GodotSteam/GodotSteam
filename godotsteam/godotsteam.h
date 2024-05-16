@@ -44,9 +44,14 @@
 
 using namespace godot;
 
-class Steam : public Object {
+class Steam : public Object,
+	ISteamMatchmakingServerListResponse,
+	ISteamMatchmakingPingResponse,
+	ISteamMatchmakingPlayersResponse,
+	ISteamMatchmakingRulesResponse {
 
 	GODOT_CLASS(Steam, Object);
+
 
 public:
 
@@ -61,8 +66,6 @@ public:
 	// STEAMWORKS FUNCTIONS
 	/////////////////////////////////////////
 	//
-	CSteamID createSteamID(uint64_t steam_id);
-
 	// Main /////////////////////////////////
 	uint32_t getSteamID32(uint64_t steam_id);
 	bool isAnonAccount(uint64_t steam_id);
@@ -340,7 +343,7 @@ public:
 	Array getItemsWithPrices();
 	String getResultItemProperty(uint32 index, String name, int32 this_inventory_handle = 0);
 	Array getResultItems(int32 this_inventory_handle = 0);
-	String getResultStatus(int32 this_inventory_handle = 0);
+	int getResultStatus(int32 this_inventory_handle = 0);
 	uint32 getResultTimestamp(int32 this_inventory_handle = 0);
 	int32 grantPromoItems();
 	bool loadItemDefinitions();
@@ -360,8 +363,8 @@ public:
 
 	// Matchmaking //////////////////////////
 	Array getFavoriteGames();
-	int addFavoriteGame(uint32 ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
-	bool removeFavoriteGame(uint32 app_id, uint32 ip, uint16 port, uint16 query_port, uint32 flags);
+	int addFavoriteGame(String ip, uint16 port, uint16 query_port, uint32 flags, uint32 last_played);
+	bool removeFavoriteGame(uint32 app_id, String ip, uint16 port, uint16 query_port, uint32 flags);
 	void requestLobbyList();
 	void addRequestLobbyListStringFilter(String key_to_match, String value_to_match, int comparison_type);
 	void addRequestLobbyListNumericalFilter(String key_to_match, int value_to_match, int comparison_type);
@@ -457,22 +460,22 @@ public:
 	bool updateVolume(float volume);
 
 	// Networking ///////////////////////////
-	bool acceptP2PSessionWithUser(uint64_t steam_id_remote);
+	bool acceptP2PSessionWithUser(uint64_t remote_steam_id);
 	bool allowP2PPacketRelay(bool allow);
-	bool closeP2PChannelWithUser(uint64_t steam_id_remote, int channel);
-	bool closeP2PSessionWithUser(uint64_t steam_id_remote);
-	Dictionary getP2PSessionState(uint64_t steam_id_remote);
+	bool closeP2PChannelWithUser(uint64_t remote_steam_id, int channel);
+	bool closeP2PSessionWithUser(uint64_t remote_steam_id);
+	Dictionary getP2PSessionState(uint64_t remote_steam_id);
 	uint32_t getAvailableP2PPacketSize(int channel = 0);
 	Dictionary readP2PPacket(uint32_t packet, int channel = 0);
-	bool sendP2PPacket(uint64_t steam_id_remote, const PoolByteArray data, int send_type, int channel = 0);
+	bool sendP2PPacket(uint64_t remote_steam_id, const PoolByteArray data, int send_type, int channel = 0);
 
 	// Networking Messages //////////////////
-	bool acceptSessionWithUser(String identity_reference);
-	bool closeChannelWithUser(String identity_reference, int channel);
-	bool closeSessionWithUser(String identity_reference);
-	Dictionary getSessionConnectionInfo(String identity_reference, bool get_connection, bool get_status);
+	bool acceptSessionWithUser(uint64_t remote_steam_id);
+	bool closeChannelWithUser(uint64_t remote_steam_id, int channel);
+	bool closeSessionWithUser(uint64_t remote_steam_id);
+	Dictionary getSessionConnectionInfo(uint64_t remote_steam_id, bool get_connection, bool get_status);
 	Array receiveMessagesOnChannel(int channel, int max_messages);
-	int sendMessageToUser(String identity_reference, const PoolByteArray data, int flags, int channel);
+	int sendMessageToUser(uint64_t remote_steam_id, const PoolByteArray data, int flags, int channel);
 
 	// Networking Sockets ///////////////////
 	int acceptConnection(uint32 connection_handle);
@@ -480,16 +483,16 @@ public:
 	bool closeConnection(uint32 peer, int reason, String debug_message, bool linger);
 	bool closeListenSocket(uint32 socket);
 	int configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights);
-	uint32 connectP2P(String identity_reference, int virtual_port, Array options);
+	uint32 connectP2P(uint64_t remote_steam_id, int virtual_port, Array options);
 	uint32 connectByIPAddress(String ip_address_with_port, Array options);
-	uint32 connectToHostedDedicatedServer(String identity_reference, int virtual_port, Array options);
+	uint32 connectToHostedDedicatedServer(uint64_t remote_steam_id, int virtual_port, Array options);
 	void createFakeUDPPort(int fake_server_port);
 	uint32 createHostedDedicatedServerListenSocket(int virtual_port, Array options);
-	uint32 createListenSocketIP(String ip_reference, Array options);
+	uint32 createListenSocketIP(String ip_address, Array options);
 	uint32 createListenSocketP2P(int virtual_port, Array options);
 	uint32 createListenSocketP2PFakeIP(int fake_port, Array options);
 	uint32 createPollGroup();
-	Dictionary createSocketPair(bool loopback, String identity_reference1, String identity_reference2);
+	Dictionary createSocketPair(bool loopback, uint64_t remote_steam_id1, uint64_t remote_steam_id2);
 	bool destroyPollGroup(uint32 poll_group);
 //			int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
 	int flushMessagesOnConnection(uint32 connection_handle);
@@ -506,58 +509,18 @@ public:
 	uint32 getHostedDedicatedServerPOPId();
 	uint16 getHostedDedicatedServerPort();
 	String getListenSocketAddress(uint32 socket, bool with_port = true);
-	String getIdentity();
 	Dictionary getRemoteFakeIPForConnection(uint32 connection);
 	int initAuthentication();
 	Array receiveMessagesOnConnection(uint32 connection, int max_messages);
 	Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
 //			Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
-	void resetIdentity(String this_identity);
+	void resetIdentity(uint64_t remote_steam_id);
 	void runNetworkingCallbacks();
 	void sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags);
 	Dictionary sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags);
 	Dictionary setCertificate(const PoolByteArray& certificate);		
 	bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
 	void setConnectionName(uint32 peer, String name);
-
-	// Networking Types /////////////////////
-	bool addIdentity(String reference_name);
-	bool addIPAddress(String reference_name);
-	void clearIdentity(String reference_name);
-	void clearIPAddress(String reference_name);
-	uint8 getGenericBytes(String reference_name);
-	String getGenericString(String reference_name);
-	Array getIdentities();
-	uint32 getIdentityIPAddr(String reference_name);
-	uint32 getIdentitySteamID(String reference_name);
-	uint64_t getIdentitySteamID64(String reference_name);
-	Array getIPAddresses();
-	uint32 getIPv4(String reference_name);
-	uint64_t getPSNID(String reference_name);
-	uint64_t getStadiaID(String reference_name);
-	String getXboxPairwiseID(String reference_name);
-	bool isAddressLocalHost(String reference_name);
-	bool isIdentityInvalid(String reference_name);
-	bool isIdentityLocalHost(String reference_name);
-	bool isIPv4(String reference_name);
-	bool isIPv6AllZeros(String reference_name);
-	bool parseIdentityString(String reference_name, String string_to_parse);
-	bool parseIPAddressString(String reference_name, String string_to_parse);
-	bool setGenericBytes(String reference_name, uint8 data);
-	bool setGenericString(String reference_name, String this_string);
-	bool setIdentityIPAddr(String reference_name, String ip_address_name);
-	void setIdentityLocalHost(String reference_name);
-	void setIdentitySteamID(String reference_name, uint32 steam_id);
-	void setIdentitySteamID64(String reference_name, uint64_t steam_id);
-	void setIPv4(String reference_name, uint32 ip, uint16 port);
-	void setIPv6(String reference_name, uint8 ipv6, uint16 port);
-	void setIPv6LocalHost(String reference_name, uint16 port = 0);
-	void setPSNID(String reference_name, uint64_t psn_id);
-	void setStadiaID(String reference_name, uint64_t stadia_id);
-	bool setXboxPairwiseID(String reference_name, String xbox_id);
-	String toIdentityString(String reference_name);
-	String toIPAddressString(String reference_name, bool with_port);
-	const SteamNetworkingConfigValue_t* convertOptionsArray(Array options);
 
 	// Networking Utils /////////////////////
 	bool checkPingDataUpToDate(float max_age_in_seconds);
@@ -754,8 +717,8 @@ public:
 	void cancelAuthTicket(uint32_t auth_ticket);
 	Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
 	void endAuthSession(uint64_t steam_id);
-	Dictionary getAuthSessionTicket(String identity_reference = "");
-	uint32 getAuthTicketForWebApi(String service_identity = "");
+	Dictionary getAuthSessionTicket(uint64_t remote_steam_id);
+	uint32 getAuthTicketForWebApi(String service_identity);
 	Dictionary getAvailableVoice();
 	void getDurationControl();
 	Dictionary getEncryptedAppTicket();
@@ -764,7 +727,7 @@ public:
 	uint64_t getSteamID();
 	Dictionary getVoice();
 	uint32 getVoiceOptimalSampleRate();
-	Dictionary initiateGameConnection(uint64_t server_id, uint32 server_ip, uint16 server_port, bool secure);
+	Dictionary initiateGameConnection(uint64_t server_id, String server_ip, uint16 server_port, bool secure);
 	bool isBehindNAT();
 	bool isPhoneIdentifying();
 	bool isPhoneRequiringVerification();
@@ -776,14 +739,14 @@ public:
 	void startVoiceRecording();
 	bool setDurationControlOnlineState(int new_state);
 	void stopVoiceRecording();
-	void terminateGameConnection(uint32 server_ip, uint16 server_port);
+	void terminateGameConnection(String server_ip, uint16 server_port);
 	int userHasLicenseForApp(uint64_t steam_id, uint32_t app_id);
 
 	// User Stats ///////////////////////////
-	void attachLeaderboardUGC(uint64_t ugc_handle, uint64_t this_leaderboard = 0);
+	void attachLeaderboardUGC(uint64_t ugc_handle, uint64_t this_leaderboard);
 	bool clearAchievement(String achievement_name);
-	void downloadLeaderboardEntries(int start, int end, int type = k_ELeaderboardDataRequestGlobal, uint64_t this_leaderboard = 0);
-	void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard = 0);
+	void downloadLeaderboardEntries(int start, int end, int type, uint64_t this_leaderboard);
+	void downloadLeaderboardEntriesForUsers(Array users_id, uint64_t this_leaderboard);
 	void findLeaderboard(String leaderboard_name);
 	void findOrCreateLeaderboard(String leaderboard_name, int sort_method, int display_type);
 	Dictionary getAchievement(String achievement_name);
@@ -798,10 +761,10 @@ public:
 	double getGlobalStatFloat(String stat_name);
 	uint64_t getGlobalStatIntHistory(String stat_name);
 	double getGlobalStatFloatHistory(String stat_name);
-	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
-	int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
-	String getLeaderboardName(uint64_t this_leaderboard = 0);
-	Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard = 0);
+	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard);
+	int getLeaderboardEntryCount(uint64_t this_leaderboard);
+	String getLeaderboardName(uint64_t this_leaderboard);
+	Dictionary getLeaderboardSortMethod(uint64_t this_leaderboard);
 	Dictionary getMostAchievedAchievementInfo();
 	Dictionary getNextMostAchievedAchievementInfo(int iterator);
 	uint32_t getNumAchievements();
@@ -817,14 +780,14 @@ public:
 	void requestGlobalAchievementPercentages();
 	void requestGlobalStats(int history_days);
 	void requestUserStats(uint64_t steam_id);
-	bool resetAllStats(bool achievements_too = true);
+	bool resetAllStats(bool achievements_too);
 	bool setAchievement(String name);
 	int setLeaderboardDetailsMax(int max);
 	bool setStatFloat(String name, float value);
 	bool setStatInt(String name, int value);
 	bool storeStats();
 	bool updateAvgRateStat(String name, float this_session, double session_length);
-	void uploadLeaderboardScore(int score, bool keep_best = false, PoolIntArray details = PoolIntArray(), uint64_t this_leaderboard = 0);
+	void uploadLeaderboardScore(int score, bool keep_best, PoolIntArray details, uint64_t this_leaderboard);
 	Array getLeaderboardEntries();
 
 	// Utils ////////////////////////////////
@@ -875,9 +838,20 @@ private:
 	// Main
 	bool is_init_success;
 
+	const SteamNetworkingConfigValue_t *convertOptionsArray(Array options);
+	CSteamID createSteamID(uint64_t steam_id);
+	SteamNetworkingIdentity getIdentityFromSteamID(uint64_t steam_id);
+	uint32 getIPFromSteamIP(SteamNetworkingIPAddr this_address);
+	uint32 getIPFromString(String ip_string);
+	uint64_t getSteamIDFromIdentity(SteamNetworkingIdentity this_identity);
+	SteamNetworkingIPAddr getSteamIPFromInt(uint32 ip_integer);
+	SteamNetworkingIPAddr getSteamIPFromString(String ip_string);
+	String getStringFromIP(uint32 ip_address);
+	String getStringFromSteamIP(SteamNetworkingIPAddr this_address);
+
 	// Apps
 	uint64_t current_app_id = 0;
-	
+
 	// Friends
 	CSteamID clan_activity;
 
@@ -896,10 +870,12 @@ private:
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;
-	ISteamMatchmakingServerListResponse *server_list_response;
-	ISteamMatchmakingPingResponse *ping_response;
-	ISteamMatchmakingPlayersResponse *player_response;
-	ISteamMatchmakingRulesResponse *rules_response;
+	ISteamMatchmakingServerListResponse *server_list_response = this;
+	ISteamMatchmakingPingResponse *ping_response = this;
+	ISteamMatchmakingPlayersResponse *players_response = this;
+	ISteamMatchmakingRulesResponse *rules_response = this;
+
+	Dictionary gameServerItemToDictionary(gameserveritem_t *server_item);
 
 	// Networking Messages
 //		std::map<int, SteamNetworkingMessage_t> network_messages;
@@ -908,13 +884,9 @@ private:
 	uint32 network_connection;
 	uint32 network_poll_group;
 	uint64_t networking_microseconds = 0;
-	SteamNetworkingIdentity networking_identity;
-	SteamNetworkingIdentity game_server;
 //		SteamDatagramHostedAddress hosted_address;
 	PoolByteArray routing_blob;
 //		SteamDatagramRelayAuthTicket relay_auth_ticket;
-	std::map<String, SteamNetworkingIdentity> networking_identities;
-	std::map<String, SteamNetworkingIPAddr> ip_addresses;
 
 	// Parties
 	uint64 party_beacon_id;
@@ -1022,6 +994,23 @@ private:
 	STEAM_CALLBACK(Steam, lobby_game_created, LobbyGameCreated_t, callbackLobbyGameCreated);
 	STEAM_CALLBACK(Steam, lobby_invite, LobbyInvite_t, callbackLobbyInvite);
 	STEAM_CALLBACK(Steam, lobby_kicked, LobbyKicked_t, callbackLobbyKicked);
+
+	// Matchmaking Server callbacks /////////
+	// ISteamMatchmakingServerListResponse
+	void ServerResponded(HServerListRequest list_request_handle, int server);
+	void ServerFailedToRespond(HServerListRequest list_request_handle, int server);
+	void RefreshComplete (HServerListRequest list_request_handle, EMatchMakingServerResponse response);
+	// ISteamMatchmakingPingResponse
+	void ServerResponded(gameserveritem_t &server);
+	void ServerFailedToRespond();
+	// ISteamMatchmakingPlayersResponse
+	void AddPlayerToList(const char *player_name, int score, float time_played);
+	void PlayersFailedToRespond();
+	void PlayersRefreshComplete();
+	// ISteamMatchmakingRulesResponse
+	void RulesResponded(const char *rule, const char *value);
+	void RulesFailedToRespond();
+	void RulesRefreshComplete();
 
 	// Music callbacks //////////////////////
 	STEAM_CALLBACK(Steam, music_playback_status_has_changed, PlaybackStatusHasChanged_t, callbackMusicPlaybackStatusHasChanged);
@@ -1148,10 +1137,6 @@ private:
 	void lobby_created(LobbyCreated_t *call_data, bool io_failure);
 	CCallResult<Steam, LobbyMatchList_t> callResultLobbyList;
 	void lobby_match_list(LobbyMatchList_t *call_data, bool io_failure);
-
-	// Matchmaking Server call results //////
-	void server_Responded(gameserveritem_t server);
-	void server_Failed_To_Respond();
 
 	// Parties call results /////////////////
 	CCallResult<Steam, JoinPartyCallback_t> callResultJoinParty;
