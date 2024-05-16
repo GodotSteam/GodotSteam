@@ -4767,16 +4767,16 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle) {
 
 // Returns very detailed connection stats in diagnostic text format. Useful for dumping to a log, etc. The format of this information is subject to change.
 Dictionary Steam::getDetailedConnectionStatus(uint32 connection) {
-	Dictionary connectionStatus;
+	Dictionary connection_status;
 	if (SteamNetworkingSockets() != NULL) {
 		char buffer[STEAM_LARGE_BUFFER_SIZE];
 		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
 		// Add data to dictionary
-		connectionStatus["success"] = success;
-		connectionStatus["status"] = buffer;
+		connection_status["success"] = success;
+		connection_status["status"] = buffer;
 	}
 	// Send the data back to the user
-	return connectionStatus;
+	return connection_status;
 }
 
 // Fetch connection user data. Returns -1 if handle is invalid or if you haven't set any userdata on the connection.
