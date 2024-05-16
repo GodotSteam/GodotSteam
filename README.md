@@ -20,20 +20,26 @@ Current Build
 ----------
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 3.24 Changes**
-- Changed: `createBrowser` now accepts empty strings like the godot3 branch
-- Changed: minor organizational things, variable naming, etc.
-- Changed: `getItemPrice()` now returns base price and price, ***thanks to SlejmUr***
-- Fixed: missing info_flags key in `getSessionConnectionInfo()`, ***thanks to SlejmUr***
-- Fixed: `requestClanOfficerList()` using wrong SDK call
-- Fixed: issues with `getResultItems()`
-- Fixed: `addRequestLobbyListDistanceFilter()`
-- Fixed: `getServerDetails()` not sending back needed struct, ***thanks to SlejmUr***
-- Fixed: regressions in `receiveMessagesOnChannel()`, `receiveMessagesOnConnection()`, and `receiveMessagesOnPollGroup()`
-- Fixed: `getConnectionRealTimeStatus()` checking the wrong value, ***thanks to tamper2***
-- Fixed: missing cast on `setSize()`
-- Fixed: `addRequiredTagGroup()` backported from godot3 branch
-- Removed: unused internal variables
+**Version 3.25 Changes**
+- Added: Steam Matchmaking response handlers, ***thanks to jeremybeier***
+- Added: all missing Messages and Sockets constants
+- Changed: Networking Messages, Sockets, and Utils now use Steam IDs instead of identity system
+- Changed: cleaned up `addItemPreviewFile()`, `check_file_signature`, and `showGamepadTextInput()`
+- Changed: various bits and pieces
+- Changed: IP logic for all related functions
+- Changed: `addFavoriteGame()`, `initiateGameConnection()`, `terminateGameConnection()`, and `removeFavoriteGame()` now take strings for IP
+- Changed: `getAuthSessionTicket()` now defaults to 0 for Steam ID
+- Changed: IP address now accepted instead of IP references
+- Fixed: `getFriendCount()` has correct bit-wise value
+- Fixed: server browser functionality, ***thanks to jeremybeier***
+- Fixed: wrong string IP conversions, ***thanks to jeremybeier***
+- Fixed: server list request filters, ***thanks to jeremybeier***
+- Fixed: `playerDetails()`, `requestFavoritesServerList()`, `requestInternetServerList()`, `requestSpectatorServerList()`, `requestFriendsServerList()`, `requestHistoryServerList()`, and `pingServer()`, ***thanks to jeremybeier***
+- Fixed: regressions caused by minor update
+- Removed: Networking Types identity system and related bits
+- Removed: P2P Networking constants as they are duplicates of the P2PSend enum
+- Removed: previous, non-functioning Matchmaking Server call results
+- Removed: `getIdentity()` as it is redundant now
 
 [You can read more change-logs here.](https://godotsteam.com/changelog/gdnative/)
 
@@ -46,6 +52,12 @@ Steamworks SDK Version | GodotSteam Version
 1.59 or newer | 3.23 or newer
 1.53 to 1.58a | 3.12 to 3.22.4
 1.52 or older | 3.11.1 or older
+
+Versions of GodotSteam that have compatibility breaks introduced.
+
+GodotSteam Version | Broken Compatibility
+---|---
+3.25 | Networking identity system removed, replaced with Steam IDs
 
 Known Issues
 ----------
@@ -66,7 +78,7 @@ When exporting with the GDNative version, please use the normal Godot Engine tem
 
 Donate
 -------------
-Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps), [Ko-Fi](https://ko-fi.com/grampsgarcia), or [Paypal](https://www.paypal.me/sithlordkyle)!
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps)!
 
 License
 -------------
