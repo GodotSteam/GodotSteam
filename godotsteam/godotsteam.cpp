@@ -193,8 +193,9 @@ Steam::Steam() :
 	callbackValidateAuthTicketResponse(this, &Steam::validate_auth_ticket_response),
 
 	// User stat callbacks //////////////////////
-	callbackUserAchievementStored(this, &Steam::user_achievement_stored),
 	callbackCurrentStatsReceived(this, &Steam::current_stats_received),
+	callbackUserAchievementIconFetched(this, &Steam::user_achievement_icon_fetched),
+	callbackUserAchievementStored(this, &Steam::user_achievement_stored),
 	callbackUserStatsStored(this, &Steam::user_stats_stored),
 	callbackUserStatsUnloaded(this, &Steam::user_stats_unloaded),
 
@@ -4616,7 +4617,8 @@ Dictionary Steam::sendMessageToConnection(uint32 connection_handle, const Packed
 }
 
 // Send one or more messages without copying the message payload. This is the most efficient way to send messages. To use this function, you must first allocate a message object using ISteamNetworkingUtils::AllocateMessage. (Do not declare one on the stack or allocate your own.)
-void Steam::sendMessages(int messages, const PackedByteArray data, uint32 connection_handle, int flags) {
+Array Steam::sendMessages(const PackedByteArray data, uint32 connection_handle, int flags) {
+	Array result;
 	if (SteamNetworkingSockets() != NULL) {
 		SteamNetworkingMessage_t *networkMessage;
 		networkMessage = SteamNetworkingUtils()->AllocateMessage(0);
@@ -4624,11 +4626,16 @@ void Steam::sendMessages(int messages, const PackedByteArray data, uint32 connec
 		networkMessage->m_cbSize = data.size();
 		networkMessage->m_conn = (HSteamNetConnection)connection_handle;
 		networkMessage->m_nFlags = flags;
-		int64 result;
-		SteamNetworkingSockets()->SendMessages(messages, &networkMessage, &result);
+		int64 *message_num_or_result = new int64[data.size()];
+		SteamNetworkingSockets()->SendMessages(data.size(), &networkMessage, message_num_or_result);
+		for (int i = 0; i < data.size(); i++ ) {
+			result.append( (int)message_num_or_result[i] );
+		}
+		delete[] message_num_or_result;
 		// Release the message
 		networkMessage->Release();
 	}
+	return result;
 }
 
 // Flush any messages waiting on the Nagle timer and send them at the next transmission opportunity (often that means right now).
@@ -7823,7 +7830,7 @@ void Steam::requestGlobalAchievementPercentages() {
 void Steam::requestGlobalStats(int history_days) {
 	if (SteamUserStats() != NULL) {
 		SteamAPICall_t api_call = SteamUserStats()->RequestGlobalStats(history_days);
-		callResultGetGlobalStatsReceived.Set(api_call, this, &Steam::global_stats_received);
+		callResultGlobalStatsReceived.Set(api_call, this, &Steam::global_stats_received);
 	}
 }
 
@@ -9124,7 +9131,10 @@ void Steam::network_messages_session_request(SteamNetworkingMessagesSessionReque
 void Steam::network_messages_session_failed(SteamNetworkingMessagesSessionFailed_t *call_data) {
 	SteamNetConnectionInfo_t info = call_data->m_info;
 	int reason = info.m_eEndReason;
-	emit_signal("network_messages_session_failed", reason);
+	uint64_t remote_steam_id = getSteamIDFromIdentity(info.m_identityRemote);
+	int connection_state = (int)info.m_eState;
+	String debug_message = (String)info.m_szEndDebug;
+	emit_signal("network_messages_session_failed", reason, remote_steam_id, connection_state, debug_message);
 }
 
 // NETWORKING SOCKETS CALLBACKS /////////////////
@@ -9169,14 +9179,14 @@ void Steam::network_authentication_status(SteamNetAuthenticationStatus_t *call_d
 // This callback is posted when ISteamNetworkingSoockets::BeginAsyncRequestFakeIP completes.
 void Steam::fake_ip_result(SteamNetworkingFakeIPResult_t *call_data) {
 	int result = call_data->m_eResult;
-	uint32 ip = call_data->m_unIP;
+	uint32 fake_ip = call_data->m_unIP;
 	// Get the ports as an array
 	Array port_list;
 	uint16 *ports = call_data->m_unPorts;
 	for (uint16 i = 0; i < sizeof(ports); i++) {
 		port_list.append(ports[i]);
 	}
-	emit_signal("fake_ip_result", result, getSteamIDFromIdentity(call_data->m_identity), getStringFromIP(ip), port_list);
+	emit_signal("fake_ip_result", result, getSteamIDFromIdentity(call_data->m_identity), getStringFromIP(fake_ip), port_list);
 }
 
 // NETWORKING UTILS CALLBACKS ///////////////////
@@ -9362,17 +9372,6 @@ void Steam::validate_auth_ticket_response(ValidateAuthTicketResponse_t *call_dat
 
 // USER STATS CALLBACKS /////////////////////////
 //
-// Result of a request to store the achievements on the server, or an "indicate progress" call. If both m_nCurProgress and m_nMaxProgress are zero, that means the achievement has been fully unlocked.
-void Steam::user_achievement_stored(UserAchievementStored_t *call_data) {
-	CSteamID game_id = call_data->m_nGameID;
-	uint64_t game = game_id.ConvertToUint64();
-	bool group_achieve = call_data->m_bGroupAchievement;
-	String name = call_data->m_rgchAchievementName;
-	uint32_t current_progress = call_data->m_nCurProgress;
-	uint32_t max_progress = call_data->m_nMaxProgress;
-	emit_signal("user_achievement_stored", game, group_achieve, name, current_progress, max_progress);
-}
-
 // Called when the latest stats and achievements for the local user have been received from the server.
 void Steam::current_stats_received(UserStatsReceived_t *call_data) {
 	CSteamID game_id = call_data->m_nGameID;
@@ -9381,6 +9380,26 @@ void Steam::current_stats_received(UserStatsReceived_t *call_data) {
 	CSteamID user_id = call_data->m_steamIDUser;
 	uint64_t user = user_id.ConvertToUint64();
 	emit_signal("current_stats_received", game, result, user);
+}
+
+void Steam::user_achievement_icon_fetched(UserAchievementIconFetched_t *call_data) {
+	uint64_t app_id = call_data->m_nGameID.ToUint64();
+	String achievement_name = call_data->m_rgchAchievementName;
+	bool achieved = call_data->m_bAchieved;
+	int icon_handle = call_data->m_nIconHandle;
+	emit_signal("user_achievement_icon_fetched", app_id, achievement_name, achieved, icon_handle);
+}
+
+// Result of a request to store the achievements on the server, or an "indicate progress" call. If both m_nCurProgress and
+// m_nMaxProgress are zero, that means the achievement has been fully unlocked.
+void Steam::user_achievement_stored(UserAchievementStored_t *call_data) {
+	CSteamID game_id = call_data->m_nGameID;
+	uint64_t game = game_id.ConvertToUint64();
+	bool group_achieve = call_data->m_bGroupAchievement;
+	String name = call_data->m_rgchAchievementName;
+	uint32_t current_progress = call_data->m_nCurProgress;
+	uint32_t max_progress = call_data->m_nMaxProgress;
+	emit_signal("user_achievement_stored", game, group_achieve, name, current_progress, max_progress);
 }
 
 // Result of a request to store the user stats.
@@ -10428,7 +10447,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("getPlayerAvatar", "size", "steam_id"), &Steam::getPlayerAvatar, DEFVAL(2), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getPlayerNickname", "steam_id"), &Steam::getPlayerNickname);
 	ClassDB::bind_method(D_METHOD("getProfileItemPropertyString", "steam_id", "item_type", "item_property"), &Steam::getProfileItemPropertyString);
-	ClassDB::bind_method(D_METHOD("getProfileItemPropertyInt", "steam_id", "item_type", "item_propery"), &Steam::getProfileItemPropertyInt);
+	ClassDB::bind_method(D_METHOD("getProfileItemPropertyInt", "steam_id", "item_type", "item_property"), &Steam::getProfileItemPropertyInt);
 	ClassDB::bind_method(D_METHOD("getRecentPlayers"), &Steam::getRecentPlayers);
 	ClassDB::bind_method(D_METHOD("getSmallFriendAvatar", "steam_id"), &Steam::getSmallFriendAvatar);
 	ClassDB::bind_method(D_METHOD("getUserFriendsGroups"), &Steam::getUserFriendsGroups);
@@ -10980,7 +10999,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "voice_size", "sample_rate"), &Steam::decompressVoice);
 	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &Steam::endAuthSession);
 	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "remote_steam_id"), &Steam::getAuthSessionTicket, DEFVAL(0));
-	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "remote_steam_id"), &Steam::getAuthTicketForWebApi, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "service_identity"), &Steam::getAuthTicketForWebApi, DEFVAL(""));
 	ClassDB::bind_method(D_METHOD("getAvailableVoice"), &Steam::getAvailableVoice);
 	ClassDB::bind_method(D_METHOD("getDurationControl"), &Steam::getDurationControl);
 	ClassDB::bind_method(D_METHOD("getEncryptedAppTicket"), &Steam::getEncryptedAppTicket);
@@ -11308,6 +11327,7 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("validate_auth_ticket_response", PropertyInfo(Variant::INT, "auth_id"), PropertyInfo(Variant::INT, "reponse"), PropertyInfo(Variant::INT, "owner_id")));
 
 	// USER STATS SIGNALS ///////////////////////
+	ADD_SIGNAL(MethodInfo("current_stats_received", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "user_id")));
 	ADD_SIGNAL(MethodInfo("global_achievement_percentages_ready", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("global_stats_received", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::STRING, "result")));
 	ADD_SIGNAL(MethodInfo("leaderboard_find_result", PropertyInfo(Variant::INT, "leaderboard_handle"), PropertyInfo(Variant::INT, "found")));
@@ -11315,8 +11335,8 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("leaderboard_score_uploaded", PropertyInfo(Variant::BOOL, "success"), PropertyInfo(Variant::INT, "this_handle"), PropertyInfo(Variant::DICTIONARY, "this_score")));
 	ADD_SIGNAL(MethodInfo("leaderboard_ugc_set", PropertyInfo(Variant::INT, "leaderboard_handle"), PropertyInfo(Variant::STRING, "result")));
 	ADD_SIGNAL(MethodInfo("number_of_current_players", PropertyInfo(Variant::INT, "success"), PropertyInfo(Variant::INT, "players")));
+	ADD_SIGNAL(MethodInfo("user_achievement_icon_fetched", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::STRING, "achievement_name"), PropertyInfo(Variant::BOOL, "was_achieved"), PropertyInfo(Variant::INT, "icon_handle")));
 	ADD_SIGNAL(MethodInfo("user_achievement_stored", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::BOOL, "group_achieve"), PropertyInfo(Variant::STRING, "achievement_name"), PropertyInfo(Variant::INT, "current_progress"), PropertyInfo(Variant::INT, "max_progress")));
-	ADD_SIGNAL(MethodInfo("current_stats_received", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "user_id")));
 	ADD_SIGNAL(MethodInfo("user_stats_received", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "user_id")));
 	ADD_SIGNAL(MethodInfo("user_stats_stored", PropertyInfo(Variant::INT, "game_id"), PropertyInfo(Variant::INT, "result")));
 	ADD_SIGNAL(MethodInfo("user_stats_unloaded", PropertyInfo(Variant::INT, "user_id")));

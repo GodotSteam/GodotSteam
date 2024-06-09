@@ -42,7 +42,7 @@
 using namespace godot;
 
 
-class Steam: public Object,
+class Steam : public Object,
 	ISteamMatchmakingServerListResponse,
 	ISteamMatchmakingPingResponse,
 	ISteamMatchmakingPlayersResponse,
@@ -2237,7 +2237,7 @@ public:
 //		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
 	void resetIdentity(uint64_t remote_steam_id);
 	void runNetworkingCallbacks();
-	void sendMessages(int messages, const PackedByteArray data, uint32 connection_handle, int flags);
+	Array sendMessages(const PackedByteArray data, uint32 connection_handle, int flags);
 	Dictionary sendMessageToConnection(uint32 connection_handle, const PackedByteArray data, int flags);
 	Dictionary setCertificate(const PackedByteArray &certificate);
 	bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
@@ -2806,8 +2806,9 @@ private:
 	STEAM_CALLBACK(Steam, validate_auth_ticket_response, ValidateAuthTicketResponse_t, callbackValidateAuthTicketResponse);
 
 	// User stat callbacks //////////////////
-	STEAM_CALLBACK(Steam, user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
 	STEAM_CALLBACK(Steam, current_stats_received, UserStatsReceived_t, callbackCurrentStatsReceived);
+	STEAM_CALLBACK(Steam, user_achievement_icon_fetched, UserAchievementIconFetched_t, callbackUserAchievementIconFetched);
+	STEAM_CALLBACK(Steam, user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
 	STEAM_CALLBACK(Steam, user_stats_stored, UserStatsStored_t, callbackUserStatsStored);
 	STEAM_CALLBACK(Steam, user_stats_unloaded, UserStatsUnloaded_t, callbackUserStatsUnloaded);
 
@@ -2926,7 +2927,7 @@ private:
 	// User stat call results ///////////////
 	CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 	void global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *call_data, bool io_failure);
-	CCallResult<Steam, GlobalStatsReceived_t> callResultGetGlobalStatsReceived;
+	CCallResult<Steam, GlobalStatsReceived_t> callResultGlobalStatsReceived;
 	void global_stats_received(GlobalStatsReceived_t *call_data, bool io_failure);
 	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 	void leaderboard_find_result(LeaderboardFindResult_t *call_data, bool io_failure);

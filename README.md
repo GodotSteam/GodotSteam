@@ -20,35 +20,14 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
-**Version 4.8 Changes**
-- Added: doc_classes back in for Godot 4.3 or higher
-- Added: Steam Matchmaking response handlers, ***thanks to jeremybeier***
-- Added: all missing Messages and Sockets constants
-- Changed: Networking Messages, Sockets, and Utils now use Steam IDs instead of identity system
-- Changed: UserUGCListSortOrder enums for readability
-- Changed: UGCContentDescriptorID enums for readability
-- Changed: `getResultStatus()` now returns the integer / enum
-- Changed: cleaned up `addItemPreviewFile()`, `check_file_signature`, and `showGamepadTextInput()`
-- Changed: various bits and pieces
-- Changed: IP logic for all related functions
-- Changed: `addFavoriteGame()`, `initiateGameConnection()`, `terminateGameConnection()`, and `removeFavoriteGame()` now take strings for IP
-- Changed: `getAuthSessionTicket()` now defaults to 0 for Steam ID
-- Changed: IP address now accepted instead of IP references
-- Fixed: `getFriendCount()` has correct bit-wise value
-- Fixed: server browser functionality, ***thanks to jeremybeier***
-- Fixed: wrong string IP conversions, ***thanks to jeremybeier***
-- Fixed: server list request filters, ***thanks to jeremybeier***
-- Fixed: typo with UGC_MATCHING_UGC_TYPE_ITEMS enum
-- Fixed: minor case issue with Workshop enums
-- Fixed: `playerDetails()`, `requestFavoritesServerList()`, `requestInternetServerList()`, `requestSpectatorServerList()`, `requestFriendsServerList()`, `requestHistoryServerList()`, and `pingServer()`, ***thanks to jeremybeier***
-- Fixed: regressions caused by minor update
-- Fixed: typo with NETWORKING_CONFIG_TYPE_STRING enum
-- Fixed: typo with LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN
-- Fixed: in-editor docs
-- Removed: Networking Types identity system and related bits
-- Removed: P2P Networking constants as they are duplicates of the P2PSend enum
-- Removed: previous, non-functioning Matchmaking Server call results
-- Removed: `getIdentity()` as it is redundant now
+**Version 4.9**
+- Added: missing `user_achievement_icon_fetched` callback
+- Changed: `network_messages_session_failed` callback now returns the Steam ID associated with the user whose session failed
+- Changed: `global_stats_received` had call result name change under-the-hood, does not affect anything
+- Changed: `sendMessages()` now returns the message result
+- Changed: argument name back for `getAuthTicketForWebApi()`
+- Fixed: incorrect property name in `getProfileItemPropertyInt()`
+
 
 [You can read more change-logs here](https://godotsteam.com/changelog/gdextension/).
 
@@ -66,6 +45,7 @@ Versions of GodotSteam that have compatibility breaks introduced.
 GodotSteam Version | Broken Compatibility
 ---|---
 4.8 | Networking identity system removed, replaced with Steam IDs
+4.9 | sendMessages returns an Array
 
 Known Issues
 ---

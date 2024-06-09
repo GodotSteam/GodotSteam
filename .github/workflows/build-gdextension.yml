@@ -4,7 +4,7 @@ on:
       steamworks_sdk_tag:
         required: true
         type: string
-    secrets:  
+    secrets:
       steamworks_sdk_repo:
         required: true
       steamworks_sdk_repo_token:
