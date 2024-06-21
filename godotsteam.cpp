@@ -9091,7 +9091,7 @@ void Steam::inventory_definition_update(SteamInventoryDefinitionUpdate_t *call_d
 		delete[] id_array;
 	}
 	// Return the item array as a signal
-	emit_signal("inventory_defintion_update", definitions);
+	emit_signal("inventory_definition_update", definitions);
 }
 
 // Triggered when GetAllItems successfully returns a result which is newer / fresher than the last known result. (It will not
