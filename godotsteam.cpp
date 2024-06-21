@@ -2859,13 +2859,16 @@ void Steam::enableDeviceCallbacks() {
 // Enable SteamInputActionEvent_t callbacks. Directly calls your callback function for lower latency than standard Steam callbacks.
 // Supports one callback at a time.
 // Note: this is called within either SteamInput()->RunFrame or by SteamAPI_RunCallbacks
-//void Steam::enableActionEventCallbacks() {
-//	if (SteamInput() != NULL) {
-//		// Too dumb to figure out how to pass this function to the pointer
-//		SteamInputActionEventCallbackPointer *this_action_callback = &Steam::inputActionEventCallback;
-//		SteamInput()->EnableActionEventCallbacks(*this_action_callback);
-//	}
-//}
+void Steam::enableActionEventCallbacks() {
+	if (SteamInput() == NULL) {
+		return;
+	}
+
+	SteamInputActionEventCallbackPointer callback = [](SteamInputActionEvent_t *call_data)
+		{ Steam::get_singleton()->inputActionEventCallback(call_data); };
+
+	SteamInput()->EnableActionEventCallbacks(callback);
+}
 
 // Get a local path to a PNG file for the provided origin's glyph.
 String Steam::getGlyphPNGForActionOrigin(InputActionOrigin origin, InputGlyphSize size, uint32 flags) {
@@ -10837,7 +10840,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("waitForData", "wait_forever", "timeout"), &Steam::waitForData);
 	ClassDB::bind_method("newDataAvailable", &Steam::newDataAvailable);
 	ClassDB::bind_method("enableDeviceCallbacks", &Steam::enableDeviceCallbacks);
-	//	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
+	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
 	ClassDB::bind_method(D_METHOD("getGlyphPNGForActionOrigin", "origin", "size", "flags"), &Steam::getGlyphPNGForActionOrigin);
 	ClassDB::bind_method(D_METHOD("getGlyphSVGForActionOrigin", "origin", "flags"), &Steam::getGlyphSVGForActionOrigin);
 	ClassDB::bind_method(D_METHOD("triggerVibrationExtended", "input_handle", "left_speed", "right_speed", "left_trigger_speed", "right_trigger_speed"), &Steam::triggerVibrationExtended);

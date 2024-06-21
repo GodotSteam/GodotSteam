@@ -1998,7 +1998,7 @@ public:
 	void deactivateActionSetLayer(uint64_t input_handle, uint64_t action_set_handle);
 	void deactivateAllActionSetLayers(uint64_t input_handle);
 	void enableDeviceCallbacks();
-	//		void enableActionEventCallbacks();
+	void enableActionEventCallbacks();
 	uint64_t getActionSetHandle(const String &action_set_name);
 	InputActionOrigin getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
 	Array getActiveActionSetLayers(uint64_t input_handle);
