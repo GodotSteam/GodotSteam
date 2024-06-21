@@ -20,6 +20,9 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
 
+**Version 3.25.1 Changes**
+- Fixed: incorrect signal name for `inventory_definition_update`, ***thanks to Foxushka***
+
 **Version 3.25 Changes**
 - Added: Steam Matchmaking response handlers, ***thanks to jeremybeier***
 - Added: all missing Messages and Sockets constants
