@@ -2859,13 +2859,16 @@ void Steam::enableDeviceCallbacks() {
 // Enable SteamInputActionEvent_t callbacks. Directly calls your callback function for lower latency than standard Steam callbacks.
 // Supports one callback at a time.
 // Note: this is called within either SteamInput()->RunFrame or by SteamAPI_RunCallbacks
-//void Steam::enableActionEventCallbacks() {
-//	if (SteamInput() != NULL) {
-//		// Too dumb to figure out how to pass this function to the pointer
-//		SteamInputActionEventCallbackPointer *this_action_callback = &Steam::inputActionEventCallback;
-//		SteamInput()->EnableActionEventCallbacks(*this_action_callback);
-//	}
-//}
+void Steam::enableActionEventCallbacks() {
+	if (SteamInput() == NULL) {
+		return;
+	}
+
+	SteamInputActionEventCallbackPointer callback = [](SteamInputActionEvent_t *call_data)
+		{ Steam::get_singleton()->inputActionEventCallback(call_data); };
+
+	SteamInput()->EnableActionEventCallbacks(callback);
+}
 
 // Get a local path to a PNG file for the provided origin's glyph.
 String Steam::getGlyphPNGForActionOrigin(InputActionOrigin origin, InputGlyphSize size, uint32 flags) {
@@ -9007,27 +9010,37 @@ void Steam::http_request_headers_received(HTTPRequestHeadersReceived_t *call_dat
 // Purpose: when callbacks are enabled this fires each time a controller action state changes
 void Steam::inputActionEventCallback(SteamInputActionEvent_t *call_data) {
 	uint64_t input_handle = call_data->controllerHandle;
-	int event_type = call_data->eEventType;
-	uint64_t analog_handle = call_data->analogAction.actionHandle;
-	uint64_t digital_handle = call_data->digitalAction.actionHandle;
-	// Get the digital action data
-	Dictionary digital_action;
-	digital_action["state"] = call_data->digitalAction.digitalActionData.bState;
-	digital_action["active"] = call_data->digitalAction.digitalActionData.bActive;
-	// Get the analog action data
-	Dictionary analog_action;
-	analog_action["mode"] = call_data->analogAction.analogActionData.eMode;
-	analog_action["x"] = call_data->analogAction.analogActionData.x;
-	analog_action["y"] = call_data->analogAction.analogActionData.y;
-	analog_action["active"] = call_data->analogAction.analogActionData.bActive;
-	// Split into a dictionary since Godot won't allow more than 6 arguments sent back
-	Dictionary action_information;
-	action_information["analog_action_handle"] = analog_handle;
-	action_information["analog_action_data"] = analog_action;
-	action_information["digital_action_handle"] = digital_handle;
-	action_information["digital_action_data"] = digital_action;
-	emit_signal("input_action_event", input_handle, event_type, action_information);
-}
+	ESteamInputActionEventType event_type = call_data->eEventType;
+
+	bool is_active;
+	Dictionary data;
+	uint64_t action_handle;
+
+	switch (event_type) {
+		case ESteamInputActionEventType_AnalogAction: {
+			is_active = call_data->analogAction.analogActionData.bActive;
+			action_handle = call_data->analogAction.actionHandle;
+
+			data["mode"] = call_data->analogAction.analogActionData.eMode;
+			data["x"] = call_data->analogAction.analogActionData.x;
+			data["y"] = call_data->analogAction.analogActionData.y;
+
+			break;
+		}
+		case ESteamInputActionEventType_DigitalAction: {
+			is_active = call_data->digitalAction.digitalActionData.bActive;
+			action_handle = call_data->digitalAction.actionHandle;
+
+			data["state"] = call_data->digitalAction.digitalActionData.bState;
+
+			break;
+		}
+		default:
+			return;
+	}
+
+	emit_signal("input_action_event", input_handle, event_type, action_handle, is_active, data);
+ }
 
 // Purpose: called when a new controller has been connected, will fire once per controller if multiple new controllers connect in
 // the same frame
@@ -10837,7 +10850,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("waitForData", "wait_forever", "timeout"), &Steam::waitForData);
 	ClassDB::bind_method("newDataAvailable", &Steam::newDataAvailable);
 	ClassDB::bind_method("enableDeviceCallbacks", &Steam::enableDeviceCallbacks);
-	//	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
+	ClassDB::bind_method("enableActionEventCallbacks", &Steam::enableActionEventCallbacks);
 	ClassDB::bind_method(D_METHOD("getGlyphPNGForActionOrigin", "origin", "size", "flags"), &Steam::getGlyphPNGForActionOrigin);
 	ClassDB::bind_method(D_METHOD("getGlyphSVGForActionOrigin", "origin", "flags"), &Steam::getGlyphSVGForActionOrigin);
 	ClassDB::bind_method(D_METHOD("triggerVibrationExtended", "input_handle", "left_speed", "right_speed", "left_trigger_speed", "right_trigger_speed"), &Steam::triggerVibrationExtended);
@@ -11426,7 +11439,7 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("http_request_headers_received", PropertyInfo(Variant::INT, "cookie_handle"), PropertyInfo(Variant::INT, "context_value")));
 
 	// INPUT SIGNALS ////////////////////////////
-	ADD_SIGNAL(MethodInfo("input_action_event"));
+	ADD_SIGNAL(MethodInfo("input_action_event", PropertyInfo(Variant::INT, "input_handle"), PropertyInfo(Variant::INT, "event_type"), PropertyInfo(Variant::INT, "action_handle"), PropertyInfo(Variant::BOOL, "is_active"),  PropertyInfo(Variant::DICTIONARY, "action_data")));
 	ADD_SIGNAL(MethodInfo("input_device_connected", PropertyInfo(Variant::INT, "input_handle")));
 	ADD_SIGNAL(MethodInfo("input_device_disconnected", PropertyInfo(Variant::INT, "input_handle")));
 	ADD_SIGNAL(MethodInfo("input_configuration_loaded", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::INT, "device_handle"), PropertyInfo(Variant::DICTIONARY, "config_data")));

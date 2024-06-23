@@ -1016,6 +1016,12 @@
 				Triggers a [signal Steam.leaderboard_scores_downloaded] callback.
 			</description>
 		</method>
+		<method name="enableActionEventCallbacks">
+			<return type="void" />
+			<description>
+				Enable the [signal Steam.input_action_event] callback.
+			</description>
+		</method>
 		<method name="enableDeviceCallbacks">
 			<return type="void" />
 			<description>
