@@ -1503,7 +1503,7 @@ public:
 		LOCAL_FILE_CHANGE_FILE_UPDATED = k_ERemoteStorageLocalFileChange_FileUpdated,
 		LOCAL_FILE_CHANGE_FILE_DELETED = k_ERemoteStorageLocalFileChange_FileDeleted
 	};
-	enum RemoteStoragePlatform {
+	enum RemoteStoragePlatform : uint32_t {
 		REMOTE_STORAGE_PLATFORM_NONE = k_ERemoteStoragePlatformNone,
 		REMOTE_STORAGE_PLATFORM_WINDOWS = k_ERemoteStoragePlatformWindows,
 		REMOTE_STORAGE_PLATFORM_OSX = k_ERemoteStoragePlatformOSX,
