@@ -132,6 +132,10 @@
 #define UFS_TAG_TYPE_MAX k_cubUFSTagTypeMax
 #define UFS_TAG_VALUE_MAX k_cubUFSTagValueMax
 
+// Define Timeline constants
+#define MAX_TIMELINE_PRIORITY k_unMaxTimelinePriority
+#define MAX_TIMELINE_EVENT_DURATION k_flMaxTimelineEventDuration
+
 // Define UGC constants
 #define DEVELOPER_METADATA_MAX k_cchDeveloperMetadataMax
 #define NUM_UGC_RESULTS_PER_PAGE kNumUGCResultsPerPage
