@@ -5,49 +5,36 @@ Additional Flavors
 ---
 Pre-Compiles | Plug-ins | Server | Examples/Demos
 --- | --- | --- | ---
-[Godot 2.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot2)| [GDNative](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot3)
-[Godot 3.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot3) | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/godot4)
-[Godot 4.x](https://github.com/CoaguCo-Industries/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server3)
-[Multiplayer Peer](https://github.com/CoaguCo-Industries/GodotSteam/tree/multiplayer-peer)| --- | [GDExtension](https://github.com/CoaguCo-Industries/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/CoaguCo-Industries/GodotSteam-Example-Project/tree/server4)
+[Godot 2.x](https://github.com/GodotSteam/GodotSteam/tree/godot2)| [GDNative](https://github.com/GodotSteam/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/GodotSteam/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/godot3)
+[Godot 3.x](https://github.com/GodotSteam/GodotSteam/tree/godot3) | [GDExtension](https://github.com/GodotSteam/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/GodotSteam/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/godot4)
+[Godot 4.x](https://github.com/GodotSteam/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/GodotSteam/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/server3)
+[Multiplayer Peer](https://github.com/GodotSteam/GodotSteam/tree/multiplayer-peer)| --- | [GDExtension](https://github.com/GodotSteam/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/server4)
 
 Documentation
 ---
 [Documentation is available here](https://godotsteam.com/). You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
 
-Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
+Feel free to chat with us about GodotSteam on the [Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ---
-You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions of this repo here](https://github.com/GodotSteam/GodotSteam/releases).
 
-**Version 4.8 Changes**
-- Added: Steam Matchmaking response handlers, ***thanks to jeremybeier***
-- Added: all missing Messages and Sockets constants
-- Changed: Networking Messages, Sockets, and Utils now use Steam IDs instead of identity system
-- Changed: UserUGCListSortOrder enums for readability
-- Changed: UGCContentDescriptorID enums for readability
-- Changed: `getResultStatus()` now returns the integer / enum
-- Changed: cleaned up `addItemPreviewFile()`, `check_file_signature`, and `showGamepadTextInput()`
-- Changed: various bits and pieces
-- Changed: IP logic for all related functions
-- Changed: `addFavoriteGame()`, `initiateGameConnection()`, `terminateGameConnection()`, and `removeFavoriteGame()` now take strings for IP
-- Changed: `getAuthSessionTicket()` now defaults to 0 for Steam ID
-- Changed: IP address now accepted instead of IP references
-- Fixed: `getFriendCount()` has correct bit-wise value
-- Fixed: server browser functionality, ***thanks to jeremybeier***
-- Fixed: wrong string IP conversions, ***thanks to jeremybeier***
-- Fixed: server list request filters, ***thanks to jeremybeier***
-- Fixed: typo with UGC_MATCHING_UGC_TYPE_ITEMS enum
-- Fixed: minor case issue with Workshop enums
-- Fixed: `playerDetails()`, `requestFavoritesServerList()`, `requestInternetServerList()`, `requestSpectatorServerList()`, `requestFriendsServerList()`, `requestHistoryServerList()`, and `pingServer()`, ***thanks to jeremybeier***
-- Fixed: regressions caused by minor update
-- Fixed: typo with NETWORKING_CONFIG_TYPE_STRING enum
-- Fixed: typo with LOBBY_COMPARISON_EQUAL_TO_GREATER_THAN
-- Fixed: in-editor docs
-- Removed: Networking Types identity system and related bits
-- Removed: P2P Networking constants as they are duplicates of the P2PSend enum
-- Removed: previous, non-functioning Matchmaking Server call results
-- Removed: `getIdentity()` as it is redundant now
+**Version 4.9 Changes**
+- Added: missing `user_achievement_icon_fetched` callback
+- Added: new functions and enums to Apps class
+- Added: new Steam Timeline class functions, enums, and constants
+- Added: new functions to UGC class
+- Added: new enum BetaBranchFlags
+- Added: new value NETWORKING_CONFIG_IP_LOCAL_HOST_ALLOW_WITHOUT_AUTH for NetworkingConfigValue enum
+- Changed: updated for Steamworks SDK 1.60
+- Changed: `network_messages_session_failed` callback now returns the Steam ID associated with the user whose session failed
+- Changed: `global_stats_received` had call result name change under-the-hood, does not affect anything
+- Changed: `sendMessages()` now returns the message result
+- Changed: `getQueryUGCResult()` now passes back additional value total_files_size
+- Changed: enum RemoteStoragePlatform now cast as uint32_t, fixes Rust compatibility, ***thanks to GreenFox***
+- Changed: `item_installed` signal now returns additional data - legacy_content and manifest_id
+- Fixed: incorrect signal name for `inventory_definition_update`, ***thanks to Foxushka***
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
@@ -65,6 +52,7 @@ Versions of GodotSteam that have compatibility breaks introduced.
 GodotSteam Version | Broken Compatibility
 ---|---
 4.8 | Networking identity system removed, replaced with Steam IDs
+4.9 | sendMessages returns an Array
 
 Known Issues
 ---
@@ -75,7 +63,7 @@ Known Issues
 ---
 For complete instructions on how to build the Godot 4.x version of GodotSteam scratch, [please refer to our documentation's 'How-To Modules' section.](https://godotsteam.com/howto/modules/) It will have the most up-to-date information.
 
-Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/CoaguCo-Industries/GodotSteam/releases) and skip compiling it yourself!
+Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/GodotSteam/GodotSteam/releases) and skip compiling it yourself!
 
 Donate
 ---
