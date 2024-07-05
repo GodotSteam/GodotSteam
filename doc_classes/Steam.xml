@@ -5370,6 +5370,12 @@
 				Sends a P2P packet to the specified user.
 				Triggers a [signal Steam.p2p_session_request] callback.
 				True if the packet was successfully sent. Note that this does not mean successfully received, if we can't get through to the user after a timeout of 20 seconds, then an error will be posted via the [signal Steam.p2p_session_connect_fail] callback.
+				False upon the following conditions:
+				[codeblock]
+				The packet is too large for the send type.
+				The target Steam ID is not valid.
+				There are too many bytes queued up to be sent.
+				[/codeblock]
 				[b]Note:[/b] The first packet send may be delayed as the NAT-traversal code runs.
 			</description>
 		</method>
