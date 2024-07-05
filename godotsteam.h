@@ -95,8 +95,17 @@ public:
 		BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH = k_EBeginAuthSessionResultGameMismatch,
 		BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET = k_EBeginAuthSessionResultExpiredTicket
 	};
+	enum BetaBranchFlags {
+		// Found in steamclientpublic.h
+		BETA_BRANCH_NONE = k_EBetaBranch_None,
+		BETA_BRANCH_DEFAULT = k_EBetaBranch_Default,
+		BETA_BRANCH_AVAILABLE = k_EBetaBranch_Available,
+		BETA_BRANCH_PRIVATE = k_EBetaBranch_Private,
+		BETA_BRANCH_SELECTED = k_EBetaBranch_Selected,
+		BETA_BRANCH_INSTALLED = k_EBetaBranch_Installed
+	};
 	enum BroadcastUploadResult {
-		 // Found in steamclientpublic.h
+		// Found in steamclientpublic.h
 		BROADCAST_UPLOAD_RESULT_NONE = k_EBroadcastUploadResultNone,
 		BROADCAST_UPLOAD_RESULT_OK = k_EBroadcastUploadResultOK,
 		BROADCAST_UPLOAD_RESULT_INIT_FAILED = k_EBroadcastUploadResultInitFailed,
@@ -1288,6 +1297,7 @@ public:
 		NETWORKING_CONFIG_SEND_RATE_MAX = k_ESteamNetworkingConfig_SendRateMax,
 		NETWORKING_CONFIG_NAGLE_TIME = k_ESteamNetworkingConfig_NagleTime,
 		NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH = k_ESteamNetworkingConfig_IP_AllowWithoutAuth,
+		NETWORKING_CONFIG_IP_LOCAL_HOST_ALLOW_WITHOUT_AUTH = k_ESteamNetworkingConfig_IPLocalHost_AllowWithoutAuth,
 		NETWORKING_CONFIG_MTU_PACKET_SIZE = k_ESteamNetworkingConfig_MTU_PacketSize,
 		NETWORKING_CONFIG_MTU_DATA_SIZE = k_ESteamNetworkingConfig_MTU_DataSize,
 		NETWORKING_CONFIG_UNENCRYPTED = k_ESteamNetworkingConfig_Unencrypted,
@@ -1465,6 +1475,7 @@ public:
 		FEATURE_TEST = k_EFeatureTest,
 		FEATURE_SITE_LICENSE = k_EFeatureSiteLicense,
 		FEATURE_KIOSK_MODE = k_EFeatureKioskMode_Deprecated,
+		FEATURE_BLOCK_ALWAYS = k_EFeatureBlockAlways,
 		FEATURE_MAX = k_EFeatureMax
 	};
 
@@ -1578,6 +1589,24 @@ public:
 		VR_SCREENSHOT_TYPE_MONO_CUBE_MAP = k_EVRScreenshotType_MonoCubemap,
 		VR_SCREENSHOT_TYPE_MONO_PANORAMA = k_EVRScreenshotType_MonoPanorama,
 		VR_SCREENSHOT_TYPE_STEREO_PANORAMA = k_EVRScreenshotType_StereoPanorama
+	};
+
+	// Timeline enums
+	enum TimelineGameMode {
+		// Found in isteamtimeline.h
+		TIMELINE_GAME_MODE_INVALID = k_ETimelineGameMode_Invalid,
+		TIMELINE_GAME_MODE_PLAYING = k_ETimelineGameMode_Playing,
+		TIMELINE_GAME_MODE_STAGING = k_ETimelineGameMode_Staging,
+		TIMELINE_GAME_MODE_MENUS = k_ETimelineGameMode_Menus,
+		TIMELINE_GAME_MODE_LOADING_SCREEN = k_ETimelineGameMode_LoadingScreen,
+		TIMELINE_GAME_MODE_MAX = k_ETimelineGameMode_Max
+	};
+	enum TimelineEventClipPriority {
+		// Found in isteamtimeline.h
+		TIMELINE_EVENT_CLIP_PRIORITY_INVALID = k_ETimelineEventClipPriority_Invalid,
+		TIMELINE_EVENT_CLIP_PRIORITY_NONE = k_ETimelineEventClipPriority_None,
+		TIMELINE_EVENT_CLIP_PRIORITY_STANDARD = k_ETimelineEventClipPriority_Standard,
+		TIMELINE_EVENT_CLIP_PRIORITY_FEATURED = k_ETimelineEventClipPriority_Featured
 	};
 
 	// UGC enums
@@ -1799,7 +1828,23 @@ public:
 	void steamShutdown();
 
 	// Apps /////////////////////////////////
+	int getAppBuildId();
+	Dictionary getAppInstallDir(uint32_t app_id);
+	uint64_t getAppOwner();
+	String getAvailableGameLanguages();
+	Dictionary getBetaInfo();
+	String getCurrentBetaName();
+	String getCurrentGameLanguage();
+	int32 getDLCCount();
 	Array getDLCDataByIndex();
+	Dictionary getDLCDownloadProgress(uint32_t dlc_id);
+	uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
+	void getFileDetails(const String &filename);
+	Array getInstalledDepots(uint32_t app_id);
+	String getLaunchCommandLine();
+	String getLaunchQueryParam(const String &key);
+	Dictionary getNumBetas();
+	void installDLC(uint32_t dlc_id);
 	bool isAppInstalled(uint32_t app_id);
 	bool isCybercafe();
 	bool isDLCInstalled(uint32_t dlc_id);
@@ -1810,21 +1855,8 @@ public:
 	bool isSubscribedFromFreeWeekend();
 	Dictionary isTimedTrial();
 	bool isVACBanned();
-	int getAppBuildId();
-	Dictionary getAppInstallDir(uint32_t app_id);
-	uint64_t getAppOwner();
-	String getAvailableGameLanguages();
-	String getCurrentBetaName();
-	String getCurrentGameLanguage();
-	int32 getDLCCount();
-	Dictionary getDLCDownloadProgress(uint32_t dlc_id);
-	uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
-	void getFileDetails(const String &filename);
-	Array getInstalledDepots(uint32_t app_id);
-	String getLaunchCommandLine();
-	String getLaunchQueryParam(const String &key);
-	void installDLC(uint32_t dlc_id);
 	bool markContentCorrupt(bool missing_files_only);
+	bool setActiveBeta(String beta_name);
 	bool setDLCContext(uint32_t app_id);
 	void uninstallDLC(uint32_t dlc_id);
 
@@ -2232,7 +2264,7 @@ public:
 	//		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
 	void resetIdentity(uint64_t remote_steam_id);
 	void runNetworkingCallbacks();
-	void sendMessages(int messages, const PackedByteArray data, uint32 connection_handle, int flags);
+	Array sendMessages(const PackedByteArray data, uint32 connection_handle, int flags);
 	Dictionary sendMessageToConnection(uint32 connection_handle, const PackedByteArray data, int flags);
 	Dictionary setCertificate(const PackedByteArray &certificate);
 	bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
@@ -2340,6 +2372,12 @@ public:
 	void triggerScreenshot();
 	uint32_t writeScreenshot(const PackedByteArray &rgb, int width, int height);
 
+	// TIMELINE /////////////////////////////
+	void addTimelineEvent(String icon, String title, String description, int32_t priority, float start_offset, float duration, TimelineEventClipPriority possible_clip);
+	void clearTimelineStateDescription(float time_delta);
+	void setTimelineGameMode(TimelineGameMode mode);
+	void setTimelineStateDescription(String description, float time_delta);
+
 	// UGC //////////////////////////////////
 	void addAppDependency(uint64_t published_file_id, uint32_t app_id);
 	bool addContentDescriptor(uint64_t update_handle, int descriptor_id);
@@ -2364,6 +2402,7 @@ public:
 	uint32 getItemState(uint64_t published_file_id);
 	Dictionary getItemUpdateProgress(uint64_t update_handle);
 	uint32 getNumSubscribedItems();
+	uint32 getNumSupportedGameVersions(uint64_t query_handle, uint32 index);
 	Dictionary getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 index, uint32 preview_index);
 	Dictionary getQueryUGCChildren(uint64_t query_handle, uint32 index, uint32_t child_count);
 	Dictionary getQueryUGCContentDescriptors(uint64_t query_handle, uint32 index, uint32_t max_entries);
@@ -2378,6 +2417,7 @@ public:
 	String getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index);
 	String getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index);
 	Array getSubscribedItems();
+	Dictionary getSupportedGameVersionData(uint64_t query_handle, uint32 index, uint32 version_index);
 	Array getUserContentDescriptorPreferences(uint32 max_entries);
 	void getUserItemVote(uint64_t published_file_id);
 	bool releaseQueryUGCRequest(uint64_t query_handle);
@@ -2388,6 +2428,7 @@ public:
 	bool removeItemKeyValueTags(uint64_t update_handle, const String &key);
 	bool removeItemPreview(uint64_t update_handle, uint32 index);
 	void sendQueryUGCRequest(uint64_t update_handle);
+	bool setAdminQuery(uint64_t update_handle, bool admin_query);
 	bool setAllowCachedResponse(uint64_t update_handle, uint32 max_age_seconds);
 	bool setCloudFileNameFilter(uint64_t update_handle, const String &match_cloud_filename);
 	bool setItemContent(uint64_t update_handle, const String &content_folder);
@@ -2401,6 +2442,7 @@ public:
 	bool setLanguage(uint64_t query_handle, const String &language);
 	bool setMatchAnyTag(uint64_t query_handle, bool match_any_tag);
 	bool setRankedByTrendDays(uint64_t query_handle, uint32 days);
+	bool setRequiredGameVersions(uint64_t query_handle, String game_branch_min, String game_branch_max);
 	bool setReturnAdditionalPreviews(uint64_t query_handle, bool return_additional_previews);
 	bool setReturnChildren(uint64_t query_handle, bool return_children);
 	bool setReturnKeyValueTags(uint64_t query_handle, bool return_key_value_tags);
@@ -2802,8 +2844,9 @@ private:
 	STEAM_CALLBACK(Steam, validate_auth_ticket_response, ValidateAuthTicketResponse_t, callbackValidateAuthTicketResponse);
 
 	// User stat callbacks //////////////////
-	STEAM_CALLBACK(Steam, user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
 	STEAM_CALLBACK(Steam, current_stats_received, UserStatsReceived_t, callbackCurrentStatsReceived);
+	STEAM_CALLBACK(Steam, user_achievement_icon_fetched, UserAchievementIconFetched_t, callbackUserAchievementIconFetched);
+	STEAM_CALLBACK(Steam, user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
 	STEAM_CALLBACK(Steam, user_stats_stored, UserStatsStored_t, callbackUserStatsStored);
 	STEAM_CALLBACK(Steam, user_stats_unloaded, UserStatsUnloaded_t, callbackUserStatsUnloaded);
 
@@ -2922,7 +2965,7 @@ private:
 	// User stat call results ///////////////
 	CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 	void global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *call_data, bool io_failure);
-	CCallResult<Steam, GlobalStatsReceived_t> callResultGetGlobalStatsReceived;
+	CCallResult<Steam, GlobalStatsReceived_t> callResultGlobalStatsReceived;
 	void global_stats_received(GlobalStatsReceived_t *call_data, bool io_failure);
 	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 	void leaderboard_find_result(LeaderboardFindResult_t *call_data, bool io_failure);
@@ -2950,6 +2993,7 @@ VARIANT_ENUM_CAST(Steam::AuthSessionResponse);
 VARIANT_ENUM_CAST(Steam::AvatarSizes);
 
 VARIANT_ENUM_CAST(Steam::BeginAuthSessionResult);
+VARIANT_BITFIELD_CAST(Steam::BetaBranchFlags);
 VARIANT_ENUM_CAST(Steam::BroadcastUploadResult);
 
 VARIANT_ENUM_CAST(Steam::ChatEntryType);
@@ -3048,6 +3092,8 @@ VARIANT_ENUM_CAST(Steam::SocketState);
 VARIANT_ENUM_CAST(Steam::SteamAPIInitResult);
 
 VARIANT_ENUM_CAST(Steam::TextFilteringContext);
+VARIANT_ENUM_CAST(Steam::TimelineGameMode);
+VARIANT_ENUM_CAST(Steam::TimelineEventClipPriority);
 
 VARIANT_ENUM_CAST(Steam::Universe);
 VARIANT_ENUM_CAST(Steam::UGCContentDescriptorID);
