@@ -1,18 +1,18 @@
 [configuration]
 entry_symbol = "godotsteam_init"
-compatibility_minimum = 4.1
+compatibility_minimum = "4.1"
 
 [libraries]
-macos.debug = "osx/libgodotsteam.debug.framework"
-macos.release = "osx/libgodotsteam.framework"
-windows.debug.x86_64 = "win64/godotsteam.debug.x86_64.dll"
-windows.debug.x86_32 = "win32/godotsteam.debug.x86_32.dll"
-windows.release.x86_64 = "win64/godotsteam.x86_64.dll"
-windows.release.x86_32 = "win32/godotsteam.x86_32.dll"
-linux.debug.x86_64 = "linux64/libgodotsteam.debug.x86_64.so"
-linux.debug.x86_32 = "linux32/libgodotsteam.debug.x86_32.so"
-linux.release.x86_64 = "linux64/libgodotsteam.x86_64.so"
-linux.release.x86_32 = "linux32/libgodotsteam.x86_32.so"
+macos.debug = "osx/libgodotsteam.template_debug.framework"
+macos.release = "osx/libgodotsteam.template_release.framework"
+windows.debug.x86_64 = "win64/libgodotsteam.windows.template_debug.x86_64.dll"
+windows.debug.x86_32 = "win32/libgodotsteam.windows.template_debug.x86_32.dll"
+windows.release.x86_64 = "win64/libgodotsteam.windows.template_release.x86_64.dll"
+windows.release.x86_32 = "win32/libgodotsteam.windows.template_release.x86_32.dll"
+linux.debug.x86_64 = "linux64/libgodotsteam.linux.template_debug.x86_64.so"
+linux.debug.x86_32 = "linux32/libgodotsteam.linux.template_debug.x86_32.so"
+linux.release.x86_64 = "linux64/libgodotsteam.linux.template_release.x86_64.so"
+linux.release.x86_32 = "linux32/libgodotsteam.linux.template_release.x86_32.so"
 
 [dependencies]
 windows.x86_64 = { "win64/steam_api64.dll": "" }
