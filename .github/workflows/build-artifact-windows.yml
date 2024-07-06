@@ -7,9 +7,6 @@ on:
       godot_version:
         required: true
         type: string
-      mono_tag:
-        required: true
-        type: string
       steamworks_sdk_tag:
         required: true
         type: string
@@ -35,7 +32,6 @@ jobs:
         include:
           - name: Editor and Templates (64-bit)
             bits: x86_64
-            build-mono: false
             cache-name: windows64
             editor-name: godot.windows.editor.x86_64.exe
             editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.windows.64.exe
@@ -49,7 +45,6 @@ jobs:
 
           - name: Editor and Templates (32-bit)
             bits: x86_32
-            build-mono: false
             cache-name: windows32
             editor-name: godot.windows.editor.x86_32.exe
             editor-name-new: godotsteam.multiplayer.${{ inputs.godot_version }}.editor.windows.32.exe
