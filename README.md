@@ -22,7 +22,7 @@ Feel free to chat with us about GodotSteam on the [Discord server](https://disco
 
 Current Build
 ----------
-You can [download pre-compiled versions of this repo here](https://github.com/CoaguCo-Industries/GodotSteam/releases).
+You can [download pre-compiled versions of this repo here](https://github.com/GodotSteam/GodotSteam/releases).
 
 **Version 3.26 Changes**
 - Added: missing `user_achievement_icon_fetched` callback
