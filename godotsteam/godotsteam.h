@@ -83,7 +83,23 @@ public:
 	void steamShutdown();
 
 	// Apps /////////////////////////////////
+	int getAppBuildId();
+	Dictionary getAppInstallDir(uint32_t app_id);
+	uint64_t getAppOwner();
+	String getAvailableGameLanguages();
+	Dictionary getBetaInfo();
+	String getCurrentBetaName();
+	String getCurrentGameLanguage();
+	int32 getDLCCount();
 	Array getDLCDataByIndex();
+	Dictionary getDLCDownloadProgress(uint32_t dlc_id);
+	uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
+	void getFileDetails(String filename);
+	Array getInstalledDepots(uint32_t app_id);
+	String getLaunchCommandLine();
+	String getLaunchQueryParam(String key);
+	Dictionary getNumBetas();
+	void installDLC(uint32_t dlc_id);
 	bool isAppInstalled(uint32_t app_id);
 	bool isCybercafe();
 	bool isDLCInstalled(uint32_t dlc_id);
@@ -94,21 +110,8 @@ public:
 	bool isSubscribedFromFreeWeekend();
 	Dictionary isTimedTrial();
 	bool isVACBanned();
-	int getAppBuildId();
-	Dictionary getAppInstallDir(uint32_t app_id);
-	uint64_t getAppOwner();
-	String getAvailableGameLanguages();
-	String getCurrentBetaName();
-	String getCurrentGameLanguage();
-	int32 getDLCCount();
-	Dictionary getDLCDownloadProgress(uint32_t dlc_id);
-	uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
-	void getFileDetails(String filename);
-	Array getInstalledDepots(uint32_t app_id);
-	String getLaunchCommandLine();
-	String getLaunchQueryParam(String key);
-	void installDLC(uint32_t dlc_id);
 	bool markContentCorrupt(bool missing_files_only);
+	bool setActiveBeta(String beta_name);
 	bool setDLCContext(uint32_t app_id);
 	void uninstallDLC(uint32_t dlc_id);
 
@@ -282,7 +285,7 @@ public:
 	void deactivateActionSetLayer(uint64_t input_handle, uint64_t action_set_handle);
 	void deactivateAllActionSetLayers(uint64_t input_handle);
 	void enableDeviceCallbacks();
-//		void enableActionEventCallbacks();
+	void enableActionEventCallbacks();
 	uint64_t getActionSetHandle(String action_set_name);
 	int getActionOriginFromXboxOrigin(uint64_t input_handle, int origin);
 	Array getActiveActionSetLayers(uint64_t input_handle);
@@ -516,7 +519,7 @@ public:
 //			Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
 	void resetIdentity(uint64_t remote_steam_id);
 	void runNetworkingCallbacks();
-	void sendMessages(int messages, const PoolByteArray data, uint32 connection_handle, int flags);
+	Array sendMessages(const PoolByteArray data, uint32 connection_handle, int flags);
 	Dictionary sendMessageToConnection(uint32 connection_handle, const PoolByteArray data, int flags);
 	Dictionary setCertificate(const PoolByteArray& certificate);		
 	bool setConnectionPollGroup(uint32 connection_handle, uint32 poll_group);
@@ -624,6 +627,12 @@ public:
 	void triggerScreenshot();
 	uint32_t writeScreenshot(const PoolByteArray& rgb, int width, int height);
 
+	// TIMELINE /////////////////////////////
+	void addTimelineEvent(String icon, String title, String description, int32_t priority, float start_offset, float duration, int possible_clip);
+	void clearTimelineStateDescription(float time_delta);
+	void setTimelineGameMode(int mode);
+	void setTimelineStateDescription(String description, float time_delta);
+
 	// UGC //////////////////////////////////
 	void addAppDependency(uint64_t published_file_id, uint32_t app_id);
 	bool addContentDescriptor(uint64_t update_handle, int descriptor_id);
@@ -648,6 +657,7 @@ public:
 	uint32 getItemState(uint64_t published_file_id);
 	Dictionary getItemUpdateProgress(uint64_t update_handle);
 	uint32 getNumSubscribedItems();
+	uint32 getNumSupportedGameVersions(uint64_t query_handle, uint32 index);
 	Dictionary getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 index, uint32 preview_index);
 	Dictionary getQueryUGCChildren(uint64_t query_handle, uint32 index, uint32_t child_count);
 	Dictionary getQueryUGCContentDescriptors(uint64_t query_handle, uint32 index, uint32_t max_entries);
@@ -662,6 +672,7 @@ public:
 	String getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_index);
 	String getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uint32 tag_index);
 	Array getSubscribedItems();
+	Dictionary getSupportedGameVersionData(uint64_t query_handle, uint32 index, uint32 version_index);
 	Array getUserContentDescriptorPreferences(uint32 max_entries);
 	void getUserItemVote(uint64_t published_file_id);
 	bool releaseQueryUGCRequest(uint64_t query_handle);
@@ -672,6 +683,7 @@ public:
 	bool removeItemKeyValueTags(uint64_t update_handle, String key);
 	bool removeItemPreview(uint64_t update_handle, uint32 index);
 	void sendQueryUGCRequest(uint64_t update_handle);
+	bool setAdminQuery(uint64_t update_handle, bool admin_query);
 	bool setAllowCachedResponse(uint64_t update_handle, uint32 max_age_seconds);
 	bool setCloudFileNameFilter(uint64_t update_handle, String match_cloud_filename);
 	bool setItemContent(uint64_t update_handle, String content_folder);
@@ -685,6 +697,7 @@ public:
 	bool setLanguage(uint64_t query_handle, String language);
 	bool setMatchAnyTag(uint64_t query_handle, bool match_any_tag);
 	bool setRankedByTrendDays(uint64_t query_handle, uint32 days);
+	bool setRequiredGameVersions(uint64_t query_handle, String game_branch_min, String game_branch_max);
 	bool setReturnAdditionalPreviews(uint64_t query_handle, bool return_additional_previews);
 	bool setReturnChildren(uint64_t query_handle, bool return_children);
 	bool setReturnKeyValueTags(uint64_t query_handle, bool return_key_value_tags);
@@ -1085,8 +1098,9 @@ private:
 	STEAM_CALLBACK(Steam, validate_auth_ticket_response, ValidateAuthTicketResponse_t, callbackValidateAuthTicketResponse);
 
 	// User stat callbacks //////////////////
-	STEAM_CALLBACK(Steam, user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
 	STEAM_CALLBACK(Steam, current_stats_received, UserStatsReceived_t, callbackCurrentStatsReceived);
+	STEAM_CALLBACK(Steam, user_achievement_icon_fetched, UserAchievementIconFetched_t, callbackUserAchievementIconFetched);
+	STEAM_CALLBACK(Steam, user_achievement_stored, UserAchievementStored_t, callbackUserAchievementStored);
 	STEAM_CALLBACK(Steam, user_stats_stored, UserStatsStored_t, callbackUserStatsStored);
 	STEAM_CALLBACK(Steam, user_stats_unloaded, UserStatsUnloaded_t, callbackUserStatsUnloaded);
 
@@ -1205,7 +1219,7 @@ private:
 	// User stat call results ///////////////
 	CCallResult<Steam, GlobalAchievementPercentagesReady_t> callResultGlobalAchievementPercentagesReady;
 	void global_achievement_percentages_ready(GlobalAchievementPercentagesReady_t *call_data, bool io_failure);
-	CCallResult<Steam, GlobalStatsReceived_t> callResultGetGlobalStatsReceived;
+	CCallResult<Steam, GlobalStatsReceived_t> callResultGlobalStatsReceived;
 	void global_stats_received(GlobalStatsReceived_t *call_data, bool io_failure);
 	CCallResult<Steam, LeaderboardFindResult_t> callResultFindLeaderboard;
 	void leaderboard_find_result(LeaderboardFindResult_t *call_data, bool io_failure);

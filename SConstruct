@@ -22,7 +22,7 @@ cpp_library = "libgodot-cpp"
 steam_lib_path = "godotsteam/sdk/redistributable_bin"
 steam_lib = "steam_api"
 
-# Only support 64 at this time..
+# Only support 64 at this time
 bits = 64
 
 # Updates the environment with the option variables.
