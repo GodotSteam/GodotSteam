@@ -1,24 +1,20 @@
-# GodotSteam Sponsors - GDNative
-A series of projects for GodotSteam sponsors to check out before release.  You can also guide how upcoming development by [weighing in over in the Discussion section](https://github.com/GodotSteam/GodotSteam-Sponsors/discussions), submitting pull requests, or discussing in our [Discord server](https://discord.gg/SJRSq6K).
+# GodotSteam for GDNative
+An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine (version 3.x). For the Windows, Linux, and Mac platforms. 
 
 Additional Flavors
 ---
-Pre-Compiles | Plug-ins
---- | ---
-[Godot 3.x](https://github.com/GodotSteam/GodotSteam-Sponsors/tree/godot3) | [GDNative](https://github.com/GodotSteam/GodotSteam-Sponsors/tree/gdnative)
-[Godot 4.x](https://github.com/GodotSteam/GodotSteam-Sponsors/tree/godot4) | [GDExtension](https://github.com/GodotSteam/GodotSteam-Sponsors/tree/gdextension)
-[Multiplayer Peer](https://github.com/GodotSteam/GodotSteam-Sponsors/tree/multiplayer-peer)
-
-Upcoming Branches
----
-- GodotSteam Components : A collection of custom nodes and editor tools for speeding up Steamworks development
-- Skillet : Early beta key to the open-source, free-to-play game showcasing GodotSteam's functionality.
+Pre-Compiles | Plug-ins | Server | Examples/Demos
+--- | --- | --- | ---
+[Godot 2.x](https://github.com/GodotSteam/GodotSteam/tree/godot2)| [GDNative](https://github.com/GodotSteam/GodotSteam/tree/gdnative) | [Server 3.x](https://github.com/GodotSteam/GodotSteam-Server/tree/godot3) | [Godot 3.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/godot3)
+[Godot 3.x](https://github.com/GodotSteam/GodotSteam/tree/godot3) | [GDExtension](https://github.com/GodotSteam/GodotSteam/tree/gdextension) | [Server 4.x](https://github.com/GodotSteam/GodotSteam-Server/tree/godot4) |  [Godot 4.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/godot4)
+[Godot 4.x](https://github.com/GodotSteam/GodotSteam/tree/godot4) | --- | [GDNative](https://github.com/GodotSteam/GodotSteam-Server/tree/gdnative) | [Server 3.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/server3)
+[Multiplayer Peer](https://github.com/GodotSteam/GodotSteam/tree/multiplayer-peer)| --- | [GDExtension](https://github.com/GodotSteam/GodotSteam-Server/tree/gdextension) | [Server 4.x](https://github.com/GodotSteam/GodotSteam-Example-Project/tree/server4)
 
 Documentation
----
-[Documentation is available here](https://godotsteam.com/). You can also check out the Search Help section inside Godot Engine after compiling it with GodotSteam.
+----------
+[Documentation is available here](https://godotsteam.com/).
 
-Feel free to chat with us about GodotSteam on the [Discord server](https://discord.gg/SJRSq6K).
+Feel free to chat with us about GodotSteam on the [CoaguCo Discord server](https://discord.gg/SJRSq6K).
 
 Current Build
 ----------
@@ -67,16 +63,16 @@ For complete instructions on how to build the GDNative version of GodotSteam, [p
 
 Alternatively, you can just [download the pre-compiled versions in our Releases section](https://github.com/GodotSteam/GodotSteam/releases) or [from the Godot Asset Library](https://godotengine.org/asset-library/asset/1045) and skip compiling it yourself!
 
-Need Help?
----
-As a sponsor, you can reach out to me [directly by e-mail at gp@godotsteam.com](mailto:gp@godotsteam.com) or on Discord at grampsgarcia.
+Usage
+----------
+Do not use the GDNative version of GodotSteam with any of the module versions whether it be our pre-compiled versions or ones you compile.  They are not compatible with each other.
 
-Thank You!
----
-Thank you so much for supporting this project!
+When exporting with the GDNative version, please use the normal Godot Engine templates instead of our GodotSteam templates or you will have a lot of issues.
 
-I am always looking for some additional perks to provide to sponsors to show appreciation for you all supporting the project.  If you have any ideas, please feel free to hit me up at either of the places above!
+Donate
+-------------
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps)!
 
 License
----
+-------------
 MIT license
