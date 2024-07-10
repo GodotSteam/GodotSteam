@@ -3,8 +3,8 @@ entry_symbol = "godotsteam_init"
 compatibility_minimum = "4.1"
 
 [libraries]
-macos.debug = "osx/libgodotsteam.template_debug.framework"
-macos.release = "osx/libgodotsteam.template_release.framework"
+macos.debug = "osx/libgodotsteam.macos.template_debug.framework"
+macos.release = "osx/libgodotsteam.macos.template_release.framework"
 windows.debug.x86_64 = "win64/libgodotsteam.windows.template_debug.x86_64.dll"
 windows.debug.x86_32 = "win32/libgodotsteam.windows.template_debug.x86_32.dll"
 windows.release.x86_64 = "win64/libgodotsteam.windows.template_release.x86_64.dll"
