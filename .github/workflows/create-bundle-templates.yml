@@ -80,7 +80,7 @@ jobs:
 
       - name: Create Template Bundle
         run: |
-          zip -j godotsteam-${{ env.ZIP_TAG }}-templates.zip files/*
+          zip -j godotsteam-${{ inputs.zip_tag }}-templates.zip files/*
       
       - name: Upload Template Bundle Artifact
         uses: ./.github/actions/upload-artifact
