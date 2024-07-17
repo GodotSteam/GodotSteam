@@ -2316,10 +2316,12 @@
 			</description>
 		</method>
 		<method name="getGlobalStatFloatHistory">
-			<return type="float" />
+			<return type="PackedFloat64Array" />
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the daily history for an aggregated stat.
+				Array[0] will be today, Array[1] will be yesterday, and Array[2] will be two days ago, etc.
+				You must have called [method Steam.requestGlobalStats] and it needs to return successfully via its callback prior to calling this.
 			</description>
 		</method>
 		<method name="getGlobalStatInt">
@@ -2331,10 +2333,12 @@
 			</description>
 		</method>
 		<method name="getGlobalStatIntHistory">
-			<return type="int" />
+			<return type="PackedInt64Array" />
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the daily history for an aggregated stat.
+				Array[0] will be today, Array[1] will be yesterday, and Array[2] will be two days ago, etc.
+				You must have called [method Steam.requestGlobalStats] and it needs to return successfully via its callback prior to calling this.
 			</description>
 		</method>
 		<method name="getGlyphForActionOrigin">

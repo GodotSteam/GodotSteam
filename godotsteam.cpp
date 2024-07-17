@@ -7880,22 +7880,31 @@ double Steam::getGlobalStatFloat(const String &name) {
 }
 
 // Gets the daily history for an aggregated stat; int.
-uint64_t Steam::getGlobalStatIntHistory(const String &name) {
+PackedInt64Array Steam::getGlobalStatIntHistory(const String &name) {
 	if (SteamUserStats() == NULL) {
-		return 0;
+		return PackedInt64Array();
 	}
-	int64 history = 0;
-	SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), &history, 60);
-	return (uint64_t)history;
+	using Int64 = int64_t;
+	PackedInt64Array history;
+	history.resize(60);
+	// Godot's Int64 typedef isn't exactly the same as Steam's int64, so we have to cast here.
+	static_assert(sizeof(int64) == sizeof(Int64), "Both int64's should be the same size");
+	auto *history_ptr = reinterpret_cast<int64*>(history.ptrw());
+	const int32 elems_set = SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), history_ptr, history.size() * sizeof(Int64));
+	history.resize(elems_set);
+	return history;
 }
 
 // Gets the daily history for an aggregated stat; float / double.
-double Steam::getGlobalStatFloatHistory(const String &name) {
+PackedFloat64Array Steam::getGlobalStatFloatHistory(const String &name) {
 	if (SteamUserStats() == NULL) {
-		return 0;
+		return PackedFloat64Array();
 	}
-	double history = 0;
-	SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), &history, 60);
+	using Float64 = double;
+	PackedFloat64Array history;
+	history.resize(60);
+	const int32 elems_set = SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), history.ptrw(), history.size() * sizeof(Float64));
+	history.resize(elems_set);
 	return history;
 }
 

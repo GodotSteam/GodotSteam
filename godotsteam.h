@@ -2517,8 +2517,8 @@ public:
 	Dictionary getAchievementProgressLimitsFloat(const String &achievement_name);
 	uint64_t getGlobalStatInt(const String &stat_name);
 	double getGlobalStatFloat(const String &stat_name);
-	uint64_t getGlobalStatIntHistory(const String &stat_name);
-	double getGlobalStatFloatHistory(const String &stat_name);
+	PackedInt64Array getGlobalStatIntHistory(const String &stat_name);
+	PackedFloat64Array getGlobalStatFloatHistory(const String &stat_name);
 	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
 	Array getLeaderboardEntries();
 	int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
