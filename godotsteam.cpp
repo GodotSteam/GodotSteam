@@ -7409,16 +7409,16 @@ void Steam::cancelAuthTicket(uint32_t auth_ticket) {
 }
 
 // Decodes the compressed voice data returned by GetVoice.
-Dictionary Steam::decompressVoice(const PackedByteArray &voice, uint32 voice_size, uint32 sample_rate) {
+Dictionary Steam::decompressVoice(const PackedByteArray &voice, uint32 sample_rate) {
 	Dictionary decompressed;
 	if (SteamUser() != NULL) {
 		uint32 written = 0;
 		PackedByteArray outputBuffer;
 		outputBuffer.resize(20480); // 20KiB buffer
-		int result = SteamUser()->DecompressVoice(voice.ptr(), voice_size, outputBuffer.ptrw(), outputBuffer.size(), &written, sample_rate);
+		int result = SteamUser()->DecompressVoice(voice.ptr(), voice.size(), outputBuffer.ptrw(), outputBuffer.size(), &written, sample_rate);
 		if (result == 0) {
+			outputBuffer.resize(written);
 			decompressed["uncompressed"] = outputBuffer;
-			decompressed["size"] = written;
 		}
 		decompressed["result"] = result; // Include result for debugging
 	}
@@ -7545,7 +7545,6 @@ Dictionary Steam::getVoice() {
 		buffer.resize(written);
 		// Add the data to the dictionary
 		voice_data["result"] = result;
-		voice_data["written"] = written;
 		voice_data["buffer"] = buffer;
 	}
 	return voice_data;
@@ -11484,7 +11483,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
 	ClassDB::bind_method(D_METHOD("beginAuthSession", "ticket", "ticket_size", "steam_id"), &Steam::beginAuthSession);
 	ClassDB::bind_method(D_METHOD("cancelAuthTicket", "auth_ticket"), &Steam::cancelAuthTicket);
-	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "voice_size", "sample_rate"), &Steam::decompressVoice);
+	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "sample_rate"), &Steam::decompressVoice);
 	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &Steam::endAuthSession);
 	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "remote_steam_id"), &Steam::getAuthSessionTicket, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "service_identity"), &Steam::getAuthTicketForWebApi, DEFVAL(""));

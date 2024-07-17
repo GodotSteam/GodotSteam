@@ -879,8 +879,7 @@
 		<method name="decompressVoice">
 			<return type="Dictionary" />
 			<param index="0" name="voice" type="PackedByteArray" />
-			<param index="1" name="voice_size" type="int" />
-			<param index="2" name="sample_rate" type="int" />
+			<param index="1" name="sample_rate" type="int" />
 			<description>
 				Decodes the compressed voice data returned by [method Steam.getVoice].
 				The output data is raw single-channel 16-bit PCM audio. The decoder supports any sample rate from 11025 to 48000. See [method Steam.getVoiceOptimalSampleRate] for more information.
@@ -888,7 +887,6 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴uncompressed (PackedByteArray)
-				┖╴size (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -3826,7 +3824,6 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴result (int)
-				┠╴written (int)
 				┖╴buffer (int)
 				[/codeblock]
 				[b]Note:[/b] "Uncompressed" audio is a deprecated feature and should not be used by most applications. It is raw single-channel 16-bit PCM wave data which may have been run through preprocessing filters and/or had silence removed, so the uncompressed audio could have a shorter duration than you expect. There may be no data at all during long periods of silence. Also, fetching uncompressed audio will cause [method Steam.getVoice] to discard any leftover compressed audio, so you must fetch both types at once. Finally, [method Steam.getAvailableVoice] is not precisely accurate when the uncompressed size is requested. So if you really need to use uncompressed audio, you should call [method Steam.getVoice] frequently with two very large (20KiB+) output buffers instead of trying to allocate perfectly-sized buffers. But most applications should ignore all of these details and simply leave the "uncompressed" parameters as NULL/0.

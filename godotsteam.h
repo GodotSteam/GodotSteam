@@ -2473,7 +2473,7 @@ public:
 	void advertiseGame(const String &server_ip, int port);
 	BeginAuthSessionResult beginAuthSession(PackedByteArray ticket, int ticket_size, uint64_t steam_id);
 	void cancelAuthTicket(uint32_t auth_ticket);
-	Dictionary decompressVoice(const PackedByteArray &voice, uint32 voice_size, uint32 sample_rate);
+	Dictionary decompressVoice(const PackedByteArray &voice, uint32 sample_rate);
 	void endAuthSession(uint64_t steam_id);
 	Dictionary getAuthSessionTicket(uint64_t remote_steam_id = 0);
 	uint32 getAuthTicketForWebApi(const String &service_identity = "");
