@@ -2408,7 +2408,7 @@
 			</description>
 		</method>
 		<method name="getHTTPResponseHeaderValue">
-			<return type="int" />
+			<return type="PackedByteArray" />
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="header_name" type="String" />
 			<param index="2" name="buffer_size" type="int" />
@@ -2417,7 +2417,7 @@
 			</description>
 		</method>
 		<method name="getHTTPStreamingResponseBodyData">
-			<return type="int" />
+			<return type="PackedByteArray" />
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="offset" type="int" />
 			<param index="2" name="buffer_size" type="int" />
@@ -5700,10 +5700,10 @@
 			</description>
 		</method>
 		<method name="setHTTPRequestRawPostBody">
-			<return type="int" />
+			<return type="bool" />
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="content_type" type="String" />
-			<param index="2" name="body_length" type="int" />
+			<param index="2" name="body" type="String" />
 			<description>
 				Sets the body for an HTTP Post request.
 				Will fail and return false on a GET request, and will fail if POST params have already been set for the request. Setting this raw body makes it the only contents for the post, the content_type parameter will set the "content-type" header for the request to inform the server how to interpret the body.

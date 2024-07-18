@@ -2325,8 +2325,8 @@ bool Steam::getHTTPRequestWasTimedOut(uint32 request_handle) {
 // Gets the body data from an HTTP response.
 PackedByteArray Steam::getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size) {
 	PackedByteArray body_data;
-	body_data.resize(buffer_size);
 	if (SteamHTTP() != NULL) {
+		body_data.resize(buffer_size);
 		SteamHTTP()->GetHTTPResponseBodyData(request_handle, body_data.ptrw(), buffer_size);
 	}
 	return body_data;
@@ -2351,21 +2351,23 @@ uint32 Steam::getHTTPResponseHeaderSize(uint32 request_handle, const String &hea
 }
 
 // Gets a header value from an HTTP response.
-uint8 Steam::getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size) {
-	uint8 value_buffer = 0;
+PackedByteArray Steam::getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size) {
+	PackedByteArray header_data;
 	if (SteamHTTP() != NULL) {
-		SteamHTTP()->GetHTTPResponseHeaderValue(request_handle, header_name.utf8().get_data(), &value_buffer, buffer_size);
+		header_data.resize(buffer_size);
+		SteamHTTP()->GetHTTPResponseHeaderValue(request_handle, header_name.utf8().get_data(), header_data.ptrw(), buffer_size);
 	}
-	return value_buffer;
+	return header_data;
 }
 
 // Gets the body data from a streaming HTTP response.
-uint8 Steam::getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size) {
-	uint8 body_data_buffer = 0;
+PackedByteArray Steam::getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size) {
+	PackedByteArray body_data;
 	if (SteamHTTP() != NULL) {
-		SteamHTTP()->GetHTTPStreamingResponseBodyData(request_handle, offset, &body_data_buffer, buffer_size);
+		body_data.resize(buffer_size);
+		SteamHTTP()->GetHTTPStreamingResponseBodyData(request_handle, offset, body_data.ptrw(), buffer_size);
 	}
-	return body_data_buffer;
+	return body_data;
 }
 
 // Prioritizes a request which has already been sent by moving it at the front of the queue.
@@ -2470,12 +2472,12 @@ bool Steam::setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 t
 }
 
 // Sets the body for an HTTP Post request.
-uint8 Steam::setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, uint32 body_length) {
-	uint8 body = 0;
-	if (SteamHTTP()) {
-		SteamHTTP()->SetHTTPRequestRawPostBody(request_handle, content_type.utf8().get_data(), &body, body_length);
+bool Steam::setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, const String &body) {
+	if (SteamHTTP() == nullptr) {
+		return false;
 	}
-	return body;
+	auto body_utf8 = body.utf8();
+	return SteamHTTP()->SetHTTPRequestRawPostBody(request_handle, content_type.utf8().get_data(), body_utf8.ptrw(), body_utf8.size());
 }
 
 // Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only
@@ -10897,7 +10899,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setHTTPRequestGetOrPostParameter", "request_handle", "name", "value"), &Steam::setHTTPRequestGetOrPostParameter);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestHeaderValue", "request_handle", "header_name", "header_value"), &Steam::setHTTPRequestHeaderValue);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestNetworkActivityTimeout", "request_handle", "timeout_seconds"), &Steam::setHTTPRequestNetworkActivityTimeout);
-	ClassDB::bind_method(D_METHOD("setHTTPRequestRawPostBody", "request_handle", "content_type", "body_length"), &Steam::setHTTPRequestRawPostBody);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestRawPostBody", "request_handle", "content_type", "body"), &Steam::setHTTPRequestRawPostBody);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestRequiresVerifiedCertificate", "request_handle", "require_verified_certificate"), &Steam::setHTTPRequestRequiresVerifiedCertificate);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestUserAgentInfo", "request_handle", "user_agent_info"), &Steam::setHTTPRequestUserAgentInfo);
 

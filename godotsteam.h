@@ -2006,8 +2006,8 @@ public:
 	PackedByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 	uint32 getHTTPResponseBodySize(uint32 request_handle);
 	uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String &header_name);
-	uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
-	uint8 getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
+	PackedByteArray getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
+	PackedByteArray getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
 	bool prioritizeHTTPRequest(uint32 request_handle);
 	bool releaseCookieContainer(uint32 cookie_handle);
 	bool releaseHTTPRequest(uint32 request_handle);
@@ -2020,7 +2020,7 @@ public:
 	bool setHTTPRequestGetOrPostParameter(uint32 request_handle, const String &name, const String &value);
 	bool setHTTPRequestHeaderValue(uint32 request_handle, const String &header_name, const String &header_value);
 	bool setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 timeout_seconds);
-	uint8 setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, uint32 body_length);
+	bool setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, const String &body);
 	bool setHTTPRequestRequiresVerifiedCertificate(uint32 request_handle, bool require_verified_certificate);
 	bool setHTTPRequestUserAgentInfo(uint32 request_handle, const String &user_agent_info);
 
