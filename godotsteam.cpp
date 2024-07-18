@@ -360,8 +360,8 @@ String Steam::getStringFromIP(uint32 ip_integer) {
 
 	if (ip_integer > 0) {
 		this_address.SetIPv4(ip_integer, 0);
-		char this_ip[16];
-		this_address.ToString(this_ip, 16, false);
+		char this_ip[SteamNetworkingIPAddr::k_cchMaxString];
+		this_address.ToString(this_ip, std::size(this_ip), false);
 		ip_address = String(this_ip);
 	}
 	return ip_address;
@@ -369,8 +369,8 @@ String Steam::getStringFromIP(uint32 ip_integer) {
 
 // Convert a Steam IP Address to a string
 String Steam::getStringFromSteamIP(SteamNetworkingIPAddr this_address) {
-	char this_ip[16];
-	this_address.ToString(this_ip, 16, false);
+	char this_ip[SteamNetworkingIPAddr::k_cchMaxString];
+	this_address.ToString(this_ip, std::size(this_ip), false);
 	return String(this_ip);
 }
 
@@ -561,7 +561,7 @@ int Steam::getAppBuildId() {
 Dictionary Steam::getAppInstallDir(uint32_t app_id) {
 	Dictionary app_install;
 	if (SteamApps() != NULL) {
-		char buffer[STEAM_BUFFER_SIZE];
+		char buffer[STEAM_BUFFER_SIZE]{};
 		uint32 install_size = SteamApps()->GetAppInstallDir((AppId_t)app_id, buffer, STEAM_BUFFER_SIZE);
 		String install_directory = buffer;
 		// If we get no install directory, mention a possible cause
@@ -720,11 +720,9 @@ String Steam::getLaunchCommandLine() {
 	if (SteamApps() == NULL) {
 		return "";
 	}
-	char commands[STEAM_BUFFER_SIZE];
+	char commands[STEAM_BUFFER_SIZE]{};
 	SteamApps()->GetLaunchCommandLine(commands, STEAM_BUFFER_SIZE);
-	String command_line;
-	command_line += commands;
-	return command_line;
+	return commands;
 }
 
 // Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
@@ -1015,7 +1013,7 @@ Dictionary Steam::getClanChatMessage(uint64_t chat_id, int message) {
 		return chat_message;
 	}
 	CSteamID chat = (uint64)chat_id;
-	char text[STEAM_LARGE_BUFFER_SIZE];
+	char text[STEAM_LARGE_BUFFER_SIZE]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	CSteamID user_id;
 	chat_message["ret"] = SteamFriends()->GetClanChatMessage(chat, message, text, STEAM_LARGE_BUFFER_SIZE, &type, &user_id);
@@ -1204,7 +1202,7 @@ Dictionary Steam::getFriendMessage(uint64_t friend_id, int message) {
 	if (SteamFriends() == NULL) {
 		return chat;
 	}
-	char text[STEAM_LARGE_BUFFER_SIZE];
+	char text[STEAM_LARGE_BUFFER_SIZE]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(friend_id), message, text, STEAM_LARGE_BUFFER_SIZE, &type);
 	chat["text"] = String(text);
@@ -3129,8 +3127,8 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String &name) {
 	if (SteamInventory() == NULL) {
 		return "";
 	}
-	uint32 buffer_size = STEAM_BUFFER_SIZE;
-	char buffer[buffer_size];
+	char buffer[STEAM_BUFFER_SIZE];
+	uint32 buffer_size = std::size(buffer);
 	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), buffer, &buffer_size);
 	String property = String::utf8(buffer, buffer_size);
 	return property;
@@ -3203,8 +3201,8 @@ Array Steam::getItemsWithPrices() {
 String Steam::getResultItemProperty(uint32 index, const String &name, int32 this_inventory_handle) {
 	if (SteamInventory() != NULL) {
 		// Set up variables to fill
-		uint32 buffer_size = 256;
-		char value[buffer_size];
+		char value[256];
+		uint32 buffer_size = std::size(value);
 		// If no inventory handle is passed, use internal one
 		if (this_inventory_handle == 0) {
 			this_inventory_handle = inventory_handle;
@@ -4836,7 +4834,7 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle) {
 Dictionary Steam::getDetailedConnectionStatus(uint32 connection) {
 	Dictionary connectionStatus;
 	if (SteamNetworkingSockets() != NULL) {
-		char buffer[STEAM_LARGE_BUFFER_SIZE];
+		char buffer[STEAM_LARGE_BUFFER_SIZE]{};
 		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
 		// Add data to dictionary
 		connectionStatus["success"] = success;
@@ -8150,7 +8148,7 @@ String Steam::filterText(TextFilteringContext context, uint64_t steam_id, const 
 	String new_message = "";
 	if (SteamUtils() != NULL) {
 		auto utf8_input = message.utf8();
-		char *filtered = new char[utf8_input.length() + 1];
+		char *filtered = new char[utf8_input.length() + 1]{};
 		CSteamID source_id = (uint64)steam_id;
 		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, utf8_input.get_data(), filtered, utf8_input.length() + 1);
 		new_message = filtered;
@@ -8450,7 +8448,7 @@ String Steam::getOPFStringForApp(uint32_t app_id) {
 	String opf_string = "";
 	if (SteamVideo() != NULL) {
 		int32 size = 48000;
-		char *buffer = new char[size];
+		char *buffer = new char[size]{};
 		if (SteamVideo()->GetOPFStringForApp((AppId_t)app_id, buffer, &size)) {
 			opf_string = buffer;
 		}
@@ -8598,7 +8596,7 @@ void Steam::connected_chat_leave(GameConnectedChatLeave_t *call_data) {
 // Called when a chat message has been received in a Steam group chat that we are in.
 void Steam::connected_clan_chat_message(GameConnectedClanChatMsg_t *call_data) {
 	Dictionary chat;
-	char text[2048];
+	char text[2048]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	CSteamID user_id;
 	chat["ret"] = SteamFriends()->GetClanChatMessage(call_data->m_steamIDClanChat, call_data->m_iMessageID, text, 2048, &type, &user_id);
@@ -8613,7 +8611,7 @@ void Steam::connected_friend_chat_message(GameConnectedFriendChatMsg_t *call_dat
 	uint64_t steam_id = call_data->m_steamIDUser.ConvertToUint64();
 	int message = call_data->m_iMessageID;
 	Dictionary chat;
-	char text[2048];
+	char text[2048]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(steam_id), message, text, 2048, &type);
 	chat["text"] = String(text);
