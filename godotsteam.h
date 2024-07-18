@@ -2390,7 +2390,7 @@ public:
 	bool addRequiredKeyValueTag(uint64_t query_handle, const String &key, const String &value);
 	bool addRequiredTag(uint64_t query_handle, const String &tag_name);
 	bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
-	bool initWorkshopForGameServer(uint32_t workshop_depot_id);
+	bool initWorkshopForGameServer(uint32_t workshop_depot_id, String folder);
 	void createItem(uint32 app_id, WorkshopFileType file_type);
 	uint64_t createQueryAllUGCRequest(UGCQuery query_type, UGCMatchingUGCType matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 	uint64_t createQueryUGCDetailsRequest(Array published_file_id);

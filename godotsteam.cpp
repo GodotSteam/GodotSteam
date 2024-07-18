@@ -6326,13 +6326,11 @@ bool Steam::addRequiredTagGroup(uint64_t query_handle, Array tag_array) {
 }
 
 // Lets game servers set a specific workshop folder before issuing any UGC commands.
-bool Steam::initWorkshopForGameServer(uint32_t workshop_depot_id) {
+bool Steam::initWorkshopForGameServer(uint32_t workshop_depot_id, String folder) {
 	bool initialized_workshop = false;
 	if (SteamUGC() != NULL) {
 		DepotId_t workshop = (uint32_t)workshop_depot_id;
-		const char *folder = new char[256];
-		initialized_workshop = SteamUGC()->BInitWorkshopForGameServer(workshop, (char *)folder);
-		delete[] folder;
+		initialized_workshop = SteamUGC()->BInitWorkshopForGameServer(workshop, folder.utf8());
 	}
 	return initialized_workshop;
 }
@@ -11268,7 +11266,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("addRequiredKeyValueTag", "query_handle", "key", "value"), &Steam::addRequiredKeyValueTag);
 	ClassDB::bind_method(D_METHOD("addRequiredTag", "query_handle", "tag_name"), &Steam::addRequiredTag);
 	ClassDB::bind_method(D_METHOD("addRequiredTagGroup", "query_handle", "tag_array"), &Steam::addRequiredTagGroup);
-	ClassDB::bind_method(D_METHOD("initWorkshopForGameServer", "workshop_depot_id"), &Steam::initWorkshopForGameServer);
+	ClassDB::bind_method(D_METHOD("initWorkshopForGameServer", "workshop_depot_id", "folder"), &Steam::initWorkshopForGameServer);
 	ClassDB::bind_method(D_METHOD("createItem", "app_id", "file_type"), &Steam::createItem);
 	ClassDB::bind_method(D_METHOD("createQueryAllUGCRequest", "query_type", "matching_type", "creator_id", "consumer_id", "page"), &Steam::createQueryAllUGCRequest);
 	ClassDB::bind_method(D_METHOD("createQueryUGCDetailsRequest", "published_file_id"), &Steam::createQueryUGCDetailsRequest);

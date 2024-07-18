@@ -3965,6 +3965,7 @@
 		<method name="initWorkshopForGameServer">
 			<return type="bool" />
 			<param index="0" name="workshop_depot_id" type="int" />
+			<param index="1" name="folder" type="String" />
 			<description>
 				Lets game servers set a specific workshop folder before issuing any UGC commands.
 				This is helpful if you want to support multiple game servers running out of the same install folder.
