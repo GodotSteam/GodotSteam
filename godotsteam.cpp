@@ -5139,9 +5139,10 @@ Dictionary Steam::getFakeIP(int first_port) {
 		fake_ip["result"] = fake_ip_result.m_eResult;
 		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
 		fake_ip["ip"] = getStringFromIP(fake_ip_result.m_unIP);
-		char ports[SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts];
+		PackedInt32Array ports;
+		ports.resize(SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts);
 		for (size_t i = 0; i < SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts; i++) {
-			ports[i] = fake_ip_result.m_unPorts[i];
+			ports.write[i] = fake_ip_result.m_unPorts[i];
 		}
 		fake_ip["ports"] = ports;
 	}
@@ -9460,10 +9461,10 @@ void Steam::fake_ip_result(SteamNetworkingFakeIPResult_t *call_data) {
 	int result = call_data->m_eResult;
 	uint32 fake_ip = call_data->m_unIP;
 	// Get the ports as an array
-	Array port_list;
-	uint16 *ports = call_data->m_unPorts;
+	PackedInt32Array port_list;
+	port_list.resize(SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts);
 	for (uint16 i = 0; i < SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts; i++) {
-		port_list.append(ports[i]);
+		port_list.write[i] = call_data->m_unPorts[i];
 	}
 	emit_signal("fake_ip_result", result, getSteamIDFromIdentity(call_data->m_identity), getStringFromIP(fake_ip), port_list);
 }

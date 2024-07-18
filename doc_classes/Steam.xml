@@ -2006,7 +2006,7 @@
 				┠╴result (int)
 				┠╴identity_type (int)
 				┠╴ip (string)
-				┖╴ports (int)
+				┖╴ports (PackedInt32Array)
 				[/codeblock]
 			</description>
 		</method>
@@ -7166,7 +7166,7 @@
 			<param index="0" name="result" type="int" />
 			<param index="1" name="remote_fake_steam_id" type="int" />
 			<param index="2" name="fake_ip" type="String" />
-			<param index="3" name="port_list" type="Array" />
+			<param index="3" name="port_list" type="PackedInt32Array" />
 			<description>
 				A struct used to describe a "fake IP" we have been assigned to use as an identifier. This callback is posted when [method Steam.beginAsyncRequestFakeIP]completes.
 			</description>
