@@ -2097,7 +2097,7 @@ public:
 	bool loadItemDefinitions();
 	void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 	void requestPrices();
-	String serializeResult(int32 this_inventory_handle = 0);
+	PackedByteArray serializeResult(int32 this_inventory_handle = 0);
 	void startPurchase(const PackedInt64Array items, const PackedInt32Array quantity);
 	int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 	int32 triggerItemDrop(uint32 definition);

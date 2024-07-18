@@ -5397,7 +5397,7 @@
 			</description>
 		</method>
 		<method name="serializeResult">
-			<return type="String" />
+			<return type="PackedByteArray" />
 			<param index="0" name="this_inventory_handle" type="int" default="0" />
 			<description>
 				Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.

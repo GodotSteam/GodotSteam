@@ -3042,7 +3042,7 @@ int32 Steam::consumeItem(uint64_t item_consume, uint32 quantity) {
 int32 Steam::deserializeResult(PackedByteArray buffer) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		if (SteamInventory()->DeserializeResult(&new_inventory_handle, &buffer, buffer.size(), false)) {
+		if (SteamInventory()->DeserializeResult(&new_inventory_handle, buffer.ptr(), buffer.size(), false)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
@@ -3307,18 +3307,20 @@ void Steam::requestPrices() {
 }
 
 // Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.
-String Steam::serializeResult(int32 this_inventory_handle) {
-	String result_serialized;
+PackedByteArray Steam::serializeResult(int32 this_inventory_handle) {
+	PackedByteArray result_serialized;
 	if (SteamInventory() != NULL) {
 		// If no inventory handle is passed, use internal one
 		if (this_inventory_handle == 0) {
 			this_inventory_handle = inventory_handle;
 		}
-		// Set up return array
+		// Set up return buffer
 		uint32 buffer_size = STEAM_BUFFER_SIZE;
-		char buffer[buffer_size];
-		if (SteamInventory()->SerializeResult((SteamInventoryResult_t)this_inventory_handle, buffer, &buffer_size)) {
-			result_serialized = String::utf8(buffer, buffer_size);
+		PackedByteArray buffer;
+		buffer.resize(buffer_size);
+		if (SteamInventory()->SerializeResult((SteamInventoryResult_t)this_inventory_handle, buffer.ptrw(), &buffer_size)) {
+			buffer.resize(buffer_size);
+			result_serialized = buffer;
 		}
 	}
 	return result_serialized;
