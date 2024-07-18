@@ -2598,7 +2598,6 @@
 				┠╴ret (bool)
 				┠╴size (int)
 				┠╴folder (string)
-				┠╴folder_size (int)
 				┖╴timestamp (int)
 				[/codeblock]
 			</description>

@@ -5138,8 +5138,8 @@ Dictionary Steam::getFakeIP(int first_port) {
 		fake_ip["result"] = fake_ip_result.m_eResult;
 		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
 		fake_ip["ip"] = getStringFromIP(fake_ip_result.m_unIP);
-		char ports[8];
-		for (size_t i = 0; i < sizeof(fake_ip_result.m_unPorts) / sizeof(fake_ip_result.m_unPorts[0]); i++) {
+		char ports[SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts];
+		for (size_t i = 0; i < SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts; i++) {
 			ports[i] = fake_ip_result.m_unPorts[i];
 		}
 		fake_ip["ports"] = ports;
@@ -6439,9 +6439,8 @@ Dictionary Steam::getItemInstallInfo(uint64_t published_file_id) {
 	uint32 timeStamp;
 	info["ret"] = SteamUGC()->GetItemInstallInfo((PublishedFileId_t)file_id, &sizeOnDisk, folder, sizeof(folder), &timeStamp);
 	if (info["ret"]) {
-		info["size"] = (int)sizeOnDisk;
+		info["size"] = (uint64_t)sizeOnDisk;
 		info["folder"] = folder;
-		info["foldersize"] = (uint32)sizeof(folder);
 		info["timestamp"] = timeStamp;
 	}
 	return info;
@@ -7506,7 +7505,8 @@ bool Steam::loggedOn() {
 // Requests an application ticket encrypted with the secret "encrypted app ticket key".
 void Steam::requestEncryptedAppTicket(const String &secret) {
 	if (SteamUser() != NULL) {
-		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket((void *)secret.utf8().get_data(), sizeof(&secret));
+		auto secret_utf8 = secret.utf8();
+		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket(secret_utf8.get_data(), secret_utf8.size());
 		callResultEncryptedAppTicketResponse.Set(api_call, this, &Steam::encrypted_app_ticket_response);
 	}
 }
@@ -9463,7 +9463,7 @@ void Steam::fake_ip_result(SteamNetworkingFakeIPResult_t *call_data) {
 	// Get the ports as an array
 	Array port_list;
 	uint16 *ports = call_data->m_unPorts;
-	for (uint16 i = 0; i < sizeof(ports); i++) {
+	for (uint16 i = 0; i < SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts; i++) {
 		port_list.append(ports[i]);
 	}
 	emit_signal("fake_ip_result", result, getSteamIDFromIdentity(call_data->m_identity), getStringFromIP(fake_ip), port_list);
