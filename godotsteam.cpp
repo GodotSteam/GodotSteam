@@ -243,10 +243,7 @@ const SteamNetworkingConfigValue_t *Steam::convertOptionsArray(Array options) {
 				this_option.SetFloat(this_value, sent_option[2]);
 			}
 			else if ((int)sent_option[1] == 4) {
-				char *this_string = { 0 };
-				String passed_string = sent_option[2];
-				strcpy(this_string, passed_string.utf8().get_data());
-				this_option.SetString(this_value, this_string);
+				this_option.SetString(this_value, sent_option[2].utf8().get_data());
 			}
 			else {
 				Object *this_pointer;
@@ -10134,8 +10131,7 @@ void Steam::file_share_result(RemoteStorageFileShareResult_t *call_data, bool io
 	else {
 		int result = call_data->m_eResult;
 		uint64_t handle = call_data->m_hFile;
-		char name[k_cchFilenameMax];
-		strcpy(name, call_data->m_rgchFilename);
+		const char *name = call_data->m_rgchFilename;
 		emit_signal("file_share_result", result, handle, name);
 	}
 }
@@ -10161,8 +10157,7 @@ void Steam::download_ugc_result(RemoteStorageDownloadUGCResult_t *call_data, boo
 		uint64_t handle = call_data->m_hFile;
 		uint32_t app_id = call_data->m_nAppID;
 		int32 size = call_data->m_nSizeInBytes;
-		char filename[k_cchFilenameMax];
-		strcpy(filename, call_data->m_pchFileName);
+		const char *filename = call_data->m_pchFileName;
 		uint64_t owner_id = call_data->m_ulSteamIDOwner;
 		// Pass some variable to download dictionary to bypass argument limit
 		Dictionary download_data;
