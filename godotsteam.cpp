@@ -2475,7 +2475,7 @@ bool Steam::setHTTPRequestRawPostBody(uint32 request_handle, const String &conte
 		return false;
 	}
 	auto body_utf8 = body.utf8();
-	return SteamHTTP()->SetHTTPRequestRawPostBody(request_handle, content_type.utf8().get_data(), body_utf8.ptrw(), body_utf8.size());
+	return SteamHTTP()->SetHTTPRequestRawPostBody(request_handle, content_type.utf8().get_data(), reinterpret_cast<uint8 *>(body_utf8.ptrw()), body_utf8.size());
 }
 
 // Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only
@@ -5066,12 +5066,13 @@ int Steam::configureConnectionLanes(uint32 connection, int lanes, Array prioriti
 Dictionary Steam::getCertificateRequest() {
 	Dictionary cert_information;
 	if (SteamNetworkingSockets() != NULL) {
-		int certificate[512];
-		int cert_size = sizeof(certificate);
+		PackedByteArray certificate;
+		certificate.resize(512);
+		int cert_size = certificate.size();
 		SteamNetworkingErrMsg error_message;
-		if (SteamNetworkingSockets()->GetCertificateRequest(&cert_size, certificate, error_message)) {
+		if (SteamNetworkingSockets()->GetCertificateRequest(&cert_size, certificate.ptrw(), error_message)) {
+			certificate.resize(cert_size);
 			cert_information["certificate"] = certificate;
-			cert_information["cert_size"] = cert_size;
 			cert_information["error_message"] = error_message;
 		}
 	}

@@ -1656,7 +1656,7 @@
 			<description>
 				Certificate provision by the application. On Steam, we normally handle all this automatically and you will not need to use these advanced functions.
 				Get blob that describes a certificate request. You can send this to your game coordinator. Pass this blob to your game coordinator and call SteamDatagram_CreateCert.
-				Returned dictionary contains the following keys: [b]certificate (int), cert_size (int), and error_message (string).[/b]
+				Returned dictionary contains the following keys: [b]certificate (PackedByteArray), and error_message (string).[/b]
 			</description>
 		</method>
 		<method name="getChatMemberByIndex">
@@ -4669,7 +4669,7 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴success (bool)
-				┖╴ping_location (PackedByeArray)
+				┖╴ping_location (PackedByteArray)
 				[/codeblock]
 			</description>
 		</method>
