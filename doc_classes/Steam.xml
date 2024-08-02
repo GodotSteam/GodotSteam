@@ -879,8 +879,7 @@
 		<method name="decompressVoice">
 			<return type="Dictionary" />
 			<param index="0" name="voice" type="PackedByteArray" />
-			<param index="1" name="voice_size" type="int" />
-			<param index="2" name="sample_rate" type="int" />
+			<param index="1" name="sample_rate" type="int" />
 			<description>
 				Decodes the compressed voice data returned by [method Steam.getVoice].
 				The output data is raw single-channel 16-bit PCM audio. The decoder supports any sample rate from 11025 to 48000. See [method Steam.getVoiceOptimalSampleRate] for more information.
@@ -888,7 +887,6 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴uncompressed (PackedByteArray)
-				┖╴size (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -1658,7 +1656,7 @@
 			<description>
 				Certificate provision by the application. On Steam, we normally handle all this automatically and you will not need to use these advanced functions.
 				Get blob that describes a certificate request. You can send this to your game coordinator. Pass this blob to your game coordinator and call SteamDatagram_CreateCert.
-				Returned dictionary contains the following keys: [b]certificate (int), cert_size (int), and error_message (string).[/b]
+				Returned dictionary contains the following keys: [b]certificate (PackedByteArray), and error_message (string).[/b]
 			</description>
 		</method>
 		<method name="getChatMemberByIndex">
@@ -2008,7 +2006,7 @@
 				┠╴result (int)
 				┠╴identity_type (int)
 				┠╴ip (string)
-				┖╴ports (int)
+				┖╴ports (PackedInt32Array)
 				[/codeblock]
 			</description>
 		</method>
@@ -2316,10 +2314,12 @@
 			</description>
 		</method>
 		<method name="getGlobalStatFloatHistory">
-			<return type="float" />
+			<return type="PackedFloat64Array" />
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the daily history for an aggregated stat.
+				Array[0] will be today, Array[1] will be yesterday, and Array[2] will be two days ago, etc.
+				You must have called [method Steam.requestGlobalStats] and it needs to return successfully via its callback prior to calling this.
 			</description>
 		</method>
 		<method name="getGlobalStatInt">
@@ -2331,10 +2331,12 @@
 			</description>
 		</method>
 		<method name="getGlobalStatIntHistory">
-			<return type="int" />
+			<return type="PackedInt64Array" />
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the daily history for an aggregated stat.
+				Array[0] will be today, Array[1] will be yesterday, and Array[2] will be two days ago, etc.
+				You must have called [method Steam.requestGlobalStats] and it needs to return successfully via its callback prior to calling this.
 			</description>
 		</method>
 		<method name="getGlyphForActionOrigin">
@@ -2406,7 +2408,7 @@
 			</description>
 		</method>
 		<method name="getHTTPResponseHeaderValue">
-			<return type="int" />
+			<return type="PackedByteArray" />
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="header_name" type="String" />
 			<param index="2" name="buffer_size" type="int" />
@@ -2415,7 +2417,7 @@
 			</description>
 		</method>
 		<method name="getHTTPStreamingResponseBodyData">
-			<return type="int" />
+			<return type="PackedByteArray" />
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="offset" type="int" />
 			<param index="2" name="buffer_size" type="int" />
@@ -2596,7 +2598,6 @@
 				┠╴ret (bool)
 				┠╴size (int)
 				┠╴folder (string)
-				┠╴folder_size (int)
 				┖╴timestamp (int)
 				[/codeblock]
 			</description>
@@ -3822,7 +3823,6 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴result (int)
-				┠╴written (int)
 				┖╴buffer (int)
 				[/codeblock]
 				[b]Note:[/b] "Uncompressed" audio is a deprecated feature and should not be used by most applications. It is raw single-channel 16-bit PCM wave data which may have been run through preprocessing filters and/or had silence removed, so the uncompressed audio could have a shorter duration than you expect. There may be no data at all during long periods of silence. Also, fetching uncompressed audio will cause [method Steam.getVoice] to discard any leftover compressed audio, so you must fetch both types at once. Finally, [method Steam.getAvailableVoice] is not precisely accurate when the uncompressed size is requested. So if you really need to use uncompressed audio, you should call [method Steam.getVoice] frequently with two very large (20KiB+) output buffers instead of trying to allocate perfectly-sized buffers. But most applications should ignore all of these details and simply leave the "uncompressed" parameters as NULL/0.
@@ -3965,6 +3965,7 @@
 		<method name="initWorkshopForGameServer">
 			<return type="bool" />
 			<param index="0" name="workshop_depot_id" type="int" />
+			<param index="1" name="folder" type="String" />
 			<description>
 				Lets game servers set a specific workshop folder before issuing any UGC commands.
 				This is helpful if you want to support multiple game servers running out of the same install folder.
@@ -4668,7 +4669,7 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴success (bool)
-				┖╴ping_location (PackedByeArray)
+				┖╴ping_location (PackedByteArray)
 				[/codeblock]
 			</description>
 		</method>
@@ -5397,7 +5398,7 @@
 			</description>
 		</method>
 		<method name="serializeResult">
-			<return type="String" />
+			<return type="PackedByteArray" />
 			<param index="0" name="this_inventory_handle" type="int" default="0" />
 			<description>
 				Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.
@@ -5699,10 +5700,10 @@
 			</description>
 		</method>
 		<method name="setHTTPRequestRawPostBody">
-			<return type="int" />
+			<return type="bool" />
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="content_type" type="String" />
-			<param index="2" name="body_length" type="int" />
+			<param index="2" name="body" type="String" />
 			<description>
 				Sets the body for an HTTP Post request.
 				Will fail and return false on a GET request, and will fail if POST params have already been set for the request. Setting this raw body makes it the only contents for the post, the content_type parameter will set the "content-type" header for the request to inform the server how to interpret the body.
@@ -7165,7 +7166,7 @@
 			<param index="0" name="result" type="int" />
 			<param index="1" name="remote_fake_steam_id" type="int" />
 			<param index="2" name="fake_ip" type="String" />
-			<param index="3" name="port_list" type="Array" />
+			<param index="3" name="port_list" type="PackedInt32Array" />
 			<description>
 				A struct used to describe a "fake IP" we have been assigned to use as an identifier. This callback is posted when [method Steam.beginAsyncRequestFakeIP]completes.
 			</description>

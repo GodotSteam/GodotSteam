@@ -243,10 +243,7 @@ const SteamNetworkingConfigValue_t *Steam::convertOptionsArray(Array options) {
 				this_option.SetFloat(this_value, sent_option[2]);
 			}
 			else if ((int)sent_option[1] == 4) {
-				char *this_string = { 0 };
-				String passed_string = sent_option[2];
-				strcpy(this_string, passed_string.utf8().get_data());
-				this_option.SetString(this_value, this_string);
+				this_option.SetString(this_value, sent_option[2].utf8().get_data());
 			}
 			else {
 				Object *this_pointer;
@@ -363,8 +360,8 @@ String Steam::getStringFromIP(uint32 ip_integer) {
 
 	if (ip_integer > 0) {
 		this_address.SetIPv4(ip_integer, 0);
-		char this_ip[16];
-		this_address.ToString(this_ip, 16, false);
+		char this_ip[SteamNetworkingIPAddr::k_cchMaxString];
+		this_address.ToString(this_ip, std::size(this_ip), false);
 		ip_address = String(this_ip);
 	}
 	return ip_address;
@@ -372,8 +369,8 @@ String Steam::getStringFromIP(uint32 ip_integer) {
 
 // Convert a Steam IP Address to a string
 String Steam::getStringFromSteamIP(SteamNetworkingIPAddr this_address) {
-	char this_ip[16];
-	this_address.ToString(this_ip, 16, false);
+	char this_ip[SteamNetworkingIPAddr::k_cchMaxString];
+	this_address.ToString(this_ip, std::size(this_ip), false);
 	return String(this_ip);
 }
 
@@ -564,7 +561,7 @@ int Steam::getAppBuildId() {
 Dictionary Steam::getAppInstallDir(uint32_t app_id) {
 	Dictionary app_install;
 	if (SteamApps() != NULL) {
-		char buffer[STEAM_BUFFER_SIZE];
+		char buffer[STEAM_BUFFER_SIZE]{};
 		uint32 install_size = SteamApps()->GetAppInstallDir((AppId_t)app_id, buffer, STEAM_BUFFER_SIZE);
 		String install_directory = buffer;
 		// If we get no install directory, mention a possible cause
@@ -707,12 +704,11 @@ Array Steam::getInstalledDepots(uint32_t app_id) {
 		return Array();
 	}
 	Array installed_depots;
-	DepotId_t *depots = new DepotId_t[32];
+	DepotId_t depots[32];
 	uint32 installed = SteamApps()->GetInstalledDepots((AppId_t)app_id, depots, 32);
 	for (uint32 i = 0; i < installed; i++) {
 		installed_depots.append(depots[i]);
 	}
-	delete[] depots;
 	return installed_depots;
 }
 
@@ -724,11 +720,9 @@ String Steam::getLaunchCommandLine() {
 	if (SteamApps() == NULL) {
 		return "";
 	}
-	char commands[STEAM_BUFFER_SIZE];
+	char commands[STEAM_BUFFER_SIZE]{};
 	SteamApps()->GetLaunchCommandLine(commands, STEAM_BUFFER_SIZE);
-	String command_line;
-	command_line += commands;
-	return command_line;
+	return commands;
 }
 
 // Gets the associated launch parameter if the game is run via steam://run/<appid>/?param1=value1;param2=value2;param3=value3 etc.
@@ -1019,7 +1013,7 @@ Dictionary Steam::getClanChatMessage(uint64_t chat_id, int message) {
 		return chat_message;
 	}
 	CSteamID chat = (uint64)chat_id;
-	char text[STEAM_LARGE_BUFFER_SIZE];
+	char text[STEAM_LARGE_BUFFER_SIZE]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	CSteamID user_id;
 	chat_message["ret"] = SteamFriends()->GetClanChatMessage(chat, message, text, STEAM_LARGE_BUFFER_SIZE, &type, &user_id);
@@ -1208,7 +1202,7 @@ Dictionary Steam::getFriendMessage(uint64_t friend_id, int message) {
 	if (SteamFriends() == NULL) {
 		return chat;
 	}
-	char text[STEAM_LARGE_BUFFER_SIZE];
+	char text[STEAM_LARGE_BUFFER_SIZE]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(friend_id), message, text, STEAM_LARGE_BUFFER_SIZE, &type);
 	chat["text"] = String(text);
@@ -1405,14 +1399,13 @@ void Steam::getPlayerAvatar(int size, uint64_t steam_id) {
 		if (handle <= 0) {
 			printf("[Steam] Error retrieving avatar handle.");
 		}
-		AvatarImageLoaded_t *avatar_data = new AvatarImageLoaded_t;
+		AvatarImageLoaded_t avatar_data;
 		CSteamID avatar_id = (uint64)steam_id;
-		avatar_data->m_steamID = avatar_id;
-		avatar_data->m_iImage = handle;
-		avatar_data->m_iWide = size;
-		avatar_data->m_iTall = size;
-		avatar_loaded(avatar_data);
-		delete avatar_data;
+		avatar_data.m_steamID = avatar_id;
+		avatar_data.m_iImage = handle;
+		avatar_data.m_iWide = size;
+		avatar_data.m_iTall = size;
+		avatar_loaded(&avatar_data);
 	}
 }
 
@@ -1815,12 +1808,9 @@ String Steam::retrieveConnectionDetails(uint64_t host_id) {
 		return "";
 	}
 	CSteamID host = (uint64)host_id;
-	char connection_details;
-	SteamGameSearch()->RetrieveConnectionDetails(host, &connection_details, 256);
-	// Messy conversion from char to String
-	String details;
-	details += connection_details;
-	return details;
+	char connection_details[256 + 1]{};
+	SteamGameSearch()->RetrieveConnectionDetails(host, connection_details, 256);
+	return connection_details;
 }
 
 // Leaves queue if still waiting.
@@ -1931,20 +1921,18 @@ void Steam::copyToClipboard(uint32 this_handle) {
 // to free up the resources associated with it. Failing to do so will result in a memory leak.
 void Steam::createBrowser(const String &user_agent, const String &user_css) {
 	if (SteamHTMLSurface() != NULL) {
-		char *this_user_agent = new char[sizeof(user_agent)];
-		strcpy(this_user_agent, user_agent.utf8().get_data());
-		char *this_user_css = new char[sizeof(user_css)];
-		strcpy(this_user_css, user_css.utf8().get_data());
-		if (user_agent.is_empty()) {
-			this_user_agent = NULL;
+		auto user_agent_utf8 = user_agent.utf8();
+		const char *this_user_agent = nullptr;
+		if (!user_agent.is_empty()) {
+			this_user_agent = user_agent_utf8.get_data();
 		}
-		if (user_css.is_empty()) {
-			this_user_css = NULL;
+		auto user_css_utf8 = user_css.utf8();
+		const char *this_user_css = nullptr;
+		if (!user_css.is_empty()) {
+			this_user_css = user_css_utf8.get_data();
 		}
 		SteamAPICall_t api_call = SteamHTMLSurface()->CreateBrowser(this_user_agent, this_user_css);
 		callResultHTMLBrowserReady.Set(api_call, this, &Steam::html_browser_ready);
-		delete[] this_user_agent;
-		delete[] this_user_css;
 	}
 }
 
@@ -2335,8 +2323,8 @@ bool Steam::getHTTPRequestWasTimedOut(uint32 request_handle) {
 // Gets the body data from an HTTP response.
 PackedByteArray Steam::getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size) {
 	PackedByteArray body_data;
-	body_data.resize(buffer_size);
 	if (SteamHTTP() != NULL) {
+		body_data.resize(buffer_size);
 		SteamHTTP()->GetHTTPResponseBodyData(request_handle, body_data.ptrw(), buffer_size);
 	}
 	return body_data;
@@ -2361,21 +2349,23 @@ uint32 Steam::getHTTPResponseHeaderSize(uint32 request_handle, const String &hea
 }
 
 // Gets a header value from an HTTP response.
-uint8 Steam::getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size) {
-	uint8 value_buffer = 0;
+PackedByteArray Steam::getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size) {
+	PackedByteArray header_data;
 	if (SteamHTTP() != NULL) {
-		SteamHTTP()->GetHTTPResponseHeaderValue(request_handle, header_name.utf8().get_data(), &value_buffer, buffer_size);
+		header_data.resize(buffer_size);
+		SteamHTTP()->GetHTTPResponseHeaderValue(request_handle, header_name.utf8().get_data(), header_data.ptrw(), buffer_size);
 	}
-	return value_buffer;
+	return header_data;
 }
 
 // Gets the body data from a streaming HTTP response.
-uint8 Steam::getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size) {
-	uint8 body_data_buffer = 0;
+PackedByteArray Steam::getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size) {
+	PackedByteArray body_data;
 	if (SteamHTTP() != NULL) {
-		SteamHTTP()->GetHTTPStreamingResponseBodyData(request_handle, offset, &body_data_buffer, buffer_size);
+		body_data.resize(buffer_size);
+		SteamHTTP()->GetHTTPStreamingResponseBodyData(request_handle, offset, body_data.ptrw(), buffer_size);
 	}
-	return body_data_buffer;
+	return body_data;
 }
 
 // Prioritizes a request which has already been sent by moving it at the front of the queue.
@@ -2480,12 +2470,12 @@ bool Steam::setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 t
 }
 
 // Sets the body for an HTTP Post request.
-uint8 Steam::setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, uint32 body_length) {
-	uint8 body = 0;
-	if (SteamHTTP()) {
-		SteamHTTP()->SetHTTPRequestRawPostBody(request_handle, content_type.utf8().get_data(), &body, body_length);
+bool Steam::setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, const String &body) {
+	if (SteamHTTP() == nullptr) {
+		return false;
 	}
-	return body;
+	auto body_utf8 = body.utf8();
+	return SteamHTTP()->SetHTTPRequestRawPostBody(request_handle, content_type.utf8().get_data(), reinterpret_cast<uint8 *>(body_utf8.ptrw()), body_utf8.size());
 }
 
 // Sets that the HTTPS request should require verified SSL certificate via machines certificate trust store. This currently only
@@ -2558,12 +2548,11 @@ Steam::InputActionOrigin Steam::getActionOriginFromXboxOrigin(uint64_t input_han
 Array Steam::getActiveActionSetLayers(uint64_t input_handle) {
 	Array handles;
 	if (SteamInput() != NULL) {
-		InputActionSetHandle_t *out = new InputActionSetHandle_t[INPUT_MAX_COUNT];
+		InputActionSetHandle_t out[INPUT_MAX_COUNT];
 		int ret = SteamInput()->GetActiveActionSetLayers(input_handle, out);
 		for (int i = 0; i < ret; i++) {
-			handles.push_back((int)out[i]);
+			handles.push_back((uint64_t)out[i]);
 		}
-		delete[] out;
 	}
 	return handles;
 }
@@ -2595,12 +2584,11 @@ uint64_t Steam::getAnalogActionHandle(const String &action_name) {
 Array Steam::getAnalogActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t analog_action_handle) {
 	Array list;
 	if (SteamInput() != NULL) {
-		EInputActionOrigin *out = new EInputActionOrigin[STEAM_CONTROLLER_MAX_ORIGINS];
+		EInputActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
 		int ret = SteamInput()->GetAnalogActionOrigins((InputHandle_t)input_handle, (ControllerActionSetHandle_t)action_set_handle, (ControllerAnalogActionHandle_t)analog_action_handle, out);
 		for (int i = 0; i < ret; i++) {
 			list.push_back((int)out[i]);
 		}
-		delete[] out;
 	}
 	return list;
 }
@@ -2609,13 +2597,12 @@ Array Steam::getAnalogActionOrigins(uint64_t input_handle, uint64_t action_set_h
 Array Steam::getConnectedControllers() {
 	Array list;
 	if (SteamInput() != NULL) {
-		InputHandle_t *handles = new InputHandle_t[INPUT_MAX_COUNT];
+		InputHandle_t handles[INPUT_MAX_COUNT];
 		int ret = SteamInput()->GetConnectedControllers(handles);
 		printf("[Steam] Inputs found %d controllers.", ret);
 		for (int i = 0; i < ret; i++) {
 			list.push_back((uint64_t)handles[i]);
 		}
-		delete[] handles;
 	}
 	return list;
 }
@@ -2681,12 +2668,11 @@ uint64_t Steam::getDigitalActionHandle(const String &action_name) {
 Array Steam::getDigitalActionOrigins(uint64_t input_handle, uint64_t action_set_handle, uint64_t digital_action_handle) {
 	Array list;
 	if (SteamInput() != NULL) {
-		EInputActionOrigin *out = new EInputActionOrigin[STEAM_CONTROLLER_MAX_ORIGINS];
+		EInputActionOrigin out[STEAM_CONTROLLER_MAX_ORIGINS];
 		int ret = SteamInput()->GetDigitalActionOrigins((InputHandle_t)input_handle, (ControllerActionSetHandle_t)action_set_handle, (ControllerDigitalActionHandle_t)digital_action_handle, out);
 		for (int i = 0; i < ret; i++) {
 			list.push_back((int)out[i]);
 		}
-		delete[] out;
 	}
 	return list;
 }
@@ -2941,13 +2927,9 @@ void Steam::triggerVibrationExtended(uint64_t input_handle, uint16_t left_speed,
 void Steam::triggerSimpleHapticEvent(uint64_t input_handle, int haptic_location, uint8 intensity, const String &gain_db, uint8 other_intensity, const String &other_gain_db) {
 	if (SteamInput() != NULL) {
 		// Convert the strings over to char
-		char *gain = new char[sizeof(gain_db)];
-		strcpy(gain, gain_db.utf8().get_data());
-		char *other_gain = new char[sizeof(other_gain_db)];
-		strcpy(other_gain, other_gain_db.utf8().get_data());
-		SteamInput()->TriggerSimpleHapticEvent((InputHandle_t)input_handle, (EControllerHapticLocation)haptic_location, intensity, *gain, other_intensity, *other_gain);
-		delete[] gain;
-		delete[] other_gain;
+		char gain = gain_db[0];
+		char other_gain = other_gain_db[0];
+		SteamInput()->TriggerSimpleHapticEvent((InputHandle_t)input_handle, (EControllerHapticLocation)haptic_location, intensity, gain, other_intensity, other_gain);
 	}
 }
 
@@ -3060,7 +3042,7 @@ int32 Steam::consumeItem(uint64_t item_consume, uint32 quantity) {
 int32 Steam::deserializeResult(PackedByteArray buffer) {
 	int32 new_inventory_handle = 0;
 	if (SteamInventory() != NULL) {
-		if (SteamInventory()->DeserializeResult(&new_inventory_handle, &buffer, buffer.size(), false)) {
+		if (SteamInventory()->DeserializeResult(&new_inventory_handle, buffer.ptr(), buffer.size(), false)) {
 			// Update the internally stored handle
 			inventory_handle = new_inventory_handle;
 		}
@@ -3145,11 +3127,10 @@ String Steam::getItemDefinitionProperty(uint32 definition, const String &name) {
 	if (SteamInventory() == NULL) {
 		return "";
 	}
-	uint32 buffer_size = STEAM_BUFFER_SIZE;
-	char *buffer = new char[buffer_size];
+	char buffer[STEAM_BUFFER_SIZE];
+	uint32 buffer_size = std::size(buffer);
 	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), buffer, &buffer_size);
 	String property = String::utf8(buffer, buffer_size);
-	delete[] buffer;
 	return property;
 }
 
@@ -3220,16 +3201,14 @@ Array Steam::getItemsWithPrices() {
 String Steam::getResultItemProperty(uint32 index, const String &name, int32 this_inventory_handle) {
 	if (SteamInventory() != NULL) {
 		// Set up variables to fill
-		uint32 buffer_size = 256;
-		char *value = new char[buffer_size];
+		char value[256];
+		uint32 buffer_size = std::size(value);
 		// If no inventory handle is passed, use internal one
 		if (this_inventory_handle == 0) {
 			this_inventory_handle = inventory_handle;
 		}
-		SteamInventory()->GetResultItemProperty((SteamInventoryResult_t)this_inventory_handle, index, name.utf8().get_data(), (char *)value, &buffer_size);
-		String property = value;
-		delete[] value;
-		return property;
+		SteamInventory()->GetResultItemProperty((SteamInventoryResult_t)this_inventory_handle, index, name.utf8().get_data(), value, &buffer_size);
+		return String::utf8(value, buffer_size);
 	}
 	return "";
 }
@@ -3328,20 +3307,21 @@ void Steam::requestPrices() {
 }
 
 // Serialized result sets contain a short signature which can't be forged or replayed across different game sessions.
-String Steam::serializeResult(int32 this_inventory_handle) {
-	String result_serialized;
+PackedByteArray Steam::serializeResult(int32 this_inventory_handle) {
+	PackedByteArray result_serialized;
 	if (SteamInventory() != NULL) {
 		// If no inventory handle is passed, use internal one
 		if (this_inventory_handle == 0) {
 			this_inventory_handle = inventory_handle;
 		}
-		// Set up return array
+		// Set up return buffer
 		uint32 buffer_size = STEAM_BUFFER_SIZE;
-		char *buffer = new char[buffer_size];
-		if (SteamInventory()->SerializeResult((SteamInventoryResult_t)this_inventory_handle, buffer, &buffer_size)) {
-			result_serialized = String::utf8(buffer, buffer_size);
+		PackedByteArray buffer;
+		buffer.resize(buffer_size);
+		if (SteamInventory()->SerializeResult((SteamInventoryResult_t)this_inventory_handle, buffer.ptrw(), &buffer_size)) {
+			buffer.resize(buffer_size);
+			result_serialized = buffer;
 		}
-		delete[] buffer;
 	}
 	return result_serialized;
 }
@@ -3854,8 +3834,7 @@ Dictionary Steam::getServerDetails(int server, uint64_t this_server_list_request
 		if (this_server_list_request == 0) {
 			this_server_list_request = (uint64)server_list_request;
 		}
-		gameserveritem_t *server_item = new gameserveritem_t();
-		server_item = SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
+		gameserveritem_t *server_item = SteamMatchmakingServers()->GetServerDetails((HServerListRequest)this_server_list_request, server);
 		// Populate the dictionary
 		game_server = gameServerItemToDictionary(server_item);
 	}
@@ -3928,34 +3907,30 @@ void Steam::releaseRequest(uint64_t this_server_list_request) {
 	}
 }
 
+// Convert an array of filters to a contiguous vector.
+static std::vector<MatchMakingKeyValuePair_t> filtersArrayToVector(const Array &filters) {
+	uint32 filter_size = filters.size();
+	std::vector<MatchMakingKeyValuePair_t> filters_array(filter_size);
+	for (uint32 i = 0; i < filter_size; i++) {
+		// Get the key/value pair
+		Array pair = filters[i];
+		// Get the key from the filter pair
+		String key = pair[0];
+		// Get the value from the filter pair
+		String value = pair[1];
+		// Create a new filter pair to populate
+		filters_array[i] = MatchMakingKeyValuePair_t(key.utf8(), value.utf8());
+	}
+	return filters_array;
+}
+
 // Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
 uint64_t Steam::requestFavoritesServerList(uint32 app_id, Array filters) {
 	server_list_request = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		uint32 filter_size = filters.size();
-		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
-		for (uint32 i = 0; i < filter_size; i++) {
-			// Get the key/value pair
-			Array pair = filters[i];
-
-			// Get the key from the filter pair
-			String key = (String)pair[0];
-			char *this_key = new char[256];
-			strcpy(this_key, key.utf8().get_data());
-
-			// Get the value from the filter pair
-			String value = pair[1];
-			char *this_value = new char[256];
-			strcpy(this_value, value.utf8().get_data());
-
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
-			delete [] this_key;
-			delete [] this_value;
-			filters_array[i] = *filter_array;
-		}
-		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
-		delete[] filters_array;
+		auto filters_storage = filtersArrayToVector(filters);
+		MatchMakingKeyValuePair_t *filters_array = filters_storage.data();
+		server_list_request = SteamMatchmakingServers()->RequestFavoritesServerList((AppId_t)app_id, &filters_array, filters_storage.size(), server_list_response);
 	}
 	return (uint64)server_list_request;
 }
@@ -3964,30 +3939,9 @@ uint64_t Steam::requestFavoritesServerList(uint32 app_id, Array filters) {
 uint64_t Steam::requestFriendsServerList(uint32 app_id, Array filters) {
 	server_list_request = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		uint32 filter_size = filters.size();
-		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
-		for (uint32 i = 0; i < filter_size; i++) {
-			// Get the key/value pair
-			Array pair = filters[i];
-
-			// Get the key from the filter pair
-			String key = (String)pair[0];
-			char *this_key = new char[256];
-			strcpy(this_key, key.utf8().get_data());
-
-			// Get the value from the filter pair
-			String value = pair[1];
-			char *this_value = new char[256];
-			strcpy(this_value, value.utf8().get_data());
-
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
-			delete [] this_key;
-			delete [] this_value;
-			filters_array[i] = *filter_array;
-		}
-		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
-		delete[] filters_array;
+		auto filters_storage = filtersArrayToVector(filters);
+		MatchMakingKeyValuePair_t *filters_array = filters_storage.data();
+		server_list_request = SteamMatchmakingServers()->RequestFriendsServerList((AppId_t)app_id, &filters_array, filters_storage.size(), server_list_response);
 	}
 	return (uint64)server_list_request;
 }
@@ -3996,30 +3950,9 @@ uint64_t Steam::requestFriendsServerList(uint32 app_id, Array filters) {
 uint64_t Steam::requestHistoryServerList(uint32 app_id, Array filters) {
 	server_list_request = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		uint32 filter_size = filters.size();
-		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
-		for (uint32 i = 0; i < filter_size; i++) {
-			// Get the key/value pair
-			Array pair = filters[i];
-
-			// Get the key from the filter pair
-			String key = (String)pair[0];
-			char *this_key = new char[256];
-			strcpy(this_key, key.utf8().get_data());
-
-			// Get the value from the filter pair
-			String value = pair[1];
-			char *this_value = new char[256];
-			strcpy(this_value, value.utf8().get_data());
-
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
-			delete [] this_key;
-			delete [] this_value;
-			filters_array[i] = *filter_array;
-		}
-		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
-		delete[] filters_array;
+		auto filters_storage = filtersArrayToVector(filters);
+		MatchMakingKeyValuePair_t *filters_array = filters_storage.data();
+		server_list_request = SteamMatchmakingServers()->RequestHistoryServerList((AppId_t)app_id, &filters_array, filters_storage.size(), server_list_response);
 	}
 	return (uint64)server_list_request;
 }
@@ -4028,30 +3961,9 @@ uint64_t Steam::requestHistoryServerList(uint32 app_id, Array filters) {
 uint64_t Steam::requestInternetServerList(uint32 app_id, Array filters) {
 	server_list_request = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		uint32 filter_size = filters.size();
-		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
-		for (uint32 i = 0; i < filter_size; i++) {
-			// Get the key/value pair
-			Array pair = filters[i];
-
-			// Get the key from the filter pair
-			String key = (String)pair[0];
-			char *this_key = new char[256];
-			strcpy(this_key, key.utf8().get_data());
-
-			// Get the value from the filter pair
-			String value = pair[1];
-			char *this_value = new char[256];
-			strcpy(this_value, value.utf8().get_data());
-
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
-			delete [] this_key;
-			delete [] this_value;
-			filters_array[i] = *filter_array;
-		}
-		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
-		delete[] filters_array;
+		auto filters_storage = filtersArrayToVector(filters);
+		MatchMakingKeyValuePair_t *filters_array = filters_storage.data();
+		server_list_request = SteamMatchmakingServers()->RequestInternetServerList((AppId_t)app_id, &filters_array, filters_storage.size(), server_list_response);
 	}
 	return (uint64)server_list_request;
 }
@@ -4069,30 +3981,9 @@ uint64_t Steam::requestLANServerList(uint32 app_id) {
 uint64_t Steam::requestSpectatorServerList(uint32 app_id, Array filters) {
 	server_list_request = 0;
 	if (SteamMatchmakingServers() != NULL) {
-		uint32 filter_size = filters.size();
-		MatchMakingKeyValuePair_t *filters_array = new MatchMakingKeyValuePair_t[filter_size];
-		for (uint32 i = 0; i < filter_size; i++) {
-			// Get the key/value pair
-			Array pair = filters[i];
-
-			// Get the key from the filter pair
-			String key = (String)pair[0];
-			char *this_key = new char[256];
-			strcpy(this_key, key.utf8().get_data());
-
-			// Get the value from the filter pair
-			String value = pair[1];
-			char *this_value = new char[256];
-			strcpy(this_value, value.utf8().get_data());
-
-			// Create a new filter pair to populate
-			MatchMakingKeyValuePair_t *filter_array = new MatchMakingKeyValuePair_t(this_key, this_value);
-			delete [] this_key;
-			delete [] this_value;
-			filters_array[i] = *filter_array;
-		}
-		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filter_size, server_list_response);
-		delete[] filters_array;
+		auto filters_storage = filtersArrayToVector(filters);
+		MatchMakingKeyValuePair_t *filters_array = filters_storage.data();
+		server_list_request = SteamMatchmakingServers()->RequestSpectatorServerList((AppId_t)app_id, &filters_array, filters_storage.size(), server_list_response);
 	}
 	return (uint64)server_list_request;
 }
@@ -4943,7 +4834,7 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle) {
 Dictionary Steam::getDetailedConnectionStatus(uint32 connection) {
 	Dictionary connectionStatus;
 	if (SteamNetworkingSockets() != NULL) {
-		char buffer[STEAM_LARGE_BUFFER_SIZE];
+		char buffer[STEAM_LARGE_BUFFER_SIZE]{};
 		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
 		// Add data to dictionary
 		connectionStatus["success"] = success;
@@ -5139,9 +5030,9 @@ Dictionary Steam::getConnectionRealTimeStatus(uint32 connection, int lanes, bool
 				lane_status["queue_time"] = (uint64_t)lanes_array[i].m_usecQueueTime;
 				lanes_status.append(lane_status);
 			}
-			delete[] lanes_array;
 			real_time_status["lanes_status"] = lanes_status;
 		}
+		delete[] lanes_array;
 	}
 	return real_time_status;
 }
@@ -5175,15 +5066,15 @@ int Steam::configureConnectionLanes(uint32 connection, int lanes, Array prioriti
 Dictionary Steam::getCertificateRequest() {
 	Dictionary cert_information;
 	if (SteamNetworkingSockets() != NULL) {
-		int *certificate = new int[512];
-		int cert_size = 0;
+		PackedByteArray certificate;
+		certificate.resize(512);
+		int cert_size = certificate.size();
 		SteamNetworkingErrMsg error_message;
-		if (SteamNetworkingSockets()->GetCertificateRequest(&cert_size, &certificate, error_message)) {
+		if (SteamNetworkingSockets()->GetCertificateRequest(&cert_size, certificate.ptrw(), error_message)) {
+			certificate.resize(cert_size);
 			cert_information["certificate"] = certificate;
-			cert_information["cert_size"] = cert_size;
 			cert_information["error_message"] = error_message;
 		}
-		delete[] certificate;
 	}
 	return cert_information;
 }
@@ -5247,9 +5138,10 @@ Dictionary Steam::getFakeIP(int first_port) {
 		fake_ip["result"] = fake_ip_result.m_eResult;
 		fake_ip["identity_type"] = fake_ip_result.m_identity.m_eType;
 		fake_ip["ip"] = getStringFromIP(fake_ip_result.m_unIP);
-		char ports[8];
-		for (size_t i = 0; i < sizeof(fake_ip_result.m_unPorts) / sizeof(fake_ip_result.m_unPorts[0]); i++) {
-			ports[i] = fake_ip_result.m_unPorts[i];
+		PackedInt32Array ports;
+		ports.resize(SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts);
+		for (size_t i = 0; i < SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts; i++) {
+			ports.write[i] = fake_ip_result.m_unPorts[i];
 		}
 		fake_ip["ports"] = ports;
 	}
@@ -5376,16 +5268,15 @@ int Steam::estimatePingTimeFromLocalHost(PackedByteArray location) {
 String Steam::convertPingLocationToString(PackedByteArray location) {
 	String location_string = "";
 	if (SteamNetworkingUtils() != NULL) {
-		char *buffer = new char[512];
 		// Add this location to ping struct
 		SteamNetworkPingLocation_t ping_location;
 		uint8_t *input_location = (uint8 *)location.ptr();
 		for (int j = 0; j < 512; j++) {
 			ping_location.m_data[j] = input_location[j];
 		}
+		char buffer[512 + 1]{};
 		SteamNetworkingUtils()->ConvertPingLocationToString(ping_location, buffer, k_cchMaxSteamNetworkingPingLocationString);
 		location_string += buffer;
-		delete[] buffer;
 	}
 	return location_string;
 }
@@ -5450,14 +5341,13 @@ int Steam::getPOPCount() {
 Array Steam::getPOPList() {
 	Array pop_list;
 	if (SteamNetworkingUtils() != NULL) {
-		SteamNetworkingPOPID *list = new SteamNetworkingPOPID[256];
+		SteamNetworkingPOPID list[256];
 		int pops = SteamNetworkingUtils()->GetPOPList(list, 256);
 		// Iterate and add
 		for (int i = 0; i < pops; i++) {
 			int pop_id = list[i];
 			pop_list.append(pop_id);
 		}
-		delete[] list;
 	}
 	return pop_list;
 }
@@ -5613,7 +5503,7 @@ Array Steam::getAvailableBeaconLocations(uint32 max) {
 	}
 	Array beaconLocations;
 	uint32 locations = 0;
-	SteamPartyBeaconLocation_t *beacons = new SteamPartyBeaconLocation_t[256];
+	SteamPartyBeaconLocation_t beacons[256];
 	if (SteamParties()->GetNumAvailableBeaconLocations(&locations)) {
 		// If max is lower than locations, set it to locations
 		if (max < locations) {
@@ -5629,7 +5519,6 @@ Array Steam::getAvailableBeaconLocations(uint32 max) {
 			}
 		}
 	}
-	delete[] beacons;
 	return beaconLocations;
 }
 
@@ -5638,12 +5527,11 @@ Array Steam::getAvailableBeaconLocations(uint32 max) {
 void Steam::createBeacon(uint32 open_slots, uint64_t location, PartyBeaconLocationType type, const String &connect_string, const String &beacon_metadata) {
 	if (SteamParties() != NULL) {
 		// Add data to the beacon location struct
-		SteamPartyBeaconLocation_t *beacon_data = new SteamPartyBeaconLocation_t;
-		beacon_data->m_eType = (ESteamPartyBeaconLocationType)type;
-		beacon_data->m_ulLocationID = location;
-		SteamAPICall_t api_call = SteamParties()->CreateBeacon(open_slots, beacon_data, connect_string.utf8().get_data(), beacon_metadata.utf8().get_data());
+		SteamPartyBeaconLocation_t beacon_data;
+		beacon_data.m_eType = (ESteamPartyBeaconLocationType)type;
+		beacon_data.m_ulLocationID = location;
+		SteamAPICall_t api_call = SteamParties()->CreateBeacon(open_slots, &beacon_data, connect_string.utf8().get_data(), beacon_metadata.utf8().get_data());
 		callResultCreateBeacon.Set(api_call, this, &Steam::create_beacon);
-		delete beacon_data;
 	}
 }
 
@@ -5739,16 +5627,14 @@ void Steam::joinParty(uint64_t beacon_id) {
 String Steam::getBeaconLocationData(uint64_t location_id, PartyBeaconLocationType location_type, PartyBeaconLocationData location_data) {
 	String beacon_location_data = "";
 	if (SteamParties() != NULL) {
-		char *beacon_data = new char[2048];
+		char beacon_data[2048 + 1]{};
 		// Add data to SteamPartyBeaconLocation struct
-		SteamPartyBeaconLocation_t *beacon = new SteamPartyBeaconLocation_t;
-		beacon->m_eType = (ESteamPartyBeaconLocationType)location_type;
-		beacon->m_ulLocationID = location_id;
-		if (SteamParties()->GetBeaconLocationData(*beacon, (ESteamPartyBeaconLocationData)location_data, (char *)beacon_data, 2048)) {
+		SteamPartyBeaconLocation_t beacon;
+		beacon.m_eType = (ESteamPartyBeaconLocationType)location_type;
+		beacon.m_ulLocationID = location_id;
+		if (SteamParties()->GetBeaconLocationData(beacon, (ESteamPartyBeaconLocationData)location_data, beacon_data, 2048)) {
 			beacon_location_data = beacon_data;
 		}
-		delete[] beacon_data;
-		delete beacon;
 	}
 	return beacon_location_data;
 }
@@ -6425,28 +6311,28 @@ bool Steam::addRequiredTagGroup(uint64_t query_handle, Array tag_array) {
 	bool added_tag_group = false;
 	if (SteamUGC() != NULL) {
 		UGCQueryHandle_t handle = uint64(query_handle);
-		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
-		tags->m_ppStrings = new const char *[tag_array.size()];
+		std::vector<CharString> string_store(tag_array.size());
+		std::vector<const char *> strings(tag_array.size());
 		uint32 str_count = tag_array.size();
 		for (uint32 i = 0; i < str_count; i++) {
-			String str = (String)tag_array[i];
-			tags->m_ppStrings[i] = str.utf8().get_data();
+			String str = tag_array[i];
+			string_store[i] = str.utf8();
+			strings[i] = string_store[i].get_data();
 		}
-		tags->m_nNumStrings = tag_array.size();
-		added_tag_group = SteamUGC()->AddRequiredTagGroup(handle, tags);
-		delete tags;
+		SteamParamStringArray_t tag;
+		tag.m_nNumStrings = strings.size();
+		tag.m_ppStrings = strings.data();
+		added_tag_group = SteamUGC()->AddRequiredTagGroup(handle, &tag);
 	}
 	return added_tag_group;
 }
 
 // Lets game servers set a specific workshop folder before issuing any UGC commands.
-bool Steam::initWorkshopForGameServer(uint32_t workshop_depot_id) {
+bool Steam::initWorkshopForGameServer(uint32_t workshop_depot_id, String folder) {
 	bool initialized_workshop = false;
 	if (SteamUGC() != NULL) {
 		DepotId_t workshop = (uint32_t)workshop_depot_id;
-		const char *folder = new char[256];
-		initialized_workshop = SteamUGC()->BInitWorkshopForGameServer(workshop, (char *)folder);
-		delete[] folder;
+		initialized_workshop = SteamUGC()->BInitWorkshopForGameServer(workshop, folder.utf8());
 	}
 	return initialized_workshop;
 }
@@ -6552,9 +6438,8 @@ Dictionary Steam::getItemInstallInfo(uint64_t published_file_id) {
 	uint32 timeStamp;
 	info["ret"] = SteamUGC()->GetItemInstallInfo((PublishedFileId_t)file_id, &sizeOnDisk, folder, sizeof(folder), &timeStamp);
 	if (info["ret"]) {
-		info["size"] = (int)sizeOnDisk;
+		info["size"] = (uint64_t)sizeOnDisk;
 		info["folder"] = folder;
-		info["foldersize"] = (uint32)sizeof(folder);
 		info["timestamp"] = timeStamp;
 	}
 	return info;
@@ -6610,10 +6495,10 @@ Dictionary Steam::getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 ind
 		return preview;
 	}
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
-	char *url_or_video_id = new char[256];
-	char *original_filename = new char[256];
+	char url_or_video_id[256 + 1]{};
+	char original_filename[256 + 1]{};
 	EItemPreviewType previewType;
-	bool success = SteamUGC()->GetQueryUGCAdditionalPreview(handle, index, preview_index, (char *)url_or_video_id, 256, (char *)original_filename, 256, &previewType);
+	bool success = SteamUGC()->GetQueryUGCAdditionalPreview(handle, index, preview_index, url_or_video_id, 256, original_filename, 256, &previewType);
 	if (success) {
 		preview["success"] = success;
 		preview["handle"] = (uint64_t)handle;
@@ -6623,8 +6508,6 @@ Dictionary Steam::getQueryUGCAdditionalPreview(uint64_t query_handle, uint32 ind
 		preview["filename"] = original_filename;
 		preview["type"] = previewType;
 	}
-	delete[] url_or_video_id;
-	delete[] original_filename;
 	return preview;
 }
 
@@ -6681,9 +6564,9 @@ Dictionary Steam::getQueryUGCKeyValueTag(uint64_t query_handle, uint32 index, ui
 		return tag;
 	}
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
-	char *key = new char[256];
-	char *value = new char[256];
-	bool success = SteamUGC()->GetQueryUGCKeyValueTag(handle, index, key_value_tag_index, (char *)key, 256, (char *)value, 256);
+	char key[256 + 1]{};
+	char value[256 + 1]{};
+	bool success = SteamUGC()->GetQueryUGCKeyValueTag(handle, index, key_value_tag_index, key, 256, value, 256);
 	if (success) {
 		tag["success"] = success;
 		tag["handle"] = (uint64_t)handle;
@@ -6692,8 +6575,6 @@ Dictionary Steam::getQueryUGCKeyValueTag(uint64_t query_handle, uint32 index, ui
 		tag["key"] = key;
 		tag["value"] = value;
 	}
-	delete[] key;
-	delete[] value;
 	return tag;
 }
 
@@ -6702,12 +6583,11 @@ String Steam::getQueryUGCMetadata(uint64_t query_handle, uint32 index) {
 	String query_ugc_metadata = "";
 	if (SteamUGC() != NULL) {
 		UGCQueryHandle_t handle = (uint64_t)query_handle;
-		char *ugc_metadata = new char[5000];
-		bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, (char *)ugc_metadata, 5000);
+		char ugc_metadata[5000 + 1]{};
+		bool success = SteamUGC()->GetQueryUGCMetadata(handle, index, ugc_metadata, 5000);
 		if (success) {
 			query_ugc_metadata = ugc_metadata;
 		}
-		delete[] ugc_metadata;
 	}
 	return query_ugc_metadata;
 }
@@ -6745,12 +6625,11 @@ String Steam::getQueryUGCPreviewURL(uint64_t query_handle, uint32 index) {
 	String query_ugc_preview_url = "";
 	if (SteamUGC() != NULL) {
 		UGCQueryHandle_t handle = (uint64_t)query_handle;
-		char *url = new char[256];
-		bool success = SteamUGC()->GetQueryUGCPreviewURL(handle, index, (char *)url, 256);
+		char url[256 + 1]{};
+		bool success = SteamUGC()->GetQueryUGCPreviewURL(handle, index, url, 256);
 		if (success) {
 			query_ugc_preview_url = url;
 		}
-		delete[] url;
 	}
 	return query_ugc_preview_url;
 }
@@ -6822,13 +6701,10 @@ String Steam::getQueryUGCTag(uint64_t query_handle, uint32 index, uint32 tag_ind
 		return "";
 	}
 	// Set a default tag to return
-	char *tag = new char[64];
+	char tag[64 + 1]{};
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	SteamUGC()->GetQueryUGCTag(handle, index, tag_index, tag, 64);
-	tag[63] = '\0';
-	String tag_name = tag;
-	delete[] tag;
-	return tag_name;
+	return tag;
 }
 
 // Retrieve the "nth" display string (usually localized) for a tag, which is associated with an individual workshop item after
@@ -6839,13 +6715,10 @@ String Steam::getQueryUGCTagDisplayName(uint64_t query_handle, uint32 index, uin
 		return "";
 	}
 	// Set a default tag name to return
-	char *tag = new char[256];
+	char tag[256 + 1]{};
 	UGCQueryHandle_t handle = (uint64_t)query_handle;
 	SteamUGC()->GetQueryUGCTagDisplayName(handle, index, tag_index, tag, 256);
-	tag[255] = '\0';
-	String tagDisplay = tag;
-	delete[] tag;
-	return tagDisplay;
+	return tag;
 }
 
 // Gets a list of all of the items the current user is subscribed to for the current game.
@@ -6891,6 +6764,7 @@ Array Steam::getUserContentDescriptorPreferences(uint32 max_entries) {
 		for (uint32 i = 0; i < num_descriptors; i++) {
 			descriptors.append(descriptor_list[i]);
 		}
+		delete descriptor_list;
 	}
 	return descriptors;
 }
@@ -7054,16 +6928,18 @@ bool Steam::setItemTags(uint64_t update_handle, Array tag_array, bool allow_admi
 	bool tags_set = false;
 	if (SteamUGC() != NULL) {
 		UGCUpdateHandle_t handle = uint64(update_handle);
-		SteamParamStringArray_t *tags = new SteamParamStringArray_t();
-		tags->m_ppStrings = new const char *[tag_array.size()];
-		uint32 strCount = tag_array.size();
-		for (uint32 i = 0; i < strCount; i++) {
-			String str = (String)tag_array[i];
-			tags->m_ppStrings[i] = str.utf8().get_data();
+		std::vector<CharString> string_store(tag_array.size());
+		std::vector<const char *> strings(tag_array.size());
+		uint32 str_count = tag_array.size();
+		for (uint32 i = 0; i < str_count; i++) {
+			String str = tag_array[i];
+			string_store[i] = str.utf8();
+			strings[i] = string_store[i].get_data();
 		}
-		tags->m_nNumStrings = tag_array.size();
-		tags_set = SteamUGC()->SetItemTags(handle, tags, allow_admin_tags);
-		delete tags;
+		SteamParamStringArray_t tag;
+		tag.m_nNumStrings = strings.size();
+		tag.m_ppStrings = strings.data();
+		tags_set = SteamUGC()->SetItemTags(handle, &tag, allow_admin_tags);
 	}
 	return tags_set;
 }
@@ -7409,16 +7285,16 @@ void Steam::cancelAuthTicket(uint32_t auth_ticket) {
 }
 
 // Decodes the compressed voice data returned by GetVoice.
-Dictionary Steam::decompressVoice(const PackedByteArray &voice, uint32 voice_size, uint32 sample_rate) {
+Dictionary Steam::decompressVoice(const PackedByteArray &voice, uint32 sample_rate) {
 	Dictionary decompressed;
 	if (SteamUser() != NULL) {
 		uint32 written = 0;
 		PackedByteArray outputBuffer;
 		outputBuffer.resize(20480); // 20KiB buffer
-		int result = SteamUser()->DecompressVoice(voice.ptr(), voice_size, outputBuffer.ptrw(), outputBuffer.size(), &written, sample_rate);
+		int result = SteamUser()->DecompressVoice(voice.ptr(), voice.size(), outputBuffer.ptrw(), outputBuffer.size(), &written, sample_rate);
 		if (result == 0) {
+			outputBuffer.resize(written);
 			decompressed["uncompressed"] = outputBuffer;
-			decompressed["size"] = written;
 		}
 		decompressed["result"] = result; // Include result for debugging
 	}
@@ -7545,7 +7421,6 @@ Dictionary Steam::getVoice() {
 		buffer.resize(written);
 		// Add the data to the dictionary
 		voice_data["result"] = result;
-		voice_data["written"] = written;
 		voice_data["buffer"] = buffer;
 	}
 	return voice_data;
@@ -7629,7 +7504,8 @@ bool Steam::loggedOn() {
 // Requests an application ticket encrypted with the secret "encrypted app ticket key".
 void Steam::requestEncryptedAppTicket(const String &secret) {
 	if (SteamUser() != NULL) {
-		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket((void *)secret.utf8().get_data(), sizeof(&secret));
+		auto secret_utf8 = secret.utf8();
+		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket(secret_utf8.get_data(), secret_utf8.size());
 		callResultEncryptedAppTicketResponse.Set(api_call, this, &Steam::encrypted_app_ticket_response);
 	}
 }
@@ -7880,22 +7756,31 @@ double Steam::getGlobalStatFloat(const String &name) {
 }
 
 // Gets the daily history for an aggregated stat; int.
-uint64_t Steam::getGlobalStatIntHistory(const String &name) {
+PackedInt64Array Steam::getGlobalStatIntHistory(const String &name) {
 	if (SteamUserStats() == NULL) {
-		return 0;
+		return PackedInt64Array();
 	}
-	int64 history = 0;
-	SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), &history, 60);
-	return (uint64_t)history;
+	using Int64 = int64_t;
+	PackedInt64Array history;
+	history.resize(60);
+	// Godot's Int64 typedef isn't exactly the same as Steam's int64, so we have to cast here.
+	static_assert(sizeof(int64) == sizeof(Int64), "Both int64's should be the same size");
+	auto *history_ptr = reinterpret_cast<int64*>(history.ptrw());
+	const int32 elems_set = SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), history_ptr, history.size() * sizeof(Int64));
+	history.resize(elems_set);
+	return history;
 }
 
 // Gets the daily history for an aggregated stat; float / double.
-double Steam::getGlobalStatFloatHistory(const String &name) {
+PackedFloat64Array Steam::getGlobalStatFloatHistory(const String &name) {
 	if (SteamUserStats() == NULL) {
-		return 0;
+		return PackedFloat64Array();
 	}
-	double history = 0;
-	SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), &history, 60);
+	using Float64 = double;
+	PackedFloat64Array history;
+	history.resize(60);
+	const int32 elems_set = SteamUserStats()->GetGlobalStatHistory(name.utf8().get_data(), history.ptrw(), history.size() * sizeof(Float64));
+	history.resize(elems_set);
 	return history;
 }
 
@@ -7988,7 +7873,7 @@ Dictionary Steam::getMostAchievedAchievementInfo() {
 	if (SteamUserStats() == NULL) {
 		return entry;
 	}
-	char *name = new char[64];
+	char name[64 + 1]{};
 	float percent = 0;
 	bool achieved = false;
 	// Get the data from Steam
@@ -7999,7 +7884,6 @@ Dictionary Steam::getMostAchievedAchievementInfo() {
 		entry["percent"] = percent;
 		entry["achieved"] = achieved;
 	}
-	delete[] name;
 	return entry;
 }
 
@@ -8009,7 +7893,7 @@ Dictionary Steam::getNextMostAchievedAchievementInfo(int iterator) {
 	if (SteamUserStats() == NULL) {
 		return entry;
 	}
-	char *name = new char[64];
+	char name[64 + 1]{};
 	float percent = 0;
 	bool achieved = false;
 	// Get the data from Steam
@@ -8020,7 +7904,6 @@ Dictionary Steam::getNextMostAchievedAchievementInfo(int iterator) {
 		entry["percent"] = percent;
 		entry["achieved"] = achieved;
 	}
-	delete[] name;
 	return entry;
 }
 
@@ -8266,7 +8149,7 @@ String Steam::filterText(TextFilteringContext context, uint64_t steam_id, const 
 	String new_message = "";
 	if (SteamUtils() != NULL) {
 		auto utf8_input = message.utf8();
-		char *filtered = new char[utf8_input.length() + 1];
+		char *filtered = new char[utf8_input.length() + 1]{};
 		CSteamID source_id = (uint64)steam_id;
 		SteamUtils()->FilterText((ETextFilteringContext)context, source_id, utf8_input.get_data(), filtered, utf8_input.length() + 1);
 		new_message = filtered;
@@ -8566,7 +8449,7 @@ String Steam::getOPFStringForApp(uint32_t app_id) {
 	String opf_string = "";
 	if (SteamVideo() != NULL) {
 		int32 size = 48000;
-		char *buffer = new char[size];
+		char *buffer = new char[size]{};
 		if (SteamVideo()->GetOPFStringForApp((AppId_t)app_id, buffer, &size)) {
 			opf_string = buffer;
 		}
@@ -8614,10 +8497,8 @@ void Steam::file_details_result(FileDetailsResult_t *file_data) {
 	uint32_t result = file_data->m_eResult;
 	uint64_t file_size = file_data->m_ulFileSize;
 	uint32_t flags = file_data->m_unFlags;
-	uint8 *file_hash = new uint8[20];
-	file_hash = file_data->m_FileSHA;
+	uint8 *file_hash = file_data->m_FileSHA;
 	emit_signal("file_details_result", result, file_size, file_hash, flags);
-	delete[] file_hash;
 }
 
 // Posted after the user executes a steam url with command line or query parameters such as
@@ -8716,7 +8597,7 @@ void Steam::connected_chat_leave(GameConnectedChatLeave_t *call_data) {
 // Called when a chat message has been received in a Steam group chat that we are in.
 void Steam::connected_clan_chat_message(GameConnectedClanChatMsg_t *call_data) {
 	Dictionary chat;
-	char text[2048];
+	char text[2048]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	CSteamID user_id;
 	chat["ret"] = SteamFriends()->GetClanChatMessage(call_data->m_steamIDClanChat, call_data->m_iMessageID, text, 2048, &type, &user_id);
@@ -8731,7 +8612,7 @@ void Steam::connected_friend_chat_message(GameConnectedFriendChatMsg_t *call_dat
 	uint64_t steam_id = call_data->m_steamIDUser.ConvertToUint64();
 	int message = call_data->m_iMessageID;
 	Dictionary chat;
-	char text[2048];
+	char text[2048]{};
 	EChatEntryType type = k_EChatEntryTypeInvalid;
 	chat["ret"] = SteamFriends()->GetFriendMessage(createSteamID(steam_id), message, text, 2048, &type);
 	chat["text"] = String(text);
@@ -9567,11 +9448,10 @@ void Steam::network_authentication_status(SteamNetAuthenticationStatus_t *call_d
 	// Status.
 	int available = call_data->m_eAvail;
 	// Non-localized English language status. For diagnostic / debugging purposes only.
-	char *debug_message = new char[256];
+	char debug_message[256 + 1]{};
 	snprintf(debug_message, 256, "%s", call_data->m_debugMsg);
 	// Send the data back via signal
 	emit_signal("network_authentication_status", available, debug_message);
-	delete[] debug_message;
 }
 
 // A struct used to describe a "fake IP" we have been assigned to use as an identifier.
@@ -9580,10 +9460,10 @@ void Steam::fake_ip_result(SteamNetworkingFakeIPResult_t *call_data) {
 	int result = call_data->m_eResult;
 	uint32 fake_ip = call_data->m_unIP;
 	// Get the ports as an array
-	Array port_list;
-	uint16 *ports = call_data->m_unPorts;
-	for (uint16 i = 0; i < sizeof(ports); i++) {
-		port_list.append(ports[i]);
+	PackedInt32Array port_list;
+	port_list.resize(SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts);
+	for (uint16 i = 0; i < SteamNetworkingFakeIPResult_t::k_nMaxReturnPorts; i++) {
+		port_list.write[i] = call_data->m_unPorts[i];
 	}
 	emit_signal("fake_ip_result", result, getSteamIDFromIdentity(call_data->m_identity), getStringFromIP(fake_ip), port_list);
 }
@@ -9598,11 +9478,10 @@ void Steam::relay_network_status(SteamRelayNetworkStatus_t *call_data) {
 	int ping_measurement = call_data->m_bPingMeasurementInProgress;
 	int available_config = call_data->m_eAvailNetworkConfig;
 	int available_relay = call_data->m_eAvailAnyRelay;
-	char *debug_message = new char[256];
+	char debug_message[256 + 1]{};
 	snprintf(debug_message, 256, "%s", call_data->m_debugMsg);
 	//	debug_message = call_data->m_debugMsg;
 	emit_signal("relay_network_status", available, ping_measurement, available_config, available_relay, debug_message);
-	delete[] debug_message;
 }
 
 
@@ -9855,16 +9734,15 @@ void Steam::user_stats_unloaded(UserStatsUnloaded_t *call_data) {
 // Called when the big picture gamepad text input has been closed.
 void Steam::gamepad_text_input_dismissed(GamepadTextInputDismissed_t *call_data) {
 	bool was_submitted = call_data->m_bSubmitted;
-	const uint32 buffer_length = 1024 + 1;
-	char *text = new char[buffer_length];
-	uint32 length = buffer_length;
+	const uint32 buffer_length = 1024;
+	char text[buffer_length + 1]{};
+	uint32 length = 0;
 	uint32_t app_id = call_data->m_unAppID;
 	if (was_submitted) {
 		SteamUtils()->GetEnteredGamepadTextInput(text, buffer_length);
 		length = SteamUtils()->GetEnteredGamepadTextLength();
 	}
 	emit_signal("gamepad_text_input_dismissed", was_submitted, String::utf8(text, (int)length), app_id);
-	delete[] text;
 }
 
 // Called when the country of the user changed. The country should be updated with getIPCountry.
@@ -10255,8 +10133,7 @@ void Steam::file_share_result(RemoteStorageFileShareResult_t *call_data, bool io
 	else {
 		int result = call_data->m_eResult;
 		uint64_t handle = call_data->m_hFile;
-		char name[k_cchFilenameMax];
-		strcpy(name, call_data->m_rgchFilename);
+		const char *name = call_data->m_rgchFilename;
 		emit_signal("file_share_result", result, handle, name);
 	}
 }
@@ -10282,8 +10159,7 @@ void Steam::download_ugc_result(RemoteStorageDownloadUGCResult_t *call_data, boo
 		uint64_t handle = call_data->m_hFile;
 		uint32_t app_id = call_data->m_nAppID;
 		int32 size = call_data->m_nSizeInBytes;
-		char filename[k_cchFilenameMax];
-		strcpy(filename, call_data->m_pchFileName);
+		const char *filename = call_data->m_pchFileName;
 		uint64_t owner_id = call_data->m_ulSteamIDOwner;
 		// Pass some variable to download dictionary to bypass argument limit
 		Dictionary download_data;
@@ -11023,7 +10899,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setHTTPRequestGetOrPostParameter", "request_handle", "name", "value"), &Steam::setHTTPRequestGetOrPostParameter);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestHeaderValue", "request_handle", "header_name", "header_value"), &Steam::setHTTPRequestHeaderValue);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestNetworkActivityTimeout", "request_handle", "timeout_seconds"), &Steam::setHTTPRequestNetworkActivityTimeout);
-	ClassDB::bind_method(D_METHOD("setHTTPRequestRawPostBody", "request_handle", "content_type", "body_length"), &Steam::setHTTPRequestRawPostBody);
+	ClassDB::bind_method(D_METHOD("setHTTPRequestRawPostBody", "request_handle", "content_type", "body"), &Steam::setHTTPRequestRawPostBody);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestRequiresVerifiedCertificate", "request_handle", "require_verified_certificate"), &Steam::setHTTPRequestRequiresVerifiedCertificate);
 	ClassDB::bind_method(D_METHOD("setHTTPRequestUserAgentInfo", "request_handle", "user_agent_info"), &Steam::setHTTPRequestUserAgentInfo);
 
@@ -11392,7 +11268,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("addRequiredKeyValueTag", "query_handle", "key", "value"), &Steam::addRequiredKeyValueTag);
 	ClassDB::bind_method(D_METHOD("addRequiredTag", "query_handle", "tag_name"), &Steam::addRequiredTag);
 	ClassDB::bind_method(D_METHOD("addRequiredTagGroup", "query_handle", "tag_array"), &Steam::addRequiredTagGroup);
-	ClassDB::bind_method(D_METHOD("initWorkshopForGameServer", "workshop_depot_id"), &Steam::initWorkshopForGameServer);
+	ClassDB::bind_method(D_METHOD("initWorkshopForGameServer", "workshop_depot_id", "folder"), &Steam::initWorkshopForGameServer);
 	ClassDB::bind_method(D_METHOD("createItem", "app_id", "file_type"), &Steam::createItem);
 	ClassDB::bind_method(D_METHOD("createQueryAllUGCRequest", "query_type", "matching_type", "creator_id", "consumer_id", "page"), &Steam::createQueryAllUGCRequest);
 	ClassDB::bind_method(D_METHOD("createQueryUGCDetailsRequest", "published_file_id"), &Steam::createQueryUGCDetailsRequest);
@@ -11475,7 +11351,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("advertiseGame", "server_ip", "port"), &Steam::advertiseGame);
 	ClassDB::bind_method(D_METHOD("beginAuthSession", "ticket", "ticket_size", "steam_id"), &Steam::beginAuthSession);
 	ClassDB::bind_method(D_METHOD("cancelAuthTicket", "auth_ticket"), &Steam::cancelAuthTicket);
-	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "voice_size", "sample_rate"), &Steam::decompressVoice);
+	ClassDB::bind_method(D_METHOD("decompressVoice", "voice", "sample_rate"), &Steam::decompressVoice);
 	ClassDB::bind_method(D_METHOD("endAuthSession", "steam_id"), &Steam::endAuthSession);
 	ClassDB::bind_method(D_METHOD("getAuthSessionTicket", "remote_steam_id"), &Steam::getAuthSessionTicket, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("getAuthTicketForWebApi", "service_identity"), &Steam::getAuthTicketForWebApi, DEFVAL(""));

@@ -2006,8 +2006,8 @@ public:
 	PackedByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 	uint32 getHTTPResponseBodySize(uint32 request_handle);
 	uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String &header_name);
-	uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
-	uint8 getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
+	PackedByteArray getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
+	PackedByteArray getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
 	bool prioritizeHTTPRequest(uint32 request_handle);
 	bool releaseCookieContainer(uint32 cookie_handle);
 	bool releaseHTTPRequest(uint32 request_handle);
@@ -2020,7 +2020,7 @@ public:
 	bool setHTTPRequestGetOrPostParameter(uint32 request_handle, const String &name, const String &value);
 	bool setHTTPRequestHeaderValue(uint32 request_handle, const String &header_name, const String &header_value);
 	bool setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 timeout_seconds);
-	uint8 setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, uint32 body_length);
+	bool setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, const String &body);
 	bool setHTTPRequestRequiresVerifiedCertificate(uint32 request_handle, bool require_verified_certificate);
 	bool setHTTPRequestUserAgentInfo(uint32 request_handle, const String &user_agent_info);
 
@@ -2097,7 +2097,7 @@ public:
 	bool loadItemDefinitions();
 	void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 	void requestPrices();
-	String serializeResult(int32 this_inventory_handle = 0);
+	PackedByteArray serializeResult(int32 this_inventory_handle = 0);
 	void startPurchase(const PackedInt64Array items, const PackedInt32Array quantity);
 	int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 	int32 triggerItemDrop(uint32 definition);
@@ -2390,7 +2390,7 @@ public:
 	bool addRequiredKeyValueTag(uint64_t query_handle, const String &key, const String &value);
 	bool addRequiredTag(uint64_t query_handle, const String &tag_name);
 	bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
-	bool initWorkshopForGameServer(uint32_t workshop_depot_id);
+	bool initWorkshopForGameServer(uint32_t workshop_depot_id, String folder);
 	void createItem(uint32 app_id, WorkshopFileType file_type);
 	uint64_t createQueryAllUGCRequest(UGCQuery query_type, UGCMatchingUGCType matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 	uint64_t createQueryUGCDetailsRequest(Array published_file_id);
@@ -2473,7 +2473,7 @@ public:
 	void advertiseGame(const String &server_ip, int port);
 	BeginAuthSessionResult beginAuthSession(PackedByteArray ticket, int ticket_size, uint64_t steam_id);
 	void cancelAuthTicket(uint32_t auth_ticket);
-	Dictionary decompressVoice(const PackedByteArray &voice, uint32 voice_size, uint32 sample_rate);
+	Dictionary decompressVoice(const PackedByteArray &voice, uint32 sample_rate);
 	void endAuthSession(uint64_t steam_id);
 	Dictionary getAuthSessionTicket(uint64_t remote_steam_id = 0);
 	uint32 getAuthTicketForWebApi(const String &service_identity = "");
@@ -2517,8 +2517,8 @@ public:
 	Dictionary getAchievementProgressLimitsFloat(const String &achievement_name);
 	uint64_t getGlobalStatInt(const String &stat_name);
 	double getGlobalStatFloat(const String &stat_name);
-	uint64_t getGlobalStatIntHistory(const String &stat_name);
-	double getGlobalStatFloatHistory(const String &stat_name);
+	PackedInt64Array getGlobalStatIntHistory(const String &stat_name);
+	PackedFloat64Array getGlobalStatFloatHistory(const String &stat_name);
 	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
 	Array getLeaderboardEntries();
 	int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
