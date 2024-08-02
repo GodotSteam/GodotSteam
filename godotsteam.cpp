@@ -4832,16 +4832,16 @@ Dictionary Steam::getConnectionInfo(uint32 connection_handle) {
 // Returns very detailed connection stats in diagnostic text format. Useful for dumping to a log, etc. The format of this
 // information is subject to change.
 Dictionary Steam::getDetailedConnectionStatus(uint32 connection) {
-	Dictionary connectionStatus;
+	Dictionary connection_status;
 	if (SteamNetworkingSockets() != NULL) {
 		char buffer[STEAM_LARGE_BUFFER_SIZE]{};
 		int success = SteamNetworkingSockets()->GetDetailedConnectionStatus((HSteamNetConnection)connection, buffer, STEAM_LARGE_BUFFER_SIZE);
 		// Add data to dictionary
-		connectionStatus["success"] = success;
-		connectionStatus["status"] = buffer;
+		connection_status["success"] = success;
+		connection_status["status"] = buffer;
 	}
 	// Send the data back to the user
-	return connectionStatus;
+	return connection_status;
 }
 
 // Fetch connection user data. Returns -1 if handle is invalid or if you haven't set any userdata on the connection.
@@ -6433,12 +6433,12 @@ Dictionary Steam::getItemInstallInfo(uint64_t published_file_id) {
 		return info;
 	}
 	PublishedFileId_t file_id = (uint64_t)published_file_id;
-	uint64 sizeOnDisk;
+	uint64 size_on_disk;
 	char folder[1024] = { 0 };
 	uint32 timeStamp;
-	info["ret"] = SteamUGC()->GetItemInstallInfo((PublishedFileId_t)file_id, &sizeOnDisk, folder, sizeof(folder), &timeStamp);
+	info["ret"] = SteamUGC()->GetItemInstallInfo((PublishedFileId_t)file_id, &size_on_disk, folder, sizeof(folder), &timeStamp);
 	if (info["ret"]) {
-		info["size"] = (uint64_t)sizeOnDisk;
+		info["size"] = (uint64_t)size_on_disk;
 		info["folder"] = folder;
 		info["timestamp"] = timeStamp;
 	}
@@ -9660,13 +9660,13 @@ void Steam::microtransaction_auth_response(MicroTxnAuthorizationResponse_t *call
 // Called when a connections to the Steam back-end has been established. This means the Steam client now has a working connection
 // to the Steam servers. Usually this will have occurred before the game has launched, and should only be seen if the user has
 // dropped connection due to a networking issue or a Steam server update.
-void Steam::steam_server_connected(SteamServersConnected_t *connectData) {
+void Steam::steam_server_connected(SteamServersConnected_t *connect_data) {
 	emit_signal("steam_server_connected");
 }
 
 // Called if the client has lost connection to the Steam servers. Real-time services will be disabled until a matching
 // SteamServersConnected_t has been posted.
-void Steam::steam_server_disconnected(SteamServersDisconnected_t *connectData) {
+void Steam::steam_server_disconnected(SteamServersDisconnected_t *connect_data) {
 	emit_signal("steam_server_disconnected");
 }
 
@@ -11464,7 +11464,6 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("getVideoURL", "app_id"), &Steam::getVideoURL);
 	ClassDB::bind_method("isBroadcasting", &Steam::isBroadcasting);
 
-	/////////////////////////////////////////////
 	// CALLBACK SIGNAL BINDS
 	/////////////////////////////////////////////
 	//
@@ -11712,7 +11711,7 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("get_video_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::STRING, "url")));
 
 
-	// CONSTANT BINDS
+	///// CONSTANT BINDS
 	/////////////////////////////////////////////
 	//
 	// STEAM API CONSTANTS //////////////////////
@@ -11856,8 +11855,7 @@ void Steam::_bind_methods() {
 	BIND_CONSTANT(LEADERBOARD_NAME_MAX);
 	BIND_CONSTANT(STAT_NAME_MAX);
 
-	/////////////////////////////////////////////
-	// ENUM CONSTANT BINDS //////////////////////
+	///// ENUM CONSTANT BINDS
 	/////////////////////////////////////////////
 	//
 	// AccountType Enums
