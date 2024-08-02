@@ -243,7 +243,7 @@ const SteamNetworkingConfigValue_t *Steam::convertOptionsArray(Array options) {
 				this_option.SetFloat(this_value, sent_option[2]);
 			}
 			else if ((int)sent_option[1] == 4) {
-				this_option.SetString(this_value, sent_option[2].utf8().get_data());
+				this_option.SetString(this_value, String(sent_option[2]).utf8().get_data());
 			}
 			else {
 				Object *this_pointer;
@@ -7505,7 +7505,7 @@ bool Steam::loggedOn() {
 void Steam::requestEncryptedAppTicket(const String &secret) {
 	if (SteamUser() != NULL) {
 		auto secret_utf8 = secret.utf8();
-		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket(secret_utf8.get_data(), secret_utf8.size());
+		SteamAPICall_t api_call = SteamUser()->RequestEncryptedAppTicket((void *)secret_utf8.get_data(), secret_utf8.size());
 		callResultEncryptedAppTicketResponse.Set(api_call, this, &Steam::encrypted_app_ticket_response);
 	}
 }

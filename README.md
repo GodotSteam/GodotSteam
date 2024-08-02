@@ -20,6 +20,10 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/GodotSteam/GodotSteam/releases).
 
+**Version 4.9.1 Changes**
+- Fixed: fixed typo in RESULT_ADMINISTRATOR_OK, ***thanks to sepTN***
+- Fixed: fixed a variety of types and code corrections, ***thanks to bobsayhilol***
+
 **Version 4.9 Changes**
 - Added: missing `user_achievement_icon_fetched` callback
 - Added: new functions and enums to Apps class
