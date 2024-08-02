@@ -11043,7 +11043,7 @@
 		</constant>
 		<constant name="RESULT_ACCOUNT_NOT_FEATURED" value="45" enum="Result">
 		</constant>
-		<constant name="RESULT_ADMINISTRATO_ROK" value="46" enum="Result">
+		<constant name="RESULT_ADMINISTRATOR_OK" value="46" enum="Result">
 		</constant>
 		<constant name="RESULT_CONTENT_VERSION" value="47" enum="Result">
 		</constant>

@@ -285,7 +285,7 @@ public:
 		RESULT_ACCOUNT_DISABLED = k_EResultAccountDisabled,
 		RESULT_SERVICE_READ_ONLY = k_EResultServiceReadOnly,
 		RESULT_ACCOUNT_NOT_FEATURED = k_EResultAccountNotFeatured,
-		RESULT_ADMINISTRATO_ROK = k_EResultAdministratorOK,
+		RESULT_ADMINISTRATOR_OK = k_EResultAdministratorOK,
 		RESULT_CONTENT_VERSION = k_EResultContentVersion,
 		RESULT_TRY_ANOTHER_CM = k_EResultTryAnotherCM,
 		RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION = k_EResultPasswordRequiredToKickSession,
