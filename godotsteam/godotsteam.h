@@ -21,7 +21,7 @@
 #include <inttypes.h>
 
 // Include Steamworks API headers
-#include "steam/steam_api.h"
+#include "steam/steam_api_flat.h"
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
 
@@ -109,7 +109,7 @@ public:
 		BETA_BRANCH_INSTALLED = k_EBetaBranch_Installed
 	};
 	enum BroadcastUploadResult {
-		 // Found in steamclientpublic.h
+		// Found in steamclientpublic.h
 		BROADCAST_UPLOAD_RESULT_NONE = k_EBroadcastUploadResultNone,
 		BROADCAST_UPLOAD_RESULT_OK = k_EBroadcastUploadResultOK,
 		BROADCAST_UPLOAD_RESULT_INIT_FAILED = k_EBroadcastUploadResultInitFailed,
@@ -289,7 +289,7 @@ public:
 		RESULT_ACCOUNT_DISABLED = k_EResultAccountDisabled,
 		RESULT_SERVICE_READ_ONLY = k_EResultServiceReadOnly,
 		RESULT_ACCOUNT_NOT_FEATURED = k_EResultAccountNotFeatured,
-		RESULT_ADMINISTRATO_ROK = k_EResultAdministratorOK,
+		RESULT_ADMINISTRATOR_OK = k_EResultAdministratorOK,
 		RESULT_CONTENT_VERSION = k_EResultContentVersion,
 		RESULT_TRY_ANOTHER_CM = k_EResultTryAnotherCM,
 		RESULT_PASSWORD_REQUIRED_TO_KICK_SESSION = k_EResultPasswordRequiredToKickSession,
@@ -1518,7 +1518,7 @@ public:
 		LOCAL_FILE_CHANGE_FILE_UPDATED = k_ERemoteStorageLocalFileChange_FileUpdated,
 		LOCAL_FILE_CHANGE_FILE_DELETED = k_ERemoteStorageLocalFileChange_FileDeleted
 	};
-	enum RemoteStoragePlatform: uint32_t {
+	enum RemoteStoragePlatform : uint32_t {
 		REMOTE_STORAGE_PLATFORM_NONE = k_ERemoteStoragePlatformNone,
 		REMOTE_STORAGE_PLATFORM_WINDOWS = k_ERemoteStoragePlatformWindows,
 		REMOTE_STORAGE_PLATFORM_OSX = k_ERemoteStoragePlatformOSX,
@@ -2010,8 +2010,8 @@ public:
 	PackedByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 	uint32 getHTTPResponseBodySize(uint32 request_handle);
 	uint32 getHTTPResponseHeaderSize(uint32 request_handle, const String &header_name);
-	uint8 getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
-	uint8 getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
+	PackedByteArray getHTTPResponseHeaderValue(uint32 request_handle, const String &header_name, uint32 buffer_size);
+	PackedByteArray getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
 	bool prioritizeHTTPRequest(uint32 request_handle);
 	bool releaseCookieContainer(uint32 cookie_handle);
 	bool releaseHTTPRequest(uint32 request_handle);
@@ -2024,7 +2024,7 @@ public:
 	bool setHTTPRequestGetOrPostParameter(uint32 request_handle, const String &name, const String &value);
 	bool setHTTPRequestHeaderValue(uint32 request_handle, const String &header_name, const String &header_value);
 	bool setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 timeout_seconds);
-	uint8 setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, uint32 body_length);
+	bool setHTTPRequestRawPostBody(uint32 request_handle, const String &content_type, const String &body);
 	bool setHTTPRequestRequiresVerifiedCertificate(uint32 request_handle, bool require_verified_certificate);
 	bool setHTTPRequestUserAgentInfo(uint32 request_handle, const String &user_agent_info);
 
@@ -2101,7 +2101,7 @@ public:
 	bool loadItemDefinitions();
 	void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 	void requestPrices();
-	String serializeResult(int32 this_inventory_handle = 0);
+	PackedByteArray serializeResult(int32 this_inventory_handle = 0);
 	void startPurchase(const PackedInt64Array items, const PackedInt32Array quantity);
 	int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 	int32 triggerItemDrop(uint32 definition);
@@ -2246,7 +2246,7 @@ public:
 	uint32 createPollGroup();
 	Dictionary createSocketPair(bool loopback, uint64_t remote_steam_id1, uint64_t remote_steam_id2);
 	bool destroyPollGroup(uint32 poll_group);
-//		int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
+	//		int findRelayAuthTicketForServer(int port);	<------ Uses datagram relay structs which were removed from base SDK
 	int flushMessagesOnConnection(uint32 connection_handle);
 	NetworkingAvailability getAuthenticationStatus();
 	Dictionary getCertificateRequest();
@@ -2256,17 +2256,16 @@ public:
 	uint64_t getConnectionUserData(uint32 peer);
 	Dictionary getDetailedConnectionStatus(uint32 connection_handle);
 	Dictionary getFakeIP(int first_port = 0);
-//		int getGameCoordinatorServerLogin(const String &app_data);	<------ Uses datagram relay structs which were removed from base SDK
-//		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
+	//		int getGameCoordinatorServerLogin(const String& app_data);	<------ Uses datagram relay structs which were removed from base SDK
+	//		int getHostedDedicatedServerAddress();	<------ Uses datagram relay structs which were removed from base SDK
 	uint32 getHostedDedicatedServerPOPId();
 	uint16 getHostedDedicatedServerPort();
 	String getListenSocketAddress(uint32 socket, bool with_port = true);
-	String getIdentity();
 	Dictionary getRemoteFakeIPForConnection(uint32 connection);
 	NetworkingAvailability initAuthentication();
 	Array receiveMessagesOnConnection(uint32 connection, int max_messages);
 	Array receiveMessagesOnPollGroup(uint32 poll_group, int max_messages);
-//		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
+	//		Dictionary receivedRelayAuthTicket();	<------ Uses datagram relay structs which were removed from base SDK
 	void resetIdentity(uint64_t remote_steam_id);
 	void runNetworkingCallbacks();
 	Array sendMessages(const PackedByteArray data, uint32 connection_handle, int flags);
@@ -2294,7 +2293,7 @@ public:
 	bool setConnectionConfigValueFloat(uint32 connection, NetworkingConfigValue config, float value);
 	bool setConnectionConfigValueInt32(uint32 connection, NetworkingConfigValue config, int32 value);
 	bool setConnectionConfigValueString(uint32 connection, NetworkingConfigValue config, const String &value);
-//		bool setConfigValue(NetworkingConfigValue setting, NetworkingConfigScope scope_type, uint32_t connection_handle, NetworkingConfigDataType data_type, auto value);
+	//		bool setConfigValue(NetworkingConfigValue setting, NetworkingConfigScope scope_type, uint32_t connection_handle, NetworkingConfigDataType data_type, auto value);
 	bool setGlobalConfigValueFloat(NetworkingConfigValue config, float value);
 	bool setGlobalConfigValueInt32(NetworkingConfigValue config, int32 value);
 	bool setGlobalConfigValueString(NetworkingConfigValue config, const String &value);
@@ -2395,7 +2394,7 @@ public:
 	bool addRequiredKeyValueTag(uint64_t query_handle, const String &key, const String &value);
 	bool addRequiredTag(uint64_t query_handle, const String &tag_name);
 	bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
-	bool initWorkshopForGameServer(uint32_t workshop_depot_id);
+	bool initWorkshopForGameServer(uint32_t workshop_depot_id, String folder);
 	void createItem(uint32 app_id, WorkshopFileType file_type);
 	uint64_t createQueryAllUGCRequest(UGCQuery query_type, UGCMatchingUGCType matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 	uint64_t createQueryUGCDetailsRequest(Array published_file_id);
@@ -2478,7 +2477,7 @@ public:
 	void advertiseGame(const String &server_ip, int port);
 	BeginAuthSessionResult beginAuthSession(PackedByteArray ticket, int ticket_size, uint64_t steam_id);
 	void cancelAuthTicket(uint32_t auth_ticket);
-	Dictionary decompressVoice(const PackedByteArray &voice, uint32 voice_size, uint32 sample_rate);
+	Dictionary decompressVoice(const PackedByteArray &voice, uint32 sample_rate);
 	void endAuthSession(uint64_t steam_id);
 	Dictionary getAuthSessionTicket(uint64_t remote_steam_id = 0);
 	uint32 getAuthTicketForWebApi(const String &service_identity = "");
@@ -2522,8 +2521,8 @@ public:
 	Dictionary getAchievementProgressLimitsFloat(const String &achievement_name);
 	uint64_t getGlobalStatInt(const String &stat_name);
 	double getGlobalStatFloat(const String &stat_name);
-	uint64_t getGlobalStatIntHistory(const String &stat_name);
-	double getGlobalStatFloatHistory(const String &stat_name);
+	PackedInt64Array getGlobalStatIntHistory(const String &stat_name);
+	PackedFloat64Array getGlobalStatFloatHistory(const String &stat_name);
 	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard = 0);
 	Array getLeaderboardEntries();
 	int getLeaderboardEntryCount(uint64_t this_leaderboard = 0);
@@ -2581,8 +2580,8 @@ public:
 	void setOverlayNotificationInset(int horizontal, int vertical);
 	void setOverlayNotificationPosition(int pos);
 	void setVRHeadsetStreamingEnabled(bool enabled);
-	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	bool showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
+	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	void startVRDashboard();
 
 	// Video ////////////////////////////////
