@@ -6,12 +6,6 @@ def configure(env):
 
     env_vars = Variables()
 
-    env_vars.Add("br_cc",
-    "Set CC to use", env['CC'])
-
-    env_vars.Add("br_cxx",
-    "Set CXX to use", env['CXX'])
-
     env_vars.Update(env)
     Help(env_vars.GenerateHelpText(env))
 
@@ -20,6 +14,11 @@ opts = Variables([], ARGUMENTS)
 # Gets the standard flags CC, CCX, etc.
 env = SConscript("godot-cpp/SConstruct")
 
+# Define our options
+opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'bin/'))
+opts.Add(PathVariable('target_name', 'The library name.', 'godotsteam', PathVariable.PathAccept))
+
+configure(env)
 # Local dependency paths, adapt them to your setup
 steam_lib_path = "godotsteam/sdk/redistributable_bin"
 
@@ -30,6 +29,7 @@ if env['platform'] in ('macos', 'osx'):
     steamworks_library = 'libsteam_api.dylib'
 
 elif env['platform'] in ('linuxbsd', 'linux'):
+    env.Append(RPATH=env.Literal('\\$$ORIGIN'))
     # Set correct Steam library
     steam_lib_path += "/linux64" if env['arch'] == 'x86_64' else "/linux32"
     steamworks_library = 'libsteam_api.so'
@@ -68,3 +68,6 @@ else:
     )
 
 Default(library)
+
+# Generates help for the -h scons option.
+Help(opts.GenerateHelpText(env))
