@@ -223,7 +223,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: gdextension
+          name: godotsteam-gdextension-plugin${{ inputs.godot_cpp_version }}
           path: |
             project/
           retention-days: 14
