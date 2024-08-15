@@ -194,21 +194,6 @@
 				If no handle is passed, GodotSteam will use the internal one.
 			</description>
 		</method>
-		<method name="addIPAddress">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Add a new IP address struct and store it for use. When this networking IP address is used in other functions, you will always use the [b]reference_name[/b] to use this struct.
-			</description>
-		</method>
-		<method name="addIdentity">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Create a new network identity struct and store it for use. When this network identity is used in other functions, you will always use the reference_name to use this struct.
-				You will have to set the IP, Steam ID, string, or bytes with other functions below otherwise the identity is invalid.
-			</description>
-		</method>
 		<method name="addItemKeyValueTag">
 			<return type="bool" />
 			<param index="0" name="query_handle" type="int" />
@@ -356,6 +341,19 @@
 			<param index="3" name="height" type="int" />
 			<description>
 				Adds a screenshot to the user's Steam screenshot library from disk. 
+			</description>
+		</method>
+		<method name="addTimelineEvent">
+			<return type="void" />
+			<param index="0" name="icon" type="String" />
+			<param index="1" name="title" type="String" />
+			<param index="2" name="description" type="String" />
+			<param index="3" name="priority" type="int" />
+			<param index="4" name="start_offet" type="float" />
+			<param index="5" name="duration" type="float" />
+			<param index="6" name="possible_clip" type="int" enum="Steam.TimelineEventClipPriority" />
+			<description>
+				Use this to mark an event on the Timeline. The event can be instantaneous or take some amount of time to complete, depending on the value passed in duration.
 			</description>
 		</method>
 		<method name="addVRScreenshotToLibrary">
@@ -515,16 +513,15 @@
 				This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call [method Steam.storeStats].
 			</description>
 		</method>
-		<method name="clearIPAddress">
+		<method name="clearRichPresence">
 			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
 			<description>
-				IP Address - Set everything to zero. E.g. [::]:0.
+				Clear the game information in Steam; used in 'View Game Info'.
 			</description>
 		</method>
-		<method name="clearIdentity">
+		<method name="clearTimelineStateDescription">
 			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
+			<param index="0" name="time_delta" type="float" />
 			<description>
 				Clear a network identity's data.
 			</description>
@@ -1556,7 +1553,7 @@
 		</method>
 		<method name="getAuthTicketForWebApi">
 			<return type="int" />
-			<param index="0" name="identity_reference" type="String" default="&quot;&quot;" />
+			<param index="0" name="service_identity" type="String" default="&quot;&quot;" />
 			<description>
 				Request a ticket which will be used for webapi "ISteamUserAuth\AuthenticateUserTicket"; [b]service_identity[/b] is an optional input parameter to identify the service the ticket will be sent to the ticket will be returned in callback [signal Steam.get_ticket_for_web_api].
 				Triggers a [signal Steam.get_ticket_for_web_api] callback.
@@ -1636,6 +1633,20 @@
 			<param index="2" name="location_data" type="int" enum="Steam.PartyBeaconLocationData" />
 			<description>
 				Query general metadata for the given beacon location. For instance the Name, or the URL for an icon if the location type supports icons (for example, the icon for a Steam Chat Room Group).
+			</description>
+		</method>
+		<method name="getBetaInfo">
+			<return type="Dictionary" />
+			<description>
+				Return beta branch details, name, description, current build ID and state flags (BetaBranchFlags).
+				The returned dictionary contains the following keys:
+				[codeblock]
+				┠╴index (int)
+				┠╴flags (uint32)
+				┠╴build_id (uint32)
+				┠╴name (string)
+				┖╴description (string)
+				[/codeblock]
 			</description>
 		</method>
 		<method name="getCachedUGCCount">
@@ -2934,11 +2945,10 @@
 				Get the number of active party beacons created by other users for your game, that are visible to the current user.
 			</description>
 		</method>
-		<method name="getNumInstalledApps">
-			<return type="int" />
+		<method name="getNumBetas">
+			<return type="Dictionary" />
 			<description>
-				Get the number of installed apps for this player.
-				[b]Note:[/b] This is a restricted interface that can only be used by previously approved apps, contact your Steam Account Manager if you believe you need access to this API.
+				Returns total number of known app beta branches (including default "public" branch).
 			</description>
 		</method>
 		<method name="getNumLobbyMembers">
@@ -2954,6 +2964,14 @@
 			<return type="int" />
 			<description>
 				Gets the total number of items the current user is subscribed to for the game or application.
+			</description>
+		</method>
+		<method name="getNumSupportedGameVersions">
+			<return type="int" />
+			<param index="0" name="query_handle" type="int" />
+			<param index="1" name="index" type="int" />
+			<description>
+				Get the number of supported game versions for this UGC content.
 			</description>
 		</method>
 		<method name="getNumberOfCurrentPlayers">
@@ -3633,6 +3651,20 @@
 				Gets a list of all of the items the current user is subscribed to for the current game.
 			</description>
 		</method>
+		<method name="getSupportedGameVersionData">
+			<return type="Dictionary" />
+			<param index="0" name="query_handle" type="int" />
+			<param index="1" name="index" type="int" />
+			<param index="2" name="version_index" type="int" />
+			<description>
+				Some items can specify that they have a version that is valid for a range of game versions (Steam branch).
+				[codeblock]
+				┠╴min (string)
+				┠╴max (string)
+				┖╴size (uint32)
+				[/codeblock]
+			</description>
+		</method>
 		<method name="getSyncPlatforms">
 			<return type="Dictionary" />
 			<param index="0" name="file" type="String" />
@@ -4208,35 +4240,6 @@
 			<param index="0" name="steam_id" type="int" />
 			<description>
 				Checks if the current user is following the specified user.
-				Triggers a [signal Steam.is_following] callback.
-			</description>
-		</method>
-		<method name="isIPv4">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Return true if IP is mapped IPv4.
-			</description>
-		</method>
-		<method name="isIPv6AllZeros">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Return true if the IP is ::0. (Doesn't check port.).
-			</description>
-		</method>
-		<method name="isIdentityInvalid">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Return true if we are the invalid type. Does not make any other validity checks (e.g. is SteamID actually valid).
-			</description>
-		</method>
-		<method name="isIdentityLocalHost">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Return true if this identity is localhost.
 			</description>
 		</method>
 		<method name="isIndividualAccount">
@@ -4643,22 +4646,6 @@
 			<description>
 				Checks if the Overlay needs a present. Only required if using event driven render updates.
 				Typically this call is unneeded if your game has a constantly running frame loop that calls the D3D Present API, or OGL SwapBuffers API every frame as is the case in most games. However, if you have a game that only refreshes the screen on an event driven basis then that can break the overlay, as it uses your Present/SwapBuffers calls to drive it's internal frame loop and it may also need to Present() to the screen any time a notification happens or when the overlay is brought up over the game by a user. You can use this API to ask the overlay if it currently need a present in that case, and then you can check for this periodically (roughly 33hz is desirable) and make sure you refresh the screen with Present or SwapBuffers to allow the overlay to do it's work.
-			</description>
-		</method>
-		<method name="parseIPAddressString">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="string_to_parse" type="String" />
-			<description>
-				Parse an IP address and optional port. If a port is not present, it is set to 0. (This means that you cannot tell if a zero port was explicitly specified.).
-			</description>
-		</method>
-		<method name="parseIdentityString">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="string_to_parse" type="String" />
-			<description>
-				Parse back a string that was generated using ToString. If we don't understand the string, but it looks "reasonable" (it matches the pattern type:type-data and doesn't have any funky characters, etc), then we will return true, and the type is set to k_ESteamNetworkingIdentityType_UnknownType (0). False will only be returned if the string looks invalid.
 			</description>
 		</method>
 		<method name="parsePingLocationString">
@@ -5331,9 +5318,9 @@
 		</method>
 		<method name="sendMessages">
 			<return type="Array" />
-			<param index="1" name="data" type="PackedByteArray" />
-			<param index="2" name="connection_handle" type="int" />
-			<param index="3" name="flags" type="int" />
+			<param index="0" name="data" type="PackedByteArray" />
+			<param index="1" name="connection_handle" type="int" />
+			<param index="2" name="flags" type="int" />
 			<description>
 				Send one or more messages without copying the message payload. This is the most efficient way to send messages.
 				The returned array contains the [b]message number[/b] that was assigned to the message if sending was successful.  If sending failed, then a negative [b]Result value[/b] is placed into the array.  For example, the array will hold RESULT_INVALID_STATE / -k_EResultInvalidState if the connection was in an invalid state.
@@ -5423,6 +5410,21 @@
 				Unlocks an achievement.
 				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this!
 				You can unlock an achievement multiple times so you don't need to worry about only setting achievements that aren't already set. This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call [method Steam.storeStats].
+			</description>
+		</method>
+		<method name="setActiveBeta">
+			<return type="bool" />
+			<param index="0" name="beta_name" type="String" />
+			<description>
+				Select this beta branch for this app as active, might need the game to restart so Steam can update to that branch.
+			</description>
+		</method>
+		<method name="setAdminQuery">
+			<return type="bool" />
+			<param index="0" name="update_handle" type="int" />
+			<param index="1" name="admin_query" type="bool" />
+			<description>
+				Admin queries return hidden items.
 			</description>
 		</method>
 		<method name="setAllowCachedResponse">
@@ -5592,22 +5594,6 @@
 				In game launchers that don't have controller support you can call this to have Steam Input translate the controller input into mouse/kb to navigate the launcher.
 			</description>
 		</method>
-		<method name="setGenericBytes">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="data" type="int" />
-			<description>
-				Returns false if invalid size.
-			</description>
-		</method>
-		<method name="setGenericString">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="this_string" type="String" />
-			<description>
-				Returns false if invalid length.
-			</description>
-		</method>
 		<method name="setGlobalConfigValueFloat">
 			<return type="bool" />
 			<param index="0" name="config" type="int" enum="Steam.NetworkingConfigValue" />
@@ -5734,63 +5720,6 @@
 			<description>
 				Scroll the current page horizontally.
 				Triggers a [signal Steam.html_horizontal_scroll] callback.
-			</description>
-		</method>
-		<method name="setIPv4">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="ip" type="int" />
-			<param index="2" name="port" type="int" />
-			<description>
-				Sets to IPv4 mapped address. IP and port are in host byte order.
-			</description>
-		</method>
-		<method name="setIPv6">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="ipv6" type="int" />
-			<param index="2" name="port" type="int" />
-			<description>
-				Set IPv6 address. IP is interpreted as bytes, so there are no endian issues. (Same as inaddr_in6.) The IP can be a mapped IPv4 address.
-			</description>
-		</method>
-		<method name="setIPv6LocalHost">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="port" type="int" default="0" />
-			<description>
-				Set to the IPv6 localhost address ::1, and the specified port.
-			</description>
-		</method>
-		<method name="setIdentityIPAddr">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="ip_address_name" type="String" />
-			<description>
-				Set to specified IP:port.
-			</description>
-		</method>
-		<method name="setIdentityLocalHost">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Set to localhost. (We always use IPv6 ::1 for this, not 127.0.0.1).
-			</description>
-		</method>
-		<method name="setIdentitySteamID">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="steam_id" type="int" />
-			<description>
-				Set a 32-bit Steam ID.
-			</description>
-		</method>
-		<method name="setIdentitySteamID64">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="steam_id" type="int" />
-			<description>
-				Takes SteamID as raw 64-bit number.
 			</description>
 		</method>
 		<method name="setInGameVoiceSpeaking">
@@ -6065,14 +5994,6 @@
 				Set a PNG icon for a song? A playlist?
 			</description>
 		</method>
-		<method name="setPSNID">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="psn_id" type="int" />
-			<description>
-				Set the Playstation Network ID for this identity.
-			</description>
-		</method>
 		<method name="setPageScaleFactor">
 			<return type="void" />
 			<param index="0" name="zoom" type="float" />
@@ -6169,6 +6090,15 @@
 				Sets whether the order of the results will be updated based on the rank of items over a number of days on a pending UGC Query.
 				[b]Note:[/b] This can only be used with [method Steam.createQueryAllUGCRequest].
 				[b]Note:[/b] This must be set before you submit the UGC query handle using [method Steam.submitItemUpdate].
+			</description>
+		</method>
+		<method name="setRequiredGameVersions">
+			<return type="bool" />
+			<param index="0" name="query_handle" type="int" />
+			<param index="1" name="game_branch_min" type="String" />
+			<param index="2" name="game_branch_max" type="String" />
+			<description>
+				An empty string for either parameter means that it will match any version on that end of the range. This will only be applied if the actual content has been changed.
 			</description>
 		</method>
 		<method name="setReturnAdditionalPreviews">
@@ -6280,14 +6210,6 @@
 				Sets the display size of a surface in pixels.
 			</description>
 		</method>
-		<method name="setStadiaID">
-			<return type="void" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="stadia_id" type="int" />
-			<description>
-				Set the Google Stadia ID for this identity.
-			</description>
-		</method>
 		<method name="setStatFloat">
 			<return type="bool" />
 			<param index="0" name="name" type="String" />
@@ -6338,6 +6260,21 @@
 				Set the time range this item was updated.
 			</description>
 		</method>
+		<method name="setTimelineGameMode">
+			<return type="void" />
+			<param index="0" name="mode" type="int" enum="Steam.TimelineGameMode" />
+			<description>
+				Changes the color of the timeline bar. See TimelineGameMode comments for how to use each value.
+			</description>
+		</method>
+		<method name="setTimelineStateDescription">
+			<return type="void" />
+			<param index="0" name="description" type="String" />
+			<param index="1" name="time_delta" type="float" />
+			<description>
+				Sets a description for the current game state in the timeline. These help the user to find specific moments in the timeline when saving clips. Setting a new state description replaces any previous description.
+			</description>
+		</method>
 		<method name="setUserItemVote">
 			<return type="void" />
 			<param index="0" name="published_file_id" type="int" />
@@ -6361,14 +6298,6 @@
 			<description>
 				Scroll the current page vertically.
 				Triggers a [signal Steam.html_vertical_scroll] callback.
-			</description>
-		</method>
-		<method name="setXboxPairwiseID">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="xbox_id" type="String" />
-			<description>
-				Set the Xbox Pairwise ID for this identity.
 			</description>
 		</method>
 		<method name="showBindingPanel">
@@ -6631,21 +6560,6 @@
 				Notify the game server that we are disconnecting.
 				This needs to occur when the game client leaves the specified game server, needs to match with the [method Steam.initiateGameConnection] call.
 				[b]Note:[/b] This is part of the old user authentication API and should not be mixed with the new API.
-			</description>
-		</method>
-		<method name="toIPAddressString">
-			<return type="String" />
-			<param index="0" name="reference_name" type="String" />
-			<param index="1" name="with_port" type="bool" />
-			<description>
-				Print to a string, with or without the port. Mapped IPv4 addresses are printed as dotted decimal (12.34.56.78), otherwise this will print the canonical form according to RFC5952. If you include the port, IPv6 will be surrounded by brackets, e.g. [::1:2]:80. Your buffer should be at least k_cchMaxString (128) bytes to avoid truncation.
-			</description>
-		</method>
-		<method name="toIdentityString">
-			<return type="String" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Print to a human-readable string. This is suitable for debug messages or any other time you need to encode the identity as a string. It has a URL-like format type:type-data. Your buffer should be at least k_cchMaxString (128) bytes big to avoid truncation.
 			</description>
 		</method>
 		<method name="transferItemQuantity">
@@ -6943,23 +6857,9 @@
 				The result of a call to [method Steam.addAppDependency].
 			</description>
 		</signal>
-		<signal name="app_installed">
-			<param index="0" name="app_id" type="int" />
-			<param index="1" name="install_folder_index" type="int" />
-			<description>
-				Sent when a new app is installed.
-			</description>
-		</signal>
 		<signal name="app_resuming_from_suspend">
 			<description>
 				Sent after the device returns from sleep/suspend mode.
-			</description>
-		</signal>
-		<signal name="app_uninstalled">
-			<param index="0" name="app_id" type="int" />
-			<param index="1" name="install_folder_index" type="int" />
-			<description>
-				Sent when an app is uninstalled.
 			</description>
 		</signal>
 		<signal name="available_beacon_locations_updated">
@@ -7559,6 +7459,11 @@
 			</description>
 		</signal>
 		<signal name="input_action_event">
+			<param index="0" name="input_handle" type="int" />
+			<param index="1" name="event_type" type="int" />
+			<param index="2" name="action_handle" type="int" />
+			<param index="3" name="is_active" type="bool" />
+			<param index="4" name="action_data" type="Dictionary" />
 			<description>
 				Purpose: when callbacks are enabled this fires each time a controller action state changes.
 			</description>
@@ -7632,6 +7537,7 @@
 			<param index="0" name="result" type="int" />
 			<param index="1" name="inventory_handle" type="int" />
 			<description>
+				This is fired whenever an inventory result transitions from RESULT_PENDING to any other completed state, see [method Steam.getResultStatus] for the complete list of states. There will always be exactly one callback per handle.
 			</description>
 		</signal>
 		<signal name="inventory_start_purchase_result">
@@ -7639,7 +7545,7 @@
 			<param index="1" name="order_id" type="int" />
 			<param index="2" name="transaction_id" type="int" />
 			<description>
-				This is fired whenever an inventory result transitions from k_EResultPending to any other completed state, see [method Steam.getResultStatus] for the complete list of states. There will always be exactly one callback per handle.
+				This is fired whenever an inventory result transitions from RESULT_PENDING to any other completed state, see [method Steam.getResultStatus] for the complete list of states. There will always be exactly one callback per handle.
 			</description>
 		</signal>
 		<signal name="ip_country">
@@ -8272,13 +8178,6 @@
 				[/codeblock]
 			</description>
 		</signal>
-		<signal name="server_connect_failure">
-			<param index="0" name="result" type="int" />
-			<param index="1" name="retrying" type="bool" />
-			<description>
-				Called when a connection attempt has failed. This will occur periodically if the Steam client is not connected, and has failed when retrying to establish a connection.
-			</description>
-		</signal>
 		<signal name="server_rules_failed_to_respond">
 			<description>
 				The server failed to respond with a rules request.
@@ -8790,6 +8689,18 @@
 		<constant name="BEGIN_AUTH_SESSION_RESULT_GAME_MISMATCH" value="4" enum="BeginAuthSessionResult">
 		</constant>
 		<constant name="BEGIN_AUTH_SESSION_RESULT_EXPIRED_TICKET" value="5" enum="BeginAuthSessionResult">
+		</constant>
+		<constant name="BETA_BRANCH_NONE" value="0" enum="BetaBranchFlags" is_bitfield="true">
+		</constant>
+		<constant name="BETA_BRANCH_DEFAULT" value="1" enum="BetaBranchFlags" is_bitfield="true">
+		</constant>
+		<constant name="BETA_BRANCH_AVAILABLE" value="2" enum="BetaBranchFlags" is_bitfield="true">
+		</constant>
+		<constant name="BETA_BRANCH_PRIVATE" value="4" enum="BetaBranchFlags" is_bitfield="true">
+		</constant>
+		<constant name="BETA_BRANCH_SELECTED" value="8" enum="BetaBranchFlags" is_bitfield="true">
+		</constant>
+		<constant name="BETA_BRANCH_INSTALLED" value="16" enum="BetaBranchFlags" is_bitfield="true">
 		</constant>
 		<constant name="BROADCAST_UPLOAD_RESULT_NONE" value="0" enum="BroadcastUploadResult">
 		</constant>
@@ -10555,6 +10466,8 @@
 		</constant>
 		<constant name="NETWORKING_CONFIG_IP_ALLOW_WITHOUT_AUTH" value="23" enum="NetworkingConfigValue">
 		</constant>
+		<constant name="NETWORKING_CONFIG_IP_LOCAL_HOST_ALLOW_WITHOUT_AUTH" value="52" enum="NetworkingConfigValue">
+		</constant>
 		<constant name="NETWORKING_CONFIG_MTU_PACKET_SIZE" value="32" enum="NetworkingConfigValue">
 		</constant>
 		<constant name="NETWORKING_CONFIG_MTU_DATA_SIZE" value="33" enum="NetworkingConfigValue">
@@ -10851,7 +10764,9 @@
 		</constant>
 		<constant name="FEATURE_KIOSK_MODE" value="14" enum="ParentalFeature">
 		</constant>
-		<constant name="FEATURE_MAX" value="15" enum="ParentalFeature">
+		<constant name="FEATURE_BLOCK_ALWAYS" value="15" enum="ParentalFeature">
+		</constant>
+		<constant name="FEATURE_MAX" value="16" enum="ParentalFeature">
 		</constant>
 		<constant name="STEAM_PARTY_BEACON_LOCATION_DATA" value="0" enum="PartyBeaconLocationData">
 		</constant>
@@ -11268,6 +11183,26 @@
 		<constant name="TEXT_FILTERING_CONTEXT_CHAT" value="2" enum="TextFilteringContext">
 		</constant>
 		<constant name="TEXT_FILTERING_CONTEXT_NAME" value="3" enum="TextFilteringContext">
+		</constant>
+		<constant name="TIMELINE_GAME_MODE_INVALID" value="0" enum="TimelineGameMode">
+		</constant>
+		<constant name="TIMELINE_GAME_MODE_PLAYING" value="1" enum="TimelineGameMode">
+		</constant>
+		<constant name="TIMELINE_GAME_MODE_STAGING" value="2" enum="TimelineGameMode">
+		</constant>
+		<constant name="TIMELINE_GAME_MODE_MENUS" value="3" enum="TimelineGameMode">
+		</constant>
+		<constant name="TIMELINE_GAME_MODE_LOADING_SCREEN" value="4" enum="TimelineGameMode">
+		</constant>
+		<constant name="TIMELINE_GAME_MODE_MAX" value="5" enum="TimelineGameMode">
+		</constant>
+		<constant name="TIMELINE_EVENT_CLIP_PRIORITY_INVALID" value="0" enum="TimelineEventClipPriority">
+		</constant>
+		<constant name="TIMELINE_EVENT_CLIP_PRIORITY_NONE" value="1" enum="TimelineEventClipPriority">
+		</constant>
+		<constant name="TIMELINE_EVENT_CLIP_PRIORITY_STANDARD" value="2" enum="TimelineEventClipPriority">
+		</constant>
+		<constant name="TIMELINE_EVENT_CLIP_PRIORITY_FEATURED" value="3" enum="TimelineEventClipPriority">
 		</constant>
 		<constant name="UNIVERSE_INVALID" value="0" enum="Universe">
 		</constant>

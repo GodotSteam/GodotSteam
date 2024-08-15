@@ -443,7 +443,7 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
 		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
 	}
-	
+
 	// Start the initialization process
 	Dictionary initialize;
 	// Attempt to initialize Steamworks
@@ -462,17 +462,8 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
-
-		// Attach the callbacks, if set
-		if (embed_callbacks) {
-			were_callbacks_embedded = true;
-
-			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
-			SceneTree::get_singleton()->connect("process_frame", callbacks);
-			SceneTree::get_singleton()->connect("physics_frame", callbacks);
-		}
 	}
-	else{
+	else {
 		// The Steam client is not running
 		if (!isSteamRunning()) {
 			status = RESULT_SERVICE_UNAVAILABLE;
@@ -1189,7 +1180,7 @@ Dictionary Steam::getFriendGamePlayed(uint64_t steam_id) {
 			friend_game["ip"] = "0.0.0.0";
 			friend_game["game_port"] = 0;
 			friend_game["query_port"] = 0;
-			friend_game["lobby"] = 0; //"No valid lobby";
+			friend_game["lobby"] = 0; // No valid lobby
 		}
 	}
 	return friend_game;
@@ -4441,7 +4432,7 @@ bool Steam::sendP2PPacket(uint64_t remote_steam_id, PackedByteArray data, P2PSen
 /////////////////////////////////////////////////
 //
 // AcceptSessionWithUser() should only be called in response to a SteamP2PSessionRequest_t callback SteamP2PSessionRequest_t 
-// ill be posted if another user tries to send you a message, and you haven't tried to talk to them.
+// will be posted if another user tries to send you a message, and you haven't tried to talk to them.
 bool Steam::acceptSessionWithUser(uint64_t remote_steam_id) {
 	if (SteamNetworkingMessages() == NULL) {
 		return false;
@@ -11567,7 +11558,7 @@ void Steam::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("lobby_match_list", PropertyInfo(Variant::ARRAY, "lobbies")));
 	ADD_SIGNAL(MethodInfo("lobby_kicked", PropertyInfo(Variant::INT, "lobby_id"), PropertyInfo(Variant::INT, "admin_id"), PropertyInfo(Variant::INT, "due_to_disconnect")));
 
-	// MATCHMAKING SERVER SIGNALS ///////////////
+	// MATCHMAKING SERVERS SIGNALS //////////////
 	ADD_SIGNAL(MethodInfo("request_server_list_server_responded", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
 	ADD_SIGNAL(MethodInfo("request_server_list_server_failed_to_respond", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "server")));
 	ADD_SIGNAL(MethodInfo("request_server_list_refresh_complete", PropertyInfo(Variant::INT, "request_handle"), PropertyInfo(Variant::INT, "response")));
@@ -12959,7 +12950,7 @@ void Steam::_bind_methods() {
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_SERVER_LIST);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_uSER_LIST);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TURN_PASS_LIST);
-	//	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_LAN_BEACON_PENALTY);		// Commented out in the SDK
+//	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_LAN_BEACON_PENALTY);		// Commented out in the SDK
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_P2P_TRANSPORT_ICE_IMPLEMENTATION);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_ECN);
 	BIND_ENUM_CONSTANT(NETWORKING_CONFIG_VALUE_FORCE32BIT);

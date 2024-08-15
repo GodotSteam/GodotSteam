@@ -20,25 +20,9 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://github.com/GodotSteam/GodotSteam/releases).
 
-**Version 4.9.1 Changes**
-- Fixed: fixed typo in RESULT_ADMINISTRATOR_OK, ***thanks to sepTN***
-- Fixed: fixed a variety of types and code corrections, ***thanks to bobsayhilol***
-
-**Version 4.9 Changes**
-- Added: missing `user_achievement_icon_fetched` callback
-- Added: new functions and enums to Apps class
-- Added: new Steam Timeline class functions, enums, and constants
-- Added: new functions to UGC class
-- Added: new enum BetaBranchFlags
-- Added: new value NETWORKING_CONFIG_IP_LOCAL_HOST_ALLOW_WITHOUT_AUTH for NetworkingConfigValue enum
-- Changed: updated for Steamworks SDK 1.60
-- Changed: `network_messages_session_failed` callback now returns the Steam ID associated with the user whose session failed
-- Changed: `global_stats_received` had call result name change under-the-hood, does not affect anything
-- Changed: `sendMessages()` now returns the message result
-- Changed: `getQueryUGCResult()` now passes back additional value total_files_size
-- Changed: enum RemoteStoragePlatform now cast as uint32_t, fixes Rust compatibility, ***thanks to GreenFox***
-- Changed: `item_installed` signal now returns additional data - legacy_content and manifest_id
-- Fixed: incorrect signal name for `inventory_definition_update`, ***thanks to Foxushka***
+**Version 4.10 Changes**
+- Changed: now using Steam Flat API, should allow compiling with MinGW
+- Changed: updated in-editor docs
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
@@ -61,7 +45,7 @@ GodotSteam Version | Broken Compatibility
 Known Issues
 ---
 - Steam overlay will not work when running your game from the editor if you are using Forward+ as the renderer.  It does work with Compatibility though.  Your exported project will work perfectly fine in the Steam client, however.
-- **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.
+- **Using MinGW causes crashes.** I strongly recommend you **do not use MinGW** to compile at this time.  ***GodotSteam 4.10 should allow this, however.***
 
 "Quick" How-To
 ---

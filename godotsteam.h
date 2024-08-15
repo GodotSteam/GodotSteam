@@ -20,7 +20,7 @@
 #include <inttypes.h>
 
 // Include Steamworks API headers
-#include "steam/steam_api.h"
+#include "steam/steam_api_flat.h"
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
 
