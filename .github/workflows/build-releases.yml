@@ -7,17 +7,17 @@ on:
         description: 'Steamworks SDK Github tag:'
         required: true
         type: string
-        default: 'sdk-1.59'
+        default: 'sdk-1.60'
       godot_tag:
         description: 'Godot Github tag:'
         required: true
         type: string
-        default: '4.2.1-stable'
+        default: '4.3-stable'
       godotsteam_version:
         description: 'GodotSteam MP version:'
         required: true
         type: string
-        default: '4.6-mp'
+        default: '4.10-mp'
 
 
 jobs:
