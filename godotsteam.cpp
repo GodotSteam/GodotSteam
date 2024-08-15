@@ -462,6 +462,15 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 		if (SteamUserStats() != NULL && retrieve_stats) {
 			requestCurrentStats();
 		}
+
+		// Attach the callbacks, if set
+		if (embed_callbacks) {
+			were_callbacks_embedded = true;
+
+			auto callbacks = callable_mp(Steam::singleton, &Steam::run_callbacks);
+			SceneTree::get_singleton()->connect("process_frame", callbacks);
+			SceneTree::get_singleton()->connect("physics_frame", callbacks);
+		}
 	}
 	else {
 		// The Steam client is not running
