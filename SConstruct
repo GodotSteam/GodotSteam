@@ -1,6 +1,22 @@
 #!python
 import os
 
+def configure(env):
+    from SCons.Script import BoolVariable, EnumVariable, Variables, Help
+
+    env_vars = Variables()
+
+    env_vars.Add("br_cc",
+    "Set CC to use", env['CC'])
+
+    env_vars.Add("br_cxx",
+    "Set CXX to use", env['CXX'])
+
+    env_vars.Update(env)
+    Help(env_vars.GenerateHelpText(env))
+
+opts = Variables([], ARGUMENTS)
+
 # Gets the standard flags CC, CCX, etc.
 env = SConscript("godot-cpp/SConstruct")
 
