@@ -103,10 +103,11 @@ jobs:
         if: ${{ inputs.godot_cpp_version == '4.3' }}
         shell: sh
         run: |
-          git config --file=.gitmodules submodule.godot-cpp.branch 4.3
+          rm .gitmodules
+          mv .gitmodules43 .gitmodules
           git submodule sync
-          git submodule update --init --recursive --remote
-      
+          git submodule update --init --recursive
+
       - name: Checkout Steamworks SDK
         uses: actions/checkout@v4
         with:
@@ -164,7 +165,7 @@ jobs:
         shell: bash
         run: |
           python -c "import sys; print(sys.version)"
-          python -m pip install scons
+          python -m pip install scons==4.7.0
           scons --version
 
       - name: Load .scons_cache directory
