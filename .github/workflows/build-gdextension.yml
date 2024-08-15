@@ -4,6 +4,9 @@ on:
       steamworks_sdk_tag:
         required: true
         type: string
+      godot_cpp_version:
+        required: true
+        type: string
     secrets:
       steamworks_sdk_repo:
         required: true
@@ -88,7 +91,21 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: true
+
+      - name: Get Godot-CPP 4.1 (For Godot 4.1-4.2)
+        if: ${{ inputs.godot_cpp_version == '4.1' }}
+        shell: sh
+        run: |
+          git submodule update --init --recursive
+
+      - name: Get Godot-CPP 4.3 (For Godot 4.3+)
+        if: ${{ inputs.godot_cpp_version == '4.3' }}
+        shell: sh
+        run: |
+          git config --file=.gitmodules submodule.godot-cpp.branch 4.3
+          git submodule sync
+          git submodule update --init --recursive --remote
       
       - name: Checkout Steamworks SDK
         uses: actions/checkout@v4

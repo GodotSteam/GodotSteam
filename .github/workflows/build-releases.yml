@@ -10,6 +10,12 @@ on:
         type: string
         default: 'sdk-1.60'
 
+      godot_cpp_version:
+        description: 'Godot CPP Tag:'
+        required: true
+        type: string
+        default: '4.1'
+
       godotsteam_version:
         description: 'GodotSteam GDExtension Tag:'
         required: true
@@ -23,6 +29,7 @@ jobs:
 
     with:
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+      godot_cpp_version: ${{ inputs.godot_cpp_version }}
 
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
