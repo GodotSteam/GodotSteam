@@ -93,7 +93,7 @@ jobs:
     uses: ./.github/workflows/create-bundle.yml
     with:
       artifact_type: macos
-      platform: MacOS
+      platform: 'MacOS'
       zip_prefix: macos
       zip_tag: ${{ needs.env-setup.outputs.zip_tag }}
 

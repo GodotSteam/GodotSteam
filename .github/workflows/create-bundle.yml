@@ -71,6 +71,7 @@ jobs:
       - name: Create ${{ inputs.platform }} Bundle
         if: ${{ inputs.platform != 'MacOS' }}
         run: |
+          ls -la files/
           zip -j ${{ inputs.zip_prefix }}-${{ inputs.zip_tag }}.zip files/*
 
       - name: Upload ${{ inputs.platform }} Bundle Artifact
