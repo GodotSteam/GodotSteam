@@ -71,7 +71,7 @@ jobs:
           name: linux-steam
           path: files
 
-      # Mac templates and Steam redistributable
+      # Mac templates
       - name: Download MacOS Template App
         uses: actions/download-artifact@v4
         with:
@@ -80,10 +80,10 @@ jobs:
 
       - name: Create Template Bundle
         run: |
-          zip -j godotsteam-${{ inputs.zip_tag }}-templates.zip files/*
+          zip -j godotsteam-${{ inputs.zip_tag }}-multiplayer-peer-templates.zip files/*
       
       - name: Upload Template Bundle Artifact
         uses: ./.github/actions/upload-artifact
         with:
-          name: godotsteam-${{ inputs.zip_tag }}-templates.zip
-          path: godotsteam-${{ inputs.zip_tag }}-templates.zip
+          name: godotsteam-${{ inputs.zip_tag }}-multiplayer-peer-templates.zip
+          path: godotsteam-${{ inputs.zip_tag }}-multiplayer-peer-templates.zip
