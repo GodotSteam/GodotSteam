@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Steam" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
 	<brief_description>
-		Steamworks SDK / API for the Godot Game Engine.
+		An ecosystem of tools for Godot Engine and Valve's Steam.
 	</brief_description>
 	<description>
-		An open-source and fully functional Steamworks SDK / API module and plug-in for the Godot Game Engine.
 		Full documentation and tutorials are available at https://godotsteam.com/.
 	</description>
 	<tutorials>
@@ -15,7 +14,7 @@
 		<link title="C#">https://godotsteam.com/tutorials/c-sharp/</link>
 		<link title="Common Issues">https://godotsteam.com/tutorials/common_issues/</link>
 		<link title="Exporting and Shipping">https://godotsteam.com/tutorials/exporting_shipping/</link>
-		<link title="Friends' Lobbies">https://godotsteam.com/tutorials/friends_lobbies/</link>
+		<link title="Friends&apos; Lobbies">https://godotsteam.com/tutorials/friends_lobbies/</link>
 		<link title="Initializing Steam">https://godotsteam.com/tutorials/initializing/</link>
 		<link title="Leaderboards">https://godotsteam.com/tutorials/leaderboards/</link>
 		<link title="Linux Caveats">https://godotsteam.com/tutorials/linux_caveats/</link>
@@ -152,7 +151,7 @@
 			<param index="0" name="published_file_id" type="int" />
 			<param index="1" name="child_published_file_id" type="int" />
 			<description>
-				Adds a workshop item as a dependency to the specified item. If the published_file_id item is of type k_EWorkshopFileTypeCollection (2), than the child_published_file_id is simply added to that collection. Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the ISteamUGC API using a combination of the numChildren key returned from [method Steam.getQueryUGCResult] and [method Steam.getQueryUGCChildren].
+				Adds a workshop item as a dependency to the specified item. If the published_file_id item is of type WORKSHOP_FILE_TYPE_COLLECTION (2), than the child_published_file_id is simply added to that collection. Otherwise, the dependency is a soft one that is displayed on the web and can be retrieved via the UGC API using a combination of the [b]children[/b] key returned from [method Steam.getQueryUGCResult] and [method Steam.getQueryUGCChildren].
 				Triggers a [signal Steam.add_ugc_dependency_result] callback.
 			</description>
 		</method>
@@ -340,7 +339,7 @@
 			<param index="2" name="width" type="int" />
 			<param index="3" name="height" type="int" />
 			<description>
-				Adds a screenshot to the user's Steam screenshot library from disk. 
+				Adds a screenshot to the user's Steam screenshot library from disk.
 			</description>
 		</method>
 		<method name="addTimelineEvent">
@@ -362,7 +361,7 @@
 			<param index="1" name="filename" type="String" />
 			<param index="2" name="vr_filename" type="String" />
 			<description>
-				Adds a VR screenshot to the user's Steam screenshot library from disk in the supported type. 
+				Adds a VR screenshot to the user's Steam screenshot library from disk in the supported type.
 			</description>
 		</method>
 		<method name="advertiseGame">
@@ -526,12 +525,6 @@
 				Clear a network identity's data.
 			</description>
 		</method>
-		<method name="clearRichPresence">
-			<return type="void" />
-			<description>
-				Clear the game information in Steam; used in 'View Game Info'.
-			</description>
-		</method>
 		<method name="closeChannelWithUser">
 			<return type="bool" />
 			<param index="0" name="remote_steam_id" type="int" />
@@ -606,7 +599,7 @@
 		<method name="connectByIPAddress">
 			<return type="int" />
 			<param index="0" name="ip_address_with_port" type="String" />
-			<param index="1" name="options" type="Array" />
+			<param index="1" name="options" type="Dictionary" />
 			<description>
 				Begin connecting to a server listen socket that is identified using an [ip-address]:[port], i.e. 127.0.0.1:27015. Used with [method Steam.createListenSocketIP].
 			</description>
@@ -615,7 +608,7 @@
 			<return type="int" />
 			<param index="0" name="remote_steam_id" type="int" />
 			<param index="1" name="virtual_port" type="int" />
-			<param index="2" name="options" type="Array" />
+			<param index="2" name="options" type="Dictionary" />
 			<description>
 				Begin connecting to a server that is identified using a platform-specific identifier. This uses the default rendezvous service, which depends on the platform and library configuration. (E.g. on Steam, it goes through the steam backend.) The traffic is relayed over the Steam Datagram Relay network.
 				If you use this, you probably want to call initRelayNetworkAccess when your app initializes. If you need to set any initial config options, pass them here.
@@ -628,7 +621,7 @@
 			<return type="int" />
 			<param index="0" name="remote_steam_id" type="int" />
 			<param index="1" name="virtual_port" type="int" />
-			<param index="2" name="options" type="Array" />
+			<param index="2" name="options" type="Dictionary" />
 			<description>
 				Client call to connect to a server hosted in a Valve data center, on the specified virtual port. You must have placed a ticket for this server into the cache, or else this connect attempt will fail!
 				Pass your options as an array of arrays; each sub-array containing: [b]config value (int), data type (int), and data value (int or string).[/b]
@@ -713,7 +706,7 @@
 		<method name="createHostedDedicatedServerListenSocket">
 			<return type="int" />
 			<param index="0" name="virtual_port" type="int" />
-			<param index="1" name="options" type="Array" />
+			<param index="1" name="options" type="Dictionary" />
 			<description>
 				Create a listen socket on the specified virtual port. The physical UDP port to use will be determined by the SDR_LISTEN_PORT environment variable. If a UDP port is not configured, this call will fail.
 				This function should be used when you are using the ticket generator library to issue your own tickets. Clients connecting to the server on this virtual port will need a ticket, and they must connect using [method Steam.connectToHostedDedicatedServer].
@@ -733,7 +726,7 @@
 		<method name="createListenSocketIP">
 			<return type="int" />
 			<param index="0" name="ip_reference" type="String" />
-			<param index="1" name="options" type="Array" />
+			<param index="1" name="options" type="Dictionary" />
 			<description>
 				Creates a "server" socket that listens for clients to connect to by calling [method Steam.connectByIPAddress], over ordinary UDP (IPv4 or IPv6)
 				Pass your options as an array of arrays; each sub-array containing: [b]config value (int), data type (int), and data value (int or string).[/b]
@@ -743,7 +736,7 @@
 		<method name="createListenSocketP2P">
 			<return type="int" />
 			<param index="0" name="virtual_port" type="int" />
-			<param index="1" name="options" type="Array" />
+			<param index="1" name="options" type="Dictionary" />
 			<description>
 				Create a listen socket that will listen for P2P connections sent to our FakeIP.  A peer can initiate connections to this listen socket by calling [method Steam.connectByIPAddress].
 			</description>
@@ -751,7 +744,7 @@
 		<method name="createListenSocketP2PFakeIP">
 			<return type="int" />
 			<param index="0" name="fake_port" type="int" />
-			<param index="1" name="options" type="Array" />
+			<param index="1" name="options" type="Dictionary" />
 			<description>
 				Like [method Steam.createListenSocketIP], but clients will connect using [method Steam.connectP2P]. The connection will be relayed through the Valve network.
 				[b]virtual_port[/b] specifies how clients can connect to this socket using [method Steam.connectP2P]. It's very common for applications to only have one listening socket; in that case, use zero. If you need to open multiple listen sockets and have clients be able to connect to one or the other, then virtual_port should be a small integer (less than 1000) unique to each listen socket you create.
@@ -877,6 +870,7 @@
 			<return type="Dictionary" />
 			<param index="0" name="voice" type="PackedByteArray" />
 			<param index="1" name="sample_rate" type="int" />
+			<param index="2" name="buffer_size_override" type="int" default="20480" />
 			<description>
 				Decodes the compressed voice data returned by [method Steam.getVoice].
 				The output data is raw single-channel 16-bit PCM audio. The decoder supports any sample rate from 11025 to 48000. See [method Steam.getVoiceOptimalSampleRate] for more information.
@@ -1689,7 +1683,7 @@
 		</method>
 		<method name="getClanByIndex">
 			<return type="int" />
-			<param index="0" name="clan" type="int" />
+			<param index="0" name="clan_index" type="int" />
 			<description>
 				Gets the Steam group's Steam ID at the given index.
 				[b]Note:[/b] You must call [method Steam.getClanCount] before calling this.
@@ -1810,25 +1804,25 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴connection_status (dictionary)
-				    ┠╴state (int)
-				    ┠╴ping (int)
-				    ┠╴local_quality (float)
-				    ┠╴remote_quality (float)
-				    ┠╴packets_out_per_second (float)
-				    ┠╴bytes_out_per_second (float)
-				    ┠╴packets_in_per_second (float)
-				    ┠╴bytes_in_per_second (float)
-				    ┠╴send_rate (int)
-				    ┠╴pending_unreliable (int)
-				    ┠╴pending_reliable (int)
-				    ┠╴send_unacknowledged_reliable (int)
-				    ┖╴queue_time (int)
+					┠╴state (int)
+					┠╴ping (int)
+					┠╴local_quality (float)
+					┠╴remote_quality (float)
+					┠╴packets_out_per_second (float)
+					┠╴bytes_out_per_second (float)
+					┠╴packets_in_per_second (float)
+					┠╴bytes_in_per_second (float)
+					┠╴send_rate (int)
+					┠╴pending_unreliable (int)
+					┠╴pending_reliable (int)
+					┠╴send_unacknowledged_reliable (int)
+					┖╴queue_time (int)
 				┖╴lanes_status (array)
-				    ┖╴lane_status (dictionary)
-				        ┠╴pending_unreliable (int)
-				        ┠╴pending_reliable (int)
-				        ┠╴sent_unacknowledged_reliable (int)
-				        ┖╴queue_time (int)
+					┖╴lane_status (dictionary)
+						┠╴pending_unreliable (int)
+						┠╴pending_reliable (int)
+						┠╴sent_unacknowledged_reliable (int)
+						┖╴queue_time (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -1890,16 +1884,29 @@
 				Get the number of DLC the user owns for a parent application / game.
 			</description>
 		</method>
-		<method name="getDLCDataByIndex">
+		<method name="getDLCData">
 			<return type="Array" />
 			<description>
-				Returns metadata for a DLC by index.
+				Get all DLC data in an array.
 				The returned array contains a list of:
 				[codeblock]
 				┖╴dlc (dictionary)
-				    ┠╴app_id (int)
-				    ┠╴available (bool)
-				    ┖╴name (string)
+					┠╴app_id (int)
+					┠╴available (bool)
+					┖╴name (string)
+				[/codeblock]
+			</description>
+		</method>
+		<method name="getDLCDataByIndex">
+			<return type="Dictionary" />
+			<param index="0" name="this_dlc_index" type="int" />
+			<description>
+				Returns metadata for a DLC by index.
+				The returned dictionary contains the following keys:
+				[codeblock]
+				┠╴app_id (int)
+				┠╴available (bool)
+				┖╴name (string)
 				[/codeblock]
 			</description>
 		</method>
@@ -1913,6 +1920,23 @@
 				┠╴ret (bool)
 				┠╴downloaded (int)
 				┖╴total (int)
+				[/codeblock]
+			</description>
+		</method>
+		<method name="getDecompressedVoice">
+			<return type="Dictionary" />
+			<param index="0" name="buffer_in_size_override" type="int" default="0" />
+			<param index="1" name="buffer_out_size_override" type="int" default="20480" />
+			<param index="2" name="sample_rate_override" type="int" default="0" />
+			<description>
+				Compacts [method Steam.getVoice], [method Steam.decompressVoice], [method Steam.getAvailableVoice], and [method Steam.getVoiceOptimalSampleRate] into one.
+				The returned dictionary contains the following keys:
+				[codeblock]
+				┠╴compressed_result (int)
+				┠╴compressed_written (int)
+				┠╴output_result (int)
+				┠╴output_buffer (PackedByteArray)
+				┖╴output_written (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -2028,13 +2052,13 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴favorite (dictionary)
-				    ┠╴ret (bool)
-				    ┠╴app (int)
-				    ┠╴ip (string)
-				    ┠╴game_port (int)
-				    ┠╴query_port (int)
-				    ┠╴flags (int)
-				    ┖╴last_played (int)
+					┠╴ret (bool)
+					┠╴app (int)
+					┠╴ip (string)
+					┠╴game_port (int)
+					┠╴query_port (int)
+					┠╴flags (int)
+					┖╴last_played (int)
 				[/codeblock]
 				[b]Note:[/b] You must call [method Steam.getFavoriteGameCount] before calling this. This is already used in GodotSteam's implementation, however.
 			</description>
@@ -2267,7 +2291,7 @@
 			<return type="int" />
 			<param index="0" name="friend_group" type="int" />
 			<description>
-					Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
+				Gets the number of friends in a given friends group. This should be called before getting the list of friends with [method Steam.getFriendsGroupMembersList].
 			</description>
 		</method>
 		<method name="getFriendsGroupMembersList">
@@ -2300,20 +2324,6 @@
 			<param index="0" name="input_handle" type="int" />
 			<description>
 				Returns the associated gamepad index for the specified controller, if emulating a gamepad.
-			</description>
-		</method>
-		<method name="getGenericBytes">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Returns null if not generic bytes type.
-			</description>
-		</method>
-		<method name="getGenericString">
-			<return type="String" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Returns null if not generic string type.
 			</description>
 		</method>
 		<method name="getGlobalStatFloat">
@@ -2370,7 +2380,7 @@
 			<param index="1" name="size" type="int" enum="Steam.InputGlyphSize" />
 			<param index="2" name="flags" type="int" />
 			<description>
-				Get a local path to a PNG file for the provided origin's glyph. 
+				Get a local path to a PNG file for the provided origin's glyph.
 			</description>
 		</method>
 		<method name="getGlyphSVGForActionOrigin">
@@ -2448,19 +2458,6 @@
 				Returns the value of the SDR_LISTEN_PORT environment variable. This is the UDP server your server will be listening on. This will configured automatically for you in production environments.
 			</description>
 		</method>
-		<method name="getIPAddresses">
-			<return type="Array" />
-			<description>
-				Get a list of all IP address structs and their names.
-				The returned array contains a list of:
-				[codeblock]
-				┖╴this_address (dictionary)
-				    ┠╴reference_name (string)
-				    ┠╴localhost (bool)
-				    ┖╴ip_address (int)
-				[/codeblock]
-			</description>
-		</method>
 		<method name="getIPCCallCount">
 			<return type="int" />
 			<description>
@@ -2474,54 +2471,6 @@
 			<description>
 				Returns the 2 digit ISO 3166-1-alpha-2 format country code which client is running in. e.g "US" or "UK".
 				This is looked up via an IP-to-location database.
-			</description>
-		</method>
-		<method name="getIPv4">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Returns IP in host byte order (e.g. aa.bb.cc.dd as 0xaabbccdd). Returns 0 if IP is not mapped IPv4.
-			</description>
-		</method>
-		<method name="getIdentities">
-			<return type="Array" />
-			<description>
-				Get a list of all known network identities.
-				The returned array contains a list of:
-				[codeblock]
-				┖╴this_identity (dictionary)
-				    ┠╴reference_name (string)
-				    ┠╴steam_id (int)
-				    ┖╴type (int)
-				[/codeblock]
-			</description>
-		</method>
-		<method name="getIdentity">
-			<return type="String" />
-			<description>
-				Get the identity assigned to this interface.
-				E.g. on Steam, this is the user's Steam ID, or for the gameserver interface, the Steam ID assigned to the gameserver. Returns false and sets the result to an invalid identity if we don't know our identity yet. (E.g. GameServer has not logged in. On Steam, the user will know their SteamID even if they are not signed into Steam.)
-			</description>
-		</method>
-		<method name="getIdentityIPAddr">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Returns null if we are not an IP address.
-			</description>
-		</method>
-		<method name="getIdentitySteamID">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Return back a Steam ID32 or 0 if identity is not a Steam ID.
-			</description>
-		</method>
-		<method name="getIdentitySteamID64">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Returns 0 if identity is not a Steam ID.
 			</description>
 		</method>
 		<method name="getImageRGBA">
@@ -2555,14 +2504,6 @@
 			<param index="0" name="input_handle" type="int" />
 			<description>
 				Returns the input type (device model) for the specified controller. This tells you if a given controller is a Steam controller, Xbox 360 controller, PS4 controller, etc.
-			</description>
-		</method>
-		<method name="getInstalledApps">
-			<return type="Array" />
-			<param index="0" name="max_app_ids" type="int" />
-			<description>
-				Get a list of app IDs for installed apps for this player.
-				Returned array contains a list of (int) app IDs.
 			</description>
 		</method>
 		<method name="getInstalledDepots">
@@ -2685,7 +2626,7 @@
 		<method name="getLaunchCommandLine">
 			<return type="String" />
 			<description>
-				Gets the command line if the game was launched via Steam URL, e.g. steam://run/{appid}//{command line}/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation > General page on your app.
+				Gets the command line if the game was launched via Steam URL, e.g. steam://run/{appid}//{command line}/. This method is preferable to launching with a command line via the operating system, which can be a security risk. In order for rich presence joins to go through this and not be placed on the OS command line, you must enable "Use launch command line" from the Installation &gt; General page on your app.
 			</description>
 		</method>
 		<method name="getLaunchQueryParam">
@@ -2706,13 +2647,6 @@
 				┠╴result (int)
 				┖╴verbal (string)
 				[/codeblock]
-			</description>
-		</method>
-		<method name="getLeaderboardEntries">
-			<return type="Array" />
-			<description>
-				Get the currently used leaderboard entries.
-				[b]Note:[/b] This is a GodotSteam specific function.
 			</description>
 		</method>
 		<method name="getLeaderboardEntryCount">
@@ -3030,13 +2964,6 @@
 				Get list of all POP IDs. Returns the number of entries that were filled into your list.
 			</description>
 		</method>
-		<method name="getPSNID">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Retrieve this identity's Playstation Network ID.
-			</description>
-		</method>
 		<method name="getPersonaName">
 			<return type="String" />
 			<description>
@@ -3236,9 +3163,9 @@
 			<param index="1" name="index" type="int" />
 			<description>
 				Available in SDK v1.51.
-			Retrieve the number of tags for an individual workshop item after receiving a querying UGC call result.
-			You can then call [method Steam.getQueryUGCTag] to get the tag name or [method Steam.getQueryUGCTagDisplayName] to get the localized tag string (if any).
-			[b]Note:[/b] This must only be called with the handle obtained from a successful [signal Steam.ugc_query_completed] call result.
+				Retrieve the number of tags for an individual workshop item after receiving a querying UGC call result.
+				You can then call [method Steam.getQueryUGCTag] to get the tag name or [method Steam.getQueryUGCTagDisplayName] to get the localized tag string (if any).
+				[b]Note:[/b] This must only be called with the handle obtained from a successful [signal Steam.ugc_query_completed] call result.
 			</description>
 		</method>
 		<method name="getQueryUGCPreviewURL">
@@ -3349,10 +3276,10 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴player (dictionary)
-				    ┠╴id (int) as friend Steam ID.
-				    ┠╴name (string)
-				    ┠╴time (int)
-				    ┖╴status (int)
+					┠╴id (int) as friend Steam ID.
+					┠╴name (string)
+					┠╴time (int)
+					┖╴status (int)
 				[/codeblock]
 				[b]Note:[/b] This is a unique function to GodotSteam.
 			</description>
@@ -3570,13 +3497,6 @@
 				[b]Note:[/b] This only works for users that the local user knows about. They will automatically know about their friends, people on leaderboards they've requested, or people in the same source as them (Steam group, chat room, lobby, or game server). If they don't know about them then you must call [method Steam.requestUserInformation] to cache the avatar locally.
 			</description>
 		</method>
-		<method name="getStadiaID">
-			<return type="int" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Retrieve this identity's Google Stadia ID.
-			</description>
-		</method>
 		<method name="getStatFloat">
 			<return type="float" />
 			<param index="0" name="stat_name" type="String" />
@@ -3673,13 +3593,13 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴bitwise (int)
-				    • 0 / None
-				    • 1&lt;&lt;0 / Windows
-				    • 1&lt;&lt;1 / OSX
-				    • 1&lt;&lt;2 / PS3
-				    • 1&lt;&lt;3 / Linux
-				    • 1&lt;&lt;4 / Reserved
-				    • 0xffffffff / All
+					• 0 / None
+					• 1&lt;&lt;0 / Windows
+					• 1&lt;&lt;1 / OSX
+					• 1&lt;&lt;2 / PS3
+					• 1&lt;&lt;3 / Linux
+					• 1&lt;&lt;4 / Reserved
+					• 0xffffffff / All
 				┖╴verbose (string)
 				[/codeblock]
 			</description>
@@ -3758,9 +3678,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴tags (dictionary)
-				    ┠╴id (int) as friend group ID
-				    ┠╴name (string)
-				    ┖╴members (int)
+					┠╴id (int) as friend group ID
+					┠╴name (string)
+					┖╴members (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -3816,9 +3736,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴ friends (dictionary)
-				    ┠╴id (int) as friend Steam ID
-				    ┠╴name (string)
-				    ┖╴status (int)
+					┠╴id (int) as friend Steam ID
+					┠╴name (string)
+					┖╴status (int)
 				[/codeblock]
 				[b]Note:[/b] This is a unique function to GodotSteam.
 			</description>
@@ -3830,9 +3750,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴groups (dictionary)
-				    ┠╴id (int) as group ID
-				    ┠╴name (string)
-				    ┖╴tag (string)
+					┠╴id (int) as group ID
+					┠╴name (string)
+					┖╴tag (string)
 				[/codeblock]
 				[b]Note:[/b] This is a unique function to GodotSteam.
 			</description>
@@ -3847,6 +3767,7 @@
 		</method>
 		<method name="getVoice">
 			<return type="Dictionary" />
+			<param index="0" name="buffer_size_override" type="int" default="0" />
 			<description>
 				Read captured audio data from the microphone buffer.
 				The compressed data can be transmitted by your application and decoded back into raw audio data using DecompressVoice on the other side. The compressed data provided is in an arbitrary format and is not meant to be played directly.
@@ -3873,11 +3794,16 @@
 				Asynchronously retrieves data about whether the user accepted the Workshop EULA for the current app.
 			</description>
 		</method>
-		<method name="getXboxPairwiseID">
-			<return type="String" />
-			<param index="0" name="reference_name" type="String" />
+		<method name="get_godotsteam_version" qualifiers="const">
+			<return type="float" />
 			<description>
-				Retrieve this identity's XBox pair ID.
+				Returns the current version of GodotSteam you are using.
+			</description>
+		</method>
+		<method name="get_server_list_request" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the current server list request handle.
 			</description>
 		</method>
 		<method name="goBack">
@@ -3939,7 +3865,7 @@
 			<return type="void" />
 			<param index="0" name="hook" type="bool" />
 			<description>
-				Toggles whether the overlay handles screenshots. 
+				Toggles whether the overlay handles screenshots.
 			</description>
 		</method>
 		<method name="hostConfirmGameStart">
@@ -4074,13 +4000,6 @@
 				[/codeblock]
 			</description>
 		</method>
-		<method name="isAddressLocalHost">
-			<return type="bool" />
-			<param index="0" name="reference_name" type="String" />
-			<description>
-				Return true if this identity is localhost. (Either IPv6 ::1, or IPv4 127.0.0.1).
-			</description>
-		</method>
 		<method name="isAnonAccount">
 			<return type="bool" />
 			<param index="0" name="steam_id" type="int" />
@@ -4132,7 +4051,7 @@
 				[codeblock]
 				┠╴broadcasting (bool)
 				┖╴viewers (int)
-    			[/codeblock]
+				[/codeblock]
 			</description>
 		</method>
 		<method name="isChatAccount">
@@ -4181,14 +4100,14 @@
 		<method name="isCloudEnabledForAccount">
 			<return type="bool" />
 			<description>
-				Checks if the account wide Steam Cloud setting is enabled for this user; or if they disabled it in the Settings->Cloud dialog.
+				Checks if the account wide Steam Cloud setting is enabled for this user; or if they disabled it in the Settings-&gt;Cloud dialog.
 				Ensure that you are also checking [method Steam.isCloudEnabledForApp], as these two options are mutually exclusive.
 			</description>
 		</method>
 		<method name="isCloudEnabledForApp">
 			<return type="bool" />
 			<description>
-				Checks if the per game Steam Cloud setting is enabled for this user; or if they disabled it in the Game Properties->Update dialog.
+				Checks if the per game Steam Cloud setting is enabled for this user; or if they disabled it in the Game Properties-&gt;Update dialog.
 				Ensure that you are also checking [method Steam.isCloudEnabledForAccount], as these two options are mutually exclusive.
 				It's generally recommended that you allow the user to toggle this setting within your in-game options, you can toggle it with [method Steam.setCloudEnabledForApp].
 			</description>
@@ -4311,7 +4230,7 @@
 		<method name="isScreenshotsHooked">
 			<return type="bool" />
 			<description>
-				Checks if the app is hooking screenshots. 
+				Checks if the app is hooking screenshots.
 			</description>
 		</method>
 		<method name="isSteamChinaLauncher">
@@ -4332,7 +4251,7 @@
 			<description>
 				Check if the Steam client is running.
 				Naturally, returns true if the Steam client is running.
-				[b]Note:[/b] While this is not listed in the Steamworks docs, it is in the SDK. 
+				[b]Note:[/b] While this is not listed in the Steamworks docs, it is in the SDK.
 			</description>
 		</method>
 		<method name="isSteamRunningInVR">
@@ -4742,16 +4661,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary)
-				    ┠╴payload (string)
-				    ┠╴size (int)
-				    ┠╴connection (int)
-				    ┠╴identity (string)
-				    ┠╴receiver_user_data (int)
-				    ┠╴time_received (int)
-				    ┠╴message_number (int)
-				    ┠╴channel (int)
-				    ┠╴flags (int)
-				    ┖╴sender_user_data (int)
+					┠╴payload (string)
+					┠╴size (int)
+					┠╴connection (int)
+					┠╴identity (string)
+					┠╴receiver_user_data (int)
+					┠╴time_received (int)
+					┠╴message_number (int)
+					┠╴channel (int)
+					┠╴flags (int)
+					┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4764,16 +4683,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary):
-				    ┠╴payload (string)
-				    ┠╴size (int)
-				    ┠╴connection (int)
-				    ┠╴identity (string)
-				    ┠╴receiver_user_data (int)
-				    ┠╴time_received (int)
-				    ┠╴message_number (int)
-				    ┠╴channel (int)
-				    ┠╴flags (int)
-				    ┖╴sender_user_data (int)
+					┠╴payload (string)
+					┠╴size (int)
+					┠╴connection (int)
+					┠╴identity (string)
+					┠╴receiver_user_data (int)
+					┠╴time_received (int)
+					┠╴message_number (int)
+					┠╴channel (int)
+					┠╴flags (int)
+					┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4786,16 +4705,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary):
-				    ┠╴payload (string)
-				    ┠╴size (int)
-				    ┠╴connection (int)
-				    ┠╴identity (string)
-				    ┠╴receiver_user_data (int)
-				    ┠╴time_received (int)
-				    ┠╴message_number (int)
-				    ┠╴channel (int)
-				    ┠╴flags (int)
-				    ┖╴sender_user_data (int)
+					┠╴payload (string)
+					┠╴size (int)
+					┠╴connection (int)
+					┠╴identity (string)
+					┠╴receiver_user_data (int)
+					┠╴time_received (int)
+					┠╴message_number (int)
+					┠╴channel (int)
+					┠╴flags (int)
+					┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4809,16 +4728,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary):
-				    ┠╴payload (string)
-				    ┠╴size (int)
-				    ┠╴connection (int)
-				    ┠╴identity (string)
-				    ┠╴user_data (int)
-				    ┠╴time_received (int)
-				    ┠╴message_number (int)
-				    ┠╴channel (int)
-				    ┠╴flags (int)
-				    ┖╴user_data (int)
+					┠╴payload (string)
+					┠╴size (int)
+					┠╴connection (int)
+					┠╴identity (string)
+					┠╴user_data (int)
+					┠╴time_received (int)
+					┠╴message_number (int)
+					┠╴channel (int)
+					┠╴flags (int)
+					┖╴user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -5851,15 +5770,6 @@
 				[b]Note:[/b] This must be set before you submit the UGC query handle using [method Steam.submitItemUpdate].
 			</description>
 		</method>
-		<method name="setLeaderboardDetailsMax">
-			<return type="int" />
-			<param index="0" name="max" type="int" />
-			<description>
-				Set the maximum number of details to return for leaderboard entries.
-				The current leaderboard details max value.
-				[b]Note:[/b] This is a GodotSteam specific function.
-			</description>
-		</method>
 		<method name="setListenForFriendsMessages">
 			<return type="bool" />
 			<param index="0" name="intercept" type="bool" />
@@ -6300,6 +6210,13 @@
 				Triggers a [signal Steam.html_vertical_scroll] callback.
 			</description>
 		</method>
+		<method name="set_server_list_request">
+			<return type="void" />
+			<param index="0" name="new_server_list_request" type="int" />
+			<description>
+				Set the current server list request handle.
+			</description>
+		</method>
 		<method name="showBindingPanel">
 			<return type="bool" />
 			<param index="0" name="input_handle" type="int" />
@@ -6541,7 +6458,7 @@
 			<param index="0" name="screenshot" type="int" />
 			<param index="1" name="file_id" type="int" />
 			<description>
-				Tags a published file as being visible in the screenshot. 
+				Tags a published file as being visible in the screenshot.
 			</description>
 		</method>
 		<method name="tagUser">
@@ -6549,7 +6466,7 @@
 			<param index="0" name="screenshot" type="int" />
 			<param index="1" name="steam_id" type="int" />
 			<description>
-				Tags a Steam user as being visible in the screenshot. You can tag up to the value declared by k_nScreenshotMaxTaggedUsers in a single screenshot. Tagging more users than that will just be discarded. This function has a built in delay before saving the tag which allows you to call it repeatedly for each item. You can get the handle to tag the screenshot once it has been successfully saved from the [signal Steam.screenshot_ready] callback or via the [method Steam.WriteScreenshot], [method Steam.AddScreenshotToLibrary], [method Steam.AddVRScreenshotToLibrary] calls. 
+				Tags a Steam user as being visible in the screenshot. You can tag up to the value declared by k_nScreenshotMaxTaggedUsers in a single screenshot. Tagging more users than that will just be discarded. This function has a built in delay before saving the tag which allows you to call it repeatedly for each item. You can get the handle to tag the screenshot once it has been successfully saved from the [signal Steam.screenshot_ready] callback or via the [method Steam.WriteScreenshot], [method Steam.AddScreenshotToLibrary], [method Steam.AddVRScreenshotToLibrary] calls.
 			</description>
 		</method>
 		<method name="terminateGameConnection">
@@ -6831,10 +6748,30 @@
 			<param index="1" name="width" type="int" />
 			<param index="2" name="height" type="int" />
 			<description>
-				Writes a screenshot to the user's Steam screenshot library. 
+				Writes a screenshot to the user's Steam screenshot library.
 			</description>
 		</method>
 	</methods>
+	<members>
+		<member name="browser_handle" type="int" setter="set_browser_handle" getter="get_browser_handle" default="0">
+		</member>
+		<member name="current_app_id" type="int" setter="set_current_app_id" getter="get_current_app_id" default="0">
+		</member>
+		<member name="current_clan_id" type="int" setter="set_current_clan_id" getter="get_current_clan_id" default="0">
+		</member>
+		<member name="current_steam_id" type="int" setter="set_current_steam_id" getter="get_current_steam_id" default="0">
+		</member>
+		<member name="inventory_handle" type="int" setter="set_inventory_handle" getter="get_inventory_handle" default="0">
+		</member>
+		<member name="inventory_update_handle" type="int" setter="set_inventory_update_handle" getter="get_inventory_update_handle" default="0">
+		</member>
+		<member name="leaderboard_details_max" type="int" setter="set_leaderboard_details_max" getter="get_leaderboard_details_max" default="64">
+		</member>
+		<member name="leaderboard_entries_array" type="Array" setter="set_leaderboard_entries" getter="get_leaderboard_entries" default="[]">
+		</member>
+		<member name="leaderboard_handle" type="int" setter="set_leaderboard_handle" getter="get_leaderboard_handle" default="0">
+		</member>
+	</members>
 	<signals>
 		<signal name="active_beacons_updated">
 			<description>
@@ -6981,7 +6918,7 @@
 		<signal name="dlc_installed">
 			<param index="0" name="app" type="int" />
 			<description>
-				 Triggered after the current user gains ownership of DLC and that DLC is installed.
+				Triggered after the current user gains ownership of DLC and that DLC is installed.
 			</description>
 		</signal>
 		<signal name="download_ugc_result">
@@ -7066,7 +7003,7 @@
 			<param index="0" name="result" type="int" />
 			<param index="1" name="remote_fake_steam_id" type="int" />
 			<param index="2" name="fake_ip" type="String" />
-			<param index="3" name="port_list" type="PackedInt32Array" />
+			<param index="3" name="port_list" type="Array" />
 			<description>
 				A struct used to describe a "fake IP" we have been assigned to use as an identifier. This callback is posted when [method Steam.beginAsyncRequestFakeIP]completes.
 			</description>
@@ -7271,7 +7208,6 @@
 		</signal>
 		<signal name="html_hide_tooltip">
 			<param index="0" name="browser_handle" type="int" />
-			<param index="1" name="scroll_data" type="Dictionary" />
 			<description>
 				Called when a a browser wants to hide a tooltip.
 			</description>
@@ -7704,9 +7640,9 @@
 			</description>
 		</signal>
 		<signal name="lobby_data_update">
-      <param index="0" name="success" type="int" />
-      <param index="1" name="lobby_id" type="int" />
-      <param index="2" name="member_id" type="int" />
+			<param index="0" name="success" type="int" />
+			<param index="1" name="lobby_id" type="int" />
+			<param index="2" name="member_id" type="int" />
 			<description>
 				The lobby metadata has changed.
 			</description>
@@ -7968,7 +7904,6 @@
 				This is called when a user has some kind of change.
 			</description>
 		</signal>
-
 		<signal name="ping_server_failed_to_respond">
 			<description>
 				The server has failed to respond to a ping request.
@@ -8020,7 +7955,6 @@
 				The server has completed a player details request.
 			</description>
 		</signal>
-
 		<signal name="relay_network_status">
 			<param index="0" name="available" type="int" />
 			<param index="1" name="ping_measurement" type="int" />
@@ -8106,7 +8040,6 @@
 				[/codeblock]
 			</description>
 		</signal>
-
 		<signal name="request_server_list_refresh_complete">
 			<param index="0" name="request_handle" type="int" />
 			<param index="1" name="response" type="int" />
@@ -8128,7 +8061,6 @@
 				A server has responded to a list request.
 			</description>
 		</signal>
-
 		<signal name="reservation_notification">
 			<param index="0" name="beacon_id" type="int" />
 			<param index="1" name="steam_id" type="int" />
@@ -8237,13 +8169,6 @@
 		<signal name="steam_shutdown">
 			<description>
 				Called when Steam wants to shut down.
-			</description>
-		</signal>
-		<signal name="steamworks_error">
-			<param index="0" name="failed_signal" type="String" />
-			<param index="1" name="io_failure" type="String" />
-			<description>
-				Intended to serve as generic error messaging for failed call results.
 			</description>
 		</signal>
 		<signal name="stop_playtime_tracking">
