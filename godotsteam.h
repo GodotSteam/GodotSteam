@@ -2505,7 +2505,7 @@ public:
 	Dictionary getAuthSessionTicket(uint64_t remote_steam_id = 0);
 	uint32 getAuthTicketForWebApi(const String &service_identity = "");
 	Dictionary getAvailableVoice();
-	Dictionary getDecompressedVoice(uint32 buffer_in_size_override = 0, uint32 buffer_out_size_override = 20480, uint32 sample_rate_override = 0);
+//	Dictionary getDecompressedVoice(uint32 buffer_in_size_override = 0, uint32 buffer_out_size_override = 20480, uint32 sample_rate_override = 0);
 	void getDurationControl();
 	Dictionary getEncryptedAppTicket();
 	int getGameBadgeLevel(int series, bool foil);

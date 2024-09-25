@@ -1923,23 +1923,6 @@
 				[/codeblock]
 			</description>
 		</method>
-		<method name="getDecompressedVoice">
-			<return type="Dictionary" />
-			<param index="0" name="buffer_in_size_override" type="int" default="0" />
-			<param index="1" name="buffer_out_size_override" type="int" default="20480" />
-			<param index="2" name="sample_rate_override" type="int" default="0" />
-			<description>
-				Compacts [method Steam.getVoice], [method Steam.decompressVoice], [method Steam.getAvailableVoice], and [method Steam.getVoiceOptimalSampleRate] into one.
-				The returned dictionary contains the following keys:
-				[codeblock]
-				┠╴compressed_result (int)
-				┠╴compressed_written (int)
-				┠╴output_result (int)
-				┠╴output_buffer (PackedByteArray)
-				┖╴output_written (int)
-				[/codeblock]
-			</description>
-		</method>
 		<method name="getDetailedConnectionStatus">
 			<return type="Dictionary" />
 			<param index="0" name="connection_handle" type="int" />

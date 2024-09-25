@@ -25,7 +25,6 @@ Current Build
 You can [download pre-compiled versions of this repo here](https://github.com/GodotSteam/GodotSteam/releases).
 
 **Version 4.11 Changes**
-- Added: `getDecompressedVoice` which utilizes `getVoice`, `decompressVoice`, `getAvailableVoice`, and `getVoiceOptimalSampleRate` in C++
 - Added: `getDLCData` to get all DLC information and `getDLCDataByIndex` now acts as Steam intended with an index passed
 - Added: properties for all variants GodotSteam stores
 - Changed: using Godot's macros for error reporting back to the editor
