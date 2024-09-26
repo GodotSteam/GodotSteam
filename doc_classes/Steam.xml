@@ -3778,7 +3778,7 @@
 			</description>
 		</method>
 		<method name="get_godotsteam_version" qualifiers="const">
-			<return type="float" />
+			<return type="String" />
 			<description>
 				Returns the current version of GodotSteam you are using.
 			</description>

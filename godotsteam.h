@@ -1812,7 +1812,7 @@ public:
 	/////////////////////////////////////////
 	//
 	// Main
-	float get_godotsteam_version() const { return godotsteam_version; }
+	String get_godotsteam_version() const { return godotsteam_version; }
 	uint32_t getSteamID32(uint64_t steam_id);
 	bool isAnonAccount(uint64_t steam_id);
 	bool isAnonUserAccount(uint64_t steam_id);
@@ -2645,7 +2645,7 @@ protected:
 
 private:
 	// Main
-	float godotsteam_version = 4.11;
+	String godotsteam_version = "4.11";
 	bool is_init_success;
 	bool were_callbacks_embedded;
 
