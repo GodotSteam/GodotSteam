@@ -2706,9 +2706,10 @@ int32 Steam::getAllItems() {
 String Steam::getItemDefinitionProperty(uint32 definition, const String &name) {
 	ERR_FAIL_COND_V_MSG(SteamInventory() == NULL, "", "[STEAM] Inventory class not found when calling: getItemDefinitionProperty");
 	uint32 buffer_size = STEAM_BUFFER_SIZE;
-	char buffer[buffer_size];
+	char *buffer = new char[buffer_size];
 	SteamInventory()->GetItemDefinitionProperty(definition, name.utf8().get_data(), buffer, &buffer_size);
 	String property = String::utf8(buffer, buffer_size);
+	delete[] buffer;
 	return property;
 }
 
@@ -2772,7 +2773,7 @@ Array Steam::getItemsWithPrices() {
 String Steam::getResultItemProperty(uint32 index, const String &name, int32 this_inventory_handle) {
 	ERR_FAIL_COND_V_MSG(SteamInventory() == NULL, "", "[STEAM] Inventory class not found when calling: getResultItemProperty");
 	uint32 buffer_size = 256;
-	char value[buffer_size];
+	char *value = new char[buffer_size];
 
 	if (this_inventory_handle == 0) {
 		this_inventory_handle = inventory_handle;
@@ -2784,6 +2785,7 @@ String Steam::getResultItemProperty(uint32 index, const String &name, int32 this
 	else {
 		SteamInventory()->GetResultItemProperty((SteamInventoryResult_t)this_inventory_handle, index, name.utf8().get_data(), value, &buffer_size);
 	}
+	delete[] value;
 	return String::utf8(value, buffer_size);
 }
 
