@@ -23,19 +23,31 @@
 		<method name="collect_debug_data">
 			<return type="Dictionary" />
 			<description>
+				Returns a list of details about the current lobby.
+				The returned dictionary contains the following keys:
+				[codeblock]
+				┠╴lobby_id (int)
+				┠╴lobby_owner (int)
+				┠╴lobby_state (int)
+				┠╴no_delay (bool)
+				┠╴no_nagle (bool)
+				┠╴steam_id (int)
+				┠╴target_peer (int)
+				┖╴unique_id (int)
+				[/codeblock]
 			</description>
 		</method>
 		<method name="connect_lobby">
-			<return type="Error" />
+			<return type="int" enum="Error" />
 			<param index="0" name="lobby_id" type="int" />
 			<description>
 				Connect to the Steam lobby by given lobby ID. Signal [code]lobby_joined[/code] will be emitted after attempting to connect.
 			</description>
 		</method>
 		<method name="create_lobby">
-			<return type="Error" />
-			<param index="0" name="lobby_type" type="LOBBY_TYPE" />
-			<param index="0" name="max_players" type="int" />
+			<return type="int" enum="Error" />
+			<param index="0" name="lobby_type" type="int" enum="SteamMultiplayerPeer.LobbyType" />
+			<param index="1" name="max_players" type="int" default="32" />
 			<description>
 				Creates a lobby of given with set privacy type and set maximum player amount. Signal [code]lobby_created[/code] will be emitted after lobby creation.
 			</description>
@@ -43,17 +55,28 @@
 		<method name="get_all_lobby_data">
 			<return type="Dictionary" />
 			<description>
+				Get all know data about the current lobby.
+				Returns a dictionary of key-value pairs.
 			</description>
 		</method>
 		<method name="get_direct_messages">
 			<return type="Array" />
 			<description>
+				Deprecated.
 			</description>
 		</method>
 		<method name="get_lobby_data">
 			<return type="String" />
 			<param index="0" name="key" type="String" />
 			<description>
+				Gets the metadata associated with the specified key from the specified lobby.
+				[b]Note:[/b] This can only get metadata from lobbies that the client knows about, either after receiving a list of lobbies from lobby_match_list, retrieving the data with requestLobbyData, or after joining a lobby.
+			</description>
+		</method>
+		<method name="get_lobby_id">
+			<return type="int" />
+			<description>
+				Returns the current lobby's ID.
 			</description>
 		</method>
 		<method name="get_peer_id_from_steam64">
@@ -63,14 +86,46 @@
 				Converts Steam user ID into peer ID of MultiplayerAPI's current [code]multiplayer_peer[/code].
 			</description>
 		</method>
+		<method name="get_peer_info">
+			<return type="Dictionary" />
+			<param index="0" name="peer_id" type="int" />
+			<description>
+				Get a list of data about a given peer.
+				The returned dictionary contains the following keys:
+				[codeblock]
+				┠╴peer_id (int)
+				┠╴steam_id (int)
+				┠╴pending_packet_count (int)
+				┠╴connection_status (string)
+				┠╴packets_out_per_sec (float)
+				┠╴bytes_out_per_sec (float)
+				┠╴packets_in_per_sec (float)
+				┠╴bytes_in_per_sec (float)
+				┠╴connection_quality_local (float)
+				┠╴connection_quality_remote (float)
+				┠╴send_rate_bytes_per_second (int)
+				┠╴pending_unreliable (string)
+				┠╴pending_reliable (string)
+				┠╴sent_unacked_reliable (string)
+				┠╴queue_time (int)
+				┖╴ping (string)
+				[/codeblock]
+			</description>
+		</method>
 		<method name="get_peer_map">
 			<return type="Dictionary" />
 			<description>
+				Get the list of all connected peers.
+				The returned dictionary contains the following key-value pair:
+				[codeblock]
+				┖╴{ peer id (int) : steam id (int) }
+				[/codeblock]
 			</description>
 		</method>
 		<method name="get_state">
-			<return type="LOBBY_STATE" />
+			<return type="int" enum="SteamMultiplayerPeer.LobbyState" />
 			<description>
+				Get the state of the lobby the local player is currently in.
 			</description>
 		</method>
 		<method name="get_steam64_from_peer_id">
@@ -84,6 +139,7 @@
 			<return type="bool" />
 			<param index="0" name="message" type="PackedByteArray" />
 			<description>
+				Send a direct message as a packet.
 			</description>
 		</method>
 		<method name="set_lobby_data">
@@ -102,32 +158,19 @@
 			</description>
 		</method>
 	</methods>
+		<members>
+		<member name="as_relay" type="bool" setter="set_as_relay" getter="get_as_relay" default="false">
+		</member>
+		<member name="no_delay" type="bool" setter="set_no_delay" getter="get_no_delay" default="false">
+		</member>
+		<member name="no_nagle" type="bool" setter="set_no_nagle" getter="get_no_nagle" default="false">
+		</member>
+	</members>
 	<signals>
 		<signal name="debug_data">
 			<param index="0" name="data" type="Dictionary" />
 			<description>
 				Sends out dumps of internal debug data from [SteamMultiplayerPeer].
-			</description>
-		</signal>
-		<signal name="favorites_list_accounts_updated">
-			<param index="0" name="result" type="int" />
-			<description>
-				Called when an account on your favorites list is updated.
-			</description>
-		</signal>
-		<signal name="favorites_list_changed">
-			<param index="0" name="favorite" type="Dictionary" />
-			<description>
-				A server was added/removed from the favorites list, you should refresh now.	The returned dictionary contains the following keys:
-				[codeblock]
-				┠╴ip (string)
-				┠╴query_port (int)
-				┠╴connection_port (int)
-				┠╴app_id (int)
-				┠╴flags (int)
-				┠╴add (bool)
-				┖╴account_id (int)
-				[/codeblock]
 			</description>
 		</signal>
 		<signal name="lobby_chat_update">
@@ -147,25 +190,11 @@
 			</description>
 		</signal>
 		<signal name="lobby_data_update">
+			<param index="0" name="success" type="int" />
+			<param index="1" name="lobby_id" type="int" />
+			<param index="2" name="member_id" type="int" />
 			<description>
 				The lobby metadata has changed.
-			</description>
-		</signal>
-		<signal name="lobby_game_created">
-			<param index="0" name="lobby_id" type="int" />
-			<param index="1" name="server_id" type="int" />
-			<param index="2" name="server_ip" type="String" />
-			<param index="3" name="port" type="int" />
-			<description>
-				A game server has been set via [code]Steam.setLobbyGameServer[/code] for all of the members of the lobby to join. It's up to the individual clients to take action on this; the typical game behavior is to leave the lobby and connect to the specified game server; but the lobby may stay open throughout the session if desired.
-			</description>
-		</signal>
-		<signal name="lobby_invite">
-			<param index="0" name="inviter" type="int" />
-			<param index="1" name="lobby" type="int" />
-			<param index="2" name="game" type="int" />
-			<description>
-				Someone has invited you to join a lobby. Normally you don't need to do anything with this, as the Steam UI will also display a 'user has invited you to the lobby, join?' notification and message.
 			</description>
 		</signal>
 		<signal name="lobby_joined">
@@ -175,20 +204,6 @@
 			<param index="3" name="response" type="Steam.ChatRoomEnterResponse" />
 			<description>
 				Received upon attempting to enter a lobby. Lobby metadata is available to use immediately after receiving this. Provided that result is [code]Steam.ChatRoomEnterResponse.CHAT_ROOM_ENTER_RESPONSE_SUCCESS[/code], callback for this signal would be a good moment to assign the peer to [MultiplayerAPI] by calling [code]multiplayer.set_multiplayer_peer()[/code].
-			</description>
-		</signal>
-		<signal name="lobby_kicked">
-			<param index="0" name="lobby_id" type="int" />
-			<param index="1" name="admin_id" type="int" />
-			<param index="2" name="due_to_disconnect" type="int" />
-			<description>
-				Posted if a user is forcefully removed from a lobby; can occur if a user loses connection to Steam.
-			</description>
-		</signal>
-		<signal name="lobby_match_list">
-			<param index="0" name="lobbies" type="Array" />
-			<description>
-				Result when requesting the lobby list. Emits signal in response to function [code]Steam.requestLobbyList()[/code].
 			</description>
 		</signal>
 		<signal name="lobby_message">
@@ -210,37 +225,35 @@
 		</signal>
 	</signals>
 	<constants>
-		<constant name="LOBBY_TYPE_PRIVATE" value="0" enum="LOBBY_TYPE">
+		<constant name="LOBBY_TYPE_PRIVATE" value="0" enum="LobbyType">
 			Lobby invisible to all other Steam users. The only way to join the lobby is from an invite.
 		</constant>
-		<constant name="LOBBY_TYPE_FRIENDS_ONLY" value="1" enum="LOBBY_TYPE">
+		<constant name="LOBBY_TYPE_FRIENDS_ONLY" value="1" enum="LobbyType">
 			Joinable by friends and invitees, but does not show up in the lobby list provided by [Steam] in [code]lobby_match_list[/code] callback.
 		</constant>
-		<constant name="LOBBY_TYPE_PUBLIC" value="2" enum="LOBBY_TYPE">
+		<constant name="LOBBY_TYPE_PUBLIC" value="2" enum="LobbyType">
 			Returned by search and visible to friends.
 		</constant>
-		<constant name="LOBBY_TYPE_INVISIBLE" value="3" enum="LOBBY_TYPE">
+		<constant name="LOBBY_TYPE_INVISIBLE" value="3" enum="LobbyType">
 			Returned by search, but not visible to other friends.
 		</constant>
-		<constant name="CHAT_CHANGE_ENTERED" value="1" enum="CHAT_CHANGE">
-		</constant>
-		<constant name="CHAT_CHANGE_LEFT" value="2" enum="CHAT_CHANGE">
-		</constant>
-		<constant name="CHAT_CHANGE_DISCONNECTED" value="4" enum="CHAT_CHANGE">
-		</constant>
-		<constant name="CHAT_CHANGE_KICKED" value="8" enum="CHAT_CHANGE">
-		</constant>
-		<constant name="CHAT_CHANGE_BANNED" value="16" enum="CHAT_CHANGE">
+		<constant name="LOBBY_TYPE_PRIVATE_UNIQUE" value="4" enum="LobbyType">
+			Private, unique and does not delete when empty - only one of these may exist per unique keypair set can only create from the Web API.
 		</constant>
 		<constant name="LOBBY_STATE_NOT_CONNECTED" value="0" enum="LOBBY_STATE">
+			The peer is not yet connected to the lobby.
 		</constant>
 		<constant name="LOBBY_STATE_HOST_PENDING" value="1" enum="LOBBY_STATE">
+			The peer is creating a lobby to host.
 		</constant>
 		<constant name="LOBBY_STATE_HOSTING" value="2" enum="LOBBY_STATE">
+			The peer is hosting a lobby.
 		</constant>
 		<constant name="LOBBY_STATE_CLIENT_PENDING" value="3" enum="LOBBY_STATE">
+			The peer is joining a lobby.
 		</constant>
 		<constant name="LOBBY_STATE_CLIENT" value="4" enum="LOBBY_STATE">
+			The peer has joined a lobby as a client.
 		</constant>
 	</constants>
 </class>

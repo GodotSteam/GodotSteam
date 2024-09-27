@@ -1,10 +1,14 @@
-#include "steam_id.h"
+///// HEADER INCLUDES
+/////////////////////////////////////////////////
+//
+// Include GodotSteam header
+#include "godotsteam_id.h"
 
-VARIANT_ENUM_CAST(SteamID::AccountType);
-VARIANT_ENUM_CAST(SteamID::Universe);
 
+///// BIND METHODS
+/////////////////////////////////////////////////
+//
 void SteamID::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("to_int"), &SteamID::to_int);
 	ClassDB::bind_method(D_METHOD("from_int", "id"), &SteamID::from_int);
 
 	ClassDB::bind_method(D_METHOD("get_account_id"), &SteamID::get_account_id);
@@ -12,6 +16,8 @@ void SteamID::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_account_type"), &SteamID::get_account_type);
 	ClassDB::bind_method(D_METHOD("get_universe"), &SteamID::get_universe);
 
+	ClassDB::bind_method(D_METHOD("to_int"), &SteamID::to_int);
+	
 	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INVALID);
 	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_INDIVIDUAL);
 	BIND_ENUM_CONSTANT(ACCOUNT_TYPE_MULTISEAT);

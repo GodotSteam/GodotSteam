@@ -1,8 +1,5 @@
 # SCsub
 Import('env')
 
-src_list = ["steam_multiplayer_peer.cpp","register_types.cpp"]
+src_list = ["godotsteam_multiplayer_peer.cpp","register_types.cpp"]
 env.add_source_files(env.modules_sources, src_list)
-
-
-
