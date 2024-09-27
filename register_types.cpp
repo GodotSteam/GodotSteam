@@ -6,12 +6,12 @@
 #include "godotsteam_multiplayer_peer.h"
 
 
-void initialize_godotsteam_multiplayer_peer_module(ModuleInitializationLevel level) {
+void initialize_godotsteam_multiplayer_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<SteamMultiplayerPeer>();
 	}
 }
 
 
-void uninitialize_godotsteam_multiplayer_peer_module(ModuleInitializationLevel level) {
+void uninitialize_godotsteam_multiplayer_module(ModuleInitializationLevel level) {
 }
