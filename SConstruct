@@ -42,6 +42,7 @@ elif env['platform'] == "windows":
     # Set correct Steam library
     steam_lib_path += "/win64" if env['arch'] == 'x86_64' else ""
     steamworks_library = 'steam_api64.dll' if env['arch'] == 'x86_64' else 'steam_api.dll'
+    env.Append( CCFLAGS=['/bigobj'] )
 
 # make sure our binding library is properly includes
 env.Append(LIBPATH=[steam_lib_path])
