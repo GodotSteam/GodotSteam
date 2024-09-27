@@ -436,11 +436,11 @@ Dictionary Steam::steamInit(bool retrieve_stats, uint32_t app_id, bool embed_cal
 	Dictionary initialize;
 	is_init_success = SteamAPI_Init();
 
-	int status = RESULT_FAIL;
+	int status = k_EResultFail;
 	String verbal = "Steamworks failed to initialize.";
 
 	if (is_init_success) {
-		status = RESULT_OK;
+		status = k_EResultOK;
 		verbal = "Steamworks active.";
 
 		current_app_id = app_id;
@@ -485,8 +485,7 @@ Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_c
 		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
 		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
 	}
-	
-	// Start the initialization process
+
 	Dictionary initialize;
 	char error_message[STEAM_MAX_ERROR_MESSAGE];
 	ESteamAPIInitResult initialize_result;
