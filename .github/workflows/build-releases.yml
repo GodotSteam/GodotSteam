@@ -54,6 +54,6 @@ jobs:
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
 
 
-  create-template-bundle:
+  create-bundle:
     needs: [build-linux, build-windows, build-macos]
     uses: ./.github/workflows/create-bundle.yml
