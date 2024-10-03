@@ -60,3 +60,6 @@ jobs:
     with:
       godot_cpp_version: ${{ inputs.godot_cpp_version }}
       steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
