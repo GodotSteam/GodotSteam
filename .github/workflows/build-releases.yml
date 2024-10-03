@@ -20,17 +20,40 @@ on:
         description: 'GodotSteam GDExtension Tag:'
         required: true
         type: string
-        default: 'v4.10-gde'
+        default: 'v4.11-gde'
 
 
 jobs:
-  build-gdextension-release:
-    uses: ./.github/workflows/build-gdextension.yml
-
+  build-linux:
+    uses: ./.github/workflows/build-artifact-linux.yml
     with:
-      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
       godot_cpp_version: ${{ inputs.godot_cpp_version }}
-
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
     secrets:
       steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
       steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+
+  build-windows:
+    uses: ./.github/workflows/build-artifact-windows.yml
+    with:
+      godot_cpp_version: ${{ inputs.godot_cpp_version }}
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+
+  build-macos:
+    uses: ./.github/workflows/build-artifact-macos.yml
+    with:
+      godot_cpp_version: ${{ inputs.godot_cpp_version }}
+      steamworks_sdk_tag: ${{ inputs.steamworks_sdk_tag }}
+    secrets:
+      steamworks_sdk_repo: ${{ secrets.STEAMWORKS_SDK_REPO }}
+      steamworks_sdk_repo_token: ${{ secrets.STEAMWORKS_SDK_REPO_TOKEN }}
+
+
+  create-template-bundle:
+    needs: [build-linux, build-windows, build-macos]
+    uses: ./.github/workflows/create-bundle.yml

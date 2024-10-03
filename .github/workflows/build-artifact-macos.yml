@@ -1,0 +1,117 @@
+on:
+  workflow_call:
+    inputs:
+      godot_cpp_version:
+        required: true
+        type: string
+
+      steamworks_sdk_tag:
+        required: true
+        type: string
+
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+
+    name: Mac ${{ matrix.name }}
+
+
+    env:
+      STRIP: "strip -u -r"
+
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Templates
+            arch: universal
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Checkout GodotSteam
+      - name: Checkout GodotSteam
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      # Download Godot-CPP to start
+      - name: Download Godot-CPP
+        uses: ./.github/actions/download-godot
+        with:
+          version: ${{ inputs.godot_cpp_version }}
+
+      # Download Steamworks SDK
+      - name: Download Steamworks SDK
+        uses: ./.github/actions/download-steamworks
+        with:
+          path: "steamworks"
+          repository: ${{ secrets.steamworks_sdk_repo }}
+          token: ${{ secrets.steamworks_sdk_repo_token }}
+          ref: ${{ inputs.steamworks_sdk_tag }}
+
+      # Download and install Vulkan
+      - name: Download Vulkan SDK
+        uses: ./.github/actions/download-vulkan
+
+      # Get that cache money
+      - name: Setup Build Cache
+        uses: ./.github/actions/setup-cache
+        with:
+          cache-name: macos
+          godot-base: inputs.godot_tag
+        continue-on-error: true
+
+      # Setup Python and SCONS
+      - name: Setup Python and SCONS
+        uses: ./.github/actions/setup-dependencies
+
+      # Compiling templates
+      - name: Debug Template Compilation (target=template_debug)
+        uses: ./.github/actions/build-godot
+        with:
+          arch: ${{ matrix.arch }}
+          platform: macos
+          target: template_debug
+
+      - name: Upload Debug Template
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: macos-debug-template
+          path: ./bin/libgodotsteam.macos.template_debug
+
+      - name: Release Template Compilation (target=template_release)
+        uses: ./.github/actions/build-godot
+        with:
+          arch: ${{ matrix.arch }}
+          platform: macos
+          target: template_release
+
+      - name: Upload Release Template
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: macos-release-template
+          path: ./bin/libgodotsteam.macos.template_release
+
+      - name: Clear bin
+        run: |
+          rm -rf bin
+
+      # Upload the Steam redistributable for packaging
+      - name: Upload Mac Steam File
+        uses: ./.github/actions/upload-steam-redistributable
+        with:
+          name: macos-steam
+          path: osx/
+          redist: libsteam_api.dylib

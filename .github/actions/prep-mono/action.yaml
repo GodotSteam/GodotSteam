@@ -1,0 +1,25 @@
+name: Move Shared Library For Mono
+
+
+description: Move the Steamworks shared library file so Mono can be happy
+
+
+inputs:
+  path:
+    description: Where to find it
+    default: ""
+
+  lib:
+    description: File to move
+    default: ""
+
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Move the shared library to bin
+      shell: bash
+      run: |
+        mkdir ./bin/
+        cp ./modules/godotsteam/sdk/redistributable_bin/${{ inputs.path }}/${{ inputs.lib }} ./bin

@@ -1,0 +1,129 @@
+on:
+  workflow_call:
+    inputs:
+      steamworks_sdk_tag:
+        required: true
+        type: string
+
+      godot_cpp_version:
+        required: true
+        type: string
+
+    secrets:
+      steamworks_sdk_repo:
+        required: true
+
+      steamworks_sdk_repo_token:
+        required: true
+
+
+jobs:
+  create-bundle:
+    runs-on: ubuntu-latest
+
+    name: Create ${{ inputs.platform }} Bundle
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Mac templates
+      - name: Download MacOS Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-release-template
+          path: files
+
+      - name: Download MacOS Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-debug-template
+          path: files
+
+      - name: Download MacOS Steam File
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-steam
+          path: files
+
+      # Linux 64-bit templates
+      - name: Download Linux 64-bit Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: linux64-release-template
+          path: files
+
+      - name: Download Linux 64-bit Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: linux64-debug-template
+          path: files
+
+      - name: Download Linux 64-bit Steam File
+        uses: actions/download-artifact@v4
+        with:
+          name: linux64-steam
+          path: files
+
+      # Linux 32-bit templates
+      - name: Download Linux 32-bit Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: linux32-release-template
+          path: files
+
+      - name: Download Linux 32-bit Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: linux32-debug-template
+          path: files
+
+      - name: Download Linux 32-bit Steam File
+        uses: actions/download-artifact@v4
+        with:
+          name: linux32-steam
+          path: files
+
+      # Windows 64-bit templates
+      - name: Download Windows 64-bit Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-release-template
+          path: files
+
+      - name: Download Windows 64-bit Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-debug-template
+          path: files
+
+      - name: Download Windows 64-bit Steam File
+        uses: actions/download-artifact@v4
+        with:
+          name: windows64-steam
+          path: files
+
+      # Windows 32-bit templates
+      - name: Download Windows 32-bit Release Template
+        uses: actions/download-artifact@v4
+        with:
+          name: windows32-release-template
+          path: files
+
+      - name: Download Windows 32-bit Debug Template
+        uses: actions/download-artifact@v4
+        with:
+          name: windows32-debug-template
+          path: files
+
+      - name: Download Windows 32-bit Steam File
+        uses: actions/download-artifact@v4
+        with:
+          name: windows32-steam
+          path: files
+
+      # Zip stuff
+      - name: Upload Artifacts Bundle
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: godotsteam-gdextension-plugin.zip
+          path: godotsteam-gdextension-plugin.zip

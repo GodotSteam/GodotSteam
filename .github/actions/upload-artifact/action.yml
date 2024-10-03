@@ -1,0 +1,28 @@
+name: Upload GodotSteam artifact
+
+
+description: Upload the GodotSteam artifact
+
+
+inputs:
+  name:
+    description: The artifact name
+    default: "${{ github.job }}"
+
+  path:
+    description: The path to upload
+    required: true
+    default: "bin/"
+
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Upload GodotSteam Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+        overwrite: true
+        retention-days: 14

@@ -1,0 +1,61 @@
+name: Prep MacOS For Packaging
+
+
+description: Combine x86_64 and arm64 into Universal
+
+
+inputs:
+  target:
+    description: Which packaging are we prepping
+    default: 'editor'
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create Universal Editor
+
+      if: ${{ inputs.target == 'editor' }}
+      shell: bash
+      run: |
+        ls -la bin/
+
+        lipo -create bin/godot.macos.editor.x86_64 bin/godot.macos.editor.arm64 -output bin/godot.macos.editor.universal
+
+        cp -r misc/dist/macos_tools.app bin/GodotSteam.app
+        mkdir -p bin/GodotSteam.app/Contents/MacOS
+
+        cp bin/godot.macos.editor.universal bin/GodotSteam.app/Contents/MacOS/Godot
+        chmod +x bin/GodotSteam.app/Contents/MacOS/Godot
+
+        cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/GodotSteam.app/Contents/MacOS/
+
+        cd bin/
+        zip -q -9 -r macos_editor.zip GodotSteam.app
+        cd ../
+        ls -la bin/
+
+    - name: Create Universal Templates
+      if: ${{ inputs.target == 'templates' }}
+      shell: bash
+      run: |
+        ls -la bin/
+
+        lipo -create bin/godot.macos.template_debug.x86_64 bin/godot.macos.template_debug.arm64 -output bin/godot.macos.template_debug.universal
+        lipo -create bin/godot.macos.template_release.x86_64 bin/godot.macos.template_release.arm64 -output bin/godot.macos.template_release.universal
+        $STRIP bin/godot.macos.template_release.universal
+
+        cp -r misc/dist/macos_template.app bin/
+        mkdir -p bin/macos_template.app/Contents/MacOS
+
+        cp bin/godot.macos.template_release.universal bin/macos_template.app/Contents/MacOS/godot_macos_release.universal
+        cp bin/godot.macos.template_debug.universal bin/macos_template.app/Contents/MacOS/godot_macos_debug.universal
+        chmod +x bin/macos_template.app/Contents/MacOS/godot_macos*
+
+        cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/macos_template.app/Contents/MacOS/
+
+        cd bin/
+        zip -q -9 -r macos.zip macos_template.app
+        cd ../
+
+        ls -la bin/
