@@ -245,7 +245,10 @@ const SteamNetworkingConfigValue_t *Steam::convert_config_options(Dictionary con
 				this_option.SetFloat(this_value, config_options[sent_option]);
 			}
 			else if (value_type == Variant::STRING) {
-				this_option.SetString(this_value, String(config_options[sent_option]).utf8().get_data());
+				char *this_string = { 0 };
+				String passed_string = config_options[sent_option];
+				strcpy(this_string, passed_string.utf8().get_data());
+				this_option.SetString(this_value, this_string);
 			}
 			else {
 				Object *this_pointer;
