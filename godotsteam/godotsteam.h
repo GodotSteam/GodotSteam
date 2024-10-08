@@ -21,7 +21,7 @@
 #include <inttypes.h>
 
 // Include Steamworks API headers
-#include "steam/steam_api.h"
+#include "steam/steam_api_flat.h"
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
 
@@ -67,6 +67,7 @@ public:
 	/////////////////////////////////////////
 	//
 	// Main /////////////////////////////////
+	String get_godotsteam_version() const { return godotsteam_version; }
 	uint32_t getSteamID32(uint64_t steam_id);
 	bool isAnonAccount(uint64_t steam_id);
 	bool isAnonUserAccount(uint64_t steam_id);
@@ -82,6 +83,32 @@ public:
 	Dictionary steamInitEx(bool retrieve_stats);
 	void steamShutdown();
 
+	uint32 get_browser_handle() const { return browser_handle; }
+	uint32_t get_current_app_id() const { return current_app_id; }
+	uint64_t get_current_clan_id() const { return current_clan_id; }
+	uint64_t get_current_steam_id() const { return current_steam_id; }
+	int32 get_inventory_handle() const { return inventory_handle; }
+	uint64_t get_inventory_update_handle() const { return inventory_update_handle; }
+	uint64_t get_leaderboard_handle() const { return leaderboard_handle; }
+	int get_leaderboard_details_max() const { return leaderboard_details_max; }
+	Array get_leaderboard_entries() const { return leaderboard_entries_array; }
+	uint64_t get_server_list_request() const { return (uint64)server_list_request; }
+	void set_browser_handle(uint32 new_browser_handle){ browser_handle = new_browser_handle; }
+	void set_current_app_id(uint32_t new_current_app_id){ current_app_id = new_current_app_id; }
+	void set_current_clan_id(uint64_t new_current_clan_id){ current_clan_id = new_current_clan_id; }
+	void set_current_steam_id(uint64_t new_current_steam_id){ current_steam_id = new_current_steam_id; }
+	void set_inventory_handle(int32 new_inventory_handle){ inventory_handle = new_inventory_handle; }
+	void set_inventory_update_handle(uint32_t new_inventory_update_handle){ inventory_update_handle = new_inventory_update_handle; }
+	void set_leaderboard_details_max(int new_leaderboard_details_max) {
+		if (new_leaderboard_details_max > k_cLeaderboardDetailsMax || new_leaderboard_details_max < 0) {
+			new_leaderboard_details_max = k_cLeaderboardDetailsMax;
+		}
+		leaderboard_details_max = new_leaderboard_details_max;
+	}
+	void set_leaderboard_entries(Array new_leaderboard_entries) { leaderboard_entries_array = new_leaderboard_entries; }
+	void set_leaderboard_handle(uint64_t new_leaderboard_handle){ leaderboard_handle = new_leaderboard_handle; }
+	void set_server_list_request(uint64_t new_server_list_request){ server_list_request = (HServerListRequest)new_server_list_request; }
+
 	// Apps /////////////////////////////////
 	int getAppBuildId();
 	Dictionary getAppInstallDir(uint32_t app_id);
@@ -91,7 +118,8 @@ public:
 	String getCurrentBetaName();
 	String getCurrentGameLanguage();
 	int32 getDLCCount();
-	Array getDLCDataByIndex();
+	Array getDLCData();
+	Dictionary getDLCDataByIndex(uint32_t this_dlc_index);
 	Dictionary getDLCDownloadProgress(uint32_t dlc_id);
 	uint32_t getEarliestPurchaseUnixTime(uint32_t app_id);
 	void getFileDetails(String filename);
@@ -128,7 +156,7 @@ public:
 	void enumerateFollowingList(uint32 start_index);
 	uint64_t getChatMemberByIndex(uint64_t clan_id, int user);
 	Dictionary getClanActivityCounts(uint64_t clan_id);
-	uint64_t getClanByIndex(int clan);
+	uint64_t getClanByIndex(int clan_index);
 	int getClanChatMemberCount(uint64_t clan_id);
 	Dictionary getClanChatMessage(uint64_t chat_id, int message);
 	int getClanCount();
@@ -261,8 +289,8 @@ public:
 	PoolByteArray getHTTPResponseBodyData(uint32 request_handle, uint32 buffer_size);
 	uint32 getHTTPResponseBodySize(uint32 request_handle);
 	uint32 getHTTPResponseHeaderSize(uint32 request_handle, String header_name);
-	uint8 getHTTPResponseHeaderValue(uint32 request_handle, String header_name, uint32 buffer_size);
-	uint8 getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
+	PoolByteArray getHTTPResponseHeaderValue(uint32 request_handle, String header_name, uint32 buffer_size);
+	PoolByteArray getHTTPStreamingResponseBodyData(uint32 request_handle, uint32 offset, uint32 buffer_size);
 	bool prioritizeHTTPRequest(uint32 request_handle);
 	bool releaseCookieContainer(uint32 cookie_handle);
 	bool releaseHTTPRequest(uint32 request_handle);
@@ -275,7 +303,7 @@ public:
 	bool setHTTPRequestGetOrPostParameter(uint32 request_handle, String name, String value);
 	bool setHTTPRequestHeaderValue(uint32 request_handle, String header_name, String header_value);
 	bool setHTTPRequestNetworkActivityTimeout(uint32 request_handle, uint32 timeout_seconds);
-	uint8 setHTTPRequestRawPostBody(uint32 request_handle, String content_type, uint32 body_length);
+	bool setHTTPRequestRawPostBody(uint32 request_handle, String content_type, String body);
 	bool setHTTPRequestRequiresVerifiedCertificate(uint32 request_handle, bool require_verified_certificate);
 	bool setHTTPRequestUserAgentInfo(uint32 request_handle, String user_agent_info);
 	
@@ -352,7 +380,7 @@ public:
 	bool loadItemDefinitions();
 	void requestEligiblePromoItemDefinitionsIDs(uint64_t steam_id);
 	void requestPrices();
-	String serializeResult(int32 this_inventory_handle = 0);
+	PoolByteArray serializeResult(int32 this_inventory_handle = 0);
 	void startPurchase(PoolIntArray items, PoolIntArray quantity);
 	int32 transferItemQuantity(uint64_t item_id, uint32 quantity, uint64_t item_destination, bool split);
 	int32 triggerItemDrop(uint32 definition);
@@ -399,16 +427,16 @@ public:
 	bool setLobbyOwner(uint64_t steam_lobby_id, uint64_t steam_id_new_owner);
 
 	// Matchmaking Servers //////////////////
-	void cancelQuery(uint64_t server_list_request = 0);
+	void cancelQuery(uint64_t this_server_list_request = 0);
 	void cancelServerQuery(int server_query);
-	int getServerCount(uint64_t server_list_request = 0);
-	Dictionary getServerDetails(int server, uint64_t server_list_request = 0);
-	bool isRefreshing(uint64_t server_list_request = 0);
+	int getServerCount(uint64_t this_server_list_request = 0);
+	Dictionary getServerDetails(int server, uint64_t this_server_list_request = 0);
+	bool isRefreshing(uint64_t this_server_list_request = 0);
 	int pingServer(String ip, uint16 port);
 	int playerDetails(String ip, uint16 port);
-	void refreshQuery(uint64_t server_list_request = 0);
-	void refreshServer(int server, uint64_t server_list_request = 0);
-	void releaseRequest(uint64_t server_list_request = 0);
+	void refreshQuery(uint64_t this_server_list_request = 0);
+	void refreshServer(int server, uint64_t this_server_list_request = 0);
+	void releaseRequest(uint64_t this_server_list_request = 0);
 	uint64_t requestFavoritesServerList(uint32 app_id, Array filters);
 	uint64_t requestFriendsServerList(uint32 app_id, Array filters);
 	uint64_t requestHistoryServerList(uint32 app_id, Array filters);
@@ -486,14 +514,14 @@ public:
 	bool closeConnection(uint32 peer, int reason, String debug_message, bool linger);
 	bool closeListenSocket(uint32 socket);
 	int configureConnectionLanes(uint32 connection, int lanes, Array priorities, Array weights);
-	uint32 connectP2P(uint64_t remote_steam_id, int virtual_port, Array options);
-	uint32 connectByIPAddress(String ip_address_with_port, Array options);
-	uint32 connectToHostedDedicatedServer(uint64_t remote_steam_id, int virtual_port, Array options);
+	uint32 connectP2P(uint64_t remote_steam_id, int virtual_port, Dictionary config_options);
+	uint32 connectByIPAddress(String ip_address_with_port, Dictionary config_options);
+	uint32 connectToHostedDedicatedServer(uint64_t remote_steam_id, int virtual_port, Dictionary config_options);
 	void createFakeUDPPort(int fake_server_port);
-	uint32 createHostedDedicatedServerListenSocket(int virtual_port, Array options);
-	uint32 createListenSocketIP(String ip_address, Array options);
-	uint32 createListenSocketP2P(int virtual_port, Array options);
-	uint32 createListenSocketP2PFakeIP(int fake_port, Array options);
+	uint32 createHostedDedicatedServerListenSocket(int virtual_port, Dictionary config_options);
+	uint32 createListenSocketIP(String ip_address, Dictionary config_options);
+	uint32 createListenSocketP2P(int virtual_port, Dictionary config_options);
+	uint32 createListenSocketP2PFakeIP(int fake_port, Dictionary config_options);
 	uint32 createPollGroup();
 	Dictionary createSocketPair(bool loopback, uint64_t remote_steam_id1, uint64_t remote_steam_id2);
 	bool destroyPollGroup(uint32 poll_group);
@@ -645,7 +673,7 @@ public:
 	bool addRequiredKeyValueTag(uint64_t query_handle, String key, String value);
 	bool addRequiredTag(uint64_t query_handle, String tag_name);
 	bool addRequiredTagGroup(uint64_t query_handle, Array tag_array);
-	bool initWorkshopForGameServer(uint32_t workshop_depot_id);
+	bool initWorkshopForGameServer(uint32_t workshop_depot_id, String folder);
 	void createItem(uint32 app_id, int file_type);
 	uint64_t createQueryAllUGCRequest(int query_type, int matching_type, uint32_t creator_id, uint32_t consumer_id, uint32 page);
 	uint64_t createQueryUGCDetailsRequest(Array published_file_id);
@@ -728,7 +756,7 @@ public:
 	void advertiseGame(String server_ip, int port);
 	int beginAuthSession(PoolByteArray ticket, int ticket_size, uint64_t steam_id);
 	void cancelAuthTicket(uint32_t auth_ticket);
-	Dictionary decompressVoice(const PoolByteArray& voice, uint32 voice_size, uint32 sample_rate);
+	Dictionary decompressVoice(const PoolByteArray& voice, uint32 sample_rate, uint32 buffer_size_override);
 	void endAuthSession(uint64_t steam_id);
 	Dictionary getAuthSessionTicket(uint64_t remote_steam_id);
 	uint32 getAuthTicketForWebApi(String service_identity);
@@ -738,7 +766,7 @@ public:
 	int getGameBadgeLevel(int series, bool foil);
 	int getPlayerSteamLevel();
 	uint64_t getSteamID();
-	Dictionary getVoice();
+	Dictionary getVoice(uint32 buffer_size_override);
 	uint32 getVoiceOptimalSampleRate();
 	Dictionary initiateGameConnection(uint64_t server_id, String server_ip, uint16 server_port, bool secure);
 	bool isBehindNAT();
@@ -772,8 +800,8 @@ public:
 	Dictionary getAchievementProgressLimitsFloat(String achievement_name);
 	uint64_t getGlobalStatInt(String stat_name);
 	double getGlobalStatFloat(String stat_name);
-	uint64_t getGlobalStatIntHistory(String stat_name);
-	double getGlobalStatFloatHistory(String stat_name);
+	PoolIntArray getGlobalStatIntHistory(String stat_name);
+	PoolRealArray getGlobalStatFloatHistory(String stat_name);
 	Dictionary getLeaderboardDisplayType(uint64_t this_leaderboard);
 	int getLeaderboardEntryCount(uint64_t this_leaderboard);
 	String getLeaderboardName(uint64_t this_leaderboard);
@@ -842,6 +870,31 @@ public:
 	Dictionary isBroadcasting();
 
 
+	// PROPERTIES
+	/////////////////////////////////////////////
+	//
+	// Friends
+	uint64_t current_clan_id = 0;
+
+	// HTML Surface
+	uint32 browser_handle = 0;
+
+	// Inventory
+	SteamInventoryResult_t inventory_handle = 0;
+	SteamInventoryUpdateHandle_t inventory_update_handle = 0;
+
+	// User
+	uint64_t current_steam_id = 0;
+
+	// User Stats
+	int leaderboard_details_max = LEADERBOARD_DETAIL_MAX;
+	Array leaderboard_entries_array;
+	SteamLeaderboard_t leaderboard_handle = 0;
+
+	// Utils
+	uint32_t current_app_id = 0;
+
+
 protected:
 	static void _bind_methods();
 	static Steam *singleton;
@@ -849,9 +902,10 @@ protected:
 
 private:
 	// Main
+	String godotsteam_version = "3.27";
 	bool is_init_success;
 
-	const SteamNetworkingConfigValue_t *convertOptionsArray(Array options);
+	const SteamNetworkingConfigValue_t *convert_config_options(Dictionary config_options);
 	CSteamID createSteamID(uint64_t steam_id);
 	SteamNetworkingIdentity getIdentityFromSteamID(uint64_t steam_id);
 	uint32 getIPFromSteamIP(SteamNetworkingIPAddr this_address);
@@ -861,25 +915,6 @@ private:
 	SteamNetworkingIPAddr getSteamIPFromString(String ip_string);
 	String getStringFromIP(uint32 ip_address);
 	String getStringFromSteamIP(SteamNetworkingIPAddr this_address);
-
-	// Apps
-	uint64_t current_app_id = 0;
-
-	// Friends
-	CSteamID clan_activity;
-
-	// HTML Surface
-	uint32 browser_handle;
-
-	// Inventory
-	SteamInventoryUpdateHandle_t inventory_update_handle;
-	SteamInventoryResult_t inventory_handle;
-	SteamItemDetails_t inventory_details;
-
-	// Leaderboards
-	SteamLeaderboard_t leaderboard_handle;
-	Array leaderboard_entries_array;
-	int leaderboard_details_max = LEADERBOARD_DETAIL_MAX;
 
 	// Matchmaking Server
 	HServerListRequest server_list_request;
@@ -894,22 +929,10 @@ private:
 //		std::map<int, SteamNetworkingMessage_t> network_messages;
 
 	// Networking Sockets
-	uint32 network_connection;
-	uint32 network_poll_group;
 	uint64_t networking_microseconds = 0;
 //		SteamDatagramHostedAddress hosted_address;
-	PoolByteArray routing_blob;
+//		PoolByteArray routing_blob;
 //		SteamDatagramRelayAuthTicket relay_auth_ticket;
-
-	// Parties
-	uint64 party_beacon_id;
-
-	// Remote Storage
-	uint64_t write_stream_handle = 0;
-
-	// User stats
-	int number_achievements = 0;
-	bool stats_initialized = false;
 
 	// Utils
 	uint64_t api_handle = 0;
