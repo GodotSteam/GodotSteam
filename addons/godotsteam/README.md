@@ -18,7 +18,7 @@ Feel free to chat with us about GodotSteam or ask for assistance on the [Discord
 
 Donate
 ---
-Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps) or [Patreon](https://patreon.com/godotsteam)! Both types of contributions keep things rolling!
+Pull-requests are the best way to help the project out but you can also donate through [Github Sponsors](https://github.com/sponsors/Gramps)!
 
 Current Build
 ---
