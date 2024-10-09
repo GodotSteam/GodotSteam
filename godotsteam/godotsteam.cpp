@@ -7467,7 +7467,8 @@ Dictionary Steam::getAchievement(String name) {
 		achieve["ret"] = false;
 	}
 	else {
-		achieve["ret"] = SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+		bool ret = SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+		achieve["ret"] = ret;
 	}
 	achieve["achieved"] = achieved;
 	return achieve;
@@ -7481,7 +7482,8 @@ Dictionary Steam::getAchievementAchievedPercent(String name) {
 		achieve["ret"] = false;
 	}
 	else {
-		achieve["ret"] = SteamUserStats()->GetAchievementAchievedPercent(name.utf8().get_data(), &percent);
+		bool ret = SteamUserStats()->GetAchievementAchievedPercent(name.utf8().get_data(), &percent);
+		achieve["ret"] = ret;
 	}
 	achieve["percent"] = percent;
 	return achieve;
