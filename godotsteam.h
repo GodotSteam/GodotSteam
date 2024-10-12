@@ -1842,7 +1842,7 @@ public:
 	void set_current_clan_id(uint64_t new_current_clan_id){ current_clan_id = new_current_clan_id; }
 	void set_current_steam_id(uint64_t new_current_steam_id){ current_steam_id = new_current_steam_id; }
 	void set_inventory_handle(int32 new_inventory_handle){ inventory_handle = new_inventory_handle; }
-	void set_inventory_update_handle(uint32_t new_inventory_update_handle){ inventory_update_handle = new_inventory_update_handle; }
+	void set_inventory_update_handle(uint64_t new_inventory_update_handle){ inventory_update_handle = new_inventory_update_handle; }
 	void set_leaderboard_details_max(int new_leaderboard_details_max) {
 		if (new_leaderboard_details_max > k_cLeaderboardDetailsMax || new_leaderboard_details_max < 0) {
 			new_leaderboard_details_max = k_cLeaderboardDetailsMax;
