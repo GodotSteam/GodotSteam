@@ -3300,13 +3300,9 @@ static std::vector<MatchMakingKeyValuePair_t> filters_array_to_vector(const Arra
 	uint32 filter_size = filters.size();
 	std::vector<MatchMakingKeyValuePair_t> filters_array(filter_size);
 	for (uint32 i = 0; i < filter_size; i++) {
-		// Get the key/value pair
 		Array pair = filters[i];
-		// Get the key from the filter pair
 		String key = pair[0];
-		// Get the value from the filter pair
 		String value = pair[1];
-		// Create a new filter pair to populate
 		filters_array[i] = MatchMakingKeyValuePair_t(key.utf8(), value.utf8());
 	}
 	return filters_array;
@@ -6519,10 +6515,11 @@ void Steam::findOrCreateLeaderboard(const String &name, LeaderboardSortMethod so
 // Return true/false if user has given achievement and the bool status of it being achieved or not.
 Dictionary Steam::getAchievement(const String &name) {
 	Dictionary achieve;
-	achieve["ret"] = false;
 	ERR_FAIL_COND_V_MSG(SteamUserStats() == NULL, achieve, "[STEAM] User Stats class not found when calling: getAchievement");
 	bool achieved = false;
-	achieve["ret"] = SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	bool achieve_exists = SteamUserStats()->GetAchievement(name.utf8().get_data(), &achieved);
+	// Testing assignment
+	achieve["ret"] = achieve_exists;
 	achieve["achieved"] = achieved;
 	return achieve;
 }
@@ -8154,7 +8151,6 @@ void Steam::relay_network_status(SteamRelayNetworkStatus_t *call_data) {
 	int available_relay = call_data->m_eAvailAnyRelay;
 	char debug_message[256 + 1]{};
 	snprintf(debug_message, 256, "%s", call_data->m_debugMsg);
-//	debug_message = call_data->m_debugMsg;
 	emit_signal("relay_network_status", available, ping_measurement, available_config, available_relay, debug_message);
 }
 

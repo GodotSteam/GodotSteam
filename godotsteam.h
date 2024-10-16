@@ -1410,9 +1410,9 @@ public:
 		IDENTITY_TYPE_XBOX_PAIRWISE = k_ESteamNetworkingIdentityType_XboxPairwiseID,
 		IDENTITY_TYPE_SONY_PSN = k_ESteamNetworkingIdentityType_SonyPSN,
 		IDENTITY_TYPE_GOOGLE_STADIA = k_ESteamNetworkingIdentityType_GoogleStadia,
-		//			IDENTITY_TYPE_NINTENDO = k_ESteamNetworkingIdentityType_NintendoNetworkServiceAccount,
-		//			IDENTITY_TYPE_EPIC_GS = k_ESteamNetworkingIdentityType_EpicGameStore,
-		//			IDENTITY_TYPE_WEGAME = k_ESteamNetworkingIdentityType_WeGame,
+//		IDENTITY_TYPE_NINTENDO = k_ESteamNetworkingIdentityType_NintendoNetworkServiceAccount,
+//		IDENTITY_TYPE_EPIC_GS = k_ESteamNetworkingIdentityType_EpicGameStore,
+//		IDENTITY_TYPE_WEGAME = k_ESteamNetworkingIdentityType_WeGame,
 		IDENTITY_TYPE_FORCE_32BIT = k_ESteamNetworkingIdentityType__Force32bit
 	};
 	enum NetworkingSocketsDebugOutputType {
