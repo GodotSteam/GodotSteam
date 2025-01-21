@@ -1022,20 +1022,20 @@ private:
 
 	// Matchmaking Server
 	// ISteamMatchmakingServerListResponse
-	void ServerResponded(HServerListRequest list_request_handle, int server);
-	void ServerFailedToRespond(HServerListRequest list_request_handle, int server);
-	void RefreshComplete (HServerListRequest list_request_handle, EMatchMakingServerResponse response);
+	void ServerResponded(HServerListRequest list_request_handle, int server) override;
+	void ServerFailedToRespond(HServerListRequest list_request_handle, int server) override;
+	void RefreshComplete (HServerListRequest list_request_handle, EMatchMakingServerResponse response) override;
 	// ISteamMatchmakingPingResponse
-	void ServerResponded(gameserveritem_t &server);
-	void ServerFailedToRespond();
+	void ServerResponded(gameserveritem_t &server) override;
+	void ServerFailedToRespond() override;
 	// ISteamMatchmakingPlayersResponse
-	void AddPlayerToList(const char *player_name, int score, float time_played);
-	void PlayersFailedToRespond();
-	void PlayersRefreshComplete();
+	void AddPlayerToList(const char *player_name, int score, float time_played) override;
+	void PlayersFailedToRespond() override;
+	void PlayersRefreshComplete() override;
 	// ISteamMatchmakingRulesResponse
-	void RulesResponded(const char *rule, const char *value);
-	void RulesFailedToRespond();
-	void RulesRefreshComplete();
+	void RulesResponded(const char *rule, const char *value) override;
+	void RulesFailedToRespond() override;
+	void RulesRefreshComplete() override;
 
 	// Music
 	STEAM_CALLBACK(Steam, music_playback_status_has_changed, PlaybackStatusHasChanged_t, callbackMusicPlaybackStatusHasChanged);
