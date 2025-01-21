@@ -1,8 +1,10 @@
 import os.path
 
+module_path = os.path.dirname(os.path.realpath(__file__))
+
 def can_build(env, platform):
 	# Check if headers are present
-	if os.path.exists("sdk/public/steam/steam_api.h"):
+	if os.path.exists("%s/sdk/public/steam/steam_api.h" % module_path):
 		return platform=="linuxbsd" or platform=="windows" or platform=="macos" or platform=="server"
 	return False
 
