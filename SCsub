@@ -1,8 +1,8 @@
-# SCsub
-Import('env')
+#!/usr/bin/env python
 
-module_path = Dir('.').srcnode().abspath
+Import("env")
+Import("env_modules")
 
-env.Append(CPPPATH=["%s/sdk/public/" % module_path])
-
-env.add_source_files(env.modules_sources,"*.cpp")
+env_godotsteam = env_modules.Clone()
+env_godotsteam.Append(CPPPATH=["#modules/godotsteam/sdk/public/"])
+env_godotsteam.add_source_files(env.modules_sources, "*.cpp")

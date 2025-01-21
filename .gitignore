@@ -53,3 +53,4 @@ doxygen/
 *.svclog
 *.scc
 
+.DS_Store
