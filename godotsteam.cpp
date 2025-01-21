@@ -51,6 +51,12 @@ SteamInternal_ContextInit_t pointer_SteamInternal_ContextInit = nullptr;
 typedef bool (*SteamAPI_RestartAppIfNecessary_t)(uint32);
 SteamAPI_RestartAppIfNecessary_t pointer_SteamAPI_RestartAppIfNecessary = nullptr;
 
+typedef void* (*SteamInternal_FindOrCreateGameServerInterface_t)(HSteamUser, const char *);
+SteamInternal_FindOrCreateGameServerInterface_t pointer_SteamInternal_FindOrCreateGameServerInterface = nullptr;
+
+typedef void* (*SteamInternal_FindOrCreateUserInterface_t)(HSteamUser, const char *);
+SteamInternal_FindOrCreateUserInterface_t pointer_SteamInternal_FindOrCreateUserInterface = nullptr;
+
 void load_steam_dll() {
 	String path;
  	if (OS::get_singleton()->has_feature("linuxbsd")) {
@@ -58,7 +64,6 @@ void load_steam_dll() {
  		if (!FileAccess::exists(path)) {
  			path = OS::get_singleton()->get_executable_path().get_base_dir().path_join("../lib").path_join("libsteam_api.so");
  			if (!FileAccess::exists(path)) {
-				ERR_PRINT("Cannot find " + path);
  				return;
  			}
  		}
@@ -69,7 +74,6 @@ void load_steam_dll() {
  			path = OS::get_singleton()->get_executable_path().get_base_dir().path_join("steam_api.dll");
  		}
  		if (!FileAccess::exists(path)) {
-			ERR_PRINT("Cannot find " + path);
  			return;
  		}
  	} else if (OS::get_singleton()->has_feature("macos")) {
@@ -77,18 +81,15 @@ void load_steam_dll() {
  		if (!FileAccess::exists(path)) {
  			path = OS::get_singleton()->get_executable_path().get_base_dir().path_join("../Frameworks").path_join("libsteam_api.dylib");
  			if (!FileAccess::exists(path)) {
-				ERR_PRINT("Cannot find " + path);
  				return;
  			}
  		}
  	} else {
-		ERR_PRINT("Steam not supported on this platform");
  		return;
  	}
 
  	Error err = OS::get_singleton()->open_dynamic_library(path, steam_library_handle);
  	if (err != OK) {
-		ERR_PRINT("Cannot open Steam dll");
  		steam_library_handle = nullptr;
  		return;
  	}
@@ -193,6 +194,25 @@ void load_steam_dll() {
 	} else {
 		pointer_SteamAPI_RestartAppIfNecessary = reinterpret_cast<bool (*)(uint32)>(symbol_handle);
 	}
+
+	// Load SteamInternal_FindOrCreateGameServerInterface
+	err = OS::get_singleton()->get_dynamic_library_symbol_handle(steam_library_handle, "SteamInternal_FindOrCreateGameServerInterface", symbol_handle, true);
+	if (err != OK) {
+		ERR_PRINT("Cannot load function SteamInternal_FindOrCreateGameServerInterface");
+		return;
+	} else {
+		pointer_SteamInternal_FindOrCreateGameServerInterface = reinterpret_cast<void *(*)(HSteamUser, const char *)>(symbol_handle);
+	}
+
+	// Load SteamInternal_FindOrCreateUserInterface
+	err = OS::get_singleton()->get_dynamic_library_symbol_handle(steam_library_handle, "SteamInternal_FindOrCreateUserInterface", symbol_handle, true);
+	if (err != OK) {
+		ERR_PRINT("Cannot load function SteamInternal_FindOrCreateUserInterface");
+		return;
+	} else {
+		pointer_SteamInternal_FindOrCreateUserInterface = reinterpret_cast<void *(*)(HSteamUser, const char *)>(symbol_handle);
+	}
+	
  }
 
 S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_SteamAPI_Init( const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg ) {
@@ -265,6 +285,20 @@ S_API bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID ) {
 		return pointer_SteamAPI_RestartAppIfNecessary(unOwnAppID);
 	}
 	return false;
+}
+
+S_API void *S_CALLTYPE SteamInternal_FindOrCreateGameServerInterface( HSteamUser hSteamUser, const char *pszVersion ) {
+	if (pointer_SteamInternal_FindOrCreateGameServerInterface != nullptr) {
+		return pointer_SteamInternal_FindOrCreateGameServerInterface(hSteamUser, pszVersion);
+	}
+	return nullptr;
+}
+
+S_API void *S_CALLTYPE SteamInternal_FindOrCreateUserInterface( HSteamUser hSteamUser, const char *pszVersion ) {
+	if (pointer_SteamInternal_FindOrCreateUserInterface != nullptr) {
+		return pointer_SteamInternal_FindOrCreateUserInterface(hSteamUser, pszVersion);
+	}
+	return nullptr;
 }
 
 Steam::Steam() :
@@ -445,9 +479,7 @@ Steam::Steam() :
 	callbackGetOPFSettingsResult(this, &Steam::get_opf_settings_result),
 	callbackGetVideoResult(this, &Steam::get_video_result)
 {
- 	print_verbose("Loading SteamAPI library");
 	load_steam_dll();
- 	print_verbose("Finished loading SteamAPI library");
 	is_init_success = false;
 	singleton = this;
 	were_callbacks_embedded = false;
