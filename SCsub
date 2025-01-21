@@ -1,42 +1,9 @@
-# SCsub
-Import('env')
+#!/usr/bin/env python
 
-module_path = Dir('.').srcnode().abspath
+Import("env")
+Import("env_modules")
 
-env.Append(CPPPATH=["%s/sdk/public/" % module_path])
-
-# If compiling Linux
-if env["platform"]== "linuxbsd" or env["platform"] == "server":
-	env.Append(LIBS=["steam_api"])
-	env.Append(RPATH=env.Literal('\\$$ORIGIN'))
-	if env['arch'] == "x86_32":
-		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux32" % module_path])
-	else: # 64 bit
-		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux64" % module_path])
-
-# If compiling Windows
-elif env["platform"] == "windows":
-	# Mostly VisualStudio
-	if env["CC"] == "cl":
-		if env['arch'] == "x86_32":
-			env.Append(LINKFLAGS=["steam_api.lib"])
-			env.Append(LIBPATH=["%s/sdk/redistributable_bin" % module_path])
-		else: # 64 bit
-			env.Append(LINKFLAGS=["steam_api64.lib"])
-			env.Append(LIBPATH=["%s/sdk/redistributable_bin/win64" % module_path])
-	
-	# Mostly "GCC"
-	else:
-		if env['arch'] == "x86_32":
-			env.Append(LIBS=["steam_api"])
-			env.Append(LIBPATH=["%s/sdk/redistributable_bin" % module_path])
-		else: # 64 bit
-			env.Append(LIBS=["steam_api64"])
-			env.Append(LIBPATH=["%s/sdk/redistributable_bin/win64" % module_path])
-
-# If compiling OSX
-elif env["platform"] == "macos":
-	env.Append(LIBS=["steam_api"])
-	env.Append(LIBPATH=['%s/sdk/redistributable_bin/osx' % module_path])
-
-env.add_source_files(env.modules_sources,"*.cpp")
+env_godotsteam = env_modules.Clone()
+env_godotsteam.Append(CPPDEFINES=["STEAM_API_NODLL"])
+env_godotsteam.Append(CPPPATH=["#modules/godotsteam/sdk/public/"])
+env_godotsteam.add_source_files(env.modules_sources, "*.cpp")
