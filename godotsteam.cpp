@@ -57,7 +57,13 @@ SteamInternal_FindOrCreateGameServerInterface_t pointer_SteamInternal_FindOrCrea
 typedef void* (*SteamInternal_FindOrCreateUserInterface_t)(HSteamUser, const char *);
 SteamInternal_FindOrCreateUserInterface_t pointer_SteamInternal_FindOrCreateUserInterface = nullptr;
 
-void load_steam_dll() {
+bool tried_loading_steam_dll = false;
+
+void try_load_steam_dll() {
+	if (tried_loading_steam_dll) {
+		return;
+	}
+	tried_loading_steam_dll = true;
 	String path;
  	if (OS::get_singleton()->has_feature("linuxbsd")) {
  		path = OS::get_singleton()->get_executable_path().get_base_dir().path_join("libsteam_api.so");
@@ -216,6 +222,7 @@ void load_steam_dll() {
  }
 
 S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_SteamAPI_Init( const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg ) {
+	try_load_steam_dll();
 	if (pointer_SteamInternal_SteamAPI_Init != nullptr) {
 		return pointer_SteamInternal_SteamAPI_Init(pszInternalCheckInterfaceVersions, pOutErrMsg);
 	}
@@ -223,6 +230,7 @@ S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_SteamAPI_Init( const char *ps
 }
 
 S_API HSteamUser S_CALLTYPE SteamAPI_GetHSteamUser() {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_GetHSteamUser != nullptr) {
 		return pointer_SteamAPI_GetHSteamUser();
 	}
@@ -230,6 +238,7 @@ S_API HSteamUser S_CALLTYPE SteamAPI_GetHSteamUser() {
 }
 
 S_API bool S_CALLTYPE SteamAPI_IsSteamRunning() {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_IsSteamRunning != nullptr) {
 		return pointer_SteamAPI_IsSteamRunning();
 	}
@@ -237,36 +246,42 @@ S_API bool S_CALLTYPE SteamAPI_IsSteamRunning() {
 }
 
 S_API void SteamAPI_RegisterCallResult S_CALLTYPE ( class CCallbackBase *pCallback, SteamAPICall_t hAPICall ) {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_RegisterCallResult != nullptr) {
 		pointer_SteamAPI_RegisterCallResult(pCallback, hAPICall);
 	}
 }
 
 S_API void S_CALLTYPE SteamAPI_RegisterCallback( class CCallbackBase *pCallback, int iCallback ) {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_RegisterCallback != nullptr) {
 		pointer_SteamAPI_RegisterCallback(pCallback, iCallback);
 	}
 }
 
 S_API void S_CALLTYPE SteamAPI_RunCallbacks() {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_RunCallbacks != nullptr) {
 		pointer_SteamAPI_RunCallbacks();
 	}
 }
 
 S_API void S_CALLTYPE SteamAPI_UnregisterCallResult( class CCallbackBase *pCallback, SteamAPICall_t hAPICall ) {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_UnregisterCallResult != nullptr) {
 		pointer_SteamAPI_UnregisterCallResult(pCallback, hAPICall);
 	}
 }
 
 S_API void S_CALLTYPE SteamAPI_UnregisterCallback( class CCallbackBase *pCallback ) {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_UnregisterCallback != nullptr) {
 		pointer_SteamAPI_UnregisterCallback(pCallback);
 	}
 }
 
 S_API HSteamUser S_CALLTYPE SteamGameServer_GetHSteamUser() {
+	try_load_steam_dll();
 	if (pointer_SteamGameServer_GetHSteamUser != nullptr) {
 		return pointer_SteamGameServer_GetHSteamUser();
 	}
@@ -274,6 +289,7 @@ S_API HSteamUser S_CALLTYPE SteamGameServer_GetHSteamUser() {
 }
 
 S_API void *S_CALLTYPE SteamInternal_ContextInit( void *pContextInitData ) {
+	try_load_steam_dll();
 	if (pointer_SteamInternal_ContextInit != nullptr) {
 		return pointer_SteamInternal_ContextInit(pContextInitData);
 	}
@@ -281,6 +297,7 @@ S_API void *S_CALLTYPE SteamInternal_ContextInit( void *pContextInitData ) {
 }
 
 S_API bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID ) {
+	try_load_steam_dll();
 	if (pointer_SteamAPI_RestartAppIfNecessary != nullptr) {
 		return pointer_SteamAPI_RestartAppIfNecessary(unOwnAppID);
 	}
@@ -288,6 +305,7 @@ S_API bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID ) {
 }
 
 S_API void *S_CALLTYPE SteamInternal_FindOrCreateGameServerInterface( HSteamUser hSteamUser, const char *pszVersion ) {
+	try_load_steam_dll();
 	if (pointer_SteamInternal_FindOrCreateGameServerInterface != nullptr) {
 		return pointer_SteamInternal_FindOrCreateGameServerInterface(hSteamUser, pszVersion);
 	}
@@ -295,6 +313,7 @@ S_API void *S_CALLTYPE SteamInternal_FindOrCreateGameServerInterface( HSteamUser
 }
 
 S_API void *S_CALLTYPE SteamInternal_FindOrCreateUserInterface( HSteamUser hSteamUser, const char *pszVersion ) {
+	try_load_steam_dll();
 	if (pointer_SteamInternal_FindOrCreateUserInterface != nullptr) {
 		return pointer_SteamInternal_FindOrCreateUserInterface(hSteamUser, pszVersion);
 	}
@@ -479,7 +498,7 @@ Steam::Steam() :
 	callbackGetOPFSettingsResult(this, &Steam::get_opf_settings_result),
 	callbackGetVideoResult(this, &Steam::get_video_result)
 {
-	load_steam_dll();
+	try_load_steam_dll();
 	is_init_success = false;
 	singleton = this;
 	were_callbacks_embedded = false;
