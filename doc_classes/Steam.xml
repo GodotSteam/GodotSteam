@@ -377,19 +377,6 @@
 				Adds a screenshot to the user's Steam screenshot library from disk.
 			</description>
 		</method>
-		<method name="addTimelineEvent">
-			<return type="void" />
-			<param index="0" name="icon" type="String" />
-			<param index="1" name="title" type="String" />
-			<param index="2" name="description" type="String" />
-			<param index="3" name="priority" type="int" />
-			<param index="4" name="start_offet" type="float" />
-			<param index="5" name="duration" type="float" />
-			<param index="6" name="possible_clip" type="int" enum="TimelineEventClipPriority" />
-			<description>
-				Use this to mark an event on the Timeline. The event can be instantaneous or take some amount of time to complete, depending on the value passed in duration.
-			</description>
-		</method>
 		<method name="addVRScreenshotToLibrary">
 			<return type="int" />
 			<param index="0" name="type" type="int" enum="VRScreenshotType" />
@@ -4969,15 +4956,6 @@
 				[b]Note:[/b] This won't download avatars for the officers automatically. If no avatar image is available for an officer, then call [method Steam.requestUserInformation] to download the avatar.
 			</description>
 		</method>
-		<method name="requestCurrentStats">
-			<return type="bool" />
-			<description>
-				Asynchronously request the user's current stats and achievements from the server.
-				You must always call this first to get the initial status of stats and achievements. Only after the resulting callback comes back can you start calling the rest of the stats and achievement functions for the current user.
-				The equivalent function for other users is [method Steam.requestUserStats].
-				Triggers a [signal Steam.current_stats_received] callback.
-			</description>
-		</method>
 		<method name="requestEligiblePromoItemDefinitionsIDs">
 			<return type="void" />
 			<param index="0" name="steam_id" type="int" />
@@ -5300,28 +5278,6 @@
 				It is guaranteed that reliable messages to the same host on the same channel will be be received by the remote host (if they are received at all) exactly once, and in the same order that they were sent.
 				No other order guarantees exist! In particular, unreliable messages may be dropped, received out of order with respect to each other and with respect to reliable data, or may be received multiple times. Messages on different channels are not guaranteed to be received in the order they were sent.
 				A note for those familiar with TCP/IP ports, or converting an existing codebase that opened multiple sockets: You might notice that there is only one channel, and with TCP/IP each endpoint has a port number. You can think of the channel number as the destination port. If you need each message to also include a source port (so the recipient can route the reply), then just put that in your message. That is essentially how UDP works!
-			</description>
-		</method>
-		<method name="sendMessages">
-			<return type="Array" />
-			<param index="0" name="data" type="PackedByteArray" />
-			<param index="1" name="connection_handle" type="int" />
-			<param index="2" name="flags" type="int" />
-			<description>
-				Send one or more messages without copying the message payload. This is the most efficient way to send messages.
-				The returned array contains the [b]message number[/b] that was assigned to the message if sending was successful.  If sending failed, then a negative [b]Result value[/b] is placed into the array.  For example, the array will hold RESULT_INVALID_STATE / -k_EResultInvalidState if the connection was in an invalid state.
-				Possible failure codes include:
-				[codeblock]
-				- RESULT_INVALID_PARAM / k_EResultInvalidParam
-					- invalid connection handle, or the individual message is too big; more than MAX_STEAM_PACKET_SIZE / k_cbMaxSteamNetworkingSocketsMessageSizeSend or 512 * 1024.
-				- RESULT_INVALID_STATE / k_EResultInvalidState
-					- Connection is in an invalid state
-				- RESULT_NO_CONNECTION / k_EResultNoConnection
-					- Connection has ended
-				- RESULT_IGNORED / k_EResultIgnored
-					- You used k_nSteamNetworkingSend_NoDelay, and the message was dropped because we were not ready to send it.
-				- RESULT_LIMIT_EXCEEDED / k_EResultLimitExceeded
-				[/codeblock]
 			</description>
 		</method>
 		<method name="sendP2PPacket">
@@ -6336,7 +6292,7 @@
 				Show the app's latest Workshop EULA to the user in an overlay window, where they can accept it or not.
 			</description>
 		</method>
-			<method name="startGamePhase">
+		<method name="startGamePhase">
 			<return type="void" />
 			<description>
 				Use this to start a game phase. Game phases allow the user to navigate their background recordings and clips. Exactly what a game phase means will vary game to game, but the game phase should be a section of gameplay that is usually between 10 minutes and a few hours in length, and should be the main way a user would think to divide up the game. These are presented to the user in a UI that shows the date the game was played, with one row per game slice. Game phases should be used to mark sections of gameplay that the user might be interested in watching.
