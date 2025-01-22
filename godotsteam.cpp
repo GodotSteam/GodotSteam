@@ -57,6 +57,9 @@ SteamInternal_FindOrCreateGameServerInterface_t pointer_SteamInternal_FindOrCrea
 typedef void* (*SteamInternal_FindOrCreateUserInterface_t)(HSteamUser, const char *);
 SteamInternal_FindOrCreateUserInterface_t pointer_SteamInternal_FindOrCreateUserInterface = nullptr;
 
+typedef void (*SteamAPI_Shutdown_t)();
+SteamAPI_Shutdown_t pointer_SteamAPI_Shutdown = nullptr;
+
 bool tried_loading_steam_dll = false;
 
 void try_load_steam_dll() {
@@ -219,6 +222,14 @@ void try_load_steam_dll() {
 		pointer_SteamInternal_FindOrCreateUserInterface = reinterpret_cast<void *(*)(HSteamUser, const char *)>(symbol_handle);
 	}
 	
+	// Load SteamAPI_Shutdown
+	err = OS::get_singleton()->get_dynamic_library_symbol_handle(steam_library_handle, "SteamAPI_Shutdown", symbol_handle, true);
+	if (err != OK) {
+		ERR_PRINT("Cannot load function SteamAPI_Shutdown");
+		return;
+	} else {
+		pointer_SteamAPI_Shutdown = reinterpret_cast<void (*)()>(symbol_handle);
+	}
  }
 
 S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_SteamAPI_Init( const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg ) {
@@ -318,6 +329,13 @@ S_API void *S_CALLTYPE SteamInternal_FindOrCreateUserInterface( HSteamUser hStea
 		return pointer_SteamInternal_FindOrCreateUserInterface(hSteamUser, pszVersion);
 	}
 	return nullptr;
+}
+
+S_API void S_CALLTYPE SteamAPI_Shutdown() {
+	try_load_steam_dll();
+	if (pointer_SteamAPI_Shutdown != nullptr) {
+		pointer_SteamAPI_Shutdown();
+	}
 }
 
 Steam::Steam() :
@@ -811,7 +829,7 @@ Dictionary Steam::steamInitEx(bool retrieve_stats, uint32_t app_id, bool embed_c
 
 // Shuts down the Steamworks API, releases pointers and frees memory.
 void Steam::steamShutdown() {
-	//SteamAPI_Shutdown();
+	SteamAPI_Shutdown();
 
 	// If callbacks were connected internally
 	if (were_callbacks_embedded) {
