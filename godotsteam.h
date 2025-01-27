@@ -13,10 +13,28 @@
 // Include INT types header
 #include <inttypes.h>
 
+// Turn off warnings for steam API
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#endif
+
+#if defined(_MSC_VER)
+//#pragma warning(disable : 4189 4324 4505)
+#endif
 // Include Steamworks API headers
 #include "steam/steam_api_flat.h"
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 // Include Godot headers
 #include "core/object/object.h"

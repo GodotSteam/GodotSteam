@@ -4,5 +4,6 @@ Import("env")
 Import("env_modules")
 
 env_godotsteam = env_modules.Clone()
+env_godotsteam.Append(CPPDEFINES=["STEAM_API_NODLL"])
 env_godotsteam.Append(CPPPATH=["#modules/godotsteam/sdk/public/"])
 env_godotsteam.add_source_files(env.modules_sources, "*.cpp")
