@@ -240,7 +240,7 @@ S_API bool S_CALLTYPE SteamAPI_IsSteamRunning() {
 	return false;
 }
 
-S_API void SteamAPI_RegisterCallResult S_CALLTYPE ( class CCallbackBase *pCallback, SteamAPICall_t hAPICall ) {
+S_API void S_CALLTYPE SteamAPI_RegisterCallResult ( class CCallbackBase *pCallback, SteamAPICall_t hAPICall ) {
 	try_load_steam_dll();
 	if (pointer_SteamAPI_RegisterCallResult != nullptr) {
 		pointer_SteamAPI_RegisterCallResult(pCallback, hAPICall);
