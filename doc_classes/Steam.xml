@@ -506,6 +506,12 @@
 				Triggers a [signal Steam.change_num_open_slots] call result.
 			</description>
 		</method>
+		<method name="checkFileSignature">
+			<return type="void" />
+			<param index="0" name="file_name" type="String" />
+			<description>
+			</description>
+		</method>
 		<method name="checkPingDataUpToDate">
 			<return type="bool" />
 			<param index="0" name="max_age_in_seconds" type="float" />

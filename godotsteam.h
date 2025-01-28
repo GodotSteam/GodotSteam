@@ -881,6 +881,7 @@ public:
 	bool showFloatingGamepadTextInput(FloatingGamepadTextInputMode input_mode, int text_field_x_position, int text_field_y_position, int text_field_width, int text_field_height);
 	bool showGamepadTextInput(GamepadTextInputMode input_mode, GamepadTextInputLineMode line_input_mode, const String &description, uint32 max_text, const String &preset_text);
 	void startVRDashboard();
+	void checkFileSignature(String p_file_name);
 
 	// Video
 	void getOPFSettings(uint32_t app_id);

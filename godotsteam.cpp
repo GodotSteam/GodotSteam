@@ -7212,6 +7212,11 @@ void Steam::startVRDashboard() {
 	SteamUtils()->StartVRDashboard();
 }
 
+void Steam::checkFileSignature(String p_file_name) {
+	ERR_FAIL_COND_MSG(SteamUtils() == NULL, "[STEAM] Utils class not found when calling: checkFileSignature");
+	SteamUtils()->CheckFileSignature(p_file_name.ascii().get_data());
+}
+
 
 ///// VIDEO
 
@@ -10022,6 +10027,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("showFloatingGamepadTextInput", "input_mode", "text_field_x_position", "text_field_y_position", "text_field_width", "text_field_height"), &Steam::showFloatingGamepadTextInput);
 	ClassDB::bind_method(D_METHOD("showGamepadTextInput", "input_mode", "line_input_mode", "description", "max_text", "preset_text"), &Steam::showGamepadTextInput);
 	ClassDB::bind_method("startVRDashboard", &Steam::startVRDashboard);
+	ClassDB::bind_method(D_METHOD("checkFileSignature", "file_name"), &Steam::checkFileSignature);
 
 	// VIDEO
 	ClassDB::bind_method(D_METHOD("getOPFSettings", "app_id"), &Steam::getOPFSettings);
