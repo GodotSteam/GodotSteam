@@ -530,7 +530,6 @@
 			<description>
 				Resets the unlock status of an achievement.
 				This is primarily only ever used for testing.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this.
 				This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call [method Steam.storeStats].
 			</description>
 		</method>
@@ -3535,7 +3534,6 @@
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the current value of the a stat for the current user.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this.
 				To receive stats for other users use [method Steam.getUserStat].
 			</description>
 		</method>
@@ -3544,7 +3542,6 @@
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the current value of the a stat for the current user.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this.
 				To receive stats for other users use [method Steam.getUserStat].
 			</description>
 		</method>
@@ -5013,7 +5010,6 @@
 			<return type="void" />
 			<description>
 				Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this.
 				Triggers a [signal Steam.global_achievement_percentages_ready] callback.
 			</description>
 		</method>
@@ -5023,7 +5019,6 @@
 			<description>
 				Asynchronously fetches global stats data, which is available for stats marked as "aggregated" in the App Admin panel of the Steamworks website.
 				The limit is 60.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this.
 				Triggers a [signal Steam.global_stats_received] callback.
 			</description>
 		</method>
@@ -5125,7 +5120,6 @@
 				Asynchronously downloads stats and achievements for the specified user from the server.
 				These stats are not automatically updated; you'll need to call this function again to refresh any data that may have change.
 				To keep from using too much memory, an least recently used cache (LRU) is maintained and other user's stats will occasionally be unloaded. When this happens a [signal Steam.user_stats_unloaded] callback is sent. After receiving this callback the user's stats will be unavailable until this function is called again.
-				The equivalent function for the local user is [method Steam.requestCurrentStats].
 				Triggers a [signal Steam.user_stats_received] callback.
 			</description>
 		</method>
@@ -5134,7 +5128,7 @@
 			<param index="0" name="achievements_too" type="bool" />
 			<description>
 				Resets the current users stats and, optionally achievements.
-				This automatically calls [method Steam.storeStats] to persist the changes to the server. This should typically only be used for testing purposes during development. Ensure that you sync up your stats with the new default values provided by Steam after calling this by calling [method Steam.requestCurrentStats].
+				This automatically calls [method Steam.storeStats] to persist the changes to the server. This should typically only be used for testing purposes during development.
 			</description>
 		</method>
 		<method name="resetIdentity">
@@ -5350,7 +5344,6 @@
 			<param index="0" name="name" type="String" />
 			<description>
 				Unlocks an achievement.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this!
 				You can unlock an achievement multiple times so you don't need to worry about only setting achievements that aren't already set. This call only modifies Steam's in-memory state so it is quite cheap. To send the unlock status to the server and to trigger the Steam overlay notification you must call [method Steam.storeStats].
 			</description>
 		</method>
@@ -6165,7 +6158,6 @@
 			<param index="1" name="value" type="float" />
 			<description>
 				Sets / updates the float value of a given stat for the current user.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this!
 				This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call [method Steam.storeStats].
 				If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.
 			</description>
@@ -6176,7 +6168,6 @@
 			<param index="1" name="value" type="int" />
 			<description>
 				Sets / updates the integer value of a given stat for the current user.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this!
 				This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call [method Steam.storeStats].
 				If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.
 			</description>
@@ -6350,7 +6341,7 @@
 		<method name="startUpdateProperties">
 			<return type="void" />
 			<description>
-				Starts a transaction request to update dynamic properties on items for the current user. This call is rate-limited by user, so property modifications should be batched as much as possible (e.g. at the end of a map or game session). After calling [method Steam.setProperty] or [method Steam.removeProperty] for all the items that you want to modify, you will need to call [method Steam.submitUpdateProperties] to send the request to the Steam servers. A [signal Steam.inventory_result_ready] callback will be fired with the results of the operation.
+				Starts a transaction request to update dynamic properties on items for the current user. This call is rate-limited by user, so property modifications should be batched as much as possible (e.g. at the end of a map or game session). After calling [method Steam.setPropertyBool] or [method Steam.setPropertyFloat] or [method Steam.setPropertyInt] or [method Steam.setPropertyString] or [method Steam.removeProperty] for all the items that you want to modify, you will need to call [method Steam.submitUpdateProperties] to send the request to the Steam servers. A [signal Steam.inventory_result_ready] callback will be fired with the results of the operation.
 			</description>
 		</method>
 		<method name="startVRDashboard">
@@ -6390,7 +6381,7 @@
 			<param index="1" name="app_id" type="int" default="0" />
 			<param index="2" name="embed_callbacks" type="bool" default="false" />
 			<description>
-				Initialize the Steamworks SDK. On success [enum Steam.STEAM_API_INIT_RESULT_OK] is returned.  Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
+				Initialize the Steamworks SDK. On success [enum SteamAPIInitResult] is returned.  Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
 				[codeblock]
 				• 0 / "Steamworks active"
 				• 1 / "Failed (generic)"
@@ -6523,7 +6514,7 @@
 			<param index="0" name="screenshot" type="int" />
 			<param index="1" name="steam_id" type="int" />
 			<description>
-				Tags a Steam user as being visible in the screenshot. You can tag up to the value declared by k_nScreenshotMaxTaggedUsers in a single screenshot. Tagging more users than that will just be discarded. This function has a built in delay before saving the tag which allows you to call it repeatedly for each item. You can get the handle to tag the screenshot once it has been successfully saved from the [signal Steam.screenshot_ready] callback or via the [method Steam.WriteScreenshot], [method Steam.AddScreenshotToLibrary], [method Steam.AddVRScreenshotToLibrary] calls.
+				Tags a Steam user as being visible in the screenshot. You can tag up to the value declared by k_nScreenshotMaxTaggedUsers in a single screenshot. Tagging more users than that will just be discarded. This function has a built in delay before saving the tag which allows you to call it repeatedly for each item. You can get the handle to tag the screenshot once it has been successfully saved from the [signal Steam.screenshot_ready] callback or via the [method Steam.writeScreenshot], [method Steam.addScreenshotToLibrary], [method Steam.addVRScreenshotToLibrary] calls.
 			</description>
 		</method>
 		<method name="terminateGameConnection">
@@ -6681,7 +6672,6 @@
 			<param index="2" name="session_length" type="float" />
 			<description>
 				Updates an AVGRATE stat with new values.
-				You must have called [method Steam.requestCurrentStats] and it needs to return successfully via its callback prior to calling this!
 				This call only modifies Steam's in-memory state and is very cheap. Doing so allows Steam to persist the changes even in the event of a game crash or unexpected shutdown. To submit the stats to the server you must call [method Steam.storeStats].
 				If this is returning false and everything appears correct, then check to ensure that your changes in the App Admin panel of the Steamworks website are published.
 			</description>
@@ -6981,7 +6971,7 @@
 			<param index="1" name="result" type="int" />
 			<param index="2" name="user_id" type="int" />
 			<description>
-				Called when the latest stats and achievements for the local user have been received from the server; in response to function [method Steam.requestCurrentStats]
+				Called when the latest stats and achievements for the local user have been received from the server;
 			</description>
 		</signal>
 		<signal name="dlc_installed">
