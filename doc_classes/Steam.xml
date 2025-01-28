@@ -7095,8 +7095,8 @@
 		</signal>
 		<signal name="file_details_result">
 			<param index="0" name="result" type="int" />
-			<param index="1" name="file_size" type="int" />
-			<param index="2" name="file_hash" type="PackedByteArray" />
+			<param index="1" name="file_size" type="PackedByteArray" />
+			<param index="2" name="file_hash" type="int" />
 			<param index="3" name="flags" type="int" />
 			<description>
 				Called after requesting the details of a specific file.
