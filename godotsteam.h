@@ -22,7 +22,6 @@
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wnon-virtual-dtor"
-#pragma clang diagnostic ignored "-Werror=alloc-zero"
 #endif
 
 #if defined(_MSC_VER)
