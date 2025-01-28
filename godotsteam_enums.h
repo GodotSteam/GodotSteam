@@ -1552,7 +1552,7 @@ enum RemoteStoragePlatform : uint32_t {
 	REMOTE_STORAGE_PLATFORM_SWITCH = k_ERemoteStoragePlatformSwitch,
 	REMOTE_STORAGE_PLATFORM_ANDROID = k_ERemoteStoragePlatformAndroid,
 	REMOTE_STORAGE_PLATFORM_IOS = k_ERemoteStoragePlatformIOS,
-	REMOTE_STORAGE_PLATFORM_ALL = k_ERemoteStoragePlatformAll
+	REMOTE_STORAGE_PLATFORM_ALL = static_cast<uint32_t>(k_ERemoteStoragePlatformAll)
 };
 
 enum RemoteStoragePublishedFileVisibility {
