@@ -1409,7 +1409,7 @@
 				Gets the achievement status, and the time it was unlocked if unlocked.
 				If the return value is true, but the unlock time is zero, that means it was unlocked before Steam began tracking achievement unlock times (December 2009). The time is provided in Unix epoch format, seconds since January 1, 1970 UTC.
 				The equivalent function for other users is [method Steam.getUserAchievementAndUnlockTime].
-				[codeblock]
+				[codeblock lang=text]
 				The returning dictionary contains the following keys:
 				┠╴retrieve (bool)
 				┠╴achieved (bool)
@@ -1606,7 +1606,7 @@
 			<description>
 				Request a ticket which will be used for webapi "ISteamUserAuth\AuthenticateUserTicket"; [b]service_identity[/b] is an optional input parameter to identify the service the ticket will be sent to the ticket will be returned in callback [signal Steam.get_ticket_for_web_api].
 				Triggers a [signal Steam.get_ticket_for_web_api] callback.
-				[b]Note:[/b] The [code]service_identity[/code] is not a network identity used by or created with GodotSteam's Networking Tools class.
+				[b]Note:[/b] The [b]service_identity[/b] is not a network identity used by or created with GodotSteam's Networking Tools class.
 			</description>
 		</method>
 		<method name="getAuthenticationStatus">
@@ -1638,7 +1638,7 @@
 			<return type="int" />
 			<param index="0" name="channel" type="int" default="0" />
 			<description>
-				Calls [method Steam.isP2PPacketAvailable] under the hood, returns the size of the available packet or zero if there is no such packet.
+				Calls isP2PPacketAvailable under the hood, returns the size of the available packet or zero if there is no such packet.
 			</description>
 		</method>
 		<method name="getAvailableVoice">
@@ -1657,7 +1657,7 @@
 			<return type="int" />
 			<param index="0" name="index" type="int" />
 			<description>
-				Use with [method Steam.getNumActiveBeacons] to iterate the active beacons visible to the current user. Argument [index is a zero-based index, so iterate over the range [0, getNumActiveBeacons() - 1]. The return is a beacon_id that can be used with [method Steam.getBeaconDetails] to get information about the beacons suitable for display to the user.
+				Use with [method Steam.getNumActiveBeacons] to iterate the active beacons visible to the current user. Argument index is a zero-based index, so iterate over the range (0, getNumActiveBeacons() - 1). The return is a beacon_id that can be used with [method Steam.getBeaconDetails] to get information about the beacons suitable for display to the user.
 			</description>
 		</method>
 		<method name="getBeaconDetails">
@@ -1859,25 +1859,25 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴connection_status (dictionary)
-					┠╴state (int)
-					┠╴ping (int)
-					┠╴local_quality (float)
-					┠╴remote_quality (float)
-					┠╴packets_out_per_second (float)
-					┠╴bytes_out_per_second (float)
-					┠╴packets_in_per_second (float)
-					┠╴bytes_in_per_second (float)
-					┠╴send_rate (int)
-					┠╴pending_unreliable (int)
-					┠╴pending_reliable (int)
-					┠╴send_unacknowledged_reliable (int)
-					┖╴queue_time (int)
+				    ┠╴state (int)
+				    ┠╴ping (int)
+				    ┠╴local_quality (float)
+				    ┠╴remote_quality (float)
+				    ┠╴packets_out_per_second (float)
+				    ┠╴bytes_out_per_second (float)
+				    ┠╴packets_in_per_second (float)
+				    ┠╴bytes_in_per_second (float)
+				    ┠╴send_rate (int)
+				    ┠╴pending_unreliable (int)
+				    ┠╴pending_reliable (int)
+				    ┠╴send_unacknowledged_reliable (int)
+				    ┖╴queue_time (int)
 				┖╴lanes_status (array)
-					┖╴lane_status (dictionary)
-						┠╴pending_unreliable (int)
-						┠╴pending_reliable (int)
-						┠╴sent_unacknowledged_reliable (int)
-						┖╴queue_time (int)
+				    ┖╴lane_status (dictionary)
+				        ┠╴pending_unreliable (int)
+				        ┠╴pending_reliable (int)
+				        ┠╴sent_unacknowledged_reliable (int)
+				        ┖╴queue_time (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -1946,9 +1946,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴dlc (dictionary)
-					┠╴app_id (int)
-					┠╴available (bool)
-					┖╴name (string)
+				    ┠╴app_id (int)
+				    ┠╴available (bool)
+				    ┖╴name (string)
 				[/codeblock]
 			</description>
 		</method>
@@ -2059,7 +2059,7 @@
 			<description>
 				Retrieve an encrypted ticket.
 				This should be called after requesting an encrypted app ticket with [method Steam.requestEncryptedAppTicket] and receiving the [signal Steam.encrypted_app_ticket_response] call result.
-				You should then pass this encrypted ticket to your secure servers to be decrypted using your secret key using [method Steam.decryptTicket].
+				You should then pass this encrypted ticket to your secure servers to be decrypted using your secret key.
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴buffer (PackedByteArray)
@@ -2090,15 +2090,14 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴favorite (dictionary)
-					┠╴ret (bool)
-					┠╴app (int)
-					┠╴ip (string)
-					┠╴game_port (int)
-					┠╴query_port (int)
-					┠╴flags (int)
-					┖╴last_played (int)
+				    ┠╴ret (bool)
+				    ┠╴app (int)
+				    ┠╴ip (string)
+				    ┠╴game_port (int)
+				    ┠╴query_port (int)
+				    ┠╴flags (int)
+				    ┖╴last_played (int)
 				[/codeblock]
-				[b]Note:[/b] You must call [method Steam.getFavoriteGameCount] before calling this. This is already used in GodotSteam's implementation, however.
 			</description>
 		</method>
 		<method name="getFileCount">
@@ -2113,7 +2112,7 @@
 			<param index="0" name="filename" type="String" />
 			<description>
 				Asynchronously retrieves metadata details about a specific file in the depot manifest.
-				[b]Note:[/b] Triggers a [signal Steam.file_details_result callback].
+				[b]Note:[/b] Triggers a [signal Steam.file_details_result].
 			</description>
 		</method>
 		<method name="getFileNameAndSize">
@@ -2377,7 +2376,7 @@
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the daily history for an aggregated stat.
-				Array[0] will be today, Array[1] will be yesterday, and Array[2] will be two days ago, etc.
+				Array.0 will be today, Array.1 will be yesterday, and Array.2 will be two days ago, etc.
 				You must have called [method Steam.requestGlobalStats] and it needs to return successfully via its callback prior to calling this.
 			</description>
 		</method>
@@ -2394,7 +2393,7 @@
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the daily history for an aggregated stat.
-				Array[0] will be today, Array[1] will be yesterday, and Array[2] will be two days ago, etc.
+				Array.0 will be today, Array.1 will be yesterday, and Array.2 will be two days ago, etc.
 				You must have called [method Steam.requestGlobalStats] and it needs to return successfully via its callback prior to calling this.
 			</description>
 		</method>
@@ -2801,7 +2800,7 @@
 			<param index="0" name="file" type="int" />
 			<description>
 				After calling [method Steam.getLocalFileChangeCount], use this method to iterate over the changes. The changes described have already been made to local files. Your application should take appropriate action to reload state from disk, and possibly notify the user.
-				For example: The local system had been suspended, during which time the user played elsewhere and uploaded changes to the Steam Cloud. On resume, Steam downloads those changes to the local system before resuming the application. The application receives an [method Steam.local_file_changed], and uses [method Steam.getLocalFileChangeCount], and [method Steam.getLocalFileChange] to iterate those changes. Depending on the application structure and the nature of the changes, the application could:
+				For example: The local system had been suspended, during which time the user played elsewhere and uploaded changes to the Steam Cloud. On resume, Steam downloads those changes to the local system before resuming the application. The application receives an [signal Steam.local_file_changed], and uses [method Steam.getLocalFileChangeCount], and [method Steam.getLocalFileChange] to iterate those changes. Depending on the application structure and the nature of the changes, the application could:
 				• Re-load game progress to resume at exactly the point where the user was when they exited the game on the other device
 				• Notify the user of any synchronized changes that don't require reloading
 				• Etc.
@@ -2825,7 +2824,7 @@
 			<return type="Dictionary" />
 			<description>
 				Return location info for the current host. Returns the approximate age of the data, in seconds, or -1 if no data is available. You can use this value in [method Steam.checkPingDataUpToDate].
-				It takes a few seconds to initialize access to the relay network. If you call this very soon after calling [method Steam.initializeRelayNetworkAccess], the data may not be available yet.
+				It takes a few seconds to initialize access to the relay network.
 				This always return the most up-to-date information we have available right now, even if we are in the middle of re-calculating ping times.
 				The returned dictionary contains the following keys:
 				[codeblock]
@@ -3172,7 +3171,7 @@
 			<description>
 				Retrieve the developer set metadata of an individual workshop item after receiving a querying UGC call result.
 				You should call this in a loop to get the details of all the workshop items returned.
-				[b]Note:[/b] This must only be called with the handle obtained from a successful [method Steam.ugc_query_completed] call result.
+				[b]Note:[/b] This must only be called with the handle obtained from a successful [signal Steam.ugc_query_completed] call result.
 			</description>
 		</method>
 		<method name="getQueryUGCNumAdditionalPreviews">
@@ -3314,10 +3313,10 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴player (dictionary)
-					┠╴id (int) as friend Steam ID.
-					┠╴name (string)
-					┠╴time (int)
-					┖╴status (int)
+				    ┠╴id (int) as friend Steam ID.
+				    ┠╴name (string)
+				    ┠╴time (int)
+				    ┖╴status (int)
 				[/codeblock]
 				[b]Note:[/b] This is a unique function to GodotSteam.
 			</description>
@@ -3540,7 +3539,7 @@
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the current value of the a stat for the current user.
-				To receive stats for other users use [method Steam.getUserStat].
+				To receive stats for other users use [method Steam.getUserStatFloat] or [method Steam.getUserStatInt].
 			</description>
 		</method>
 		<method name="getStatInt">
@@ -3548,7 +3547,7 @@
 			<param index="0" name="stat_name" type="String" />
 			<description>
 				Gets the current value of the a stat for the current user.
-				To receive stats for other users use [method Steam.getUserStat].
+				To receive stats for other users use [method Steam.getUserStatFloat] or [method Steam.getUserStatInt].
 			</description>
 		</method>
 		<method name="getSteamID">
@@ -3629,13 +3628,13 @@
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴bitwise (int)
-					• 0 / None
-					• 1&lt;&lt;0 / Windows
-					• 1&lt;&lt;1 / OSX
-					• 1&lt;&lt;2 / PS3
-					• 1&lt;&lt;3 / Linux
-					• 1&lt;&lt;4 / Reserved
-					• 0xffffffff / All
+				    • 0 / None
+				    • 1&lt;&lt;0 / Windows
+				    • 1&lt;&lt;1 / OSX
+				    • 1&lt;&lt;2 / PS3
+				    • 1&lt;&lt;3 / Linux
+				    • 1&lt;&lt;4 / Reserved
+				    • 0xffffffff / All
 				┖╴verbose (string)
 				[/codeblock]
 			</description>
@@ -3714,9 +3713,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴tags (dictionary)
-					┠╴id (int) as friend group ID
-					┠╴name (string)
-					┖╴members (int)
+				    ┠╴id (int) as friend group ID
+				    ┠╴name (string)
+				    ┖╴members (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -3752,7 +3751,7 @@
 			<description>
 				Gets the current value of the a stat for the specified user.
 				You must have called [method Steam.requestUserStats] and it needs to return successfully via its callback prior to calling this.
-				The equivalent function for the local user is [method Steam.getStat].
+				The equivalent function for the local user is [method Steam.getStatFloat] or [method Steam.getStatInt].
 			</description>
 		</method>
 		<method name="getUserStatInt">
@@ -3762,7 +3761,7 @@
 			<description>
 				Gets the current value of the a stat for the specified user.
 				You must have called [method Steam.requestUserStats] and it needs to return successfully via its callback prior to calling this.
-				The equivalent function for the local user is [method Steam.getStat].
+				The equivalent function for the local user is [method Steam.getStatInt] or [method Steam.getStatFloat].
 			</description>
 		</method>
 		<method name="getUserSteamFriends">
@@ -3772,9 +3771,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴ friends (dictionary)
-					┠╴id (int) as friend Steam ID
-					┠╴name (string)
-					┖╴status (int)
+				    ┠╴id (int) as friend Steam ID
+				    ┠╴name (string)
+				    ┖╴status (int)
 				[/codeblock]
 				[b]Note:[/b] This is a unique function to GodotSteam.
 			</description>
@@ -3786,9 +3785,9 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴groups (dictionary)
-					┠╴id (int) as group ID
-					┠╴name (string)
-					┖╴tag (string)
+				    ┠╴id (int) as group ID
+				    ┠╴name (string)
+				    ┖╴tag (string)
 				[/codeblock]
 				[b]Note:[/b] This is a unique function to GodotSteam.
 			</description>
@@ -3808,7 +3807,7 @@
 				Read captured audio data from the microphone buffer.
 				The compressed data can be transmitted by your application and decoded back into raw audio data using DecompressVoice on the other side. The compressed data provided is in an arbitrary format and is not meant to be played directly.
 				This should be called once per frame, and at worst no more than four times a second to keep the microphone input delay as low as possible. Calling this any less may result in gaps in the returned stream.
-				It is recommended that you pass in an 8 kilobytes or larger destination buffer for compressed audio. Static buffers are recommended for performance reasons. However, if you would like to allocate precisely the right amount of space for a buffer before each call you may use [getAvailableVoice](/functions/users/#getavailablevoice) to find out how much data is available to be read.
+				It is recommended that you pass in an 8 kilobytes or larger destination buffer for compressed audio. Static buffers are recommended for performance reasons. However, if you would like to allocate precisely the right amount of space for a buffer before each call you may use [method getAvailableVoice](/functions/users/#getavailablevoice) to find out how much data is available to be read.
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴result (int)
@@ -3930,7 +3929,7 @@
 			<param index="2" name="max_progress" type="int" />
 			<description>
 				Shows the user a pop-up notification with the current progress of an achievement.
-				Calling this function will not set the progress or unlock the achievement, the game must do that manually by calling [method Steam.setStat].
+				Calling this function will not set the progress or unlock the achievement, the game must do that manually by calling [method Steam.setStatFloat] or [method Steam.setStatInt].
 				Triggers a [signal Steam.user_stats_stored] callback.
 				Triggers a [signal Steam.user_achievement_stored] callback.
 			</description>
@@ -4004,7 +4003,6 @@
 			<param index="0" name="dlc_id" type="int" />
 			<description>
 				Allows you to install an optional DLC.
-				Note: Triggers a [signal Steam.dlc_installed callback].
 			</description>
 		</method>
 		<method name="inviteUserToGame">
@@ -4694,7 +4692,7 @@
 			<description>
 				Reads in a packet that has been sent from another user via [method Steam.sendP2PPacket].
 				This call is not blocking, and will return false if no data is available.
-				Before calling this you should have called [method Steam.getAvailableP2PPacketSize] / [method Steam.isP2PPacketAvailable].
+				Before calling this you should have called [method Steam.getAvailableP2PPacketSize].
 				The returned dictionary contains the following keys:
 				[codeblock]
 				┠╴data (PackedByteArray)
@@ -4711,16 +4709,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary)
-					┠╴payload (PackedByteArray)
-					┠╴size (int)
-					┠╴connection (int)
-					┠╴identity (string)
-					┠╴receiver_user_data (int)
-					┠╴time_received (int)
-					┠╴message_number (int)
-					┠╴channel (int)
-					┠╴flags (int)
-					┖╴sender_user_data (int)
+				    ┠╴payload (PackedByteArray)
+				    ┠╴size (int)
+				    ┠╴connection (int)
+				    ┠╴identity (string)
+				    ┠╴receiver_user_data (int)
+				    ┠╴time_received (int)
+				    ┠╴message_number (int)
+				    ┠╴channel (int)
+				    ┠╴flags (int)
+				    ┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4733,16 +4731,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary):
-					┠╴payload (string)
-					┠╴size (int)
-					┠╴connection (int)
-					┠╴identity (string)
-					┠╴receiver_user_data (int)
-					┠╴time_received (int)
-					┠╴message_number (int)
-					┠╴channel (int)
-					┠╴flags (int)
-					┖╴sender_user_data (int)
+				    ┠╴payload (string)
+				    ┠╴size (int)
+				    ┠╴connection (int)
+				    ┠╴identity (string)
+				    ┠╴receiver_user_data (int)
+				    ┠╴time_received (int)
+				    ┠╴message_number (int)
+				    ┠╴channel (int)
+				    ┠╴flags (int)
+				    ┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4755,16 +4753,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary):
-					┠╴payload (string)
-					┠╴size (int)
-					┠╴connection (int)
-					┠╴identity (string)
-					┠╴receiver_user_data (int)
-					┠╴time_received (int)
-					┠╴message_number (int)
-					┠╴channel (int)
-					┠╴flags (int)
-					┖╴sender_user_data (int)
+				    ┠╴payload (string)
+				    ┠╴size (int)
+				    ┠╴connection (int)
+				    ┠╴identity (string)
+				    ┠╴receiver_user_data (int)
+				    ┠╴time_received (int)
+				    ┠╴message_number (int)
+				    ┠╴channel (int)
+				    ┠╴flags (int)
+				    ┖╴sender_user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4778,16 +4776,16 @@
 				The returned array contains a list of:
 				[codeblock]
 				┖╴messages (dictionary):
-					┠╴payload (string)
-					┠╴size (int)
-					┠╴connection (int)
-					┠╴identity (string)
-					┠╴user_data (int)
-					┠╴time_received (int)
-					┠╴message_number (int)
-					┠╴channel (int)
-					┠╴flags (int)
-					┖╴user_data (int)
+				    ┠╴payload (string)
+				    ┠╴size (int)
+				    ┠╴connection (int)
+				    ┠╴identity (string)
+				    ┠╴user_data (int)
+				    ┠╴time_received (int)
+				    ┠╴message_number (int)
+				    ┠╴channel (int)
+				    ┠╴flags (int)
+				    ┖╴user_data (int)
 				[/codeblock]
 			</description>
 		</method>
@@ -4964,7 +4962,7 @@
 			<param index="0" name="steam_id" type="int" />
 			<description>
 				Request the list of "eligible" promo items that can be manually granted to the given user.
-				These are promo items of type "manual" that won't be granted automatically. An example usage of this is an item that becomes available every week. After calling this function you need to call [method Steam.getEligiblePromoItemDefinitionIDs] to get the actual item definition ids.
+				These are promo items of type "manual" that won't be granted automatically. An example usage of this is an item that becomes available every week.
 				Triggers a [signal Steam.inventory_eligible_promo_item] callback.
 			</description>
 		</method>
@@ -5070,7 +5068,7 @@
 				Get a filtered list of relevant lobbies.
 				There can only be one active lobby search at a time. The old request will be canceled if a new one is started. Depending on the users connection to the Steam back-end, this call can take from 300ms to 5 seconds to complete, and has a timeout of 20 seconds.
 				Triggers a [signal Steam.lobby_match_list] callback.
-				[b]Note:[/b] To filter the results you must call the [method Steam.addRequestLobbyList] functions before calling this. The filters are cleared on each call to this function.
+				[b]Note:[/b] To filter the results you must call the addRequestLobbyList functions before calling this. The filters are cleared on each call to this function.
 				[b]Note:[/b] If [method Steam.addRequestLobbyListDistanceFilter] is not called, k_ELobbyDistanceFilterDefault will be used, which will only find matches in the same or nearby regions.
 				[b]Note:[/b] This will only return lobbies that are not full, and only lobbies that are public (2) or invisible (3), and are set to joinable with [method Steam.setLobbyJoinable].
 			</description>
@@ -5087,7 +5085,7 @@
 		<method name="requestPrices">
 			<return type="void" />
 			<description>
-				Request prices for all item definitions that can be purchased in the user's local currency. A [signal Steam.inventory_request_prices_result] call result will be returned with the user's local currency code. After that, you can call [method Steam.getNumItemsWithPrices] and [method Steam.getItemsWithPrices] to get prices for all the known item definitions, or [method Steam.getItemPrice] for a specific item definition.
+				Request prices for all item definitions that can be purchased in the user's local currency. A [signal Steam.inventory_request_prices_result] call result will be returned with the user's local currency code.
 				Triggers a [signal Steam.inventory_request_prices_result] callback.
 			</description>
 		</method>
@@ -5548,7 +5546,7 @@
 			<return type="void" />
 			<param index="0" name="phase_id" type="String" />
 			<description>
-				Games can set a phase ID so they can refer back to a phase in [method Steam.openOverlayToPhase].
+				Games can set a phase ID.
 			</description>
 		</method>
 		<method name="setGlobalConfigValueFloat">
