@@ -7274,7 +7274,11 @@ void Steam::file_details_result(FileDetailsResult_t *file_data) {
 	uint64_t file_size = file_data->m_ulFileSize;
 	uint32_t flags = file_data->m_unFlags;
 	uint8 *file_hash = file_data->m_FileSHA;
-	emit_signal("file_details_result", result, file_size, file_hash, flags);
+	PackedByteArray file_hash_array;
+	for (int i = 0; i < 20; i++) {
+		file_hash_array.push_back(file_hash[i]);
+	}
+	emit_signal("file_details_result", result, file_size, file_hash_array, flags);
 }
 
 // Posted after the user executes a steam url with command line or query parameters such as
@@ -10039,7 +10043,7 @@ void Steam::_bind_methods() {
 	///// SIGNALS / CALLBACKS
 
 	// APPS
-	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::INT, "file_size"), PropertyInfo(Variant::INT, "file_hash"), PropertyInfo(Variant::INT, "flags")));
+	ADD_SIGNAL(MethodInfo("file_details_result", PropertyInfo(Variant::INT, "result"), PropertyInfo(Variant::PACKED_BYTE_ARRAY, "file_size"), PropertyInfo(Variant::INT, "file_hash"), PropertyInfo(Variant::INT, "flags")));
 	ADD_SIGNAL(MethodInfo("dlc_installed", PropertyInfo(Variant::INT, "app")));
 	ADD_SIGNAL(MethodInfo("new_launch_url_parameters"));
 	ADD_SIGNAL(MethodInfo("timed_trial_status", PropertyInfo(Variant::INT, "app_id"), PropertyInfo(Variant::BOOL, "is_offline"), PropertyInfo(Variant::INT, "seconds_allowed"), PropertyInfo(Variant::INT, "seconds_played")));
