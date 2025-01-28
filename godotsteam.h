@@ -69,9 +69,7 @@ class Steam : public Object,
 
 
 public:
-
-    #pragma region Enums
-
+	// ENUMS
 	enum AccountType {
 		// Found in steamclientpublic.h
 		ACCOUNT_TYPE_INVALID = k_EAccountTypeInvalid,
@@ -1937,9 +1935,6 @@ public:
 		TEXT_FILTERING_CONTEXT_CHAT = k_ETextFilteringContextChat,
 		TEXT_FILTERING_CONTEXT_NAME = k_ETextFilteringContextName
 	};
-	#pragma endregion Enums
-
-	# pragma region Functions
 
 	static Steam *get_singleton();
 	Steam();
@@ -2829,9 +2824,6 @@ private:
 	void run_callbacks() {
 		SteamAPI_RunCallbacks();
 	}
-	#pragma endregion Functions
-
-	# pragma region Callbacks
 
 	// STEAM CALLBACKS
 	// Apps
@@ -3151,10 +3143,7 @@ private:
 	// Utility
 	CCallResult<Steam, CheckFileSignature_t> callResultCheckFileSignature;
 	void check_file_signature(CheckFileSignature_t *call_data, bool io_failure);
-	#pragma endregion Callbacks
 };
-
-#pragma region VariantCast
 
 VARIANT_ENUM_CAST(Steam::AccountType);
 VARIANT_ENUM_CAST(Steam::APICallFailure);
@@ -3285,6 +3274,5 @@ VARIANT_ENUM_CAST(Steam::WorkshopVideoProvider);
 VARIANT_ENUM_CAST(Steam::WorkshopVote);
 
 VARIANT_ENUM_CAST(Steam::XboxOrigin);
-#pragma endregion VariantCast
 
 #endif // GODOTSTEAM_H
