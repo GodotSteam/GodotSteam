@@ -17,7 +17,6 @@
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
-#pragma GCC diagnostic ignored "-Walloc-zero"
 
 #elif defined(__clang__)
 #pragma clang diagnostic push

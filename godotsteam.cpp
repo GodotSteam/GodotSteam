@@ -2573,6 +2573,7 @@ int32 Steam::addPromoItems(PackedInt64Array items) {
 	int32 new_inventory_handle = 0;
 	ERR_FAIL_COND_V_MSG(SteamInventory() == NULL, new_inventory_handle, "[STEAM] Inventory class not found when calling: addPromoItems");
 	int count = items.size();
+	ERR_FAIL_COND_V_MSG(count==0, new_inventory_handle, "[STEAM] No items to add");
 	SteamItemDef_t *new_items = new SteamItemDef_t[items.size()];
 
 	for (int i = 0; i < count; i++) {
@@ -2631,6 +2632,7 @@ int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt3
 	int32 new_inventory_handle = 0;
 	ERR_FAIL_COND_V_MSG(SteamInventory() == NULL, new_inventory_handle, "[STEAM] Inventory class not found when calling: exchangeItems");
 	uint32 total_output = output_items.size();
+	ERR_FAIL_COND_V_MSG(total_output == 0, new_inventory_handle, "[STEAM] output items is empty");
 	SteamItemDef_t *generated_items = new SteamItemDef_t[total_output];
 	for (uint32 i = 0; i < total_output; i++) {
 		generated_items[i] = output_items[i];
@@ -2640,6 +2642,7 @@ int32 Steam::exchangeItems(const PackedInt64Array output_items, const PackedInt3
 	uint32_t *quantity_in = (uint32*) input_quantity.ptr();
 	
 	uint32 array_size = input_items.size();
+	ERR_FAIL_COND_V_MSG(array_size == 0, new_inventory_handle, "[STEAM] input items is empty");
 	SteamItemInstanceID_t *input_item_ids = new SteamItemInstanceID_t[array_size];
 	for (uint32 i = 0; i < array_size; i++) {
 		input_item_ids[i] = input_items[i];
@@ -2660,6 +2663,7 @@ int32 Steam::generateItems(const PackedInt64Array items, const PackedInt32Array 
 	int32 new_inventory_handle = 0;
 	ERR_FAIL_COND_V_MSG(SteamInventory() == NULL, new_inventory_handle, "[STEAM] Inventory class not found when calling: generateItems");
 	uint32 total_quantity = items.size();
+	ERR_FAIL_COND_V_MSG(total_quantity == 0, new_inventory_handle, "[STEAM] items is empty");
 	SteamItemDef_t *generated_items = new SteamItemDef_t[total_quantity];
 
 	for (uint32 i = 0; i < total_quantity; i++) {
@@ -2711,6 +2715,7 @@ int32 Steam::getItemsByID(const PackedInt64Array id_array) {
 	int32 new_inventory_handle = 0;
 	ERR_FAIL_COND_V_MSG(SteamInventory() == NULL, new_inventory_handle, "[STEAM] Inventory class not found when calling: getItemsByID");
 	uint32 array_size = id_array.size();
+	ERR_FAIL_COND_V_MSG(array_size == 0, new_inventory_handle, "[STEAM] id_array is empty");
 	SteamItemInstanceID_t *item_ids = new SteamItemInstanceID_t[array_size];
 
 	for (uint32 i = 0; i < array_size; i++) {
@@ -2917,6 +2922,7 @@ bool Steam::setPropertyString(uint64_t item_id, const String &name, const String
 void Steam::startPurchase(const PackedInt64Array items, const PackedInt32Array quantity) {
 	ERR_FAIL_COND_MSG(SteamInventory() == NULL, "[STEAM] Inventory class not found when calling: startPurchase");
 	uint32 total_items = items.size();
+	ERR_FAIL_COND_MSG(total_items == 0, "[STEAM] No items to purchase");
 	SteamItemDef_t *purchases = new SteamItemDef_t[total_items];
 	for (uint32 i = 0; i < total_items; i++) {
 		purchases[i] = items[i];
@@ -4318,6 +4324,7 @@ Dictionary Steam::getConnectionRealTimeStatus(uint32 connection, int lanes, bool
 // Each lane has its own message number sequence.  The first message sent on each lane will be assigned the number 1.
 int Steam::configureConnectionLanes(uint32 connection, uint32 lanes, Array priorities, Array weights) {
 	ERR_FAIL_COND_V_MSG(SteamNetworkingSockets() == NULL, 0, "[STEAM] Networking Sockets class not found when calling: configureConnectionLanes");
+	ERR_FAIL_COND_V_MSG(lanes==0, 0, "[STEAM] No lanes specified when calling: configureConnectionLanes");
 	int *lane_priorities = new int[lanes];
 	for (uint32 i = 0; i < lanes; i++) {
 		lane_priorities[i] = priorities[i];
