@@ -484,6 +484,10 @@ bool Steam::steamInit(uint32_t app_id, bool embed_callbacks) {
 // Initialize the Steamworks SDK. On success STEAM_API_INIT_RESULT_OK is returned.
 // Otherwise, if error_message is non-NULL, it will receive a non-localized message that explains the reason for the failure.
 Dictionary Steam::steamInitEx(uint32_t app_id, bool embed_callbacks) {
+	if (app_id == 0) {
+		app_id = GLOBAL_GET("steam/initialization/app_id");
+	}
+
 	if (app_id != 0) {
 		OS::get_singleton()->set_environment("SteamAppId", itos(app_id));
 		OS::get_singleton()->set_environment("SteamGameId", itos(app_id));
