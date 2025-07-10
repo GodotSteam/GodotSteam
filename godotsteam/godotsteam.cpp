@@ -9002,16 +9002,16 @@ void Steam::download_ugc_result(RemoteStorageDownloadUGCResult_t *call_data, boo
 void Steam::unsubscribe_item(RemoteStorageUnsubscribePublishedFileResult_t *call_data, bool io_failure) {
 	ERR_FAIL_COND_MSG(io_failure, "[STEAM] unsubscribe_item signal failed internally");
 	int result = call_data->m_eResult;
-	int file_id = call_data->m_nPublishedFileId;
-	emit_signal("unsubscribe_item", result, file_id);
+	PublishedFileId_t file_id = call_data->m_nPublishedFileId;
+	emit_signal("unsubscribe_item", result, (uint64_t)file_id);
 }
 
 // Called when the user has subscribed to a piece of UGC. Result from ISteamUGC::SubscribeItem.
 void Steam::subscribe_item(RemoteStorageSubscribePublishedFileResult_t *call_data, bool io_failure) {
 	ERR_FAIL_COND_MSG(io_failure, "[STEAM] subscribe_item signal failed internally");
 	int result = call_data->m_eResult;
-	int file_id = call_data->m_nPublishedFileId;
-	emit_signal("subscribe_item", result, file_id);
+	PublishedFileId_t file_id = call_data->m_nPublishedFileId;
+	emit_signal("subscribe_item", result, (uint64_t)file_id);
 }
 
 
